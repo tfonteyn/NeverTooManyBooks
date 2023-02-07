@@ -69,6 +69,26 @@ public enum WindowSizeClass {
         }
     }
 
+    /**
+     * Is the screen expanded width.
+     * i.e. is there room enough for lots of extra features?
+     *
+     * @return {@code true} if it is.
+     */
+    public static boolean isScreenWidthExpanded(@NonNull final Context context) {
+        return getWidth(context) == EXPANDED;
+    }
+
+    /**
+     * Is the screen medium width.
+     * i.e. is there room enough for some extra features?
+     *
+     * @return {@code true} if it is.
+     */
+    public static boolean isScreenWidthMedium(@NonNull final Context context) {
+        return getWidth(context) == MEDIUM;
+    }
+
     @NonNull
     public static WindowSizeClass getWidth(@NonNull final Context context) {
         return getWidth(getActivity(context));

@@ -37,6 +37,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -88,6 +89,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
+import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
 /**
@@ -125,6 +127,7 @@ public class BooklistAdapter
     /** Cached inflater. */
     @NonNull
     private final LayoutInflater inflater;
+    private final boolean embeddedMode;
 
     /** caching the book condition strings. */
     @NonNull
@@ -135,6 +138,8 @@ public class BooklistAdapter
     /** The padding indent (in pixels) added for each level: padding = (level-1) * levelIndent. */
     @Dimension
     private final int levelIndent;
+    @NonNull
+    private final ShowContextMenu contextMenuMode;
     /** Whether to use the covers DAO caching. */
     private boolean imageCachingEnabled;
     private boolean reorderTitleForDisplaying;
@@ -157,15 +162,19 @@ public class BooklistAdapter
     @Nullable
     private OnRowClickListener rowClickListener;
     @Nullable
-    private OnRowLongClickListener rowLongClickListener;
+    private OnRowClickListener rowLongClickListener;
 
     /**
      * Constructor.
      *
-     * @param context Current context
+     * @param context      Current context
+     * @param embeddedMode flag; whether the booklist has an embedded details fragment
      */
-    public BooklistAdapter(@NonNull final Context context) {
-        inflater = LayoutInflater.from(context);
+    public BooklistAdapter(@NonNull final Context context,
+                           final boolean embeddedMode) {
+        this.inflater = LayoutInflater.from(context);
+        this.embeddedMode = embeddedMode;
+        this.contextMenuMode = ShowContextMenu.getPreferredMode(context);
 
         final Resources resources = context.getResources();
         userLocale = resources.getConfiguration().getLocales().get(0);
@@ -372,19 +381,8 @@ public class BooklistAdapter
                 break;
         }
 
-        // test for the listener inside the lambda, this allows changing it if needed
-        holder.onClickTargetView.setOnClickListener(v -> {
-            if (rowClickListener != null) {
-                rowClickListener.onClick(holder.getBindingAdapterPosition());
-            }
-        });
-
-        holder.onClickTargetView.setOnLongClickListener(v -> {
-            if (rowLongClickListener != null) {
-                return rowLongClickListener.onLongClick(v, holder.getBindingAdapterPosition());
-            }
-            return false;
-        });
+        holder.setOnClickListener(rowClickListener);
+        holder.setOnLongClickListener(rowLongClickListener);
 
         return holder;
     }
@@ -731,7 +729,7 @@ public class BooklistAdapter
         this.rowClickListener = listener;
     }
 
-    public void setRowLongClickListener(@Nullable final OnRowLongClickListener listener) {
+    public void setRowLongClickListener(@Nullable final OnRowClickListener listener) {
         this.rowLongClickListener = listener;
     }
 
@@ -759,30 +757,22 @@ public class BooklistAdapter
         throw new IllegalStateException("Not in debug");
     }
 
+    /**
+     * Handle a click or long-click on a row.
+     */
     @FunctionalInterface
     public interface OnRowClickListener {
 
         /**
-         * User clicked a row.
-         *
-         * @param position The position of the item within the adapter's data set.
-         */
-        void onClick(int position);
-    }
-
-    @FunctionalInterface
-    public interface OnRowLongClickListener {
-
-        /**
-         * User long-clicked a row.
+         * User (long)clicked a row.
          *
          * @param v        View clicked
          * @param position The position of the item within the adapter's data set.
          *
-         * @return true if the callback consumed the long click, false otherwise.
+         * @return true if the callback consumed the click, false otherwise.
          */
-        boolean onLongClick(@NonNull View v,
-                            int position);
+        boolean onClick(@NonNull View v,
+                        int position);
     }
 
     /**
@@ -801,7 +791,10 @@ public class BooklistAdapter
          * as it is this View that will be passed to the onClick handlers.
          */
         @NonNull
-        final View onClickTargetView;
+        private final View onClickTargetView;
+
+        @Nullable
+        private final Button btnRowMenu;
 
         /**
          * Constructor.
@@ -814,10 +807,63 @@ public class BooklistAdapter
             super(itemView);
             this.adapter = adapter;
 
+            btnRowMenu = itemView.findViewById(R.id.btn_row_menu);
+
             // 2022-09-07: not used for now, but keeping for future usage
             // If present, redirect all clicks to this view, otherwise let the main view get them.
             onClickTargetView = Objects.requireNonNullElse(
                     itemView.findViewById(R.id.ROW_ONCLICK_TARGET), itemView);
+        }
+
+        // test for the listener inside the lambda, this allows changing it if needed
+        void setOnClickListener(@Nullable final OnRowClickListener listener) {
+            onClickTargetView.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onClick(v, getBindingAdapterPosition());
+                }
+            });
+        }
+
+        void setOnLongClickListener(@Nullable final OnRowClickListener listener) {
+            // Provide long-click support.
+            onClickTargetView.setOnLongClickListener(v -> {
+                if (listener != null) {
+                    return listener.onClick(v, getBindingAdapterPosition());
+                }
+                return false;
+            });
+
+            if (btnRowMenu != null) {
+                btnRowMenu.setOnClickListener(v -> {
+                    if (listener != null) {
+                        listener.onClick(v, getBindingAdapterPosition());
+                    }
+                });
+
+                switch (adapter.contextMenuMode) {
+                    case Button: {
+                        btnRowMenu.setVisibility(View.VISIBLE);
+                        break;
+                    }
+                    case ButtonIfSpace: {
+                        final WindowSizeClass size = WindowSizeClass.getWidth(
+                                btnRowMenu.getContext());
+                        final boolean hasSpace = !adapter.embeddedMode &&
+                                                 (size == WindowSizeClass.MEDIUM
+                                                  || size == WindowSizeClass.EXPANDED);
+                        if (hasSpace) {
+                            btnRowMenu.setVisibility(View.VISIBLE);
+                        } else {
+                            btnRowMenu.setVisibility(View.GONE);
+                        }
+                        break;
+                    }
+                    case NoButton: {
+                        btnRowMenu.setVisibility(View.GONE);
+                        break;
+                    }
+                }
+            }
         }
 
         /**

@@ -727,12 +727,13 @@ public class BooksOnBookshelf
      *
      * @param position The position of the item within the adapter's data set.
      */
-    private void onRowClicked(final int position) {
+    private boolean onRowClicked(@NonNull final View v,
+                                 final int position) {
         //noinspection ConstantConditions
         final DataHolder rowData = adapter.readDataAt(position);
         // Paranoia: if the user can click it, then the row exists.
         if (rowData == null) {
-            return;
+            return true;
         }
 
         if (rowData.getInt(DBKey.BL_NODE_GROUP) == BooklistGroup.BOOK) {
@@ -763,6 +764,8 @@ public class BooksOnBookshelf
             // the exact same (saved) position.
             displayList(null);
         }
+
+        return true;
     }
 
     /**
@@ -960,8 +963,8 @@ public class BooksOnBookshelf
             final int level = rowData.getInt(DBKey.BL_NODE_LEVEL);
             contextMenu.setTitle(adapter.getLevelText(level, position));
 
-            if (menu.size() < 5) {
-                // small menu, show it anchored to the row
+            if (menu.size() < 5 || WindowSizeClass.isScreenWidthMedium(this)) {
+                // show it anchored
                 contextMenu.showAsDropDown(v, menuItem ->
                         onRowContextMenuItemSelected(menuItem, position));
 
@@ -1610,7 +1613,7 @@ public class BooksOnBookshelf
                   new Throwable());
         }
 
-        adapter = new BooklistAdapter(this);
+        adapter = new BooklistAdapter(this, hasEmbeddedDetailsFrame());
         adapter.setRowClickListener(this::onRowClicked);
         adapter.setRowLongClickListener(this::onCreateContextMenu);
 
@@ -1652,7 +1655,7 @@ public class BooksOnBookshelf
     }
 
     private boolean hasEmbeddedDetailsFrame() {
-        return WindowSizeClass.getWidth(this) == WindowSizeClass.EXPANDED;
+        return WindowSizeClass.isScreenWidthExpanded(this);
     }
 
     /**
