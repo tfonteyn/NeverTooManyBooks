@@ -1663,6 +1663,9 @@
     <string name="pt_search_resolve_authors_bedetheque">Resolve author pen-names using the Bedetheque website</string>
     <string name="pt_bedetheque_search_resolve_formats">Preserve Bedetheque (french) format naming</string>
 
+    <string name="confirm_no_missing_covers_search_from_top">All books below this row have covers. Search again from the top?</string>
+    <string name="info_all_books_have_covers">All books on this shelf have covers</string>
+
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
 
