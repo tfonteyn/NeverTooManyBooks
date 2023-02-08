@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.booklist;
+package com.hardbacknutter.nevertoomanybooks.booklist.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -47,14 +47,8 @@ import java.util.Objects;
 import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.rowviewholders.AuthorHolder;
-import com.hardbacknutter.nevertoomanybooks.booklist.rowviewholders.BookHolder;
-import com.hardbacknutter.nevertoomanybooks.booklist.rowviewholders.Formatter;
-import com.hardbacknutter.nevertoomanybooks.booklist.rowviewholders.GenericStringHolder;
-import com.hardbacknutter.nevertoomanybooks.booklist.rowviewholders.OnRowClickListener;
-import com.hardbacknutter.nevertoomanybooks.booklist.rowviewholders.RatingHolder;
-import com.hardbacknutter.nevertoomanybooks.booklist.rowviewholders.RowViewHolder;
-import com.hardbacknutter.nevertoomanybooks.booklist.rowviewholders.SeriesHolder;
+import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
+import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;

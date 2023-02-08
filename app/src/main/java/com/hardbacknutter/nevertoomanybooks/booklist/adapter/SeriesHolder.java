@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.booklist.rowviewholders;
+package com.hardbacknutter.nevertoomanybooks.booklist.adapter;
 
 import android.view.View;
 import android.widget.ImageView;
@@ -48,10 +48,10 @@ public class SeriesHolder
      * @param itemView the view specific for this holder
      * @param group    the group this holder represents
      */
-    public SeriesHolder(@IntRange(from = 1) final int level,
-                        @NonNull final View itemView,
-                        @NonNull final BooklistGroup group,
-                        @NonNull final FormatFunction formatter) {
+    SeriesHolder(@IntRange(from = 1) final int level,
+                 @NonNull final View itemView,
+                 @NonNull final BooklistGroup group,
+                 @NonNull final FormatFunction formatter) {
         super(level, itemView, group, formatter);
         completeView = itemView.findViewById(R.id.cbx_is_complete);
     }

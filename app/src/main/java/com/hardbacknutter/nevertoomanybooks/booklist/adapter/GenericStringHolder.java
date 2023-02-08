@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.booklist.rowviewholders;
+package com.hardbacknutter.nevertoomanybooks.booklist.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -88,10 +88,10 @@ public class GenericStringHolder
      * @param itemView the view specific for this holder
      * @param group    the group this holder represents
      */
-    public GenericStringHolder(@IntRange(from = 1) final int level,
-                               @NonNull final View itemView,
-                               @NonNull final BooklistGroup group,
-                               @NonNull final FormatFunction formatter) {
+    GenericStringHolder(@IntRange(from = 1) final int level,
+                        @NonNull final View itemView,
+                        @NonNull final BooklistGroup group,
+                        @NonNull final FormatFunction formatter) {
         super(itemView);
 
         groupId = group.getId();
@@ -113,7 +113,7 @@ public class GenericStringHolder
         return MathUtils.clamp(level - 1, 0, 2);
     }
 
-    public void setDebugPosition(@Nullable final DebugPosition debugPosition) {
+    void setDebugPosition(@Nullable final DebugPosition debugPosition) {
         this.debugPosition = debugPosition;
     }
 

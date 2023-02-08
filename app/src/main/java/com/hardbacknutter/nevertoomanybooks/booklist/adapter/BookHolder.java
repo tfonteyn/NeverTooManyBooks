@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.booklist.rowviewholders;
+package com.hardbacknutter.nevertoomanybooks.booklist.adapter;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -108,9 +108,9 @@ public class BookHolder
      * @param style            to use
      * @param coverLongestSide Longest side for a cover in pixels
      */
-    public BookHolder(@NonNull final View itemView,
-                      @NonNull final Style style,
-                      @Dimension final int coverLongestSide) {
+    BookHolder(@NonNull final View itemView,
+               @NonNull final Style style,
+               @Dimension final int coverLongestSide) {
         super(itemView);
 
         imageCachingEnabled = ImageUtils.isImageCachingEnabled();

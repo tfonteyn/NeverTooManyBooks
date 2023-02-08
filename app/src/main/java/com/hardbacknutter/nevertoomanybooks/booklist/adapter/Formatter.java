@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.booklist.rowviewholders;
+package com.hardbacknutter.nevertoomanybooks.booklist.adapter;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -55,7 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
  * BooklistGroup (e.g. Author,Series,...),
  * we handle the formatting is here regardless.
  */
-public class Formatter
+class Formatter
         implements FormatFunction {
 
     private static final String TAG = "Formatter";
@@ -73,8 +73,8 @@ public class Formatter
     @NonNull
     private final String[] conditionDescriptions;
 
-    public Formatter(@NonNull final Context context,
-                     @NonNull final Style style) {
+    Formatter(@NonNull final Context context,
+              @NonNull final Style style) {
         this.context = context;
         this.style = style;
         reorderTitleForDisplaying = ReorderHelper.forDisplay(context);

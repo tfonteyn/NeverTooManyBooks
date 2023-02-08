@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.booklist.rowviewholders;
+package com.hardbacknutter.nevertoomanybooks.booklist.adapter;
 
 import android.view.View;
 import android.widget.RatingBar;
@@ -48,8 +48,8 @@ public class RatingHolder
      * @param itemView the view specific for this holder
      * @param group    the group this holder represents
      */
-    public RatingHolder(@NonNull final View itemView,
-                        @NonNull final BooklistGroup group) {
+    RatingHolder(@NonNull final View itemView,
+                 @NonNull final BooklistGroup group) {
         super(itemView);
         key = group.getDisplayDomainExpression().getDomain().getName();
         ratingBar = itemView.findViewById(R.id.rating);

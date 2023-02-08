@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.booklist.rowviewholders;
+package com.hardbacknutter.nevertoomanybooks.booklist.adapter;
 
 import android.view.View;
 import android.widget.Button;
@@ -69,8 +69,7 @@ public abstract class RowViewHolder
                 itemView.findViewById(R.id.ROW_ONCLICK_TARGET), itemView);
     }
 
-
-    public void setOnClickListener(@Nullable final OnRowClickListener listener) {
+    void setOnClickListener(@Nullable final OnRowClickListener listener) {
         // test for the listener inside the lambda, this allows changing it if needed
         onClickTargetView.setOnClickListener(v -> {
             if (listener != null) {
@@ -79,9 +78,9 @@ public abstract class RowViewHolder
         });
     }
 
-    public void setOnLongClickListener(@Nullable final OnRowClickListener listener,
-                                       final boolean embeddedMode,
-                                       @NonNull final ShowContextMenu contextMenuMode) {
+    void setOnLongClickListener(@Nullable final OnRowClickListener listener,
+                                final boolean embeddedMode,
+                                @NonNull final ShowContextMenu contextMenuMode) {
         // Provide long-click support.
         onClickTargetView.setOnLongClickListener(v -> {
             if (listener != null) {
