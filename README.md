@@ -18,15 +18,32 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-This is a book catalogue application, to keep track of your books and comics.
+This is a book collection application, to keep track of your books and comics.
 Books can be added either manually, by ISBN, or by barcode.
 
-Data is fetched from multiple internet sites.
+The UI is available in:
+English, German, French, Dutch, Italian, Spanish, Greek, Czech, Polish, Turkish and Russian.
+The quality of translation of the latter half of this list is likely not perfect.
+
+Data is fetched on-demand from multiple internet sites.
+You can enable/disable and prioritize the sites in the settings.
+
+- Amazon
+- Bedetheque (new in v4)
+- Google Books
+- ISFDB
+- KB.NL (new in v4)
+- LastDodo
+- OpenLibrary
+- StripInfo
+
+Please do not ask for GoodReads/LibraryThing to be added.
+
+Supports synchronizing with a Calibre Content Server.
 
 Requires minimal Android 8.0 (API 26)
 
-To install the optional Calibre code which provides Virtual Library support,
-see [Calibre AJAX extension](https://github.com/tfonteyn/NeverTooManyBooks/blob/dev/app/src/main/java/com/hardbacknutter/nevertoomanybooks/sync/calibre/ajax_additions.py)
+Make sure to check the [documentation][https://github.com/tfonteyn/NeverTooManyBooks/wiki]
 
 In August 2018, this project was forked from:
 Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn.
