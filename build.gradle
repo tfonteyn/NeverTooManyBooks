@@ -33,7 +33,7 @@ task clean(type: Delete) {
 
 ext {
     applicationId = "com.hardbacknutter.nevertoomanybooks"
-    applicationVersionCode = 40
+    applicationVersionCode = 41
     applicationVersionName = '4.0.0'
 
     // see NOTES.txt
