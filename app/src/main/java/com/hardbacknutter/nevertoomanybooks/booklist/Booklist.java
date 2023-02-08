@@ -229,7 +229,7 @@ public class Booklist
      * @return cursor
      */
     @NonNull
-    Cursor getNewListCursor() {
+    public Cursor getNewListCursor() {
         if (listCursor != null) {
             listCursor.close();
         }
@@ -324,7 +324,7 @@ public class Booklist
         return node;
     }
 
-    boolean isNodeExpanded(final long rowId) {
+    public boolean isNodeExpanded(final long rowId) {
         return getNodeByRowId(rowId).isExpanded();
     }
 

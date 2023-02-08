@@ -18,26 +18,12 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.booklist.rowviewholders;
+package com.hardbacknutter.nevertoomanybooks.booklist.adapter;
 
-import android.view.View;
+import androidx.annotation.ColorInt;
 
-import androidx.annotation.NonNull;
-
-/**
- * Handle a click or long-click on a row.
- */
 @FunctionalInterface
-public interface OnRowClickListener {
-
-    /**
-     * User (long)clicked a row.
-     *
-     * @param v        View clicked
-     * @param position The position of the item within the adapter's data set.
-     *
-     * @return true if the callback consumed the click, false otherwise.
-     */
-    boolean onClick(@NonNull View v,
-                    int position);
+public interface DebugPosition {
+    @ColorInt
+    int getDbgRowColor(int rowId);
 }

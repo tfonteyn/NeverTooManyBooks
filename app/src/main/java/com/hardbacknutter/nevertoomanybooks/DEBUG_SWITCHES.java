@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks;
 import androidx.activity.result.contract.ActivityResultContract;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
+import com.hardbacknutter.nevertoomanybooks.booklist.adapter.BooklistAdapter;
 
 /**
  * Global location where you can switch individual DEBUG options of/off
@@ -61,7 +62,7 @@ public final class DEBUG_SWITCHES {
      */
     public static final boolean BOB_NODE_STATE = false;
     /**
-     * {@link com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter}
+     * {@link BooklistAdapter}
      * {@link BooksOnBookshelf}
      * Display the position and node id. Adds a View from code.
      */
