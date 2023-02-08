@@ -26,34 +26,16 @@ is by design not foolproof. The nodes 'expanded' flag WILL get out of sync with
  the display from time to time.
 
 ----------------------------------------------------------------------------------------------------
-4.0.0
+4.0.1
 
 NEW:
-- new search-engine for Bedetheque (BDGest) for french comics
-- updated and re-enabled search-engine for KB NL for dutch books
-- author pseudonym support:
-  - The user can manage/display pseudonyms.
-  - automatic resolving is available for stripinfo/lastdodo
-    which use bedetheque, and bedetheque itself.
-    i.e. the majority of european non-english comics
-    (and a fairly large amount of english) are supported.
-- easier access to context menu's on the book list (button and/or long-click configurable)
-- booklist groups for author and publisher 1st character
-- update-from-internet is now available for a number of date based booklist groups
-- refitted support for importing Book Catalogue "bcbk" backup file
-- new scanner code from 3.4 is considered stable.
+
 
 FIXES:
-- merging author etc... updated and made more robust
-- importing badly formatted list-price fields no longer skips the book,
-  but just skips the price field.
-- fixed filter name mismatches.
+
 
 REMOVED:
-- all CSV and XML exports are removed. It was increasingly difficult to keep them updated.
-  Use JSON instead. A simplified CSV export is planned in a future version.
-- TAR import is removed. This allowed the removal of the Apache library for tar.
-  Repack any tar archive as a zip and import the zip.
+
 
 ----------------------------------------------------------------------------------------------------
 Pseudonyms:
