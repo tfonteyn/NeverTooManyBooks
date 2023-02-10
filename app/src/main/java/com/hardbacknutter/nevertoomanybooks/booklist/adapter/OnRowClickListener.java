@@ -35,9 +35,7 @@ public interface OnRowClickListener {
      *
      * @param v        View clicked
      * @param position The position of the item within the adapter's data set.
-     *
-     * @return true if the callback consumed the click, false otherwise.
      */
-    boolean onClick(@NonNull View v,
-                    int position);
+    void onClick(@NonNull View v,
+                 int position);
 }

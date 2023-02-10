@@ -69,55 +69,67 @@ public abstract class RowViewHolder
                 itemView.findViewById(R.id.ROW_ONCLICK_TARGET), itemView);
     }
 
-    void setOnClickListener(@Nullable final OnRowClickListener listener) {
-        // test for the listener inside the lambda, this allows changing it if needed
-        onClickTargetView.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onClick(v, getBindingAdapterPosition());
-            }
-        });
+    /**
+     * Set the {@link OnRowClickListener} for a click on a row.
+     *
+     * @param listener to set
+     */
+    public void setOnRowClickListener(@Nullable final OnRowClickListener listener) {
+        if (listener != null) {
+            onClickTargetView.setOnClickListener(v -> listener
+                    .onClick(v, getBindingAdapterPosition()));
+        } else {
+            onClickTargetView.setOnClickListener(null);
+        }
     }
 
-    void setOnLongClickListener(@Nullable final OnRowClickListener listener,
-                                final boolean embeddedMode,
-                                @NonNull final ShowContextMenu contextMenuMode) {
-        // Provide long-click support.
-        onClickTargetView.setOnLongClickListener(v -> {
-            if (listener != null) {
-                return listener.onClick(v, getBindingAdapterPosition());
-            }
-            return false;
-        });
-
-        if (btnRowMenu != null) {
-            btnRowMenu.setOnClickListener(v -> {
-                if (listener != null) {
-                    listener.onClick(v, getBindingAdapterPosition());
-                }
+    /**
+     * Setup the onClick listener for showing the context menu on a row.
+     * <p>
+     * Provides long-click on a row, and optionally a dedicated button for the same.
+     *
+     * @param listener        to receive clicks
+     * @param contextMenuMode user preferred context menu mode
+     */
+    public void setOnRowShowContextMenuListener(@Nullable final OnRowClickListener listener,
+                                                @Nullable final ShowContextMenu contextMenuMode) {
+        if (listener != null && contextMenuMode != null) {
+            onClickTargetView.setOnLongClickListener(v -> {
+                listener.onClick(v, getBindingAdapterPosition());
+                return true;
             });
 
-            switch (contextMenuMode) {
-                case Button: {
-                    btnRowMenu.setVisibility(View.VISIBLE);
-                    break;
-                }
-                case ButtonIfSpace: {
-                    final WindowSizeClass size = WindowSizeClass.getWidth(
-                            btnRowMenu.getContext());
-                    final boolean hasSpace = !embeddedMode &&
-                                             (size == WindowSizeClass.MEDIUM
-                                              || size == WindowSizeClass.EXPANDED);
-                    if (hasSpace) {
+            if (btnRowMenu != null) {
+                btnRowMenu.setOnClickListener(
+                        v -> listener.onClick(v, getBindingAdapterPosition()));
+
+                switch (contextMenuMode) {
+                    case Button: {
                         btnRowMenu.setVisibility(View.VISIBLE);
-                    } else {
-                        btnRowMenu.setVisibility(View.GONE);
+                        break;
                     }
-                    break;
+                    case ButtonIfSpace: {
+                        final WindowSizeClass size = WindowSizeClass.getWidth(
+                                btnRowMenu.getContext());
+                        if (size == WindowSizeClass.MEDIUM
+                            || size == WindowSizeClass.EXPANDED) {
+                            btnRowMenu.setVisibility(View.VISIBLE);
+                        } else {
+                            btnRowMenu.setVisibility(View.GONE);
+                        }
+                        break;
+                    }
+                    case NoButton: {
+                        btnRowMenu.setVisibility(View.GONE);
+                        break;
+                    }
                 }
-                case NoButton: {
-                    btnRowMenu.setVisibility(View.GONE);
-                    break;
-                }
+            }
+        } else {
+            onClickTargetView.setOnLongClickListener(null);
+            if (btnRowMenu != null) {
+                btnRowMenu.setOnClickListener(null);
+                btnRowMenu.setVisibility(View.GONE);
             }
         }
     }
