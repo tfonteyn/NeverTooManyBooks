@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.bookdetails;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -56,13 +57,14 @@ public class ViewBookOnWebsiteHandler
 
             final MenuItem subMenuItem = menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE);
             final SubMenu subMenu = subMenuItem.getSubMenu();
+            final Resources res = context.getResources();
 
             for (final Site site : Site.Type.ViewOnSite.getSites()) {
                 final EngineId engineId = site.getEngineId();
                 final SearchEngineConfig config = Objects.requireNonNull(engineId.getConfig());
                 subMenu.add(R.id.MENU_GROUP_BOOK,
                             config.getDomainMenuResId(),
-                            context.getResources().getInteger(config.getDomainMenuOrderResId()),
+                            res.getInteger(config.getDomainMenuOrderResId()),
                             engineId.getLabelResId())
                        .setIcon(R.drawable.ic_baseline_link_24);
             }

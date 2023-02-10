@@ -218,9 +218,9 @@ public class DebugReport {
 
     @NonNull
     public DebugReport addScreenParams() {
-        final Resources resources = context.getResources();
-        final Configuration configuration = resources.getConfiguration();
-        final DisplayMetrics metrics = resources.getDisplayMetrics();
+        final Resources res = context.getResources();
+        final Configuration configuration = res.getConfiguration();
+        final DisplayMetrics metrics = res.getDisplayMetrics();
 
         final String sb =
                 "logScreenParams|\n\n"

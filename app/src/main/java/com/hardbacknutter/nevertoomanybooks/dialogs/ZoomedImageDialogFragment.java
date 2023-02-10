@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -110,16 +110,16 @@ public class ZoomedImageDialogFragment
         // |screenHwRatio=1.711111068725586
         // |maxWidth=1026|maxHeight=1755
 
-        final Resources resources = getResources();
-        final Configuration configuration = resources.getConfiguration();
-        final DisplayMetrics metrics = resources.getDisplayMetrics();
+        final Resources res = getResources();
+        final Configuration configuration = res.getConfiguration();
+        final DisplayMetrics metrics = res.getDisplayMetrics();
 
         final double screenHwRatio = ((float) configuration.screenHeightDp)
                                      / ((float) configuration.screenWidthDp);
 
         // screen space we use is depending on the screen size...
         // or we end up with pixelated overblown images.
-        final int percentage = resources.getInteger(R.integer.cover_zoom_screen_percentage);
+        final int percentage = res.getInteger(R.integer.cover_zoom_screen_percentage);
         final float multiplier = metrics.density * ((float) percentage / 100);
         final int maxWidth;
         final int maxHeight;
