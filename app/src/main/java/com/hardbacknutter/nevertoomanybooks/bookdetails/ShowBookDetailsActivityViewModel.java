@@ -54,11 +54,20 @@ public class ShowBookDetailsActivityViewModel
         return modified;
     }
 
-    void updateFragmentResult() {
+    /**
+     * Unconditionally set the modification flag to {@code true}.
+     */
+    void setDataModified() {
         modified = true;
     }
 
-    void updateFragmentResult(@NonNull final EditBookOutput data) {
+    /**
+     * Set the modification flag to {@code true} <strong>if the given data was modified</strong>.
+     * Does NOT change the flag if the data was not modified.
+     *
+     * @param data to check for being modified
+     */
+    void setDataModified(@NonNull final EditBookOutput data) {
         if (data.isModified()) {
             modified = true;
         }

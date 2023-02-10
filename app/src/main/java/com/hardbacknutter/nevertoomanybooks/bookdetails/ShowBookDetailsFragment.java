@@ -135,7 +135,7 @@ public class ShowBookDetailsFragment
                     // The db was already updated, just update the book
                     vm.reloadBook();
 
-                    aVm.updateFragmentResult();
+                    aVm.setDataModified();
 
                     if (bookChangedListener != null) {
                         bookChangedListener.onBookUpdated(vm.getBook(), DBKey.LOANEE_NAME);
@@ -292,7 +292,7 @@ public class ShowBookDetailsFragment
     private void onBookAutoUpdateFinished(@NonNull final UpdateBooksOutput data) {
         // only override if 'true'; i.e. if we got an id back
         if (data.getBookModified() > 0) {
-            aVm.updateFragmentResult();
+            aVm.setDataModified();
         }
 
         vm.reloadBook();
@@ -310,7 +310,7 @@ public class ShowBookDetailsFragment
     private void onBookEditFinished(@NonNull final EditBookOutput data) {
         if (data.isModified()) {
             // needed when running inside the ViewPager
-            aVm.updateFragmentResult();
+            aVm.setDataModified();
 
             vm.reloadBook();
 
@@ -338,7 +338,7 @@ public class ShowBookDetailsFragment
     private void toggleReadStatus() {
         final Book book = vm.getBook();
         final boolean read = book.toggleRead();
-        aVm.updateFragmentResult();
+        aVm.setDataModified();
 
         vm.requireField(R.id.read).setValue(read);
 
@@ -683,7 +683,7 @@ public class ShowBookDetailsFragment
 
         private void deleteLoanee(@NonNull final Book book) {
             vm.deleteLoan();
-            aVm.updateFragmentResult();
+            aVm.setDataModified();
 
             bindLoanee(book);
             if (vm.isEmbedded()) {
@@ -702,7 +702,7 @@ public class ShowBookDetailsFragment
             StandardDialogs.deleteBook(getContext(), title, authors, () -> {
                 final long bookIdDeleted = book.getId();
                 vm.deleteBook();
-                aVm.updateFragmentResult();
+                aVm.setDataModified();
 
                 if (bookChangedListener != null) {
                     // explicitly tell the listener WHICH book we deleted.
