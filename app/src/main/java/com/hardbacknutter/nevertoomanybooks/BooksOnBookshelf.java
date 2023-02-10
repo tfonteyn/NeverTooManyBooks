@@ -92,6 +92,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.RowChangedListener;
+import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.booklist.adapter.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
@@ -729,13 +730,13 @@ public class BooksOnBookshelf
      *
      * @param position The position of the item within the adapter's data set.
      */
-    private boolean onRowClicked(@NonNull final View v,
-                                 final int position) {
+    private void onRowClicked(@NonNull final View v,
+                              final int position) {
         //noinspection ConstantConditions
         final DataHolder rowData = adapter.readDataAt(position);
         // Paranoia: if the user can click it, then the row exists.
         if (rowData == null) {
-            return true;
+            return;
         }
 
         if (rowData.getInt(DBKey.BL_NODE_GROUP) == BooklistGroup.BOOK) {
@@ -767,7 +768,6 @@ public class BooksOnBookshelf
             displayList(null);
         }
 
-        return true;
     }
 
     /**
@@ -775,16 +775,14 @@ public class BooksOnBookshelf
      *
      * @param v        View clicked
      * @param position The position of the item within the adapter's data set.
-     *
-     * @return {@code true} if there is a menu to show
      */
-    private boolean onCreateContextMenu(@NonNull final View v,
-                                        final int position) {
+    private void onCreateContextMenu(@NonNull final View v,
+                                     final int position) {
         //noinspection ConstantConditions
         final DataHolder rowData = adapter.readDataAt(position);
         // Paranoia: if the user can click it, then the row exists.
         if (rowData == null) {
-            return false;
+            return;
         }
 
         final ExtPopupMenu contextMenu = new ExtPopupMenu(this)
@@ -977,10 +975,8 @@ public class BooksOnBookshelf
                 contextMenu.show(v, Gravity.CENTER, menuItem ->
                         onRowContextMenuItemSelected(menuItem, position));
             }
-            return true;
         }
 
-        return false;
     }
 
     /**
@@ -1620,8 +1616,12 @@ public class BooksOnBookshelf
         }
 
         adapter = new BooklistAdapter(this, vm.getStyle(this));
-        adapter.setRowClickListener(this::onRowClicked);
-        adapter.setRowLongClickListener(this::onCreateContextMenu, hasEmbeddedDetailsFrame());
+        adapter.setOnRowClickListener(this::onRowClicked);
+        ShowContextMenu preferredMode = ShowContextMenu.getPreferredMode(this);
+        if (preferredMode == ShowContextMenu.ButtonIfSpace && hasEmbeddedDetailsFrame()) {
+            preferredMode = ShowContextMenu.NoButton;
+        }
+        adapter.setOnRowShowMenuListener(preferredMode, this::onCreateContextMenu);
 
         adapter.setBooklist(vm.getBooklist());
 
