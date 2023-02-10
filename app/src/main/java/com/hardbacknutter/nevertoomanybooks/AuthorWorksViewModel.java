@@ -165,11 +165,6 @@ public class AuthorWorksViewModel
         return works;
     }
 
-    @NonNull
-    ArrayList<Long> getBookIds(@NonNull final TocEntry tocEntry) {
-        return ServiceLocator.getInstance().getTocEntryDao().getBookIds(tocEntry.getId());
-    }
-
     /**
      * Delete the given {@link AuthorWork}.
      *
@@ -248,7 +243,7 @@ public class AuthorWorksViewModel
         return EditBookOutput.createResult(0, dataModified);
     }
 
-    void onBookEditFinished(@NonNull final EditBookOutput data) {
+    void setDataModified(@NonNull final EditBookOutput data) {
         // ignore the data.bookId
         if (data.isModified()) {
             dataModified = true;

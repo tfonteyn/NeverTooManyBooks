@@ -32,7 +32,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
@@ -144,8 +143,4 @@ public class TocViewModel
         }
     }
 
-    @NonNull
-    ArrayList<Long> getBookIds(@NonNull final TocEntry tocEntry) {
-        return ServiceLocator.getInstance().getTocEntryDao().getBookIds(tocEntry.getId());
-    }
 }

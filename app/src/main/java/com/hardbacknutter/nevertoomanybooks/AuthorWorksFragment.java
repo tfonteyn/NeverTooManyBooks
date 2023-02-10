@@ -22,10 +22,8 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -34,7 +32,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -45,24 +42,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.divider.MaterialDividerItemDecoration;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import com.hardbacknutter.fastscroller.FastScroller;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ShowBookPagerContract;
-import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.DisplayBookLauncher;
+import com.hardbacknutter.nevertoomanybooks.bookdetails.TocAdapter;
+import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
-import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 
 /**
@@ -86,11 +79,6 @@ public class AuthorWorksFragment
 
     /** The Fragment ViewModel. */
     private AuthorWorksViewModel vm;
-    /** Display a Book. */
-    private final ActivityResultLauncher<ShowBookPagerContract.Input> displayBookLauncher =
-            registerForActivityResult(new ShowBookPagerContract(), o -> o.ifPresent(
-                    data -> vm.onBookEditFinished(data)));
-
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
@@ -101,29 +89,20 @@ public class AuthorWorksFragment
                     getActivity().finish();
                 }
             };
-
+    /** Display a Book. */
+    private DisplayBookLauncher displayBookLauncher;
     /** The Adapter. */
     private TocAdapter adapter;
     /** View Binding. */
     private RecyclerView worksListView;
     private ExtPopupMenu contextMenu;
-    private final TocEntryHandler tocEntryHandler = new TocEntryHandler() {
-        @Override
-        public void viewBook(final int position) {
-            gotoBook(position);
-        }
-
-        @Override
-        public void showContextMenu(@NonNull final View anchor,
-                                    final int position) {
-            contextMenu.showAsDropDown(anchor, menuItem ->
-                    onMenuItemSelected(menuItem, position));
-        }
-    };
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        displayBookLauncher = new DisplayBookLauncher(this, o -> o.ifPresent(
+                data -> vm.setDataModified(data)));
 
         vm = new ViewModelProvider(this).get(AuthorWorksViewModel.class);
         //noinspection ConstantConditions
@@ -190,51 +169,6 @@ public class AuthorWorksFragment
         }
     }
 
-    /**
-     * User tapped on an entry; get the book(s) for that entry and display.
-     *
-     * @param position in the list
-     */
-    private void gotoBook(final int position) {
-        final AuthorWork work = vm.getWorks().get(position);
-
-        switch (work.getWorkType()) {
-            case TocEntry: {
-                final TocEntry tocEntry = (TocEntry) work;
-                final ArrayList<Long> bookIdList = vm.getBookIds(tocEntry);
-                if (bookIdList.size() == 1) {
-                    displayBookLauncher.launch(new ShowBookPagerContract.Input(
-                            bookIdList.get(0), vm.getStyle().getUuid(), null, 0));
-
-                } else {
-                    // multiple books, open the list as a NEW ACTIVITY
-                    final Intent intent = new Intent(getContext(), BooksOnBookshelf.class)
-                            .putExtra(Book.BKEY_BOOK_ID_LIST, ParcelUtils.wrap(bookIdList))
-                            // Open the list expanded, as otherwise you end up with
-                            // the author as a single line, and no books shown at all,
-                            // which can be quite confusing to the user.
-                            .putExtra(BooksOnBookshelfViewModel.BKEY_LIST_STATE,
-                                      (Parcelable) RebuildBooklist.Expanded);
-
-                    if (vm.isAllBookshelves()) {
-                        intent.putExtra(DBKey.FK_BOOKSHELF, Bookshelf.ALL_BOOKS);
-                    }
-                    startActivity(intent);
-                }
-                break;
-            }
-            case Book:
-            case BookLight: {
-                displayBookLauncher.launch(new ShowBookPagerContract.Input(
-                        work.getId(), vm.getStyle().getUuid(), null, 0));
-
-                break;
-            }
-            default:
-                throw new IllegalArgumentException(String.valueOf(work));
-        }
-    }
-
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
@@ -263,7 +197,21 @@ public class AuthorWorksFragment
         final int overlayType = Prefs.getFastScrollerOverlayType(context);
         FastScroller.attach(worksListView, overlayType);
 
-        adapter = new TocAdapter(context, vm.getAuthor(), vm.getWorks(), tocEntryHandler);
+        adapter = new TocAdapter(context, vm.getAuthor(), vm.getWorks());
+
+        // click -> get the book(s) for that entry and display.
+        adapter.setOnRowClickListener(
+                (v, position) -> displayBookLauncher.launch(
+                        this,
+                        vm.getWorks().get(position),
+                        vm.getStyle(),
+                        vm.isAllBookshelves()));
+        final ShowContextMenu preferredMode = ShowContextMenu.getPreferredMode(context);
+        adapter.setOnRowShowMenuListener(
+                preferredMode, (anchor, position) -> contextMenu.showAsDropDown(anchor, menuItem ->
+                        onMenuItemSelected(menuItem, position))
+        );
+
         worksListView.setAdapter(adapter);
 
         contextMenu = new ExtPopupMenu(context);
@@ -275,43 +223,6 @@ public class AuthorWorksFragment
 
         if (savedInstanceState == null) {
             TipManager.getInstance().display(context, R.string.tip_authors_works, null);
-        }
-    }
-
-    public static class TocAdapter
-            extends TocBaseAdapter {
-
-        /**
-         * Constructor.
-         *
-         * @param context         Current context
-         * @param worksAuthor     the author who 'owns' the works list
-         * @param tocList         to show
-         * @param tocEntryHandler the handler to act on row clicks
-         */
-        TocAdapter(@NonNull final Context context,
-                   @NonNull final Author worksAuthor,
-                   @NonNull final List<AuthorWork> tocList,
-                   @NonNull final TocEntryHandler tocEntryHandler) {
-            super(context, worksAuthor, tocList, tocEntryHandler);
-        }
-
-        @NonNull
-        @Override
-        public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
-                                         final int viewType) {
-            final Holder holder = super.onCreateViewHolder(parent, viewType);
-
-            // click -> get the book(s) for that entry and display.
-            holder.itemView.setOnClickListener(
-                    v -> tocEntryHandler.viewBook(holder.getBindingAdapterPosition()));
-
-            holder.itemView.setOnLongClickListener(v -> {
-                tocEntryHandler.showContextMenu(v, holder.getBindingAdapterPosition());
-                return true;
-            });
-
-            return holder;
         }
     }
 
