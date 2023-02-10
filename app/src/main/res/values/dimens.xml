@@ -147,9 +147,15 @@
     <dimen name="bob_embedded_list_width">400dp</dimen>
 
     <!-- the margin around the CardView. -->
-    <dimen name="bob_book_card_margin">8dp</dimen>
+    <dimen name="bob_book_card_margin">4dp</dimen>
     <!-- The content padding used for the CardView content displaying a Book. -->
     <dimen name="bob_book_card_content_padding">4dp</dimen>
+
+    <!-- the margin around the CardView. -->
+    <dimen name="authorwork_card_margin">4dp</dimen>
+    <!-- The content padding used for the CardView content displaying an AuthorWork. -->
+    <dimen name="authorwork_card_content_padding">4dp</dimen>
+
 
     <!-- The relative size for the 'real-author' name of a pseudonym. -->
     <item name="bob_author_pseudonym_size" format="float" type="dimen">0.6f</item>

@@ -74,6 +74,18 @@
         <item name="cardBackgroundColor">?attr/colorSurface</item>
     </style>
 
+    <!--
+        The content container/row for an AuthorWork in a list.
+        (yes, this is not one for the BookList... should be in another style-x.xml file) -->
+    -->
+
+    <style name="AuthorWorkCard" parent="Widget.Material3.CardView.Elevated">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_margin">@dimen/authorwork_card_margin</item>
+        <item name="contentPadding">@dimen/authorwork_card_content_padding</item>
+        <item name="cardBackgroundColor">?attr/colorSurface</item>
+    </style>
     <!-- *************************************************************************************** -->
     <!-- Elements in a BookGroup
          textIsSelectable=false as the user must be able to click on the whole row.
