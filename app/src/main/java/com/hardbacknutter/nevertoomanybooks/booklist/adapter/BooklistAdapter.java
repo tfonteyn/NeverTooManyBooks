@@ -72,7 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
  * ROW_INFO is important, as it's that one that gets shown/hidden when needed.
  */
 public class BooklistAdapter
-        extends RecyclerView.Adapter<RowViewHolder>
+        extends RecyclerView.Adapter<RowViewHolder<DataHolder>>
         implements FastScroller.PopupTextProvider {
 
     /** Log tag. */
@@ -262,8 +262,8 @@ public class BooklistAdapter
     @SuppressLint("SwitchIntDef")
     @Override
     @NonNull
-    public RowViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
-                                            @BooklistGroup.Id final int groupId) {
+    public RowViewHolder<DataHolder> onCreateViewHolder(@NonNull final ViewGroup parent,
+                                                        @BooklistGroup.Id final int groupId) {
         @LayoutRes
         final int layoutId;
         switch (groupId) {
@@ -311,7 +311,7 @@ public class BooklistAdapter
         }
 
 
-        final RowViewHolder holder;
+        final RowViewHolder<DataHolder> holder;
 
         // NEWTHINGS: BooklistGroup - add a new holder type if needed
         switch (groupId) {
@@ -352,7 +352,7 @@ public class BooklistAdapter
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final RowViewHolder holder,
+    public void onBindViewHolder(@NonNull final RowViewHolder<DataHolder> holder,
                                  final int position) {
 
         //noinspection ConstantConditions

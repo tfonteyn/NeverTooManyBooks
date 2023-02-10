@@ -33,13 +33,14 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 
 /**
  * Base for all {@link BooklistGroup} ViewHolder classes.
+ *
+ * @param <T> the type of data to bind
  */
-public abstract class RowViewHolder
+public abstract class RowViewHolder<T>
         extends RecyclerView.ViewHolder {
 
     /**
@@ -58,7 +59,7 @@ public abstract class RowViewHolder
      *
      * @param itemView the view specific for this holder
      */
-    RowViewHolder(@NonNull final View itemView) {
+    protected RowViewHolder(@NonNull final View itemView) {
         super(itemView);
 
         btnRowMenu = itemView.findViewById(R.id.btn_row_menu);
@@ -138,10 +139,10 @@ public abstract class RowViewHolder
      * Bind the data to the views in the holder.
      *
      * @param position The position of the item within the adapter's data set.
-     * @param rowData  with data to bind
-     * @param style    to use
+     * @param data     to bind
+     * @param style    to use (nullability depends on implementation)
      */
     public abstract void onBindViewHolder(int position,
-                                          @NonNull DataHolder rowData,
-                                          @NonNull Style style);
+                                          @NonNull T data,
+                                          Style style);
 }
