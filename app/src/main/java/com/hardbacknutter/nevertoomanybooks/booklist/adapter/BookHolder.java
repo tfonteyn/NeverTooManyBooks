@@ -116,9 +116,9 @@ public class BookHolder
         imageCachingEnabled = ImageUtils.isImageCachingEnabled();
         this.coverLongestSide = coverLongestSide;
 
-        final Resources resources = itemView.getContext().getResources();
-        userLocale = resources.getConfiguration().getLocales().get(0);
-        conditionDescriptions = resources.getStringArray(R.array.conditions_book);
+        final Resources res = itemView.getContext().getResources();
+        userLocale = res.getConfiguration().getLocales().get(0);
+        conditionDescriptions = res.getStringArray(R.array.conditions_book);
 
         languages = ServiceLocator.getInstance().getLanguages();
 

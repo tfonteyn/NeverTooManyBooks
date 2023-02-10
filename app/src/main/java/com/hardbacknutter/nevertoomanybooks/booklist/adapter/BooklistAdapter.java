@@ -123,9 +123,9 @@ public class BooklistAdapter
         this.style = style;
         this.contextMenuMode = ShowContextMenu.getPreferredMode(context);
 
-        final Resources resources = context.getResources();
-        levelIndent = resources.getDimensionPixelSize(R.dimen.bob_group_level_padding_start);
-        level1topMargin = resources.getDimensionPixelSize(R.dimen.bob_group_level_1_margin_top);
+        final Resources res = context.getResources();
+        levelIndent = res.getDimensionPixelSize(R.dimen.bob_group_level_padding_start);
+        level1topMargin = res.getDimensionPixelSize(R.dimen.bob_group_level_1_margin_top);
 
         formatter = new Formatter(context, style);
 

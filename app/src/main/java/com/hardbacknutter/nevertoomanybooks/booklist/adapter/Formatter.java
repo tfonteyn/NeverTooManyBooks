@@ -79,9 +79,9 @@ class Formatter
         this.style = style;
         reorderTitleForDisplaying = ReorderHelper.forDisplay(context);
 
-        final Resources resources = context.getResources();
-        conditionDescriptions = resources.getStringArray(R.array.conditions_book);
-        userLocale = resources.getConfiguration().getLocales().get(0);
+        final Resources res = context.getResources();
+        conditionDescriptions = res.getStringArray(R.array.conditions_book);
+        userLocale = res.getConfiguration().getLocales().get(0);
     }
 
     /**
