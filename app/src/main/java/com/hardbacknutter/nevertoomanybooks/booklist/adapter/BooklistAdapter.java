@@ -87,8 +87,6 @@ public class BooklistAdapter
     @Dimension
     private final int levelIndent;
     @NonNull
-    private final ShowContextMenu contextMenuMode;
-    @NonNull
     private final Style style;
     @Dimension
     private final int groupRowHeight;
@@ -97,7 +95,8 @@ public class BooklistAdapter
     private final int coverLongestSide;
     @NonNull
     private final Formatter formatter;
-    private boolean embeddedMode;
+
+
     /** The cursor is the equivalent of the 'list of items'. */
     @Nullable
     private Cursor cursor;
@@ -109,7 +108,9 @@ public class BooklistAdapter
     @Nullable
     private OnRowClickListener rowClickListener;
     @Nullable
-    private OnRowClickListener rowLongClickListener;
+    private OnRowClickListener rowShowMenuListener;
+    @Nullable
+    private ShowContextMenu contextMenuMode;
 
     /**
      * Constructor.
@@ -121,7 +122,6 @@ public class BooklistAdapter
                            @NonNull final Style style) {
         this.inflater = LayoutInflater.from(context);
         this.style = style;
-        this.contextMenuMode = ShowContextMenu.getPreferredMode(context);
 
         final Resources res = context.getResources();
         levelIndent = res.getDimensionPixelSize(R.dimen.bob_group_level_padding_start);
@@ -174,24 +174,23 @@ public class BooklistAdapter
     }
 
     /**
-     * Set the row click listener.
+     * Set the {@link OnRowClickListener} for a click on a row.
      *
      * @param listener to set
      */
-    public void setRowClickListener(@Nullable final OnRowClickListener listener) {
+    public void setOnRowClickListener(@Nullable final OnRowClickListener listener) {
         this.rowClickListener = listener;
     }
 
     /**
-     * Set the row context menu listener.
+     * Set the {@link OnRowClickListener} for showing the context menu on a row.
      *
-     * @param listener     to set
-     * @param embeddedMode flag; whether the booklist has an embedded details fragment
+     * @param listener to receive clicks
      */
-    public void setRowLongClickListener(@Nullable final OnRowClickListener listener,
-                                        final boolean embeddedMode) {
-        this.embeddedMode = embeddedMode;
-        this.rowLongClickListener = listener;
+    public void setOnRowShowMenuListener(@NonNull final ShowContextMenu contextMenuMode,
+                                         @Nullable final OnRowClickListener listener) {
+        this.rowShowMenuListener = listener;
+        this.contextMenuMode = contextMenuMode;
     }
 
     /**
@@ -345,8 +344,8 @@ public class BooklistAdapter
             }
         }
 
-        holder.setOnClickListener(rowClickListener);
-        holder.setOnLongClickListener(rowLongClickListener, embeddedMode, contextMenuMode);
+        holder.setOnRowClickListener(rowClickListener);
+        holder.setOnRowShowContextMenuListener(rowShowMenuListener, contextMenuMode);
 
         return holder;
     }
