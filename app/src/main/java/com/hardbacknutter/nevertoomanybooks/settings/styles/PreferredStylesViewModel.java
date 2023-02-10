@@ -142,7 +142,7 @@ public class PreferredStylesViewModel
     }
 
     /**
-     * Look up and down in the list to find a 'preferred' row, and set it 'selected'.
+     * Find the best candidate position/style and make that one the 'selected'.
      *
      * @param position current position
      *

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -27,8 +27,6 @@
          If not present, the listeners are set on the entire row.
     -->
     <item name="ROW_ONCLICK_TARGET" type="id" />
-    <!-- optional delete button, should live outside of the onclick target -->
-    <item name="ROW_DELETE_BTN" type="id" />
     <!-- optional checkable button, should live outside of the onclick target -->
     <item name="ROW_CHECKABLE_BTN" type="id" />
     <!-- optional grabber handle, should live outside of the onclick target -->

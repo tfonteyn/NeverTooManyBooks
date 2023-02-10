@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PreferredStylesContract;
+import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStylesBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditPreferredStylesBinding;
@@ -131,11 +132,6 @@ public class PreferredStylesFragment
         }
 
         @Override
-        public void setSelectedPosition(final int position) {
-            vm.setSelectedPosition(position);
-        }
-
-        @Override
         public int findPreferredAndSelect(final int position) {
             return vm.findPreferredAndSelect(position);
         }
@@ -144,18 +140,6 @@ public class PreferredStylesFragment
         public void swapItems(final int fromPosition,
                               final int toPosition) {
             vm.onItemMove(fromPosition, toPosition);
-        }
-
-        @Override
-        public void showContextMenu(@NonNull final View anchor,
-                                    final int position) {
-            final ExtPopupMenu popupMenu = new ExtPopupMenu(anchor.getContext())
-                    .inflate(R.menu.editing_styles)
-                    .setGroupDividerEnabled();
-            prepareMenu(popupMenu.getMenu(), position);
-
-            popupMenu.showAsDropDown(anchor, menuItem ->
-                    onMenuItemSelected(menuItem, position));
         }
     };
     /** Drag and drop support for the list view. */
@@ -197,7 +181,30 @@ public class PreferredStylesFragment
         //noinspection ConstantConditions
         listAdapter = new StylesAdapter(getContext(), vm.getStyleList(), positionHandler,
                                         vh -> itemTouchHelper.startDrag(vh));
+        listAdapter.setOnRowClickListener((v, position) -> {
+            // click -> set the row as 'selected'.
+            // Do NOT modify the 'preferred' state of the row here.
+
+            // first update the previous, now unselected, row.
+            listAdapter.notifyItemChanged(vm.getSelectedPosition());
+            // store the newly selected row.
+            vm.setSelectedPosition(position);
+            // update the newly selected row.
+            listAdapter.notifyItemChanged(position);
+        });
+        listAdapter.setOnRowShowMenuListener(
+                ShowContextMenu.getPreferredMode(getContext()),
+                (anchor, position) -> {
+                    final ExtPopupMenu popupMenu = new ExtPopupMenu(anchor.getContext())
+                            .inflate(R.menu.editing_styles)
+                            .setGroupDividerEnabled();
+                    prepareMenu(popupMenu.getMenu(), position);
+
+                    popupMenu.showAsDropDown(anchor, menuItem ->
+                            onMenuItemSelected(menuItem, position));
+                });
         listAdapter.registerAdapterDataObserver(adapterDataObserver);
+
         vb.list.addItemDecoration(
                 new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL));
         vb.list.setHasFixedSize(true);
@@ -290,13 +297,12 @@ public class PreferredStylesFragment
     }
 
     /**
-     * The glue between fragment and adapter.
+     * The glue (proxy) between adapter and ViewModel.
+     * Handles the 'preferred' and 'selected' position.
      */
     private interface PositionHandler {
 
         int getSelectedPosition();
-
-        void setSelectedPosition(int position);
 
         /**
          * Find the best candidate position/style and make that one the 'selected'.
@@ -309,9 +315,6 @@ public class PreferredStylesFragment
 
         void swapItems(int fromPosition,
                        int toPosition);
-
-        void showContextMenu(@NonNull View anchor,
-                             int position);
     }
 
     private static class Holder
@@ -355,27 +358,10 @@ public class PreferredStylesFragment
             final Holder holder = new Holder(
                     RowEditPreferredStylesBinding.inflate(getLayoutInflater(), parent, false));
 
-            // click the checkbox -> toggle the 'preferred' status
-            //noinspection ConstantConditions
-            holder.checkableButton.setOnClickListener(v -> togglePreferredStatus(holder));
+            holder.setOnItemCheckChangedListener(this::togglePreferredStatus);
 
-            // click -> set the row as 'selected'.
-            // Do NOT modify the 'preferred' state of the row here.
-            holder.rowDetailsView.setOnClickListener(v -> {
-                // first update the previous, now unselected, row.
-                notifyItemChanged(positionHandler.getSelectedPosition());
-                // store the newly selected row.
-                positionHandler.setSelectedPosition(holder.getBindingAdapterPosition());
-                // update the newly selected row.
-                notifyItemChanged(positionHandler.getSelectedPosition());
-            });
-
-            // long-click -> context menu
-            holder.rowDetailsView.setOnLongClickListener(v -> {
-                positionHandler.showContextMenu(v, holder.getBindingAdapterPosition());
-                return true;
-            });
-
+            holder.setOnRowClickListener(rowClickListener);
+            holder.setOnRowShowContextMenuListener(contextMenuMode, rowShowMenuListener);
             return holder;
         }
 
@@ -393,8 +379,7 @@ public class PreferredStylesFragment
             holder.vb.groups.setText(style.getGroupsSummaryText(context));
 
             // set the 'preferred' state of the current row
-            //noinspection ConstantConditions
-            holder.checkableButton.setChecked(style.isPreferred());
+            holder.setChecked(style.isPreferred());
 
             // set the 'selected' state of the current row
             holder.itemView.setSelected(position == positionHandler.getSelectedPosition());
@@ -411,31 +396,27 @@ public class PreferredStylesFragment
          * <li>set the row to 'not preferred'</li>
          * <li>look up and down in the list to find a 'preferred' row, and set it 'selected'</li>
          * </ol>
-         *
-         * @param holder the checked row.
          */
-        private void togglePreferredStatus(@NonNull final Holder holder) {
-            int position = holder.getBindingAdapterPosition();
-
-            // toggle the 'preferred' state of the current position/style
+        private boolean togglePreferredStatus(final int position) {
             final Style style = getItem(position);
             final boolean checked = !style.isPreferred();
             style.setPreferred(checked);
-            //noinspection ConstantConditions
-            holder.checkableButton.setChecked(checked);
 
             // if the current position/style is no longer 'preferred' but was 'selected' ...
             if (!checked && positionHandler.getSelectedPosition() == position) {
-                position = positionHandler.findPreferredAndSelect(position);
+                notifyItemChanged(positionHandler.findPreferredAndSelect(position));
+            } else {
+                notifyItemChanged(position);
             }
-
-            notifyItemChanged(position);
+            return checked;
         }
 
         @Override
         public boolean onItemMove(final int fromPosition,
                                   final int toPosition) {
+            // changes the 'preferred' position as needed
             positionHandler.swapItems(fromPosition, toPosition);
+
             return super.onItemMove(fromPosition, toPosition);
         }
     }

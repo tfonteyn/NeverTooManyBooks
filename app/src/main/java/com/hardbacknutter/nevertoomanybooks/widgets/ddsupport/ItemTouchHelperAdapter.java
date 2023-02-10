@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,6 +35,9 @@
  */
 package com.hardbacknutter.nevertoomanybooks.widgets.ddsupport;
 
+import android.view.View;
+
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -72,7 +75,8 @@ public interface ItemTouchHelperAdapter {
      *
      * @param position The position of the item dismissed.
      */
-    default void onItemSwiped(final int position) {
+    default void onItemSwiped(@NonNull final View v,
+                              final int position) {
 
     }
 }

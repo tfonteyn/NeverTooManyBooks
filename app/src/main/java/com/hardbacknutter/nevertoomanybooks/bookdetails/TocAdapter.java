@@ -132,7 +132,7 @@ public class TocAdapter
         }
 
         holder.setOnRowClickListener(rowClickListener);
-        holder.setOnRowShowContextMenuListener(rowShowMenuListener, contextMenuMode);
+        holder.setOnRowShowContextMenuListener(contextMenuMode, rowShowMenuListener);
         return holder;
     }
 
@@ -270,7 +270,7 @@ public class TocAdapter
     }
 
     public abstract static class AuthorWorkHolder
-            extends RowViewHolder<AuthorWork> {
+            extends RowViewHolder {
 
         @NonNull
         final RowAuthorWorkBinding vb;
@@ -280,7 +280,6 @@ public class TocAdapter
             vb = RowAuthorWorkBinding.bind(itemView);
         }
 
-        @Override
         public void onBindViewHolder(final int position,
                                      @NonNull final AuthorWork work,
                                      @Nullable final Style style) {

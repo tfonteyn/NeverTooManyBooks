@@ -29,18 +29,32 @@
     android:minHeight="?attr/listPreferredItemHeightSmall"
     >
 
-    <TextView
-        android:id="@+id/bookshelf_name"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/field_margin_start"
-        android:layout_marginEnd="@dimen/field_margin_end"
-        android:textAppearance="?attr/textAppearanceListItem"
-        android:textIsSelectable="false"
+    <LinearLayout
+        android:id="@id/ROW_ONCLICK_TARGET"
+        style="@style/RowEditor.TextSection"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_row_menu"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="@sample/data.json/shelves/name"
+        >
+
+        <TextView
+            android:id="@+id/bookshelf_name"
+            style="@style/RowEditor.Text.Primary"
+            tools:ignore="SelectableText"
+            tools:text="@sample/data.json/shelves/name"
+            />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_row_menu"
+        style="@style/Button.More"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible"
         />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -31,7 +31,8 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
 public class RatingHolder
-        extends RowViewHolder<DataHolder> {
+        extends RowViewHolder
+        implements BindableViewHolder<DataHolder> {
 
     /**
      * Key of the related data column.

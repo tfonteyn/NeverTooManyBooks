@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.widgets;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -28,43 +29,37 @@ import android.widget.ImageView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.adapter.RowViewHolder;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.ItemTouchHelperViewHolder;
 
+
 /**
- * Row ViewHolder for each row in a RecyclerView.
+ * Row ViewHolder for each editable row in a RecyclerView.
  *
- * <ul>Extends the original with support for:
+ * <ul>Provides support for:
  *      <li>{@link ItemTouchHelperViewHolder}</li>
- *      <li>a 'delete' button</li>
  *      <li>a 'checkable' button</li>
  * </ul>
  * <ul>Uses pre-defined ID's:
- *      <li>R.id.TLV_ROW_DETAILS</li>
- *      <li>R.id.TLV_ROW_DELETE</li>
- *      <li>R.id.TLV_ROW_CHECKABLE</li>
- *      <li>R.id.TLV_ROW_GRABBER</li>
+ *      <li>R.id.ROW_CHECKABLE_BTN</li>
+ *      <li>R.id.ROW_GRABBER_ICON</li>
  * </ul>
  */
 public abstract class ItemTouchHelperViewHolderBase
-        extends RecyclerView.ViewHolder
+        extends RowViewHolder
         implements ItemTouchHelperViewHolder {
 
     /** optional row checkable button. */
     @Nullable
-    public final CompoundButton checkableButton;
-    /** The details part of the row (or the row itself). */
-    @NonNull
-    public final View rowDetailsView;
+    private final CompoundButton checkableButton;
     /** optional drag handle button for drag/drop support. */
     @Nullable
-    final ImageView dragHandleView;
-    /** optional row delete button. */
-    @Nullable
-    final View deleteButton;
+    private final ImageView dragHandleView;
 
     /** used while dragging. */
     @ColorInt
@@ -74,20 +69,41 @@ public abstract class ItemTouchHelperViewHolderBase
 
     protected ItemTouchHelperViewHolderBase(@NonNull final View itemView) {
         super(itemView);
-
-        // Don't enable the whole row, so buttons keep working
-        final View rd = itemView.findViewById(R.id.ROW_ONCLICK_TARGET);
-        // but if we did not define a details row subview, use the row itself anyhow.
-        rowDetailsView = rd != null ? rd : itemView;
-        rowDetailsView.setFocusable(false);
-
-        // optional
-        deleteButton = itemView.findViewById(R.id.ROW_DELETE_BTN);
-        checkableButton = itemView.findViewById(R.id.ROW_CHECKABLE_BTN);
-        dragHandleView = itemView.findViewById(R.id.ROW_GRABBER_ICON);
+        setClickTargetViewFocusable(false);
 
         itemDraggedBackgroundColor = AttrUtils.getColorInt(
                 itemView.getContext(), com.google.android.material.R.attr.colorPrimary);
+
+        // optional
+        dragHandleView = itemView.findViewById(R.id.ROW_GRABBER_ICON);
+        checkableButton = itemView.findViewById(R.id.ROW_CHECKABLE_BTN);
+    }
+
+    public boolean isDraggable() {
+        return dragHandleView != null;
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    void setOnDragListener(@NonNull final View.OnTouchListener listener) {
+        //noinspection ConstantConditions
+        dragHandleView.setOnTouchListener(listener);
+    }
+
+    /**
+     * The user clicked on the checkable button.
+     *
+     * @param listener which received the position clicked, and must
+     *                 return the new checkable status for the row.
+     */
+    public void setOnItemCheckChangedListener(@NonNull final Function<Integer, Boolean> listener) {
+        //noinspection ConstantConditions
+        checkableButton.setOnClickListener(
+                v -> setChecked(listener.apply(getBindingAdapterPosition())));
+    }
+
+    public void setChecked(final boolean checked) {
+        //noinspection ConstantConditions
+        checkableButton.setChecked(checked);
     }
 
     @Override

@@ -46,6 +46,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
+import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
+import com.hardbacknutter.nevertoomanybooks.booklist.adapter.RowViewHolder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookshelvesBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfBinding;
@@ -268,7 +270,7 @@ public class EditBookshelvesFragment
     }
 
     public static class Holder
-            extends RecyclerView.ViewHolder {
+            extends RowViewHolder {
 
         @NonNull
         private final RowEditBookshelfBinding vb;
@@ -307,15 +309,13 @@ public class EditBookshelvesFragment
             final Holder holder = new Holder(
                     RowEditBookshelfBinding.inflate(getInflater(), parent, false));
 
-            // click -> set the row as 'selected'.
-            holder.vb.bookshelfName.setOnClickListener(v -> {
+            holder.setOnRowClickListener((v, position) -> {
                 // first update the previous, now unselected, row.
                 final int oldListIndex = positionHandler.getSelectedPosition();
                 final int oldPosition = revert(oldListIndex);
                 notifyItemChanged(oldPosition);
 
                 // store the newly selected row.
-                final int position = holder.getBindingAdapterPosition();
                 final int listIndex = transpose(position);
                 if (listIndex == -1) {
                     // Should never get here
@@ -327,16 +327,17 @@ public class EditBookshelvesFragment
             });
 
             // long-click -> context menu
-            holder.vb.bookshelfName.setOnLongClickListener(v -> {
-                final int position = holder.getBindingAdapterPosition();
-                final int listIndex = transpose(position);
-                if (listIndex == -1) {
-                    // Should never get here
-                    throw new IllegalStateException("ListIndex is -1 for position=" + position);
-                }
-                positionHandler.showContextMenu(v, position, listIndex);
-                return true;
-            });
+            holder.setOnRowShowContextMenuListener(
+                    ShowContextMenu.getPreferredMode(parent.getContext()), (v, position) -> {
+                        final int listIndex = transpose(position);
+                        if (listIndex == -1) {
+                            // Should never get here
+                            throw new IllegalStateException(
+                                    "ListIndex is -1 for position=" + position);
+                        }
+                        positionHandler.showContextMenu(v, position, listIndex);
+                    });
+
 
             return holder;
         }

@@ -53,7 +53,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
  * Assumes there is a 'name' TextView.
  */
 public class GenericStringHolder
-        extends RowViewHolder<DataHolder> {
+        extends RowViewHolder
+        implements BindableViewHolder<DataHolder> {
 
     private static final int[] TEXT_APP_ATTR = {
             com.google.android.material.R.attr.textAppearanceTitleLarge,

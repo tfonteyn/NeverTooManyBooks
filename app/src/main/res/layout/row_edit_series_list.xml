@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -29,22 +29,12 @@
     tools:viewBindingIgnore="true"
     >
 
-    <ImageButton
-        android:id="@id/ROW_DELETE_BTN"
-        style="@style/RowEditor.Button.Delete"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/ROW_ONCLICK_TARGET"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription"
-        />
-
     <LinearLayout
         android:id="@id/ROW_ONCLICK_TARGET"
         style="@style/RowEditor.TextSection"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/ROW_GRABBER_ICON"
-        app:layout_constraintStart_toEndOf="@id/ROW_DELETE_BTN"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         >
 
@@ -61,10 +51,19 @@
         android:id="@id/ROW_GRABBER_ICON"
         style="@style/RowEditor.Button.DragHandle"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_row_menu"
         app:layout_constraintStart_toEndOf="@id/ROW_ONCLICK_TARGET"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription"
         />
 
+    <Button
+        android:id="@+id/btn_row_menu"
+        style="@style/Button.More"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>

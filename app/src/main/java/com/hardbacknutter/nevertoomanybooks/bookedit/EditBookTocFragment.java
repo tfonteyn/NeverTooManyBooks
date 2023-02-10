@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.bookedit;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -58,6 +57,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookTocBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditTocEntryBinding;
@@ -73,6 +73,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.Edition;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
@@ -158,25 +159,6 @@ public class EditBookTocFragment
 
     private ExtPopupMenu contextMenu;
 
-    private final AdapterRowHandler adapterRowHandler = new AdapterRowHandler() {
-
-        @Override
-        public void edit(final int position) {
-            editEntry(tocEntryList.get(position), position);
-        }
-
-        @Override
-        public void delete(final int position) {
-            deleteEntry(position);
-        }
-
-        @Override
-        public void showContextMenu(@NonNull final View anchor,
-                                    final int position) {
-            contextMenu.showAsDropDown(anchor, menuItem -> onMenuItemSelected(menuItem, position));
-        }
-    };
-
     @NonNull
     @Override
     public FragmentId getFragmentId() {
@@ -186,8 +168,6 @@ public class EditBookTocFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        editTocVm = new ViewModelProvider(this).get(EditBookTocViewModel.class);
 
         final FragmentManager fm = getChildFragmentManager();
 
@@ -219,10 +199,22 @@ public class EditBookTocFragment
         getToolbar().addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner(),
                                      Lifecycle.State.RESUMED);
 
-        final Context context = getContext();
         //noinspection ConstantConditions
-        vm.initFields(context, FragmentId.Toc, FieldGroup.Toc);
+        vm.initFields(getContext(), FragmentId.Toc, FieldGroup.Toc);
 
+        initEditTocViewModel();
+
+        contextMenu = MenuUtils.createEditDeleteContextMenu(getContext());
+        initListView();
+
+        final SimpleItemTouchHelperCallback sitHelperCallback =
+                new SimpleItemTouchHelperCallback(adapter);
+        itemTouchHelper = new ItemTouchHelper(sitHelperCallback);
+        itemTouchHelper.attachToRecyclerView(vb.tocList);
+    }
+
+    private void initEditTocViewModel() {
+        editTocVm = new ViewModelProvider(this).get(EditBookTocViewModel.class);
         editTocVm.onIsfdbEditions().observe(getViewLifecycleOwner(), this::onIsfdbEditions);
         editTocVm.onIsfdbBook().observe(getViewLifecycleOwner(), this::onIsfdbBook);
 
@@ -243,32 +235,32 @@ public class EditBookTocFragment
                 message.getData().ifPresent(data -> Snackbar
                         .make(vb.getRoot(), R.string.warning_book_not_found,
                               Snackbar.LENGTH_LONG).show()));
+    }
+
+    private void initListView() {
+        final Context context = getContext();
+
+        tocEntryList = vm.getBook().getToc();
+
+        //noinspection ConstantConditions
+        adapter = new TocListEditAdapter(context, tocEntryList,
+                                         vh -> itemTouchHelper.startDrag(vh));
+
+        adapter.setOnRowClickListener(
+                (v, position) -> editEntry(tocEntryList.get(position), position));
+        adapter.setOnRowShowMenuListener(
+                ShowContextMenu.getPreferredMode(context),
+                (v, position) -> contextMenu
+                        .showAsDropDown(v, menuItem -> onMenuItemSelected(menuItem, position)));
+
+        adapter.registerAdapterDataObserver(adapterDataObserver);
+        vb.tocList.setAdapter(adapter);
 
         vb.tocList.addItemDecoration(
                 new MaterialDividerItemDecoration(context, RecyclerView.VERTICAL));
         vb.tocList.setHasFixedSize(true);
-
-        tocEntryList = vm.getBook().getToc();
-        adapter = new TocListEditAdapter(context, tocEntryList, adapterRowHandler,
-                                         vh -> itemTouchHelper.startDrag(vh));
-        adapter.registerAdapterDataObserver(adapterDataObserver);
-        vb.tocList.setAdapter(adapter);
-
-        final SimpleItemTouchHelperCallback sitHelperCallback =
-                new SimpleItemTouchHelperCallback(adapter);
-        itemTouchHelper = new ItemTouchHelper(sitHelperCallback);
-        itemTouchHelper.attachToRecyclerView(vb.tocList);
-
-        contextMenu = new ExtPopupMenu(context);
-        final Resources res = getResources();
-        final Menu menu = contextMenu.getMenu();
-        menu.add(Menu.NONE, R.id.MENU_EDIT, res.getInteger(R.integer.MENU_ORDER_EDIT),
-                 R.string.action_edit_ellipsis)
-            .setIcon(R.drawable.ic_baseline_edit_24);
-        menu.add(Menu.NONE, R.id.MENU_DELETE, res.getInteger(R.integer.MENU_ORDER_DELETE),
-                 R.string.action_delete)
-            .setIcon(R.drawable.ic_baseline_delete_24);
     }
+
 
     @Override
     public void onDestroyView() {
@@ -417,10 +409,7 @@ public class EditBookTocFragment
      */
     private void editEntry(@NonNull final TocEntry tocEntry,
                            final int position) {
-        final Field<Long, View> typeField = vm.requireField(R.id.book_type);
-        //noinspection ConstantConditions
-        final boolean isAnthology = typeField.getValue() == Book.ContentType.Anthology.getId();
-        editTocEntryLauncher.launch(vm.getBook(), position, tocEntry, isAnthology);
+        editTocEntryLauncher.launch(vm.getBook(), position, tocEntry, vm.isAnthology());
     }
 
     /**
@@ -688,9 +677,6 @@ public class EditBookTocFragment
     private static class TocListEditAdapter
             extends RecyclerViewAdapterBase<TocEntry, Holder> {
 
-        @NonNull
-        private final AdapterRowHandler adapterRowHandler;
-
         /**
          * Constructor.
          *
@@ -700,10 +686,8 @@ public class EditBookTocFragment
          */
         TocListEditAdapter(@NonNull final Context context,
                            @NonNull final List<TocEntry> items,
-                           @NonNull final AdapterRowHandler adapterRowHandler,
                            @NonNull final StartDragListener dragStartListener) {
             super(context, items, dragStartListener);
-            this.adapterRowHandler = adapterRowHandler;
         }
 
         @NonNull
@@ -714,13 +698,8 @@ public class EditBookTocFragment
             final Holder holder = new Holder(
                     RowEditTocEntryBinding.inflate(getLayoutInflater(), parent, false));
 
-            holder.rowDetailsView.setOnClickListener(
-                    v -> adapterRowHandler.edit(holder.getBindingAdapterPosition()));
-
-            holder.rowDetailsView.setOnLongClickListener(v -> {
-                adapterRowHandler.showContextMenu(v, holder.getBindingAdapterPosition());
-                return true;
-            });
+            holder.setOnRowClickListener(rowClickListener);
+            holder.setOnRowShowContextMenuListener(contextMenuMode, rowShowMenuListener);
 
             return holder;
         }
@@ -744,12 +723,6 @@ public class EditBookTocFragment
             } else {
                 holder.vb.year.setVisibility(View.GONE);
             }
-        }
-
-        @Override
-        protected void onDelete(final int adapterPosition,
-                                @NonNull final TocEntry item) {
-            adapterRowHandler.delete(adapterPosition);
         }
     }
 

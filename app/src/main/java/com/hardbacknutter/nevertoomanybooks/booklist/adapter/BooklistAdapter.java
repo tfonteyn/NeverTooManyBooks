@@ -72,7 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
  * ROW_INFO is important, as it's that one that gets shown/hidden when needed.
  */
 public class BooklistAdapter
-        extends RecyclerView.Adapter<RowViewHolder<DataHolder>>
+        extends RecyclerView.Adapter<RowViewHolder>
         implements FastScroller.PopupTextProvider {
 
     /** Log tag. */
@@ -261,8 +261,8 @@ public class BooklistAdapter
     @SuppressLint("SwitchIntDef")
     @Override
     @NonNull
-    public RowViewHolder<DataHolder> onCreateViewHolder(@NonNull final ViewGroup parent,
-                                                        @BooklistGroup.Id final int groupId) {
+    public RowViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
+                                            @BooklistGroup.Id final int groupId) {
         @LayoutRes
         final int layoutId;
         switch (groupId) {
@@ -310,7 +310,7 @@ public class BooklistAdapter
         }
 
 
-        final RowViewHolder<DataHolder> holder;
+        final RowViewHolder holder;
 
         // NEWTHINGS: BooklistGroup - add a new holder type if needed
         switch (groupId) {
@@ -345,21 +345,22 @@ public class BooklistAdapter
         }
 
         holder.setOnRowClickListener(rowClickListener);
-        holder.setOnRowShowContextMenuListener(rowShowMenuListener, contextMenuMode);
+        holder.setOnRowShowContextMenuListener(contextMenuMode, rowShowMenuListener);
 
         return holder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final RowViewHolder<DataHolder> holder,
+    public void onBindViewHolder(@NonNull final RowViewHolder holder,
                                  final int position) {
 
         //noinspection ConstantConditions
         cursor.moveToPosition(position);
 
         // further binding depends on the type of row (i.e. holder).
-        //noinspection ConstantConditions
-        holder.onBindViewHolder(position, rowData, style);
+        //noinspection ConstantConditions,unchecked
+        ((BindableViewHolder<DataHolder>) holder)
+                .onBindViewHolder(position, rowData, style);
     }
 
     private void scaleTextViews(@NonNull final View view,

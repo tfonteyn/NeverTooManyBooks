@@ -38,6 +38,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesListBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
@@ -45,7 +46,9 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
@@ -82,6 +85,8 @@ public class EditBookSeriesListDialogFragment
     /** The adapter for the list itself. */
     private SeriesListAdapter adapter;
 
+    private ExtPopupMenu contextMenu;
+
     private final EditBookSeriesDialogFragment.Launcher editLauncher =
             new EditBookSeriesDialogFragment.Launcher() {
                 @Override
@@ -96,17 +101,6 @@ public class EditBookSeriesListDialogFragment
                 }
             };
 
-    private final AdapterRowHandler adapterRowHandler = new AdapterRowHandler() {
-
-        @Override
-        public void edit(final int position) {
-            final Book book = vm.getBook();
-            editLauncher.launch(book.getTitle(),
-                                book.getString(DBKey.LANGUAGE),
-                                EditAction.Edit,
-                                seriesList.get(position));
-        }
-    };
     /** Drag and drop support for the list view. */
     private ItemTouchHelper itemTouchHelper;
 
@@ -167,20 +161,69 @@ public class EditBookSeriesListDialogFragment
             return false;
         });
 
-        // set up the list view. The adapter is setup in onPopulateViews
-        vb.seriesList.setHasFixedSize(true);
-
-        seriesList = vm.getBook().getSeries();
-        adapter = new SeriesListAdapter(getContext(), seriesList, adapterRowHandler,
-                                        vh -> itemTouchHelper.startDrag(vh));
-        vb.seriesList.setAdapter(adapter);
-        adapter.registerAdapterDataObserver(adapterDataObserver);
+        contextMenu = MenuUtils.createEditDeleteContextMenu(getContext());
+        initListView();
 
         final SimpleItemTouchHelperCallback sitHelperCallback =
                 new SimpleItemTouchHelperCallback(adapter);
         itemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         itemTouchHelper.attachToRecyclerView(vb.seriesList);
     }
+
+    private void initListView() {
+        final Context context = getContext();
+
+        seriesList = vm.getBook().getSeries();
+
+        //noinspection ConstantConditions
+        adapter = new SeriesListAdapter(context, seriesList,
+                                        vh -> itemTouchHelper.startDrag(vh));
+        adapter.setOnRowClickListener((v, position) -> editEntry(position));
+        adapter.setOnRowShowMenuListener(
+                ShowContextMenu.getPreferredMode(context),
+                (v, position) -> contextMenu
+                        .showAsDropDown(v, menuItem -> onMenuItemSelected(menuItem, position)));
+
+
+        adapter.registerAdapterDataObserver(adapterDataObserver);
+        vb.seriesList.setAdapter(adapter);
+
+        vb.seriesList.setHasFixedSize(true);
+    }
+
+    private void editEntry(final int position) {
+        final Book book = vm.getBook();
+        editLauncher.launch(book.getTitle(),
+                            book.getString(DBKey.LANGUAGE),
+                            EditAction.Edit,
+                            seriesList.get(position));
+    }
+
+    /**
+     * Using {@link ExtPopupMenu} for context menus.
+     *
+     * @param menuItem that was selected
+     * @param position in the list
+     *
+     * @return {@code true} if handled.
+     */
+    private boolean onMenuItemSelected(@NonNull final MenuItem menuItem,
+                                       final int position) {
+        final int itemId = menuItem.getItemId();
+
+        if (itemId == R.id.MENU_EDIT) {
+            editEntry(position);
+            return true;
+
+        } else if (itemId == R.id.MENU_DELETE) {
+            // simply remove and refresh
+            seriesList.remove(position);
+            adapter.notifyItemRemoved(position);
+            return true;
+        }
+        return false;
+    }
+
 
     @Override
     public void onDestroyView() {
@@ -359,8 +402,6 @@ public class EditBookSeriesListDialogFragment
     private static class SeriesListAdapter
             extends RecyclerViewAdapterBase<Series, Holder> {
 
-        @NonNull
-        private final AdapterRowHandler adapterRowHandler;
 
         /**
          * Constructor.
@@ -371,10 +412,8 @@ public class EditBookSeriesListDialogFragment
          */
         SeriesListAdapter(@NonNull final Context context,
                           @NonNull final List<Series> items,
-                          @NonNull final AdapterRowHandler adapterRowHandler,
                           @NonNull final StartDragListener dragStartListener) {
             super(context, items, dragStartListener);
-            this.adapterRowHandler = adapterRowHandler;
         }
 
         @NonNull
@@ -384,8 +423,8 @@ public class EditBookSeriesListDialogFragment
             final View view = getLayoutInflater()
                     .inflate(R.layout.row_edit_series_list, parent, false);
             final Holder holder = new Holder(view);
-            holder.rowDetailsView.setOnClickListener(
-                    v -> adapterRowHandler.edit(holder.getBindingAdapterPosition()));
+            holder.setOnRowClickListener(rowClickListener);
+            holder.setOnRowShowContextMenuListener(contextMenuMode, rowShowMenuListener);
             return holder;
         }
 

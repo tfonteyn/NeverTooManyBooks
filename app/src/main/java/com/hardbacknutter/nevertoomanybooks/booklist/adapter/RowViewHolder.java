@@ -31,16 +31,18 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 
 /**
- * Base for all {@link BooklistGroup} ViewHolder classes.
+ * Base for all ViewHolder classes.
+ * <p>
+ * Provides unified handling of clicks, long-clicks and an optional context menu button.
  *
- * @param <T> the type of data to bind
+ * <ul>Uses pre-defined ID's:
+ *      <li>R.id.ROW_ONCLICK_TARGET</li>
+ * </ul>
  */
-public abstract class RowViewHolder<T>
+public abstract class RowViewHolder
         extends RecyclerView.ViewHolder {
 
     /**
@@ -64,10 +66,12 @@ public abstract class RowViewHolder<T>
 
         btnRowMenu = itemView.findViewById(R.id.btn_row_menu);
 
-        // 2022-09-07: not used for now, but keeping for future usage
-        // If present, redirect all clicks to this view, otherwise let the main view get them.
         onClickTargetView = Objects.requireNonNullElse(
                 itemView.findViewById(R.id.ROW_ONCLICK_TARGET), itemView);
+    }
+
+    protected void setClickTargetViewFocusable(final boolean focusable) {
+        onClickTargetView.setFocusable(focusable);
     }
 
     /**
@@ -89,11 +93,11 @@ public abstract class RowViewHolder<T>
      * <p>
      * Provides long-click on a row, and optionally a dedicated button for the same.
      *
-     * @param listener        to receive clicks
      * @param contextMenuMode user preferred context menu mode
+     * @param listener        to receive clicks
      */
-    public void setOnRowShowContextMenuListener(@Nullable final OnRowClickListener listener,
-                                                @Nullable final ShowContextMenu contextMenuMode) {
+    public void setOnRowShowContextMenuListener(@Nullable final ShowContextMenu contextMenuMode,
+                                                @Nullable final OnRowClickListener listener) {
         if (listener != null && contextMenuMode != null) {
             onClickTargetView.setOnLongClickListener(v -> {
                 listener.onClick(v, getBindingAdapterPosition());
@@ -134,15 +138,4 @@ public abstract class RowViewHolder<T>
             }
         }
     }
-
-    /**
-     * Bind the data to the views in the holder.
-     *
-     * @param position The position of the item within the adapter's data set.
-     * @param data     to bind
-     * @param style    to use (nullability depends on implementation)
-     */
-    public abstract void onBindViewHolder(int position,
-                                          @NonNull T data,
-                                          Style style);
 }

@@ -17,24 +17,24 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.bookedit;
 
-import android.view.View;
+package com.hardbacknutter.nevertoomanybooks.booklist.adapter;
 
-/**
- * The glue between fragment and adapter.
- */
+import androidx.annotation.NonNull;
+
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+
 @FunctionalInterface
-interface AdapterRowHandler {
+public interface BindableViewHolder<T> {
 
-    void edit(int position);
-
-    default void delete(final int position) {
-        throw new UnsupportedOperationException();
-    }
-
-    default void showContextMenu(final View anchor,
-                                 final int position) {
-        throw new UnsupportedOperationException();
-    }
+    /**
+     * Bind the data to the views in the holder.
+     *
+     * @param position The position of the item within the adapter's data set.
+     * @param data     to bind
+     * @param style    to use (nullability depends on implementation)
+     */
+    void onBindViewHolder(int position,
+                          @NonNull T data,
+                          Style style);
 }

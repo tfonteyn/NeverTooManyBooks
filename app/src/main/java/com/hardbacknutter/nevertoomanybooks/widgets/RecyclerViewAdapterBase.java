@@ -32,6 +32,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.Collections;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
+import com.hardbacknutter.nevertoomanybooks.booklist.adapter.OnRowClickListener;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.ItemTouchHelperAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 
@@ -59,6 +61,13 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends ItemTouchHelperV
     @NonNull
     private final Context context;
 
+    @Nullable
+    protected OnRowClickListener rowClickListener;
+    @Nullable
+    protected OnRowClickListener rowShowMenuListener;
+    @Nullable
+    protected ShowContextMenu contextMenuMode;
+
     /**
      * Constructor.
      *
@@ -73,6 +82,26 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends ItemTouchHelperV
         inflater = LayoutInflater.from(context);
         this.dragStartListener = dragStartListener;
         this.items = items;
+    }
+
+    /**
+     * Set the {@link OnRowClickListener} for a click on a row.
+     *
+     * @param listener to set
+     */
+    public void setOnRowClickListener(@Nullable final OnRowClickListener listener) {
+        this.rowClickListener = listener;
+    }
+
+    /**
+     * Set the {@link OnRowClickListener} for showing the context menu on a row.
+     *
+     * @param listener to receive clicks
+     */
+    public void setOnRowShowMenuListener(@NonNull final ShowContextMenu contextMenuMode,
+                                         @Nullable final OnRowClickListener listener) {
+        this.rowShowMenuListener = listener;
+        this.contextMenuMode = contextMenuMode;
     }
 
     @NonNull
@@ -90,37 +119,16 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends ItemTouchHelperV
     @CallSuper
     public void onBindViewHolder(@NonNull final VHT holder,
                                  final int position) {
-
-        if (holder.deleteButton != null) {
-            holder.deleteButton.setOnClickListener(v -> {
-                final int adapterPosition = holder.getBindingAdapterPosition();
-                // 2019-09-25: yes, we CAN (and did) get a NO_POSITION value here. So check it!
-                if (adapterPosition == RecyclerView.NO_POSITION) {
-                    // don't touch the item list, but update the screen.
-                    notifyDataSetChanged();
-                } else {
-                    // situation normal.
-                    onDelete(adapterPosition, getItem(adapterPosition));
-                }
-            });
-        }
-
-        // If we support drag drop re-ordering,
-        if (dragStartListener != null && holder.dragHandleView != null) {
+        // Enable drag-drop re-ordering if supported
+        if (dragStartListener != null && holder.isDraggable()) {
             // Start a drag whenever the handle view is touched
-            holder.dragHandleView.setOnTouchListener((v, event) -> {
+            holder.setOnDragListener((v, event) -> {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     dragStartListener.onStartDrag(holder);
                 }
                 return false;
             });
         }
-    }
-
-    protected void onDelete(final int adapterPosition,
-                            @NonNull final Item item) {
-        items.remove(item);
-        notifyItemRemoved(adapterPosition);
     }
 
     @Override
@@ -149,16 +157,5 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends ItemTouchHelperV
         Collections.swap(items, fromPosition, toPosition);
         notifyItemMoved(fromPosition, toPosition);
         return true;
-    }
-
-    /**
-     * Swiping a row will by default call {@link #onDelete(int, Object)}.
-     *
-     * @param position The position of the item swiped.
-     */
-    @Override
-    @CallSuper
-    public void onItemSwiped(final int position) {
-        onDelete(position, items.get(position));
     }
 }

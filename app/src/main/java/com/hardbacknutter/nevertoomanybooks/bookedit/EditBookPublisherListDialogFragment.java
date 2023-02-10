@@ -38,6 +38,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherListBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
@@ -45,7 +46,9 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
@@ -82,6 +85,8 @@ public class EditBookPublisherListDialogFragment
     /** The adapter for the list itself. */
     private PublisherListAdapter adapter;
 
+    private ExtPopupMenu contextMenu;
+
     private final EditBookPublisherDialogFragment.Launcher editLauncher =
             new EditBookPublisherDialogFragment.Launcher() {
                 @Override
@@ -96,17 +101,6 @@ public class EditBookPublisherListDialogFragment
                 }
             };
 
-    private final AdapterRowHandler adapterRowHandler = new AdapterRowHandler() {
-
-        @Override
-        public void edit(final int position) {
-            final Book book = vm.getBook();
-            editLauncher.launch(book.getTitle(),
-                                book.getString(DBKey.LANGUAGE),
-                                EditAction.Edit,
-                                publisherList.get(position));
-        }
-    };
     /** Drag and drop support for the list view. */
     private ItemTouchHelper itemTouchHelper;
 
@@ -167,19 +161,68 @@ public class EditBookPublisherListDialogFragment
             return false;
         });
 
-        vb.publisherList.setHasFixedSize(true);
-
-        publisherList = vm.getBook().getPublishers();
-        adapter = new PublisherListAdapter(getContext(), publisherList, adapterRowHandler,
-                                           vh -> itemTouchHelper.startDrag(vh));
-        vb.publisherList.setAdapter(adapter);
-        adapter.registerAdapterDataObserver(adapterDataObserver);
+        contextMenu = MenuUtils.createEditDeleteContextMenu(getContext());
+        initListView();
 
         final SimpleItemTouchHelperCallback sitHelperCallback =
                 new SimpleItemTouchHelperCallback(adapter);
         itemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         itemTouchHelper.attachToRecyclerView(vb.publisherList);
     }
+
+    private void initListView() {
+        final Context context = getContext();
+
+        publisherList = vm.getBook().getPublishers();
+
+        //noinspection ConstantConditions
+        adapter = new PublisherListAdapter(context, publisherList,
+                                           vh -> itemTouchHelper.startDrag(vh));
+        adapter.setOnRowClickListener((v, position) -> editEntry(position));
+        adapter.setOnRowShowMenuListener(
+                ShowContextMenu.getPreferredMode(context),
+                (v, position) -> contextMenu
+                        .showAsDropDown(v, menuItem -> onMenuItemSelected(menuItem, position)));
+
+        adapter.registerAdapterDataObserver(adapterDataObserver);
+        vb.publisherList.setAdapter(adapter);
+
+        vb.publisherList.setHasFixedSize(true);
+    }
+
+    private void editEntry(final int position) {
+        final Book book = vm.getBook();
+        editLauncher.launch(book.getTitle(),
+                            book.getString(DBKey.LANGUAGE),
+                            EditAction.Edit,
+                            publisherList.get(position));
+    }
+
+    /**
+     * Using {@link ExtPopupMenu} for context menus.
+     *
+     * @param menuItem that was selected
+     * @param position in the list
+     *
+     * @return {@code true} if handled.
+     */
+    private boolean onMenuItemSelected(@NonNull final MenuItem menuItem,
+                                       final int position) {
+        final int itemId = menuItem.getItemId();
+
+        if (itemId == R.id.MENU_EDIT) {
+            editEntry(position);
+            return true;
+
+        } else if (itemId == R.id.MENU_DELETE) {
+            // simply remove and refresh
+            publisherList.remove(position);
+            adapter.notifyItemRemoved(position);
+            return true;
+        }
+        return false;
+    }
+
 
     @Override
     public void onDestroyView() {
@@ -356,9 +399,6 @@ public class EditBookPublisherListDialogFragment
     private static class PublisherListAdapter
             extends RecyclerViewAdapterBase<Publisher, Holder> {
 
-        @NonNull
-        private final AdapterRowHandler adapterRowHandler;
-
         /**
          * Constructor.
          *
@@ -368,10 +408,8 @@ public class EditBookPublisherListDialogFragment
          */
         PublisherListAdapter(@NonNull final Context context,
                              @NonNull final List<Publisher> items,
-                             @NonNull final AdapterRowHandler adapterRowHandler,
                              @NonNull final StartDragListener dragStartListener) {
             super(context, items, dragStartListener);
-            this.adapterRowHandler = adapterRowHandler;
         }
 
         @NonNull
@@ -381,8 +419,8 @@ public class EditBookPublisherListDialogFragment
             final View view = getLayoutInflater()
                     .inflate(R.layout.row_edit_publisher_list, parent, false);
             final Holder holder = new Holder(view);
-            holder.rowDetailsView.setOnClickListener(
-                    v -> adapterRowHandler.edit(holder.getBindingAdapterPosition()));
+            holder.setOnRowClickListener(rowClickListener);
+            holder.setOnRowShowContextMenuListener(contextMenuMode, rowShowMenuListener);
             return holder;
         }
 

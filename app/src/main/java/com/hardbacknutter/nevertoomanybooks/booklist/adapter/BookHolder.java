@@ -64,7 +64,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
  * ViewHolder for a {@link BooklistGroup#BOOK} row.
  */
 public class BookHolder
-        extends RowViewHolder<DataHolder> {
+        extends RowViewHolder
+        implements BindableViewHolder<DataHolder> {
 
     /**
      * 0.6 is based on a standard paperback 17.5cm x 10.6cm

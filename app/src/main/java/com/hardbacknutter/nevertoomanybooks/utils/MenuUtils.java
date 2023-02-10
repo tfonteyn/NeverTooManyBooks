@@ -24,6 +24,7 @@ import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.res.Resources;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
@@ -39,6 +40,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 
 public final class MenuUtils {
 
@@ -94,5 +96,20 @@ public final class MenuUtils {
         // can be set in xml, but here for paranoia
         item.setCheckable(false);
         item.setEnabled(false);
+    }
+
+    @NonNull
+    public static ExtPopupMenu createEditDeleteContextMenu(@NonNull final Context context) {
+        final ExtPopupMenu contextMenu = new ExtPopupMenu(context);
+        final Resources res = context.getResources();
+        final Menu menu = contextMenu.getMenu();
+        menu.add(Menu.NONE, R.id.MENU_EDIT, res.getInteger(R.integer.MENU_ORDER_EDIT),
+                 R.string.action_edit_ellipsis)
+            .setIcon(R.drawable.ic_baseline_edit_24);
+        menu.add(Menu.NONE, R.id.MENU_DELETE, res.getInteger(R.integer.MENU_ORDER_DELETE),
+                 R.string.action_delete)
+            .setIcon(R.drawable.ic_baseline_delete_24);
+
+        return contextMenu;
     }
 }

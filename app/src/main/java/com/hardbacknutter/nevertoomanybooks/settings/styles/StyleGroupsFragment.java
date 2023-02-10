@@ -185,19 +185,14 @@ public class StyleGroupsFragment
             final View view = getLayoutInflater()
                     .inflate(R.layout.row_edit_style_groups, parent, false);
             final Holder holder = new Holder(view);
-            //noinspection ConstantConditions
-            holder.checkableButton.setOnClickListener(v -> onItemCheckChanged(holder));
+            holder.setOnItemCheckChangedListener(position -> {
+                final StyleViewModel.WrappedGroup wrappedGroup = getItem(position);
+                final boolean newStatus = !wrappedGroup.isPresent();
+                wrappedGroup.setPresent(newStatus);
+                notifyItemChanged(position);
+                return newStatus;
+            });
             return holder;
-        }
-
-        void onItemCheckChanged(@NonNull final Holder holder) {
-            final int position = holder.getBindingAdapterPosition();
-            final StyleViewModel.WrappedGroup wrappedGroup = getItem(position);
-            final boolean newStatus = !wrappedGroup.isPresent();
-            wrappedGroup.setPresent(newStatus);
-            //noinspection ConstantConditions
-            holder.checkableButton.setChecked(newStatus);
-            notifyItemChanged(position);
         }
 
         @Override
@@ -208,8 +203,7 @@ public class StyleGroupsFragment
             final StyleViewModel.WrappedGroup wrappedGroup = getItem(position);
 
             holder.groupNameView.setText(wrappedGroup.getGroup().getLabel(getContext()));
-            //noinspection ConstantConditions
-            holder.checkableButton.setChecked(wrappedGroup.isPresent());
+            holder.setChecked(wrappedGroup.isPresent());
         }
     }
 

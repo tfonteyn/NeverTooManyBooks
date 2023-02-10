@@ -327,6 +327,11 @@ public class EditBookViewModel
         return book;
     }
 
+    boolean isAnthology() {
+        final Field<Long, View> typeField = requireField(R.id.book_type);
+        return Objects.equals(typeField.getValue(), Book.ContentType.Anthology.getId());
+    }
+
     /**
      * Insert/update the book into the database, store cover files, and prepare activity results.
      *

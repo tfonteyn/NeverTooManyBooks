@@ -105,11 +105,8 @@ public class EditTocEntryDialogFragment
             //noinspection ConstantConditions
             authorName = tocEntry.getPrimaryAuthor().getLabel(getContext());
         } else {
-            //noinspection ConstantConditions
             title = savedInstanceState.getString(DBKey.TITLE);
-            //noinspection ConstantConditions
             firstPublicationDate = savedInstanceState.getParcelable(DBKey.FIRST_PUBLICATION__DATE);
-            //noinspection ConstantConditions
             authorName = savedInstanceState.getString(DBKey.AUTHOR_FORMATTED);
         }
     }

@@ -38,6 +38,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorListBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
@@ -49,7 +50,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.EntityFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
@@ -87,6 +90,8 @@ public class EditBookAuthorListDialogFragment
     /** The adapter for the list itself. */
     private AuthorListAdapter adapter;
 
+    private ExtPopupMenu contextMenu;
+
     private final EditBookAuthorDialogFragment.Launcher editLauncher =
             new EditBookAuthorDialogFragment.Launcher() {
                 @Override
@@ -101,17 +106,6 @@ public class EditBookAuthorListDialogFragment
                 }
             };
 
-    private final AdapterRowHandler adapterRowHandler = new AdapterRowHandler() {
-
-        @Override
-        public void edit(final int position) {
-            final Book book = vm.getBook();
-            editLauncher.launch(book.getTitle(),
-                                book.getString(DBKey.LANGUAGE),
-                                EditAction.Edit,
-                                authorList.get(position));
-        }
-    };
 
     /** Drag and drop support for the list view. */
     private ItemTouchHelper itemTouchHelper;
@@ -173,18 +167,66 @@ public class EditBookAuthorListDialogFragment
             return false;
         });
 
-        vb.authorList.setHasFixedSize(true);
-
-        authorList = vm.getBook().getAuthors();
-        adapter = new AuthorListAdapter(getContext(), authorList, adapterRowHandler,
-                                        vh -> itemTouchHelper.startDrag(vh));
-        vb.authorList.setAdapter(adapter);
-        adapter.registerAdapterDataObserver(adapterDataObserver);
+        contextMenu = MenuUtils.createEditDeleteContextMenu(getContext());
+        initListView();
 
         final SimpleItemTouchHelperCallback sitHelperCallback =
                 new SimpleItemTouchHelperCallback(adapter);
         itemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         itemTouchHelper.attachToRecyclerView(vb.authorList);
+    }
+
+    private void initListView() {
+        final Context context = getContext();
+
+        authorList = vm.getBook().getAuthors();
+
+        //noinspection ConstantConditions
+        adapter = new AuthorListAdapter(context, authorList,
+                                        vh -> itemTouchHelper.startDrag(vh));
+        adapter.setOnRowClickListener((v, position) -> editEntry(position));
+        adapter.setOnRowShowMenuListener(
+                ShowContextMenu.getPreferredMode(context),
+                (v, position) -> contextMenu
+                        .showAsDropDown(v, menuItem -> onMenuItemSelected(menuItem, position)));
+
+        adapter.registerAdapterDataObserver(adapterDataObserver);
+        vb.authorList.setAdapter(adapter);
+
+        vb.authorList.setHasFixedSize(true);
+    }
+
+    private void editEntry(final int position) {
+        final Book book = vm.getBook();
+        editLauncher.launch(book.getTitle(),
+                            book.getString(DBKey.LANGUAGE),
+                            EditAction.Edit,
+                            authorList.get(position));
+    }
+
+    /**
+     * Using {@link ExtPopupMenu} for context menus.
+     *
+     * @param menuItem that was selected
+     * @param position in the list
+     *
+     * @return {@code true} if handled.
+     */
+    private boolean onMenuItemSelected(@NonNull final MenuItem menuItem,
+                                       final int position) {
+        final int itemId = menuItem.getItemId();
+
+        if (itemId == R.id.MENU_EDIT) {
+            editEntry(position);
+            return true;
+
+        } else if (itemId == R.id.MENU_DELETE) {
+            // simply remove and refresh
+            authorList.remove(position);
+            adapter.notifyItemRemoved(position);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -384,8 +426,6 @@ public class EditBookAuthorListDialogFragment
 
         @NonNull
         private final FieldFormatter<Author> formatter;
-        @NonNull
-        private final AdapterRowHandler adapterRowHandler;
 
         /**
          * Constructor.
@@ -396,11 +436,8 @@ public class EditBookAuthorListDialogFragment
          */
         AuthorListAdapter(@NonNull final Context context,
                           @NonNull final List<Author> items,
-                          @NonNull final AdapterRowHandler adapterRowHandler,
                           @NonNull final StartDragListener dragStartListener) {
             super(context, items, dragStartListener);
-            this.adapterRowHandler = adapterRowHandler;
-
             formatter = new EntityFormatter<>(Details.Full);
         }
 
@@ -412,8 +449,8 @@ public class EditBookAuthorListDialogFragment
             final View view = getLayoutInflater()
                     .inflate(R.layout.row_edit_author_list, parent, false);
             final Holder holder = new Holder(view);
-            holder.rowDetailsView.setOnClickListener(
-                    v -> adapterRowHandler.edit(holder.getBindingAdapterPosition()));
+            holder.setOnRowClickListener(rowClickListener);
+            holder.setOnRowShowContextMenuListener(contextMenuMode, rowShowMenuListener);
             return holder;
         }
 

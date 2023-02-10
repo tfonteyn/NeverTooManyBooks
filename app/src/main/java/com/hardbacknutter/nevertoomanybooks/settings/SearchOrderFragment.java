@@ -184,16 +184,13 @@ public class SearchOrderFragment
             final View view = getLayoutInflater()
                     .inflate(R.layout.row_edit_searchsite, parent, false);
             final Holder holder = new Holder(view);
-            //noinspection ConstantConditions
-            holder.checkableButton.setOnClickListener(v -> onItemCheckChanged(holder));
+            holder.setOnItemCheckChangedListener(position -> {
+                final Site site = getItem(position);
+                site.setActive(!site.isActive());
+                notifyItemChanged(position);
+                return site.isActive();
+            });
             return holder;
-        }
-
-        void onItemCheckChanged(@NonNull final Holder holder) {
-            final Site site = getItem(holder.getBindingAdapterPosition());
-            site.setActive(!site.isActive());
-            //noinspection ConstantConditions
-            holder.checkableButton.setChecked(site.isActive());
         }
 
         @Override
@@ -208,8 +205,7 @@ public class SearchOrderFragment
 
             holder.nameView.setText(site.getEngineId().getName(context));
 
-            //noinspection ConstantConditions
-            holder.checkableButton.setChecked(site.isActive());
+            holder.setChecked(site.isActive());
 
             // only show the info for Data lists. Irrelevant for others.
             if (site.getType() == Site.Type.Data) {

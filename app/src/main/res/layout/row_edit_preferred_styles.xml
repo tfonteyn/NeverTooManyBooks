@@ -75,12 +75,21 @@
         android:id="@id/ROW_GRABBER_ICON"
         style="@style/RowEditor.Button.DragHandle"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_row_menu"
         app:layout_constraintStart_toEndOf="@id/ROW_ONCLICK_TARGET"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription"
         />
 
+    <Button
+        android:id="@+id/btn_row_menu"
+        style="@style/Button.More"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 
