@@ -43,8 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminFragment;
 
 /**
- * Encapsulates a {@link SearchEngine} instance + the {@link Type}
- * and the active/deactive state.
+ * Encapsulates a {@link SearchEngine} instance + the {@link Type} and the active state.
  *
  * @see EngineId
  * @see SearchEngine
