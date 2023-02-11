@@ -119,6 +119,8 @@ public class ImageViewLoader {
     /**
      * Load the image bitmap into the given view.
      * The image is scaled to fit the box exactly preserving the aspect ratio.
+     * i.e. one dimension will fit 100%, the other dimension will (usually) have
+     * white-space left.
      *
      * @param imageView View to populate
      * @param bitmap    The Bitmap of the image
