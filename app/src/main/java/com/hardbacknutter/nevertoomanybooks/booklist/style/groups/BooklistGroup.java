@@ -145,6 +145,20 @@ public class BooklistGroup {
     @VisibleForTesting
     public static final int GROUP_KEY_MAX = 33;
 
+    private static final String GLOB_YYYY =
+            " GLOB '[0-9][0-9][0-9][0-9]*'";
+    private static final String GLOB_YYYY_MM =
+            " GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]*'";
+    private static final String GLOB_YYYY_M =
+            " GLOB '[0-9][0-9][0-9][0-9]-[0-9]*'";
+    private static final String GLOB_YYYY_MM_DD =
+            " GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*'";
+    private static final String GLOB_YYYY_M_DD =
+            " GLOB '[0-9][0-9][0-9][0-9]-[0-9]-[0-9][0-9]*'";
+    private static final String GLOB_YYYY_MM_D =
+            " GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9]*'";
+    private static final String GLOB_YYY_M_D =
+            " GLOB '[0-9][0-9][0-9][0-9]-[0-9]-[0-9]*'";
     /**
      * Base domains (BD_*) for Date groups.
      * Date based groups have to sort on the full date for cases
@@ -165,8 +179,10 @@ public class BooklistGroup {
     private static final DomainExpression BD_DATE_ACQUIRED =
             new DomainExpression(DOM_BOOK_DATE_ACQUIRED, Sort.Desc);
 
-    private static final String CASE_WHEN_ = "CASE WHEN ";
+    private static final String CASE = "CASE";
     private static final String _WHEN_ = " WHEN ";
+    private static final String _THEN_ = " THEN ";
+    private static final String SUBSTR = "SUBSTR(";
     private static final String _ELSE_ = " ELSE ";
     private static final String _END = " END";
 
@@ -251,8 +267,9 @@ public class BooklistGroup {
      */
     @NonNull
     private static String localDateTimeExpression(@NonNull final String fieldSpec) {
-        return CASE_WHEN_ + fieldSpec + " GLOB '*-*-* *' "
-               + " THEN datetime(" + fieldSpec + ", 'localtime')"
+        return CASE
+               + _WHEN_ + fieldSpec + " GLOB '*-*-* *' "
+               + _THEN_ + "datetime(" + fieldSpec + ", 'localtime')"
                + _ELSE_ + fieldSpec
                + _END;
     }
@@ -268,23 +285,26 @@ public class BooklistGroup {
      * <p>
      * See <a href="https://www.sqlitetutorial.net/sqlite-glob/">sqlite-glob</a>
      *
-     * @param fieldSpec fully qualified field name
      * @param toLocal   if set, first convert the fieldSpec to local time from UTC
+     * @param fieldSpec fully qualified field name
      *
      * @return expression
      */
     @NonNull
-    private static String year(@NonNull String fieldSpec,
-                               final boolean toLocal) {
+    private static String year(final boolean toLocal,
+                               @NonNull final String... fieldSpec) {
 
-        if (toLocal) {
-            fieldSpec = localDateTimeExpression(fieldSpec);
+        final StringBuilder sb = new StringBuilder(CASE);
+
+        for (int i = 0; i < fieldSpec.length; i++) {
+            if (toLocal) {
+                fieldSpec[i] = localDateTimeExpression(fieldSpec[i]);
+            }
+            sb.append(_WHEN_).append(fieldSpec[i]).append(GLOB_YYYY)
+              .append(_THEN_).append(SUBSTR).append(fieldSpec[i]).append(",1,4)");
         }
-        return CASE_WHEN_ + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]*'"
-               + " THEN SUBSTR(" + fieldSpec + ",1,4)"
-               // invalid
-               + " ELSE ''"
-               + _END;
+        sb.append(" ELSE ''").append(_END);
+        return sb.toString();
     }
 
     /**
@@ -293,25 +313,27 @@ public class BooklistGroup {
      * Just look for 4 leading numbers followed by '-' and by 2 or 1 digit.
      * We don't care about anything else.
      *
-     * @param fieldSpec fully qualified field name
      * @param toLocal   if set, first convert the fieldSpec to local time from UTC
+     * @param fieldSpec fully qualified field name
      *
      * @return expression
      */
     @NonNull
-    private static String month(@NonNull String fieldSpec,
-                                final boolean toLocal) {
-        if (toLocal) {
-            fieldSpec = localDateTimeExpression(fieldSpec);
+    private static String month(final boolean toLocal,
+                                @NonNull final String... fieldSpec) {
+        final StringBuilder sb = new StringBuilder(CASE);
+
+        for (int i = 0; i < fieldSpec.length; i++) {
+            if (toLocal) {
+                fieldSpec[i] = localDateTimeExpression(fieldSpec[i]);
+            }
+            sb.append(_WHEN_).append(fieldSpec[i]).append(GLOB_YYYY_MM)
+              .append(_THEN_).append(SUBSTR).append(fieldSpec[i]).append(",6,2)")
+              .append(_WHEN_).append(fieldSpec[i]).append(GLOB_YYYY_M)
+              .append(_THEN_).append(SUBSTR).append(fieldSpec[i]).append(",6,1)");
         }
-        // YYYY-MM or YYYY-M
-        return CASE_WHEN_ + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]*'"
-               + " THEN SUBSTR(" + fieldSpec + ",6,2)"
-               + _WHEN_ + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9]*'"
-               + " THEN SUBSTR(" + fieldSpec + ",6,1)"
-               // invalid
-               + " ELSE ''"
-               + _END;
+        sb.append(" ELSE ''").append(_END);
+        return sb.toString();
     }
 
     /**
@@ -321,33 +343,33 @@ public class BooklistGroup {
      * and then by '-' and 1 or two digits.
      * We don't care about anything else.
      *
-     * @param fieldSpec fully qualified field name
      * @param toLocal   if set, first convert the fieldSpec to local time from UTC
+     * @param fieldSpec fully qualified field name
      *
      * @return expression
      */
     @NonNull
-    private static String day(@NonNull String fieldSpec,
-                              @SuppressWarnings("SameParameterValue") final boolean toLocal) {
-        if (toLocal) {
-            fieldSpec = localDateTimeExpression(fieldSpec);
+    private static String day(@SuppressWarnings("SameParameterValue") final boolean toLocal,
+                              @NonNull final String... fieldSpec) {
+        final StringBuilder sb = new StringBuilder(CASE);
+
+        for (int i = 0; i < fieldSpec.length; i++) {
+            if (toLocal) {
+                fieldSpec[i] = localDateTimeExpression(fieldSpec[i]);
+            }
+            // Look for 4 leading numbers followed by 2 or 1 digit then another 2 or 1 digit.
+            // YYYY-MM-DD or YYYY-M-DD or YYYY-MM-D or YYYY-M-D
+            sb.append(_WHEN_).append(fieldSpec[i]).append(GLOB_YYYY_MM_DD)
+              .append(_THEN_).append(SUBSTR).append(fieldSpec[i]).append(",9,2)")
+              .append(_WHEN_).append(fieldSpec[i]).append(GLOB_YYYY_M_DD)
+              .append(_THEN_).append(SUBSTR).append(fieldSpec[i]).append(",8,2)")
+              .append(_WHEN_).append(fieldSpec[i]).append(GLOB_YYYY_MM_D)
+              .append(_THEN_).append(SUBSTR).append(fieldSpec[i]).append(",9,1)")
+              .append(_WHEN_).append(fieldSpec[i]).append(GLOB_YYY_M_D)
+              .append(_THEN_).append(SUBSTR).append(fieldSpec[i]).append(",8,1)");
         }
-        // Look for 4 leading numbers followed by 2 or 1 digit then another 2 or 1 digit.
-        // YYYY-MM-DD or YYYY-M-DD or YYYY-MM-D or YYYY-M-D
-        return CASE_WHEN_ + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*'"
-               + " THEN SUBSTR(" + fieldSpec + ",9,2)"
-               //
-               + _WHEN_ + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9]-[0-9][0-9]*'"
-               + " THEN SUBSTR(" + fieldSpec + ",8,2)"
-               //
-               + _WHEN_ + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9]*'"
-               + " THEN SUBSTR(" + fieldSpec + ",9,1)"
-               //
-               + _WHEN_ + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9]-[0-9]*'"
-               + " THEN SUBSTR(" + fieldSpec + ",8,1)"
-               // invalid
-               + " ELSE ''"
-               + _END;
+        sb.append(" ELSE ''").append(_END);
+        return sb.toString();
     }
 
     /**
@@ -497,7 +519,7 @@ public class BooklistGroup {
                 // UTC. Formatting is done after fetching.
                 final DomainExpression keyDomainExpression = new DomainExpression(
                         new Domain.Builder(BlgKey.PUB_YEAR, SqLiteDataType.Integer).build(),
-                        year(TBL_BOOKS.dot(DBKey.BOOK_PUBLICATION__DATE), false),
+                        year(false, TBL_BOOKS.dot(DBKey.BOOK_PUBLICATION__DATE)),
                         Sort.Desc);
                 return new GroupKey(id, R.string.lbl_date_published_year, "yrp",
                                     keyDomainExpression)
@@ -507,7 +529,7 @@ public class BooklistGroup {
                 // UTC. Formatting is done after fetching.
                 final DomainExpression keyDomainExpression = new DomainExpression(
                         new Domain.Builder(BlgKey.PUB_MONTH, SqLiteDataType.Integer).build(),
-                        month(TBL_BOOKS.dot(DBKey.BOOK_PUBLICATION__DATE), false),
+                        month(false, TBL_BOOKS.dot(DBKey.BOOK_PUBLICATION__DATE)),
                         Sort.Desc);
                 return new GroupKey(id, R.string.lbl_date_published_month, "mp",
                                     keyDomainExpression)
@@ -519,7 +541,7 @@ public class BooklistGroup {
                 // UTC. Formatting is done in the sql expression.
                 final DomainExpression keyDomainExpression = new DomainExpression(
                         new Domain.Builder(BlgKey.FIRST_PUB_YEAR, SqLiteDataType.Integer).build(),
-                        year(TBL_BOOKS.dot(DBKey.FIRST_PUBLICATION__DATE), false),
+                        year(false, TBL_BOOKS.dot(DBKey.FIRST_PUBLICATION__DATE)),
                         Sort.Desc);
                 return new GroupKey(id, R.string.lbl_date_first_publication_year, "yfp",
                                     keyDomainExpression)
@@ -529,7 +551,7 @@ public class BooklistGroup {
                 // Local for the user. Formatting is done after fetching.
                 final DomainExpression keyDomainExpression = new DomainExpression(
                         new Domain.Builder(BlgKey.FIRST_PUB_MONTH, SqLiteDataType.Integer).build(),
-                        month(TBL_BOOKS.dot(DBKey.FIRST_PUBLICATION__DATE), false),
+                        month(false, TBL_BOOKS.dot(DBKey.FIRST_PUBLICATION__DATE)),
                         Sort.Desc);
                 return new GroupKey(id, R.string.lbl_date_first_publication_month, "mfp",
                                     keyDomainExpression)
@@ -541,7 +563,9 @@ public class BooklistGroup {
                 // Local for the user. Formatting is done in the sql expression.
                 final DomainExpression keyDomainExpression = new DomainExpression(
                         new Domain.Builder(BlgKey.ACQUIRED_YEAR, SqLiteDataType.Integer).build(),
-                        year(TBL_BOOKS.dot(DBKey.DATE_ACQUIRED), true),
+                        year(true,
+                             TBL_BOOKS.dot(DBKey.DATE_ACQUIRED),
+                             TBL_BOOKS.dot(DBKey.DATE_ADDED__UTC)),
                         Sort.Desc);
                 return new GroupKey(id, R.string.lbl_date_acquired_year, "yac",
                                     keyDomainExpression)
@@ -551,7 +575,9 @@ public class BooklistGroup {
                 // Local for the user. Formatting is done after fetching.
                 final DomainExpression keyDomainExpression = new DomainExpression(
                         new Domain.Builder(BlgKey.ACQUIRED_MONTH, SqLiteDataType.Integer).build(),
-                        month(TBL_BOOKS.dot(DBKey.DATE_ACQUIRED), true),
+                        month(true,
+                              TBL_BOOKS.dot(DBKey.DATE_ACQUIRED),
+                              TBL_BOOKS.dot(DBKey.DATE_ADDED__UTC)),
                         Sort.Desc);
                 return new GroupKey(id, R.string.lbl_date_acquired_month, "mac",
                                     keyDomainExpression)
@@ -561,7 +587,9 @@ public class BooklistGroup {
                 // Local for the user. Formatting is done in the sql expression.
                 final DomainExpression keyDomainExpression = new DomainExpression(
                         new Domain.Builder(BlgKey.ACQUIRED_DAY, SqLiteDataType.Integer).build(),
-                        day(TBL_BOOKS.dot(DBKey.DATE_ACQUIRED), true),
+                        day(true,
+                            TBL_BOOKS.dot(DBKey.DATE_ACQUIRED),
+                            TBL_BOOKS.dot(DBKey.DATE_ADDED__UTC)),
                         Sort.Desc);
                 return new GroupKey(id, R.string.lbl_date_acquired_day, "dac",
                                     keyDomainExpression)
@@ -573,7 +601,7 @@ public class BooklistGroup {
                 // Local for the user. Formatting is done in the sql expression.
                 final DomainExpression keyDomainExpression = new DomainExpression(
                         new Domain.Builder(BlgKey.ADDED_YEAR, SqLiteDataType.Integer).build(),
-                        year(TBL_BOOKS.dot(DBKey.DATE_ADDED__UTC), true),
+                        year(true, TBL_BOOKS.dot(DBKey.DATE_ADDED__UTC)),
                         Sort.Desc);
                 return new GroupKey(id, R.string.lbl_date_added_year, "ya", keyDomainExpression)
                         .addBaseDomain(BD_DATE_ADDED);
@@ -582,7 +610,7 @@ public class BooklistGroup {
                 // Local for the user. Formatting is done after fetching.
                 final DomainExpression keyDomainExpression = new DomainExpression(
                         new Domain.Builder(BlgKey.ADDED_DAY, SqLiteDataType.Integer).build(),
-                        month(TBL_BOOKS.dot(DBKey.DATE_ADDED__UTC), true),
+                        month(true, TBL_BOOKS.dot(DBKey.DATE_ADDED__UTC)),
                         Sort.Desc);
                 return new GroupKey(id, R.string.lbl_date_added_month, "ma", keyDomainExpression)
                         .addBaseDomain(BD_DATE_ADDED);
@@ -591,7 +619,7 @@ public class BooklistGroup {
                 // Local for the user. Formatting is done in the sql expression.
                 final DomainExpression keyDomainExpression = new DomainExpression(
                         new Domain.Builder(BlgKey.ADDED_MONTH, SqLiteDataType.Integer).build(),
-                        day(TBL_BOOKS.dot(DBKey.DATE_ADDED__UTC), true),
+                        day(true, TBL_BOOKS.dot(DBKey.DATE_ADDED__UTC)),
                         Sort.Desc);
                 return new GroupKey(id, R.string.lbl_date_added_day, "da", keyDomainExpression)
                         .addBaseDomain(BD_DATE_ADDED);
@@ -602,7 +630,7 @@ public class BooklistGroup {
                 // Local for the user. Formatting is done in the sql expression.
                 final DomainExpression keyDomainExpression = new DomainExpression(
                         new Domain.Builder(BlgKey.LAST_UPD_YEAR, SqLiteDataType.Integer).build(),
-                        year(TBL_BOOKS.dot(DBKey.DATE_LAST_UPDATED__UTC), true),
+                        year(true, TBL_BOOKS.dot(DBKey.DATE_LAST_UPDATED__UTC)),
                         Sort.Desc);
                 return new GroupKey(id, R.string.lbl_date_last_updated_year, "yu",
                                     keyDomainExpression)
@@ -612,7 +640,7 @@ public class BooklistGroup {
                 // Local for the user. Formatting is done after fetching.
                 final DomainExpression keyDomainExpression = new DomainExpression(
                         new Domain.Builder(BlgKey.LAST_UPD_MONTH, SqLiteDataType.Integer).build(),
-                        month(TBL_BOOKS.dot(DBKey.DATE_LAST_UPDATED__UTC), true),
+                        month(true, TBL_BOOKS.dot(DBKey.DATE_LAST_UPDATED__UTC)),
                         Sort.Desc);
                 return new GroupKey(id, R.string.lbl_date_last_updated_month, "mu",
                                     keyDomainExpression)
@@ -622,7 +650,7 @@ public class BooklistGroup {
                 // Local for the user. Formatting is done in the sql expression.
                 final DomainExpression keyDomainExpression = new DomainExpression(
                         new Domain.Builder(BlgKey.LAST_UPD_DAY, SqLiteDataType.Integer).build(),
-                        day(TBL_BOOKS.dot(DBKey.DATE_LAST_UPDATED__UTC), true),
+                        day(true, TBL_BOOKS.dot(DBKey.DATE_LAST_UPDATED__UTC)),
                         Sort.Desc);
                 return new GroupKey(id, R.string.lbl_date_last_updated_day, "du",
                                     keyDomainExpression)
@@ -634,7 +662,7 @@ public class BooklistGroup {
                 // Local for the user. Formatting is done in the sql expression.
                 final DomainExpression keyDomainExpression = new DomainExpression(
                         new Domain.Builder(BlgKey.READ_YEAR, SqLiteDataType.Integer).build(),
-                        year(TBL_BOOKS.dot(DBKey.READ_END__DATE), true),
+                        year(true, TBL_BOOKS.dot(DBKey.READ_END__DATE)),
                         Sort.Desc);
                 return new GroupKey(id, R.string.lbl_date_read_year, "yr", keyDomainExpression)
                         .addBaseDomain(BD_DATE_READ_END)
@@ -644,7 +672,7 @@ public class BooklistGroup {
                 // Local for the user. Formatting is done after fetching.
                 final DomainExpression keyDomainExpression = new DomainExpression(
                         new Domain.Builder(BlgKey.READ_MONTH, SqLiteDataType.Integer).build(),
-                        month(TBL_BOOKS.dot(DBKey.READ_END__DATE), true),
+                        month(true, TBL_BOOKS.dot(DBKey.READ_END__DATE)),
                         Sort.Desc);
                 return new GroupKey(id, R.string.lbl_date_read_month, "mr", keyDomainExpression)
                         .addBaseDomain(BD_DATE_READ_END)
@@ -654,7 +682,7 @@ public class BooklistGroup {
                 // Local for the user. Formatting is done in the sql expression.
                 final DomainExpression keyDomainExpression = new DomainExpression(
                         new Domain.Builder(BlgKey.READ_DAY, SqLiteDataType.Integer).build(),
-                        day(TBL_BOOKS.dot(DBKey.READ_END__DATE), true),
+                        day(true, TBL_BOOKS.dot(DBKey.READ_END__DATE)),
                         Sort.Desc);
                 return new GroupKey(id, R.string.lbl_date_read_day, "dr", keyDomainExpression)
                         .addBaseDomain(BD_DATE_READ_END)
