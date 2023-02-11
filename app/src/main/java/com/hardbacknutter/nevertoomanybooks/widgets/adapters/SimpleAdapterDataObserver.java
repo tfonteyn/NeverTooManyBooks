@@ -22,7 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.widgets.adapters;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
- * Really dumb implementation that simple delegates everything to {@link #onChanged()}.
+ * Really dumb implementation that delegates everything to {@link #onChanged()}.
  */
 public abstract class SimpleAdapterDataObserver
         extends RecyclerView.AdapterDataObserver {
