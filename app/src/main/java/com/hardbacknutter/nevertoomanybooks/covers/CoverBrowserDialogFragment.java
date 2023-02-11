@@ -321,6 +321,9 @@ public class CoverBrowserDialogFragment
         vb.statusMessage.setText(R.string.info_tap_on_thumbnail_to_zoom);
     }
 
+    /**
+     * Proxy between adapter and ViewModel.
+     */
     private interface PositionHandler {
 
         /**
@@ -476,6 +479,7 @@ public class CoverBrowserDialogFragment
                 // and queue a request for it.
                 positionHandler.fetchGalleryImage(isbn);
                 holder.vb.lblSite.setText("");
+                holder.vb.coverImage0.setOnClickListener(null);
 
             } else {
                 // check if it's good
@@ -484,12 +488,9 @@ public class CoverBrowserDialogFragment
                     // YES, load it into the view.
                     imageLoader.fromFile(holder.vb.coverImage0, file.get(), null);
 
-                    // keep this statement here, or we would need to call file.exists() twice
+                    holder.vb.lblSite.setText(imageFileInfo.getEngineId().getLabelResId());
                     holder.vb.coverImage0.setOnClickListener(
                             v -> positionHandler.onGalleryImageSelected(imageFileInfo));
-
-                    holder.vb.lblSite.setText(imageFileInfo.getEngineId().getLabelResId());
-
                 } else {
                     // no file. Theoretically we should not get here,
                     // as a failed search should have removed the isbn from the edition list,
@@ -497,6 +498,7 @@ public class CoverBrowserDialogFragment
                     imageLoader.placeholder(holder.vb.coverImage0,
                                             R.drawable.ic_baseline_broken_image_24);
                     holder.vb.lblSite.setText("");
+                    holder.vb.coverImage0.setOnClickListener(null);
                 }
             }
         }
