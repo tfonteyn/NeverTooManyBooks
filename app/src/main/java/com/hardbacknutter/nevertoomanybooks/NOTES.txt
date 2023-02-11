@@ -26,9 +26,12 @@ is by design not foolproof. The nodes 'expanded' flag WILL get out of sync with
  the display from time to time.
 
 ----------------------------------------------------------------------------------------------------
-4.0.1
+4.1.0
 
 NEW:
+- context menu button now available for all lists.
+- group/sorting by date-acquired now uses date-added as fallback
+  when the former is not explicitly set
 
 
 FIXES:
