@@ -44,23 +44,21 @@ public class SeriesHolder
     /**
      * Constructor.
      *
-     * @param level    the level in the Booklist tree
      * @param itemView the view specific for this holder
-     * @param group    the group this holder represents
+     * @param style    to use
+     * @param level    the level in the Booklist tree
      */
-    SeriesHolder(@IntRange(from = 1) final int level,
-                 @NonNull final View itemView,
-                 @NonNull final BooklistGroup group,
+    SeriesHolder(@NonNull final View itemView,
+                 @NonNull final Style style,
+                 @IntRange(from = 1) final int level,
                  @NonNull final FormatFunction formatter) {
-        super(level, itemView, group, formatter);
+        super(itemView, style, BooklistGroup.SERIES, level, formatter);
         completeView = itemView.findViewById(R.id.cbx_is_complete);
     }
 
     @Override
-    public void onBindViewHolder(final int position,
-                                 @NonNull final DataHolder rowData,
-                                 @NonNull final Style style) {
-        super.onBindViewHolder(position, rowData, style);
+    public void onBind(@NonNull final DataHolder rowData) {
+        super.onBind(rowData);
 
         completeView.setVisibility(rowData.getBoolean(DBKey.SERIES_IS_COMPLETE)
                                    ? View.VISIBLE : View.GONE);

@@ -53,7 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
 
 public class CalibreLibraryMappingFragment
         extends BaseFragment {

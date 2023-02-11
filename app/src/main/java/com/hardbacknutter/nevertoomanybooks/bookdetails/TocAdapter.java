@@ -39,13 +39,15 @@ import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.booklist.adapter.OnRowClickListener;
-import com.hardbacknutter.nevertoomanybooks.booklist.adapter.RowViewHolder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowAuthorWorkBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
+import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 
 public class TocAdapter
         extends RecyclerView.Adapter<TocAdapter.AuthorWorkHolder>
@@ -60,6 +62,8 @@ public class TocAdapter
     private final LayoutInflater inflater;
     @NonNull
     private final List<AuthorWork> works;
+    @NonNull
+    private final Style style;
     @Nullable
     private final Author mainAuthor;
     @Nullable
@@ -78,10 +82,12 @@ public class TocAdapter
      */
     @SuppressLint("UseCompatLoadingForDrawables")
     public TocAdapter(@NonNull final Context context,
+                      @NonNull final Style style,
                       @Nullable final Author mainAuthor,
                       @NonNull final List<AuthorWork> works) {
         inflater = LayoutInflater.from(context);
         this.contextMenuMode = ShowContextMenu.getPreferredMode(context);
+        this.style = style;
         this.mainAuthor = mainAuthor;
         this.works = works;
     }
@@ -114,17 +120,17 @@ public class TocAdapter
         switch (AuthorWork.Type.getType((char) viewType)) {
             case TocEntry: {
                 final View view = inflater.inflate(R.layout.row_author_work, parent, false);
-                holder = new TocEntryHolder(view);
+                holder = new TocEntryHolder(view, style);
                 break;
             }
             case BookLight: {
                 final View view = inflater.inflate(R.layout.row_author_work, parent, false);
-                holder = new BookLightHolder(view);
+                holder = new BookLightHolder(view, style);
                 break;
             }
             case Book: {
                 final View view = inflater.inflate(R.layout.row_author_work, parent, false);
-                holder = new BookHolder(view);
+                holder = new BookHolder(view, style);
                 break;
             }
             default:
@@ -142,12 +148,11 @@ public class TocAdapter
 
         final AuthorWork work = works.get(position);
 
-        holder.onBindViewHolder(position, work, null);
+        holder.onBind(work);
 
-        final Author primaryAuthor = work.getPrimaryAuthor();
         // only display a primary author for this work if different from the main author
-        holder.vb.author.setVisibility(Objects.equals(primaryAuthor, mainAuthor)
-                                       ? View.VISIBLE : View.GONE);
+        final boolean same = Objects.equals(work.getPrimaryAuthor(), mainAuthor);
+        holder.vb.author.setVisibility(same ? View.GONE : View.VISIBLE);
     }
 
     @Override
@@ -181,8 +186,9 @@ public class TocAdapter
         @NonNull
         private final Drawable multipleBooksIcon;
 
-        TocEntryHolder(@NonNull final View itemView) {
-            super(itemView);
+        TocEntryHolder(@NonNull final View itemView,
+                       @NonNull final Style style) {
+            super(itemView, style);
             final Context context = itemView.getContext();
             final Resources.Theme theme = context.getTheme();
             final Resources res = context.getResources();
@@ -196,10 +202,8 @@ public class TocAdapter
         }
 
         @Override
-        public void onBindViewHolder(final int position,
-                                     @NonNull final AuthorWork work,
-                                     @Nullable final Style style) {
-            super.onBindViewHolder(position, work, style);
+        public void onBind(@NonNull final AuthorWork work) {
+            super.onBind(work);
             if (work.getBookCount() > 1) {
                 vb.btnType.setImageDrawable(multipleBooksIcon);
                 vb.btnType.setContentDescription(multipleBooksStr);
@@ -220,8 +224,9 @@ public class TocAdapter
         @NonNull
         private final Drawable typeIcon;
 
-        BookLightHolder(@NonNull final View itemView) {
-            super(itemView);
+        BookLightHolder(@NonNull final View itemView,
+                        @NonNull final Style style) {
+            super(itemView, style);
             final Context context = itemView.getContext();
             final Resources.Theme theme = context.getTheme();
             final Resources res = context.getResources();
@@ -230,10 +235,8 @@ public class TocAdapter
         }
 
         @Override
-        public void onBindViewHolder(final int position,
-                                     @NonNull final AuthorWork work,
-                                     @Nullable final Style style) {
-            super.onBindViewHolder(position, work, style);
+        public void onBind(@NonNull final AuthorWork work) {
+            super.onBind(work);
             vb.btnType.setImageDrawable(typeIcon);
             vb.btnType.setContentDescription(typeDescription);
         }
@@ -250,8 +253,9 @@ public class TocAdapter
         @NonNull
         private final Drawable typeIcon;
 
-        BookHolder(@NonNull final View itemView) {
-            super(itemView);
+        BookHolder(@NonNull final View itemView,
+                   @NonNull final Style style) {
+            super(itemView, style);
             final Context context = itemView.getContext();
             final Resources.Theme theme = context.getTheme();
             final Resources res = context.getResources();
@@ -260,29 +264,31 @@ public class TocAdapter
         }
 
         @Override
-        public void onBindViewHolder(final int position,
-                                     @NonNull final AuthorWork work,
-                                     @Nullable final Style style) {
-            super.onBindViewHolder(position, work, style);
+        public void onBind(@NonNull final AuthorWork work) {
+            super.onBind(work);
             vb.btnType.setImageDrawable(typeIcon);
             vb.btnType.setContentDescription(typeDescription);
         }
     }
 
     public abstract static class AuthorWorkHolder
-            extends RowViewHolder {
+            extends RowViewHolder
+            implements BindableViewHolder<AuthorWork> {
 
         @NonNull
         final RowAuthorWorkBinding vb;
+        @NonNull
+        private final Style style;
 
-        AuthorWorkHolder(@NonNull final View itemView) {
+        AuthorWorkHolder(@NonNull final View itemView,
+                         @NonNull final Style style) {
             super(itemView);
             vb = RowAuthorWorkBinding.bind(itemView);
+            this.style = style;
         }
 
-        public void onBindViewHolder(final int position,
-                                     @NonNull final AuthorWork work,
-                                     @Nullable final Style style) {
+        @Override
+        public void onBind(@NonNull final AuthorWork work) {
 
             final Context context = itemView.getContext();
             vb.title.setText(work.getLabel(context));
@@ -300,7 +306,9 @@ public class TocAdapter
             }
 
             final Author primaryAuthor = work.getPrimaryAuthor();
-            vb.author.setText(primaryAuthor != null ? primaryAuthor.getLabel(context) : null);
+            vb.author.setText(primaryAuthor != null
+                              ? primaryAuthor.getLabel(context, Details.Normal, style)
+                              : null);
 
             vb.btnType.setOnClickListener(anchor -> {
                 final String titles = work

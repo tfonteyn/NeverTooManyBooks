@@ -47,7 +47,6 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
-import com.hardbacknutter.nevertoomanybooks.booklist.adapter.RowViewHolder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookshelvesBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfBinding;
@@ -55,9 +54,10 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
-import com.hardbacknutter.nevertoomanybooks.widgets.GridDividerItemDecoration;
-import com.hardbacknutter.nevertoomanybooks.widgets.MultiColumnRecyclerViewAdapter;
-import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.GridDividerItemDecoration;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.MultiColumnRecyclerViewAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
 
 /**
  * {@link Bookshelf} maintenance.
@@ -258,6 +258,9 @@ public class EditBookshelvesFragment
         return false;
     }
 
+    /**
+     * Proxy between adapter and ViewModel.
+     */
     private interface PositionHandler {
 
         int getSelectedPosition();
@@ -317,9 +320,9 @@ public class EditBookshelvesFragment
 
                 // store the newly selected row.
                 final int listIndex = transpose(position);
-                if (listIndex == -1) {
+                if (listIndex == RecyclerView.NO_POSITION) {
                     // Should never get here
-                    throw new IllegalStateException("ListIndex is -1 for position=" + position);
+                    throw new IllegalStateException("No ListIndex for position=" + position);
                 }
                 positionHandler.setSelectedPosition(listIndex);
                 // update the newly selected row.
@@ -330,10 +333,10 @@ public class EditBookshelvesFragment
             holder.setOnRowShowContextMenuListener(
                     ShowContextMenu.getPreferredMode(parent.getContext()), (v, position) -> {
                         final int listIndex = transpose(position);
-                        if (listIndex == -1) {
+                        if (listIndex == RecyclerView.NO_POSITION) {
                             // Should never get here
                             throw new IllegalStateException(
-                                    "ListIndex is -1 for position=" + position);
+                                    "No ListIndex for position=" + position);
                         }
                         positionHandler.showContextMenu(v, position, listIndex);
                     });
@@ -347,14 +350,14 @@ public class EditBookshelvesFragment
                                      final int position) {
 
             final int listIndex = transpose(position);
-            if (listIndex >= 0) {
-                final Bookshelf bookshelf = bookshelfList.get(listIndex);
-
+            if (listIndex == RecyclerView.NO_POSITION) {
+                holder.vb.bookshelfName.setVisibility(View.INVISIBLE);
+            } else {
                 holder.vb.bookshelfName.setVisibility(View.VISIBLE);
+
+                final Bookshelf bookshelf = bookshelfList.get(listIndex);
                 holder.vb.bookshelfName.setText(bookshelf.getName());
                 holder.itemView.setSelected(listIndex == positionHandler.getSelectedPosition());
-            } else {
-                holder.vb.bookshelfName.setVisibility(View.INVISIBLE);
             }
         }
 

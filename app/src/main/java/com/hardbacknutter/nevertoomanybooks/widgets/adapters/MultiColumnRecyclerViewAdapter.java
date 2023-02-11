@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.widgets;
+package com.hardbacknutter.nevertoomanybooks.widgets.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -54,7 +54,7 @@ public abstract class MultiColumnRecyclerViewAdapter<HOLDER extends RecyclerView
         int listIndex = (column * rowCount) + row;
 
         if (listIndex >= realItemCount) {
-            listIndex = -1;
+            listIndex = RecyclerView.NO_POSITION;
         }
 
         return listIndex;

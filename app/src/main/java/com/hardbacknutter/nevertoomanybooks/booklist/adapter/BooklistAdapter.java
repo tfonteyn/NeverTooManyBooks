@@ -56,21 +56,9 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 
-/**
- * Handles all views in a multi-type list showing Book, Author, Series etc.
- * <p>
- * Each row(level) needs to have a layout like:
- * <pre>
- *     {@code
- *          <layout id="@id/ROW_INFO">
- *          <TextView id="@id/name" />
- *          ...
- *      }
- * </pre>
- * <p>
- * ROW_INFO is important, as it's that one that gets shown/hidden when needed.
- */
 public class BooklistAdapter
         extends RecyclerView.Adapter<RowViewHolder>
         implements FastScroller.PopupTextProvider {
@@ -319,22 +307,19 @@ public class BooklistAdapter
                 break;
 
             case BooklistGroup.AUTHOR:
-                holder = new AuthorHolder(level, itemView,
-                                          style.requireGroupById(groupId), formatter);
+                holder = new AuthorHolder(itemView, style, level, formatter);
                 break;
 
             case BooklistGroup.SERIES:
-                holder = new SeriesHolder(level, itemView,
-                                          style.requireGroupById(groupId), formatter);
+                holder = new SeriesHolder(itemView, style, level, formatter);
                 break;
 
             case BooklistGroup.RATING:
-                holder = new RatingHolder(itemView, style.requireGroupById(groupId));
+                holder = new RatingHolder(itemView, style);
                 break;
 
             default:
-                holder = new GenericStringHolder(level, itemView,
-                                                 style.requireGroupById(groupId), formatter);
+                holder = new GenericStringHolder(itemView, style, groupId, level, formatter);
                 break;
         }
 
@@ -357,10 +342,8 @@ public class BooklistAdapter
         //noinspection ConstantConditions
         cursor.moveToPosition(position);
 
-        // further binding depends on the type of row (i.e. holder).
-        //noinspection ConstantConditions,unchecked
-        ((BindableViewHolder<DataHolder>) holder)
-                .onBindViewHolder(position, rowData, style);
+        //noinspection unchecked,ConstantConditions
+        ((BindableViewHolder<DataHolder>) holder).onBind(rowData);
     }
 
     private void scaleTextViews(@NonNull final View view,

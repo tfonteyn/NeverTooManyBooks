@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.widgets;
+package com.hardbacknutter.nevertoomanybooks.widgets.adapters;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -115,6 +115,7 @@ public class GridDividerItemDecoration
 
     /**
      * Sets the color of the divider.
+     *
      * @param context Current context
      * @param colorId The id of the color resource to be set.
      *
@@ -149,7 +150,8 @@ public class GridDividerItemDecoration
 
     /**
      * Sets the start inset of the divider.
-     * @param context Current context
+     *
+     * @param context      Current context
      * @param insetStartId The id of the inset dimension resource to be set.
      *
      * @see #getDividerInsetStart()
@@ -182,7 +184,8 @@ public class GridDividerItemDecoration
 
     /**
      * Sets the end inset of the divider.
-     * @param context Current context
+     *
+     * @param context    Current context
      * @param insetEndId The id of the inset dimension resource to be set.
      *
      * @see #getDividerInsetEnd()

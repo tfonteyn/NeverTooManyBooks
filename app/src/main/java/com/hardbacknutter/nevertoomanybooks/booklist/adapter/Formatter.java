@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 
 /**
  * Format the source string according to the BooklistGroup id.

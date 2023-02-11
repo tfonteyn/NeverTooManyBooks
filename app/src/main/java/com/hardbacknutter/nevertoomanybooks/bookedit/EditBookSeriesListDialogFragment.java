@@ -47,11 +47,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
-import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
-import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
-import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropViewHolder;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 
@@ -388,7 +389,8 @@ public class EditBookSeriesListDialogFragment
      * Holder for each row.
      */
     private static class Holder
-            extends ItemTouchHelperViewHolderBase {
+            extends BaseDragDropViewHolder
+            implements BindableViewHolder<Series> {
 
         @NonNull
         final TextView seriesView;
@@ -397,11 +399,17 @@ public class EditBookSeriesListDialogFragment
             super(itemView);
             seriesView = itemView.findViewById(R.id.row_series);
         }
+
+        @Override
+        public void onBind(@NonNull final Series series) {
+            final Context context = itemView.getContext();
+            seriesView.setText(series.getLabel(context));
+
+        }
     }
 
     private static class SeriesListAdapter
-            extends RecyclerViewAdapterBase<Series, Holder> {
-
+            extends BaseDragDropRecyclerViewAdapter<Series, Holder> {
 
         /**
          * Constructor.
@@ -432,9 +440,7 @@ public class EditBookSeriesListDialogFragment
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
             super.onBindViewHolder(holder, position);
-
-            final Series series = getItem(position);
-            holder.seriesView.setText(series.getLabel(getContext()));
+            holder.onBind(getItem(position));
         }
     }
 }

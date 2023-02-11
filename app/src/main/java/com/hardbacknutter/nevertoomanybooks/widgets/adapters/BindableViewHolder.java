@@ -18,23 +18,24 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.booklist.adapter;
+package com.hardbacknutter.nevertoomanybooks.widgets.adapters;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-
+/**
+ * Used by adapters which have different {@link RecyclerView.ViewHolder} types,
+ * and delegate the actual binding to individual {@link RecyclerView.ViewHolder}s.
+ *
+ * @param <T> type of data to bind
+ */
 @FunctionalInterface
 public interface BindableViewHolder<T> {
 
     /**
-     * Bind the data to the views in the holder.
+     * Bind the given data to the views in the holder.
      *
-     * @param position The position of the item within the adapter's data set.
-     * @param data     to bind
-     * @param style    to use (nullability depends on implementation)
+     * @param data to bind
      */
-    void onBindViewHolder(int position,
-                          @NonNull T data,
-                          Style style);
+    void onBind(@NonNull T data);
 }

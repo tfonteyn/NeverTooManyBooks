@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorViewModel;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
 
 /**
  * Edit a single Author from the book's author list.

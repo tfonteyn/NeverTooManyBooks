@@ -58,7 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditLoanBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
 
 /**
  * Dialog to create a new loan, edit an existing one or remove it (book is returned).

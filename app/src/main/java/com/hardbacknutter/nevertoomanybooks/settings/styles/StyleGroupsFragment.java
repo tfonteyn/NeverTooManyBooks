@@ -43,8 +43,8 @@ import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStyleGroupsBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
-import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
-import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 
@@ -150,7 +150,7 @@ public class StyleGroupsFragment
      * Holder for each row.
      */
     private static class Holder
-            extends ItemTouchHelperViewHolderBase {
+            extends BaseDragDropViewHolder {
 
         @NonNull
         final TextView groupNameView;
@@ -162,7 +162,7 @@ public class StyleGroupsFragment
     }
 
     private static class GroupWrapperListAdapter
-            extends RecyclerViewAdapterBase<StyleViewModel.WrappedGroup, Holder> {
+            extends BaseDragDropRecyclerViewAdapter<StyleViewModel.WrappedGroup, Holder> {
 
         /**
          * Constructor.
@@ -199,10 +199,11 @@ public class StyleGroupsFragment
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
             super.onBindViewHolder(holder, position);
+            final Context context = holder.itemView.getContext();
 
             final StyleViewModel.WrappedGroup wrappedGroup = getItem(position);
 
-            holder.groupNameView.setText(wrappedGroup.getGroup().getLabel(getContext()));
+            holder.groupNameView.setText(wrappedGroup.getGroup().getLabel(context));
             holder.setChecked(wrappedGroup.isPresent());
         }
     }

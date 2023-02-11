@@ -63,8 +63,9 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceAlertDialogBuilder;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
 
 public class BookshelfFiltersDialogFragment
         extends FFBaseDialogFragment {
@@ -308,7 +309,9 @@ public class BookshelfFiltersDialogFragment
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
-            holder.onBind(holder.itemView.getContext(), filters.get(position));
+            final PFilter<?> pFilter = filters.get(position);
+            //noinspection unchecked
+            ((BindableViewHolder<PFilter<?>>) holder).onBind(pFilter);
         }
 
         @Override
@@ -336,13 +339,11 @@ public class BookshelfFiltersDialogFragment
             this.modificationListener = modificationListener;
             delBtn = itemView.findViewById(R.id.btn_del);
         }
-
-        public abstract void onBind(@NonNull Context context,
-                                    @NonNull PFilter<?> pFilter);
     }
 
     private static class BooleanHolder
-            extends Holder {
+            extends Holder
+            implements BindableViewHolder<PBooleanFilter> {
 
         @NonNull
         private final RowEditBookshelfFilterBooleanBinding vb;
@@ -353,11 +354,9 @@ public class BookshelfFiltersDialogFragment
             vb = RowEditBookshelfFilterBooleanBinding.bind(itemView);
         }
 
-        public void onBind(@NonNull final Context context,
-                           @NonNull final PFilter<?> pFilter) {
-            final PBooleanFilter filter = (PBooleanFilter) pFilter;
+        public void onBind(@NonNull final PBooleanFilter filter) {
+            final Context context = itemView.getContext();
             vb.lblFilter.setText(filter.getLabel(context));
-
             vb.valueTrue.setText(filter.getValueText(context, true));
             vb.valueFalse.setText(filter.getValueText(context, false));
 
@@ -382,7 +381,8 @@ public class BookshelfFiltersDialogFragment
     }
 
     private static class StringEqualityHolder
-            extends Holder {
+            extends Holder
+            implements BindableViewHolder<PStringEqualityFilter> {
 
         @NonNull
         private final RowEditBookshelfFilterStringEqualityBinding vb;
@@ -393,10 +393,10 @@ public class BookshelfFiltersDialogFragment
             vb = RowEditBookshelfFilterStringEqualityBinding.bind(itemView);
         }
 
-        public void onBind(@NonNull final Context context,
-                           @NonNull final PFilter<?> pFilter) {
-            final PStringEqualityFilter filter = (PStringEqualityFilter) pFilter;
+        public void onBind(@NonNull final PStringEqualityFilter filter) {
+            final Context context = itemView.getContext();
             vb.lblFilter.setText(filter.getLabel(context));
+            vb.filter.setText(filter.getValueText(context));
 
             // We cannot share this adapter/formatter between multiple Holder instances
             // as they depends on the DBKey of the filter.
@@ -405,8 +405,6 @@ public class BookshelfFiltersDialogFragment
                     .createAdapter(context, filter.getDBKey());
             // likewise, always set the adapter even when null
             vb.filter.setAdapter(adapter);
-
-            vb.filter.setText(filter.getValueText(context));
             vb.filter.addTextChangedListener((ExtTextWatcher) s -> {
                 filter.setValueText(context, s.toString());
                 modificationListener.setModified(true);
@@ -415,7 +413,8 @@ public class BookshelfFiltersDialogFragment
     }
 
     private static class EntityListHolder<T extends Entity>
-            extends Holder {
+            extends Holder
+            implements BindableViewHolder<PEntityListFilter<T>> {
 
         @NonNull
         private final RowEditBookshelfFilterEntityListBinding vb;
@@ -426,12 +425,9 @@ public class BookshelfFiltersDialogFragment
             vb = RowEditBookshelfFilterEntityListBinding.bind(itemView);
         }
 
-        public void onBind(@NonNull final Context context,
-                           @NonNull final PFilter<?> pFilter) {
-            //noinspection unchecked
-            final PEntityListFilter<T> filter = (PEntityListFilter<T>) pFilter;
+        public void onBind(@NonNull final PEntityListFilter<T> filter) {
+            final Context context = itemView.getContext();
             vb.lblFilter.setText(filter.getLabel(context));
-
             vb.filter.setText(filter.getValueText(context));
 
             vb.ROWONCLICKTARGET.setOnClickListener(v -> {
@@ -459,7 +455,8 @@ public class BookshelfFiltersDialogFragment
     }
 
     private static class BitmaskHolder
-            extends Holder {
+            extends Holder
+            implements BindableViewHolder<PBitmaskFilter> {
 
         @NonNull
         private final RowEditBookshelfFilterBitmaskBinding vb;
@@ -471,11 +468,9 @@ public class BookshelfFiltersDialogFragment
         }
 
         @Override
-        public void onBind(@NonNull final Context context,
-                           @NonNull final PFilter<?> pFilter) {
-            final PBitmaskFilter filter = (PBitmaskFilter) pFilter;
+        public void onBind(@NonNull final PBitmaskFilter filter) {
+            final Context context = itemView.getContext();
             vb.lblFilter.setText(filter.getLabel(context));
-
             vb.filter.setText(filter.getValueText(context));
 
             vb.ROWONCLICKTARGET.setOnClickListener(v -> {

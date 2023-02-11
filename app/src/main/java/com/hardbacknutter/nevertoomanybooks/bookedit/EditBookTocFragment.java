@@ -76,9 +76,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
-import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
-import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
-import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropViewHolder;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 
@@ -663,7 +664,8 @@ public class EditBookTocFragment
      * Holder for each row.
      */
     private static class Holder
-            extends ItemTouchHelperViewHolderBase {
+            extends BaseDragDropViewHolder
+            implements BindableViewHolder<TocEntry> {
 
         @NonNull
         private final RowEditTocEntryBinding vb;
@@ -672,10 +674,27 @@ public class EditBookTocFragment
             super(vb.getRoot());
             this.vb = vb;
         }
+
+        @Override
+        public void onBind(@NonNull final TocEntry tocEntry) {
+            final Context context = itemView.getContext();
+            vb.title.setText(tocEntry.getTitle());
+            vb.author.setText(tocEntry.getPrimaryAuthor().getLabel(context));
+
+            final PartialDate date = tocEntry.getFirstPublicationDate();
+            if (date.isPresent()) {
+                vb.year.setVisibility(View.VISIBLE);
+                // cut the date to just the year.
+                vb.year.setText(context.getString(R.string.brackets,
+                                                  String.valueOf(date.getYearValue())));
+            } else {
+                vb.year.setVisibility(View.GONE);
+            }
+        }
     }
 
     private static class TocListEditAdapter
-            extends RecyclerViewAdapterBase<TocEntry, Holder> {
+            extends BaseDragDropRecyclerViewAdapter<TocEntry, Holder> {
 
         /**
          * Constructor.
@@ -708,21 +727,7 @@ public class EditBookTocFragment
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
             super.onBindViewHolder(holder, position);
-
-            final TocEntry tocEntry = getItem(position);
-
-            holder.vb.title.setText(tocEntry.getTitle());
-            holder.vb.author.setText(tocEntry.getPrimaryAuthor().getLabel(getContext()));
-
-            final PartialDate date = tocEntry.getFirstPublicationDate();
-            if (date.isPresent()) {
-                holder.vb.year.setVisibility(View.VISIBLE);
-                // cut the date to just the year.
-                holder.vb.year.setText(getContext().getString(R.string.brackets,
-                                                              String.valueOf(date.getYearValue())));
-            } else {
-                holder.vb.year.setVisibility(View.GONE);
-            }
+            holder.onBind(getItem(position));
         }
     }
 

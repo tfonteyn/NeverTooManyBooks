@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.widgets;
+package com.hardbacknutter.nevertoomanybooks.widgets.adapters;
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;
@@ -33,7 +33,6 @@ import androidx.annotation.Nullable;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.adapter.RowViewHolder;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.ItemTouchHelperViewHolder;
 
@@ -50,7 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.ItemTouchHelperVie
  *      <li>R.id.ROW_GRABBER_ICON</li>
  * </ul>
  */
-public abstract class ItemTouchHelperViewHolderBase
+public abstract class BaseDragDropViewHolder
         extends RowViewHolder
         implements ItemTouchHelperViewHolder {
 
@@ -67,7 +66,7 @@ public abstract class ItemTouchHelperViewHolderBase
     /** preserves the original background while dragging. */
     private Drawable originalItemSelectedBackground;
 
-    protected ItemTouchHelperViewHolderBase(@NonNull final View itemView) {
+    protected BaseDragDropViewHolder(@NonNull final View itemView) {
         super(itemView);
         setClickTargetViewFocusable(false);
 

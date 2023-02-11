@@ -47,11 +47,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
-import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
-import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
-import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropViewHolder;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 
@@ -385,7 +386,8 @@ public class EditBookPublisherListDialogFragment
      * Holder for each row.
      */
     private static class Holder
-            extends ItemTouchHelperViewHolderBase {
+            extends BaseDragDropViewHolder
+            implements BindableViewHolder<Publisher> {
 
         @NonNull
         final TextView publisherView;
@@ -394,10 +396,16 @@ public class EditBookPublisherListDialogFragment
             super(itemView);
             publisherView = itemView.findViewById(R.id.row_publisher);
         }
+
+        @Override
+        public void onBind(@NonNull final Publisher publisher) {
+            final Context context = itemView.getContext();
+            publisherView.setText(publisher.getLabel(context));
+        }
     }
 
     private static class PublisherListAdapter
-            extends RecyclerViewAdapterBase<Publisher, Holder> {
+            extends BaseDragDropRecyclerViewAdapter<Publisher, Holder> {
 
         /**
          * Constructor.
@@ -428,9 +436,7 @@ public class EditBookPublisherListDialogFragment
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
             super.onBindViewHolder(holder, position);
-
-            final Publisher publisher = getItem(position);
-            holder.publisherView.setText(publisher.getLabel(getContext()));
+            holder.onBind(getItem(position));
         }
     }
 }

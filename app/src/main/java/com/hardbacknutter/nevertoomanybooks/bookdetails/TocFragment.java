@@ -144,7 +144,7 @@ public class TocFragment
         final int overlayType = Prefs.getFastScrollerOverlayType(context);
         FastScroller.attach(vb.toc, overlayType);
 
-        adapter = new TocAdapter(context, vm.getPrimaryAuthor(), vm.getWorks());
+        adapter = new TocAdapter(context, aVm.getStyle(), vm.getPrimaryAuthor(), vm.getWorks());
         adapter.setOnRowClickListener((v, position) -> {
             // If there's only one book, there is no point doing this
             // as we're already on the book.

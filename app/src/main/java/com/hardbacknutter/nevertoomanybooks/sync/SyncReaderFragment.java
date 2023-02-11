@@ -64,7 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.datepicker.DatePickerListener;
 import com.hardbacknutter.nevertoomanybooks.widgets.datepicker.SingleDatePicker;
 

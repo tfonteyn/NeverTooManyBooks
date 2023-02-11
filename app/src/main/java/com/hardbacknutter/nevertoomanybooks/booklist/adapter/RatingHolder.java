@@ -29,6 +29,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 
 public class RatingHolder
         extends RowViewHolder
@@ -47,19 +49,18 @@ public class RatingHolder
      * Constructor.
      *
      * @param itemView the view specific for this holder
-     * @param group    the group this holder represents
+     * @param style    to use
      */
     RatingHolder(@NonNull final View itemView,
-                 @NonNull final BooklistGroup group) {
+                 final Style style) {
         super(itemView);
-        key = group.getDisplayDomainExpression().getDomain().getName();
+        key = style.requireGroupById(BooklistGroup.RATING)
+                   .getDisplayDomainExpression().getDomain().getName();
         ratingBar = itemView.findViewById(R.id.rating);
     }
 
     @Override
-    public void onBindViewHolder(final int position,
-                                 @NonNull final DataHolder rowData,
-                                 @NonNull final Style style) {
+    public void onBind(@NonNull final DataHolder rowData) {
         ratingBar.setRating(rowData.getInt(key));
     }
 }

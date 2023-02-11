@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.widgets;
+package com.hardbacknutter.nevertoomanybooks.widgets.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -39,14 +39,13 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 
 /**
  * Base class for implementing a RecyclerView with Drag&Drop support for re-arranging rows.
- * Supports an optional 'delete' button as well.
  * <p>
- * See {@link ItemTouchHelperViewHolderBase} for the matching base class for the ViewHolder.
+ * See {@link BaseDragDropViewHolder} for the matching base class for the ViewHolder.
  *
  * @param <Item> list item type
  * @param <VHT>  ViewHolder type
  */
-public abstract class RecyclerViewAdapterBase<Item, VHT extends ItemTouchHelperViewHolderBase>
+public abstract class BaseDragDropRecyclerViewAdapter<Item, VHT extends BaseDragDropViewHolder>
         extends RecyclerView.Adapter<VHT>
         implements ItemTouchHelperAdapter {
 
@@ -58,8 +57,6 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends ItemTouchHelperV
     /** Cached inflater. */
     @NonNull
     private final LayoutInflater inflater;
-    @NonNull
-    private final Context context;
 
     @Nullable
     protected OnRowClickListener rowClickListener;
@@ -75,10 +72,9 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends ItemTouchHelperV
      * @param items             List of items
      * @param dragStartListener Listener to handle the user moving rows up and down
      */
-    protected RecyclerViewAdapterBase(@NonNull final Context context,
-                                      @NonNull final List<Item> items,
-                                      @Nullable final StartDragListener dragStartListener) {
-        this.context = context;
+    protected BaseDragDropRecyclerViewAdapter(@NonNull final Context context,
+                                              @NonNull final List<Item> items,
+                                              @Nullable final StartDragListener dragStartListener) {
         inflater = LayoutInflater.from(context);
         this.dragStartListener = dragStartListener;
         this.items = items;
@@ -107,11 +103,6 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends ItemTouchHelperV
     @NonNull
     protected LayoutInflater getLayoutInflater() {
         return inflater;
-    }
-
-    @NonNull
-    protected Context getContext() {
-        return context;
     }
 
     @SuppressLint("ClickableViewAccessibility")

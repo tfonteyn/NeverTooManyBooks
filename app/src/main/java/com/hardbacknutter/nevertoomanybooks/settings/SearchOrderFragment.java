@@ -52,8 +52,9 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditSearchOrderBinding;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
-import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
-import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropViewHolder;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 
@@ -147,22 +148,56 @@ public class SearchOrderFragment
      * Holder for each row.
      */
     private static class Holder
-            extends ItemTouchHelperViewHolderBase {
+            extends BaseDragDropViewHolder
+            implements BindableViewHolder<Site> {
 
         @NonNull
-        final TextView nameView;
+        private final TextView nameView;
         @NonNull
-        final TextView infoView;
+        private final TextView infoView;
 
         Holder(@NonNull final View itemView) {
             super(itemView);
             nameView = itemView.findViewById(R.id.website_name);
             infoView = itemView.findViewById(R.id.website_search_capabilities);
         }
+
+        @Override
+        public void onBind(@NonNull final Site site) {
+            final Context context = itemView.getContext();
+            nameView.setText(site.getEngineId().getName(context));
+
+            setChecked(site.isActive());
+
+            // only show the info for Data lists. Irrelevant for others.
+            if (site.getType() == Site.Type.Data) {
+                final SearchEngine searchEngine = site.getSearchEngine();
+                // do not list SearchEngine.CoverByIsbn, it's irrelevant to the user.
+                final Collection<String> info = new ArrayList<>();
+                if (searchEngine instanceof SearchEngine.ByIsbn) {
+                    info.add(context.getString(R.string.lbl_isbn));
+                }
+                if (searchEngine instanceof SearchEngine.ByBarcode) {
+                    info.add(context.getString(R.string.lbl_barcode));
+                }
+                if (searchEngine instanceof SearchEngine.ByExternalId) {
+                    info.add(context.getString(R.string.lbl_tab_lbl_ext_id));
+                }
+                if (searchEngine instanceof SearchEngine.ByText) {
+                    info.add(context.getString(android.R.string.search_go));
+                }
+                infoView.setText(context.getString(R.string.brackets,
+                                                   String.join(", ", info)));
+
+                infoView.setVisibility(View.VISIBLE);
+            } else {
+                infoView.setVisibility(View.GONE);
+            }
+        }
     }
 
     private static class SearchSiteListAdapter
-            extends RecyclerViewAdapterBase<Site, Holder> {
+            extends BaseDragDropRecyclerViewAdapter<Site, Holder> {
 
         /**
          * Constructor.
@@ -197,40 +232,7 @@ public class SearchOrderFragment
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
             super.onBindViewHolder(holder, position);
-
-            @NonNull
-            final Context context = getContext();
-
-            final Site site = getItem(position);
-
-            holder.nameView.setText(site.getEngineId().getName(context));
-
-            holder.setChecked(site.isActive());
-
-            // only show the info for Data lists. Irrelevant for others.
-            if (site.getType() == Site.Type.Data) {
-                final SearchEngine searchEngine = site.getSearchEngine();
-                // do not list SearchEngine.CoverByIsbn, it's irrelevant to the user.
-                final Collection<String> info = new ArrayList<>();
-                if (searchEngine instanceof SearchEngine.ByIsbn) {
-                    info.add(context.getString(R.string.lbl_isbn));
-                }
-                if (searchEngine instanceof SearchEngine.ByBarcode) {
-                    info.add(context.getString(R.string.lbl_barcode));
-                }
-                if (searchEngine instanceof SearchEngine.ByExternalId) {
-                    info.add(context.getString(R.string.lbl_tab_lbl_ext_id));
-                }
-                if (searchEngine instanceof SearchEngine.ByText) {
-                    info.add(context.getString(android.R.string.search_go));
-                }
-                holder.infoView.setText(context.getString(R.string.brackets,
-                                                          String.join(", ", info)));
-
-                holder.infoView.setVisibility(View.VISIBLE);
-            } else {
-                holder.infoView.setVisibility(View.GONE);
-            }
+            holder.onBind(getItem(position));
         }
     }
 

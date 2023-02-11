@@ -33,6 +33,9 @@ import java.util.Map;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
+/**
+ * URGENT: create a class "Title" with "getTitle()" and "getFormattedTitle()"
+ */
 public final class ReorderHelper {
 
     public static final String PK_SHOW_TITLE_REORDERED = "show.title.reordered";
@@ -87,9 +90,9 @@ public final class ReorderHelper {
         // 3. the user device Locale
         // 4. ENGLISH.
         final Locale[] locales = {titleLocale,
-                                  context.getResources().getConfiguration().getLocales().get(0),
-                                  ServiceLocator.getSystemLocale(),
-                                  Locale.ENGLISH};
+                context.getResources().getConfiguration().getLocales().get(0),
+                ServiceLocator.getSystemLocale(),
+                Locale.ENGLISH};
 
         final AppLocale appLocale = ServiceLocator.getInstance().getAppLocale();
 

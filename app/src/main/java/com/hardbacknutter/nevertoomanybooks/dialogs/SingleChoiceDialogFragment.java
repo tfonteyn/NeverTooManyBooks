@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
-import com.hardbacknutter.nevertoomanybooks.widgets.RadioGroupRecyclerAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RadioGroupRecyclerAdapter;
 
 /**
  * Replacement for the AlertDialog with radio button setup.

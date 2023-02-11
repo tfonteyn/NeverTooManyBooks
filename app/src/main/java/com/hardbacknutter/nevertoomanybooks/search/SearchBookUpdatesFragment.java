@@ -63,8 +63,9 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
-import com.hardbacknutter.nevertoomanybooks.widgets.GridDividerItemDecoration;
-import com.hardbacknutter.nevertoomanybooks.widgets.MultiColumnRecyclerViewAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.GridDividerItemDecoration;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.MultiColumnRecyclerViewAdapter;
 
 /**
  * Search the internet for one book or a list of books and download/update book data
@@ -314,8 +315,9 @@ public class SearchBookUpdatesFragment
         }
     }
 
-    static class Holder
-            extends RecyclerView.ViewHolder {
+    private static class Holder
+            extends RecyclerView.ViewHolder
+            implements BindableViewHolder<SyncField> {
 
         @NonNull
         private final RowUpdateFromInternetBinding vb;
@@ -323,6 +325,20 @@ public class SearchBookUpdatesFragment
         Holder(@NonNull final RowUpdateFromInternetBinding vb) {
             super(vb.getRoot());
             this.vb = vb;
+        }
+
+        @Override
+        public void onBind(@Nullable final SyncField syncField) {
+            if (syncField == null) {
+                vb.field.setVisibility(View.INVISIBLE);
+                vb.cbxUsage.setVisibility(View.INVISIBLE);
+            } else {
+                vb.field.setVisibility(View.VISIBLE);
+                vb.cbxUsage.setVisibility(View.VISIBLE);
+                vb.field.setText(syncField.getFieldLabel());
+                vb.cbxUsage.setChecked(syncField.getAction() != SyncAction.Skip);
+                vb.cbxUsage.setText(syncField.getActionLabelResId());
+            }
         }
     }
 
@@ -358,9 +374,9 @@ public class SearchBookUpdatesFragment
             holder.vb.cbxUsage.setOnClickListener(v -> {
                 final int position = holder.getBindingAdapterPosition();
                 final int listIndex = transpose(position);
-                if (listIndex == -1) {
+                if (listIndex == RecyclerView.NO_POSITION) {
                     // Should never get here
-                    throw new IllegalStateException("ListIndex is -1 for position=" + position);
+                    throw new IllegalStateException("No ListIndex for position=" + position);
                 }
                 final SyncField fs = syncFields[listIndex];
                 fs.nextState();
@@ -375,17 +391,10 @@ public class SearchBookUpdatesFragment
                                      final int position) {
 
             final int listIndex = transpose(position);
-            if (listIndex >= 0) {
-                final SyncField syncField = syncFields[listIndex];
-
-                holder.vb.field.setVisibility(View.VISIBLE);
-                holder.vb.cbxUsage.setVisibility(View.VISIBLE);
-                holder.vb.field.setText(syncField.getFieldLabel());
-                holder.vb.cbxUsage.setChecked(syncField.getAction() != SyncAction.Skip);
-                holder.vb.cbxUsage.setText(syncField.getActionLabelResId());
+            if (listIndex == RecyclerView.NO_POSITION) {
+                holder.onBind(null);
             } else {
-                holder.vb.field.setVisibility(View.INVISIBLE);
-                holder.vb.cbxUsage.setVisibility(View.INVISIBLE);
+                holder.onBind(syncFields[listIndex]);
             }
         }
 

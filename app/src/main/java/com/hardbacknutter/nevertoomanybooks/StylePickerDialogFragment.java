@@ -43,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.widgets.RadioGroupRecyclerAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RadioGroupRecyclerAdapter;
 
 public class StylePickerDialogFragment
         extends FFBaseDialogFragment {

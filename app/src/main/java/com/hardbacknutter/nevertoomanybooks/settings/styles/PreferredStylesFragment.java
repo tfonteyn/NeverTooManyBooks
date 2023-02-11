@@ -57,9 +57,9 @@ import com.hardbacknutter.nevertoomanybooks.databinding.RowEditPreferredStylesBi
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
-import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
-import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
-import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropViewHolder;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 
@@ -297,8 +297,7 @@ public class PreferredStylesFragment
     }
 
     /**
-     * The glue (proxy) between adapter and ViewModel.
-     * Handles the 'preferred' and 'selected' position.
+     * Proxy between adapter and ViewModel.
      */
     private interface PositionHandler {
 
@@ -318,7 +317,7 @@ public class PreferredStylesFragment
     }
 
     private static class Holder
-            extends ItemTouchHelperViewHolderBase {
+            extends BaseDragDropViewHolder {
 
         @NonNull
         private final RowEditPreferredStylesBinding vb;
@@ -330,7 +329,7 @@ public class PreferredStylesFragment
     }
 
     private static class StylesAdapter
-            extends RecyclerViewAdapterBase<Style, Holder> {
+            extends BaseDragDropRecyclerViewAdapter<Style, Holder> {
 
         @NonNull
         private final PositionHandler positionHandler;
@@ -369,10 +368,9 @@ public class PreferredStylesFragment
         public void onBindViewHolder(@NonNull final Holder holder,
                                      @SuppressLint("RecyclerView") final int position) {
             super.onBindViewHolder(holder, position);
+            final Context context = holder.itemView.getContext();
 
             final Style style = getItem(position);
-
-            final Context context = getContext();
 
             holder.vb.styleName.setText(style.getLabel(context));
             holder.vb.type.setText(style.getTypeDescription(context));

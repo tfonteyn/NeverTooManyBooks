@@ -46,6 +46,8 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 
 /**
  * ViewHolder to handle any field that can be displayed as a string.
@@ -85,26 +87,27 @@ public class GenericStringHolder
     /**
      * Constructor.
      *
-     * @param level    the level in the Booklist tree
      * @param itemView the view specific for this holder
-     * @param group    the group this holder represents
+     * @param style    to use
+     * @param groupId  the group this holder represents
+     * @param level    the level in the Booklist tree
      */
-    GenericStringHolder(@IntRange(from = 1) final int level,
-                        @NonNull final View itemView,
-                        @NonNull final BooklistGroup group,
+    GenericStringHolder(@NonNull final View itemView,
+                        @NonNull final Style style,
+                        final int groupId,
+                        @IntRange(from = 1) final int level,
                         @NonNull final FormatFunction formatter) {
         super(itemView);
-
-        groupId = group.getId();
-        key = group.getDisplayDomainExpression().getDomain().getName();
-        textView = itemView.findViewById(R.id.level_text);
+        this.groupId = groupId;
         this.formatter = formatter;
 
-        final Context context = textView.getContext();
+        key = style.requireGroupById(groupId).getDisplayDomainExpression().getDomain().getName();
 
+        final Context context = itemView.getContext();
+
+        textView = itemView.findViewById(R.id.level_text);
         textView.setTextAppearance(AttrUtils.getResId(
                 context, TEXT_APP_ATTR[getLevelMultiplier(level)]));
-
         textView.setTypeface(null, Typeface.BOLD);
 
         drawBullet(context, level);
@@ -147,18 +150,15 @@ public class GenericStringHolder
     }
 
     @Override
-    public void onBindViewHolder(final int position,
-                                 @NonNull final DataHolder rowData,
-                                 @NonNull final Style style) {
+    public void onBind(@NonNull final DataHolder rowData) {
         textView.setText(formatter.format(groupId, rowData, key));
 
         if (BuildConfig.DEBUG) {
-            dbgPosition(position, rowData);
+            dbgPosition(rowData);
         }
     }
 
-    private void dbgPosition(final int position,
-                             @NonNull final DataHolder rowData) {
+    private void dbgPosition(@NonNull final DataHolder rowData) {
         // Debugger help: color the row according to state
         if (DEBUG_SWITCHES.BOB_NODE_STATE) {
             //noinspection ConstantConditions
@@ -167,7 +167,7 @@ public class GenericStringHolder
         }
 
         if (DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
-            final String dbgText = " " + position + '/'
+            final String dbgText = " " + getBindingAdapterPosition() + '/'
                                    + rowData.getLong(DBKey.BL_LIST_VIEW_NODE_ROW_ID);
 
             // just hang it of the existing text view.

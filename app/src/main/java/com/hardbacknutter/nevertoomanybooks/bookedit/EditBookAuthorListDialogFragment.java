@@ -51,11 +51,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.EntityFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
-import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
-import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
-import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropViewHolder;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 
@@ -410,19 +411,29 @@ public class EditBookAuthorListDialogFragment
      * Holder for each row.
      */
     private static class Holder
-            extends ItemTouchHelperViewHolderBase {
+            extends BaseDragDropViewHolder
+            implements BindableViewHolder<Author> {
 
         @NonNull
         final TextView authorView;
+        @NonNull
+        private final FieldFormatter<Author> formatter;
 
-        Holder(@NonNull final View itemView) {
+        Holder(@NonNull final View itemView,
+               @NonNull final FieldFormatter<Author> formatter) {
             super(itemView);
             authorView = itemView.findViewById(R.id.row_author);
+            this.formatter = formatter;
+        }
+
+        @Override
+        public void onBind(@NonNull final Author author) {
+            formatter.apply(author, authorView);
         }
     }
 
     private static class AuthorListAdapter
-            extends RecyclerViewAdapterBase<Author, Holder> {
+            extends BaseDragDropRecyclerViewAdapter<Author, Holder> {
 
         @NonNull
         private final FieldFormatter<Author> formatter;
@@ -448,7 +459,7 @@ public class EditBookAuthorListDialogFragment
 
             final View view = getLayoutInflater()
                     .inflate(R.layout.row_edit_author_list, parent, false);
-            final Holder holder = new Holder(view);
+            final Holder holder = new Holder(view, formatter);
             holder.setOnRowClickListener(rowClickListener);
             holder.setOnRowShowContextMenuListener(contextMenuMode, rowShowMenuListener);
             return holder;
@@ -458,9 +469,7 @@ public class EditBookAuthorListDialogFragment
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
             super.onBindViewHolder(holder, position);
-
-            final Author author = getItem(position);
-            formatter.apply(author, holder.authorView);
+            holder.onBind(getItem(position));
         }
     }
 }

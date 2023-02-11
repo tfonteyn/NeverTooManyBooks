@@ -197,7 +197,7 @@ public class AuthorWorksFragment
         final int overlayType = Prefs.getFastScrollerOverlayType(context);
         FastScroller.attach(worksListView, overlayType);
 
-        adapter = new TocAdapter(context, vm.getAuthor(), vm.getWorks());
+        adapter = new TocAdapter(context, vm.getStyle(), vm.getAuthor(), vm.getWorks());
 
         // click -> get the book(s) for that entry and display.
         adapter.setOnRowClickListener(

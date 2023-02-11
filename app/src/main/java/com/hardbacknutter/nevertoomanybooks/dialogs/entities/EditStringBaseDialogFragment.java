@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.RowChangedListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditStringBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
 
 /**
  * Base Dialog class to edit an <strong>in-line in Books table</strong> String field.

@@ -130,10 +130,11 @@ import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.SpinnerInteractionListener;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
 
 /**
  * Activity that displays a flattened book hierarchy based on the Booklist* classes.
@@ -1735,7 +1736,8 @@ public class BooksOnBookshelf
     }
 
     private static class HeaderViewHolder
-            extends RecyclerView.ViewHolder {
+            extends RecyclerView.ViewHolder
+            implements BindableViewHolder<BooklistHeader> {
 
         @NonNull
         private final BooksonbookshelfHeaderBinding vb;
@@ -1743,6 +1745,26 @@ public class BooksOnBookshelf
         HeaderViewHolder(@NonNull final BooksonbookshelfHeaderBinding vb) {
             super(vb.getRoot());
             this.vb = vb;
+        }
+
+        @Override
+        public void onBind(@NonNull final BooklistHeader headerContent) {
+            String header;
+            header = headerContent.getStyleName();
+            vb.styleName.setText(header);
+            vb.styleName.setVisibility(header != null ? View.VISIBLE : View.GONE);
+
+            header = headerContent.getFilterText();
+            vb.filterText.setText(header);
+            vb.filterText.setVisibility(header != null ? View.VISIBLE : View.GONE);
+
+            header = headerContent.getSearchText();
+            vb.searchText.setText(header);
+            vb.searchText.setVisibility(header != null ? View.VISIBLE : View.GONE);
+
+            header = headerContent.getBookCount();
+            vb.bookCount.setText(header);
+            vb.bookCount.setVisibility(header != null ? View.VISIBLE : View.GONE);
         }
     }
 
@@ -1778,24 +1800,7 @@ public class BooksOnBookshelf
         @Override
         public void onBindViewHolder(@NonNull final HeaderViewHolder holder,
                                      final int position) {
-            final BooklistHeader headerContent = headerSupplier.get();
-
-            String header;
-            header = headerContent.getStyleName();
-            holder.vb.styleName.setText(header);
-            holder.vb.styleName.setVisibility(header != null ? View.VISIBLE : View.GONE);
-
-            header = headerContent.getFilterText();
-            holder.vb.filterText.setText(header);
-            holder.vb.filterText.setVisibility(header != null ? View.VISIBLE : View.GONE);
-
-            header = headerContent.getSearchText();
-            holder.vb.searchText.setText(header);
-            holder.vb.searchText.setVisibility(header != null ? View.VISIBLE : View.GONE);
-
-            header = headerContent.getBookCount();
-            holder.vb.bookCount.setText(header);
-            holder.vb.bookCount.setVisibility(header != null ? View.VISIBLE : View.GONE);
+            holder.onBind(headerSupplier.get());
         }
 
         @Override

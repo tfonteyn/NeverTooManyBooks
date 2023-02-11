@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
 
 public final class FieldArrayAdapter
         extends ExtArrayAdapter<String> {

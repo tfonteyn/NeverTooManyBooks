@@ -59,6 +59,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 
 /**
  * ViewHolder for a {@link BooklistGroup#BOOK} row.
@@ -90,6 +92,8 @@ public class BookHolder
     /** caching the book condition strings. */
     @NonNull
     private final String[] conditionDescriptions;
+    @NonNull
+    private final Style style;
     /** Only active when running in debug mode; displays the "position/rowId" for a book. */
     @Nullable
     private TextView dbgRowIdView;
@@ -113,6 +117,7 @@ public class BookHolder
                @NonNull final Style style,
                @Dimension final int coverLongestSide) {
         super(itemView);
+        this.style = style;
 
         imageCachingEnabled = ImageUtils.isImageCachingEnabled();
         this.coverLongestSide = coverLongestSide;
@@ -129,7 +134,7 @@ public class BookHolder
 
         a_bracket_b_bracket = context.getString(R.string.a_bracket_b_bracket);
 
-        if (style.isShowField(Style.Screen.List, FieldVisibility.COVER[0])) {
+        if (this.style.isShowField(Style.Screen.List, FieldVisibility.COVER[0])) {
             // Do not go overkill here by adding a full-blown CoverHandler.
             // We only provide zooming by clicking on the image.
             vb.coverImage0.setOnClickListener(this::onZoomCover);
@@ -179,12 +184,10 @@ public class BookHolder
     }
 
     @Override
-    public void onBindViewHolder(final int position,
-                                 @NonNull final DataHolder rowData,
-                                 @NonNull final Style style) {
+    public void onBind(@NonNull final DataHolder rowData) {
         if (use == null) {
             // init once
-            use = new UseFields(rowData, style);
+            use = new UseFields(rowData, this.style);
         }
 
         // Titles (book/series) are NOT reordered here.
@@ -219,7 +222,7 @@ public class BookHolder
         }
 
         if (use.series) {
-            if (style.hasGroup(BooklistGroup.SERIES)) {
+            if (this.style.hasGroup(BooklistGroup.SERIES)) {
                 vb.seriesTitle.setVisibility(View.GONE);
                 showOrHideSeriesNumber(rowData);
             } else {
@@ -283,7 +286,7 @@ public class BookHolder
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
             if (dbgRowIdView != null) {
-                final String txt = String.valueOf(position) + '/'
+                final String txt = String.valueOf(getBindingAdapterPosition()) + '/'
                                    + rowData.getLong(DBKey.BL_LIST_VIEW_NODE_ROW_ID);
                 dbgRowIdView.setText(txt);
             }
@@ -451,7 +454,7 @@ public class BookHolder
     }
 
     /**
-     * Cache the 'use' flags for {@link #onBindViewHolder(int, DataHolder, Style)}.
+     * Cache the 'use' flags for {@link #onBind(int, DataHolder)}.
      */
     private static class UseFields {
         final boolean isbn;
