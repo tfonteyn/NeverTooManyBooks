@@ -95,22 +95,24 @@ public class CoverBrowserDialogFragment
     private ImageViewLoader previewLoader;
     private final PositionHandler positionHandler = new PositionHandler() {
 
+        /**
+         * Display the given file in the preview View.
+         * Starts a task to fetch a large(r) image if needed.
+         *
+         * @param imageFileInfo for the image
+         */
         @Override
         public void onGalleryImageSelected(@NonNull final ImageFileInfo imageFileInfo) {
-            // Display the given file in the preview View.
-            // Starts a task to fetch a large(r) image if needed.
-            imageFileInfo.getFile().ifPresent(file -> {
-                if (Size.Large == imageFileInfo.getSize()) {
-                    // the gallery image IS a valid large image, so just display it
-                    setSelectedImage(imageFileInfo);
-                } else {
-                    vb.preview.setVisibility(View.INVISIBLE);
-                    vb.previewProgressBar.show();
+            if (Size.Large == imageFileInfo.getSize()) {
+                // the gallery image IS a valid large image, so just display it
+                setSelectedImage(imageFileInfo);
+            } else {
+                vb.preview.setVisibility(View.INVISIBLE);
+                vb.previewProgressBar.show();
 
-                    // start a task to fetch a larger image
-                    vm.fetchSelectedImage(imageFileInfo);
-                }
-            });
+                // start a task to fetch a larger image
+                vm.fetchSelectedImage(imageFileInfo);
+            }
         }
 
         @Override
