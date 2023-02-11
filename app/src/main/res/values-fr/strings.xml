@@ -709,7 +709,7 @@
     <string name="debug_select_items">Sélectionnez ce que vous souhaitez inclure</string>
     <string name="lbl_author_pseudonym">C\'est un pseudonyme de :</string>
     <string name="err_real_author_must_be_valid">Doit être vide ou un auteur existant.</string>
-    <string name="confirm_create_real_author">\"%1$s\" n\'existe pas encore. Faut-il les créer ?</string>
+    <string name="confirm_create_real_author">«%1$s» n\'existe pas encore. Faut-il les créer ?</string>
     <string name="pt_search_resolve_authors_bedetheque">Résoudre les pseudonymes des auteurs à l\'aide du site Web Bedetheque</string>
     <string name="pt_bedetheque_search_resolve_formats">Conserver la dénomination au format Bedetheque</string>
     <string name="confirm_no_missing_covers_search_from_top">Tous les livres en dessous de cette rangée ont des couvertures. Rechercher à nouveau à partir du haut ?</string>
@@ -718,6 +718,6 @@
     <string name="book_format_softcover_oblong">Broché - oblongue</string>
     <string name="lbl_purge_blns">Effacer l\'état du nœud</string>
     <string name="info_purge_blns_all">Effacer l\'état du nœud de toutes les listes</string>
-    <string name="info_purge_blns_item_name">Effacer l\'état du nœud de %1$s \"%2$s\" ?</string>
+    <string name="info_purge_blns_item_name">Effacer l\'état du nœud de %1$s «%2$s» ?</string>
 
 </resources>

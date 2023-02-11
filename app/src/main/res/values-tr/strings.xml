@@ -708,7 +708,7 @@
     <string name="lbl_group_1st_char_book_title">Kitap başlığının 1. karakteri</string>
     <string name="lbl_author_pseudonym">Bu, takma adıdır:</string>
     <string name="err_real_author_must_be_valid">Boş veya mevcut bir Yazar olmalıdır.</string>
-    <string name="confirm_create_real_author">\"%1$s\" henüz mevcut değil. Yaratılmalılar mı?</string>
+    <string name="confirm_create_real_author">“%1$s” henüz mevcut değil. Yaratılmalılar mı?</string>
     <string name="pt_search_resolve_authors_bedetheque">Bedetheque web sitesini kullanarak yazar takma adlarını çözün</string>
     <string name="pt_bedetheque_search_resolve_formats">Bedetheque (Fransızca) biçim adlandırmasını koru</string>
     <string name="confirm_no_missing_covers_search_from_top">Bu sıranın altındaki tüm kitapların kapakları vardır. Baştan tekrar aransın mı?</string>
@@ -717,5 +717,5 @@
     <string name="book_format_softcover_oblong">Yumuşak kapak / dikdörtgen</string>
     <string name="lbl_purge_blns">Düğüm durumunu temizle</string>
     <string name="info_purge_blns_all">Düğüm durumunu tüm listelerden temizle</string>
-    <string name="info_purge_blns_item_name">%1$s \"%2$s\" düğüm durumu temizlensin mi?</string>
+    <string name="info_purge_blns_item_name">%1$s “%2$s” düğüm durumu temizlensin mi?</string>
 </resources>

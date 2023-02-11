@@ -705,7 +705,7 @@
     <string name="lbl_group_1st_char_book_title">1e karakter van de boektitel</string>
     <string name="lbl_author_pseudonym">Dit is een pseudoniem van:</string>
     <string name="err_real_author_must_be_valid">Moet leeg zijn of een bestaande auteur zijn.</string>
-    <string name="confirm_create_real_author">\"%1$s\" bestaat nog niet. Moeten ze worden gemaakt?</string>
+    <string name="confirm_create_real_author">„%1$s” bestaat nog niet. Moeten ze worden gemaakt?</string>
     <string name="pt_search_resolve_authors_bedetheque">Los auteursnamen op met behulp van de Bedetheque-website</string>
     <string name="pt_bedetheque_search_resolve_formats">Behoud Bedetheque (Frans) naamgeving</string>
     <string name="confirm_no_missing_covers_search_from_top">Alle boeken onder deze rij hebben omslagen. Opnieuw zoeken vanaf de top?</string>
@@ -714,5 +714,5 @@
     <string name="book_format_softcover_oblong">Softcover - oblong</string>
     <string name="lbl_purge_blns">Wis de node status</string>
     <string name="info_purge_blns_all">Wis de node status van alle lijsten</string>
-    <string name="info_purge_blns_item_name">Wis de node status van %1$s \"%2$s\" ?</string>
+    <string name="info_purge_blns_item_name">Wis de node status van %1$s „%2$s” ?</string>
 </resources>

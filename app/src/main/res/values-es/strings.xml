@@ -707,7 +707,7 @@
     <string name="lbl_group_1st_char_book_title">1er carácter del título del libro</string>
     <string name="lbl_author_pseudonym">Este es un seudónimo de:</string>
     <string name="err_real_author_must_be_valid">Debe estar en blanco o ser un autor existente.</string>
-    <string name="confirm_create_real_author">\"%1$s\" aún no existe. ¿Deberían crearse?</string>
+    <string name="confirm_create_real_author">«%1$s» aún no existe. ¿Deberían crearse?</string>
     <string name="pt_search_resolve_authors_bedetheque">Resuelva los seudónimos de los autores utilizando el sitio web Bedetheque</string>
     <string name="pt_bedetheque_search_resolve_formats">Preservar la nomenclatura en formato Bedetheque (francés)</string>
     <string name="confirm_no_missing_covers_search_from_top">Todos los libros debajo de esta fila tienen cubiertas. ¿Buscar de nuevo desde la parte superior?</string>
@@ -716,5 +716,5 @@
     <string name="book_format_softcover_oblong">Tapa blanda - rectangular</string>
     <string name="lbl_purge_blns">Borrar el estado del nodo</string>
     <string name="info_purge_blns_all">Borrar el estado del nodo de todas las listas</string>
-    <string name="info_purge_blns_item_name">¿Borrar el estado del nodo de %1$s \"%2$s\"?</string>
+    <string name="info_purge_blns_item_name">¿Borrar el estado del nodo de %1$s «%2$s»?</string>
 </resources>

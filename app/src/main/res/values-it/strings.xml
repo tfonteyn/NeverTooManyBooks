@@ -716,5 +716,5 @@
     <string name="book_format_softcover_oblong">Copertina morbida - oblunga</string>
     <string name="lbl_purge_blns">Cancella lo stato del nodo</string>
     <string name="info_purge_blns_all">Cancella lo stato del nodo da tutti gli elenchi</string>
-    <string name="info_purge_blns_item_name">Cancellare lo stato del nodo di %1$s \"%2$s\"?</string>
+    <string name="info_purge_blns_item_name">Cancellare lo stato del nodo di %1$s “%2$s”?</string>
 </resources>

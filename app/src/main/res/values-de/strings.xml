@@ -716,5 +716,5 @@
     <string name="book_format_softcover_oblong">Softcover - länglich</string>
     <string name="lbl_purge_blns">Löschen Sie den Knotenstatus</string>
     <string name="info_purge_blns_all">Löschen Sie den Knotenstatus aus allen Listen</string>
-    <string name="info_purge_blns_item_name">Knotenstatus von %1$s \"%2$s\" löschen?</string>
+    <string name="info_purge_blns_item_name">Knotenstatus von %1$s „%2$s“ löschen?</string>
 </resources>

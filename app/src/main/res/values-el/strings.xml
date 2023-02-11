@@ -707,7 +707,7 @@
     <string name="lbl_group_1st_char_book_title">1ος χαρακτήρας του τίτλου του βιβλίου</string>
     <string name="lbl_author_pseudonym">Αυτό είναι ένα ψευδώνυμο του:</string>
     <string name="err_real_author_must_be_valid">Πρέπει να είναι κενό ή υπάρχων Συγγραφέας.</string>
-    <string name="confirm_create_real_author">Το \"%1$s\" δεν υπάρχει ακόμα. Πρέπει να δημιουργηθούν;</string>
+    <string name="confirm_create_real_author">Το «%1$s» δεν υπάρχει ακόμα. Πρέπει να δημιουργηθούν;</string>
     <string name="pt_search_resolve_authors_bedetheque">Επιλύστε τα ψευδώνυμα των συγγραφέων χρησιμοποιώντας τον ιστότοπο Bedetheque</string>
     <string name="pt_bedetheque_search_resolve_formats">Διατηρήστε την ονομασία Bedetheque (γαλλική).</string>
     <string name="confirm_no_missing_covers_search_from_top">Όλα τα βιβλία κάτω από αυτή τη σειρά έχουν εξώφυλλα. Ψάξτε ξανά από την κορυφή;</string>
@@ -716,5 +716,5 @@
     <string name="book_format_softcover_oblong">μαλακό κάλυμμα - επίμηκες</string>
     <string name="lbl_purge_blns">Διαγράψτε την κατάσταση του κόμβου</string>
     <string name="info_purge_blns_all">Διαγράψτε την κατάσταση του κόμβου από όλες τις λίστες</string>
-    <string name="info_purge_blns_item_name">Διαγραφή της κατάστασης κόμβου του %1$s \"%2$s\";</string>
+    <string name="info_purge_blns_item_name">Διαγραφή της κατάστασης κόμβου του %1$s «%2$s»;</string>
 </resources>
