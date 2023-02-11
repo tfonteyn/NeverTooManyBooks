@@ -454,7 +454,7 @@ public class BookHolder
     }
 
     /**
-     * Cache the 'use' flags for {@link #onBind(int, DataHolder)}.
+     * Cache the 'use' flags for {@link #onBind(DataHolder)}.
      */
     private static class UseFields {
         final boolean isbn;
