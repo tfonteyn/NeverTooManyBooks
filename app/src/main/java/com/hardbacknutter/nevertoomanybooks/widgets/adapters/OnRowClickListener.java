@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.booklist.adapter;
+package com.hardbacknutter.nevertoomanybooks.widgets.adapters;
 
 import android.view.View;
 

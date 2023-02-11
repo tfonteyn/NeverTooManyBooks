@@ -31,7 +31,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
-import com.hardbacknutter.nevertoomanybooks.booklist.adapter.OnRowClickListener;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 
 /**

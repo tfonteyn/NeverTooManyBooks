@@ -33,7 +33,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
-import com.hardbacknutter.nevertoomanybooks.booklist.adapter.OnRowClickListener;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.ItemTouchHelperAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 
