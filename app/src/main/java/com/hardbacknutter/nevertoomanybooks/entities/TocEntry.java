@@ -79,7 +79,7 @@ public class TocEntry
     private PartialDate firstPublicationDate;
 
     /** in-memory use only. Number of books this TocEntry appears in. */
-    private int bookCount;
+    private final int bookCount;
 
     /**
      * Constructor.
