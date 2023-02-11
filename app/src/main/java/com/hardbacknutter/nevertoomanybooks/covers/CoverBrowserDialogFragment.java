@@ -265,12 +265,6 @@ public class CoverBrowserDialogFragment
         final int editionIndex;
         if (imageFileInfo != null) {
             editionIndex = vm.getEditions().indexOf(imageFileInfo.getIsbn());
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                Log.d(TAG, "setGalleryImage"
-                           + "|editionIndex=" + editionIndex
-                           + "|" + imageFileInfo);
-            }
         } else {
             editionIndex = -1;
         }
@@ -424,9 +418,6 @@ public class CoverBrowserDialogFragment
     private static class GalleryAdapter
             extends RecyclerView.Adapter<Holder> {
 
-        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
-        private static final String TAG = "GalleryAdapter";
-
         /** A single image fixed width. */
         private final int maxWidth;
         /** A single image fixed height. */
@@ -477,12 +468,6 @@ public class CoverBrowserDialogFragment
 
             final String isbn = editionsList.get(position);
             final ImageFileInfo imageFileInfo = positionHandler.getFileInfo(isbn);
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                Log.d(TAG, "onBindViewHolder"
-                           + "|position=" + position
-                           + "|imageFileInfo=" + imageFileInfo);
-            }
 
             if (imageFileInfo == null) {
                 // not in the cache,; use a placeholder but preserve the available space
