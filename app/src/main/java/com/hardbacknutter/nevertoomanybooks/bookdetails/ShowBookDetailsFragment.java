@@ -367,7 +367,7 @@ public class ShowBookDetailsFragment
         toolbar.setSubtitle(bookTitle);
     }
 
-    // Dev. Note: this will get called FOR EACH fragment currently existing
+    // Dev. note: this will get called FOR EACH fragment currently existing
     // in the ViewPager ... so ALSO for the fragments off-screen.
     // DO NOT use a LiveDataEvent !
     private void onBindBook(@NonNull final Book book) {

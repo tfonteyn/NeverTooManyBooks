@@ -42,8 +42,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 /**
  * The movable external directory for covers.
  * <p>
- * Dev. notes: A device might have two (or seldom? more) external file directories
- * of the same type.
+ * <strong>Dev. note:</strong> A device might have two (or seldom? more) external
+ * file directories of the same type.
  * i.e. {@link Context#getExternalFilesDir} for {@link Environment#DIRECTORY_PICTURES}
  * might internally resolve several paths:
  * <ol>

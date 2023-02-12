@@ -867,8 +867,8 @@ class BooklistBuilder {
          * "/key=value/key=value/key=value/..."
          * A {@code null} value is reformatted as an empty string
          * <p>
-         * Dev. Note: this is an SQL expression, the "||" operator being a string 'concat'
-         * during the SQL execution.
+         * <strong>Dev. note:</strong> this is an SQL expression, the "||" operator being
+         * a string 'concat' during the SQL execution.
          *
          * @return column expression
          */

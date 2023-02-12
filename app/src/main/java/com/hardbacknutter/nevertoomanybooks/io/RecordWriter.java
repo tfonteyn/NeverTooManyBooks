@@ -60,8 +60,8 @@ public interface RecordWriter
      * Write a Set of {@link RecordType} records.
      * Unsupported record types should/will be silently skipped.
      * <p>
-     * Dev. Note: there is no StorageException because we don't implement this interface
-     * for writing covers (which is just a File copy)
+     * <strong>Dev. note:</strong> there is no StorageException because we don't implement
+     * this interface for writing covers (which is just a File copy)
      *
      * @param context          Current context
      * @param writer           Writer to write to
