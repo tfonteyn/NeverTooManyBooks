@@ -98,8 +98,8 @@ public class Author
     /**
      * WRITER: not distinguished for now. If we do, use TYPE_ORIGINAL_SCRIPT_WRITER = 1 << 1;
      * <p>
-     * Dev. note: do NOT Do not set "= TYPE_WRITER" as Android Studio formatting will be
-     * [censored]
+     * <strong>Dev. note:</strong> do NOT Do not set "= TYPE_WRITER"
+     * as Android Studio formatting will be [censored]
      */
     public static final int TYPE_ORIGINAL_SCRIPT_WRITER = 1; //
 
