@@ -327,7 +327,7 @@ public class Book
      * i.o.w. this is <strong>NOT</strong> a copy constructor.
      * See {@link #from(Book)} for the latter.
      * <p>
-     * <b>Dev. note:</b> keep the list of data we duplicate
+     * <strong>Dev. note:</strong> keep the list of data we duplicate
      * in sync with {@link BookDaoImpl} .SqlAllBooks#BOOK
      *
      * @return new Book
