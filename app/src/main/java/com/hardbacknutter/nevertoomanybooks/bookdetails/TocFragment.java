@@ -32,9 +32,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.material.divider.MaterialDividerItemDecoration;
 
 import java.util.ArrayList;
 
@@ -138,9 +135,6 @@ public class TocFragment
         final Context context = getContext();
 
         //noinspection ConstantConditions
-        vb.toc.addItemDecoration(
-                new MaterialDividerItemDecoration(context, RecyclerView.VERTICAL));
-
         final int overlayType = Prefs.getFastScrollerOverlayType(context);
         FastScroller.attach(vb.toc, overlayType);
 
