@@ -418,9 +418,8 @@ public final class ServiceLocator {
     /**
      * Main entry point for clients to get the main database.
      * <p>
-     * <strong>Dev. note:</strong>
-     * This method always returns the same object for the duration of the apps life!
-     * our DBHelper caches a single SynchronizedDb,
+     * <strong>Dev. note:</strong> This method always returns the same object for
+     * the duration of the apps life. Our DBHelper caches a single SynchronizedDb,
      * which in turn caches the database from the underlying SQLiteOpenHelper
      * which in turn caches the actual database.
      * Or in short: it's safe to use this as a singleton.
