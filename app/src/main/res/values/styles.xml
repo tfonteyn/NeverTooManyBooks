@@ -23,7 +23,8 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Label for a field (both view and edit screens). -->
-    <style name="Label" parent="Widget.MaterialComponents.TextView">
+    <style name="Label"
+           parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">@dimen/field_margin_top</item>
@@ -43,7 +44,8 @@
     <!-- *************************************************************************************** -->
     <!-- Read-only, informative text -->
     <!-- *************************************************************************************** -->
-    <style name="Text.Header" parent="Widget.MaterialComponents.TextView">
+    <style name="Text.Header"
+           parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">@dimen/section_margin_top</item>
@@ -51,13 +53,15 @@
         <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
     </style>
 
-    <style name="Text.Body" parent="Widget.MaterialComponents.TextView">
+    <style name="Text.Body"
+           parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
     </style>
 
-    <style name="Text.Error" parent="Widget.MaterialComponents.TextView">
+    <style name="Text.Error"
+           parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
@@ -75,7 +79,8 @@
     <!-- *************************************************************************************** -->
 
     <!-- An Activity primary/top toolbar -->
-    <style name="Toolbar.Activity" parent="Widget.Material3.Toolbar">
+    <style name="Toolbar.Activity"
+           parent="Widget.Material3.Toolbar">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">?attr/actionBarSize</item>
         <item name="android:background">?attr/colorPrimary</item>
@@ -83,7 +88,8 @@
     </style>
 
     <!-- A Dialog primary/top toolbar with a 'close' icon. -->
-    <style name="Toolbar.Dialog" parent="Widget.Material3.Toolbar.Surface">
+    <style name="Toolbar.Dialog"
+           parent="Widget.Material3.Toolbar.Surface">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">?attr/actionBarSize</item>
         <item name="android:background">?attr/colorPrimary</item>
@@ -91,7 +97,8 @@
     </style>
 
     <!-- The confirmation button placed in toolbars. (parent is '?attr/materialIconButtonFilledTonalStyle). -->
-    <style name="Toolbar.Button" parent="@style/Widget.Material3.Button.IconButton.Filled.Tonal">
+    <style name="Toolbar.Button"
+           parent="@style/Widget.Material3.Button.IconButton.Filled.Tonal">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">@dimen/toolbar_button_start_margin</item>
@@ -99,7 +106,8 @@
         <item name="iconTint">?attr/colorOnPrimaryContainer</item>
     </style>
 
-    <style name="NavigationView" parent="Widget.Material3.NavigationView">
+    <style name="NavigationView"
+           parent="Widget.Material3.NavigationView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_gravity">start</item>
@@ -117,7 +125,8 @@
          Important: in FLOATING mode, some adjustments are done from code.
          See com/hardbacknutter/nevertoomanybooks/dialogs/FFBaseDialogFragment.java#onViewCreated
      -->
-    <style name="Dialog.Frame" parent="">
+    <style name="Dialog.Frame"
+           parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
@@ -126,7 +135,8 @@
     <!-- FrameLayout for a DialogFragment - always FULLSCREEN
          NestedScrollView
     -->
-    <style name="Dialog.Fullscreen" parent="">
+    <style name="Dialog.Fullscreen"
+           parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
@@ -137,7 +147,8 @@
          ConstraintLayout
          LinearLayout
     -->
-    <style name="Dialog.Body" parent="">
+    <style name="Dialog.Body"
+           parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
@@ -165,7 +176,8 @@
     <!-- *************************************************************************************** -->
 
     <!-- The TextInputLayout view as the equivalent of a Spinner for menu selections. -->
-    <style name="Button.DropdownMenu" parent="Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+    <style name="Button.DropdownMenu"
+           parent="Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <!-- override to make it better visible. -->
@@ -173,7 +185,8 @@
     </style>
 
     <!-- A button in a list of action-options. -->
-    <style name="Button.Menu" parent="Widget.Material3.Button.TextButton">
+    <style name="Button.Menu"
+           parent="Widget.Material3.Button.TextButton">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">?attr/listPreferredItemHeight</item>
         <item name="android:layout_marginStart">@dimen/field_margin_start</item>
@@ -186,7 +199,8 @@
     </style>
 
     <!-- A button to save/submit some form. Meant to be placed on the 'end' & 'bottom' of the form. -->
-    <style name="Button.Action.Submit" parent="Widget.Material3.Button">
+    <style name="Button.Action.Submit"
+           parent="Widget.Material3.Button">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">4dp</item>
@@ -196,7 +210,8 @@
     </style>
 
     <!-- The "show toc" button. -->
-    <style name="Button.Action.OpenToc" parent="Widget.Material3.Button.TonalButton">
+    <style name="Button.Action.OpenToc"
+           parent="Widget.Material3.Button.TonalButton">
         <item name="android:layout_width">@dimen/btn_open_toc_width</item>
         <item name="android:layout_height">@dimen/btn_open_toc_height</item>
         <item name="android:layout_marginTop">@dimen/field_margin_top</item>
@@ -206,7 +221,8 @@
     </style>
 
     <!-- ImageButton - using no-parent is easier then adjusting "Widget.Material3.Button.IconButton" -->
-    <style name="Button.InfoPopup" parent="">
+    <style name="Button.InfoPopup"
+           parent="">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">8dp</item>
@@ -215,7 +231,8 @@
         <item name="android:src">@drawable/ic_baseline_help_outline_24</item>
     </style>
 
-    <style name="Button.More" parent="Widget.Material3.Button.IconButton.Outlined">
+    <style name="Button.More"
+           parent="Widget.Material3.Button.IconButton.Outlined">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="icon">@drawable/ic_baseline_more_vert_24</item>
@@ -227,7 +244,8 @@
     <!-- *************************************************************************************** -->
 
     <!-- A button which will take the user to an external website. -->
-    <style name="Button.Url" parent="Widget.Material3.Button.TonalButton">
+    <style name="Button.Url"
+           parent="Widget.Material3.Button.TonalButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="icon">@drawable/ic_baseline_link_24</item>
@@ -242,7 +260,8 @@
 
     <!-- *************************************************************************************** -->
 
-    <style name="About" parent="Widget.MaterialComponents.TextView">
+    <style name="About"
+           parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
