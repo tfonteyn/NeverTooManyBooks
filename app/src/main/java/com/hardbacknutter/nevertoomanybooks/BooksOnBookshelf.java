@@ -983,7 +983,7 @@ public class BooksOnBookshelf
     /**
      * Using {@link ExtPopupMenu} for context menus.
      * <p>
-     * Dev. note: this used to be simply "onMenuItemSelected",
+     * <strong>Dev. note:</strong> this used to be simply "onMenuItemSelected",
      * but due to an R8 bug confusing it with "onMenuItemSelected(int, android.view.MenuItem)"
      * ended throwing a "java.lang.LinkageError" ... so the name had to be changed.
      *
