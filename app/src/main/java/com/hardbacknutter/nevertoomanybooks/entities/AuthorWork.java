@@ -55,6 +55,8 @@ public interface AuthorWork {
 
     /**
      * Get the label to use for <strong>displaying</strong>.
+     * <p>
+     * <strong>Dev. note:</strong> matches {@link Entity#getLabel(Context, Details, Style)}.
      *
      * @param context Current context
      *
