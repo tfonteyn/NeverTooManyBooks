@@ -237,8 +237,8 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="icon">@drawable/ic_baseline_more_vert_24</item>
         <item name="iconTint">?attr/colorOnPrimaryContainer</item>
-        <item name="android:scaleX">0.75</item>
-        <item name="android:scaleY">0.75</item>
+        <item name="android:scaleX">0.60</item>
+        <item name="android:scaleY">0.60</item>
     </style>
 
     <!-- *************************************************************************************** -->
