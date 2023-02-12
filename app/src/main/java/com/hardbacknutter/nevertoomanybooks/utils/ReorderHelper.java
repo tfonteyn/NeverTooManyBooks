@@ -34,7 +34,14 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 /**
- * URGENT: create a class "Title" with "getTitle()" and "getFormattedTitle()"
+ * Reorder display labels (title/name) for:
+ * <ul>
+ *     <li>Book title</li>
+ *     <li>TOC title</li>
+ *     <li>Series title</li>
+ *     <li>Publisher name</li>
+ * </ul>
+ * This is <strong>NOT</strong> used for Authors.
  */
 public final class ReorderHelper {
 
