@@ -68,6 +68,10 @@ class Formatter
 
     @NonNull
     private final Locale userLocale;
+    /**
+     * We don't have full Objects here for Series/Publisher so we can't use
+     * their methods for auto-reordering.
+     */
     private final boolean reorderTitleForDisplaying;
 
     /** caching the book condition strings. */
