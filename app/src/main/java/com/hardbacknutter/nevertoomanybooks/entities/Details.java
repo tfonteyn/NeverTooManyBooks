@@ -24,5 +24,7 @@ public enum Details {
     Full,
     Normal,
     Short,
-    Auto
+
+    /** Components will decide themselves which of the above to use. */
+    AutoSelect
 }

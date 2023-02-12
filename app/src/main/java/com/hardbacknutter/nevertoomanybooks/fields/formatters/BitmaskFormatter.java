@@ -100,7 +100,7 @@ public class BitmaskFormatter
                            .map(s -> "<li>" + s + "</li>")
                            .collect(Collectors.joining("", "<ul>", "</ul>"));
             }
-            case Auto:
+            case AutoSelect:
             case Normal: {
                 return String.join(delimiter, list);
             }

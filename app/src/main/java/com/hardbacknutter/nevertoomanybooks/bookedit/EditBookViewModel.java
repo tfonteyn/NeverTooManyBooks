@@ -198,7 +198,7 @@ public class EditBookViewModel
             dateFormatter = new DateFieldFormatter(userLocale);
             languageFormatter = new LanguageFormatter(userLocale);
             doubleNumberFormatter = new DoubleNumberFormatter();
-            listFormatterAutoDetails = new ListFormatter<>(Details.Auto, null);
+            listFormatterAutoDetails = new ListFormatter<>(Details.AutoSelect, null);
             listFormatterNormalDetails = new ListFormatter<>(Details.Normal, null);
 
             if (args != null) {

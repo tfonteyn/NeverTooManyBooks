@@ -693,7 +693,7 @@ public class Author
      *     <li>{@link Details#Full}: standard formatted name combined
      *          (if enabled) with the author type. The latter uses HTML formatting.
      *     </li>
-     *     <li>{@link Details#Normal}, {@link Details#Auto}: standard formatted name.</li>
+     *     <li>{@link Details#Normal}, {@link Details#AutoSelect}: standard formatted name.</li>
      *     <li>{@link Details#Short}: initial + family-name</li>
      * </ul>
      *
@@ -721,7 +721,7 @@ public class Author
                 }
                 break;
             }
-            case Auto:
+            case AutoSelect:
             case Normal: {
                 label = getFormattedName(context, style);
                 break;

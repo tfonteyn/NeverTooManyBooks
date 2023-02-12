@@ -94,7 +94,7 @@ public class ListFormatter<T extends Entity>
 
         final Details listDetails;
         final Details itemDetails;
-        if (details == Details.Auto) {
+        if (details == Details.AutoSelect) {
             //TODO: simplify the decision logic...
             final WindowSizeClass wsc;
             final int orientation = context.getResources().getConfiguration().orientation;
@@ -170,7 +170,7 @@ public class ListFormatter<T extends Entity>
                 }
             }
 
-            case Auto:
+            case AutoSelect:
             default:
                 throw new IllegalArgumentException("listDetails=" + listDetails);
         }
