@@ -86,7 +86,7 @@ public interface AuthorWork {
      * <p>
      * The default implementation assumes the work <strong>is</strong> a Book.
      * <p>
-     * Dev. note: calling this <strong>should</strong> be faster than
+     * <strong>Dev. note:</strong> calling this <strong>should</strong> be faster than
      * calling {@link #getBookTitles(Context)} and the size of that list.
      *
      * @return count
