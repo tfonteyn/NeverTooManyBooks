@@ -74,8 +74,8 @@ public final class Site
      * The (for now) only actual preference:
      * whether this site is active <strong>for the list it belongs to</strong>.
      * <p>
-     * Dev. note: code uses 'active' as in the user can activate/deactivate a site,
-     * while enabled/disabled is used at compile time from the gradle script.
+     * <strong>Dev. note:</strong> code uses 'active' as in the user can activate/deactivate
+     * a site, while enabled/disabled is used at compile time from the gradle script.
      * <p>
      * This key uses 'enabled' for backwards compatibility.
      */
