@@ -250,6 +250,7 @@
     <string name="lbl_date_added_day">Dag</string>
     <string name="lbl_date_added_month">Maand</string>
     <string name="lbl_date_added_year">Jaar</string>
+    <string name="pc_lists">Lijsten</string>
     <string name="pc_advanced_options">Geavanceerd</string>
     <string name="lbl_all_bookshelves">Alle boekenplanken</string>
     <string name="lbl_book_type_anthology">Bloemlezing</string>

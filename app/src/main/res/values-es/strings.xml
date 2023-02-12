@@ -252,6 +252,7 @@
     <string name="lbl_date_added_day">Día de inclusión</string>
     <string name="lbl_date_added_month">Mes de inclusión</string>
     <string name="lbl_date_added_year">Año de inclusión</string>
+    <string name="pc_lists">Liza</string>
     <string name="pc_advanced_options">Ajustes avanzados</string>
     <string name="lbl_all_bookshelves">Todas las bibliotecas</string>
     <string name="lbl_book_type_anthology">Antología</string>

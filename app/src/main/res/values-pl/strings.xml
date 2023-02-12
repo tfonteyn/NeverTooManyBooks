@@ -252,6 +252,7 @@
     <string name="lbl_date_added_day">Dodano dzień</string>
     <string name="lbl_date_added_month">Dodano miesiąc</string>
     <string name="lbl_date_added_year">Dodano rok</string>
+    <string name="pc_lists">Listy</string>
     <string name="pc_advanced_options">Zaawansowane</string>
     <string name="lbl_all_bookshelves">Wszystkie półki na książki</string>
     <string name="lbl_book_type_anthology">Antologia</string>

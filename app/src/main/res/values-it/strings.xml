@@ -252,6 +252,7 @@
     <string name="lbl_date_added_day">Giorno di inserimento</string>
     <string name="lbl_date_added_month">Mese di inserimento</string>
     <string name="lbl_date_added_year">Anno di inserimento</string>
+    <string name="pc_lists">Liste</string>
     <string name="pc_advanced_options">Avanzate</string>
     <string name="lbl_all_bookshelves">Tutte le biblioteche</string>
     <string name="lbl_book_type_anthology">Antologia</string>

@@ -252,6 +252,7 @@
     <string name="lbl_date_added_day">Ημέρα Πρόσθεσης</string>
     <string name="lbl_date_added_month">Μήνας Πρόσθεσης</string>
     <string name="lbl_date_added_year">Έτος Πρόσθεσης</string>
+    <string name="pc_lists">Κονίστρα</string>
     <string name="pc_advanced_options">Για προχωρημένους</string>
     <string name="lbl_all_bookshelves">Όλα τα ράφια</string>
     <string name="lbl_book_type_anthology">Ανθολογία</string>

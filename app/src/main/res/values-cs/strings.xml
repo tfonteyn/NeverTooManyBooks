@@ -251,6 +251,7 @@
     <string name="lbl_date_added_day">Den přidání</string>
     <string name="lbl_date_added_month">Měsíc přidání</string>
     <string name="lbl_date_added_year">Rok přidání</string>
+    <string name="pc_lists">Seznamy</string>
     <string name="pc_advanced_options">Rozšířené nastavení</string>
     <string name="lbl_all_bookshelves">Všechny knihovny</string>
     <string name="lbl_book_type_anthology">Antologie</string>

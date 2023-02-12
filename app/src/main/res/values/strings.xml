@@ -1193,6 +1193,7 @@
     <string name="pc_sorting" translatable="false">@string/lbl_sorting</string>
     <string name="pc_edit" translatable="false">@string/action_edit</string>
     <string name="pc_bob">Booklists</string>
+    <string name="pc_lists">Lists</string>
     <!-- [VERIFIED] -->
     <string name="pc_advanced_options">Advanced</string>
     <string name="pc_image_cache">Image cache</string>

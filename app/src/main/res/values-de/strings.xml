@@ -252,6 +252,7 @@
     <string name="lbl_date_added_day">Tag der Erfassung</string>
     <string name="lbl_date_added_month">Monat der Erfassung</string>
     <string name="lbl_date_added_year">Jahr der Erfassung</string>
+    <string name="pc_lists">Listen</string>
     <string name="pc_advanced_options">Erweitert</string>
     <string name="lbl_all_bookshelves">Alle Bücherregale</string>
     <string name="lbl_book_type_anthology">Anthologie</string>

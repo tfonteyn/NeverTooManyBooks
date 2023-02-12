@@ -252,6 +252,7 @@
     <string name="lbl_date_added_day">Добавленый день</string>
     <string name="lbl_date_added_month">Добавленый месяц</string>
     <string name="lbl_date_added_year">Добавленый год</string>
+    <string name="pc_lists">Списки</string>
     <string name="pc_advanced_options">Дополнительные настройки</string>
     <string name="lbl_all_bookshelves">Все книжные полки</string>
     <string name="lbl_book_type_anthology">Антология</string>

@@ -173,7 +173,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/pc_bob">
+        android:title="@string/pc_lists">
         <!-- the state of the list when starting the app. -->
         <!-- default Booklist.PREF_REBUILD_SAVED_STATE == 0 -->
         <ListPreference

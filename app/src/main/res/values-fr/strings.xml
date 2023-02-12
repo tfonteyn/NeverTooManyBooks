@@ -254,6 +254,7 @@
     <string name="lbl_date_added_day">Jour d\'ajout</string>
     <string name="lbl_date_added_month">Mois d\'ajout</string>
     <string name="lbl_date_added_year">Année d\'ajout</string>
+    <string name="pc_lists">Listes</string>
     <string name="pc_advanced_options">Paramètres avancés</string>
     <string name="lbl_all_bookshelves">Toutes les bibliothèques</string>
     <string name="lbl_book_type_anthology">Anthologie</string>
