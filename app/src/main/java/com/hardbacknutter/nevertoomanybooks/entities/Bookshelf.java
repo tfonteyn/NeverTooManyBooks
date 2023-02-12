@@ -255,9 +255,11 @@ public class Bookshelf
         this.id = id;
     }
 
-    @Override
     @NonNull
-    public String getLabel(@NonNull final Context context) {
+    @Override
+    public String getLabel(@NonNull final Context context,
+                           @Nullable final Details details,
+                           @Nullable final Style style) {
         return name;
     }
 

@@ -24,12 +24,15 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 abstract class LibraryBase
@@ -103,7 +106,9 @@ abstract class LibraryBase
 
     @NonNull
     @Override
-    public String getLabel(@NonNull final Context context) {
+    public String getLabel(@NonNull final Context context,
+                           @Nullable final Details details,
+                           @Nullable final Style style) {
         return name;
     }
 

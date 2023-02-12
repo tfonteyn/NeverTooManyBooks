@@ -41,23 +41,27 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 public class EntityFormatter<T extends Entity>
         extends HtmlFormatter<T> {
 
-    /** how much details to show. */
     @NonNull
     private final Details details;
+    @Nullable
+    private final Style style;
 
     /**
      * Constructor.
      *
-     * @param details how much details to show
+     * @param details how much {@link Entity} details to show. May be ignored by implementations.
+     * @param style   to use
      */
-    public EntityFormatter(@NonNull final Details details) {
+    public EntityFormatter(@NonNull final Details details,
+                           @Nullable final Style style) {
         this.details = details;
+        this.style = style;
     }
 
     @Override
     @NonNull
     public String format(@NonNull final Context context,
                          @Nullable final T entity) {
-        return entity == null ? "" : entity.getLabel(context, details, null);
+        return entity == null ? "" : entity.getLabel(context, details, style);
     }
 }

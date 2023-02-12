@@ -26,6 +26,7 @@ import androidx.annotation.Nullable;
 
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
@@ -59,11 +60,15 @@ public interface AuthorWork {
      * <strong>Dev. note:</strong> matches {@link Entity#getLabel(Context, Details, Style)}.
      *
      * @param context Current context
+     * @param details the amount of details wanted
+     * @param style   (optional) to use
      *
      * @return the label to use.
      */
     @NonNull
-    String getLabel(@NonNull Context context);
+    String getLabel(@NonNull final Context context,
+                    @NonNull final Details details,
+                    @Nullable final Style style);
 
     @NonNull
     PartialDate getFirstPublicationDate();

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,10 +25,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Locale;
-import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 /**
  * An Entity always has an id and some user-friendly label (aka 'displayName')
@@ -45,18 +43,20 @@ public interface Entity {
 
     /**
      * Get the label to use for <strong>displaying</strong>.
+     * <p>
+     * Convenience method to {@link #getLabel(Context, Details, Style)}.
      *
      * @param context Current context
      *
-     * @return the label to use.
+     * @return formatted string
      */
     @NonNull
-    String getLabel(@NonNull Context context);
+    default String getLabel(@NonNull final Context context) {
+        return getLabel(context, Details.AutoSelect, null);
+    }
 
     /**
      * Get the label to use for <strong>displaying</strong>.
-     * <p>
-     * The default implementation ignores the details/style parameters.
      *
      * @param context Current context
      * @param details the amount of details wanted
@@ -65,31 +65,10 @@ public interface Entity {
      * @return the label to use.
      */
     @NonNull
-    default String getLabel(@NonNull final Context context,
-                            @NonNull final Details details,
-                            @Nullable final Style style) {
-        return getLabel(context);
-    }
+    String getLabel(@NonNull final Context context,
+                    @NonNull final Details details,
+                    @Nullable final Style style);
 
-    /**
-     * Convenience method; called by (some) implementations of {@link #getLabel(Context)}.
-     *
-     * @param context Current context
-     * @param source  unformatted string
-     * @param locale  to use
-     *
-     * @return formatted string
-     */
-    @NonNull
-    default String getLabel(@NonNull final Context context,
-                            @NonNull final String source,
-                            @NonNull final Supplier<Locale> locale) {
-        if (ReorderHelper.forDisplay(context)) {
-            return ReorderHelper.reorder(context, source, locale.get());
-        } else {
-            return source;
-        }
-    }
 
     /**
      * Get the Locale of the Entity.

@@ -35,9 +35,11 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 /**
  * Represents a Series.
@@ -422,9 +424,16 @@ public class Series
      */
     @Override
     @NonNull
-    public String getLabel(@NonNull final Context context) {
-        // Using the locale here is overkill;  see #getLocale(..)
-        final String label = getLabel(context, this.title, () -> null);
+    public String getLabel(@NonNull final Context context,
+                           @Nullable final Details details,
+                           @Nullable final Style style) {
+        final String label;
+        if (ReorderHelper.forDisplay(context)) {
+            // Using the locale here is overkill;  see #getLocale(..)
+            label = ReorderHelper.reorder(context, title, null);
+        } else {
+            label = title;
+        }
         if (number.isEmpty()) {
             return label;
         } else {

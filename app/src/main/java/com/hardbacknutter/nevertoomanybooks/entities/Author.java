@@ -575,8 +575,8 @@ public class Author
      * @return formatted, but unfiltered, name
      */
     @NonNull
-    public String getFormattedName(@NonNull final Context context,
-                                   @Nullable final Style style) {
+    private String getFormattedName(@NonNull final Context context,
+                                    @Nullable final Style style) {
         final boolean givenNameFirst;
         if (style != null) {
             givenNameFirst = style.isShowAuthorByGivenName();
@@ -678,11 +678,6 @@ public class Author
 
     public void setId(final long id) {
         this.id = id;
-    }
-
-    @NonNull
-    public String getLabel(@NonNull final Context context) {
-        return getLabel(context, Details.Normal, null);
     }
 
     /**

@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 @SuppressWarnings("WeakerAccess")
@@ -217,7 +218,8 @@ public class AuthorWorksViewModel
     @NonNull
     String getScreenTitle(@NonNull final Context context) {
         return context.getString(R.string.name_hash_nr,
-                                 author.getLabel(context), works.size());
+                                 author.getLabel(context, Details.AutoSelect, style),
+                                 works.size());
     }
 
     /**

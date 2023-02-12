@@ -30,7 +30,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 /**
  * Represents a Publisher.
@@ -124,17 +126,17 @@ public class Publisher
         this.id = id;
     }
 
-    /**
-     * Get the user visible name.
-     *
-     * @param context Current context
-     *
-     * @return name
-     */
+    @Override
     @NonNull
-    public String getLabel(@NonNull final Context context) {
-        // Using the locale here is overkill;  see #getLocale(..)
-        return getLabel(context, name, () -> null);
+    public String getLabel(@NonNull final Context context,
+                           @Nullable final Details details,
+                           @Nullable final Style style) {
+        if (ReorderHelper.forDisplay(context)) {
+            // Using the locale here is overkill;  see #getLocale(..)
+            return ReorderHelper.reorder(context, name, null);
+        } else {
+            return name;
+        }
     }
 
     /**

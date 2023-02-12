@@ -169,7 +169,8 @@ public class TocAdapter
     @NonNull
     @Override
     public String[] getPopupText(final int position) {
-        return new String[]{works.get(position).getLabel(inflater.getContext())};
+        return new String[]{works.get(position)
+                .getLabel(inflater.getContext(), Details.AutoSelect, style)};
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -291,7 +292,7 @@ public class TocAdapter
         public void onBind(@NonNull final AuthorWork work) {
 
             final Context context = itemView.getContext();
-            vb.title.setText(work.getLabel(context));
+            vb.title.setText(work.getLabel(context, Details.AutoSelect, style));
 
             final PartialDate date = work.getFirstPublicationDate();
             if (date.isPresent()) {
@@ -314,19 +315,22 @@ public class TocAdapter
                 final String titles = work
                         .getBookTitles(context)
                         .stream()
-                        .map(bt -> context.getString(R.string.list_element,
-                                                     bt.getLabel(context)))
+                        .map(bt -> context
+                                .getString(R.string.list_element,
+                                           bt.getLabel(context, Details.AutoSelect, style)))
                         .collect(Collectors.joining("\n"));
 
                 if (work.getBookCount() > 1) {
-                    final String msg = context.getString(R.string.info_story_in_multiple_books,
-                                                         work.getLabel(context),
-                                                         titles);
+                    final String msg = context
+                            .getString(R.string.info_story_in_multiple_books,
+                                       work.getLabel(context, Details.AutoSelect, style),
+                                       titles);
                     StandardDialogs.infoPopup(anchor, XOFF, YOFF, msg);
                 } else {
-                    final String msg = context.getString(R.string.info_story_in_single_book,
-                                                         work.getLabel(context),
-                                                         titles);
+                    final String msg = context
+                            .getString(R.string.info_story_in_single_book,
+                                       work.getLabel(context, Details.AutoSelect, style),
+                                       titles);
                     StandardDialogs.infoPopup(anchor, XOFF, YOFF, msg);
                 }
             });

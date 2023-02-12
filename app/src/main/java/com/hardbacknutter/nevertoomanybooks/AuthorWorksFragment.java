@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
@@ -146,7 +147,8 @@ public class AuthorWorksFragment
             case TocEntry: {
                 //noinspection ConstantConditions
                 StandardDialogs.deleteTocEntry(
-                        getContext(), work.getLabel(getContext()),
+                        getContext(),
+                        work.getLabel(getContext(), Details.AutoSelect, vm.getStyle()),
                         work.getPrimaryAuthor(), () -> {
                             vm.delete(getContext(), work);
                             adapter.notifyItemRemoved(position);
@@ -157,7 +159,8 @@ public class AuthorWorksFragment
             case BookLight: {
                 //noinspection ConstantConditions
                 StandardDialogs.deleteBook(
-                        getContext(), work.getLabel(getContext()),
+                        getContext(),
+                        work.getLabel(getContext(), Details.AutoSelect, vm.getStyle()),
                         Collections.singletonList(work.getPrimaryAuthor()), () -> {
                             vm.delete(getContext(), work);
                             adapter.notifyItemRemoved(position);

@@ -68,6 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
@@ -451,16 +452,16 @@ public class Book
         return Collections.singletonList(new BookLight(this));
     }
 
-    /**
-     * Get the label to use for <strong>displaying</strong>.
-     *
-     * @param context Current context
-     *
-     * @return the label to use.
-     */
+    @Override
     @NonNull
-    public String getLabel(@NonNull final Context context) {
-        return getLabel(context, getTitle(), () -> getLocale(context));
+    public String getLabel(@NonNull final Context context,
+                           @Nullable final Details details,
+                           @Nullable final Style style) {
+        if (ReorderHelper.forDisplay(context)) {
+            return ReorderHelper.reorder(context, getTitle(), getLocale(context));
+        } else {
+            return getTitle();
+        }
     }
 
     @Override
@@ -1174,11 +1175,13 @@ public class Book
         final String title = getTitle();
 
         final Author author = getPrimaryAuthor();
-        final String authorStr = author != null ? author.getFormattedName(context, style)
-                                                : context.getString(R.string.unknown_author);
+        final String authorStr = author != null
+                                 ? author.getLabel(context, Details.AutoSelect, style)
+                                 : context.getString(R.string.unknown_author);
 
         final String seriesStr = getPrimarySeries()
-                .map(value -> context.getString(R.string.brackets, value.getLabel(context)))
+                .map(value -> context.getString(R.string.brackets,
+                                                value.getLabel(context, Details.AutoSelect, style)))
                 .orElse("");
 
         //remove trailing 0's
@@ -1260,10 +1263,11 @@ public class Book
 
         @NonNull
         @Override
-        public String getLabel(@NonNull final Context context) {
+        public String getLabel(@NonNull final Context context,
+                               @Nullable final Details details,
+                               @Nullable final Style style) {
             return context.getString(labelResId);
         }
-
     }
 
     /**

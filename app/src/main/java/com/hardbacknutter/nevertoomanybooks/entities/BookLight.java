@@ -30,7 +30,9 @@ import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
 /**
@@ -128,8 +130,14 @@ public class BookLight
 
     @Override
     @NonNull
-    public String getLabel(@NonNull final Context context) {
-        return getLabel(context, title, () -> null);
+    public String getLabel(@NonNull final Context context,
+                           @Nullable final Details details,
+                           @Nullable final Style style) {
+        if (ReorderHelper.forDisplay(context)) {
+            return ReorderHelper.reorder(context, title, null);
+        } else {
+            return title;
+        }
     }
 
     @Override

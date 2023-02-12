@@ -449,7 +449,7 @@ public class EditBookAuthorListDialogFragment
                           @NonNull final List<Author> items,
                           @NonNull final StartDragListener dragStartListener) {
             super(context, items, dragStartListener);
-            formatter = new EntityFormatter<>(Details.Full);
+            formatter = new EntityFormatter<>(Details.Full, null);
         }
 
         @NonNull
