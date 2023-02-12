@@ -40,8 +40,6 @@ import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.divider.MaterialDividerItemDecoration;
-
 import java.util.Collections;
 
 import com.hardbacknutter.fastscroller.FastScroller;
@@ -193,8 +191,6 @@ public class AuthorWorksFragment
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
         worksListView.setHasFixedSize(true);
-        worksListView.addItemDecoration(
-                new MaterialDividerItemDecoration(context, RecyclerView.VERTICAL));
 
         // Optional overlay
         final int overlayType = Prefs.getFastScrollerOverlayType(context);
