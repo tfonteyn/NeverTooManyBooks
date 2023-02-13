@@ -161,7 +161,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_condition"
-            style="@style/TIL.DropdownMenu.Outline.Dense"
+            style="@style/TIL.AutoCompleteTextView"
             android:hint="@string/lbl_condition"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/col1"
@@ -181,7 +181,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_condition_cover"
-            style="@style/TIL.DropdownMenu.Outline.Dense"
+            style="@style/TIL.AutoCompleteTextView"
             android:hint="@string/lbl_dust_cover"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/col1"

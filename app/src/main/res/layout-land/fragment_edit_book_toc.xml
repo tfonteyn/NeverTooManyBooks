@@ -45,7 +45,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_book_type"
-            style="@style/TIL.DropdownMenu.Outline.Dense"
+            style="@style/TIL.AutoCompleteTextView"
             android:hint="@string/lbl_book_type"
             app:layout_constraintEnd_toEndOf="parent"
             app:materialThemeOverlay="@style/ThemeOverlay.Material3.AutoCompleteTextView.OutlinedBox.Dense"

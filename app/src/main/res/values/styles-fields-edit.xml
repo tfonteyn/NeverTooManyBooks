@@ -123,6 +123,8 @@
     <!-- A TextInputLayout style specific for fields where the inner field
          is a (Material)AutoCompleteTextView.
 
+         The "Dense" style is normally used on the book-edit screens (and related).
+
       Reminder:
         AutoCompleteTextView is automatically replaced with MaterialAutoCompleteTextView
         and setOnItemSelectedListener() DOES NOT WORK with AutoCompleteTextView.
@@ -156,25 +158,6 @@
 
     <style name="TIL.Filter.AutoCompleteTextView"
            parent="Widget.Material3.TextInputLayout.FilledBox.ExposedDropdownMenu">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <!-- 4x so we can override individually (is this another Android bug?) -->
-        <item name="android:layout_marginTop">@dimen/til_margin</item>
-        <item name="android:layout_marginBottom">@dimen/til_margin</item>
-        <item name="android:layout_marginStart">@dimen/til_margin</item>
-        <item name="android:layout_marginEnd">@dimen/til_margin</item>
-        <!-- override to make it better visible. -->
-        <item name="endIconTint">?attr/colorOnSurface</item>
-    </style>
-    <!-- *************************************************************************************** -->
-
-    <!-- The TextInputLayout view for a NON-editable AutoCompleteTextView; equivalent of a Spinner.
-        DO NOT set a style attribute on the AutoCompleteTextView itself!
-
-        The "Dense" style is normally used on the book-edit screens (and related).
-    -->
-    <style name="TIL.DropdownMenu.Outline.Dense"
-           parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <!-- 4x so we can override individually (is this another Android bug?) -->
