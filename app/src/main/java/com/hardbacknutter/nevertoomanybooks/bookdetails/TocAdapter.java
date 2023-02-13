@@ -206,10 +206,10 @@ public class TocAdapter
         public void onBind(@NonNull final AuthorWork work) {
             super.onBind(work);
             if (work.getBookCount() > 1) {
-                vb.btnType.setImageDrawable(multipleBooksIcon);
+                vb.btnType.setIcon(multipleBooksIcon);
                 vb.btnType.setContentDescription(multipleBooksStr);
             } else {
-                vb.btnType.setImageDrawable(tocIcon);
+                vb.btnType.setIcon(tocIcon);
                 vb.btnType.setContentDescription(tocStr);
             }
         }
@@ -238,7 +238,7 @@ public class TocAdapter
         @Override
         public void onBind(@NonNull final AuthorWork work) {
             super.onBind(work);
-            vb.btnType.setImageDrawable(typeIcon);
+            vb.btnType.setIcon(typeIcon);
             vb.btnType.setContentDescription(typeDescription);
         }
     }
@@ -267,7 +267,7 @@ public class TocAdapter
         @Override
         public void onBind(@NonNull final AuthorWork work) {
             super.onBind(work);
-            vb.btnType.setImageDrawable(typeIcon);
+            vb.btnType.setIcon(typeIcon);
             vb.btnType.setContentDescription(typeDescription);
         }
     }

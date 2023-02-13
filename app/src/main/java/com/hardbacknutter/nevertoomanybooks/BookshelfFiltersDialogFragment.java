@@ -26,7 +26,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -329,7 +328,7 @@ public class BookshelfFiltersDialogFragment
             extends RecyclerView.ViewHolder {
 
         @Nullable
-        final ImageButton delBtn;
+        final Button delBtn;
         @NonNull
         final ModificationListener modificationListener;
 

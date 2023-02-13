@@ -29,7 +29,7 @@
     android:minHeight="?attr/listPreferredItemHeightSmall"
     >
 
-    <ImageButton
+    <Button
         android:id="@+id/btn_del"
         style="@style/RowEditor.Button.Delete"
         app:layout_constraintStart_toStartOf="parent"

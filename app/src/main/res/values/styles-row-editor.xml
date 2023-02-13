@@ -22,15 +22,13 @@
 <!-- An editable list with buttons on each row, and a text section in the middle of the row. -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="Base.RowEditor.Button" parent="">
+    <!-- 'delete this row' -->
+    <style name="RowEditor.Button.Delete"
+           parent="Widget.Material3.Button.IconButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">0dp</item>
         <item name="android:padding">8dp</item>
-    </style>
-
-    <!-- ImageButton - 'delete this row' -->
-    <style name="RowEditor.Button.Delete" parent="Base.RowEditor.Button">
-        <item name="android:src">@drawable/ic_baseline_delete_24</item>
+        <item name="icon">@drawable/ic_baseline_delete_24</item>
         <item name="android:focusable">true</item>
         <item name="android:focusableInTouchMode">false</item>
         <item name="android:clickable">true</item>
@@ -39,13 +37,18 @@
     </style>
 
     <!-- ImageView - handle to let the user drag & drop rows to re-order them -->
-    <style name="RowEditor.Button.DragHandle" parent="Base.RowEditor.Button">
+    <style name="RowEditor.Button.DragHandle"
+           parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:layout_height">0dp</item>
         <item name="android:src">@drawable/ic_baseline_drag_handle_24</item>
         <item name="android:contentDescription">@string/cd_btn_drag_handle</item>
     </style>
 
     <!-- CheckBox -->
-    <style name="RowEditor.Button.Checkable" parent="Widget.App.CheckBox">
+    <style name="RowEditor.Button.Checkable"
+           parent="Widget.App.CheckBox">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <!-- don't want it to close to the edge of the screen. -->
