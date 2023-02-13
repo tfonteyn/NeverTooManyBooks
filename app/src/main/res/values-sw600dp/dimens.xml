@@ -34,4 +34,9 @@
 
     <dimen name="scrollbar_padding">10dp</dimen>
 
+    <item name="btn_context_menu_scale"
+          format="float"
+          type="dimen">0.75
+    </item>
+
 </resources>

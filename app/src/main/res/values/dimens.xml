@@ -204,6 +204,12 @@
     <!-- The confirm/select (etc) button at the "end" gets more space. -->
     <dimen name="toolbar_button_start_margin_last_button">8dp</dimen>
 
+    <!-- the scaleX/scaleY scaling factor for the "3-dot" context menu button on a row. -->
+    <item name="btn_context_menu_scale"
+          format="float"
+          type="dimen">0.6
+    </item>
+
 
     <integer name="span_count_edit_bookshelves">1</integer>
     <integer name="span_count_update_from_internet">1</integer>

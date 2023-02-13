@@ -32,4 +32,10 @@
 
     <dimen name="toolbar_button_start_margin">8dp</dimen>
     <dimen name="toolbar_button_start_margin_last_button">16dp</dimen>
+
+    <item name="btn_context_menu_scale"
+          format="float"
+          type="dimen">0.85
+    </item>
+
 </resources>
