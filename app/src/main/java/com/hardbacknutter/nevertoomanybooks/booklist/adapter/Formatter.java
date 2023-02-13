@@ -113,6 +113,8 @@ class Formatter
                     return context.getString(R.string.bob_empty_author);
 
                 } else if (rowData.contains(DBKey.AUTHOR_REAL_AUTHOR)) {
+                    // Specifically check for AUTHOR_REAL_AUTHOR as it will usually be 0
+                    // and no lookup will be needed.
                     final long realAuthorId = rowData.getLong(DBKey.AUTHOR_REAL_AUTHOR);
                     if (realAuthorId != 0) {
                         final Author realAuthor = ServiceLocator.getInstance().getAuthorDao()
@@ -122,6 +124,7 @@ class Formatter
                         }
                     }
                 }
+                // already formatted by the SQL query
                 return text;
             }
             case BooklistGroup.SERIES: {
