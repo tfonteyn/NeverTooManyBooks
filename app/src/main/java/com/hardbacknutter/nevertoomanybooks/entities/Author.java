@@ -751,6 +751,8 @@ public class Author
 
     /**
      * TODO: try to unify this with the {@link #getLabel(Context, Details, Style)}
+     *  using a either the Details object or a new style flag to decide whether
+     *  to add the realAuthor name
      * <p>
      * Return the <strong>styled and formatted</strong> version of the name.
      * <p>
