@@ -66,12 +66,12 @@
     </style>
 
     <!-- The content container/row for a book in the booklist. -->
-    <style name="BoB.Group.Book" parent="Widget.Material3.CardView.Elevated">
+    <style name="BoB.Group.Book"
+           parent="Widget.App.CardView">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_margin">@dimen/bob_book_card_margin</item>
         <item name="contentPadding">@dimen/bob_book_card_content_padding</item>
-        <item name="cardBackgroundColor">?attr/colorSurface</item>
     </style>
 
     <!--
@@ -79,12 +79,12 @@
         (yes, this is not one for the BookList... should be in another style-x.xml file) -->
     -->
 
-    <style name="AuthorWorkCard" parent="Widget.Material3.CardView.Elevated">
+    <style name="AuthorWorkCard"
+           parent="Widget.App.CardView">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_margin">@dimen/authorwork_card_margin</item>
         <item name="contentPadding">@dimen/authorwork_card_content_padding</item>
-        <item name="cardBackgroundColor">?attr/colorSurface</item>
     </style>
     <!-- *************************************************************************************** -->
     <!-- Elements in a BookGroup

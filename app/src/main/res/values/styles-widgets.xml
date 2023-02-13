@@ -58,6 +58,11 @@
         <item name="chipSpacingVertical">4dp</item>
     </style>
 
+    <style name="Widget.App.CardView"
+           parent="Widget.Material3.CardView.Elevated">
+        <item name="cardBackgroundColor">?attr/colorSurface</item>
+    </style>
+
     <style name="Widget.App.Snackbar.TextView"
            parent="Widget.Material3.Snackbar.TextView">
         <item name="android:maxLines">2</item>
