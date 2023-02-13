@@ -44,7 +44,7 @@
             tools:ignore="UseCompatTextViewDrawableXml"
             />
 
-        <ImageButton
+        <Button
             android:id="@+id/inf_ext_not_installed"
             style="@style/Button.InfoPopup"
             android:contentDescription="@string/info_calibre_content_server_extension"

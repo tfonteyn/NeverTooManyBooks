@@ -18,6 +18,10 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
+<!--
+ TODO: on a 4" screen, we get some overlap between the columns.
+ Leaving this for now... 4" screens.. oh well :/
+-->
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -37,7 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.33"
+            app:layout_constraintGuide_percent="0.3"
             />
 
         <androidx.constraintlayout.widget.Guideline
@@ -45,7 +49,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.66"
+            app:layout_constraintGuide_percent="0.7"
             />
 
         <!--suppress LongLine -->
@@ -114,7 +118,7 @@
             app:layout_constraintTop_toBottomOf="@id/cbx_books"
             />
 
-        <ImageButton
+        <Button
             android:id="@+id/inf_new_only"
             style="@style/Button.InfoPopup"
             android:contentDescription="@string/option_info_import_books_option_new_only"
@@ -130,10 +134,9 @@
             android:checked="true"
             android:text="@string/option_import_books_option_new_and_updated"
             app:layout_constraintStart_toStartOf="@id/cbx_books"
-            app:layout_constraintTop_toBottomOf="@id/rb_import_new_only"
-            />
+            app:layout_constraintTop_toBottomOf="@id/rb_import_new_only" />
 
-        <ImageButton
+        <Button
             android:id="@+id/inf_new_and_updated"
             style="@style/Button.InfoPopup"
             android:contentDescription="@string/option_info_import_books_option_new_and_updated"
@@ -151,7 +154,7 @@
             app:layout_constraintTop_toBottomOf="@id/rb_import_new_and_updated"
             />
 
-        <ImageButton
+        <Button
             android:id="@+id/inf_all"
             style="@style/Button.InfoPopup"
             android:contentDescription="@string/option_info_import_books_option_all"

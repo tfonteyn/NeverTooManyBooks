@@ -116,7 +116,7 @@
             app:layout_constraintTop_toBottomOf="@id/cbx_books"
             />
 
-        <ImageButton
+        <Button
             android:id="@+id/inf_import_new_only"
             style="@style/Button.InfoPopup"
             android:contentDescription="@string/option_info_import_books_option_new_only"
@@ -135,7 +135,7 @@
             app:layout_constraintTop_toBottomOf="@id/rb_import_new_only"
             />
 
-        <ImageButton
+        <Button
             android:id="@+id/inf_import_new_and_updated"
             style="@style/Button.InfoPopup"
             android:contentDescription="@string/option_info_import_books_option_new_and_updated"
@@ -153,7 +153,7 @@
             app:layout_constraintTop_toBottomOf="@id/rb_import_new_and_updated"
             />
 
-        <ImageButton
+        <Button
             android:id="@+id/inf_import_all"
             style="@style/Button.InfoPopup"
             android:contentDescription="@string/option_info_import_books_option_all"

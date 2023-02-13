@@ -52,7 +52,7 @@
             tools:ignore="UseCompatTextViewDrawableXml"
             />
 
-        <ImageButton
+        <Button
             android:id="@+id/inf_ext_not_installed"
             style="@style/Button.InfoPopup"
             android:contentDescription="@string/info_calibre_content_server_extension"
@@ -136,12 +136,13 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@id/col1"
             app:layout_constraintTop_toBottomOf="@id/header_vlibs"
+            app:layout_constraintVertical_bias="0.0"
             tools:itemCount="4"
             tools:listitem="@layout/row_edit_calibre_library"
-            tools:visibility="visible"
-            />
+            tools:visibility="visible" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

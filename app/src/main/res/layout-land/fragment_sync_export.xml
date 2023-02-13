@@ -88,7 +88,7 @@
             app:layout_constraintTop_toBottomOf="@id/rb_export_all"
             />
 
-        <ImageButton
+        <Button
             android:id="@+id/inf_export_new_and_updated"
             style="@style/Button.InfoPopup"
             android:contentDescription="@string/info_export_books_option_since_last_full_backup"

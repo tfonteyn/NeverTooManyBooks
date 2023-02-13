@@ -220,17 +220,18 @@
         <item name="android:contentDescription">@string/action_show_toc_long</item>
     </style>
 
-    <!-- ImageButton - using no-parent is easier then adjusting "Widget.Material3.Button.IconButton" -->
+    <!-- A small 'help' button next to an option. -->
     <style name="Button.InfoPopup"
-           parent="">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
+           parent="Widget.Material3.Button.IconButton">
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">24dp</item>
+        <item name="android:layout_marginTop">4dp</item>
         <item name="android:layout_marginStart">8dp</item>
-        <item name="android:padding">4dp</item>
-        <item name="android:background">@android:color/transparent</item>
-        <item name="android:src">@drawable/ic_baseline_help_outline_24</item>
+        <item name="android:padding">0dp</item>
+        <item name="icon">@drawable/ic_baseline_help_outline_24</item>
     </style>
 
+    <!-- Context menu button. -->
     <style name="Button.More"
            parent="Widget.Material3.Button.IconButton.Outlined">
         <item name="android:layout_width">wrap_content</item>
