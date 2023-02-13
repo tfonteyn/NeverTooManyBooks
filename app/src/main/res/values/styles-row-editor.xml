@@ -58,7 +58,8 @@
 
 
     <!-- LinearLayout/ConstraintLayout - the details part of the row in a list row. -->
-    <style name="RowEditor.TextSection" parent="">
+    <style name="RowEditor.TextSection"
+           parent="">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">@dimen/field_margin_start</item>
@@ -67,8 +68,9 @@
         <item name="android:orientation">vertical</item>
     </style>
 
-    <!-- bae style for a row inside a list details row -->
-    <style name="Base.RowEditor.Text" parent="Widget.MaterialComponents.TextView">
+    <!-- base style for a row inside a list details row -->
+    <style name="Base.RowEditor.Text"
+           parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:ellipsize">marquee</item>
@@ -77,12 +79,14 @@
     </style>
 
     <!-- Primary row inside a list details row. -->
-    <style name="RowEditor.Text.Primary" parent="Base.RowEditor.Text">
+    <style name="RowEditor.Text.Primary"
+           parent="Base.RowEditor.Text">
         <item name="android:textAppearance">?attr/textAppearanceListItem</item>
     </style>
 
     <!-- Secondary rows inside a list details row. -->
-    <style name="RowEditor.Text.Secondary" parent="Base.RowEditor.Text">
+    <style name="RowEditor.Text.Secondary"
+           parent="Base.RowEditor.Text">
         <item name="android:textAppearance">?attr/textAppearanceListItemSecondary</item>
         <item name="android:layout_marginStart">8dp</item>
     </style>
