@@ -99,22 +99,26 @@
 
     <!-- *************************************************************************************** -->
 
-    <style name="ThemeOverlay.App.TabLayout" parent="">
+    <style name="ThemeOverlay.App.TabLayout"
+           parent="">
         <!-- selected -->
         <item name="colorPrimary">?attr/colorSecondary</item>
     </style>
 
-    <style name="ThemeOverlay.App.CheckBox" parent="">
+    <style name="ThemeOverlay.App.CheckBox"
+           parent="">
+        <!-- Container: checked -->
+        <item name="colorPrimary">?attr/colorSecondary</item>
+    </style>
+
+    <style name="ThemeOverlay.App.RadioButton"
+           parent="">
         <!-- checked -->
         <item name="colorPrimary">?attr/colorSecondary</item>
     </style>
 
-    <style name="ThemeOverlay.App.RadioButton" parent="">
-        <!-- checked -->
-        <item name="colorPrimary">?attr/colorSecondary</item>
-    </style>
-
-    <style name="ThemeOverlay.App.Switch" parent="">
+    <style name="ThemeOverlay.App.Switch"
+           parent="">
         <!-- track checked state. -->
         <item name="colorPrimary">?attr/colorSecondary</item>
         <!-- thumb unchecked state. -->
