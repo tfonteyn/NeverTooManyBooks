@@ -18,20 +18,10 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
-<androidx.constraintlayout.widget.ConstraintLayout
+<merge
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/buttonPanel"
-    style="?attr/buttonBarStyle"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingStart="12dp"
-    android:paddingTop="4dp"
-    android:paddingEnd="12dp"
-    android:paddingBottom="4dp"
-    tools:viewBindingIgnore="true"
-    >
+    xmlns:tools="http://schemas.android.com/tools">
 
     <Button
         android:id="@+id/btn_neutral"
@@ -66,4 +56,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</merge>

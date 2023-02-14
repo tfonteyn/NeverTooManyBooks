@@ -70,12 +70,6 @@ public class EditBookAuthorDialogFragment
     /** View Binding. */
     private DialogEditBookAuthorContentBinding vb;
 
-    /** Displayed for info only. */
-    @Nullable
-    private String bookTitle;
-    @Nullable
-    private String bookLanguage;
-
     /** Adding or Editing. */
     private EditAction action;
 
@@ -98,8 +92,6 @@ public class EditBookAuthorDialogFragment
 
         final Bundle args = requireArguments();
         action = Objects.requireNonNull(args.getParcelable(EditAction.BKEY), EditAction.BKEY);
-        bookTitle = args.getString(DBKey.TITLE);
-        bookLanguage = args.getString(DBKey.LANGUAGE);
     }
 
     @Override
@@ -108,7 +100,7 @@ public class EditBookAuthorDialogFragment
         super.onViewCreated(view, savedInstanceState);
         vb = DialogEditBookAuthorContentBinding.bind(view.findViewById(R.id.dialog_content));
         // always fullscreen; title is fixed, no buttonPanel
-        setSubtitle(bookTitle);
+        setSubtitle(vm.getBook().getTitle());
 
         final Context context = getContext();
         final Author currentEdit = authorVm.getCurrentEdit();
@@ -231,7 +223,8 @@ public class EditBookAuthorDialogFragment
 
         final Context context = getContext();
         //noinspection ConstantConditions
-        final Locale bookLocale = Languages.toLocale(context, bookLanguage);
+        final Locale bookLocale =
+                Languages.toLocale(context, vm.getBook().getString(DBKey.LANGUAGE));
 
         if (!authorVm.validateAndSetRealAuthor(context, bookLocale, createRealAuthorIfNeeded)) {
             new MaterialAlertDialogBuilder(context)
@@ -289,12 +282,9 @@ public class EditBookAuthorDialogFragment
             extends EditLauncher<Author> {
 
         @Override
-        public void launch(@NonNull final String bookTitle,
-                           @NonNull final String bookLanguage,
-                           @NonNull final EditAction action,
+        public void launch(@NonNull final EditAction action,
                            @NonNull final Author author) {
             super.launch(new EditBookAuthorDialogFragment(),
-                         bookTitle, bookLanguage,
                          action, DBKey.FK_AUTHOR, author);
         }
     }

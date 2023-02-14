@@ -55,12 +55,6 @@ public class EditBookSeriesDialogFragment
     /** View Binding. */
     private DialogEditBookSeriesContentBinding vb;
 
-    /** Displayed for info only. */
-    @Nullable
-    private String bookTitle;
-    @Nullable
-    private String bookLanguage;
-
     /** The Series we're editing. */
     private Series series;
     /** Current edit. */
@@ -86,8 +80,6 @@ public class EditBookSeriesDialogFragment
         requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
         action = Objects.requireNonNull(args.getParcelable(EditAction.BKEY), EditAction.BKEY);
         series = Objects.requireNonNull(args.getParcelable(DBKey.FK_SERIES), DBKey.FK_SERIES);
-        bookTitle = args.getString(DBKey.TITLE);
-        bookLanguage = args.getString(DBKey.LANGUAGE);
 
         if (savedInstanceState == null) {
             currentEdit = new Series(series.getTitle(), series.isComplete());
@@ -103,9 +95,8 @@ public class EditBookSeriesDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         vb = DialogEditBookSeriesContentBinding.bind(view.findViewById(R.id.dialog_content));
-        setTitle(R.string.lbl_series);
-        setSubtitle(bookTitle);
-        vb.btnPositive.setText(R.string.action_save);
+        setSubtitle(vm.getBook().getTitle());
+        vb.buttonPanel.btnPositive.setText(R.string.action_save);
 
         //noinspection ConstantConditions
         final ExtArrayAdapter<String> titleAdapter = new ExtArrayAdapter<>(
@@ -176,12 +167,10 @@ public class EditBookSeriesDialogFragment
             extends EditLauncher<Series> {
 
         @Override
-        public void launch(@NonNull final String bookTitle,
-                           @NonNull final String bookLanguage,
-                           @NonNull final EditAction action,
+        public void launch(@NonNull final EditAction action,
                            @NonNull final Series series) {
             super.launch(new EditBookSeriesDialogFragment(),
-                         bookTitle, bookLanguage, action, DBKey.FK_SERIES, series);
+                         action, DBKey.FK_SERIES, series);
         }
     }
 }

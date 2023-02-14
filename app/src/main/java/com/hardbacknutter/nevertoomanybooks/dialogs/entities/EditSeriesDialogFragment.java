@@ -106,8 +106,7 @@ public class EditSeriesDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         vb = DialogEditSeriesContentBinding.bind(view.findViewById(R.id.dialog_content));
-        setTitle(R.string.lbl_series);
-        vb.btnPositive.setText(R.string.action_save);
+        vb.buttonPanel.btnPositive.setText(R.string.action_save);
 
         //noinspection ConstantConditions
         final ExtArrayAdapter<String> titleAdapter = new ExtArrayAdapter<>(

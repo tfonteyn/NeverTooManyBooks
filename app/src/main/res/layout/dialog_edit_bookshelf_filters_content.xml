@@ -24,75 +24,37 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/dialog_content"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingStart="?attr/dialogPreferredPadding"
-    android:paddingTop="@dimen/dialogPreferredPaddingTop"
-    android:paddingEnd="?attr/dialogPreferredPadding"
-    android:paddingBottom="@dimen/dialogPreferredPaddingBottom"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    >
+    style="@style/Dialog.Content">
 
-    <include layout="@layout/inc_dialog_title" />
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/dialog_toolbar"
+        style="@style/Toolbar.Dialog.Content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:menu="@menu/toolbar_action_add"
+        app:title="@string/lbl_filters"
+        />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/filter_list"
         style="@style/Dialog.Body.RecyclerView"
-        app:layout_constraintBottom_toTopOf="@id/buttonPanel"
+        app:layout_constraintBottom_toTopOf="@id/button_panel_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/title_divider"
+        app:layout_constraintTop_toBottomOf="@id/dialog_toolbar"
         tools:listitem="@layout/row_edit_bookshelf_filter_boolean"
         />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/buttonPanel"
-        style="?attr/buttonBarStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="12dp"
-        android:paddingTop="4dp"
-        android:paddingEnd="12dp"
-        android:paddingBottom="4dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:id="@+id/button_panel_layout"
+        style="@style/ButtonPanel.Container"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/filter_list"
-        tools:viewBindingIgnore="true"
-        >
+        app:layout_constraintTop_toBottomOf="@id/filter_list">
 
-        <Button
-            android:id="@+id/btn_neutral"
-            style="?attr/buttonBarNeutralButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/floating_dialogs_button_height"
-            android:text="x"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:ignore="HardcodedText"
-            tools:visibility="visible"
-            />
-
-        <Button
-            android:id="@+id/btn_negative"
-            style="?attr/buttonBarNegativeButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/floating_dialogs_button_height"
-            android:text="@android:string/cancel"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btn_positive"
-            />
-
-        <Button
-            android:id="@+id/btn_positive"
-            style="?attr/buttonBarPositiveButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/floating_dialogs_button_height"
-            android:text="@android:string/ok"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            />
-
+        <include
+            android:id="@+id/button_panel"
+            layout="@layout/inc_dialog_buttons" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

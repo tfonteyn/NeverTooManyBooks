@@ -104,8 +104,7 @@ public class StylePickerDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         vb = DialogStylesMenuContentBinding.bind(view.findViewById(R.id.dialog_content));
-        setTitle(R.string.lbl_style);
-        vb.btnPositive.setText(R.string.action_select);
+        vb.buttonPanel.btnPositive.setText(R.string.action_select);
 
         loadStyles();
 

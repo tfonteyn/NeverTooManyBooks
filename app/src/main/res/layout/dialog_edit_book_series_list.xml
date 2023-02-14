@@ -41,7 +41,7 @@
         -->
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
-            style="@style/Toolbar.Dialog"
+            style="@style/Toolbar.Dialog.Fullscreen"
             app:menu="@menu/toolbar_action_add"
             app:navigationIcon="?attr/homeAsUpIndicator"
             app:title="@string/lbl_series_multiple"

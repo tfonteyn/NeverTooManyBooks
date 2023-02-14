@@ -22,7 +22,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/Dialog.Body"
+    style="@style/Dialog.Content"
     android:orientation="vertical"
     tools:viewBindingIgnore="true"
     >

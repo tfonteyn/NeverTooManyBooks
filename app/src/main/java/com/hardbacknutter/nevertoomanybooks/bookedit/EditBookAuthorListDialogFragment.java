@@ -38,13 +38,11 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorListContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorViewModel;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.EntityFormatter;
@@ -89,9 +87,6 @@ public class EditBookAuthorListDialogFragment
             };
     /** The adapter for the list itself. */
     private AuthorListAdapter adapter;
-
-    private ExtPopupMenu contextMenu;
-
     private final EditBookAuthorDialogFragment.Launcher editLauncher =
             new EditBookAuthorDialogFragment.Launcher() {
                 @Override
@@ -105,8 +100,7 @@ public class EditBookAuthorListDialogFragment
                     processChanges(original, modified);
                 }
             };
-
-
+    private ExtPopupMenu contextMenu;
     /** Drag and drop support for the list view. */
     private ItemTouchHelper itemTouchHelper;
 
@@ -197,11 +191,7 @@ public class EditBookAuthorListDialogFragment
     }
 
     private void editEntry(final int position) {
-        final Book book = vm.getBook();
-        editLauncher.launch(book.getTitle(),
-                            book.getString(DBKey.LANGUAGE),
-                            EditAction.Edit,
-                            authorList.get(position));
+        editLauncher.launch(EditAction.Edit, authorList.get(position));
     }
 
     /**
@@ -245,6 +235,7 @@ public class EditBookAuthorListDialogFragment
     @Override
     protected boolean onToolbarButtonClick(@Nullable final View button) {
         if (button != null) {
+            // Fullscreen only;
             // R.id.btn_add
             // R.id.btn_add_details
             onAdd(button.getId() == R.id.btn_add_details);
@@ -271,11 +262,7 @@ public class EditBookAuthorListDialogFragment
 
         final Author author = Author.from(name);
         if (withDetails) {
-            final Book book = vm.getBook();
-            editLauncher.launch(book.getTitle(),
-                                book.getString(DBKey.LANGUAGE),
-                                EditAction.Add,
-                                author);
+            editLauncher.launch(EditAction.Add, author);
         } else {
             add(author);
         }

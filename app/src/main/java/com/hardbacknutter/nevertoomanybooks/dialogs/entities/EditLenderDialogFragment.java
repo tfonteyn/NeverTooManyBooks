@@ -148,9 +148,8 @@ public class EditLenderDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         vb = DialogEditLoanContentBinding.bind(view.findViewById(R.id.dialog_content));
-        setTitle(R.string.lbl_lend_book_to_colon);
         setSubtitle(bookTitle);
-        vb.btnPositive.setText(R.string.action_save);
+        vb.buttonPanel.btnPositive.setText(R.string.action_save);
 
         //noinspection ConstantConditions
         adapter = new ExtArrayAdapter<>(getContext(), R.layout.popup_dropdown_menu_item,

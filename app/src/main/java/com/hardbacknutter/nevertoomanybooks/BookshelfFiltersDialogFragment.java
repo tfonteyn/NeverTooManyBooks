@@ -106,12 +106,10 @@ public class BookshelfFiltersDialogFragment
         super.onViewCreated(view, savedInstanceState);
 
         vb = DialogEditBookshelfFiltersContentBinding.bind(view.findViewById(R.id.dialog_content));
-        setTitle(R.string.lbl_filters);
         setSubtitle(vm.getBookshelf().getName());
-        vb.btnPositive.setText(R.string.action_select);
-        vb.btnNeutral.setText(R.string.action_clear);
-        vb.btnNeutral.setVisibility(View.VISIBLE);
-        //URGENT: R.id.btn_add
+        vb.buttonPanel.btnPositive.setText(R.string.action_select);
+        vb.buttonPanel.btnNeutral.setText(R.string.action_clear);
+        vb.buttonPanel.btnNeutral.setVisibility(View.VISIBLE);
 
         //noinspection ConstantConditions
         listAdapter = new FilterListAdapter(getContext(), vm.getFilterList(), modificationListener);

@@ -32,7 +32,6 @@ import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.DimenRes;
@@ -41,7 +40,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.widget.Group;
 import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -59,28 +57,26 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
  * <p>
  * Special cases:
  * <p>
- * {@link CoverBrowserDialogFragment}
- * - force the width to a 'dimen' setting to maximize it.
+ * {@link #setFloatingDialogWidth(int)}: force the width to a 'dimen' setting to maximize it.
+ * e.g. {@link CoverBrowserDialogFragment}
  * <p>
- * {@link StylePickerDialogFragment}
- * - force the height to a 'dimen' to work around the RecyclerView collapsing or growing to large.
- * - prevent the compensation of the 'actionBarSize'.
+ * {@link #setFloatingDialogHeight(int)}: force the height to a 'dimen' to work
+ * around the RecyclerView collapsing or growing to large.
+ * e.g. {@link StylePickerDialogFragment}
  * <p>
  * Why an action-view in the toolbar?
- * If we want an outline to be drawn AROUND the icon, then we seem forced to use an "actionLayout"
- * with an icon-Button using the outline style.
- * <p>
- * Only alternative is to use an icon with outline builtin... which makes the actual icon to small.
+ * If we want an outline to be drawn AROUND the icon to make it better visible,
+ * then we seem forced to use an "actionLayout" with an icon-Button using the outline style.
+ * An alternative is to use an icon with outline builtin... but that makes the actual icon to small.
  */
 public abstract class FFBaseDialogFragment
         extends DialogFragment {
-
-    private static final int USE_DEFAULT = -1;
 
     private final int fullscreenLayoutId;
     private final int contentLayoutId;
 
     /** The <strong>Dialog</strong> Toolbar. Not to be confused with the Activity's Toolbar! */
+    @Nullable
     private Toolbar dialogToolbar;
     /** Show the dialog fullscreen (default) or as a floating dialog. */
     private boolean fullscreen;
@@ -92,9 +88,6 @@ public abstract class FFBaseDialogFragment
     /** FLOATING DIALOG mode only. Default set in {@link #onAttach(Context)}. */
     @DimenRes
     private int heightDimenResId;
-
-    @Nullable
-    private Group titleBar;
 
     /**
      * Constructor.
@@ -147,7 +140,7 @@ public abstract class FFBaseDialogFragment
     @CallSuper
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
-
+        // Must be here as needed by both onCreateDialog/onCreateView
         //noinspection ConstantConditions
         fullscreen = WindowSizeClass.getWidth(getActivity()) == WindowSizeClass.COMPACT
                      || forceFullscreen;
@@ -195,36 +188,17 @@ public abstract class FFBaseDialogFragment
         if (buttonPanel != null) {
             buttonPanel.setVisibility(fullscreen ? View.GONE : View.VISIBLE);
         }
-        titleBar = view.findViewById(R.id.title_group);
-        if (titleBar != null) {
-            titleBar.setVisibility(fullscreen ? View.GONE : View.VISIBLE);
+
+        final Toolbar floatingToolbar = view.findViewById(R.id.dialog_toolbar);
+        if (floatingToolbar != null) {
+            floatingToolbar.setVisibility(fullscreen ? View.GONE : View.VISIBLE);
         }
 
         if (fullscreen) {
             dialogToolbar = Objects.requireNonNull(view.findViewById(R.id.toolbar), "R.id.toolbar");
-            dialogToolbar.setNavigationOnClickListener(this::onToolbarNavigationClick);
-            // Simple menu items; i.e. non-action view.
-            dialogToolbar.setOnMenuItemClickListener(this::onToolbarMenuItemClick);
-
-            // Hookup any/all buttons in the action-view to also use #onToolbarMenuItemClick
-            final MenuItem menuItem = dialogToolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
-            if (menuItem != null) {
-                final View actionView = menuItem.getActionView();
-
-                if (actionView instanceof Button) {
-                    actionView.setOnClickListener(this::onToolbarButtonClick);
-
-                } else if (actionView instanceof ViewGroup) {
-                    final ViewGroup av = (ViewGroup) actionView;
-                    for (int c = 0; c < av.getChildCount(); c++) {
-                        final View child = av.getChildAt(c);
-                        if (child instanceof Button) {
-                            child.setOnClickListener(this::onToolbarButtonClick);
-                        }
-                    }
-                }
-            }
         } else {
+            dialogToolbar = floatingToolbar;
+
             //view.setBackgroundResource(R.drawable.bg_floating_dialog);
 
             if (buttonPanel != null) {
@@ -254,6 +228,31 @@ public abstract class FFBaseDialogFragment
                 view.getLayoutParams().height = res.getDimensionPixelSize(heightDimenResId);
             }
         }
+
+        if (dialogToolbar != null) {
+            dialogToolbar.setNavigationOnClickListener(this::onToolbarNavigationClick);
+            // Simple menu items; i.e. non-action view.
+            dialogToolbar.setOnMenuItemClickListener(this::onToolbarMenuItemClick);
+
+            // Hookup any/all buttons in the action-view to use #onToolbarButtonClick
+            final MenuItem menuItem = dialogToolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
+            if (menuItem != null) {
+                final View actionView = menuItem.getActionView();
+
+                if (actionView instanceof Button) {
+                    actionView.setOnClickListener(this::onToolbarButtonClick);
+
+                } else if (actionView instanceof ViewGroup) {
+                    final ViewGroup av = (ViewGroup) actionView;
+                    for (int c = 0; c < av.getChildCount(); c++) {
+                        final View child = av.getChildAt(c);
+                        if (child instanceof Button) {
+                            child.setOnClickListener(this::onToolbarButtonClick);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -262,32 +261,20 @@ public abstract class FFBaseDialogFragment
      * @param resId Resource ID of a string to set as the title
      */
     public void setTitle(@StringRes final int resId) {
-        if (fullscreen) {
+        if (dialogToolbar != null) {
             dialogToolbar.setTitle(resId);
-        } else {
-            final TextView textView = getView().findViewById(R.id.title);
-            textView.setText(resId);
         }
     }
 
-    public void setTitle(@Nullable final String title) {
-        if (fullscreen) {
+    public void setTitle(@Nullable final CharSequence title) {
+        if (dialogToolbar != null) {
             dialogToolbar.setTitle(title);
-        } else {
-            final TextView textView = getView().findViewById(R.id.title);
-            textView.setText(title);
         }
     }
 
-    public void setSubtitle(@Nullable final String subtitle) {
-        if (fullscreen) {
+    public void setSubtitle(@Nullable final CharSequence subtitle) {
+        if (dialogToolbar != null) {
             dialogToolbar.setSubtitle(subtitle);
-        } else {
-            final TextView textView = getView().findViewById(R.id.subtitle);
-            textView.setText(subtitle);
-            textView.setVisibility(titleBar != null && titleBar.getVisibility() == View.VISIBLE
-                                   && subtitle != null && !subtitle.isEmpty()
-                                   ? View.VISIBLE : View.GONE);
         }
     }
 

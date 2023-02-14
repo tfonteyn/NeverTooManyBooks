@@ -87,8 +87,8 @@
         <item name="layout_scrollFlags">scroll|enterAlways|snap</item>
     </style>
 
-    <!-- A Dialog primary/top toolbar with a 'close' icon. -->
-    <style name="Toolbar.Dialog"
+    <!-- A fullscreen Dialog primary/top toolbar with a 'close' icon. -->
+    <style name="Toolbar.Dialog.Fullscreen"
            parent="Widget.Material3.Toolbar.Surface">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">?attr/actionBarSize</item>
@@ -96,7 +96,15 @@
         <item name="navigationIcon">@drawable/ic_baseline_close_24</item>
     </style>
 
-    <!-- The confirmation button placed in toolbars. (parent is '?attr/materialIconButtonFilledTonalStyle). -->
+    <!-- A floating Dialog primary/top toolbar -->
+    <style name="Toolbar.Dialog.Content"
+           parent="Widget.Material3.Toolbar.Surface">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+        <!--        <item name="android:background">?attr/colorPrimary</item>-->
+    </style>
+
+    <!-- A highlighted button placed in toolbars. (parent is '?attr/materialIconButtonFilledTonalStyle). -->
     <style name="Toolbar.Button"
            parent="@style/Widget.Material3.Button.IconButton.Filled.Tonal">
         <item name="android:layout_width">wrap_content</item>
@@ -118,49 +126,14 @@
     <!-- Dialogs -->
     <!-- *************************************************************************************** -->
 
-    <!-- FrameLayout for a DialogFragment - FLOATING or FULLSCREEN depending on screen size
-         FrameLayout
-         ConstraintLayout
-
-         Important: in FLOATING mode, some adjustments are done from code.
-         See com/hardbacknutter/nevertoomanybooks/dialogs/FFBaseDialogFragment.java#onViewCreated
-     -->
-    <!--    <style name="Dialog.Frame"-->
-    <!--           parent="">-->
-    <!--        <item name="android:layout_width">match_parent</item>-->
-    <!--        <item name="android:layout_height">wrap_content</item>-->
-    <!--        <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>-->
-    <!--    </style>-->
-
-    <!-- FrameLayout for a DialogFragment - always FULLSCREEN
-         NestedScrollView
-    -->
-    <!--    <style name="Dialog.Fullscreen"-->
-    <!--           parent="">-->
-    <!--        <item name="android:layout_width">match_parent</item>-->
-    <!--        <item name="android:layout_height">match_parent</item>-->
-    <!--        <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>-->
-    <!--        <item name="android:fillViewport">true</item>-->
-    <!--    </style>-->
-
-    <!-- Dialog content view.
-         ConstraintLayout
-         LinearLayout
-    -->
-    <style name="Dialog.Body"
+    <!-- Special style for RecyclerView's embedded in a FFBaseDialogFragment -->
+    <style name="Dialog.Body.RecyclerView"
            parent="">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
-
         <item name="android:paddingTop">@dimen/dialogPreferredPaddingTop</item>
         <item name="android:paddingBottom">@dimen/dialogPreferredPaddingBottom</item>
-
         <item name="android:paddingStart">?attr/dialogPreferredPadding</item>
         <item name="android:paddingEnd">?attr/dialogPreferredPadding</item>
-    </style>
 
-    <style name="Dialog.Body.RecyclerView">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">0dp</item>
         <item name="android:fadeScrollbars">false</item>
@@ -168,6 +141,20 @@
         <item name="android:scrollbars">vertical</item>
         <item name="layoutManager">androidx.recyclerview.widget.LinearLayoutManager</item>
         <item name="layout_constraintVertical_bias">0.0</item>
+        <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
+    </style>
+
+    <!-- The root view for the Dialog content. -->
+    <style name="Dialog.Content"
+           parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+
+        <item name="android:paddingTop">@dimen/dialogPreferredPaddingTop</item>
+        <item name="android:paddingBottom">@dimen/dialogPreferredPaddingBottom</item>
+        <item name="android:paddingStart">?attr/dialogPreferredPadding</item>
+        <item name="android:paddingEnd">?attr/dialogPreferredPadding</item>
+
         <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
     </style>
 
@@ -240,6 +227,17 @@
         <item name="iconTint">?attr/colorOnPrimaryContainer</item>
         <item name="android:scaleX">@dimen/btn_context_menu_scale</item>
         <item name="android:scaleY">@dimen/btn_context_menu_scale</item>
+    </style>
+
+    <style name="ButtonPanel.Container"
+           parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:paddingBottom">4dp</item>
     </style>
 
     <!-- *************************************************************************************** -->

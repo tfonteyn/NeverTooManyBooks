@@ -95,8 +95,7 @@ public class EditBookshelfDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         vb = DialogEditBookshelfContentBinding.bind(view.findViewById(R.id.dialog_content));
-        setTitle(R.string.lbl_bookshelf);
-        vb.btnPositive.setText(R.string.action_save);
+        vb.buttonPanel.btnPositive.setText(R.string.action_save);
 
         vb.bookshelf.setText(name);
         autoRemoveError(vb.bookshelf, vb.lblBookshelf);

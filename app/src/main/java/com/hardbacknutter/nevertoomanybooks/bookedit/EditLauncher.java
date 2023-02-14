@@ -23,7 +23,6 @@ import android.os.Bundle;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -74,32 +73,23 @@ public abstract class EditLauncher<T extends Parcelable>
         this.fragmentManager.setFragmentResultListener(this.requestKeyValue, lifecycleOwner, this);
     }
 
-    public abstract void launch(@NonNull String bookTitle,
-                                @NonNull String bookLanguage,
-                                @NonNull EditAction action,
+    public abstract void launch(@NonNull EditAction action,
                                 @NonNull T item);
 
     /**
      * Launch the dialog.
      *
      * @param fragment     a new instance of the desired fragment to launch
-     * @param bookTitle    displayed for info only
-     * @param bookLanguage used for correct Locale handling; Can be {@code null} in which
-     *                     case the user-locale will be used
      * @param action       add or edit
      * @param itemKey      the {@link DBKey} for the item
      * @param item         to edit
      */
     public void launch(@NonNull final DialogFragment fragment,
-                       @NonNull final String bookTitle,
-                       @Nullable final String bookLanguage,
                        @NonNull final EditAction action,
                        @NonNull final String itemKey,
                        @NonNull final T item) {
-        final Bundle args = new Bundle(5);
+        final Bundle args = new Bundle(3);
         args.putString(requestKeyName, requestKeyValue);
-        args.putString(DBKey.TITLE, bookTitle);
-        args.putString(DBKey.LANGUAGE, bookLanguage);
         args.putParcelable(EditAction.BKEY, action);
         args.putParcelable(itemKey, item);
 

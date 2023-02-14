@@ -24,14 +24,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/dialog_content"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingStart="?attr/dialogPreferredPadding"
-    android:paddingTop="@dimen/dialogPreferredPaddingTop"
-    android:paddingEnd="?attr/dialogPreferredPadding"
-    android:paddingBottom="@dimen/dialogPreferredPaddingBottom"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    >
+    style="@style/Dialog.Content">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -39,7 +32,14 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         >
 
-        <include layout="@layout/inc_dialog_title" />
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/dialog_toolbar"
+            style="@style/Toolbar.Dialog.Content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:title="@string/lbl_series_multiple"
+            />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_series_title"
@@ -47,7 +47,7 @@
             android:hint="@string/lbl_series"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title_divider"
+            app:layout_constraintTop_toBottomOf="@id/dialog_toolbar"
             >
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView

@@ -36,8 +36,8 @@
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
-            style="@style/Toolbar.Dialog"
-            app:menu="@menu/toolbar_edit_filters"
+            style="@style/Toolbar.Dialog.Fullscreen"
+            app:menu="@menu/toolbar_action_edit_filters"
             app:title="@string/lbl_filters"
             />
 

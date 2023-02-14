@@ -38,11 +38,9 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherListContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
@@ -84,9 +82,6 @@ public class EditBookPublisherListDialogFragment
             };
     /** The adapter for the list itself. */
     private PublisherListAdapter adapter;
-
-    private ExtPopupMenu contextMenu;
-
     private final EditBookPublisherDialogFragment.Launcher editLauncher =
             new EditBookPublisherDialogFragment.Launcher() {
                 @Override
@@ -100,7 +95,7 @@ public class EditBookPublisherListDialogFragment
                     processChanges(original, modified);
                 }
             };
-
+    private ExtPopupMenu contextMenu;
     /** Drag and drop support for the list view. */
     private ItemTouchHelper itemTouchHelper;
 
@@ -191,11 +186,7 @@ public class EditBookPublisherListDialogFragment
     }
 
     private void editEntry(final int position) {
-        final Book book = vm.getBook();
-        editLauncher.launch(book.getTitle(),
-                            book.getString(DBKey.LANGUAGE),
-                            EditAction.Edit,
-                            publisherList.get(position));
+        editLauncher.launch(EditAction.Edit, publisherList.get(position));
     }
 
     /**
@@ -240,6 +231,7 @@ public class EditBookPublisherListDialogFragment
     @Override
     protected boolean onToolbarButtonClick(@Nullable final View button) {
         if (button != null) {
+            // Fullscreen only;
             // R.id.btn_add
             // R.id.btn_add_details
             onAdd(button.getId() == R.id.btn_add_details);
@@ -266,11 +258,7 @@ public class EditBookPublisherListDialogFragment
 
         final Publisher publisher = Publisher.from(name);
         if (withDetails) {
-            final Book book = vm.getBook();
-            editLauncher.launch(book.getTitle(),
-                                book.getString(DBKey.LANGUAGE),
-                                EditAction.Add,
-                                publisher);
+            editLauncher.launch(EditAction.Add, publisher);
         } else {
             add(publisher);
         }

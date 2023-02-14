@@ -38,11 +38,9 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesListContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
@@ -84,9 +82,6 @@ public class EditBookSeriesListDialogFragment
             };
     /** The adapter for the list itself. */
     private SeriesListAdapter adapter;
-
-    private ExtPopupMenu contextMenu;
-
     private final EditBookSeriesDialogFragment.Launcher editLauncher =
             new EditBookSeriesDialogFragment.Launcher() {
                 @Override
@@ -100,7 +95,7 @@ public class EditBookSeriesListDialogFragment
                     processChanges(original, modified);
                 }
             };
-
+    private ExtPopupMenu contextMenu;
     /** Drag and drop support for the list view. */
     private ItemTouchHelper itemTouchHelper;
 
@@ -191,11 +186,7 @@ public class EditBookSeriesListDialogFragment
     }
 
     private void editEntry(final int position) {
-        final Book book = vm.getBook();
-        editLauncher.launch(book.getTitle(),
-                            book.getString(DBKey.LANGUAGE),
-                            EditAction.Edit,
-                            seriesList.get(position));
+        editLauncher.launch(EditAction.Edit, seriesList.get(position));
     }
 
     /**
@@ -240,6 +231,7 @@ public class EditBookSeriesListDialogFragment
     @Override
     protected boolean onToolbarButtonClick(@Nullable final View button) {
         if (button != null) {
+            // Fullscreen only;
             // R.id.btn_add
             // R.id.btn_add_details
             onAdd(button.getId() == R.id.btn_add_details);
@@ -268,11 +260,7 @@ public class EditBookSeriesListDialogFragment
         //noinspection ConstantConditions
         series.setNumber(vb.seriesNum.getText().toString().trim());
         if (withDetails) {
-            final Book book = vm.getBook();
-            editLauncher.launch(book.getTitle(),
-                                book.getString(DBKey.LANGUAGE),
-                                EditAction.Add,
-                                series);
+            editLauncher.launch(EditAction.Add, series);
         } else {
             add(series);
         }

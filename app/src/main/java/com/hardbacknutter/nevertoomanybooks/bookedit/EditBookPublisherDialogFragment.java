@@ -55,12 +55,6 @@ public class EditBookPublisherDialogFragment
     /** View Binding. */
     private DialogEditBookPublisherContentBinding vb;
 
-    /** Displayed for info only. */
-    @Nullable
-    private String bookTitle;
-    @Nullable
-    private String bookLanguage;
-
     /** The Publisher we're editing. */
     private Publisher publisher;
     /** Current edit. */
@@ -87,8 +81,6 @@ public class EditBookPublisherDialogFragment
         action = Objects.requireNonNull(args.getParcelable(EditAction.BKEY), EditAction.BKEY);
         publisher = Objects.requireNonNull(args.getParcelable(DBKey.FK_PUBLISHER),
                                            DBKey.FK_PUBLISHER);
-        bookTitle = args.getString(DBKey.TITLE);
-        bookLanguage = args.getString(DBKey.LANGUAGE);
 
         if (savedInstanceState == null) {
             currentEdit = new Publisher(publisher.getName());
@@ -103,9 +95,8 @@ public class EditBookPublisherDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         vb = DialogEditBookPublisherContentBinding.bind(view.findViewById(R.id.dialog_content));
-        setTitle(R.string.lbl_publisher);
-        setSubtitle(bookTitle);
-        vb.btnPositive.setText(R.string.action_save);
+        setSubtitle(vm.getBook().getTitle());
+        vb.buttonPanel.btnPositive.setText(R.string.action_save);
 
         //noinspection ConstantConditions
         final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
@@ -170,12 +161,10 @@ public class EditBookPublisherDialogFragment
             extends EditLauncher<Publisher> {
 
         @Override
-        public void launch(@NonNull final String bookTitle,
-                           @NonNull final String bookLanguage,
-                           @NonNull final EditAction action,
+        public void launch(@NonNull final EditAction action,
                            @NonNull final Publisher publisher) {
             super.launch(new EditBookPublisherDialogFragment(),
-                         bookTitle, bookLanguage, action, DBKey.FK_PUBLISHER, publisher);
+                         action, DBKey.FK_PUBLISHER, publisher);
         }
     }
 

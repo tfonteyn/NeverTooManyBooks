@@ -155,7 +155,6 @@ public class CoverBrowserDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         vb = DialogCoverBrowserContentBinding.bind(view.findViewById(R.id.dialog_content));
-        setTitle(R.string.lbl_covers_long);
 
         final String bookTitle = Objects.requireNonNull(
                 requireArguments().getString(DBKey.TITLE), DBKey.TITLE);

@@ -108,8 +108,7 @@ public class EditPublisherDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         vb = DialogEditPublisherContentBinding.bind(view.findViewById(R.id.dialog_content));
-        setTitle(R.string.lbl_publisher);
-        vb.btnPositive.setText(R.string.action_save);
+        vb.buttonPanel.btnPositive.setText(R.string.action_save);
 
         //noinspection ConstantConditions
         final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
