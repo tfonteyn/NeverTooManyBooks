@@ -22,9 +22,10 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:viewBindingIgnore="true"
     >
 
     <com.google.android.material.appbar.AppBarLayout
@@ -42,54 +43,6 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <FrameLayout
-        android:id="@+id/body_frame"
-        style="@style/Dialog.Frame"
-        >
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            >
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                style="@style/Dialog.Body"
-                >
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/lbl_publisher_name"
-                    style="@style/TIL.AutoCompleteTextView"
-                    android:layout_width="@dimen/til_fixed_width_personal_name"
-                    android:hint="@string/lbl_publisher"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    >
-
-                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                        android:id="@+id/publisher_name"
-                        style="@style/acPersonalNameTextEntry"
-                        android:imeOptions="actionDone"
-                        tools:ignore="LabelFor"
-                        />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <TextView
-                    style="@style/Text.Body"
-                    android:textAppearance="?attr/textAppearanceBodySmall"
-                    android:text="@string/warning_immediate_global_changes"
-                    app:layout_constraintStart_toStartOf="@id/lbl_publisher_name"
-                    app:layout_constraintTop_toBottomOf="@id/lbl_publisher_name"
-                    />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <include
-                layout="@layout/inc_dialog_buttonbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
-        </LinearLayout>
-    </FrameLayout>
+    <include
+        layout="@layout/dialog_edit_publisher_content" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

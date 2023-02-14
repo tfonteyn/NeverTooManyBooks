@@ -22,9 +22,10 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:viewBindingIgnore="true"
     >
 
     <com.google.android.material.appbar.AppBarLayout
@@ -48,63 +49,6 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/body_frame"
-        style="@style/Dialog.Fullscreen"
-        >
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            style="@style/Dialog.Body"
-            >
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/lbl_series_title"
-                style="@style/TIL.AutoCompleteTextView"
-                android:hint="@string/lbl_series"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                >
-
-                <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                    android:id="@+id/series_title"
-                    style="@style/acTitleTextEntry"
-                    android:imeOptions="actionNext"
-                    tools:ignore="LabelFor"
-                    />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/lbl_series_num"
-                style="@style/TIL.Text.SeriesNum"
-                app:endIconMode="clear_text"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/lbl_series_title"
-                >
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/series_num"
-                    style="@style/TIE.SeriesNumber"
-                    android:imeOptions="actionDone"
-                    tools:ignore="Autofill"
-                    />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/series_list"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginTop="@dimen/section_margin_top"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/lbl_series_num"
-                tools:listitem="@layout/row_edit_series_list"
-                />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.core.widget.NestedScrollView>
+    <include
+        layout="@layout/dialog_edit_book_series_list_content" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

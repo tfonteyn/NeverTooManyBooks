@@ -20,10 +20,8 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,7 +33,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.RowChangedListener;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditStringBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditStringContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
 
@@ -60,7 +58,7 @@ public abstract class EditStringBaseDialogFragment
     /** FragmentResultListener request key to use for our response. */
     private String requestKey;
     /** View Binding. */
-    private DialogEditStringBinding vb;
+    private DialogEditStringContentBinding vb;
     /** The text we're editing. */
     private String originalText;
     /** Current edit. */
@@ -75,7 +73,7 @@ public abstract class EditStringBaseDialogFragment
     EditStringBaseDialogFragment(@StringRes final int titleId,
                                  @StringRes final int labelResId,
                                  @NonNull final String dataKey) {
-        super(R.layout.dialog_edit_string);
+        super(R.layout.dialog_edit_string, R.layout.dialog_edit_string_content);
 
         dialogTitleId = titleId;
         this.labelResId = labelResId;
@@ -101,9 +99,9 @@ public abstract class EditStringBaseDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        vb = DialogEditStringBinding.bind(view);
-
-        vb.toolbar.setTitle(dialogTitleId);
+        vb = DialogEditStringContentBinding.bind(view.findViewById(R.id.dialog_content));
+        setTitle(dialogTitleId);
+        vb.btnPositive.setText(R.string.action_save);
 
         vb.lblEditString.setHint(getString(labelResId));
         vb.editString.setText(currentText);
@@ -129,21 +127,11 @@ public abstract class EditStringBaseDialogFragment
         vb.editString.requestFocus();
     }
 
-    @Nullable
     @Override
-    protected Button mapButton(@NonNull final Button actionButton,
-                               @NonNull final View buttonPanel) {
-        if (actionButton.getId() == R.id.btn_save) {
-            return buttonPanel.findViewById(R.id.btn_positive);
-        }
-        return null;
-    }
-
-    @Override
-    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem menuItem,
-                                             @Nullable final Button button) {
-        if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM && button != null) {
-            if (button.getId() == R.id.btn_save) {
+    protected boolean onToolbarButtonClick(@Nullable final View button) {
+        if (button != null) {
+            final int id = button.getId();
+            if (id == R.id.btn_save || id == R.id.btn_positive) {
                 if (saveChanges()) {
                     dismiss();
                 }

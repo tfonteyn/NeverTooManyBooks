@@ -22,9 +22,10 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:viewBindingIgnore="true"
     >
 
     <com.google.android.material.appbar.AppBarLayout
@@ -42,123 +43,6 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <FrameLayout
-        android:id="@+id/body_frame"
-        style="@style/Dialog.Frame"
-        >
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            >
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                style="@style/Dialog.Body"
-                >
-
-                <androidx.constraintlayout.helper.widget.Flow
-                    android:id="@+id/flow_names"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:constraint_referenced_ids="lbl_family_name,lbl_given_names"
-                    app:flow_horizontalAlign="start"
-                    app:flow_horizontalBias="0"
-                    app:flow_horizontalGap="@dimen/field_margin_inline"
-                    app:flow_horizontalStyle="packed"
-                    app:flow_maxElementsWrap="2"
-                    app:flow_verticalBias="0"
-                    app:flow_verticalGap="@dimen/field_margin_top"
-                    app:flow_wrapMode="aligned"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    />
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/lbl_family_name"
-                    style="@style/TIL.AutoCompleteTextView"
-                    android:layout_width="@dimen/til_fixed_width_personal_name"
-                    android:hint="@string/lbl_family_name"
-                    >
-
-                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                        android:id="@+id/family_name"
-                        style="@style/acPersonalNameTextEntry"
-                        android:imeOptions="actionNext"
-                        tools:ignore="LabelFor"
-                        />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/lbl_given_names"
-                    style="@style/TIL.AutoCompleteTextView"
-                    android:layout_width="@dimen/til_fixed_width_personal_name"
-                    android:hint="@string/lbl_given_names"
-                    >
-
-                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                        android:id="@+id/given_names"
-                        style="@style/acPersonalNameTextEntry"
-                        android:imeOptions="actionDone"
-                        tools:ignore="LabelFor"
-                        />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <CheckBox
-                    android:id="@+id/cbx_is_complete"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/lbl_author_is_complete"
-                    app:layout_constraintStart_toStartOf="@id/lbl_family_name"
-                    app:layout_constraintTop_toBottomOf="@id/lbl_given_names"
-                    />
-
-                <TextView
-                    android:id="@+id/lbl_real_author_header"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/section_margin_top"
-                    android:text="@string/lbl_author_pseudonym"
-                    app:layout_constraintStart_toStartOf="@id/flow_names"
-                    app:layout_constraintTop_toBottomOf="@id/cbx_is_complete"
-                    />
-
-                <!-- NO hint text! -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/lbl_real_author"
-                    style="@style/TIL.AutoCompleteTextView"
-                    android:layout_width="@dimen/til_fixed_width_personal_name"
-                    android:layout_marginTop="@dimen/section_margin_top"
-                    app:layout_constraintStart_toStartOf="@id/lbl_family_name"
-                    app:layout_constraintTop_toBottomOf="@id/lbl_real_author_header"
-                    >
-
-                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                        android:id="@+id/real_author"
-                        style="@style/acPersonalNameTextEntry"
-                        android:imeOptions="actionDone"
-                        tools:ignore="LabelFor"
-                        />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <TextView
-                    style="@style/Text.Body"
-                    android:layout_marginTop="@dimen/section_margin_top"
-                    android:text="@string/warning_immediate_global_changes"
-                    android:textAppearance="?attr/textAppearanceBodySmall"
-                    app:layout_constraintStart_toStartOf="@id/lbl_family_name"
-                    app:layout_constraintTop_toBottomOf="@id/lbl_real_author"
-                    />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <include
-                layout="@layout/inc_dialog_buttonbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
-        </LinearLayout>
-    </FrameLayout>
+    <include
+        layout="@layout/dialog_edit_author_content" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

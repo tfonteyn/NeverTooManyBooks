@@ -125,23 +125,23 @@
          Important: in FLOATING mode, some adjustments are done from code.
          See com/hardbacknutter/nevertoomanybooks/dialogs/FFBaseDialogFragment.java#onViewCreated
      -->
-    <style name="Dialog.Frame"
-           parent="">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
-    </style>
+    <!--    <style name="Dialog.Frame"-->
+    <!--           parent="">-->
+    <!--        <item name="android:layout_width">match_parent</item>-->
+    <!--        <item name="android:layout_height">wrap_content</item>-->
+    <!--        <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>-->
+    <!--    </style>-->
 
     <!-- FrameLayout for a DialogFragment - always FULLSCREEN
          NestedScrollView
     -->
-    <style name="Dialog.Fullscreen"
-           parent="">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
-        <item name="android:fillViewport">true</item>
-    </style>
+    <!--    <style name="Dialog.Fullscreen"-->
+    <!--           parent="">-->
+    <!--        <item name="android:layout_width">match_parent</item>-->
+    <!--        <item name="android:layout_height">match_parent</item>-->
+    <!--        <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>-->
+    <!--        <item name="android:fillViewport">true</item>-->
+    <!--    </style>-->
 
     <!-- Dialog content view.
          ConstraintLayout

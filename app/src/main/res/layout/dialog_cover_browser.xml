@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -25,6 +25,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    tools:viewBindingIgnore="true"
     >
 
     <com.google.android.material.appbar.AppBarLayout
@@ -41,76 +42,6 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <FrameLayout
-        android:id="@+id/body_frame"
-        style="@style/Dialog.Frame"
-        >
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            style="@style/Dialog.Body"
-            >
-
-            <com.google.android.material.progressindicator.LinearProgressIndicator
-                android:id="@+id/progress_bar"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:indeterminate="true"
-                android:visibility="invisible"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:visibility="visible"
-                />
-
-            <TextView
-                android:id="@+id/status_message"
-                style="@style/Text.Body"
-                android:textAppearance="?attr/textAppearanceBodySmall"
-                app:layout_constraintStart_toStartOf="@id/progress_bar"
-                app:layout_constraintTop_toBottomOf="@id/progress_bar"
-                tools:text="@string/progress_msg_searching_editions"
-                tools:ignore="SelectableText"
-                />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/gallery"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/section_margin_top"
-                android:orientation="horizontal"
-                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/status_message"
-                app:spanCount="@integer/cover_browser_gallery_span_count"
-                tools:itemCount="20"
-                tools:listitem="@layout/row_cover_browser_gallery"
-                />
-
-            <ImageView
-                android:id="@+id/preview"
-                style="@style/CoverImage.BrowserPreview"
-                android:visibility="invisible"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/gallery"
-                tools:ignore="ContentDescription"
-                tools:src="@sample/covers"
-                tools:visibility="visible"
-                />
-
-            <com.google.android.material.progressindicator.CircularProgressIndicator
-                android:id="@+id/previewProgressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="@id/preview"
-                app:layout_constraintEnd_toEndOf="@id/preview"
-                app:layout_constraintStart_toStartOf="@id/preview"
-                app:layout_constraintTop_toTopOf="@id/preview"
-                tools:visibility="visible"
-                />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </FrameLayout>
+    <include
+        layout="@layout/dialog_cover_browser_content" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

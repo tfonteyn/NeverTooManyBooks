@@ -26,7 +26,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -40,7 +39,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesListBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesListContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -71,7 +70,7 @@ public class EditBookSeriesListDialogFragment
     /** The book. Must be in the Activity scope. */
     private EditBookViewModel vm;
     /** View Binding. */
-    private DialogEditBookSeriesListBinding vb;
+    private DialogEditBookSeriesListContentBinding vb;
     /** the rows. */
     private List<Series> seriesList;
     /** React to list changes. */
@@ -109,7 +108,7 @@ public class EditBookSeriesListDialogFragment
      * No-arg constructor for OS use.
      */
     public EditBookSeriesListDialogFragment() {
-        super(R.layout.dialog_edit_book_series_list);
+        super(R.layout.dialog_edit_book_series_list, R.layout.dialog_edit_book_series_list_content);
         setForceFullscreen();
     }
 
@@ -127,6 +126,9 @@ public class EditBookSeriesListDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //noinspection ConstantConditions
+        vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
+
         editLauncher.registerForFragmentResult(getChildFragmentManager(),
                                                EditBookSeriesDialogFragment.BKEY_REQUEST_KEY,
                                                RK_EDIT_SERIES,
@@ -137,13 +139,9 @@ public class EditBookSeriesListDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        vb = DialogEditBookSeriesListBinding.bind(view);
-
-        //noinspection ConstantConditions
-        vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
-
-        vb.toolbar.setSubtitle(vm.getBook().getTitle());
+        vb = DialogEditBookSeriesListContentBinding.bind(view.findViewById(R.id.dialog_content));
+        // always fullscreen; title is fixed, no buttonPanel
+        setSubtitle(vm.getBook().getTitle());
 
         //noinspection ConstantConditions
         final ExtArrayAdapter<String> titleAdapter = new ExtArrayAdapter<>(
@@ -240,9 +238,8 @@ public class EditBookSeriesListDialogFragment
     }
 
     @Override
-    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem menuItem,
-                                             @Nullable final Button button) {
-        if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM && button != null) {
+    protected boolean onToolbarButtonClick(@Nullable final View button) {
+        if (button != null) {
             // R.id.btn_add
             // R.id.btn_add_details
             onAdd(button.getId() == R.id.btn_add_details);

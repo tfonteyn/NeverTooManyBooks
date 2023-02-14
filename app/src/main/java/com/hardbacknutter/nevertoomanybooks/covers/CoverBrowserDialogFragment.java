@@ -54,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogCoverBrowserBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogCoverBrowserContentBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowCoverBrowserGalleryBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
@@ -90,7 +90,7 @@ public class CoverBrowserDialogFragment
     private CoverBrowserViewModel vm;
 
     /** View Binding. */
-    private DialogCoverBrowserBinding vb;
+    private DialogCoverBrowserContentBinding vb;
 
     private ImageViewLoader previewLoader;
     private final PositionHandler positionHandler = new PositionHandler() {
@@ -131,7 +131,7 @@ public class CoverBrowserDialogFragment
      * No-arg constructor for OS use.
      */
     public CoverBrowserDialogFragment() {
-        super(R.layout.dialog_cover_browser);
+        super(R.layout.dialog_cover_browser, R.layout.dialog_cover_browser_content);
         setFloatingDialogWidth(R.dimen.floating_dialogs_cover_browser_width);
     }
 
@@ -154,12 +154,12 @@ public class CoverBrowserDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        vb = DialogCoverBrowserBinding.bind(view);
+        vb = DialogCoverBrowserContentBinding.bind(view.findViewById(R.id.dialog_content));
+        setTitle(R.string.lbl_covers_long);
 
         final String bookTitle = Objects.requireNonNull(
                 requireArguments().getString(DBKey.TITLE), DBKey.TITLE);
-        vb.toolbar.setSubtitle(bookTitle);
+        setSubtitle(bookTitle);
 
         //noinspection ConstantConditions
         galleryAdapter = new GalleryAdapter(getContext(), vm.getEditions(),

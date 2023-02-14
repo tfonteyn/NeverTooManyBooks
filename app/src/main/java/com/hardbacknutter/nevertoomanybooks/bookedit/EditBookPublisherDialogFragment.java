@@ -20,9 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.bookedit;
 
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,7 +30,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
@@ -55,7 +53,7 @@ public class EditBookPublisherDialogFragment
     /** View model. Must be in the Activity scope. */
     private EditBookViewModel vm;
     /** View Binding. */
-    private DialogEditBookPublisherBinding vb;
+    private DialogEditBookPublisherContentBinding vb;
 
     /** Displayed for info only. */
     @Nullable
@@ -74,7 +72,7 @@ public class EditBookPublisherDialogFragment
      * No-arg constructor for OS use.
      */
     public EditBookPublisherDialogFragment() {
-        super(R.layout.dialog_edit_book_publisher);
+        super(R.layout.dialog_edit_book_publisher, R.layout.dialog_edit_book_publisher_content);
     }
 
     @Override
@@ -104,8 +102,10 @@ public class EditBookPublisherDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        vb = DialogEditBookPublisherBinding.bind(view);
-        vb.toolbar.setSubtitle(bookTitle);
+        vb = DialogEditBookPublisherContentBinding.bind(view.findViewById(R.id.dialog_content));
+        setTitle(R.string.lbl_publisher);
+        setSubtitle(bookTitle);
+        vb.btnPositive.setText(R.string.action_save);
 
         //noinspection ConstantConditions
         final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
@@ -119,21 +119,11 @@ public class EditBookPublisherDialogFragment
         vb.publisherName.requestFocus();
     }
 
-    @Nullable
     @Override
-    protected Button mapButton(@NonNull final Button actionButton,
-                               @NonNull final View buttonPanel) {
-        if (actionButton.getId() == R.id.btn_save) {
-            return buttonPanel.findViewById(R.id.btn_positive);
-        }
-        return null;
-    }
-
-    @Override
-    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem menuItem,
-                                             @Nullable final Button button) {
-        if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM && button != null) {
-            if (button.getId() == R.id.btn_save) {
+    protected boolean onToolbarButtonClick(@Nullable final View button) {
+        if (button != null) {
+            final int id = button.getId();
+            if (id == R.id.btn_save || id == R.id.btn_positive) {
                 if (saveChanges()) {
                     dismiss();
                 }

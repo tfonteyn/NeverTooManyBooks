@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -53,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.PEntityListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PStringEqualityFilter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfFiltersBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfFiltersContentBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfFilterBitmaskBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfFilterBooleanBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfFilterEntityListBinding;
@@ -74,7 +73,7 @@ public class BookshelfFiltersDialogFragment
     private FilterListAdapter listAdapter;
     /** View Binding. */
     @SuppressWarnings("FieldCanBeLocal")
-    private DialogEditBookshelfFiltersBinding vb;
+    private DialogEditBookshelfFiltersContentBinding vb;
 
     private BookshelfFiltersViewModel vm;
 
@@ -87,8 +86,9 @@ public class BookshelfFiltersDialogFragment
      * No-arg constructor for OS use.
      */
     public BookshelfFiltersDialogFragment() {
-        super(R.layout.dialog_edit_bookshelf_filters);
-        setFloatingDialogMarginBottom(0);
+        super(R.layout.dialog_edit_bookshelf_filters,
+              R.layout.dialog_edit_bookshelf_filters_content);
+        // Force the height to display the RecyclerView
         setFloatingDialogHeight(R.dimen.floating_dialog_generic_height);
     }
 
@@ -105,9 +105,13 @@ public class BookshelfFiltersDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        vb = DialogEditBookshelfFiltersBinding.bind(view);
-
-        vb.toolbar.setSubtitle(vm.getBookshelf().getName());
+        vb = DialogEditBookshelfFiltersContentBinding.bind(view.findViewById(R.id.dialog_content));
+        setTitle(R.string.lbl_filters);
+        setSubtitle(vm.getBookshelf().getName());
+        vb.btnPositive.setText(R.string.action_select);
+        vb.btnNeutral.setText(R.string.action_clear);
+        vb.btnNeutral.setVisibility(View.VISIBLE);
+        //URGENT: R.id.btn_add
 
         //noinspection ConstantConditions
         listAdapter = new FilterListAdapter(getContext(), vm.getFilterList(), modificationListener);
@@ -124,36 +128,22 @@ public class BookshelfFiltersDialogFragment
         }
     }
 
-    @Nullable
     @Override
-    protected Button mapButton(@NonNull final Button actionButton,
-                               @NonNull final View buttonPanel) {
-        if (actionButton.getId() == R.id.btn_select) {
-            return buttonPanel.findViewById(R.id.btn_positive);
-
-        } else if (actionButton.getId() == R.id.btn_clear) {
-            return buttonPanel.findViewById(R.id.btn_neutral);
-        }
-        return null;
-    }
-
-    @Override
-    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem menuItem,
-                                             @Nullable final Button button) {
-        final int itemId = menuItem.getItemId();
-        if (itemId == R.id.MENU_ACTION_CONFIRM && button != null) {
-            if (button.getId() == R.id.btn_clear) {
+    protected boolean onToolbarButtonClick(@Nullable final View button) {
+        if (button != null) {
+            final int id = button.getId();
+            if (id == R.id.btn_clear || id == R.id.btn_neutral) {
                 vm.setModified(true);
                 vm.getFilterList().clear();
                 saveChanges();
                 dismiss();
                 return true;
 
-            } else if (button.getId() == R.id.btn_add) {
+            } else if (id == R.id.btn_add) {
                 onAdd();
                 return true;
 
-            } else if (button.getId() == R.id.btn_select) {
+            } else if (id == R.id.btn_select || id == R.id.btn_positive) {
                 if (saveChanges()) {
                     dismiss();
                 }

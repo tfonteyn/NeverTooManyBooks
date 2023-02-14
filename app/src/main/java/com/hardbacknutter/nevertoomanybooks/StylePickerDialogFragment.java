@@ -19,11 +19,11 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,7 +32,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.LifecycleOwner;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +40,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogStylesMenuContentBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RadioGroupRecyclerAdapter;
@@ -69,13 +69,14 @@ public class StylePickerDialogFragment
     private List<Style> styleList;
     /** Adapter for the selection. */
     private RadioGroupRecyclerAdapter<String, String> adapter;
+    private DialogStylesMenuContentBinding vb;
 
     /**
      * No-arg constructor for OS use.
      */
     public StylePickerDialogFragment() {
-        super(R.layout.dialog_styles_menu);
-        setFloatingDialogMarginBottom(0);
+        super(R.layout.dialog_styles_menu, R.layout.dialog_styles_menu_content);
+        // Force the height to display the RecyclerView
         setFloatingDialogHeight(R.dimen.floating_dialog_generic_height);
     }
 
@@ -102,8 +103,9 @@ public class StylePickerDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        final RecyclerView stylesListView = view.findViewById(R.id.styles_list);
+        vb = DialogStylesMenuContentBinding.bind(view.findViewById(R.id.dialog_content));
+        setTitle(R.string.lbl_style);
+        vb.btnPositive.setText(R.string.action_select);
 
         loadStyles();
 
@@ -111,7 +113,7 @@ public class StylePickerDialogFragment
         adapter = new RadioGroupRecyclerAdapter<>(getContext(), styleUuids, styleLabels,
                                                   currentStyleUuid,
                                                   uuid -> currentStyleUuid = uuid);
-        stylesListView.setAdapter(adapter);
+        vb.stylesList.setAdapter(adapter);
     }
 
     @Override
@@ -121,28 +123,11 @@ public class StylePickerDialogFragment
         outState.putBoolean(BKEY_SHOW_ALL_STYLES, showAllStyles);
     }
 
-    @Nullable
+    @SuppressLint("NotifyDataSetChanged")
     @Override
-    protected Button mapButton(@NonNull final Button actionButton,
-                               @NonNull final View buttonPanel) {
-        if (actionButton.getId() == R.id.btn_select) {
-            return buttonPanel.findViewById(R.id.btn_positive);
-        }
-        return null;
-    }
-
-    @Override
-    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem menuItem,
-                                             @Nullable final Button button) {
-        final int itemId = menuItem.getItemId();
-
-        if (itemId == R.id.MENU_ACTION_CONFIRM && button != null) {
-            if (button.getId() == R.id.btn_select) {
-                onStyleSelected();
-                return true;
-            }
-
-        } else if (itemId == R.id.MENU_EDIT) {
+    protected boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem) {
+        final int itemId = menuItem != null ? menuItem.getItemId() : 0;
+        if (itemId == R.id.MENU_EDIT) {
             onEditStyle();
             return true;
 
@@ -159,7 +144,19 @@ public class StylePickerDialogFragment
             adapter.notifyDataSetChanged();
             return true;
         }
+        return false;
+    }
 
+    @Override
+    protected boolean onToolbarButtonClick(@Nullable final View button) {
+
+        if (button != null) {
+            final int id = button.getId();
+            if (id == R.id.btn_select || id == R.id.btn_positive) {
+                onStyleSelected();
+                return true;
+            }
+        }
         return false;
     }
 

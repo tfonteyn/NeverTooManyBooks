@@ -26,7 +26,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -40,7 +39,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherListBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherListContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -71,7 +70,7 @@ public class EditBookPublisherListDialogFragment
     /** The book. Must be in the Activity scope. */
     private EditBookViewModel vm;
     /** View Binding. */
-    private DialogEditBookPublisherListBinding vb;
+    private DialogEditBookPublisherListContentBinding vb;
     /** the rows. */
     private List<Publisher> publisherList;
     /** React to list changes. */
@@ -109,7 +108,8 @@ public class EditBookPublisherListDialogFragment
      * No-arg constructor for OS use.
      */
     public EditBookPublisherListDialogFragment() {
-        super(R.layout.dialog_edit_book_publisher_list);
+        super(R.layout.dialog_edit_book_publisher_list,
+              R.layout.dialog_edit_book_publisher_list_content);
         setForceFullscreen();
     }
 
@@ -140,10 +140,9 @@ public class EditBookPublisherListDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        vb = DialogEditBookPublisherListBinding.bind(view);
-
-        vb.toolbar.setSubtitle(vm.getBook().getTitle());
+        vb = DialogEditBookPublisherListContentBinding.bind(view.findViewById(R.id.dialog_content));
+        // always fullscreen; title is fixed, no buttonPanel
+        setSubtitle(vm.getBook().getTitle());
 
         //noinspection ConstantConditions
         final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
@@ -239,9 +238,8 @@ public class EditBookPublisherListDialogFragment
     }
 
     @Override
-    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem menuItem,
-                                             @Nullable final Button button) {
-        if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM && button != null) {
+    protected boolean onToolbarButtonClick(@Nullable final View button) {
+        if (button != null) {
             // R.id.btn_add
             // R.id.btn_add_details
             onAdd(button.getId() == R.id.btn_add_details);

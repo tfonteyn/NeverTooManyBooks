@@ -22,9 +22,10 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:viewBindingIgnore="true"
     >
 
     <com.google.android.material.appbar.AppBarLayout
@@ -42,62 +43,6 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <FrameLayout
-        android:id="@+id/body_frame"
-        style="@style/Dialog.Frame"
-        >
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            >
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                style="@style/Dialog.Body"
-                >
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/lbl_series_title"
-                    style="@style/TIL.AutoCompleteTextView"
-                    android:hint="@string/lbl_series"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    >
-
-                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                        android:id="@+id/series_title"
-                        style="@style/acTitleTextEntry"
-                        android:imeOptions="actionDone"
-                        tools:ignore="LabelFor"
-                        />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <CheckBox
-                    android:id="@+id/cbx_is_complete"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/lbl_series_is_complete"
-                    app:layout_constraintStart_toStartOf="@id/lbl_series_title"
-                    app:layout_constraintTop_toBottomOf="@id/lbl_series_title"
-                    />
-
-                <TextView
-                    style="@style/Text.Body"
-                    android:textAppearance="?attr/textAppearanceBodySmall"
-                    android:text="@string/warning_immediate_global_changes"
-                    app:layout_constraintStart_toStartOf="@id/lbl_series_title"
-                    app:layout_constraintTop_toBottomOf="@id/cbx_is_complete"
-                    />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <include
-                layout="@layout/inc_dialog_buttonbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
-        </LinearLayout>
-    </FrameLayout>
+    <include
+        layout="@layout/dialog_edit_series_content" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

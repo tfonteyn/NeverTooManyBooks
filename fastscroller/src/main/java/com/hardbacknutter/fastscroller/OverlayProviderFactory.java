@@ -129,7 +129,7 @@ public final class OverlayProviderFactory {
         final Context context = popupView.getContext();
         //reminder: don't use colorSurface; that's already used for the list view background.
         final int bgColor = AttrUtils
-                .getColorInt(context, androidx.appcompat.R.attr.colorBackgroundFloating);
+                .getColorInt(context, com.google.android.material.R.attr.colorBackgroundFloating);
         popupView.setBackground(new Md2PopupBackground(context, bgColor));
         popupView.setElevation(res.getDimensionPixelOffset(R.dimen.fs_md2_popup_elevation));
 

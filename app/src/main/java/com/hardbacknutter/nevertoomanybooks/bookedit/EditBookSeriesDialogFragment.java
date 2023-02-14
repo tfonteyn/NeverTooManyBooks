@@ -20,9 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.bookedit;
 
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,7 +30,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
@@ -55,7 +53,7 @@ public class EditBookSeriesDialogFragment
     /** View model. Must be in the Activity scope. */
     private EditBookViewModel vm;
     /** View Binding. */
-    private DialogEditBookSeriesBinding vb;
+    private DialogEditBookSeriesContentBinding vb;
 
     /** Displayed for info only. */
     @Nullable
@@ -74,7 +72,7 @@ public class EditBookSeriesDialogFragment
      * No-arg constructor for OS use.
      */
     public EditBookSeriesDialogFragment() {
-        super(R.layout.dialog_edit_book_series);
+        super(R.layout.dialog_edit_book_series, R.layout.dialog_edit_book_series_content);
     }
 
     @Override
@@ -104,8 +102,10 @@ public class EditBookSeriesDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        vb = DialogEditBookSeriesBinding.bind(view);
-        vb.toolbar.setSubtitle(bookTitle);
+        vb = DialogEditBookSeriesContentBinding.bind(view.findViewById(R.id.dialog_content));
+        setTitle(R.string.lbl_series);
+        setSubtitle(bookTitle);
+        vb.btnPositive.setText(R.string.action_save);
 
         //noinspection ConstantConditions
         final ExtArrayAdapter<String> titleAdapter = new ExtArrayAdapter<>(
@@ -121,21 +121,11 @@ public class EditBookSeriesDialogFragment
         vb.seriesNum.setText(currentEdit.getNumber());
     }
 
-    @Nullable
     @Override
-    protected Button mapButton(@NonNull final Button actionButton,
-                               @NonNull final View buttonPanel) {
-        if (actionButton.getId() == R.id.btn_save) {
-            return buttonPanel.findViewById(R.id.btn_positive);
-        }
-        return null;
-    }
-
-    @Override
-    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem menuItem,
-                                             @Nullable final Button button) {
-        if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM && button != null) {
-            if (button.getId() == R.id.btn_save) {
+    protected boolean onToolbarButtonClick(@Nullable final View button) {
+        if (button != null) {
+            final int id = button.getId();
+            if (id == R.id.btn_save || id == R.id.btn_positive) {
                 if (saveChanges()) {
                     dismiss();
                 }

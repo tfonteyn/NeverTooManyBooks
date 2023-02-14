@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/dialog_content"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="?attr/dialogPreferredPadding"
+    android:paddingTop="@dimen/dialogPreferredPaddingTop"
+    android:paddingEnd="?attr/dialogPreferredPadding"
+    android:paddingBottom="@dimen/dialogPreferredPaddingBottom"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    >
+
+    <include layout="@layout/inc_dialog_title" />
+
+    <androidx.constraintlayout.helper.widget.Flow
+        android:id="@+id/flow_names"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="lbl_family_name,lbl_given_names"
+        app:flow_horizontalAlign="start"
+        app:flow_horizontalBias="0"
+        app:flow_horizontalGap="@dimen/field_margin_inline"
+        app:flow_horizontalStyle="packed"
+        app:flow_maxElementsWrap="2"
+        app:flow_verticalBias="0"
+        app:flow_verticalGap="@dimen/field_margin_top"
+        app:flow_wrapMode="aligned"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title_divider"
+        />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/lbl_family_name"
+        style="@style/TIL.AutoCompleteTextView"
+        android:layout_width="@dimen/til_fixed_width_personal_name"
+        android:hint="@string/lbl_family_name"
+        >
+
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:id="@+id/family_name"
+            style="@style/acPersonalNameTextEntry"
+            android:imeOptions="actionNext"
+            tools:ignore="LabelFor"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/lbl_given_names"
+        style="@style/TIL.AutoCompleteTextView"
+        android:layout_width="@dimen/til_fixed_width_personal_name"
+        android:hint="@string/lbl_given_names"
+        >
+
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:id="@+id/given_names"
+            style="@style/acPersonalNameTextEntry"
+            android:imeOptions="actionDone"
+            tools:ignore="LabelFor"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <CheckBox
+        android:id="@+id/cbx_is_complete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lbl_author_is_complete"
+        app:layout_constraintStart_toStartOf="@id/lbl_family_name"
+        app:layout_constraintTop_toBottomOf="@id/lbl_given_names"
+        />
+
+    <TextView
+        android:id="@+id/lbl_real_author_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/section_margin_top"
+        android:text="@string/lbl_author_pseudonym"
+        app:layout_constraintStart_toStartOf="@id/flow_names"
+        app:layout_constraintTop_toBottomOf="@id/cbx_is_complete"
+        />
+
+    <!-- NO hint text! -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/lbl_real_author"
+        style="@style/TIL.AutoCompleteTextView"
+        android:layout_width="@dimen/til_fixed_width_personal_name"
+        android:layout_marginTop="@dimen/section_margin_top"
+        app:layout_constraintStart_toStartOf="@id/lbl_family_name"
+        app:layout_constraintTop_toBottomOf="@id/lbl_real_author_header"
+        >
+
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:id="@+id/real_author"
+            style="@style/acPersonalNameTextEntry"
+            android:imeOptions="actionDone"
+            tools:ignore="LabelFor"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/note"
+        style="@style/Text.Body"
+        android:layout_marginTop="@dimen/section_margin_top"
+        android:text="@string/warning_immediate_global_changes"
+        android:textAppearance="?attr/textAppearanceBodySmall"
+        app:layout_constraintStart_toStartOf="@id/lbl_family_name"
+        app:layout_constraintTop_toBottomOf="@id/lbl_real_author"
+        />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/buttonPanel"
+        style="?attr/buttonBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="12dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/note"
+        tools:viewBindingIgnore="true"
+        >
+
+        <Button
+            android:id="@+id/btn_neutral"
+            style="?attr/buttonBarNeutralButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/floating_dialogs_button_height"
+            android:text="x"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:ignore="HardcodedText"
+            tools:visibility="visible"
+            />
+
+        <Button
+            android:id="@+id/btn_negative"
+            style="?attr/buttonBarNegativeButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/floating_dialogs_button_height"
+            android:text="@android:string/cancel"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btn_positive"
+            />
+
+        <Button
+            android:id="@+id/btn_positive"
+            style="?attr/buttonBarPositiveButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/floating_dialogs_button_height"
+            android:text="@android:string/ok"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

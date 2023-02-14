@@ -21,9 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -41,7 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfContentBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -60,7 +58,7 @@ public class EditBookshelfDialogFragment
     private String requestKey;
 
     /** View Binding. */
-    private DialogEditBookshelfBinding vb;
+    private DialogEditBookshelfContentBinding vb;
 
     /** The Bookshelf we're editing. */
     private Bookshelf bookshelf;
@@ -72,7 +70,7 @@ public class EditBookshelfDialogFragment
      * No-arg constructor for OS use.
      */
     public EditBookshelfDialogFragment() {
-        super(R.layout.dialog_edit_bookshelf);
+        super(R.layout.dialog_edit_bookshelf, R.layout.dialog_edit_bookshelf_content);
     }
 
     @Override
@@ -96,8 +94,9 @@ public class EditBookshelfDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        vb = DialogEditBookshelfBinding.bind(view);
+        vb = DialogEditBookshelfContentBinding.bind(view.findViewById(R.id.dialog_content));
+        setTitle(R.string.lbl_bookshelf);
+        vb.btnPositive.setText(R.string.action_save);
 
         vb.bookshelf.setText(name);
         autoRemoveError(vb.bookshelf, vb.lblBookshelf);
@@ -105,21 +104,11 @@ public class EditBookshelfDialogFragment
         vb.bookshelf.requestFocus();
     }
 
-    @Nullable
     @Override
-    protected Button mapButton(@NonNull final Button actionButton,
-                               @NonNull final View buttonPanel) {
-        if (actionButton.getId() == R.id.btn_save) {
-            return buttonPanel.findViewById(R.id.btn_positive);
-        }
-        return null;
-    }
-
-    @Override
-    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem menuItem,
-                                             @Nullable final Button button) {
-        if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM && button != null) {
-            if (button.getId() == R.id.btn_save) {
+    protected boolean onToolbarButtonClick(@Nullable final View button) {
+        if (button != null) {
+            final int id = button.getId();
+            if (id == R.id.btn_save || id == R.id.btn_positive) {
                 if (saveChanges()) {
                     dismiss();
                 }

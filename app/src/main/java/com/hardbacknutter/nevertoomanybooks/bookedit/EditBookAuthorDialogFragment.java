@@ -22,9 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.bookedit;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.SparseArray;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
@@ -39,7 +37,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorViewModel;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -70,7 +68,7 @@ public class EditBookAuthorDialogFragment
     private EditAuthorViewModel authorVm;
 
     /** View Binding. */
-    private DialogEditBookAuthorBinding vb;
+    private DialogEditBookAuthorContentBinding vb;
 
     /** Displayed for info only. */
     @Nullable
@@ -85,7 +83,7 @@ public class EditBookAuthorDialogFragment
      * No-arg constructor for OS use.
      */
     public EditBookAuthorDialogFragment() {
-        super(R.layout.dialog_edit_book_author);
+        super(R.layout.dialog_edit_book_author, R.layout.dialog_edit_book_author_content);
         setForceFullscreen();
     }
 
@@ -108,8 +106,9 @@ public class EditBookAuthorDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        vb = DialogEditBookAuthorBinding.bind(view);
-        vb.toolbar.setSubtitle(bookTitle);
+        vb = DialogEditBookAuthorContentBinding.bind(view.findViewById(R.id.dialog_content));
+        // always fullscreen; title is fixed, no buttonPanel
+        setSubtitle(bookTitle);
 
         final Context context = getContext();
         final Author currentEdit = authorVm.getCurrentEdit();
@@ -201,21 +200,11 @@ public class EditBookAuthorDialogFragment
         }
     }
 
-    @Nullable
     @Override
-    protected Button mapButton(@NonNull final Button actionButton,
-                               @NonNull final View buttonPanel) {
-        if (actionButton.getId() == R.id.btn_save) {
-            return buttonPanel.findViewById(R.id.btn_positive);
-        }
-        return null;
-    }
-
-    @Override
-    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem menuItem,
-                                             @Nullable final Button button) {
-        if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM && button != null) {
-            if (button.getId() == R.id.btn_save) {
+    protected boolean onToolbarButtonClick(@Nullable final View button) {
+        if (button != null) {
+            final int id = button.getId();
+            if (id == R.id.btn_save || id == R.id.btn_positive) {
                 if (saveChanges(false)) {
                     dismiss();
                 }

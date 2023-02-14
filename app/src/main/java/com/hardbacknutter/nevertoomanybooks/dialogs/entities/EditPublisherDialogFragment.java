@@ -20,9 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.RowChangedListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditPublisherBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditPublisherContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
@@ -55,7 +53,7 @@ public class EditPublisherDialogFragment
     private String requestKey;
 
     /** View Binding. */
-    private DialogEditPublisherBinding vb;
+    private DialogEditPublisherContentBinding vb;
 
     /** The Publisher we're editing. */
     private Publisher publisher;
@@ -67,7 +65,7 @@ public class EditPublisherDialogFragment
      * No-arg constructor for OS use.
      */
     public EditPublisherDialogFragment() {
-        super(R.layout.dialog_edit_publisher);
+        super(R.layout.dialog_edit_publisher, R.layout.dialog_edit_publisher_content);
     }
 
     /**
@@ -109,8 +107,9 @@ public class EditPublisherDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        vb = DialogEditPublisherBinding.bind(view);
+        vb = DialogEditPublisherContentBinding.bind(view.findViewById(R.id.dialog_content));
+        setTitle(R.string.lbl_publisher);
+        vb.btnPositive.setText(R.string.action_save);
 
         //noinspection ConstantConditions
         final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
@@ -125,21 +124,11 @@ public class EditPublisherDialogFragment
         vb.publisherName.requestFocus();
     }
 
-    @Nullable
     @Override
-    protected Button mapButton(@NonNull final Button actionButton,
-                               @NonNull final View buttonPanel) {
-        if (actionButton.getId() == R.id.btn_save) {
-            return buttonPanel.findViewById(R.id.btn_positive);
-        }
-        return null;
-    }
-
-    @Override
-    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem menuItem,
-                                             @Nullable final Button button) {
-        if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM && button != null) {
-            if (button.getId() == R.id.btn_save) {
+    protected boolean onToolbarButtonClick(@Nullable final View button) {
+        if (button != null) {
+            final int id = button.getId();
+            if (id == R.id.btn_save || id == R.id.btn_positive) {
                 if (saveChanges()) {
                     dismiss();
                 }

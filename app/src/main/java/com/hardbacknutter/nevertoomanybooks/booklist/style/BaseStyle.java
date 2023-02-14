@@ -331,7 +331,7 @@ public abstract class BaseStyle
         if (groupRowUsesPreferredHeight) {
             if (listPreferredItemHeightSmall == 0) {
                 listPreferredItemHeightSmall = AttrUtils.getDimensionPixelSize(
-                        context, androidx.appcompat.R.attr.listPreferredItemHeightSmall);
+                        context, com.google.android.material.R.attr.listPreferredItemHeightSmall);
             }
             return listPreferredItemHeightSmall;
         } else {

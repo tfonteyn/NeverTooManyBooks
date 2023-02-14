@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<!-- Edit the Author details.
+    Names: global
+    isComplete: global
+
+    Type: book
+    -->
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/dialog_content"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="?attr/dialogPreferredPadding"
+    android:paddingTop="@dimen/dialogPreferredPaddingTop"
+    android:paddingEnd="?attr/dialogPreferredPadding"
+    android:paddingBottom="@dimen/dialogPreferredPaddingBottom"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    >
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        >
+
+        <include layout="@layout/inc_dialog_title" />
+
+        <androidx.constraintlayout.helper.widget.Flow
+            android:id="@+id/flow_names"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="lbl_family_name,lbl_given_names"
+            app:flow_horizontalAlign="start"
+            app:flow_horizontalBias="0"
+            app:flow_horizontalGap="@dimen/field_margin_inline"
+            app:flow_horizontalStyle="packed"
+            app:flow_maxElementsWrap="2"
+            app:flow_verticalBias="0"
+            app:flow_verticalGap="@dimen/field_margin_top"
+            app:flow_wrapMode="aligned"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title_divider"
+            />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_family_name"
+            style="@style/TIL.AutoCompleteTextView"
+            android:layout_width="@dimen/til_fixed_width_personal_name"
+            android:hint="@string/lbl_family_name"
+            >
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/family_name"
+                style="@style/acPersonalNameTextEntry"
+                android:imeOptions="actionNext"
+                tools:ignore="LabelFor"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_given_names"
+            style="@style/TIL.AutoCompleteTextView"
+            android:layout_width="@dimen/til_fixed_width_personal_name"
+            android:hint="@string/lbl_given_names"
+            >
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/given_names"
+                style="@style/acPersonalNameTextEntry"
+                android:imeOptions="actionDone"
+                tools:ignore="LabelFor"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <CheckBox
+            android:id="@+id/cbx_is_complete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/lbl_author_is_complete"
+            app:layout_constraintStart_toStartOf="@id/lbl_family_name"
+            app:layout_constraintTop_toBottomOf="@id/lbl_given_names" />
+
+        <TextView
+            android:id="@+id/lbl_real_author_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/section_margin_top"
+            android:text="@string/lbl_author_pseudonym"
+            app:layout_constraintStart_toStartOf="@id/flow_names"
+            app:layout_constraintTop_toBottomOf="@id/cbx_is_complete"
+            />
+
+        <!-- NO hint text! -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_real_author"
+            style="@style/TIL.AutoCompleteTextView"
+            android:layout_width="@dimen/til_fixed_width_personal_name"
+            android:layout_marginTop="@dimen/section_margin_top"
+            app:layout_constraintStart_toStartOf="@id/lbl_family_name"
+            app:layout_constraintTop_toBottomOf="@id/lbl_real_author_header"
+            >
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/real_author"
+                style="@style/acPersonalNameTextEntry"
+                android:imeOptions="actionDone"
+                tools:ignore="LabelFor"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/barrier_types_top"
+            style="@style/Widget.Material3.MaterialDivider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/section_margin_top"
+            app:layout_constraintTop_toBottomOf="@id/lbl_real_author"
+            />
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/btn_use_author_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/section_margin_top"
+            android:checked="true"
+            android:text="@string/lbl_author_type"
+            app:layout_constraintStart_toStartOf="@id/flow_names"
+            app:layout_constraintTop_toBottomOf="@id/barrier_types_top"
+            />
+
+        <!--suppress LongLine -->
+        <androidx.constraintlayout.helper.widget.Flow
+            android:id="@+id/author_type_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/section_margin_top"
+            app:constraint_referenced_ids="cbx_author_type_writer,cbx_author_type_intro,cbx_author_type_contributor,cbx_author_type_translator,cbx_author_type_editor,cbx_author_type_narrator,cbx_author_type_artist,cbx_author_type_inking,cbx_author_type_colorist,cbx_author_type_cover_artist,cbx_author_type_cover_inking,cbx_author_type_cover_colorist"
+            app:flow_horizontalAlign="start"
+            app:flow_horizontalBias="0.5"
+            app:flow_horizontalGap="@dimen/field_margin_inline"
+            app:flow_horizontalStyle="packed"
+            app:flow_maxElementsWrap="6"
+            app:flow_verticalBias="0"
+            app:flow_verticalGap="@dimen/field_margin_top"
+            app:flow_wrapMode="aligned"
+            app:layout_constraintStart_toStartOf="@id/flow_names"
+            app:layout_constraintTop_toBottomOf="@id/btn_use_author_type"
+            />
+
+        <CheckBox
+            android:id="@+id/cbx_author_type_writer"
+            style="@style/AuthorStyleCheckBox"
+            android:text="@string/lbl_author_type_writer"
+            />
+
+        <CheckBox
+            android:id="@+id/cbx_author_type_intro"
+            style="@style/AuthorStyleCheckBox"
+            android:text="@string/lbl_author_type_intro"
+            />
+
+        <CheckBox
+            android:id="@+id/cbx_author_type_contributor"
+            style="@style/AuthorStyleCheckBox"
+            android:text="@string/lbl_author_type_contributor"
+            />
+
+        <CheckBox
+            android:id="@+id/cbx_author_type_translator"
+            style="@style/AuthorStyleCheckBox"
+            android:text="@string/lbl_author_type_translator"
+            />
+
+        <CheckBox
+            android:id="@+id/cbx_author_type_editor"
+            style="@style/AuthorStyleCheckBox"
+            android:text="@string/lbl_author_type_editor"
+            />
+
+        <CheckBox
+            android:id="@+id/cbx_author_type_narrator"
+            style="@style/AuthorStyleCheckBox"
+            android:text="@string/lbl_author_type_narrator"
+            />
+
+        <CheckBox
+            android:id="@+id/cbx_author_type_artist"
+            style="@style/AuthorStyleCheckBox"
+            android:text="@string/lbl_author_type_artist"
+            />
+
+        <CheckBox
+            android:id="@+id/cbx_author_type_inking"
+            style="@style/AuthorStyleCheckBox"
+            android:text="@string/lbl_author_type_inking"
+            />
+
+        <CheckBox
+            android:id="@+id/cbx_author_type_colorist"
+            style="@style/AuthorStyleCheckBox"
+            android:text="@string/lbl_author_type_colorist"
+            />
+
+        <CheckBox
+            android:id="@+id/cbx_author_type_cover_artist"
+            style="@style/AuthorStyleCheckBox"
+            android:text="@string/lbl_author_type_cover_artist"
+            />
+
+        <CheckBox
+            android:id="@+id/cbx_author_type_cover_inking"
+            style="@style/AuthorStyleCheckBox"
+            android:text="@string/lbl_author_type_cover_inking"
+            />
+
+        <CheckBox
+            android:id="@+id/cbx_author_type_cover_colorist"
+            style="@style/AuthorStyleCheckBox"
+            android:text="@string/lbl_author_type_cover_colorist"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

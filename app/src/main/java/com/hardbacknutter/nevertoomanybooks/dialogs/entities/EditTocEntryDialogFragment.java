@@ -20,9 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,7 +35,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookTocBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookTocContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -61,7 +59,7 @@ public class EditTocEntryDialogFragment
     private String requestKey;
 
     /** View Binding. */
-    private DialogEditBookTocBinding vb;
+    private DialogEditBookTocContentBinding vb;
 
     @Nullable
     private String bookTitle;
@@ -85,7 +83,7 @@ public class EditTocEntryDialogFragment
      * No-arg constructor for OS use.
      */
     public EditTocEntryDialogFragment() {
-        super(R.layout.dialog_edit_book_toc);
+        super(R.layout.dialog_edit_book_toc, R.layout.dialog_edit_book_toc_content);
     }
 
     @Override
@@ -116,11 +114,11 @@ public class EditTocEntryDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        vb = DialogEditBookTocBinding.bind(view);
+        vb = DialogEditBookTocContentBinding.bind(view.findViewById(R.id.dialog_content));
+        setTitle(title);
+        setSubtitle(bookTitle);
+        vb.btnPositive.setText(R.string.action_save);
 
-        vb.toolbar.setSubtitle(bookTitle);
-
-        vb.title.setText(title);
         autoRemoveError(vb.title, vb.lblTitle);
 
         firstPublicationDate.ifPresent(date -> vb.firstPublication.setText(
@@ -149,21 +147,11 @@ public class EditTocEntryDialogFragment
         }
     }
 
-    @Nullable
     @Override
-    protected Button mapButton(@NonNull final Button actionButton,
-                               @NonNull final View buttonPanel) {
-        if (actionButton.getId() == R.id.btn_save) {
-            return buttonPanel.findViewById(R.id.btn_positive);
-        }
-        return null;
-    }
-
-    @Override
-    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem menuItem,
-                                             @Nullable final Button button) {
-        if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM && button != null) {
-            if (button.getId() == R.id.btn_save) {
+    protected boolean onToolbarButtonClick(@Nullable final View button) {
+        if (button != null) {
+            final int id = button.getId();
+            if (id == R.id.btn_save || id == R.id.btn_positive) {
                 if (saveChanges()) {
                     dismiss();
                 }

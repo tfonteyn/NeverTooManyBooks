@@ -22,9 +22,10 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:viewBindingIgnore="true"
     >
 
     <com.google.android.material.appbar.AppBarLayout
@@ -42,28 +43,6 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/body_frame"
-        style="@style/Dialog.Frame"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/filter_list"
-            style="@style/Dialog.Body.RecyclerView"
-            app:layout_constraintBottom_toTopOf="@id/buttonPanel"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="MissingConstraints"
-            tools:listitem="@layout/row_edit_bookshelf_filter_boolean"
-            />
-
-        <include
-            android:id="@+id/buttonPanel"
-            layout="@layout/inc_dialog_buttonbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <include
+        layout="@layout/dialog_edit_bookshelf_filters_content" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
