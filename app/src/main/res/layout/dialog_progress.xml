@@ -29,6 +29,7 @@
     >
 
     <!-- used to shade the rest of the screen -->
+
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -45,7 +46,6 @@
             android:id="@+id/progress_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
             android:elevation="4dp"
             android:padding="@dimen/progress_padding"
             android:textAppearance="?attr/textAppearanceTitleMedium"
