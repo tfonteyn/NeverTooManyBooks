@@ -122,6 +122,7 @@
 
         <!-- Material3 theme OVERLAYS! -->
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+
         <item name="materialCalendarTheme">@style/ThemeOverlay.App.MaterialCalendarTheme</item>
         <item name="materialCalendarFullscreenTheme">
             @style/ThemeOverlay.App.MaterialCalendarFullscreenTheme

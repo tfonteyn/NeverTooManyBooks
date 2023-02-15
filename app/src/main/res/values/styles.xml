@@ -101,7 +101,7 @@
            parent="Widget.Material3.Toolbar.Surface">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">?attr/actionBarSize</item>
-        <!--        <item name="android:background">?attr/colorPrimary</item>-->
+        <item name="android:background">@android:color/transparent</item>
     </style>
 
     <!-- A highlighted button placed in toolbars. (parent is '?attr/materialIconButtonFilledTonalStyle). -->

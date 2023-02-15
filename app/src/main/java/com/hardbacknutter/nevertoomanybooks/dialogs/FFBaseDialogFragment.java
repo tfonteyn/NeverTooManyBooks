@@ -162,8 +162,7 @@ public abstract class FFBaseDialogFragment
             dialog = new Dialog(getContext(), R.style.Theme_App_FullScreen);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         } else {
-            dialog = new Dialog(getContext(), com.google.android.material
-                    .R.style.ThemeOverlay_Material3_Dialog_Alert);
+            dialog = new Dialog(getContext(), R.style.ThemeOverlay_App_CustomDialog);
         }
         return dialog;
     }
@@ -188,8 +187,6 @@ public abstract class FFBaseDialogFragment
             dialogToolbar = Objects.requireNonNull(view.findViewById(R.id.toolbar), "R.id.toolbar");
         } else {
             dialogToolbar = floatingToolbar;
-
-            view.setBackgroundResource(R.drawable.bg_floating_dialog);
 
             if (buttonPanel != null) {
                 Button button;

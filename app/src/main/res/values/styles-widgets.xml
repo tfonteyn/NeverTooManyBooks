@@ -141,9 +141,23 @@
         <item name="colorOutline">?attr/colorOnSurfaceVariant</item>
     </style>
 
+    <!-- WORKS -->
+    <!--    <style name="ThemeOverlay.App.CustomDialog"-->
+    <!--           parent="ThemeOverlay.Material3.Dialog.Alert">-->
+    <!--        <item name="dialogCornerRadius">@dimen/floating_dialog_corner_radius</item>-->
+    <!--    </style>-->
+    <!-- WORKS; I don't see a difference with the above...
+         is this yet more Android duplication and semi-deliberate confusion?
+         TODO: try to sort out the mess....
+     -->
+    <style name="ThemeOverlay.App.CustomDialog"
+           parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="dialogCornerRadius">@dimen/floating_dialog_corner_radius</item>
+    </style>
+
+    <!-- app wide ThemeOverlay -->
     <style name="ThemeOverlay.App.MaterialAlertDialog"
            parent="ThemeOverlay.Material3.MaterialAlertDialog">
-        <!-- Override these here, as having them on the "Base.Theme.App" is not enough? -->
         <item name="buttonBarButtonStyle">@style/Widget.App.DialogButtonBarButtons</item>
         <item name="buttonBarPositiveButtonStyle">@style/Widget.App.DialogButtonBarButtons</item>
         <item name="buttonBarNegativeButtonStyle">@style/Widget.App.DialogButtonBarButtons</item>
@@ -154,7 +168,6 @@
 
     <style name="ThemeOverlay.App.MaterialCalendarTheme"
            parent="@style/ThemeOverlay.Material3.MaterialCalendar">
-        <!-- Override these here, as having them on the "Base.Theme.App" is not enough? -->
         <item name="buttonBarButtonStyle">@style/Widget.App.DialogButtonBarButtons</item>
         <item name="buttonBarPositiveButtonStyle">@style/Widget.App.DialogButtonBarButtons</item>
         <item name="buttonBarNegativeButtonStyle">@style/Widget.App.DialogButtonBarButtons</item>
