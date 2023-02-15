@@ -78,7 +78,6 @@ public class EditBookAuthorDialogFragment
      */
     public EditBookAuthorDialogFragment() {
         super(R.layout.dialog_edit_book_author, R.layout.dialog_edit_book_author_content);
-        setForceFullscreen();
     }
 
     @Override

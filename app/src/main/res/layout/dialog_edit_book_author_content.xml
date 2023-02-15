@@ -24,6 +24,9 @@
     isComplete: global
 
     Type: book
+
+    TODO: decide on the NestedScrollView:
+     NOT have it as the top-level, but put it around the author-types instead
     -->
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -44,8 +47,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:title="@string/lbl_author"
-            />
+            app:title="@string/lbl_author" />
 
         <androidx.constraintlayout.helper.widget.Flow
             android:id="@+id/flow_names"
@@ -244,6 +246,34 @@
             style="@style/AuthorStyleCheckBox"
             android:text="@string/lbl_author_type_cover_colorist"
             />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/button_panel_layout"
+            style="@style/ButtonPanel.Container"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/author_type_group">
+
+            <Button
+                android:id="@+id/btn_negative"
+                style="?attr/buttonBarNegativeButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@android:string/cancel"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btn_positive"
+                />
+
+            <Button
+                android:id="@+id/btn_positive"
+                style="?attr/buttonBarPositiveButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/action_save"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
