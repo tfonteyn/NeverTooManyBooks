@@ -88,8 +88,6 @@ public class BookshelfFiltersDialogFragment
     public BookshelfFiltersDialogFragment() {
         super(R.layout.dialog_edit_bookshelf_filters,
               R.layout.dialog_edit_bookshelf_filters_content);
-        // Force the height to display the RecyclerView
-        setFloatingDialogHeight(R.dimen.floating_dialog_generic_height);
     }
 
     @Override
@@ -107,9 +105,6 @@ public class BookshelfFiltersDialogFragment
 
         vb = DialogEditBookshelfFiltersContentBinding.bind(view.findViewById(R.id.dialog_content));
         setSubtitle(vm.getBookshelf().getName());
-        vb.buttonPanel.btnPositive.setText(R.string.action_select);
-        vb.buttonPanel.btnNeutral.setText(R.string.action_clear);
-        vb.buttonPanel.btnNeutral.setVisibility(View.VISIBLE);
 
         //noinspection ConstantConditions
         listAdapter = new FilterListAdapter(getContext(), vm.getFilterList(), modificationListener);

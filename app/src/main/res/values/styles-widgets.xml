@@ -102,6 +102,17 @@
         <item name="indicatorSize">96dp</item>
     </style>
 
+    <!-- used by the "buttonBarButtonStyle" attributes -->
+    <style name="Widget.App.DialogButtonBarButtons"
+           parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="android:textColor">?attr/colorSecondary</item>
+    </style>
+
+    <style name="Widget.App.DialogButtonBarButtons.Flush"
+           parent="Widget.Material3.Button.TextButton.Dialog.Flush">
+        <item name="android:textColor">?attr/colorSecondary</item>
+    </style>
+
     <!-- *************************************************************************************** -->
 
     <style name="ThemeOverlay.App.TabLayout"
@@ -132,24 +143,24 @@
 
     <style name="ThemeOverlay.App.MaterialAlertDialog"
            parent="ThemeOverlay.Material3.MaterialAlertDialog">
-
-        <!-- We MUST set the styles separately!
-             Just setting the common buttonBarButtonStyle is NOT enough -->
-        <item name="buttonBarButtonStyle">@style/ThemeOverlay.DialogButtonBarButtons</item>
-        <item name="buttonBarPositiveButtonStyle">@style/ThemeOverlay.DialogButtonBarButtons</item>
-        <item name="buttonBarNegativeButtonStyle">@style/ThemeOverlay.DialogButtonBarButtons</item>
-        <item name="buttonBarNeutralButtonStyle">@style/ThemeOverlay.DialogButtonBarButtons</item>
+        <!-- Override these here, as having them on the "Base.Theme.App" is not enough? -->
+        <item name="buttonBarButtonStyle">@style/Widget.App.DialogButtonBarButtons</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.App.DialogButtonBarButtons</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Widget.App.DialogButtonBarButtons</item>
+        <item name="buttonBarNeutralButtonStyle">
+            @style/Widget.App.DialogButtonBarButtons.Flush
+        </item>
     </style>
 
     <style name="ThemeOverlay.App.MaterialCalendarTheme"
            parent="@style/ThemeOverlay.Material3.MaterialCalendar">
-
-        <!-- We MUST set the styles separately!
-             Just setting the common buttonBarButtonStyle is NOT enough -->
-        <item name="buttonBarButtonStyle">@style/ThemeOverlay.DialogButtonBarButtons</item>
-        <item name="buttonBarPositiveButtonStyle">@style/ThemeOverlay.DialogButtonBarButtons</item>
-        <item name="buttonBarNegativeButtonStyle">@style/ThemeOverlay.DialogButtonBarButtons</item>
-        <item name="buttonBarNeutralButtonStyle">@style/ThemeOverlay.DialogButtonBarButtons</item>
+        <!-- Override these here, as having them on the "Base.Theme.App" is not enough? -->
+        <item name="buttonBarButtonStyle">@style/Widget.App.DialogButtonBarButtons</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.App.DialogButtonBarButtons</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Widget.App.DialogButtonBarButtons</item>
+        <item name="buttonBarNeutralButtonStyle">
+            @style/Widget.App.DialogButtonBarButtons.Flush
+        </item>
     </style>
 
     <style name="ThemeOverlay.App.MaterialCalendarFullscreenTheme"
@@ -177,9 +188,5 @@
         <item name="android:backgroundTint">?attr/colorButtonNormal</item>
     </style>
 
-    <!-- used by the "buttonBarButtonStyle" attributes -->
-    <style name="ThemeOverlay.DialogButtonBarButtons"
-           parent="Widget.Material3.Button.TextButton.Dialog">
-        <item name="android:textColor">?attr/colorSecondary</item>
-    </style>
+
 </resources>

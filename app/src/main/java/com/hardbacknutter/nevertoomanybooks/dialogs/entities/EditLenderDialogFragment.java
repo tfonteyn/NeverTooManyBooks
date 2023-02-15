@@ -149,7 +149,6 @@ public class EditLenderDialogFragment
         super.onViewCreated(view, savedInstanceState);
         vb = DialogEditLoanContentBinding.bind(view.findViewById(R.id.dialog_content));
         setSubtitle(bookTitle);
-        vb.buttonPanel.btnPositive.setText(R.string.action_save);
 
         //noinspection ConstantConditions
         adapter = new ExtArrayAdapter<>(getContext(), R.layout.popup_dropdown_menu_item,

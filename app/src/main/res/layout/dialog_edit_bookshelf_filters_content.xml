@@ -24,7 +24,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/dialog_content"
-    style="@style/Dialog.Content">
+    style="@style/Dialog.Content"
+    android:minHeight="@dimen/floating_dialog_recycler_view_min_height">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/dialog_toolbar"
@@ -39,8 +40,8 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/filter_list"
         style="@style/Dialog.Body.RecyclerView"
-        app:layout_constraintBottom_toTopOf="@id/button_panel_layout"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/button_panel_layout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/dialog_toolbar"
         tools:listitem="@layout/row_edit_bookshelf_filter_boolean"
@@ -49,12 +50,39 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/button_panel_layout"
         style="@style/ButtonPanel.Container"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/filter_list">
 
-        <include
-            android:id="@+id/button_panel"
-            layout="@layout/inc_dialog_buttons" />
+        <Button
+            android:id="@+id/btn_neutral"
+            style="?attr/buttonBarNeutralButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/action_clear"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            />
+
+        <Button
+            android:id="@+id/btn_negative"
+            style="?attr/buttonBarNegativeButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@android:string/cancel"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btn_positive"
+            />
+
+        <Button
+            android:id="@+id/btn_positive"
+            style="?attr/buttonBarPositiveButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/action_select"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -96,7 +96,6 @@ public class EditBookSeriesDialogFragment
         super.onViewCreated(view, savedInstanceState);
         vb = DialogEditBookSeriesContentBinding.bind(view.findViewById(R.id.dialog_content));
         setSubtitle(vm.getBook().getTitle());
-        vb.buttonPanel.btnPositive.setText(R.string.action_save);
 
         //noinspection ConstantConditions
         final ExtArrayAdapter<String> titleAdapter = new ExtArrayAdapter<>(

@@ -117,7 +117,6 @@ public class EditTocEntryDialogFragment
         vb = DialogEditBookTocContentBinding.bind(view.findViewById(R.id.dialog_content));
         setTitle(title);
         setSubtitle(bookTitle);
-        vb.buttonPanel.btnPositive.setText(R.string.action_save);
 
         autoRemoveError(vb.title, vb.lblTitle);
 

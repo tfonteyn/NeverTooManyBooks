@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -20,6 +20,5 @@
   -->
 
 <resources>
-    <!-- Copy of "material:abc_alert_dialog_button_bar_height" -->
-    <dimen name="floating_dialogs_button_height">54dp</dimen>
+
 </resources>

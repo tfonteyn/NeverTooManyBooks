@@ -17,6 +17,10 @@ ENHANCE: add book by search: allow publisher + present list of finds instead of 
     and then redo the search WITH the isbn
 ==> so this is why we only ever get ONE result back.
 
+Look into using
+https://developer.android.com/guide/navigation/navigation-custom-back
+https://developer.android.com/training/appbar/up-action
+
 ----------------------------------------------------------------------------------------------------
 
 Known issues:

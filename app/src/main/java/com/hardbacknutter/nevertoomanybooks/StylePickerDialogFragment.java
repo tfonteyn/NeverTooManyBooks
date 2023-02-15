@@ -76,10 +76,7 @@ public class StylePickerDialogFragment
      */
     public StylePickerDialogFragment() {
         super(R.layout.dialog_styles_menu, R.layout.dialog_styles_menu_content);
-        // Force the height to display the RecyclerView
-        setFloatingDialogHeight(R.dimen.floating_dialog_generic_height);
     }
-
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -104,7 +101,6 @@ public class StylePickerDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         vb = DialogStylesMenuContentBinding.bind(view.findViewById(R.id.dialog_content));
-        vb.buttonPanel.btnPositive.setText(R.string.action_select);
 
         loadStyles();
 

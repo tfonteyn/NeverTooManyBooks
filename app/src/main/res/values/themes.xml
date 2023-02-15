@@ -108,19 +108,24 @@
         <item name="materialCardViewStyle">@style/Widget.App.CardView</item>
 
         <item name="floatingActionButtonStyle">@style/Widget.App.FloatingActionButton</item>
-        <item name="extendedFloatingActionButtonStyle">@style/Widget.App.ExtendedFloatingActionButton</item>
+        <item name="extendedFloatingActionButtonStyle">
+            @style/Widget.App.ExtendedFloatingActionButton
+        </item>
 
 
         <!-- We MUST set these separately! Just setting the common buttonBarButtonStyle is NOT enough -->
-        <item name="buttonBarButtonStyle">@style/ThemeOverlay.DialogButtonBarButtons</item>
-        <item name="buttonBarPositiveButtonStyle">@style/ThemeOverlay.DialogButtonBarButtons</item>
-        <item name="buttonBarNegativeButtonStyle">@style/ThemeOverlay.DialogButtonBarButtons</item>
-        <item name="buttonBarNeutralButtonStyle">@style/ThemeOverlay.DialogButtonBarButtons</item>
+        <item name="buttonBarButtonStyle">@style/Widget.App.DialogButtonBarButtons</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.App.DialogButtonBarButtons</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Widget.App.DialogButtonBarButtons</item>
+        <item name="buttonBarNeutralButtonStyle">@style/Widget.App.DialogButtonBarButtons.Flush
+        </item>
 
-        <!-- Material3 theme overlays -->
+        <!-- Material3 theme OVERLAYS! -->
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
         <item name="materialCalendarTheme">@style/ThemeOverlay.App.MaterialCalendarTheme</item>
-        <item name="materialCalendarFullscreenTheme">@style/ThemeOverlay.App.MaterialCalendarFullscreenTheme</item>
+        <item name="materialCalendarFullscreenTheme">
+            @style/ThemeOverlay.App.MaterialCalendarFullscreenTheme
+        </item>
 
         <!-- Chip styles as attributes makes it easy to add chips from code -->
         <item name="appChipFilterStyle">@style/Widget.Material3.Chip.Filter</item>

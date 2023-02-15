@@ -29,21 +29,10 @@
     i.e. only from "sw600" onwards!
 -->
 <resources>
-    <!-- com/hardbacknutter/nevertoomanybooks/dialogs/FFBaseDialogFragment.java
-         The default if a floating dialog does not specify a width.
 
-          Must be large enough to fit a single TIL field with "dimen/til_fixed_width_personal_name"
-    -->
-    <dimen name="floating_dialogs_width">420dp</dimen>
-    <!-- dialog specific settings. -->
-    <dimen name="floating_dialog_generic_height">100dp</dimen>
+    <!-- These base value will never get used as the dialogs will be fullscreen
+         at this resolution. Floating dialogs are only used from sw600 -->
+    <dimen name="floating_dialog_recycler_view_min_height">100dp</dimen>
     <dimen name="floating_dialogs_cover_browser_width">100dp</dimen>
 
-    <!--
-        Copy of "material:abc_alert_dialog_button_bar_height" which is used as minHeight
-        for a button. This is a work around for what seems to be a bug where the buttons
-        end up with a 0-height when their height is set to WRAP_CONTENT.
-        Instead we set the button height to this value.
-    -->
-    <dimen name="floating_dialogs_button_height">48dp</dimen>
 </resources>

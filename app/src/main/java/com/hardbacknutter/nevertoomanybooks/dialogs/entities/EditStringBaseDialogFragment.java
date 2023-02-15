@@ -101,7 +101,6 @@ public abstract class EditStringBaseDialogFragment
         super.onViewCreated(view, savedInstanceState);
         vb = DialogEditStringContentBinding.bind(view.findViewById(R.id.dialog_content));
         setTitle(dialogTitleId);
-        vb.buttonPanel.btnPositive.setText(R.string.action_save);
 
         vb.lblEditString.setHint(getString(labelResId));
         vb.editString.setText(currentText);

@@ -104,7 +104,6 @@ public class EditAuthorDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         vb = DialogEditAuthorContentBinding.bind(view.findViewById(R.id.dialog_content));
-        vb.buttonPanel.btnPositive.setText(R.string.action_save);
 
         final Context context = getContext();
         final Author currentEdit = authorVm.getCurrentEdit();

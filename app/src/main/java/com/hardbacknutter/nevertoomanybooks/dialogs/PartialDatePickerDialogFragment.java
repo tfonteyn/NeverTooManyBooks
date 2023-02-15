@@ -144,7 +144,7 @@ public class PartialDatePickerDialogFragment
 
         final Bundle args = requireArguments();
         requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
-        dialogTitleId = args.getInt(BKEY_DIALOG_TITLE);
+        dialogTitleId = args.getInt(BKEY_DIALOG_TITLE, R.string.action_edit);
         fieldId = args.getInt(BKEY_FIELD_ID);
 
         if (savedInstanceState == null) {
@@ -172,7 +172,7 @@ public class PartialDatePickerDialogFragment
         // Ensure components match current Locale order
         reorderPickers(view);
 
-        setTitle(dialogTitleId != 0 ? dialogTitleId : R.string.action_edit);
+        setTitle(dialogTitleId);
 
         final NumberPicker yearPicker = view.findViewById(R.id.year);
         // 0: 'not set'
