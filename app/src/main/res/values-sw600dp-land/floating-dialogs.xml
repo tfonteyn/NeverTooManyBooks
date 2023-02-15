@@ -22,5 +22,5 @@
 <!-- Generic  7.0" (600 x 1024) - 160dpi - sw600 -->
 <resources>
     <dimen name="floating_dialog_recycler_view_min_height">500dp</dimen>
-    <dimen name="floating_dialogs_cover_browser_width">800dp</dimen>
+    <dimen name="floating_dialog_cover_browser_width">800dp</dimen>
 </resources>

@@ -30,10 +30,10 @@
 -->
 <resources>
 
-    <!-- These base value will never get used as the dialogs will be fullscreen
-         at this resolution. Floating dialogs are only used from sw600 -->
+    <!-- These base values will never get used as the dialogs will be fullscreen
+         at this resolution. -->
     <dimen name="floating_dialog_recycler_view_min_height">100dp</dimen>
-    <dimen name="floating_dialogs_cover_browser_width">100dp</dimen>
-
+    <dimen name="floating_dialog_cover_browser_width">100dp</dimen>
+    <!-- Copied from Material 1.8 libs -->
     <dimen name="floating_dialog_corner_radius">28dp</dimen>
 </resources>
