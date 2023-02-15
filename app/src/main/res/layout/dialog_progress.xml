@@ -33,25 +33,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:alpha="0.2"
-        android:clickable="true"
         android:background="?attr/colorOnBackground"
+        android:clickable="true"
         android:elevation="@dimen/progress_z_backdrop"
         />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="@dimen/progress_width"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/progress_margin_top"
-        android:background="@drawable/bg_floating_dialog"
-        android:elevation="@dimen/progress_z"
-        >
+        style="@style/ProgressDialog">
 
         <TextView
             android:id="@+id/progress_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
+            android:background="@android:color/transparent"
             android:elevation="4dp"
             android:padding="@dimen/progress_padding"
             android:textAppearance="?attr/textAppearanceTitleMedium"
@@ -90,15 +84,22 @@
             tools:progress="67"
             />
 
-        <Button
-            android:id="@+id/btn_cancel"
-            style="?attr/buttonBarNegativeButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@android:string/cancel"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/button_panel_layout"
+            style="@style/ButtonPanel.Container"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/progress_bar"
-            />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/progress_bar">
 
+            <Button
+                android:id="@+id/btn_cancel"
+                style="?attr/buttonBarNegativeButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@android:string/cancel"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

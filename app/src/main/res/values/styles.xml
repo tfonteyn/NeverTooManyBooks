@@ -300,6 +300,25 @@
 
     <!-- *************************************************************************************** -->
 
+    <!-- ConstraintLayout -->
+    <style name="ProgressDialog">
+        <item name="android:layout_width">@dimen/progress_width</item>
+        <item name="android:layout_height">wrap_content</item>
+
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:elevation">@dimen/progress_z</item>
+        <item name="android:layout_marginTop">@dimen/progress_margin_top</item>
+
+        <item name="android:background">@drawable/bg_floating_dialog</item>
+        <item name="android:backgroundTint">?attr/colorSurface</item>
+
+        <item name="android:paddingStart">?attr/dialogPreferredPadding</item>
+        <item name="android:paddingTop">@dimen/dialogPreferredPaddingTop</item>
+        <item name="android:paddingEnd">?attr/dialogPreferredPadding</item>
+        <item name="android:paddingBottom">@dimen/dialogPreferredPaddingBottom</item>
+    </style>
+
+
     <!-- NestedScrollView -->
     <style name="TopNestedScroller">
         <item name="android:layout_width">match_parent</item>
