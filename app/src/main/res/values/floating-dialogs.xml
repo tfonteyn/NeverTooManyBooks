@@ -35,4 +35,5 @@
     <dimen name="floating_dialog_recycler_view_min_height">100dp</dimen>
     <dimen name="floating_dialogs_cover_browser_width">100dp</dimen>
 
+    <dimen name="floating_dialog_corner_radius">28dp</dimen>
 </resources>
