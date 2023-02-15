@@ -55,11 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
 /**
  * Provides fullscreen or floating dialog support.
  * <p>
- * Special cases:
- * <p>
- * {@link #setFloatingDialogWidth(int)}: force the width to a 'dimen' setting to maximize it.
- * e.g. {@link CoverBrowserDialogFragment}
- * <p>
  * Why an action-view in the toolbar?
  * If we want an outline to be drawn AROUND the icon to make it better visible,
  * then we seem forced to use an "actionLayout" with an icon-Button using the outline style.
@@ -77,37 +72,43 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
  *         {@code app:layout_constraintBottom_toTopOf="@id/button_panel_layout"}
  *     </li>
  * </ol>
+ * <p>
+ * Special cases:
+ * <p>
+ * {@link #setFloatingDialogWidth(int)}: force the width to a 'dimen' setting to maximize it.
+ * e.g. {@link CoverBrowserDialogFragment}
  */
 public abstract class FFBaseDialogFragment
         extends DialogFragment {
 
     private final int fullscreenLayoutId;
     private final int contentLayoutId;
-
+    private final boolean forceFullscreen;
     /** The <strong>Dialog</strong> Toolbar. Not to be confused with the Activity's Toolbar! */
     @Nullable
     private Toolbar dialogToolbar;
     /** Show the dialog fullscreen (default) or as a floating dialog. */
     private boolean fullscreen;
-    private boolean forceFullscreen;
     /** FLOATING DIALOG mode only. Default set in {@link #onAttach(Context)}. */
     @DimenRes
     private int widthDimenResId;
 
     /**
      * Constructor.
+     *
+     * @param fullscreenLayoutId the layout resource id which offers a full screen
+     *                           dialog-fragment with a CoordinatorLayout/AppBarLayout
+     *                           at the root.
+     * @param contentLayoutId    the layout resource if which can be used to view the same
+     *                           dialog-fragment as a floating dialog; i.e. without
+     *                           the CoordinatorLayout/AppBarLayout.
+     *                           Set this to {@code 0} to force fullscreen usage.
      */
     protected FFBaseDialogFragment(@LayoutRes final int fullscreenLayoutId,
                                    @LayoutRes final int contentLayoutId) {
         this.fullscreenLayoutId = fullscreenLayoutId;
         this.contentLayoutId = contentLayoutId;
-    }
-
-    /**
-     * If required, this <strong>MUST</strong> be called from the <strong>constructor</strong>.
-     */
-    protected void setForceFullscreen() {
-        forceFullscreen = true;
+        forceFullscreen = contentLayoutId == 0;
     }
 
     /**

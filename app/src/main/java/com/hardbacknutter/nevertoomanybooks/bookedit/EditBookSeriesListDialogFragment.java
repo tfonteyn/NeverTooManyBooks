@@ -103,8 +103,7 @@ public class EditBookSeriesListDialogFragment
      * No-arg constructor for OS use.
      */
     public EditBookSeriesListDialogFragment() {
-        super(R.layout.dialog_edit_book_series_list, R.layout.dialog_edit_book_series_list_content);
-        setForceFullscreen();
+        super(R.layout.dialog_edit_book_series_list, 0);
     }
 
     /**

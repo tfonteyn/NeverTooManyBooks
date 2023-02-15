@@ -103,9 +103,7 @@ public class EditBookPublisherListDialogFragment
      * No-arg constructor for OS use.
      */
     public EditBookPublisherListDialogFragment() {
-        super(R.layout.dialog_edit_book_publisher_list,
-              R.layout.dialog_edit_book_publisher_list_content);
-        setForceFullscreen();
+        super(R.layout.dialog_edit_book_publisher_list, 0);
     }
 
     /**

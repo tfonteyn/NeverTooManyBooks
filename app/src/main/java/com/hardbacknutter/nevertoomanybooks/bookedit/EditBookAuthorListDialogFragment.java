@@ -108,8 +108,7 @@ public class EditBookAuthorListDialogFragment
      * No-arg constructor for OS use.
      */
     public EditBookAuthorListDialogFragment() {
-        super(R.layout.dialog_edit_book_author_list, R.layout.dialog_edit_book_author_list_content);
-        setForceFullscreen();
+        super(R.layout.dialog_edit_book_author_list, 0);
     }
 
     /**
