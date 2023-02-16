@@ -28,7 +28,7 @@
     <dimen name="cover_details_1_padding">10dp</dimen>
 
     <!-- smaller than sw600 as we're in embedded mode here
-         multiplier: 1.25 -->
+         multiplier: 2.50 -->
     <dimen name="cover_details_0_height">250dp</dimen>
     <dimen name="cover_details_0_width">160dp</dimen>
     <!-- multiplier: 1.5 -->

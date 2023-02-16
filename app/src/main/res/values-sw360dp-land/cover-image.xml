@@ -34,11 +34,12 @@
     <dimen name="cover_details_0_padding">10dp</dimen>
     <dimen name="cover_details_1_padding">10dp</dimen>
 
-    <!-- multiplier: 1 -->
+    <!-- multiplier: 2 -->
     <dimen name="cover_details_0_height">200dp</dimen>
     <dimen name="cover_details_0_width">128dp</dimen>
-    <dimen name="cover_details_1_height">100dp</dimen>
-    <dimen name="cover_details_1_width">64dp</dimen>
+    <!-- multiplier: 0.8 -->
+    <dimen name="cover_details_1_height">80dp</dimen>
+    <dimen name="cover_details_1_width">52dp</dimen>
 
     <!-- multiplier: 1 -->
     <dimen name="cover_edit_0_height">100dp</dimen>

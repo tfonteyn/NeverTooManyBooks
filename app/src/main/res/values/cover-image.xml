@@ -50,11 +50,15 @@
         0: Front cover
         1: back cover
         These are the MAXIMUM dimensions. Images will always be scaled to fit this box.
+
+        A height of "100dp" and width of "64dp" is considered the default, i.e. multiplier: 1
         -->
-    <dimen name="cover_details_0_height">200dp</dimen>
-    <dimen name="cover_details_0_width">128dp</dimen>
-    <dimen name="cover_details_1_height">100dp</dimen>
-    <dimen name="cover_details_1_width">64dp</dimen>
+    <!-- multiplier: 1.8 -->
+    <dimen name="cover_details_0_height">180dp</dimen>
+    <dimen name="cover_details_0_width">115dp</dimen>
+    <!-- multiplier: 0.9 -->
+    <dimen name="cover_details_1_height">90dp</dimen>
+    <dimen name="cover_details_1_width">57dp</dimen>
 
     <array name="cover_details_height">
         <item>@dimen/cover_details_0_height</item>
@@ -74,8 +78,10 @@
         1: back cover
         These are the MAXIMUM dimensions. Images will always be scaled to fit this box.
         -->
+    <!-- multiplier: 1 -->
     <dimen name="cover_edit_0_height">100dp</dimen>
     <dimen name="cover_edit_0_width">64dp</dimen>
+    <!-- multiplier: 1 -->
     <dimen name="cover_edit_1_height">100dp</dimen>
     <dimen name="cover_edit_1_width">64dp</dimen>
 

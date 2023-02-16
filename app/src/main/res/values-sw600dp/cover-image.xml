@@ -27,9 +27,10 @@
     <dimen name="cover_details_0_padding">15dp</dimen>
     <dimen name="cover_details_1_padding">15dp</dimen>
 
-    <!-- multiplier: 1.5 -->
+    <!-- multiplier: 3 -->
     <dimen name="cover_details_0_height">300dp</dimen>
     <dimen name="cover_details_0_width">192dp</dimen>
+    <!-- multiplier: 1.5 -->
     <dimen name="cover_details_1_height">150dp</dimen>
     <dimen name="cover_details_1_width">96dp</dimen>
 

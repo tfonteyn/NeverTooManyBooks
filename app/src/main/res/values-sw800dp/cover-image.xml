@@ -26,9 +26,10 @@
     <dimen name="cover_details_0_padding">20dp</dimen>
     <dimen name="cover_details_1_padding">20dp</dimen>
 
-    <!-- multiplier: 1.75 -->
+    <!-- multiplier: 3.50 -->
     <dimen name="cover_details_0_height">350dp</dimen>
     <dimen name="cover_details_0_width">224dp</dimen>
+    <!-- multiplier: 1.75 -->
     <dimen name="cover_details_1_height">175dp</dimen>
     <dimen name="cover_details_1_width">112dp</dimen>
 
