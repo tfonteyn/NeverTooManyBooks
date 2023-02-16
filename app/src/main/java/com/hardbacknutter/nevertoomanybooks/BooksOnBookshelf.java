@@ -1469,14 +1469,16 @@ public class BooksOnBookshelf
             // Invisible... theoretically this means the page should not re-layout
             vb.content.list.setVisibility(View.INVISIBLE);
 
-            // If the book details frame is present, remove it
-            final Fragment fragment = getEmbeddedDetailsFragment();
-            if (fragment != null) {
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .setReorderingAllowed(true)
-                        .remove(fragment)
-                        .commit();
+            // If the book details frame and fragment is present, remove the fragment
+            if (hasEmbeddedDetailsFrame()) {
+                final Fragment fragment = vb.content.detailsFrame.getFragment();
+                if (fragment != null) {
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .setReorderingAllowed(true)
+                            .remove(fragment)
+                            .commit();
+                }
             }
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
@@ -1655,11 +1657,11 @@ public class BooksOnBookshelf
         }
     }
 
-    @Nullable
-    private Fragment getEmbeddedDetailsFragment() {
-        return vb.content.detailsFrame == null ? null : vb.content.detailsFrame.getFragment();
-    }
-
+    /**
+     * Check if there is an embedded details-frame in our current layout.
+     *
+     * @return {@code true} if there is.
+     */
     private boolean hasEmbeddedDetailsFrame() {
         return vb.content.detailsFrame != null;
     }
