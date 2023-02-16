@@ -19,8 +19,6 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!-- Generic 10.1" (800 x 1280) - 160dpi - sw800 -->
 <resources>
-    <dimen name="floating_dialog_recycler_view_min_height">600dp</dimen>
-    <dimen name="floating_dialog_cover_browser_width">1000dp</dimen>
+    <dimen name="floating_dialog_cover_browser_width">600dp</dimen>
 </resources>
