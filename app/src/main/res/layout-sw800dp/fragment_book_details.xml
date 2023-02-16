@@ -180,7 +180,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier_description_top"
+            android:id="@+id/barrier_covers_bottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
@@ -195,7 +195,7 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:layout_constraintEnd_toStartOf="@id/toc_frame"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barrier_description_top"
+            app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom"
             >
 
             <include
@@ -215,7 +215,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1"
             app:layout_constraintStart_toEndOf="@id/col2"
-            app:layout_constraintTop_toBottomOf="@id/personal_data_layout"
+            app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom"
             app:layout_constraintVertical_bias="0.0"
             tools:layout="@layout/fragment_toc"
             tools:visibility="visible"
