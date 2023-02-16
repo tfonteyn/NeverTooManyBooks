@@ -1661,8 +1661,7 @@ public class BooksOnBookshelf
     }
 
     private boolean hasEmbeddedDetailsFrame() {
-        //TODO: use better criteria to decide on embedded details frame
-        return WindowSizeClass.isScreenWidthExpanded(this);
+        return vb.content.detailsFrame != null;
     }
 
     /**
