@@ -129,46 +129,12 @@
             tools:text="@sample/data.json/author/full_name"
             />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/publication_section"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/section_margin_top"
-            app:layout_constraintEnd_toEndOf="@id/col2"
-            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
-            app:layout_constraintTop_toBottomOf="@id/author"
-            >
-
-            <include
-                android:id="@+id/publication_content"
-                layout="@layout/fragment_book_details_merge_publication_section"
-                />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <TextView
-            android:id="@+id/lbl_genre"
-            style="@style/Label"
-            android:text="@string/lbl_genre"
-            app:layout_constraintStart_toEndOf="@id/col2"
-            app:layout_constraintTop_toBottomOf="@id/author"
-            />
-
-        <TextView
-            android:id="@+id/genre"
-            style="@style/Field.Generic"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/lbl_genre"
-            app:layout_constraintTop_toBottomOf="@id/lbl_genre"
-            tools:ignore="SelectableText"
-            tools:text="@sample/data.json/genre/name"
-            />
-
         <TextView
             android:id="@+id/lbl_series"
             style="@style/Label"
             android:text="@string/lbl_series"
-            app:layout_constraintStart_toEndOf="@id/col2"
-            app:layout_constraintTop_toBottomOf="@id/genre"
+            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
+            app:layout_constraintTop_toBottomOf="@id/author"
             />
 
         <TextView
@@ -182,7 +148,23 @@
             />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/personal_data_section"
+            android:id="@+id/publication_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/section_margin_top"
+            app:layout_constraintEnd_toEndOf="@id/col2"
+            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
+            app:layout_constraintTop_toBottomOf="@id/series_title"
+            >
+
+            <include
+                android:id="@+id/publication_content"
+                layout="@layout/fragment_book_details_merge_publication_content"
+                />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/personal_data_layout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/section_margin_top"
@@ -193,7 +175,7 @@
 
             <include
                 android:id="@+id/personal_data_content"
-                layout="@layout/fragment_book_details_merge_personal_section"
+                layout="@layout/fragment_book_details_merge_personal_data_content"
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -202,22 +184,25 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="cover_image_0,cover_image_1,publication_section,personal_data_section"
+            app:constraint_referenced_ids="cover_image_0,cover_image_1,publication_layout,personal_data_layout"
             />
 
-        <TextView
-            android:id="@+id/description"
-            style="@style/Field.Description"
-            android:background="@drawable/bg_outline"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/description_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/section_margin_top"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:layout_constraintEnd_toStartOf="@id/toc_frame"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/barrier_description_top"
-            tools:ignore="SelectableText"
-            tools:maxLines="200"
-            tools:text="@tools:sample/lorem/random"
-            tools:visibility="visible"
-            />
+            >
+
+            <include
+                android:id="@+id/description_content"
+                layout="@layout/fragment_book_details_merge_description_content"
+                />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/toc_frame"
@@ -230,7 +215,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1"
             app:layout_constraintStart_toEndOf="@id/col2"
-            app:layout_constraintTop_toBottomOf="@id/personal_data_section"
+            app:layout_constraintTop_toBottomOf="@id/personal_data_layout"
             app:layout_constraintVertical_bias="0.0"
             tools:layout="@layout/fragment_toc"
             tools:visibility="visible"

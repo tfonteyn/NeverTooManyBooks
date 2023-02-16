@@ -24,8 +24,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/TopNestedScroller"
-    tools:viewBindingIgnore="true"
     tools:context=".FragmentHostActivity"
+    tools:viewBindingIgnore="true"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -39,7 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="end"
-            app:constraint_referenced_ids="cover_image_0,cover_image_1,publication_section"
+            app:constraint_referenced_ids="cover_image_0,cover_image_1,publication_layout"
             />
 
         <androidx.constraintlayout.widget.Barrier
@@ -47,15 +47,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="cover_image_0,cover_image_1"
-            />
-
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier_series_bottom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="author,genre,series_title"
+            app:constraint_referenced_ids="cover_image_0,cover_image_1,series_title"
             />
 
         <ImageView
@@ -63,19 +55,19 @@
             style="@style/CoverImage.Details.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:src="@sample/covers"
             tools:ignore="ContentDescription"
+            tools:src="@sample/covers"
             />
 
         <ImageView
             android:id="@id/cover_image_1"
             style="@style/CoverImage.Details.1"
-            app:layout_constraintStart_toEndOf="@id/cover_image_0"
             app:layout_constraintBottom_toBottomOf="@id/cover_image_0"
+            app:layout_constraintStart_toEndOf="@id/cover_image_0"
             app:layout_constraintTop_toTopOf="@id/cover_image_0"
             app:layout_constraintVertical_bias="1"
-            tools:src="@sample/covers"
             tools:ignore="ContentDescription"
+            tools:src="@sample/covers"
             />
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
@@ -146,46 +138,12 @@
             tools:text="@sample/data.json/author/full_name"
             />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/publication_section"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/section_margin_top"
-            app:layout_constraintEnd_toStartOf="@id/barrier_covers_end"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom"
-            >
-
-            <include
-                android:id="@+id/publication_content"
-                layout="@layout/fragment_book_details_merge_publication_section"
-                />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <TextView
-            android:id="@+id/lbl_genre"
-            style="@style/Label"
-            android:text="@string/lbl_genre"
-            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
-            app:layout_constraintTop_toBottomOf="@id/author"
-            />
-
-        <TextView
-            android:id="@+id/genre"
-            style="@style/Field.Generic"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/lbl_genre"
-            app:layout_constraintTop_toBottomOf="@id/lbl_genre"
-            tools:ignore="SelectableText"
-            tools:text="@sample/data.json/genre/name"
-            />
-
         <TextView
             android:id="@+id/lbl_series"
             style="@style/Label"
             android:text="@string/lbl_series"
             app:layout_constraintStart_toStartOf="@id/barrier_covers_end"
-            app:layout_constraintTop_toBottomOf="@id/genre"
+            app:layout_constraintTop_toBottomOf="@id/author"
             />
 
         <TextView
@@ -199,33 +157,51 @@
             />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/personal_data_section"
+            android:id="@+id/publication_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/section_margin_top"
+            app:layout_constraintEnd_toStartOf="@id/barrier_covers_end"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom"
+            >
+
+            <include
+                android:id="@+id/publication_content"
+                layout="@layout/fragment_book_details_merge_publication_content"
+                />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/personal_data_layout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/section_margin_top"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/barrier_covers_end"
-            app:layout_constraintTop_toBottomOf="@id/description"
+            app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom"
             >
 
             <include
                 android:id="@+id/personal_data_content"
-                layout="@layout/fragment_book_details_merge_personal_section"
+                layout="@layout/fragment_book_details_merge_personal_data_content"
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-        <TextView
-            android:id="@+id/description"
-            style="@style/Field.Description"
-            android:background="@drawable/bg_outline"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/description_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/section_margin_top"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
-            android:layout_marginTop="@dimen/section_margin_top"
-            app:layout_constraintTop_toBottomOf="@id/barrier_series_bottom"
-            tools:ignore="SelectableText"
-            tools:text="@tools:sample/lorem/random"
-            tools:maxLines="10"
-            />
+            app:layout_constraintTop_toBottomOf="@id/personal_data_layout"
+            >
+
+            <include
+                android:id="@+id/description_content"
+                layout="@layout/fragment_book_details_merge_description_content"
+                />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

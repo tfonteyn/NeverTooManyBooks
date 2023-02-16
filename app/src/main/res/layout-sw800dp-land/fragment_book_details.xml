@@ -130,46 +130,12 @@
             tools:text="@sample/data.json/author/full_name"
             />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/publication_section"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/section_margin_top"
-            app:layout_constraintEnd_toEndOf="@id/col2"
-            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
-            app:layout_constraintTop_toBottomOf="@id/author"
-            >
-
-            <include
-                android:id="@+id/publication_content"
-                layout="@layout/fragment_book_details_merge_publication_section"
-                />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <TextView
-            android:id="@+id/lbl_genre"
-            style="@style/Label"
-            android:text="@string/lbl_genre"
-            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
-            app:layout_constraintTop_toBottomOf="@id/publication_section"
-            />
-
-        <TextView
-            android:id="@+id/genre"
-            style="@style/Field.Generic"
-            app:layout_constraintEnd_toStartOf="@id/col2"
-            app:layout_constraintStart_toStartOf="@id/lbl_genre"
-            app:layout_constraintTop_toBottomOf="@id/lbl_genre"
-            tools:ignore="SelectableText"
-            tools:text="@sample/data.json/genre/name"
-            />
-
         <TextView
             android:id="@+id/lbl_series"
             style="@style/Label"
             android:text="@string/lbl_series"
             app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
-            app:layout_constraintTop_toBottomOf="@id/genre"
+            app:layout_constraintTop_toBottomOf="@id/author"
             />
 
         <TextView
@@ -183,19 +149,37 @@
             />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/personal_data_section"
+            android:id="@+id/publication_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/section_margin_top"
+            app:layout_constraintEnd_toEndOf="@id/col2"
+            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
+            app:layout_constraintTop_toBottomOf="@id/series_title"
+            >
+
+            <include
+                android:id="@+id/publication_content"
+                layout="@layout/fragment_book_details_merge_publication_content"
+                />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/personal_data_layout"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="@dimen/section_margin_top"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/col2"
             app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
-            app:layout_constraintTop_toBottomOf="@id/series_title"
+            app:layout_constraintTop_toBottomOf="@id/publication_layout"
             >
 
             <include
                 android:id="@+id/personal_data_content"
-                layout="@layout/fragment_book_details_merge_personal_section"
+                layout="@layout/fragment_book_details_merge_personal_data_content"
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -222,14 +206,19 @@
             app:layout_constraintVertical_weight="0.5"
             >
 
-            <TextView
-                android:id="@+id/description"
-                style="@style/Field.Description"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/description_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:ignore="SelectableText"
-                tools:text="@tools:sample/lorem/random"
-                />
+                android:layout_marginTop="@dimen/section_margin_top"
+                >
+
+                <include
+                    android:id="@+id/description_content"
+                    layout="@layout/fragment_book_details_merge_description_content"
+                    />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
         </androidx.core.widget.NestedScrollView>
 
         <androidx.fragment.app.FragmentContainerView
@@ -246,36 +235,5 @@
             tools:layout="@layout/fragment_toc"
             tools:visibility="visible"
             />
-
-        <!--        <TextView-->
-        <!--            android:id="@+id/description"-->
-        <!--            style="@style/Field.Description"-->
-        <!--            android:background="@drawable/bg_large_text_field"-->
-        <!--            android:layout_height="0dp"-->
-        <!--            app:layout_constraintBottom_toTopOf="@id/toc_frame"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent"-->
-        <!--            app:layout_constraintStart_toEndOf="@id/col2"-->
-        <!--            app:layout_constraintTop_toTopOf="parent"-->
-        <!--            app:layout_constraintVertical_bias="0"-->
-        <!--            app:layout_constraintVertical_weight="0.5"-->
-        <!--            tools:ignore="SelectableText"-->
-        <!--            tools:text="@tools:sample/lorem/random"-->
-        <!--            tools:visibility="visible"-->
-        <!--            />-->
-
-        <!--        <androidx.fragment.app.FragmentContainerView-->
-        <!--            android:id="@+id/toc_frame"-->
-        <!--            android:layout_width="0dp"-->
-        <!--            android:layout_height="0dp"-->
-        <!--            android:layout_marginTop="@dimen/field_margin_top"-->
-        <!--            android:visibility="gone"-->
-        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent"-->
-        <!--            app:layout_constraintStart_toEndOf="@id/col2"-->
-        <!--            app:layout_constraintTop_toBottomOf="@+id/description"-->
-        <!--            app:layout_constraintVertical_weight="0.5"-->
-        <!--            tools:layout="@layout/fragment_toc"-->
-        <!--            tools:visibility="visible"-->
-        <!--            />-->
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>
