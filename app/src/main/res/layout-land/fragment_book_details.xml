@@ -34,28 +34,12 @@
         android:layout_margin="@dimen/container_margin"
         >
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/col1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.33"
-            />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/col2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.5"
-            />
-
         <androidx.constraintlayout.widget.Barrier
             android:id="@+id/barrier_covers_end"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="end"
-            app:constraint_referenced_ids="cover_image_0,cover_image_1,col1"
+            app:constraint_referenced_ids="cover_image_0,cover_image_1,publication_section"
             />
 
         <androidx.constraintlayout.widget.Barrier
@@ -88,6 +72,8 @@
             style="@style/CoverImage.Details.1"
             app:layout_constraintStart_toEndOf="@id/cover_image_0"
             app:layout_constraintBottom_toBottomOf="@id/cover_image_0"
+            app:layout_constraintTop_toTopOf="@id/cover_image_0"
+            app:layout_constraintVertical_bias="1"
             tools:src="@sample/covers"
             tools:ignore="ContentDescription"
             />
@@ -165,7 +151,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/section_margin_top"
-            app:layout_constraintEnd_toStartOf="@id/col1"
+            app:layout_constraintEnd_toStartOf="@id/barrier_covers_end"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom"
             >
@@ -180,7 +166,7 @@
             android:id="@+id/lbl_genre"
             style="@style/Label"
             android:text="@string/lbl_genre"
-            app:layout_constraintStart_toEndOf="@id/col1"
+            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/author"
             />
 
@@ -198,7 +184,7 @@
             android:id="@+id/lbl_series"
             style="@style/Label"
             android:text="@string/lbl_series"
-            app:layout_constraintStart_toStartOf="@id/col1"
+            app:layout_constraintStart_toStartOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/genre"
             />
 
@@ -218,7 +204,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/section_margin_top"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/col1"
+            app:layout_constraintStart_toStartOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/description"
             >
 
@@ -234,7 +220,7 @@
             style="@style/Field.Description"
             android:background="@drawable/bg_outline"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/col1"
+            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
             android:layout_marginTop="@dimen/section_margin_top"
             app:layout_constraintTop_toBottomOf="@id/barrier_series_bottom"
             tools:ignore="SelectableText"
