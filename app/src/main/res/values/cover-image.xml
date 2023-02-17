@@ -31,7 +31,6 @@
     <!-- View tag - tags a Cover Image View with the 'uuid' (i.e. the book) it represents. -->
     <item name="TAG_THUMBNAIL_UUID" type="id" />
 
-
     <!-- Predefined id's for cover image views; so we can use them in an array. -->
     <item name="cover_image_0" type="id" />
     <item name="cover_image_1" type="id" />
@@ -46,13 +45,20 @@
     <!-- Maximum space a zoomed cover can use of the screen; 0..100 -->
     <integer name="cover_zoom_screen_percentage">95</integer>
 
-    <!-- Book details screen.
-        0: Front cover
-        1: back cover
-        These are the MAXIMUM dimensions. Images will always be scaled to fit this box.
+    <!-- BoB layout -->
+    <dimen name="cover_list_padding">2dp</dimen>
+
+    <!-- Book details layout.
+         0: Front cover
+         1: back cover
+         These are the MAXIMUM dimensions.
+         Images will always be scaled to fit this box.
 
         A height of "100dp" and width of "64dp" is considered the default, i.e. multiplier: 1
         -->
+    <dimen name="cover_details_0_padding">10dp</dimen>
+    <dimen name="cover_details_1_padding">10dp</dimen>
+
     <!-- multiplier: 1.8 -->
     <dimen name="cover_details_0_height">180dp</dimen>
     <dimen name="cover_details_0_width">115dp</dimen>
@@ -60,6 +66,15 @@
     <dimen name="cover_details_1_height">90dp</dimen>
     <dimen name="cover_details_1_width">57dp</dimen>
 
+    <!-- Book edit layout. -->
+    <!-- multiplier: 1 -->
+    <dimen name="cover_edit_0_height">100dp</dimen>
+    <dimen name="cover_edit_0_width">64dp</dimen>
+    <!-- multiplier: 1 -->
+    <dimen name="cover_edit_1_height">100dp</dimen>
+    <dimen name="cover_edit_1_width">64dp</dimen>
+
+    <!-- array access to cover sizes. -->
     <array name="cover_details_height">
         <item>@dimen/cover_details_0_height</item>
         <item>@dimen/cover_details_1_height</item>
@@ -68,22 +83,6 @@
         <item>@dimen/cover_details_0_width</item>
         <item>@dimen/cover_details_1_width</item>
     </array>
-
-    <dimen name="cover_list_padding">2dp</dimen>
-    <dimen name="cover_details_0_padding">10dp</dimen>
-    <dimen name="cover_details_1_padding">10dp</dimen>
-
-    <!-- Book edit screen.
-        0: Front cover
-        1: back cover
-        These are the MAXIMUM dimensions. Images will always be scaled to fit this box.
-        -->
-    <!-- multiplier: 1 -->
-    <dimen name="cover_edit_0_height">100dp</dimen>
-    <dimen name="cover_edit_0_width">64dp</dimen>
-    <!-- multiplier: 1 -->
-    <dimen name="cover_edit_1_height">100dp</dimen>
-    <dimen name="cover_edit_1_width">64dp</dimen>
 
     <array name="cover_edit_height">
         <item>@dimen/cover_edit_0_height</item>
@@ -103,7 +102,7 @@
     <dimen name="cover_browser_preview_height">250dp</dimen>
     <dimen name="cover_browser_preview_width">160dp</dimen>
 
-    <!-- BoB screen. We use a square space for the image so both
+    <!-- BoB layout. We use a square space for the image so both
          portrait/landscape cover images work out.
          The sizes are calculated at {0, 2, 3, 5} * 40dp
          Width is set at a ratio 0.60 (common for paperbacks)
@@ -119,7 +118,7 @@
         <item>200dp</item>
     </array>
 
-    <!-- used as defaults in the layout. Will be adjusted according user preferences. -->
+    <!-- used as defaults in the BoB layout. Will be adjusted according user preferences. -->
     <dimen name="cover_scale_2_height">120dp</dimen>
     <dimen name="cover_scale_2_width">72dp</dimen>
 

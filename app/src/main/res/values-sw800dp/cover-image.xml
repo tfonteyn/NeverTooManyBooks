@@ -26,12 +26,12 @@
     <dimen name="cover_details_0_padding">20dp</dimen>
     <dimen name="cover_details_1_padding">20dp</dimen>
 
-    <!-- multiplier: 3.50 -->
-    <dimen name="cover_details_0_height">350dp</dimen>
-    <dimen name="cover_details_0_width">224dp</dimen>
-    <!-- multiplier: 1.75 -->
-    <dimen name="cover_details_1_height">175dp</dimen>
-    <dimen name="cover_details_1_width">112dp</dimen>
+    <!-- multiplier: 3 -->
+    <dimen name="cover_details_0_height">300dp</dimen>
+    <dimen name="cover_details_0_width">192dp</dimen>
+    <!-- multiplier: 1.5 -->
+    <dimen name="cover_details_1_height">150dp</dimen>
+    <dimen name="cover_details_1_width">96dp</dimen>
 
     <!-- multiplier: 1.75 -->
     <dimen name="cover_edit_0_height">175dp</dimen>

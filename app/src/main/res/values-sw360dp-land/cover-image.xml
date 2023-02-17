@@ -51,7 +51,7 @@
     <dimen name="cover_browser_gallery_height">80dp</dimen>
     <dimen name="cover_browser_gallery_width">52dp</dimen>
 
-    <!-- multiplier: 1 -->
+    <!-- multiplier: 2.5 -->
     <dimen name="cover_browser_preview_height">250dp</dimen>
     <dimen name="cover_browser_preview_width">160dp</dimen>
 

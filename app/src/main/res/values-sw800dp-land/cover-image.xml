@@ -27,19 +27,24 @@
     <dimen name="cover_details_0_padding">10dp</dimen>
     <dimen name="cover_details_1_padding">10dp</dimen>
 
-    <!-- smaller than sw600 as we're in embedded mode here
-         multiplier: 2.50 -->
+    <!-- multiplier: 2.50 : smaller than sw600 as we're in embedded mode here -->
     <dimen name="cover_details_0_height">250dp</dimen>
     <dimen name="cover_details_0_width">160dp</dimen>
+    <!-- multiplier: 1.2 -->
+    <dimen name="cover_details_1_height">120dp</dimen>
+    <dimen name="cover_details_1_width">77dp</dimen>
+
     <!-- multiplier: 1.5 -->
-    <dimen name="cover_details_1_height">150dp</dimen>
-    <dimen name="cover_details_1_width">96dp</dimen>
+    <dimen name="cover_edit_0_height">150dp</dimen>
+    <dimen name="cover_edit_0_width">96dp</dimen>
+    <dimen name="cover_edit_1_height">150dp</dimen>
+    <dimen name="cover_edit_1_width">96dp</dimen>
 
     <!-- multiplier: 1.5 -->
     <dimen name="cover_browser_gallery_height">150dp</dimen>
     <dimen name="cover_browser_gallery_width">96dp</dimen>
 
-    <!-- multiplier: 2.4 -->
+    <!-- multiplier: 6 -->
     <dimen name="cover_browser_preview_height">600dp</dimen>
     <dimen name="cover_browser_preview_width">384dp</dimen>
 
