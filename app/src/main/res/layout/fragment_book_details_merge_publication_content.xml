@@ -164,7 +164,7 @@
         app:layout_constraintStart_toStartOf="@id/lbl_edition"
         app:layout_constraintTop_toBottomOf="@id/lbl_edition"
         tools:ignore="SelectableText"
-        tools:text="limited to 150 copies"
+        tools:text="limited to 150 copies with ex-libris"
         />
 
     <TextView
