@@ -224,6 +224,8 @@ public class ShowBookDetailsViewModel
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.description, DBKey.DESCRIPTION,
                                        notesFormatter)
+                           // The description_scroller is not present on all devices.
+                           // Do NOT replace it with "description_layout" !!!
                            .addRelatedViews(R.id.description_scroller));
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.genre, DBKey.GENRE)
