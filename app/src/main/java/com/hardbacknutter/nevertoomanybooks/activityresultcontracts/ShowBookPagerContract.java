@@ -52,16 +52,8 @@ public class ShowBookPagerContract
         return FragmentHostActivity
                 .createIntent(context, R.layout.activity_book_details, ShowBookPagerFragment.class)
                 .putExtra(DBKey.FK_BOOK, input.bookId)
-                // the current list table, so the user can swipe
-                // to the next/previous book
-                .putExtra(ShowBookPagerViewModel.BKEY_NAV_TABLE_NAME,
-                          input.navTableName)
-                // The row id in the list table of the given book.
-                // Keep in mind a book can occur multiple times,
-                // so we need to pass the specific one.
-                .putExtra(ShowBookPagerViewModel.BKEY_LIST_TABLE_ROW_ID,
-                          input.listTableRowId)
-                // some style elements are applicable for the details screen
+                .putExtra(ShowBookPagerViewModel.BKEY_NAV_TABLE_NAME, input.navTableName)
+                .putExtra(ShowBookPagerViewModel.BKEY_LIST_TABLE_ROW_ID, input.listTableRowId)
                 .putExtra(Style.BKEY_UUID, input.styleUuid);
     }
 
@@ -91,6 +83,17 @@ public class ShowBookPagerContract
         /** Ignore if navTableName is null. */
         final long listTableRowId;
 
+        /**
+         * @param bookId         the book id
+         * @param styleUuid      to use
+         *                       Some style elements are applicable for the details screen
+         * @param navTableName   The name of the current list-navigation table,
+         *                       which will be used by the pager to allow
+         *                       the user to swipe to the next/previous book
+         * @param listTableRowId The row id in the list table of the given book.
+         *                       Keep in mind a book can occur multiple times,
+         *                       so we need to pass the specific one.
+         */
         public Input(@IntRange(from = 1) final long bookId,
                      @NonNull final String styleUuid,
                      @Nullable final String navTableName,
