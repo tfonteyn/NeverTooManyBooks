@@ -188,20 +188,36 @@
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/description_layout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+        <TextView
+            android:id="@+id/lbl_genre"
+            style="@style/Label"
             android:layout_marginTop="@dimen/section_margin_top"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:text="@string/lbl_genre"
             app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/personal_data_layout"
-            >
+            />
 
-            <include
-                android:id="@+id/description_content"
-                layout="@layout/fragment_book_details_merge_description_content"
-                />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/genre"
+            style="@style/Field.Generic"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/lbl_genre"
+            app:layout_constraintTop_toBottomOf="@id/lbl_genre"
+            tools:ignore="SelectableText"
+            tools:text="@sample/data.json/genre/name"
+            />
+
+        <TextView
+            android:id="@+id/description"
+            style="@style/Field.Description"
+            android:background="@drawable/bg_outline"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
+            app:layout_constraintTop_toBottomOf="@id/genre"
+            tools:ignore="SelectableText"
+            tools:maxLines="20"
+            tools:text="@tools:sample/lorem/random"
+            />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

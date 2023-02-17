@@ -164,8 +164,6 @@
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/personal_data_layout"
             android:layout_width="0dp"
@@ -183,42 +181,43 @@
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- FIXME: this is the latest compromise:
-                Good:
-                Both description and toc are shown;
-                or one or the other and the remaining one takes all height.
-                Bad:
-                Both can/have-to be scrolled when to large to fit but
-                it would be cleaner to scroll them as one.
-                If a description is present, it always take half of the
-                height even if it's just one line.
-                -->
+        <TextView
+            android:id="@+id/lbl_genre"
+            style="@style/Label"
+            android:text="@string/lbl_genre"
+            app:layout_constraintStart_toEndOf="@id/col2"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            />
+
+        <TextView
+            android:id="@+id/genre"
+            style="@style/Field.Generic"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/lbl_genre"
+            app:layout_constraintTop_toBottomOf="@id/lbl_genre"
+            tools:ignore="SelectableText"
+            tools:text="@sample/data.json/genre/name"
+            />
+
         <androidx.core.widget.NestedScrollView
             android:id="@+id/description_scroller"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@drawable/bg_outline"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:layout_constraintBottom_toTopOf="@id/toc_frame"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/col2"
-            app:layout_constraintTop_toBottomOf="@id/title"
-            app:layout_constraintVertical_bias="0"
-            app:layout_constraintVertical_weight="0.5"
-            >
+            app:layout_constraintTop_toBottomOf="@id/genre">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/description_layout"
+            <TextView
+                android:id="@+id/description"
+                style="@style/Field.Description"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/section_margin_top"
-                >
-
-                <include
-                    android:id="@+id/description_content"
-                    layout="@layout/fragment_book_details_merge_description_content"
-                    />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
+                android:layout_height="match_parent"
+                tools:ignore="SelectableText"
+                tools:text="@tools:sample/lorem/random"
+                />
         </androidx.core.widget.NestedScrollView>
 
         <androidx.fragment.app.FragmentContainerView
@@ -227,11 +226,12 @@
             android:layout_height="0dp"
             android:layout_marginTop="@dimen/field_margin_top"
             android:visibility="gone"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/col2"
-            app:layout_constraintTop_toBottomOf="@+id/description_scroller"
-            app:layout_constraintVertical_weight="0.5"
+            app:layout_constraintTop_toBottomOf="@id/description_scroller"
+
             tools:layout="@layout/fragment_toc"
             tools:visibility="visible"
             />
