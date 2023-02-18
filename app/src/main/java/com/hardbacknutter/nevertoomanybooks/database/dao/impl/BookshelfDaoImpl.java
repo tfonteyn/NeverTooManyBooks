@@ -259,7 +259,7 @@ public class BookshelfDaoImpl
             try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
                 stmt.bindString(1, bookshelf.getName());
                 stmt.bindLong(2, styleId);
-                stmt.bindLong(3, bookshelf.getFirstVisibleItemPosition());
+                stmt.bindLong(3, bookshelf.getBooklistAdapterPosition());
                 stmt.bindLong(4, bookshelf.getFirstVisibleItemViewOffset());
                 iId = stmt.executeInsert();
             }
@@ -303,7 +303,7 @@ public class BookshelfDaoImpl
             try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
                 stmt.bindString(1, bookshelf.getName());
                 stmt.bindLong(2, styleId);
-                stmt.bindLong(3, bookshelf.getFirstVisibleItemPosition());
+                stmt.bindLong(3, bookshelf.getBooklistAdapterPosition());
                 stmt.bindLong(4, bookshelf.getFirstVisibleItemViewOffset());
                 stmt.bindLong(5, bookshelf.getId());
 
