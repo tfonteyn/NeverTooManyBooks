@@ -191,7 +191,7 @@ public class StylePickerDialogFragment
 
         // use the activity so we get the results there.
         //noinspection ConstantConditions
-        ((BooksOnBookshelf) getActivity()).editStyle(selectedStyle, true);
+        ((BooksOnBookshelf) getActivity()).editStyle(selectedStyle);
     }
 
     /**

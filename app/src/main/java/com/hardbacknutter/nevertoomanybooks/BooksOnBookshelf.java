@@ -1371,9 +1371,11 @@ public class BooksOnBookshelf
                 });
     }
 
-    public void editStyle(@NonNull final Style style,
-                          final boolean setAsPreferred) {
-        editStyleLauncher.launch(EditStyleContract.edit(style, setAsPreferred));
+    /**
+     * Called from {@link StylePickerDialogFragment}.
+     */
+    void editStyle(@NonNull final Style style) {
+        editStyleLauncher.launch(EditStyleContract.edit(style, true));
     }
 
     /**
