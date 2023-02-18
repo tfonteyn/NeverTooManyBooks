@@ -30,8 +30,8 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskFileUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
@@ -69,9 +69,9 @@ public class OptimizeDbTask
         publishProgress(1, context.getString(R.string.progress_msg_optimizing));
 
         // Cleanup temp files. Out of precaution we only trash jpg files
-        FileUtils.deleteDirectory(CoverDir.getTemp(context),
-                                  file -> file.getName().endsWith(".jpg"),
-                                  this);
+        TaskFileUtils.deleteDirectory(CoverDir.getTemp(context),
+                                      file -> file.getName().endsWith(".jpg"),
+                                      this);
 
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 

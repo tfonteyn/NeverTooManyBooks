@@ -60,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
+import com.hardbacknutter.nevertoomanybooks.utils.FileSize;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UriInfo;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
@@ -377,7 +378,7 @@ public class ExportFragment
                 msg.append("\n\n")
                    .append(getString(R.string.info_export_report, "",
                                      uriInfo.getDisplayName(getContext()),
-                                     FileUtils.formatFileSize(getContext(), size)));
+                                     FileSize.format(getContext(), size)));
 
                 if (size > 0 && size < MAX_FILE_SIZE_FOR_EMAIL) {
                     msg.append("\n\n").append(getString(R.string.confirm_email_file));

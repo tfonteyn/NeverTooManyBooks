@@ -52,7 +52,7 @@ public class LoggerTest {
 
         final File logDir = logger.getLogDir();
 
-        FileUtils.deleteDirectory(logDir, null, null);
+        FileUtils.deleteDirectory(logDir, null);
 
         List<File> files;
 

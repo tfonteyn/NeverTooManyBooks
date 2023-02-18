@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
-import android.content.Context;
 import android.os.Build;
 import android.os.StatFs;
 import android.webkit.MimeTypeMap;
@@ -39,14 +38,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.CRC32;
-
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
 
 /**
  * Class to wrap common storage related functions.
@@ -67,10 +61,6 @@ public final class FileUtils {
      * 8192 is what Android 10 android.os.FileUtils.copy uses.
      */
     private static final int FILE_COPY_BUFFER_SIZE = 8192;
-    /** Bytes to Mb: decimal as per <a href="https://en.wikipedia.org/wiki/File_size">IEC</a>. */
-    private static final int TO_MEGABYTES = 1_000_000;
-    /** Bytes to Kb: decimal as per <a href="https://en.wikipedia.org/wiki/File_size">IEC</a>. */
-    private static final int TO_KILOBYTES = 1_000;
     private static final String ERROR_SOURCE_MISSING = "Source does not exist: ";
     private static final String ERROR_FAILED_TO_RENAME = "Failed to rename: ";
 
@@ -177,41 +167,6 @@ public final class FileUtils {
     }
 
     /**
-     * Recursively copy the source Directory to the destination Directory.
-     *
-     * @param sourceDir   directory
-     * @param destDir     directory
-     * @param cancellable (optional) to check for user cancellation
-     *
-     * @throws IOException on generic/other IO failures
-     */
-    public static void copyDirectory(@NonNull final File sourceDir,
-                                     @NonNull final File destDir,
-                                     @Nullable final Cancellable cancellable)
-            throws IOException {
-        // sanity check
-        if (sourceDir.isDirectory() && destDir.isDirectory()) {
-            //noinspection ConstantConditions
-            for (final File file : sourceDir.listFiles()) {
-                if (cancellable != null && cancellable.isCancelled()) {
-                    return;
-                }
-                final BasicFileAttributes fileAttr =
-                        Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-                if (fileAttr.isRegularFile()) {
-                    copy(file, new File(destDir, file.getName()));
-
-                } else if (fileAttr.isDirectory()) {
-                    final File destSubDir = new File(destDir, file.getName());
-                    //noinspection ResultOfMethodCallIgnored
-                    destSubDir.mkdir();
-                    copyDirectory(file, destSubDir, cancellable);
-                }
-            }
-        }
-    }
-
-    /**
      * ENHANCE: make suitable for multiple filesystems using {@link #copy(File, File)}
      * Android docs {@link File#renameTo(File)}: Both paths be on the same mount point.
      * But we use the external app directory solely, so a 'rename' works as is for now.
@@ -266,28 +221,23 @@ public final class FileUtils {
      * Recursively delete files.
      * Does <strong>NOT</strong> delete the actual directory or any actual subdirectories.
      *
-     * @param root        directory
-     * @param filter      (optional) to apply; {@code null} for all files.
-     * @param cancellable (optional) to check for user cancellation
+     * @param root   directory
+     * @param filter (optional) to apply; {@code null} for all files.
      *
      * @return number of bytes deleted
      */
     public static long deleteDirectory(@NonNull final File root,
-                                       @Nullable final FileFilter filter,
-                                       @Nullable final Cancellable cancellable) {
+                                       @Nullable final FileFilter filter) {
         long totalSize = 0;
         // sanity check
         if (root.isDirectory()) {
             //noinspection ConstantConditions
             for (final File file : root.listFiles(filter)) {
-                if (cancellable != null && cancellable.isCancelled()) {
-                    return totalSize;
-                }
                 if (file.isFile()) {
                     totalSize += file.length();
-                    delete(file);
+                    FileUtils.delete(file);
                 } else if (file.isDirectory()) {
-                    totalSize += deleteDirectory(file, filter, cancellable);
+                    totalSize += deleteDirectory(file, filter);
                 }
             }
         }
@@ -373,29 +323,6 @@ public final class FileUtils {
             }
         }
         return list;
-    }
-
-    /**
-     * Format a number of bytes in a human readable form.
-     *
-     * @param context Current context
-     * @param bytes   to format
-     *
-     * @return formatted # bytes
-     */
-    @NonNull
-    public static String formatFileSize(@NonNull final Context context,
-                                        final float bytes) {
-        if (bytes < 3_000) {
-            // Show 'bytes' if < 3k
-            return context.getString(R.string.size_bytes, bytes);
-        } else if (bytes < 250_000) {
-            // Show Kb if less than 250kB
-            return context.getString(R.string.size_kilobytes, bytes / TO_KILOBYTES);
-        } else {
-            // Show MB otherwise...
-            return context.getString(R.string.size_megabytes, bytes / TO_MEGABYTES);
-        }
     }
 
     /**

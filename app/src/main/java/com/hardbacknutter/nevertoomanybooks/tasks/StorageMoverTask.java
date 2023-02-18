@@ -90,7 +90,7 @@ public class StorageMoverTask
         publishProgress(0, context.getString(R.string.progress_msg_please_wait));
 
         // two steps, so we don't delete anything if the copy fails or is cancelled
-        FileUtils.copyDirectory(sourceDir, destDir, this);
+        TaskFileUtils.copyDirectory(sourceDir, destDir, this);
         if (isCancelled()) {
             return -1;
         }
@@ -98,7 +98,7 @@ public class StorageMoverTask
         publishProgress(0, context.getString(R.string.progress_msg_cleaning_up));
 
         // Delete(File) swallows all exceptions as none are deemed critical.
-        FileUtils.deleteDirectory(sourceDir, null, this);
+        TaskFileUtils.deleteDirectory(sourceDir, null, this);
         if (isCancelled()) {
             return -1;
         }

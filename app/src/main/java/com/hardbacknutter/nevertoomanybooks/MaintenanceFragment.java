@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.SqliteShellFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceAlertDialogBuilder;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
+import com.hardbacknutter.nevertoomanybooks.utils.FileSize;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
@@ -143,7 +144,7 @@ public class MaintenanceFragment
             }
 
             final String msg = getString(R.string.info_cleanup_files,
-                                         FileUtils.formatFileSize(context, bytes),
+                                         FileSize.format(context, bytes),
                                          getString(R.string.option_bug_report));
 
             new MaterialAlertDialogBuilder(context)
@@ -312,9 +313,9 @@ public class MaintenanceFragment
         final Context context = getContext();
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         //noinspection ConstantConditions
-        return FileUtils.deleteDirectory(serviceLocator.getLogger().getLogDir(), null, null)
-               + FileUtils.deleteDirectory(serviceLocator.getUpgradesDir(), null, null)
-               + FileUtils.deleteDirectory(CoverDir.getTemp(context), null, null)
-               + FileUtils.deleteDirectory(CoverDir.getDir(context), coverFilter, null);
+        return FileUtils.deleteDirectory(serviceLocator.getLogger().getLogDir(), null)
+               + FileUtils.deleteDirectory(serviceLocator.getUpgradesDir(), null)
+               + FileUtils.deleteDirectory(CoverDir.getTemp(context), null)
+               + FileUtils.deleteDirectory(CoverDir.getDir(context), coverFilter);
     }
 }
