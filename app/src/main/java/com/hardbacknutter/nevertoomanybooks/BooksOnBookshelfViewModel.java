@@ -27,9 +27,12 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -135,17 +138,31 @@ public class BooksOnBookshelfViewModel
 
     /** Cache for all bookshelves. */
     private final List<Bookshelf> bookshelfList = new ArrayList<>();
+
     private final BoBTask boBTask = new BoBTask();
+
+    private final MutableLiveData<Pair<Integer, Integer>> onSelectAdapterPosition =
+            new MutableLiveData<>();
+
     /** Holder for all search criteria. See {@link SearchCriteria} for more info. */
     @Nullable
     private SearchCriteria searchCriteria;
     /** Database Access. */
     private BookDao bookDao;
+
+    /** Preferred booklist state in next rebuild. */
+    private RebuildBooklist rebuildMode;
+
+    /** Current displayed list. */
+    @Nullable
+    private Booklist booklist;
+
     /**
      * Flag (potentially) set when coming back from another Activity.
      * Indicates if list rebuild is needed in {@link BooksOnBookshelf}#onResume.
      */
     private boolean forceRebuildInOnResume;
+
     /** Flag to indicate that a list has been successfully loaded. */
     private boolean listLoaded;
 
@@ -155,13 +172,19 @@ public class BooksOnBookshelfViewModel
     /** Currently selected bookshelf. */
     @Nullable
     private Bookshelf bookshelf;
-    /** The row id we want the new list to display more-or-less in the center. */
-    private long currentCenteredBookId;
-    /** Preferred booklist state in next rebuild. */
-    private RebuildBooklist rebuildMode;
-    /** Current displayed list. */
-    @Nullable
-    private Booklist booklist;
+
+    /**
+     * The book id we want the new list to display more-or-less in the center.
+     * Takes precedence above {@link #selectedAdapterPosition}
+     */
+    private long selectedBookId;
+
+    /**
+     * The selected (book) adapter position for the book (to be) displayed in the details frame.
+     *
+     * @see #selectedBookId
+     */
+    private int selectedAdapterPosition = RecyclerView.NO_POSITION;
 
     // Not using a list here as we need separate access to the amazon handler
     @Nullable
@@ -187,6 +210,14 @@ public class BooksOnBookshelfViewModel
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<BoBTask.Outcome>>> onFinished() {
         return boBTask.onFinished();
+    }
+
+    /**
+     * @return first: previous adapter position which should be un-selected
+     *         second: current adapter position to select
+     */
+    LiveData<Pair<Integer, Integer>> onSelectAdapterPosition() {
+        return onSelectAdapterPosition;
     }
 
     @Override
@@ -370,8 +401,13 @@ public class BooksOnBookshelfViewModel
         bookshelf.setAsPreferred();
 
         if (previousBookshelfId != bookshelf.getId()) {
-            currentCenteredBookId = 0;
+            resetSelectedBook();
         }
+    }
+
+    private void resetSelectedBook() {
+        selectedBookId = 0;
+        selectedAdapterPosition = RecyclerView.NO_POSITION;
     }
 
     @SuppressWarnings("UnusedReturnValue")
@@ -421,20 +457,25 @@ public class BooksOnBookshelfViewModel
     }
 
     /**
-     * Save current position information in the preferences.
-     * We do this to preserve this data across application shutdown/startup.
+     * Save the current booklist adapter position on the current bookshelf.
      *
      * @param context    Current context
-     * @param position   adapter list position; i.e. first visible position in the list
-     * @param viewOffset offset in pixels for the first visible position in the list
+     * @param position   The booklist <strong>adapter</strong> position of the first visible view.
+     * @param viewOffset Value of {@link RecyclerView#getChildAt(int)} #getTop()
      */
     void saveListPosition(@NonNull final Context context,
                           final int position,
                           final int viewOffset) {
         if (listLoaded) {
             Objects.requireNonNull(bookshelf, Bookshelf.TAG);
-            bookshelf.setFirstVisibleItemPosition(context, position, viewOffset);
+            bookshelf.saveListPosition(context, position, viewOffset);
         }
+    }
+
+    Pair<Integer, Integer> getSavedListPosition() {
+        Objects.requireNonNull(bookshelf, Bookshelf.TAG);
+        return new Pair<>(bookshelf.getBooklistAdapterPosition(),
+                          bookshelf.getFirstVisibleItemViewOffset());
     }
 
     /**
@@ -465,18 +506,26 @@ public class BooksOnBookshelfViewModel
     }
 
     @IntRange(from = 0)
-    long getCurrentCenteredBookId() {
-        return currentCenteredBookId;
+    long getSelectedBookId() {
+        return selectedBookId;
     }
 
     /**
-     * Set the <strong>desired</strong> book id to position the list.
+     * Set the book id and its adapter position to which we like to return to after a rebuild.
+     * <p>
      * Pass {@code 0} to disable.
+     * <p>
+     * Dev. note: reminder: book can appear on multiple positions.
      *
-     * @param bookId to use
+     * @param bookId          to store
+     * @param adapterPosition to store
      */
-    void setCurrentCenteredBookId(@IntRange(from = 0) final long bookId) {
-        currentCenteredBookId = bookId;
+    void setSelectedPosition(@IntRange(from = 0) final long bookId,
+                             final int adapterPosition) {
+        selectedBookId = bookId;
+
+        onSelectAdapterPosition.setValue(new Pair<>(selectedAdapterPosition, adapterPosition));
+        selectedAdapterPosition = adapterPosition;
     }
 
     /**
@@ -504,15 +553,15 @@ public class BooksOnBookshelfViewModel
 
     /**
      * This is used to re-display the list in onResume.
-     * i.e. {@link #currentCenteredBookId} was set, but a rebuild was not needed.
+     * i.e. {@link #selectedBookId} was set, but a rebuild was not needed.
      *
      * @return the node(s), can be empty, but never {@code null}
      */
     @NonNull
     List<BooklistNode> getTargetNodes() {
-        if (currentCenteredBookId != 0) {
+        if (selectedBookId != 0) {
             Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
-            return booklist.getVisibleBookNodes(currentCenteredBookId);
+            return booklist.getVisibleBookNodes(selectedBookId);
         }
 
         return new ArrayList<>();
@@ -579,7 +628,7 @@ public class BooksOnBookshelfViewModel
      * Create the contract input object for one the groups in {@link #BLG_RECORD}.
      *
      * @param context       Current context
-     * @param rowData       the data at the selected position/row
+     * @param rowData       the data at the selected row
      * @param onlyThisShelf flag
      *
      * @return a fully initialized input object
@@ -635,7 +684,7 @@ public class BooksOnBookshelfViewModel
      * Create the contract input object for one the groups in {@link #BLG_DATE_RECORD}.
      *
      * @param context Current context
-     * @param rowData the data at the selected position/row
+     * @param rowData the data at the selected row
      *
      * @return a fully initialized input object
      */
@@ -787,7 +836,7 @@ public class BooksOnBookshelfViewModel
 
         // If we got an reposition id back, make any potential rebuild re-position to it.
         if (data.getRepositionToBookId() > 0) {
-            currentCenteredBookId = data.getRepositionToBookId();
+            selectedBookId = data.getRepositionToBookId();
         }
     }
 
@@ -803,7 +852,7 @@ public class BooksOnBookshelfViewModel
 
         // If we got an reposition id back, make any potential rebuild re-position to it.
         if (data.getRepositionToBookId() > 0) {
-            currentCenteredBookId = data.getRepositionToBookId();
+            selectedBookId = data.getRepositionToBookId();
         }
     }
 
@@ -888,7 +937,7 @@ public class BooksOnBookshelfViewModel
         Objects.requireNonNull(bookshelf, ERROR_NULL_BOOKLIST);
 
         //noinspection ConstantConditions
-        boBTask.build(bookshelf, rebuildMode, searchCriteria, currentCenteredBookId);
+        boBTask.build(bookshelf, rebuildMode, searchCriteria, selectedBookId);
     }
 
     boolean isBuilding() {
@@ -911,13 +960,17 @@ public class BooksOnBookshelfViewModel
     }
 
     void onBuildCancelled() {
-        // reset the central book id.
-        currentCenteredBookId = 0;
+        resetSelectedBook();
     }
 
     void onBuildFailed() {
-        // reset the central book id.
-        currentCenteredBookId = 0;
+        resetSelectedBook();
+    }
+
+    void onBookDeleted(final long bookId) {
+        if (bookId == 0 || bookId == selectedBookId) {
+            resetSelectedBook();
+        }
     }
 
     @NonNull
