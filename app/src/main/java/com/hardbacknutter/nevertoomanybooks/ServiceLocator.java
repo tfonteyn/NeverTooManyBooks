@@ -199,12 +199,6 @@ public final class ServiceLocator {
             if (sInstance == null) {
                 sInstance = new ServiceLocator(context);
 
-                File dir = getUpgradesDir();
-                if (!dir.exists()) {
-                    //noinspection ResultOfMethodCallIgnored
-                    dir.mkdirs();
-                }
-
                 SearchEngineConfig.createRegistry(context);
             }
         }
@@ -243,7 +237,6 @@ public final class ServiceLocator {
         return PreferenceManager.getDefaultSharedPreferences(sInstance.appContext);
     }
 
-
     /**
      * Return the device Locale.
      * <p>
@@ -262,19 +255,6 @@ public final class ServiceLocator {
         return Resources.getSystem().getConfiguration().getLocales().get(0);
     }
 
-    @NonNull
-    public Logger getLogger() {
-        if (logger == null) {
-            logger = new Logger(appContext);
-        }
-        return logger;
-    }
-
-    @NonNull
-    public static File getUpgradesDir() {
-        return new File(sInstance.appContext.getFilesDir(), DIR_UPGRADES);
-    }
-
     /**
      * Create a "new Bundle()" using a supplier.
      * This allows us to inject mock-bundle's when running a JUnit test.
@@ -286,6 +266,24 @@ public final class ServiceLocator {
     @NonNull
     public static Bundle newBundle() {
         return sInstance.bundleSupplier.get();
+    }
+
+    @NonNull
+    public Logger getLogger() {
+        if (logger == null) {
+            logger = new Logger(appContext);
+        }
+        return logger;
+    }
+
+    @NonNull
+    public File getUpgradesDir() {
+        final File dir = new File(appContext.getFilesDir(), DIR_UPGRADES);
+        if (!dir.exists()) {
+            //noinspection ResultOfMethodCallIgnored
+            dir.mkdirs();
+        }
+        return dir;
     }
 
     /**

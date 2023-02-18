@@ -112,7 +112,7 @@ public class DebugReport {
 
     public void addDatabaseUpgrades(final int maxFiles)
             throws IOException {
-        files.addAll(collectFiles(ServiceLocator.getUpgradesDir(), maxFiles));
+        files.addAll(collectFiles(ServiceLocator.getInstance().getUpgradesDir(), maxFiles));
     }
 
     public void addLogs(final int maxFiles)

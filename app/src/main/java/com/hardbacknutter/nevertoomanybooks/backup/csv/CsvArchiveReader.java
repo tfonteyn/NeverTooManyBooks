@@ -91,8 +91,9 @@ public class CsvArchiveReader
         // Backup the database, keeping up to CSV_BACKUP_COPIES copies.
         // ENHANCE: For now we don't inform the user of this nor offer a restore.
 
-        FileUtils.copyWithBackup(new File(ServiceLocator.getInstance().getDb().getDatabasePath()),
-                                 new File(ServiceLocator.getUpgradesDir(), DB_BACKUP_NAME),
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        FileUtils.copyWithBackup(new File(serviceLocator.getDb().getDatabasePath()),
+                                 new File(serviceLocator.getUpgradesDir(), DB_BACKUP_NAME),
                                  DB_BACKUP_COPIES);
 
         try (InputStream is = context.getContentResolver().openInputStream(importHelper.getUri());

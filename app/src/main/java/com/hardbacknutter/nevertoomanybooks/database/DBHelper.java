@@ -615,7 +615,8 @@ public class DBHelper
                           final int oldVersion,
                           final int newVersion) {
 
-        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        final Context context = serviceLocator.getLocalizedAppContext();
 
         final StartupActivity startup = StartupActivity.getActiveActivity();
         if (startup != null) {
@@ -626,14 +627,14 @@ public class DBHelper
         if (oldVersion != newVersion) {
             final String backup = DB_UPGRADE_FILE_PREFIX + "-" + oldVersion + '-' + newVersion;
             try {
-                final File destFile = new File(ServiceLocator.getUpgradesDir(), backup);
+                final File destFile = new File(serviceLocator.getUpgradesDir(), backup);
                 // rename the existing file if there is one
                 if (destFile.exists()) {
                     final File destination = new File(destFile.getPath() + ".bak");
                     try {
                         FileUtils.rename(destFile, destination);
                     } catch (@NonNull final IOException e) {
-                        ServiceLocator.getInstance().getLogger()
+                        serviceLocator.getLogger()
                                       .error(TAG, e, "failed to rename source=" + destFile
                                                      + " TO destination=" + destination, e);
                     }
@@ -641,7 +642,7 @@ public class DBHelper
                 // and create a new copy
                 FileUtils.copy(new File(db.getPath()), destFile);
             } catch (@NonNull final IOException e) {
-                ServiceLocator.getInstance().getLogger().error(TAG, e);
+                serviceLocator.getLogger().error(TAG, e);
             }
         }
 

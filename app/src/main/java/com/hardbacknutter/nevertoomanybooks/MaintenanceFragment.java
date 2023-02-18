@@ -302,7 +302,7 @@ public class MaintenanceFragment
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         //noinspection ConstantConditions
         return FileUtils.getUsedSpace(serviceLocator.getLogger().getLogDir(), null)
-               + FileUtils.getUsedSpace(ServiceLocator.getUpgradesDir(), null)
+               + FileUtils.getUsedSpace(serviceLocator.getUpgradesDir(), null)
                + FileUtils.getUsedSpace(CoverDir.getTemp(context), null)
                + FileUtils.getUsedSpace(CoverDir.getDir(context), coverFilter);
     }
@@ -313,7 +313,7 @@ public class MaintenanceFragment
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         //noinspection ConstantConditions
         return FileUtils.deleteDirectory(serviceLocator.getLogger().getLogDir(), null, null)
-               + FileUtils.deleteDirectory(ServiceLocator.getUpgradesDir(), null, null)
+               + FileUtils.deleteDirectory(serviceLocator.getUpgradesDir(), null, null)
                + FileUtils.deleteDirectory(CoverDir.getTemp(context), null, null)
                + FileUtils.deleteDirectory(CoverDir.getDir(context), coverFilter, null);
     }
