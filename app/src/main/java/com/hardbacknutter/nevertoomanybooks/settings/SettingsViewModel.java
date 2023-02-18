@@ -28,6 +28,7 @@ import androidx.lifecycle.ViewModel;
 
 import java.io.IOException;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.StorageMoverTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
@@ -40,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 public class SettingsViewModel
         extends ViewModel {
 
+    private static final String TAG = "SettingsViewModel";
     private final StorageMoverTask storageMoverTask = new StorageMoverTask();
     private boolean requiresActivityRecreation;
 
@@ -61,8 +63,9 @@ public class SettingsViewModel
                 storageMoverTask.start();
                 return true;
             }
-        } catch (@NonNull final IOException ignore) {
-            // ignore, just report we can't move
+        } catch (@NonNull final IOException e) {
+            // log but ignore, just report we can't move
+            ServiceLocator.getInstance().getLogger().error(TAG, e);
         }
         return false;
     }

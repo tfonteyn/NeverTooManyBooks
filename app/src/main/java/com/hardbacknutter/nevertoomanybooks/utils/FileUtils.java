@@ -45,10 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.CRC32;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
 
 /**
@@ -65,8 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
  */
 public final class FileUtils {
 
-    /** Log tag. */
-    private static final String TAG = "FileUtils";
     /**
      * Buffer size for file copy operations.
      * 8192 is what Android 10 android.os.FileUtils.copy uses.
@@ -233,11 +228,6 @@ public final class FileUtils {
 
         //sanity check
         if (source.getAbsolutePath().equals(destination.getAbsolutePath())) {
-            if (BuildConfig.DEBUG /* always */) {
-                Logger.e(TAG, new Throwable(),
-                         "renameOrThrow|source==destination=="
-                         + source.getAbsolutePath());
-            }
             return;
         }
 
@@ -267,10 +257,7 @@ public final class FileUtils {
             try {
                 //noinspection ResultOfMethodCallIgnored
                 file.delete();
-            } catch (@NonNull final /* SecurityException */ RuntimeException e) {
-                if (BuildConfig.DEBUG /* always */) {
-                    Logger.e(TAG, e, "delete|file=" + file);
-                }
+            } catch (@NonNull final /* SecurityException */ RuntimeException ignore) {
             }
         }
     }
@@ -322,7 +309,6 @@ public final class FileUtils {
             return new StatFs(root.getPath()).getAvailableBytes();
 
         } catch (@NonNull final IllegalArgumentException e) {
-            ServiceLocator.getInstance().getLogger().error(TAG, e);
             throw new IOException(e);
         }
     }
