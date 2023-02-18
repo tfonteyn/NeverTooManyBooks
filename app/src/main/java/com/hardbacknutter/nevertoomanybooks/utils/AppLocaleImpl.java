@@ -75,6 +75,18 @@ public final class AppLocaleImpl
     @Override
     @NonNull
     public Context apply(@NonNull final Context context) {
+        // URGENT: this debug code proofs that we're doing this wrong.
+        //  We need to experiment more, but at first glance:
+        //   list = new LocaleList(preferredAppLocale, context.getResources().getConfiguration().getLocales())
+        //   deltaConfig.setLocales(list)
+        //
+//        Logger.d(TAG, "user getLocales()      : ",
+//                 String.valueOf(context.getResources().getConfiguration().getLocales()));
+//        Logger.d(TAG, "system getLocales()    : ",
+//                 String.valueOf(Resources.getSystem().getConfiguration().getLocales()));
+//        Logger.d(TAG, "LocaleList.getDefault(): ",
+//                 String.valueOf(LocaleList.getDefault()));
+
         // Create the Locale at first access, or if the persisted is different from the current.
         final String localeSpec = getPersistedLocaleSpec();
 
