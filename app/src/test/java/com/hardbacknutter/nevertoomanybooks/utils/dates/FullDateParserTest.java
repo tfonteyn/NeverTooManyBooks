@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,11 +20,12 @@
 package com.hardbacknutter.nevertoomanybooks.utils.dates;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Locale;
 
-import org.junit.jupiter.api.Test;
-
 import com.hardbacknutter.nevertoomanybooks.Base;
+
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -45,7 +46,7 @@ class FullDateParserTest
 
     @Test
     void numeric() {
-        final Locale[] locales = {Locale.ENGLISH};
+        final List<Locale> locales = List.of(Locale.ENGLISH);
         final DateParser parser = new FullDateParser(locales);
 
         // Matches due to MM-dd pattern being before dd-MM
@@ -97,7 +98,7 @@ class FullDateParserTest
 
     @Test
     void englishOnly() {
-        final Locale[] locales = {Locale.ENGLISH};
+        final List<Locale> locales = List.of(Locale.ENGLISH);
         final DateParser parser = new FullDateParser(locales);
 
         assertEquals(s_1987_06_25, parser.parse("25-Jun-1987"));
@@ -115,7 +116,7 @@ class FullDateParserTest
 
     @Test
     void multiLocale() {
-        final Locale[] locales = {Locale.FRENCH, Locale.GERMAN};
+        final List<Locale> locales = List.of(Locale.FRENCH, Locale.GERMAN);
         final DateParser parser = new FullDateParser(locales);
 
         // English is always added (at the end of the parser list)

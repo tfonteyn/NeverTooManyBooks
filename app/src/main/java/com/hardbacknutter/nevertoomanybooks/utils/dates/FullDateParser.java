@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.utils.dates;
 
 import android.content.Context;
+import android.os.LocaleList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,9 +32,10 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -65,7 +67,7 @@ public class FullDateParser
             // same without time
             "MM-dd-yyyy",
             "dd-MM-yyyy",
-            };
+    };
 
     /** Patterns with Locale dependent text. */
     private static final String[] TEXT_PATTERNS = {
@@ -88,10 +90,10 @@ public class FullDateParser
             "MMMM d, yyyy",
             "MMM yyyy",
             "MMMM yyyy",
-            };
+    };
 
     @NonNull
-    private final Locale[] locales;
+    private final LinkedHashSet<Locale> locales;
     @NonNull
     private final DateParser isoDateParser;
     /** List of patterns we'll use to parse dates. */
@@ -103,11 +105,15 @@ public class FullDateParser
     /**
      * Constructor.
      *
-     * @param context Current context; not stored, only used to get the locale.
+     * @param context Current context; not stored, only used to get the locales.
      */
     public FullDateParser(@NonNull final Context context) {
-        locales = new Locale[]{context.getResources().getConfiguration().getLocales().get(0),
-                               ServiceLocator.getSystemLocale()};
+        this.locales = new LinkedHashSet<>();
+        final LocaleList localeList = context.getResources().getConfiguration().getLocales();
+        for (int i = 0; i < localeList.size(); i++) {
+            locales.add(localeList.get(i));
+        }
+        locales.add(ServiceLocator.getSystemLocale());
         isoDateParser = new ISODateParser();
     }
 
@@ -115,8 +121,8 @@ public class FullDateParser
      * Constructor for testing.
      */
     @VisibleForTesting
-    public FullDateParser(@NonNull final Locale... locales) {
-        this.locales = locales;
+    public FullDateParser(@NonNull final Collection<Locale> locales) {
+        this.locales = new LinkedHashSet<>(locales);
         isoDateParser = new ISODateParser();
     }
 
@@ -157,7 +163,7 @@ public class FullDateParser
             if (numericalParsers == null) {
                 numericalParsers = new ArrayList<>();
                 addPatterns(numericalParsers, NUMERICAL_PATTERNS,
-                            ServiceLocator.getSystemLocale());
+                            List.of(ServiceLocator.getSystemLocale()));
             }
             result = parse(numericalParsers, dateStr, locale);
 
@@ -221,7 +227,7 @@ public class FullDateParser
      */
     private void addPatterns(@NonNull final Collection<DateTimeFormatter> group,
                              @NonNull final String[] patterns,
-                             @NonNull final Locale... locales) {
+                             @NonNull final Collection<Locale> locales) {
         // prevent duplicate locales
         final Collection<Locale> added = new HashSet<>();
         for (final Locale locale : locales) {
@@ -251,15 +257,15 @@ public class FullDateParser
                             @NonNull final Collection<DateTimeFormatter> group,
                             @SuppressWarnings("SameParameterValue")
                             @NonNull final String[] patterns,
-                            @NonNull final Locale[] locales) {
+                            @NonNull final Collection<Locale> locales) {
 
         final String english = Locale.ENGLISH.getISO3Language();
 
-        final boolean add = Arrays.stream(locales)
-                                  .map(Locale::getISO3Language)
-                                  .noneMatch(english::equals);
+        final boolean add = locales.stream()
+                                   .map(Locale::getISO3Language)
+                                   .noneMatch(english::equals);
         if (add) {
-            addPatterns(group, patterns, Locale.ENGLISH);
+            addPatterns(group, patterns, List.of(Locale.ENGLISH));
         }
     }
 }
