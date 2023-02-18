@@ -42,6 +42,7 @@ import androidx.annotation.IntRange;
 import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
@@ -286,8 +287,9 @@ public class BooksOnBookshelf
                     }
                 }
             };
-    /** List layout manager. */
-    private LinearLayoutManager layoutManager;
+
+    /** Delegate which will handle all positioning/scrolling. */
+    private PositioningHelper positioningHelper;
 
     /**
      * Accept the result from the dialog.
@@ -385,11 +387,11 @@ public class BooksOnBookshelf
         initToolbar();
 
         createBookshelfSpinner();
+        createFabMenu();
 
         // setup the list related stuff; the actual list data is generated in onResume
         createBooklistView();
 
-        createFabMenu();
         updateSyncMenuVisibility();
 
         // Popup the search widget when the user starts to type.
@@ -434,6 +436,9 @@ public class BooksOnBookshelf
         vm.onCancelled().observe(this, this::onBuildCancelled);
         vm.onFailure().observe(this, this::onBuildFailed);
         vm.onFinished().observe(this, this::onBuildFinished);
+
+        vm.onSelectAdapterPosition().observe(this, p ->
+                positioningHelper.onSelectAdapterPosition(p.first, p.second));
     }
 
     /**
@@ -508,23 +513,6 @@ public class BooksOnBookshelf
         bookshelfSelectionChangedListener.attach(vb.bookshelfSpinner);
     }
 
-    private void createBooklistView() {
-        //noinspection ConstantConditions
-        layoutManager = (LinearLayoutManager) vb.content.list.getLayoutManager();
-
-        // hide the view at creation time. onResume will provide the data and make it visible.
-        vb.content.list.setVisibility(View.GONE);
-
-        // Optional overlay
-        final int overlayType = Prefs.getFastScrollerOverlayType(this);
-        FastScroller.attach(vb.content.list, overlayType);
-
-
-        vb.content.list.setItemViewCacheSize(OFFSCREEN_CACHE_SIZE);
-        vb.content.list.setDrawingCacheEnabled(true);
-        vb.content.list.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-    }
-
     private void createFabMenu() {
         fabMenu = new FabMenu(vb.fab, vb.fabOverlay,
                               vb.fab0ScanBarcode,
@@ -534,10 +522,28 @@ public class BooksOnBookshelf
                               vb.fab3AddManually,
                               vb.fab4SearchExternalId);
 
-        fabMenu.attach(vb.content.list);
         fabMenu.setOnClickListener(view -> onFabMenuItemSelected(view.getId()));
         fabMenu.getItem(vb.fab4SearchExternalId.getId())
                .ifPresent(item -> item.setEnabled(EditBookExternalIdFragment.isShowTab()));
+    }
+
+    private void createBooklistView() {
+        positioningHelper = new PositioningHelper(vb.content.list);
+
+        // hide the view at creation time. onResume will provide the data and make it visible.
+        vb.content.list.setVisibility(View.GONE);
+
+        // Custom fastscroller which actually works (as opposed to the builtin android one).
+        // Provides an optional overlay.
+        final int overlayType = Prefs.getFastScrollerOverlayType(this);
+        FastScroller.attach(vb.content.list, overlayType);
+
+        // attach the scroll-listener
+        fabMenu.attach(vb.content.list);
+
+        vb.content.list.setItemViewCacheSize(OFFSCREEN_CACHE_SIZE);
+        vb.content.list.setDrawingCacheEnabled(true);
+        vb.content.list.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
     }
 
     /**
@@ -552,7 +558,6 @@ public class BooksOnBookshelf
         //noinspection ConstantConditions
         getNavigationMenuItem(R.id.SUBMENU_SYNC).setVisible(enable);
     }
-
 
     private void setNavIcon() {
         if (isRootActivity()) {
@@ -692,8 +697,7 @@ public class BooksOnBookshelf
         vm.reloadBookshelfList(this);
         bookshelfAdapter.notifyDataSetChanged();
         // and select the current shelf.
-        final int selectedPosition = vm.getSelectedBookshelfSpinnerPosition(this);
-        vb.bookshelfSpinner.setSelection(selectedPosition);
+        vb.bookshelfSpinner.setSelection(vm.getSelectedBookshelfSpinnerPosition(this));
 
 
         final boolean forceRebuildInOnResume = vm.isForceRebuildInOnResume();
@@ -717,9 +721,31 @@ public class BooksOnBookshelf
         super.onPause();
     }
 
+    /**
+     * Preserve the adapter position of the top-most visible row
+     * for the CURRENT bookshelf/style combination.
+     * <ol>
+     *     <li>The adapter position at the top of the screen.</li>
+     *     <li>The pixel offset of that row from the top of the screen.</li>
+     * </ol>
+     * Note that we convert the list/layout position to the adapter position and store the latter.
+     */
+    private void saveListPosition() {
+        if (!isDestroyed()) {
+            final Pair<Integer, Integer> positionAndOffset =
+                    positioningHelper.getAdapterPositionAndViewOffset();
+            vm.saveListPosition(this, positionAndOffset.first, positionAndOffset.second);
+        }
+    }
+
+    /**
+     * Called by the embedded details frame to match-up the list position with the displayed book.
+     *
+     * @param bookId to scroll the list to.
+     */
     @Override
     public void onSyncBook(final long bookId) {
-        scrollTo(vm.getVisibleBookNodes(bookId));
+        displayList(vm.getVisibleBookNodes(bookId));
     }
 
     /**
@@ -729,12 +755,12 @@ public class BooksOnBookshelf
      *      <li>Not a book: expand/collapse the section as appropriate.</li>
      * </ul>
      *
-     * @param position The position of the item within the adapter's data set.
+     * @param adapterPosition The booklist adapter position.
      */
     private void onRowClicked(@NonNull final View v,
-                              final int position) {
+                              final int adapterPosition) {
         //noinspection ConstantConditions
-        final DataHolder rowData = adapter.readDataAt(position);
+        final DataHolder rowData = adapter.readDataAt(adapterPosition);
         // Paranoia: if the user can click it, then the row exists.
         if (rowData == null) {
             return;
@@ -743,8 +769,8 @@ public class BooksOnBookshelf
         if (rowData.getInt(DBKey.BL_NODE_GROUP) == BooklistGroup.BOOK) {
             // It's a book, open the details page.
             final long bookId = rowData.getLong(DBKey.FK_BOOK);
-            // store the id as the current 'central' book for repositioning
-            vm.setCurrentCenteredBookId(bookId);
+            // store the id as the current 'central' book for repositioning after a rebuild
+            vm.setSelectedPosition(bookId, adapterPosition);
 
             if (hasEmbeddedDetailsFrame()) {
                 //  On larger screens, opens the book details fragment embedded.
@@ -774,13 +800,13 @@ public class BooksOnBookshelf
     /**
      * Create a context menu based on row group.
      *
-     * @param v        View clicked
-     * @param position The position of the item within the adapter's data set.
+     * @param v               View clicked
+     * @param adapterPosition The booklist adapter position
      */
     private void onCreateContextMenu(@NonNull final View v,
-                                     final int position) {
+                                     final int adapterPosition) {
         //noinspection ConstantConditions
-        final DataHolder rowData = adapter.readDataAt(position);
+        final DataHolder rowData = adapter.readDataAt(adapterPosition);
         // Paranoia: if the user can click it, then the row exists.
         if (rowData == null) {
             return;
@@ -962,19 +988,19 @@ public class BooksOnBookshelf
         if (menu.size() > 0) {
             // we have a menu to show, set the title according to the level.
             final int level = rowData.getInt(DBKey.BL_NODE_LEVEL);
-            contextMenu.setTitle(adapter.getLevelText(level, position));
+            contextMenu.setTitle(adapter.getLevelText(level, adapterPosition));
 
             if (menu.size() < 5 || WindowSizeClass.isScreenWidthMedium(this)) {
                 // show it anchored
                 contextMenu.showAsDropDown(v, menuItem ->
-                        onRowContextMenuItemSelected(menuItem, position));
+                        onRowContextMenuItemSelected(menuItem, adapterPosition));
 
             } else if (hasEmbeddedDetailsFrame()) {
                 contextMenu.show(v, Gravity.START, menuItem ->
-                        onRowContextMenuItemSelected(menuItem, position));
+                        onRowContextMenuItemSelected(menuItem, adapterPosition));
             } else {
                 contextMenu.show(v, Gravity.CENTER, menuItem ->
-                        onRowContextMenuItemSelected(menuItem, position));
+                        onRowContextMenuItemSelected(menuItem, adapterPosition));
             }
         }
 
@@ -987,15 +1013,15 @@ public class BooksOnBookshelf
      * but due to an R8 bug confusing it with "onMenuItemSelected(int, android.view.MenuItem)"
      * ended throwing a "java.lang.LinkageError" ... so the name had to be changed.
      *
-     * @param menuItem that was selected
-     * @param position The position of the item within the adapter's data set.
+     * @param menuItem        that was selected
+     * @param adapterPosition The booklist adapter position
      *
      * @return {@code true} if handled.
      */
     private boolean onRowContextMenuItemSelected(@NonNull final MenuItem menuItem,
-                                                 final int position) {
+                                                 final int adapterPosition) {
         //noinspection ConstantConditions
-        final DataHolder rowData = adapter.readDataAt(position);
+        final DataHolder rowData = adapter.readDataAt(adapterPosition);
         // Paranoia: if the user can click it, then the row exists.
         if (rowData == null) {
             return false;
@@ -1112,7 +1138,7 @@ public class BooksOnBookshelf
                     return true;
 
                 } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-                    updateBooksFromInternetData(position, rowData, DBKey.AUTHOR_FORMATTED);
+                    updateBooksFromInternetData(adapterPosition, rowData, DBKey.AUTHOR_FORMATTED);
                     return true;
                 }
                 break;
@@ -1143,7 +1169,7 @@ public class BooksOnBookshelf
                     return true;
 
                 } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-                    updateBooksFromInternetData(position, rowData, DBKey.SERIES_TITLE);
+                    updateBooksFromInternetData(adapterPosition, rowData, DBKey.SERIES_TITLE);
                     return true;
                 }
                 break;
@@ -1164,7 +1190,7 @@ public class BooksOnBookshelf
                     return true;
 
                 } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-                    updateBooksFromInternetData(position, rowData, DBKey.PUBLISHER_NAME);
+                    updateBooksFromInternetData(adapterPosition, rowData, DBKey.PUBLISHER_NAME);
                     return true;
                 }
                 break;
@@ -1277,17 +1303,6 @@ public class BooksOnBookshelf
         }
     }
 
-    @SuppressLint("Range")
-    private void showBookDetailsIfWeCan(@IntRange(from = 0) final long bookId) {
-        if (bookId > 0 && hasEmbeddedDetailsFrame()) {
-            vm.setCurrentCenteredBookId(bookId);
-            openEmbeddedBookDetails(bookId);
-        } else {
-            // Make sure to disable the current stored book id positioning
-            vm.setCurrentCenteredBookId(0);
-        }
-    }
-
     private void onFabMenuItemSelected(@IdRes final int itemId) {
 
         if (itemId == R.id.fab0_scan_barcode) {
@@ -1339,14 +1354,14 @@ public class BooksOnBookshelf
      * Allow the user to decide between books on "this bookshelf only" or on all bookshelves
      * and then update all the selected books.
      *
-     * @param position The position of the item within the adapter's data set.
-     * @param rowData  for the row which was selected
-     * @param labelKey key into the rowData for the row-item text to show to the user.
+     * @param adapterPosition The booklist adapter position
+     * @param rowData         for the row which was selected
+     * @param labelKey        key into the rowData for the row-item text to show to the user.
      */
-    private void updateBooksFromInternetData(final int position,
+    private void updateBooksFromInternetData(final int adapterPosition,
                                              @NonNull final DataHolder rowData,
                                              @NonNull final String labelKey) {
-        final View anchor = layoutManager.findViewByPosition(position);
+        final View anchor = positioningHelper.findViewByAdapterPosition(adapterPosition);
         final String dialogTitle = rowData.getString(labelKey);
         //noinspection ConstantConditions
         new ExtPopupMenu(this)
@@ -1390,70 +1405,12 @@ public class BooksOnBookshelf
 
     @Override
     public void onBookDeleted(final long bookId) {
-        if (bookId == 0 || bookId == vm.getCurrentCenteredBookId()) {
-            vm.setCurrentCenteredBookId(0);
-        }
+        vm.onBookDeleted(bookId);
         // We don't try to remove the row without a rebuild as this could quickly become complex...
         // e.g. if there is(was) only a single book on the level, we'd have to recursively
         // cleanup each level above the book
         saveListPosition();
         buildBookList();
-    }
-
-    @NonNull
-    private BooklistNode scrollTo(@NonNull final List<BooklistNode> targetNodes) {
-
-        // 2022-06-26: yet another attempt to tune the repositioning...
-
-        int firstVisibleIPosition = layoutManager.findFirstCompletelyVisibleItemPosition();
-        int lastVisiblePosition = layoutManager.findLastCompletelyVisibleItemPosition();
-
-        final BooklistNode best = findBestNode(targetNodes,
-                                               firstVisibleIPosition, lastVisiblePosition);
-
-        final int destPos = best.getAdapterPosition();
-
-        //FIXME: The position we get from find*VisibleItemPosition() is one more than
-        // what we have on the BooklistNode - whose bug this is no idea for now.
-        // Workaround: adjust manually
-        if (firstVisibleIPosition > 0) {
-            firstVisibleIPosition--;
-        }
-        if (lastVisiblePosition > 0) {
-            lastVisiblePosition--;
-        }
-
-        if (destPos < firstVisibleIPosition || destPos > lastVisiblePosition) {
-            final int offset = vb.content.list.getHeight() / 4;
-            layoutManager.scrollToPositionWithOffset(destPos, offset);
-        }
-        return best;
-    }
-
-    @NonNull
-    private BooklistNode findBestNode(@NonNull final List<BooklistNode> targetNodes,
-                                      final int firstVisibleIPosition,
-                                      final int lastVisiblePosition) {
-        BooklistNode best = targetNodes.get(0);
-        if (targetNodes.size() > 1) {
-            // Position of the row in the (vertical) center of the screen
-            final int centerAdapterPosition =
-                    (lastVisiblePosition + firstVisibleIPosition) / 2;
-            // distance from currently visible center row
-            int distance = Math.abs(best.getAdapterPosition() - centerAdapterPosition);
-            // Loop all other rows, looking for a nearer one
-            int row = 1;
-            while (distance > 0 && row < targetNodes.size()) {
-                final BooklistNode node = targetNodes.get(row);
-                final int newDist = Math.abs(node.getAdapterPosition() - centerAdapterPosition);
-                if (newDist < distance) {
-                    distance = newDist;
-                    best = node;
-                }
-                row++;
-            }
-        }
-        return best;
     }
 
     /**
@@ -1641,21 +1598,54 @@ public class BooksOnBookshelf
         vb.content.list.setVisibility(View.VISIBLE);
 
         if (adapter.getItemCount() > 0) {
-            // scroll to the saved position - this should get us close to where we need to be
-            scrollToSavedPosition();
-            // and wait for layout cycle
-            vb.content.list.post(() -> {
-                if (targetNodes == null || targetNodes.isEmpty()) {
-                    // We're on the precise position
-                    final long bookId = vm.getCurrentCenteredBookId();
-                    showBookDetailsIfWeCan(bookId);
-                } else {
-                    // We have target nodes;
-                    final BooklistNode node = scrollTo(targetNodes);
-                    final long bookId = node.getBookId();
-                    vb.content.list.post(() -> showBookDetailsIfWeCan(bookId));
-                }
-            });
+            if (targetNodes == null || targetNodes.isEmpty()) {
+                // There are no target nodes, just scroll to the saved position
+                final Pair<Integer, Integer> savedListPosition = vm.getSavedListPosition();
+                final int adapterPosition = savedListPosition.first;
+                positioningHelper.scrollTo(savedListPosition, adapter.getItemCount());
+                // wait for layout cycle and display the book
+                vb.content.list.post(() -> showBookDetailsIfWeCan(adapterPosition,
+                                                                  vm.getSelectedBookId()));
+            } else if (targetNodes.size() == 1) {
+                // There is a single target node; scroll to it
+                final BooklistNode node = positioningHelper.scrollTo(targetNodes);
+                // wait for layout cycle and display the book
+                vb.content.list.post(() -> showBookDetailsIfWeCan(node.getAdapterPosition(),
+                                                                  node.getBookId()));
+
+            } else {
+                // We'll need to find the "best" node (from all target nodes).
+                // First scroll to the saved position which will serve as the starting point
+                // for finding the "best" node.
+                final Pair<Integer, Integer> savedListPosition = vm.getSavedListPosition();
+                positioningHelper.scrollTo(savedListPosition, adapter.getItemCount());
+                // wait for layout cycle
+                vb.content.list.post(() -> {
+                    // Now find the "best" node and scroll to it
+                    final BooklistNode node = positioningHelper.scrollTo(targetNodes);
+                    // wait again for layout cycle and display the book
+                    vb.content.list.post(() -> showBookDetailsIfWeCan(node.getAdapterPosition(),
+                                                                      node.getBookId()));
+                });
+            }
+        }
+    }
+
+    /**
+     * Display the given book in the embedded details fragment IF POSSIBLE.
+     *
+     * @param adapterPosition the booklist adapter position
+     * @param bookId          of the book to open
+     */
+    @SuppressLint("Range")
+    private void showBookDetailsIfWeCan(final int adapterPosition,
+                                        @IntRange(from = 0) final long bookId) {
+        if (bookId > 0 && hasEmbeddedDetailsFrame()) {
+            vm.setSelectedPosition(bookId, adapterPosition);
+            openEmbeddedBookDetails(bookId);
+        } else {
+            // Make sure to disable the current stored book id and position
+            vm.setSelectedPosition(0, RecyclerView.NO_POSITION);
         }
     }
 
@@ -1669,59 +1659,10 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Preserve the {@link LinearLayoutManager#findFirstVisibleItemPosition()}
-     * for the CURRENT bookshelf/style combination.
-     * <ol>
-     *     <li>The row number at the top of the screen.</li>
-     *     <li>The pixel offset of that row from the top of the screen.</li>
-     * </ol>
+     * Open the given book in the embedded details fragment.
+     *
+     * @param bookId of the book to open
      */
-    private void saveListPosition() {
-        if (!isDestroyed()) {
-            final int firstVisiblePos = layoutManager.findFirstVisibleItemPosition();
-            if (firstVisiblePos != RecyclerView.NO_POSITION) {
-                final int viewOffset;
-                // the list.getChildAt; not the layoutManager.getChildAt (not sure why...)
-                final View topView = vb.content.list.getChildAt(0);
-                if (topView == null) {
-                    viewOffset = 0;
-
-                } else {
-                    // currently our padding is 0, but this is future-proof
-                    final int paddingTop = vb.content.list.getPaddingTop();
-                    final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams)
-                            topView.getLayoutParams();
-                    viewOffset = topView.getTop() - lp.topMargin - paddingTop;
-                }
-                vm.saveListPosition(this, firstVisiblePos, viewOffset);
-            }
-        }
-    }
-
-    /**
-     * Scroll the list to the position saved in {@link #saveListPosition}.
-     * Saves the potentially changed position after the scrolling is done.
-     */
-    private void scrollToSavedPosition() {
-        Objects.requireNonNull(adapter, "adapter");
-
-        final Bookshelf bookshelf = vm.getCurrentBookshelf();
-        final int position = bookshelf.getFirstVisibleItemPosition();
-
-        // sanity check
-        if (position < 0) {
-            layoutManager.scrollToPositionWithOffset(0, 0);
-
-        } else if (position >= adapter.getItemCount()) {
-            // the list is shorter than it used to be, just scroll to the end
-            layoutManager.scrollToPosition(position);
-
-        } else {
-            layoutManager.scrollToPositionWithOffset(position,
-                                                     bookshelf.getFirstVisibleItemViewOffset());
-        }
-    }
-
     private void openEmbeddedBookDetails(final long bookId) {
         final FragmentManager fm = getSupportFragmentManager();
 
@@ -1735,6 +1676,174 @@ public class BooksOnBookshelf
               .commit();
         } else {
             ((ShowBookDetailsFragment) fragment).reloadBook(bookId);
+        }
+    }
+
+    /**
+     * A delegate/wrapper for the book-list view handling all things related to positioning.
+     * <p>
+     * Takes care of conversions between adapter-position and layout-position
+     * due to the {@link ConcatAdapter} used with the {@link HeaderAdapter}
+     * (currently hardcoded to 1 header-row).
+     */
+    private static class PositioningHelper {
+
+        private static final int HEADER_ROWS = 1;
+        @NonNull
+        private final LinearLayoutManager layoutManager;
+        @NonNull
+        private final RecyclerView recyclerView;
+
+        PositioningHelper(@NonNull final RecyclerView recyclerView) {
+            this.recyclerView = recyclerView;
+            //noinspection ConstantConditions
+            this.layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        }
+
+        @Nullable
+        View findViewByAdapterPosition(final int adapterPosition) {
+            return layoutManager.findViewByPosition(adapterPosition + HEADER_ROWS);
+        }
+
+        /**
+         * LiveData callback to select (highlight) the current row.
+         *
+         * @param previousAdapterPosition to un-select
+         * @param currentAdapterPosition  to select
+         */
+        void onSelectAdapterPosition(final int previousAdapterPosition,
+                                     final int currentAdapterPosition) {
+            View view;
+            if (previousAdapterPosition != currentAdapterPosition) {
+                view = layoutManager.findViewByPosition(previousAdapterPosition + HEADER_ROWS);
+                if (view != null) {
+                    view.setSelected(false);
+                }
+            }
+            view = layoutManager.findViewByPosition(currentAdapterPosition + HEADER_ROWS);
+            if (view != null) {
+                view.setSelected(true);
+            }
+        }
+
+        /**
+         * Retrieve the current adapter position and view-offset of the top-most visible row.
+         */
+        @NonNull
+        Pair<Integer, Integer> getAdapterPositionAndViewOffset() {
+            final int firstVisiblePos = layoutManager.findFirstVisibleItemPosition();
+            if (firstVisiblePos == RecyclerView.NO_POSITION) {
+                return new Pair<>(0, 0);
+            }
+
+            int adapterPosition = firstVisiblePos - HEADER_ROWS;
+            // can theoretically happen with an empty list which has a header
+            if (adapterPosition < 0) {
+                adapterPosition = 0;
+            }
+
+            final int viewOffset;
+            // the list.getChildAt; not the layoutManager.getChildAt (not sure why...)
+            final View topView = recyclerView.getChildAt(0);
+            if (topView == null) {
+                viewOffset = 0;
+            } else {
+                // currently our padding is 0, but this is future-proof
+                final int paddingTop = recyclerView.getPaddingTop();
+                final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams)
+                        topView.getLayoutParams();
+                viewOffset = topView.getTop() - lp.topMargin - paddingTop;
+            }
+            return new Pair<>(adapterPosition, viewOffset);
+        }
+
+        /**
+         * Scroll to the "best" of the given target nodes.
+         *
+         * @param targetNodes candidates to scroll to.
+         *
+         * @return the node we ended up at.
+         */
+        @NonNull
+        BooklistNode scrollTo(@NonNull final List<BooklistNode> targetNodes) {
+
+            // the layout positions (i.e. including the header row)
+            int firstVisiblePosition = layoutManager.findFirstCompletelyVisibleItemPosition();
+            int lastVisiblePosition = layoutManager.findLastCompletelyVisibleItemPosition();
+
+            if (firstVisiblePosition > 0) {
+                firstVisiblePosition = firstVisiblePosition - HEADER_ROWS;
+            }
+            if (lastVisiblePosition > 0) {
+                lastVisiblePosition = lastVisiblePosition - HEADER_ROWS;
+            }
+
+            final BooklistNode best;
+            if (targetNodes.size() == 1) {
+                best = targetNodes.get(0);
+            } else {
+                best = findBestNode(targetNodes, firstVisiblePosition, lastVisiblePosition);
+            }
+
+            final int destPos = best.getAdapterPosition();
+
+            if (destPos < firstVisiblePosition || destPos > lastVisiblePosition) {
+                final int offset = recyclerView.getHeight() / 4;
+                layoutManager.scrollToPositionWithOffset(destPos + HEADER_ROWS, offset);
+            }
+            return best;
+        }
+
+        /**
+         * Scroll the list to the given adapter-position/view-offset.
+         */
+        void scrollTo(@NonNull final Pair<Integer, Integer> adapterPositionAndViewOffset,
+                      final int maxPosition) {
+            final int adapterPosition = adapterPositionAndViewOffset.first;
+            final int viewOffset = adapterPositionAndViewOffset.second;
+            scrollTo(adapterPosition, maxPosition, viewOffset);
+        }
+
+        private void scrollTo(final int adapterPosition,
+                              final int maxPosition,
+                              final int offset) {
+            final int position = adapterPosition + HEADER_ROWS;
+
+            // sanity check
+            if (position <= HEADER_ROWS) {
+                layoutManager.scrollToPositionWithOffset(0, 0);
+
+            } else if (position >= maxPosition) {
+                // the list is shorter than it used to be, just scroll to the end
+                layoutManager.scrollToPosition(position);
+            } else {
+                layoutManager.scrollToPositionWithOffset(position, offset);
+            }
+        }
+
+        @NonNull
+        private BooklistNode findBestNode(@NonNull final List<BooklistNode> targetNodes,
+                                          final int firstVisibleAdapterPosition,
+                                          final int lastVisibleAdapterPosition) {
+            // Assume first is best
+            BooklistNode best = targetNodes.get(0);
+            // Position of the row in the (vertical) center of the screen
+            final int centerAdapterPosition =
+                    (lastVisibleAdapterPosition + firstVisibleAdapterPosition) / 2;
+            // distance from currently visible center row
+            int distance = Math.abs(best.getAdapterPosition() - centerAdapterPosition);
+            // Loop all other rows, looking for a nearer one
+            int row = 1;
+            while (distance > 0 && row < targetNodes.size()) {
+                final BooklistNode node = targetNodes.get(row);
+                final int newDist = Math.abs(node.getAdapterPosition() - centerAdapterPosition);
+                if (newDist < distance) {
+                    distance = newDist;
+                    best = node;
+                }
+                row++;
+            }
+            return best;
         }
     }
 
