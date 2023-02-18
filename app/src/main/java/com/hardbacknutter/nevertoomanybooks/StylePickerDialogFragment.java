@@ -69,7 +69,6 @@ public class StylePickerDialogFragment
     private List<Style> styleList;
     /** Adapter for the selection. */
     private RadioGroupRecyclerAdapter<String, String> adapter;
-    private DialogStylesMenuContentBinding vb;
 
     /**
      * No-arg constructor for OS use.
@@ -100,7 +99,8 @@ public class StylePickerDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        vb = DialogStylesMenuContentBinding.bind(view.findViewById(R.id.dialog_content));
+        final DialogStylesMenuContentBinding vb = DialogStylesMenuContentBinding.bind(
+                view.findViewById(R.id.dialog_content));
 
         loadStyles();
 
@@ -121,7 +121,11 @@ public class StylePickerDialogFragment
     @SuppressLint("NotifyDataSetChanged")
     @Override
     protected boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem) {
-        final int itemId = menuItem != null ? menuItem.getItemId() : 0;
+        if (menuItem == null) {
+            return false;
+        }
+
+        final int itemId = menuItem.getItemId();
         if (itemId == R.id.MENU_EDIT) {
             onEditStyle();
             return true;
