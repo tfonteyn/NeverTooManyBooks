@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.LocaleList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -253,6 +254,17 @@ public final class ServiceLocator {
         }
 
         return Resources.getSystem().getConfiguration().getLocales().get(0);
+    }
+
+    @NonNull
+    public static LocaleList getSystemLocaleList() {
+        // While running JUnit tests we cannot get access or mock Resources.getSystem(),
+        // ... so we need to cheat.
+        if (BuildConfig.DEBUG && TestFlags.isJUnit) {
+            return new LocaleList(Locale.US);
+        }
+
+        return Resources.getSystem().getConfiguration().getLocales();
     }
 
     /**

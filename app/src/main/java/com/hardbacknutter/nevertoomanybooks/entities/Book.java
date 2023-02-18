@@ -276,14 +276,16 @@ public class Book
     /**
      * Copy Constructor. Loads the bundle <strong>with</strong> type checks.
      *
-     * @param data book to copy all data from
+     * @param context Current context
+     * @param data    book to copy all data from
      *
      * @return new instance; flagged as {@link EntityStage.Stage#Dirty}
      */
     @NonNull
-    public static Book from(@NonNull final Book data) {
+    public static Book from(@NonNull final Context context,
+                            @NonNull final Book data) {
         final Book book = new Book();
-        book.putAll(data);
+        book.putAll(context, data);
         // has unsaved data, hence 'Dirty'
         book.setStage(EntityStage.Stage.Dirty);
         return book;
@@ -326,7 +328,7 @@ public class Book
     /**
      * Duplicate a book by copying APPLICABLE (not simply all of them) fields.
      * i.o.w. this is <strong>NOT</strong> a copy constructor.
-     * See {@link #from(Book)} for the latter.
+     * See {@link #from(Context, Book)} for the latter.
      * <p>
      * <strong>Dev. note:</strong> keep the list of data we duplicate
      * in sync with {@link BookDaoImpl} .SqlAllBooks#BOOK
@@ -334,7 +336,7 @@ public class Book
      * @return new Book
      */
     @NonNull
-    public Book duplicate() {
+    public Book duplicate(@NonNull final Context context) {
         final Book duplicate = new Book();
 
         // Q: Why don't we get the DataManager#mRawData, remove the identifiers/dates and use that?
@@ -379,7 +381,7 @@ public class Book
         duplicate.putString(DBKey.PRINT_RUN, getString(DBKey.PRINT_RUN));
         duplicate.putLong(DBKey.TOC_TYPE__BITMASK, getLong(DBKey.TOC_TYPE__BITMASK));
         duplicate.putString(DBKey.BOOK_PUBLICATION__DATE, getString(DBKey.BOOK_PUBLICATION__DATE));
-        duplicate.putDouble(DBKey.PRICE_LISTED, getDouble(DBKey.PRICE_LISTED));
+        duplicate.putDouble(DBKey.PRICE_LISTED, getDouble(context, DBKey.PRICE_LISTED));
         duplicate.putString(DBKey.PRICE_LISTED_CURRENCY, getString(DBKey.PRICE_LISTED_CURRENCY));
         duplicate.putString(DBKey.FIRST_PUBLICATION__DATE,
                             getString(DBKey.FIRST_PUBLICATION__DATE));
@@ -400,7 +402,7 @@ public class Book
         // put/getBoolean is 'right', but as a copy, might as well just use long
         duplicate.putLong(DBKey.SIGNED__BOOL, getLong(DBKey.SIGNED__BOOL));
 
-        duplicate.putFloat(DBKey.RATING, getFloat(DBKey.RATING));
+        duplicate.putFloat(DBKey.RATING, getFloat(context, DBKey.RATING));
         duplicate.putString(DBKey.PERSONAL_NOTES, getString(DBKey.PERSONAL_NOTES));
 
         // put/getBoolean is 'right', but as a copy, might as well just use long
@@ -409,7 +411,7 @@ public class Book
         duplicate.putString(DBKey.READ_END__DATE, getString(DBKey.READ_END__DATE));
 
         duplicate.putString(DBKey.DATE_ACQUIRED, getString(DBKey.DATE_ACQUIRED));
-        duplicate.putDouble(DBKey.PRICE_PAID, getDouble(DBKey.PRICE_PAID));
+        duplicate.putDouble(DBKey.PRICE_PAID, getDouble(context, DBKey.PRICE_PAID));
         duplicate.putString(DBKey.PRICE_PAID_CURRENCY, getString(DBKey.PRICE_PAID_CURRENCY));
 
         duplicate.putInt(DBKey.BOOK_CONDITION, getInt(DBKey.BOOK_CONDITION));
@@ -1185,7 +1187,7 @@ public class Book
                 .orElse("");
 
         //remove trailing 0's
-        final float rating = getFloat(DBKey.RATING);
+        final float rating = getFloat(context, DBKey.RATING);
         String ratingStr;
         if (rating > 0) {
             // force rounding down and check the fraction

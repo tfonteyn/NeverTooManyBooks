@@ -113,7 +113,8 @@ public class EntityListDropDownMenuField<T extends Entity>
     }
 
     @Override
-    public void setInitialValue(@NonNull final DataManager source) {
+    public void setInitialValue(@NonNull final Context context,
+                                @NonNull final DataManager source) {
         initialValue = source.getLong(fieldKey);
         setValue(initialValue);
     }

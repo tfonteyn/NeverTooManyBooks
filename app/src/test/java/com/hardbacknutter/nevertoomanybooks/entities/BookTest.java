@@ -53,7 +53,7 @@ class BookTest
         bdh.processPrice(DBKey.PRICE_LISTED);
         // dump(book);
 
-        assertEquals(1.23d, book.getDouble(DBKey.PRICE_LISTED));
+        assertEquals(1.23d, book.getDouble(context, DBKey.PRICE_LISTED));
         assertEquals("USD", book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
     }
 
@@ -73,11 +73,11 @@ class BookTest
         bdh.processPrice(DBKey.PRICE_PAID);
         //dump(book);
 
-        assertEquals(0d, book.getDouble(DBKey.PRICE_LISTED));
-        assertNull(book.get(DBKey.PRICE_LISTED_CURRENCY));
+        assertEquals(0d, book.getDouble(context, DBKey.PRICE_LISTED));
+        assertNull(book.get(context, DBKey.PRICE_LISTED_CURRENCY));
 
-        assertEquals(456.789d, book.getDouble(DBKey.PRICE_PAID));
-        assertNull(book.get(DBKey.PRICE_PAID_CURRENCY));
+        assertEquals(456.789d, book.getDouble(context, DBKey.PRICE_PAID));
+        assertNull(book.get(context, DBKey.PRICE_PAID_CURRENCY));
     }
 
     @Test
@@ -97,12 +97,12 @@ class BookTest
         bdh.processPrice(DBKey.PRICE_PAID);
         //dump(book);
 
-        assertEquals(0d, book.getDouble(DBKey.PRICE_LISTED));
-        assertEquals(Money.EUR, book.get(DBKey.PRICE_LISTED_CURRENCY));
+        assertEquals(0d, book.getDouble(context, DBKey.PRICE_LISTED));
+        assertEquals(Money.EUR, book.get(context, DBKey.PRICE_LISTED_CURRENCY));
 
         // "test" is correct as preprocessPrices should NOT change illegal values.
-        assertEquals("test", book.get(DBKey.PRICE_PAID));
-        assertNull(book.get(DBKey.PRICE_PAID_CURRENCY));
+        assertEquals("test", book.get(context, DBKey.PRICE_PAID));
+        assertNull(book.get(context, DBKey.PRICE_PAID_CURRENCY));
     }
 
     @Test
@@ -116,7 +116,7 @@ class BookTest
         bdh.processPrice(DBKey.PRICE_LISTED);
         //dump(book);
 
-        assertEquals(45d, book.getDouble(DBKey.PRICE_LISTED));
+        assertEquals(45d, book.getDouble(context, DBKey.PRICE_LISTED));
         assertEquals(Money.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
     }
 
@@ -144,7 +144,7 @@ class BookTest
         // Not tested: null string for a string field..
 
         final BookDaoHelper bdh = new BookDaoHelper(context, book, true);
-        bdh.processExternalIds();
+        bdh.processExternalIds(context);
         dump(book);
 
         assertEquals(2, book.getLong(DBKey.SID_GOODREADS_BOOK));
@@ -156,7 +156,7 @@ class BookTest
         assertEquals("test", book.getString(DBKey.BOOK_ISBN, null));
         assertFalse(book.contains(DBKey.SID_OPEN_LIBRARY));
 
-        bdh.processNullsAndBlanks();
+        bdh.processNullsAndBlanks(context);
         dump(book);
         // should not have any effect, so same tests:
         assertEquals(2, book.getLong(DBKey.SID_GOODREADS_BOOK));
@@ -189,30 +189,30 @@ class BookTest
 
 
         final BookDaoHelper bdh = new BookDaoHelper(context, book, false);
-        bdh.processExternalIds();
+        bdh.processExternalIds(context);
         dump(book);
 
         assertEquals(2, book.getLong(DBKey.SID_GOODREADS_BOOK));
-        assertNull(book.get(DBKey.SID_ISFDB));
-        assertNull(book.get(DBKey.SID_LAST_DODO_NL));
-        assertNull(book.get(DBKey.SID_LIBRARY_THING));
-        assertNull(book.get(DBKey.SID_STRIP_INFO));
+        assertNull(book.get(context, DBKey.SID_ISFDB));
+        assertNull(book.get(context, DBKey.SID_LAST_DODO_NL));
+        assertNull(book.get(context, DBKey.SID_LIBRARY_THING));
+        assertNull(book.get(context, DBKey.SID_STRIP_INFO));
 
         assertEquals("test", book.getString(DBKey.BOOK_ISBN, null));
-        assertNull(book.get(DBKey.SID_OPEN_LIBRARY));
+        assertNull(book.get(context, DBKey.SID_OPEN_LIBRARY));
 
 
-        bdh.processNullsAndBlanks();
+        bdh.processNullsAndBlanks(context);
         dump(book);
         // should not have any effect, so same tests:
         assertEquals(2, book.getLong(DBKey.SID_GOODREADS_BOOK));
-        assertNull(book.get(DBKey.SID_ISFDB));
-        assertNull(book.get(DBKey.SID_LAST_DODO_NL));
-        assertNull(book.get(DBKey.SID_LIBRARY_THING));
-        assertNull(book.get(DBKey.SID_STRIP_INFO));
+        assertNull(book.get(context, DBKey.SID_ISFDB));
+        assertNull(book.get(context, DBKey.SID_LAST_DODO_NL));
+        assertNull(book.get(context, DBKey.SID_LIBRARY_THING));
+        assertNull(book.get(context, DBKey.SID_STRIP_INFO));
 
         assertEquals("test", book.getString(DBKey.BOOK_ISBN, null));
-        assertNull(book.get(DBKey.SID_OPEN_LIBRARY));
+        assertNull(book.get(context, DBKey.SID_OPEN_LIBRARY));
     }
 
     /**
@@ -239,7 +239,7 @@ class BookTest
         book.putDouble(DBKey.PRICE_PAID, 0);
 
         final BookDaoHelper bdh = new BookDaoHelper(context, book, true);
-        bdh.processNullsAndBlanks();
+        bdh.processNullsAndBlanks(context);
 
         assertEquals("2020-01-14", book.getString(DBKey.DATE_ACQUIRED, null));
 
@@ -249,8 +249,8 @@ class BookTest
         // text, default "". A null is removed.
         assertFalse(book.contains(DBKey.READ_END__DATE));
 
-        assertEquals(12.34d, book.getDouble(DBKey.PRICE_LISTED));
-        assertEquals(0d, book.getDouble(DBKey.PRICE_PAID));
+        assertEquals(12.34d, book.getDouble(context, DBKey.PRICE_LISTED));
+        assertEquals(0d, book.getDouble(context, DBKey.PRICE_PAID));
     }
 
     @Test
@@ -263,7 +263,7 @@ class BookTest
         book.putDouble(DBKey.PRICE_PAID, 0);
 
         final BookDaoHelper bdh = new BookDaoHelper(context, book, false);
-        bdh.processNullsAndBlanks();
+        bdh.processNullsAndBlanks(context);
 
         assertEquals("2020-01-14", book.getString(DBKey.DATE_ACQUIRED, null));
 
@@ -273,13 +273,13 @@ class BookTest
         // text, default "". A null is replaced by the default
         assertEquals("", book.getString(DBKey.READ_END__DATE, null));
 
-        assertEquals(12.34d, book.getDouble(DBKey.PRICE_LISTED));
-        assertEquals(0d, book.getDouble(DBKey.PRICE_PAID));
+        assertEquals(12.34d, book.getDouble(context, DBKey.PRICE_LISTED));
+        assertEquals(0d, book.getDouble(context, DBKey.PRICE_PAID));
     }
 
     private void dump(@NonNull final DataManager data) {
         for (final String key : data.keySet()) {
-            final Object value = data.get(key);
+            final Object value = data.get(context, key);
             System.out.println(key + "=" + value);
         }
     }

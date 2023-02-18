@@ -62,11 +62,11 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  * <p>
  * <ul>Data flows to and from a view as follows:
  *      <li>IN  (no formatter ):<br>
- *          {@link Field#setInitialValue(DataManager)} ->
+ *          {@link Field#setInitialValue(Context, DataManager)} ->
  *          {@link Field#setValue(Object)} ->
  *          populates the View.</li>
  *      <li>IN  (with FieldFormatter):<br>
- *          {@link Field#setInitialValue(DataManager)} ->
+ *          {@link Field#setInitialValue(Context, DataManager)} ->
  *          {@link Field#setValue(Object)} ->
  *          {@link FieldFormatter#apply} ->
  *          populates the View.</li>
@@ -158,9 +158,11 @@ public interface Field<T, V extends View> {
      * This is used for the <strong>INITIAL LOAD</strong>, i.e. the value as stored
      * in the database.
      *
-     * @param source DataManager to load the Field objects from
+     * @param context Current context
+     * @param source  DataManager to load the Field objects from
      */
-    void setInitialValue(@NonNull DataManager source);
+    void setInitialValue(@NonNull Context context,
+                         @NonNull DataManager source);
 
     /**
      * Get the value from the view associated with the Field.

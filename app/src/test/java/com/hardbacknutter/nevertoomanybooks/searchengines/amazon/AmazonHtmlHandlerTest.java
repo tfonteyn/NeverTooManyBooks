@@ -78,7 +78,7 @@ class AmazonHtmlHandlerTest
         assertEquals("608", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("English", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(14.49d, book.getDouble(DBKey.PRICE_LISTED));
+        assertEquals(14.49d, book.getDouble(context, DBKey.PRICE_LISTED));
         assertEquals(Money.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final ArrayList<Publisher> allPublishers = book.getPublishers();
@@ -112,7 +112,7 @@ class AmazonHtmlHandlerTest
         assertEquals("336", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("English", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(5.84d, book.getDouble(DBKey.PRICE_LISTED));
+        assertEquals(5.84d, book.getDouble(context, DBKey.PRICE_LISTED));
         assertEquals(Money.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final ArrayList<Publisher> allPublishers = book.getPublishers();
@@ -145,7 +145,7 @@ class AmazonHtmlHandlerTest
         assertEquals("Le retour à la terre, 1 : La vraie vie",
                      book.getString(DBKey.TITLE, null));
         assertEquals("978-2205057331", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals(12d, book.getDouble(DBKey.PRICE_LISTED));
+        assertEquals(12d, book.getDouble(context, DBKey.PRICE_LISTED));
         assertEquals(Money.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final ArrayList<Publisher> allPublishers = book.getPublishers();

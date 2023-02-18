@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
+import android.os.LocaleList;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -30,7 +31,6 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.Currency;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -139,14 +139,15 @@ public class Money
      * <p>
      * <strong>If any conversion fails, the currency and the value will be {@code null}</strong>
      *
-     * @param locale            <strong>Must</strong> be the Locale for the source data.
-     *                          (and NOT simply the system/user).
+     * @param localeList        <strong>Must</strong> have the Locale for the source data
+     *                          as the first in the list,
+     *                          optionally followed by user/system locales.
      * @param priceWithCurrency price to decode
      */
-    public Money(@NonNull final Locale locale,
+    public Money(@NonNull final LocaleList localeList,
                  @NonNull final CharSequence priceWithCurrency) {
 
-        if (!parse(locale, priceWithCurrency)) {
+        if (!parse(localeList, priceWithCurrency)) {
             currency = null;
             value = null;
         }
@@ -260,21 +261,21 @@ public class Money
         return 0;
     }
 
-    public boolean parse(@NonNull final Locale locale,
+    public boolean parse(@NonNull final LocaleList localeList,
                          @NonNull final CharSequence priceWithCurrency) {
 
         // website html cleaning
         final String pc = NBSP_LITERAL.matcher(priceWithCurrency).replaceAll(" ");
 
         final String[] data = CURRENCY_AS_PREFIX_PATTERN.split(pc, 2);
-        if (data.length > 1 && parse(locale, data[0], data[1])) {
+        if (data.length > 1 && parse(localeList, data[0], data[1])) {
             return true;
         }
 
         Matcher matcher;
 
         matcher = CURRENCY_AS_SUFFIX_PATTERN.matcher(pc);
-        if (matcher.find() && parse(locale, matcher.group(2), matcher.group(1))) {
+        if (matcher.find() && parse(localeList, matcher.group(2), matcher.group(1))) {
             return true;
         }
 
@@ -310,13 +311,13 @@ public class Money
         return false;
     }
 
-    private boolean parse(@NonNull final Locale locale,
+    private boolean parse(@NonNull final LocaleList localeList,
                           @Nullable final String currencyStr,
                           @Nullable final String valueStr) {
 
         String currencyCode = null;
         if (currencyStr != null && !currencyStr.isEmpty()) {
-            currencyCode = currencyStr.trim().toUpperCase(locale);
+            currencyCode = currencyStr.trim().toUpperCase(localeList.get(0));
             // if we don't have a normalized ISO3 code, see if we can convert it to one.
             if (currencyCode.length() != 3) {
                 currencyCode = fromSymbol(currencyStr);
@@ -326,8 +327,8 @@ public class Money
         if (currencyCode != null && currencyCode.length() == 3) {
             if (valueStr != null && !valueStr.isEmpty()) {
                 try {
-                    // buffer just in case the getInstance() throws.
-                    final double tmpValue = ParseUtils.parseDouble(valueStr, locale);
+                    // buffer just in case the Currency.getInstance() throws.
+                    final double tmpValue = ParseUtils.parseDouble(localeList, valueStr);
                     // re-get the code just in case it used a recognised but non-standard string
                     currency = Currency.getInstance(currencyCode);
                     value = BigDecimal.valueOf(tmpValue);

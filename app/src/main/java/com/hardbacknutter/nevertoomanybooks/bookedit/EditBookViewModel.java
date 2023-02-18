@@ -401,16 +401,19 @@ public class EditBookViewModel
     /**
      * Add any fields the book does not have yet (does not overwrite existing ones).
      *
-     * @param args to check
+     * @param context Current context
+     * @param args    to check
      */
-    void addFieldsFromArguments(@Nullable final Bundle args) {
+    void addFieldsFromArguments(@NonNull final Context context,
+                                @Nullable final Bundle args) {
         if (args != null) {
             final Book bookFromArguments = args.getParcelable(Book.BKEY_BOOK_DATA);
             if (bookFromArguments != null) {
                 bookFromArguments.keySet()
                                  .stream()
                                  .filter(key -> !book.contains(key))
-                                 .forEach(key -> book.put(key, bookFromArguments.get(key)));
+                                 .forEach(key -> book.put(key, bookFromArguments
+                                         .get(context, key)));
             }
         }
     }
@@ -862,7 +865,7 @@ public class EditBookViewModel
                 initFieldsMain(fragmentId);
                 break;
             case Publication:
-                initFieldsPublication(fragmentId);
+                initFieldsPublication(context, fragmentId);
                 break;
             case Notes:
                 initFieldsNotes(context, fragmentId);
@@ -927,7 +930,8 @@ public class EditBookViewModel
                                    errStrNonBlankRequired)));
     }
 
-    private void initFieldsPublication(@NonNull final FragmentId fragmentId) {
+    private void initFieldsPublication(@NonNull final Context context,
+                                       @NonNull final FragmentId fragmentId) {
 
         fields.add(new AutoCompleteTextField(fragmentId, R.id.format, DBKey.FORMAT,
                                              this::getAllFormats)
@@ -971,8 +975,9 @@ public class EditBookViewModel
                                        if (destField.isEmpty()) {
                                            // Paranoia... parse it to a double.
                                            final double value = ParseUtils.toDouble(
-                                                   requireField(R.id.price_listed)
-                                                           .getValue(), null);
+                                                   context,
+                                                   requireField(R.id.price_listed).getValue()
+                                           );
                                            getBook().putDouble(DBKey.PRICE_PAID, value);
                                            destField.setValue(value);
                                        }

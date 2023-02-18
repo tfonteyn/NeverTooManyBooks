@@ -1078,7 +1078,7 @@ public class BooksOnBookshelf
 
                 } else if (itemId == R.id.MENU_BOOK_DUPLICATE) {
                     final Book book = DataHolderUtils.requireBook(rowData);
-                    duplicateLauncher.launch(book.duplicate());
+                    duplicateLauncher.launch(book.duplicate(this));
                     return true;
 
                 } else if (itemId == R.id.MENU_BOOK_DELETE) {

@@ -233,7 +233,7 @@ public class BookHolder
         }
 
         if (use.rating) {
-            final float rating = rowData.getFloat(DBKey.RATING);
+            final float rating = rowData.getFloat(itemView.getContext(), DBKey.RATING);
             if (rating > 0) {
                 vb.rating.setRating(rating);
                 vb.rating.setVisibility(View.VISIBLE);

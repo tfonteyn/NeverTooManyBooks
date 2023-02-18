@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -73,7 +73,7 @@ public class DoubleNumberFormatter
 
         try {
             // System Locale: the user types it in on the SYSTEM keypad using a , or .
-            return ParseUtils.parseDouble(text, ServiceLocator.getSystemLocale());
+            return ParseUtils.parseDouble(ServiceLocator.getSystemLocaleList(), text);
 
         } catch (@NonNull final NumberFormatException e) {
             // this should never happen... flw

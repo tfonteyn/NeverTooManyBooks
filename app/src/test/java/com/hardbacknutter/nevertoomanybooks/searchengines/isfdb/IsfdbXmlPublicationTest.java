@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
+import android.os.LocaleList;
+
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
@@ -69,11 +71,12 @@ class IsfdbXmlPublicationTest
         setLocale(Locale.UK);
         final String filename = "/isfdb/425189.xml";
 
+        final LocaleList localeList = new LocaleList(searchEngine.getLocale(context));
+
         final IsfdbPublicationListHandler listHandler =
                 new IsfdbPublicationListHandler(searchEngine,
                                                 new boolean[]{false, false},
-                                                1,
-                                                searchEngine.getLocale(context));
+                                                1, localeList);
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final SAXParser parser = factory.newSAXParser();

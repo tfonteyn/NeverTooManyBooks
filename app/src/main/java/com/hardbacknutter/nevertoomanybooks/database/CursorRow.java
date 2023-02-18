@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Parcelable;
 
@@ -145,14 +146,16 @@ public class CursorRow
     }
 
     /**
-     * @param key to get
+     * @param context Current context
+     * @param key     to get
      *
      * @return the double value of the column ({@code null} comes back as 0)
      *
      * @throws ColumnNotPresentException if the column was not present.
      */
     @Override
-    public double getDouble(@NonNull final String key)
+    public double getDouble(@NonNull final Context context,
+                            @NonNull final String key)
             throws ColumnNotPresentException {
 
         final int col = cursor.getColumnIndex(key);
@@ -166,14 +169,16 @@ public class CursorRow
     }
 
     /**
-     * @param key to get
+     * @param context Current context
+     * @param key     to get
      *
      * @return the double value of the column ({@code null} comes back as 0)
      *
      * @throws ColumnNotPresentException if the column was not present.
      */
     @Override
-    public float getFloat(@NonNull final String key)
+    public float getFloat(@NonNull final Context context,
+                          @NonNull final String key)
             throws ColumnNotPresentException {
 
         final int col = cursor.getColumnIndex(key);

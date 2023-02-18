@@ -19,12 +19,17 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
+import android.content.Context;
+import android.os.LocaleList;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.text.DecimalFormat;
 import java.text.Normalizer;
 import java.text.ParseException;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -281,18 +286,23 @@ public final class ParseUtils {
         }
     }
 
+    public static float toFloat(@NonNull final Context context,
+                                @Nullable final Object source) {
+        return toFloat(context.getResources().getConfiguration().getLocales(), source);
+    }
+
     /**
      * Translate the passed Object to a {@code float} value.
      *
-     * @param source       Object to convert
-     * @param sourceLocale (optional) Locale to use for the formatter/parser.
+     * @param localeList Locales to use for the formatter/parser.
+     * @param source     Object to convert
      *
      * @return Resulting value ({@code null} or empty string becomes 0)
      *
      * @throws NumberFormatException if the source was not compatible.
      */
-    public static float toFloat(@Nullable final Object source,
-                                @Nullable final Locale sourceLocale)
+    public static float toFloat(@NonNull final LocaleList localeList,
+                                @Nullable final Object source)
             throws NumberFormatException {
 
         if (source == null) {
@@ -307,7 +317,7 @@ public final class ParseUtils {
                 return 0f;
             }
             try {
-                return parseFloat(stringValue, sourceLocale);
+                return parseFloat(localeList, stringValue);
             } catch (@NonNull final NumberFormatException e) {
                 // as a last resort try boolean
                 return toBoolean(source) ? 1 : 0;
@@ -315,18 +325,23 @@ public final class ParseUtils {
         }
     }
 
+    public static double toDouble(@NonNull final Context context,
+                                  @Nullable final Object source) {
+        return toDouble(context.getResources().getConfiguration().getLocales(), source);
+    }
+
     /**
      * Translate the passed Object to a {@code double} value.
      *
-     * @param source       Object to convert
-     * @param sourceLocale (optional) Locale to use for the formatter/parser.
+     * @param localeList Locales to use for the formatter/parser.
+     * @param source     Object to convert
      *
      * @return Resulting value ({@code null} or empty string becomes 0)
      *
      * @throws NumberFormatException if the source was not compatible.
      */
-    public static double toDouble(@Nullable final Object source,
-                                  @Nullable final Locale sourceLocale)
+    public static double toDouble(@NonNull final LocaleList localeList,
+                                  @Nullable final Object source)
             throws NumberFormatException {
 
         if (source == null) {
@@ -341,7 +356,7 @@ public final class ParseUtils {
                 return 0;
             } else {
                 try {
-                    return parseDouble(stringValue, sourceLocale);
+                    return parseDouble(localeList, stringValue);
                 } catch (@NonNull final NumberFormatException e) {
                     // as a last resort try boolean
                     return toBoolean(source) ? 1 : 0;
@@ -349,7 +364,6 @@ public final class ParseUtils {
             }
         }
     }
-
 
     /**
      * Translate the passed Object to a boolean value.
@@ -433,31 +447,31 @@ public final class ParseUtils {
     /**
      * Replacement for {@code Float.parseFloat(String)} using Locales.
      *
-     * @param source       String to parse
-     * @param sourceLocale Locale to use for the formatter/parser.
-     *                     Can be {@code null} in which case
-     *                     {@link Double#parseDouble(String)} is used.
+     * @param localeList Locales to use for the formatter/parser.
+     * @param source     String to parse
      *
      * @return Resulting value ({@code null} or empty becomes 0)
      *
      * @throws NumberFormatException if the source was not compatible.
      */
-    public static float parseFloat(@Nullable final String source,
-                                   @Nullable final Locale sourceLocale)
+    public static float parseFloat(@NonNull final LocaleList localeList,
+                                   @Nullable final String source)
             throws NumberFormatException {
 
         if (isZero(source)) {
             return 0f;
         }
 
-        if (sourceLocale == null) {
+        // Sanity check
+        if (localeList.isEmpty()) {
             return Float.parseFloat(source);
         }
 
-        // we check in order - first match returns.
         // Locale.US is used for '.' as decimal and ',' as thousands separator.
-        final Locale[] locales = {sourceLocale, ServiceLocator.getSystemLocale(), Locale.US};
+        final LinkedHashSet<Locale> locales =
+                combineLocales(localeList, ServiceLocator.getSystemLocale(), Locale.US);
 
+        // we check in order - first match returns.
         for (final Locale locale : locales) {
             try {
                 final Number number = DecimalFormat.getInstance(locale).parse(source);
@@ -472,27 +486,37 @@ public final class ParseUtils {
         throw new NumberFormatException(ERROR_NOT_A_FLOAT + source);
     }
 
+    @NonNull
+    private static LinkedHashSet<Locale> combineLocales(@NonNull final LocaleList sourceLocale,
+                                                        @NonNull final Locale... otherLocales) {
+        final LinkedHashSet<Locale> locales = new LinkedHashSet<>();
+        for (int i = 0; i < sourceLocale.size(); i++) {
+            locales.add(sourceLocale.get(i));
+        }
+        locales.addAll(Arrays.asList(otherLocales));
+        return locales;
+    }
+
     /**
      * Replacement for {@code Double.parseDouble(String)} using Locales.
      *
-     * @param source       String to parse
-     * @param sourceLocale Locale to use for the formatter/parser.
-     *                     Can be {@code null} in which case
-     *                     {@link Double#parseDouble(String)} is used.
+     * @param localeList Locales to use for the formatter/parser.
+     * @param source     String to parse
      *
      * @return Resulting value ({@code null} or empty becomes 0)
      *
      * @throws NumberFormatException if the source was not compatible.
      */
-    public static double parseDouble(@Nullable final String source,
-                                     @Nullable final Locale sourceLocale)
+    public static double parseDouble(@NonNull final LocaleList localeList,
+                                     @Nullable final String source)
             throws NumberFormatException {
 
         if (isZero(source)) {
             return 0d;
         }
 
-        if (sourceLocale == null) {
+        // Sanity check
+        if (localeList.isEmpty()) {
             return Double.parseDouble(source);
         }
 
@@ -501,10 +525,11 @@ public final class ParseUtils {
             return Double.parseDouble(source);
         }
 
-        // we check in order - first match returns.
         // Locale.US is used for '.' as decimal and ',' as thousands separator.
-        final Locale[] locales = {sourceLocale, ServiceLocator.getSystemLocale(), Locale.US};
+        final LinkedHashSet<Locale> locales =
+                combineLocales(localeList, ServiceLocator.getSystemLocale(), Locale.US);
 
+        // we check in order - first match returns.
         for (final Locale locale : locales) {
             try {
                 final DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(locale);

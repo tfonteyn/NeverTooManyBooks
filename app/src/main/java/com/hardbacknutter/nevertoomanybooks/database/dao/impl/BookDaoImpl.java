@@ -183,7 +183,7 @@ public class BookDaoImpl
             final BookDaoHelper bookDaoHelper = new BookDaoHelper(context, book, true);
             final ContentValues cv = bookDaoHelper
                     .process(context)
-                    .filterValues(db.getTableInfo(TBL_BOOKS));
+                    .filterValues(context, db.getTableInfo(TBL_BOOKS));
 
             // Make sure we have at least one author
             final List<Author> authors = book.getAuthors();
@@ -284,7 +284,7 @@ public class BookDaoImpl
             final BookDaoHelper bookDaoHelper = new BookDaoHelper(context, book, false);
             final ContentValues cv = bookDaoHelper
                     .process(context)
-                    .filterValues(db.getTableInfo(TBL_BOOKS));
+                    .filterValues(context, db.getTableInfo(TBL_BOOKS));
 
             // Disallow UUID updates
             if (cv.containsKey(DBKey.BOOK_UUID)) {

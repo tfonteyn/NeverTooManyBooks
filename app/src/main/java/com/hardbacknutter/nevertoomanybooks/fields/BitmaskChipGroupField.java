@@ -116,7 +116,8 @@ public class BitmaskChipGroupField
     }
 
     @Override
-    public void setInitialValue(@NonNull final DataManager source) {
+    public void setInitialValue(@NonNull final Context context,
+                                @NonNull final DataManager source) {
         initialValue = source.getInt(fieldKey);
         setValue(initialValue);
     }

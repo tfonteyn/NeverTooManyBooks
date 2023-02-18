@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -60,7 +60,7 @@ public class DoubleValidator
             throws ValidatorException {
 
         final double value;
-        final Object obj = dataManager.get(key);
+        final Object obj = dataManager.get(context, key);
         if (obj == null) {
             value = defaultValue;
         } else if (obj instanceof Number) {
@@ -71,7 +71,8 @@ public class DoubleValidator
                 value = defaultValue;
             } else {
                 try {
-                    value = ParseUtils.parseDouble(stringValue, ServiceLocator.getSystemLocale());
+                    value = ParseUtils.parseDouble(ServiceLocator.getSystemLocaleList(),
+                                                   stringValue);
 
                 } catch (@NonNull final NumberFormatException e) {
                     throw new ValidatorException(

@@ -1008,7 +1008,8 @@ public class SearchCoordinator
                          && !siteData.result.isEmpty()) {
                          final Locale siteLocale = searchEngine.getLocale(context);
                          siteData.result.keySet().forEach(
-                                 key -> processKey(key, siteData.result, siteLocale, book));
+                                 key -> processKey(context, key, siteData.result,
+                                                   siteLocale, book));
                      }
                  });
 
@@ -1019,7 +1020,8 @@ public class SearchCoordinator
             coverFilter.filter(book);
         }
 
-        private void processKey(@NonNull final String key,
+        private void processKey(@NonNull final Context context,
+                                @NonNull final String key,
                                 @NonNull final Book siteData,
                                 @NonNull final Locale siteLocale,
                                 @NonNull final Book book) {
@@ -1036,7 +1038,7 @@ public class SearchCoordinator
                 //FIXME: doing this will for example put a LONG id in the bundle as a String.
                 // This is as-designed, but you do get an Exception in the log when the data
                 // gets to the EditBook formatters. Harmless, but not clean.
-                processString(key, siteData, book);
+                processString(context, key, siteData, book);
             }
         }
 
@@ -1163,15 +1165,17 @@ public class SearchCoordinator
          * Accumulate String data.
          * Handles other types via a .toString()
          *
+         * @param context  Current context
          * @param key      Key of data
          * @param siteData Source Bundle
          * @param book     Destination bundle
          */
-        private void processString(@NonNull final String key,
+        private void processString(@NonNull final Context context,
+                                   @NonNull final String key,
                                    @NonNull final Book siteData,
                                    @NonNull final Book book) {
             // Fetch as Object, as engines MAY store typed data
-            final Object dataToAdd = siteData.get(key);
+            final Object dataToAdd = siteData.get(context, key);
             if (dataToAdd == null || dataToAdd.toString().isEmpty()) {
                 return;
             }

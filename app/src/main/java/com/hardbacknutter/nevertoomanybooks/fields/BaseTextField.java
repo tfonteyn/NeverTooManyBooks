@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.fields;
 
+import android.content.Context;
 import android.view.View;
 import android.widget.Checkable;
 import android.widget.TextView;
@@ -113,8 +114,9 @@ public abstract class BaseTextField<T, V extends TextView>
     }
 
     @Override
-    public void setInitialValue(@NonNull final DataManager source) {
-        final Object obj = source.get(fieldKey);
+    public void setInitialValue(@NonNull final Context context,
+                                @NonNull final DataManager source) {
+        final Object obj = source.get(context, fieldKey);
         if (obj != null) {
             //noinspection unchecked
             initialValue = (T) obj;

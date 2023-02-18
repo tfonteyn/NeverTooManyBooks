@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -62,7 +62,7 @@ public class DefaultFieldValidator
                          @NonNull final String key,
                          @StringRes final int errorLabelResId) {
 
-        final Object value = dataManager.get(key);
+        final Object value = dataManager.get(context, key);
         if (value != null && value.toString().trim().isEmpty()) {
             dataManager.putString(key, defaultValue);
         }

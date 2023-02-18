@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.datamanager;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -148,11 +149,13 @@ public class DataManager
     /**
      * Store all passed values in our collection (with type checking).
      *
-     * @param src DataManager to copy from
+     * @param context Current context
+     * @param src     DataManager to copy from
      */
-    protected void putAll(@NonNull final DataManager src) {
+    protected void putAll(@NonNull final Context context,
+                          @NonNull final DataManager src) {
         for (final String key : src.keySet()) {
-            put(key, src.get(key));
+            put(key, src.get(context, key));
         }
     }
 
@@ -257,15 +260,17 @@ public class DataManager
     /**
      * Get the data object specified by the passed key.
      *
-     * @param key Key of data object
+     * @param context Current context
+     * @param key     Key of data object
      *
      * @return Data object, or {@code null} when not present or the value is {@code null}
      */
     @Nullable
-    public Object get(@NonNull final String key) {
+    public Object get(@NonNull final Context context,
+                      @NonNull final String key) {
         if (DBKey.MONEY_KEYS.contains(key)) {
             try {
-                return getMoney(key);
+                return getMoney(context, key);
             } catch (@NonNull final NumberFormatException ignore) {
                 //TEST: should we really ignore this, next step will return raw value.
                 if (BuildConfig.DEBUG /* always */) {
@@ -360,15 +365,17 @@ public class DataManager
     /**
      * Get a double value.
      *
-     * @param key Key of data object
+     * @param context Current context
+     * @param key     Key of data object
      *
      * @return a double value; {@code null} or empty becomes {@code 0}
      *
      * @throws NumberFormatException if the source was not compatible.
      */
-    public double getDouble(@NonNull final String key)
+    public double getDouble(@NonNull final Context context,
+                            @NonNull final String key)
             throws NumberFormatException {
-        return ParseUtils.toDouble(rawData.get(key), null);
+        return ParseUtils.toDouble(context, rawData.get(key));
     }
 
     /**
@@ -385,15 +392,17 @@ public class DataManager
     /**
      * Get a float value.
      *
-     * @param key Key of data object
+     * @param context Current context
+     * @param key     Key of data object
      *
      * @return a float value {@code null} or empty becomes {@code 0}
      *
      * @throws NumberFormatException if the source was not compatible.
      */
-    public float getFloat(@NonNull final String key)
+    public float getFloat(@NonNull final Context context,
+                          @NonNull final String key)
             throws NumberFormatException {
-        return ParseUtils.toFloat(rawData.get(key), null);
+        return ParseUtils.toFloat(context, rawData.get(key));
     }
 
     /**
@@ -433,17 +442,19 @@ public class DataManager
     /**
      * Get a {@link Money} value.
      *
-     * @param key Key of data object
+     * @param context Current context
+     * @param key     Key of data object
      *
      * @return value
      *
      * @throws NumberFormatException if the source was not compatible.
      */
     @Nullable
-    public Money getMoney(@NonNull final String key)
+    public Money getMoney(@NonNull final Context context,
+                          @NonNull final String key)
             throws NumberFormatException {
         if (rawData.containsKey(key)) {
-            return new Money(getDouble(key), getString(key + DBKey.CURRENCY_SUFFIX));
+            return new Money(getDouble(context, key), getString(key + DBKey.CURRENCY_SUFFIX));
         } else {
             return null;
         }

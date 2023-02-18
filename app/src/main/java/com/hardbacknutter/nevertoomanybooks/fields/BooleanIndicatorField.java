@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.fields;
 
+import android.content.Context;
 import android.view.View;
 import android.widget.Checkable;
 
@@ -81,7 +82,8 @@ public class BooleanIndicatorField
     }
 
     @Override
-    public void setInitialValue(@NonNull final DataManager source) {
+    public void setInitialValue(@NonNull final Context context,
+                                @NonNull final DataManager source) {
         initialValue = source.getBoolean(fieldKey);
         setValue(initialValue);
     }

@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
 
+import android.content.Context;
 import android.net.Uri;
 
 import androidx.annotation.AnyThread;
@@ -162,7 +163,8 @@ public class CollectionFormUploader {
     }
 
     @WorkerThread
-    public void setRating(@NonNull final Book book)
+    public void setRating(@NonNull final Context context,
+                          @NonNull final Book book)
             throws IOException, IllegalArgumentException, StorageException {
 
         final long externalId = book.getLong(DBKey.SID_STRIP_INFO);
@@ -176,7 +178,7 @@ public class CollectionFormUploader {
         }
 
         final String postBody = new Uri.Builder()
-                .appendQueryParameter(FF_SCORE, ratingToSite(book))
+                .appendQueryParameter(FF_SCORE, ratingToSite(context, book))
                 .appendQueryParameter(FF_STRIP_ID, String.valueOf(externalId))
                 .appendQueryParameter(FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
                 .appendQueryParameter(FORM_MODE, MODE_SEND_FORM)
@@ -189,8 +191,9 @@ public class CollectionFormUploader {
 
     @AnyThread
     @NonNull
-    private String ratingToSite(@NonNull final Book book) {
-        return String.valueOf(MathUtils.clamp(book.getFloat(DBKey.RATING) * 2, 0, 10));
+    private String ratingToSite(@NonNull final Context context,
+                                @NonNull final Book book) {
+        return String.valueOf(MathUtils.clamp(book.getFloat(context, DBKey.RATING) * 2, 0, 10));
     }
 
     /**
@@ -199,14 +202,16 @@ public class CollectionFormUploader {
      * will be updated with the new collection-id, and set to {@link EntityStage.Stage#Dirty}.
      * It's up to the caller to update the book in the local database.
      *
-     * @param book to send
+     * @param context Current context
+     * @param book    to send
      *
-     * @throws IOException on generic/other IO failures
+     * @throws IOException              on generic/other IO failures
      * @throws IllegalArgumentException if the external id was not present
-     * @throws StorageException on storage related failures
+     * @throws StorageException         on storage related failures
      */
     @WorkerThread
-    public void send(@NonNull final Book book)
+    public void send(@NonNull final Context context,
+                     @NonNull final Book book)
             throws IOException, IllegalArgumentException, StorageException {
 
         final long externalId = book.getLong(DBKey.SID_STRIP_INFO);
@@ -227,7 +232,7 @@ public class CollectionFormUploader {
 
         final Uri.Builder builder = new Uri.Builder();
 
-        builder.appendQueryParameter(FF_SCORE, ratingToSite(book));
+        builder.appendQueryParameter(FF_SCORE, ratingToSite(context, book));
 
         String dateAcquired = book.getString(DBKey.DATE_ACQUIRED);
         if (dateAcquired.length() == 10) {
@@ -239,7 +244,7 @@ public class CollectionFormUploader {
         builder.appendQueryParameter(FF_AANKOOP_DATUM, dateAcquired);
 
         // The site does not store a currency; it's hardcoded/supposed to be EURO.
-        final Money paid = book.getMoney(DBKey.PRICE_PAID);
+        final Money paid = book.getMoney(context, DBKey.PRICE_PAID);
         builder.appendQueryParameter(FF_AANKOOP_PRIJS,
                                      paid != null ? String.valueOf(paid.toEuro()) : "");
 

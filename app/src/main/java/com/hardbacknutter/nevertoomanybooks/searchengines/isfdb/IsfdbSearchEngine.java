@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
 import android.content.Context;
+import android.os.LocaleList;
 import android.util.Log;
 
 import androidx.annotation.IntRange;
@@ -923,7 +924,9 @@ public class IsfdbSearchEngine
                             if (nextElementSibling != null) {
                                 tmpString = nextElementSibling.ownText();
                                 if (!tmpString.isEmpty()) {
-                                    final Money money = new Money(getLocale(context), tmpString);
+                                    final LocaleList localeList =
+                                            new LocaleList(getLocale(context));
+                                    final Money money = new Money(localeList, tmpString);
                                     if (money.getCurrencyCode() != null) {
                                         book.putDouble(DBKey.PRICE_LISTED, money.doubleValue());
                                         book.putString(DBKey.PRICE_LISTED_CURRENCY,
@@ -1518,7 +1521,7 @@ public class IsfdbSearchEngine
         final IsfdbPublicationListHandler listHandler =
                 new IsfdbPublicationListHandler(this,
                                                 fetchCovers, maxRecords,
-                                                getLocale(context));
+                                                new LocaleList(getLocale(context)));
 
         try {
             final SAXParser parser = factory.newSAXParser();

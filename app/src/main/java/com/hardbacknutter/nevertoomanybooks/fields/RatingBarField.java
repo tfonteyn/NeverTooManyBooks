@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.fields;
 
+import android.content.Context;
 import android.widget.RatingBar;
 
 import androidx.annotation.IdRes;
@@ -66,8 +67,9 @@ public class RatingBarField
     }
 
     @Override
-    public void setInitialValue(@NonNull final DataManager source) {
-        initialValue = source.getFloat(fieldKey);
+    public void setInitialValue(@NonNull final Context context,
+                                @NonNull final DataManager source) {
+        initialValue = source.getFloat(context, fieldKey);
         setValue(initialValue);
     }
 

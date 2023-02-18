@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
+import android.os.LocaleList;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,7 +28,6 @@ import androidx.annotation.Nullable;
 import java.io.EOFException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -121,7 +122,7 @@ class IsfdbPublicationListHandler
     @NonNull
     private final boolean[] fetchCovers;
     @NonNull
-    private final Locale locale;
+    private final LocaleList localeList;
     /** XML content. */
     @SuppressWarnings("StringBufferField")
     private final StringBuilder builder = new StringBuilder();
@@ -143,12 +144,12 @@ class IsfdbPublicationListHandler
     IsfdbPublicationListHandler(@NonNull final IsfdbSearchEngine isfdbApiSearchEngine,
                                 @NonNull final boolean[] fetchCovers,
                                 final int maxBooks,
-                                @NonNull final Locale locale) {
+                                @NonNull final LocaleList localeList) {
         searchEngine = isfdbApiSearchEngine;
 
         this.fetchCovers = fetchCovers;
         this.maxBooks = maxBooks;
-        this.locale = locale;
+        this.localeList = localeList;
     }
 
     @NonNull
@@ -298,7 +299,7 @@ class IsfdbPublicationListHandler
                 }
                 case XML_PRICE: {
                     final String tmpString = builder.toString().trim();
-                    final Money money = new Money(locale, tmpString);
+                    final Money money = new Money(localeList, tmpString);
                     if (money.getCurrencyCode() != null) {
                         publicationData.putDouble(DBKey.PRICE_LISTED, money.doubleValue());
                         addIfNotPresent(DBKey.PRICE_LISTED_CURRENCY, money.getCurrencyCode());

@@ -57,6 +57,8 @@ public class BookCoder
     private final JsonCoder<Bookshelf> bookshelfCoder;
     @NonNull
     private final JsonCoder<CalibreLibrary> calibreLibraryCoder;
+    @NonNull
+    private final Context context;
     private final JsonCoder<Publisher> publisherCoder = new PublisherCoder();
     private final JsonCoder<Series> seriesCoder = new SeriesCoder();
     private final JsonCoder<TocEntry> tocEntryCoder = new TocEntryCoder();
@@ -70,6 +72,7 @@ public class BookCoder
 
         bookshelfCoder = new BookshelfCoder(context);
         calibreLibraryCoder = new CalibreLibraryCoder(context);
+        this.context = context;
     }
 
     @Override
@@ -88,7 +91,7 @@ public class BookCoder
                         @NonNull final String key)
             throws JSONException {
 
-        final Object element = book.get(key);
+        final Object element = book.get(context, key);
 
         // Special keys first.
 

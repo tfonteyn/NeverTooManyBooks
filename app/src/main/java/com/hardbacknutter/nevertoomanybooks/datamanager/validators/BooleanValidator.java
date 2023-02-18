@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -55,7 +55,7 @@ public class BooleanValidator
                          @StringRes final int errorLabelResId)
             throws ValidatorException {
 
-        final Object o = dataManager.get(key);
+        final Object o = dataManager.get(context, key);
         if (o == null || o.toString().trim().isEmpty()) {
             dataManager.putBoolean(key, defaultValue);
             return;

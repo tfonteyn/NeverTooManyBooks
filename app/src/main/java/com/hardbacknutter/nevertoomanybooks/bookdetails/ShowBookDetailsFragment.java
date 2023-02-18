@@ -386,9 +386,10 @@ public class ShowBookDetailsFragment
         final List<Field<?, ? extends View>> fields = vm.getFields();
 
         // do NOT call notifyIfChanged, as this is the initial load
+        //noinspection ConstantConditions
         fields.stream()
               .filter(Field::isAutoPopulated)
-              .forEach(field -> field.setInitialValue(book));
+              .forEach(field -> field.setInitialValue(getContext(), book));
 
         bindCoverImages();
         bindLoanee(book);

@@ -242,7 +242,7 @@ public final class SyncReaderProcessor
                         switch (field.getAction()) {
                             case CopyIfBlank:
                                 // remove unneeded fields from the new data
-                                if (hasField(localBook, field.key)) {
+                                if (hasField(context, localBook, field.key)) {
                                     remoteBook.remove(field.key);
                                 }
                                 break;
@@ -272,7 +272,7 @@ public final class SyncReaderProcessor
 
             //IMPORTANT: note how we construct a NEW BOOK, with the DELTA-data which
             // we want to commit to the existing book.
-            final Book delta = Book.from(remoteBook);
+            final Book delta = Book.from(context, remoteBook);
             delta.putLong(DBKey.PK_ID, bookId);
             return delta;
         }
@@ -283,12 +283,14 @@ public final class SyncReaderProcessor
     /**
      * Check if we already have this field (with content) in the original data.
      *
+     * @param context   Current context
      * @param localBook to check
      * @param key       to test for
      *
      * @return {@code true} if already present
      */
-    private boolean hasField(@NonNull final Book localBook,
+    private boolean hasField(@NonNull final Context context,
+                             @NonNull final Book localBook,
                              @NonNull final String key) {
         switch (key) {
             case Book.BKEY_AUTHOR_LIST:
@@ -302,7 +304,7 @@ public final class SyncReaderProcessor
                 break;
 
             default:
-                final Object o = localBook.get(key);
+                final Object o = localBook.get(context, key);
                 if (o != null) {
                     final String value = o.toString().trim();
                     return !value.isEmpty() && !"0".equals(value);

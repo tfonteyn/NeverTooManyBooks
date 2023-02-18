@@ -123,7 +123,8 @@ public abstract class EditBookBaseFragment
         // BUT: that new data would not be in the fragment arguments?
         //TODO: double check having book-data bundle in onResume.
         if (book.isNew()) {
-            vm.addFieldsFromArguments(getArguments());
+            //noinspection ConstantConditions
+            vm.addFieldsFromArguments(getContext(), getArguments());
         }
 
         // update the Fields for THIS fragment with their current View instances
@@ -184,9 +185,10 @@ public abstract class EditBookBaseFragment
         // Bulk load the data into the Views.
 
         // do NOT call notifyIfChanged, as this is the initial load
+        //noinspection ConstantConditions
         fields.stream()
               .filter(Field::isAutoPopulated)
-              .forEach(field -> field.setInitialValue(book));
+              .forEach(field -> field.setInitialValue(getContext(), book));
 
         // With all Views populated, (re-)add the date helpers
         // which rely on fields having valid views

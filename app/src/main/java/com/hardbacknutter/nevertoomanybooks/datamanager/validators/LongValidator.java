@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -62,7 +62,7 @@ public class LongValidator
             throws ValidatorException {
 
         final long value;
-        final Object obj = dataManager.get(key);
+        final Object obj = dataManager.get(context, key);
         if (obj == null) {
             value = defaultValue;
         } else if (obj instanceof Long) {

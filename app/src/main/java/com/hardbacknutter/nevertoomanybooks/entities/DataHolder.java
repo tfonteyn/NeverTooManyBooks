@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.entities;
 
+import android.content.Context;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
@@ -80,20 +81,24 @@ public interface DataHolder {
     /**
      * Returns the value associated with the given key.
      *
-     * @param key Key of data object
+     * @param context Current context
+     * @param key     Key of data object
      *
      * @return a double value
      */
-    double getDouble(@NonNull String key);
+    double getDouble(@NonNull Context context,
+                     @NonNull String key);
 
     /**
      * Returns the value associated with the given key.
      *
-     * @param key Key of data object
+     * @param context Current context
+     * @param key     Key of data object
      *
      * @return a float value
      */
-    float getFloat(@NonNull String key);
+    float getFloat(@NonNull Context context,
+                   @NonNull String key);
 
     /**
      * Returns the value associated with the given key.

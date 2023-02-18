@@ -121,7 +121,8 @@ public class ListChipGroupField<T extends Parcelable & Entity>
     }
 
     @Override
-    public void setInitialValue(@NonNull final DataManager source) {
+    public void setInitialValue(@NonNull final Context context,
+                                @NonNull final DataManager source) {
         initialValue = new ArrayList<>(source.getParcelableArrayList(fieldKey));
         setValue(initialValue);
     }

@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.amazon;
 
 import android.content.Context;
+import android.os.LocaleList;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
@@ -280,7 +281,7 @@ public class AmazonSearchEngine
         final String title = titleElement.text().trim();
         book.putString(DBKey.TITLE, title);
 
-        parsePrice(document, book, siteLocale);
+        parsePrice(document, book, new LocaleList(siteLocale));
 
         parseAuthors(document, book, siteLocale);
 
@@ -309,7 +310,7 @@ public class AmazonSearchEngine
 
     private void parsePrice(@NonNull final Document document,
                             @NonNull final Book book,
-                            @NonNull final Locale siteLocale) {
+                            @NonNull final LocaleList siteLocale) {
         final Element price = document.selectFirst("span.offer-price");
         if (price != null) {
             final Money money = new Money(siteLocale, price.text());

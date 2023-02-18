@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.backup.xml;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.LocaleList;
 import android.util.Base64;
 import android.util.Log;
 
@@ -38,7 +39,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
@@ -86,8 +86,8 @@ public class XmlRecordReader
     private static final String ERROR_UNABLE_TO_PROCESS_XML_RECORD = "Unable to process XML ";
 
     private static final String TAG = "XmlRecordReader";
-    @Nullable
-    private final Locale userLocale;
+    @NonNull
+    private final LocaleList userLocale;
 
     /**
      * Stack for popping tags on if we go into one.
@@ -105,7 +105,7 @@ public class XmlRecordReader
      * @param context Current context
      */
     public XmlRecordReader(@NonNull final Context context) {
-        userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        userLocale = context.getResources().getConfiguration().getLocales();
     }
 
     @Override
@@ -232,12 +232,12 @@ public class XmlRecordReader
 
                     case XmlUtils.TAG_FLOAT:
                         accessor.putFloat(currentTag.name, ParseUtils.parseFloat(
-                                currentTag.value, userLocale));
+                                userLocale, currentTag.value));
                         break;
 
                     case XmlUtils.TAG_DOUBLE:
                         accessor.putDouble(currentTag.name, ParseUtils.parseDouble(
-                                currentTag.value, userLocale));
+                                userLocale, currentTag.value));
                         break;
 
                     default:
