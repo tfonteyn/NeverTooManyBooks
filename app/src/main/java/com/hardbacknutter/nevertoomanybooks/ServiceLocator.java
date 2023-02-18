@@ -82,6 +82,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StripInfoDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TocEntryDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.TestFlags;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
@@ -91,12 +92,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.notifier.Notifier;
 import com.hardbacknutter.nevertoomanybooks.utils.notifier.NotifierImpl;
 
 public final class ServiceLocator {
-
-    /**
-     * Sub directory of {@link Context#getFilesDir()}.
-     * log files.
-     */
-    static final String DIR_LOG = "log";
 
     /**
      * Sub directory of {@link Context#getFilesDir()}.
@@ -118,6 +113,9 @@ public final class ServiceLocator {
     /** TODO: allow this to be injected. */
     @Nullable
     private CacheDbHelper cacheDbHelper;
+
+    @Nullable
+    private Logger logger;
 
     @Nullable
     private StylesHelper stylesHelper;
@@ -201,13 +199,7 @@ public final class ServiceLocator {
             if (sInstance == null) {
                 sInstance = new ServiceLocator(context);
 
-                File dir = getLogDir();
-                if (!dir.exists()) {
-                    //noinspection ResultOfMethodCallIgnored
-                    dir.mkdirs();
-                }
-
-                dir = getUpgradesDir();
+                File dir = getUpgradesDir();
                 if (!dir.exists()) {
                     //noinspection ResultOfMethodCallIgnored
                     dir.mkdirs();
@@ -270,10 +262,12 @@ public final class ServiceLocator {
         return Resources.getSystem().getConfiguration().getLocales().get(0);
     }
 
-
     @NonNull
-    public static File getLogDir() {
-        return new File(sInstance.appContext.getFilesDir(), DIR_LOG);
+    public Logger getLogger() {
+        if (logger == null) {
+            logger = new Logger(appContext);
+        }
+        return logger;
     }
 
     @NonNull

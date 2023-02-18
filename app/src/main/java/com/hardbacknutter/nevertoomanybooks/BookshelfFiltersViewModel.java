@@ -37,7 +37,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 public class BookshelfFiltersViewModel
@@ -115,7 +114,7 @@ public class BookshelfFiltersViewModel
                 ServiceLocator.getInstance().getBookshelfDao().update(context, bookshelf);
             } catch (@NonNull final DaoWriteException e) {
                 // log, but ignore - should never happen unless disk full
-                Logger.error(TAG, e, "");
+                ServiceLocator.getInstance().getLogger().error(TAG, e, "");
             }
         }
         return true;

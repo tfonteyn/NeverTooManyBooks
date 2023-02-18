@@ -102,7 +102,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfHeaderBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorDialogFragment;
@@ -1524,7 +1523,7 @@ public class BooksOnBookshelf
     private void onBuildFailed(@NonNull final LiveDataEvent<TaskResult<Throwable>> message) {
         vb.progressCircle.hide();
         message.getData().ifPresent(data -> {
-            Logger.error(TAG, data.getResult());
+            ServiceLocator.getInstance().getLogger().error(TAG, data.getResult());
 
             vm.onBuildFailed();
 

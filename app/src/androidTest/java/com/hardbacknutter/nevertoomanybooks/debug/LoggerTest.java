@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,12 +26,12 @@ import androidx.test.filters.SmallTest;
 import java.io.File;
 import java.util.List;
 
-import org.junit.Test;
-
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+
+import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -46,10 +46,11 @@ public class LoggerTest {
             throws StorageException {
 
         final Context context = ServiceLocator.getAppContext();
+        final Logger logger = ServiceLocator.getInstance().getLogger();
 
         CoverDir.initVolume(context, 0);
 
-        final File logDir = ServiceLocator.getLogDir();
+        final File logDir = logger.getLogDir();
 
         FileUtils.deleteDirectory(logDir, null, null);
 
@@ -60,15 +61,15 @@ public class LoggerTest {
 
         for (int i = 0; i < 6; i++) {
             final Object[] params1 = {"message " + (msgNr++)};
-            Logger.warn("loop=" + i, params1);
+            logger.warn("loop=" + i, params1);
             final Object[] params = {"message " + (msgNr++)};
-            Logger.warn("loop=" + i, params);
-            Logger.cycleLogs();
+            logger.warn("loop=" + i, params);
+            logger.cycleLogs();
         }
 
         files = FileUtils.collectFiles(logDir, null);
         // 4 files: .bak, .bak.1, .bak.2, .bak.3
         assertEquals(4, files.size());
-        Logger.warn("final", files.toString());
+        logger.warn("final", files.toString());
     }
 }

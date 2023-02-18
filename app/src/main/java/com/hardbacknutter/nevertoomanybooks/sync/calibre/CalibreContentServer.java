@@ -74,7 +74,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -318,7 +317,7 @@ public class CalibreContentServer
                  .putString(PK_LOCAL_FOLDER_URI, uri.toString())
                  .apply();
         } catch (@NonNull final SecurityException e) {
-            Logger.error(TAG, e, "uri=" + uri);
+            ServiceLocator.getInstance().getLogger().error(TAG, e, "uri=" + uri);
             throw e;
         }
     }

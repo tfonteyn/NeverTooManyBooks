@@ -32,6 +32,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.ReaderResults;
@@ -136,7 +137,8 @@ public class ImportResults
         booksFailed++;
 
         if (booksFailed <= MAX_FAIL_LINES) {
-            Logger.warn(TAG, "Import failed for book " + row + "|e=" + e.getMessage());
+            ServiceLocator.getInstance().getLogger()
+                          .warn(TAG, "Import failed for book " + row + "|e=" + e.getMessage());
         }
         if (BuildConfig.DEBUG /* always */) {
             if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS && booksFailed > MAX_FAIL_LINES) {

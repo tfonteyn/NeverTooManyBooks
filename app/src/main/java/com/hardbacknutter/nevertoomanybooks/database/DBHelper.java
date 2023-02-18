@@ -116,6 +116,7 @@ public class DBHelper
     private static final SQLiteDatabase.CursorFactory CURSOR_FACTORY =
             (db, d, et, q) -> new SynchronizedCursor(d, et, q, SYNCHRONIZER);
 
+    /** Always use {@link #getCollation(SQLiteDatabase)} to access. */
     @Nullable
     private static Boolean sIsCollationCaseSensitive;
 
@@ -184,17 +185,18 @@ public class DBHelper
                 try {
                     db.execSQL("DROP INDEX " + indexName);
                 } catch (@NonNull final SQLException e) {
-                    Logger.error(TAG, e);
+                    ServiceLocator.getInstance().getLogger().error(TAG, e);
                     throw e;
                 } catch (@NonNull final RuntimeException e) {
-                    Logger.error(TAG, e, "DROP INDEX failed: " + indexName);
+                    ServiceLocator.getInstance().getLogger()
+                                  .error(TAG, e, "DROP INDEX failed: " + indexName);
                 }
             }
         }
 
         // now recreate
         for (final TableDefinition table : DBDefinitions.ALL_TABLES.values()) {
-            table.createIndices(db, sIsCollationCaseSensitive);
+            table.createIndices(db, getCollation(db));
         }
 
         db.execSQL("analyze");
@@ -263,33 +265,11 @@ public class DBHelper
               .apply();
     }
 
-    /**
-     * Get the main database.
-     *
-     * @return database connection
-     *
-     * @throws SQLiteException if the database cannot be opened
-     */
-    @NonNull
-    public SynchronizedDb getDb() {
-        synchronized (this) {
-            if (synchronizedDb == null) {
-                // Dev note: don't move this to the constructor, "this" must
-                // be fully constructed before we can pass it to the SynchronizedDb constructor
-                //noinspection ConstantConditions
-                synchronizedDb = new SynchronizedDb(SYNCHRONIZER, this,
-                                                    sIsCollationCaseSensitive, stmtCacheSize);
-            }
+    private static boolean getCollation(@NonNull final SQLiteDatabase db) {
+        if (sIsCollationCaseSensitive == null) {
+            sIsCollationCaseSensitive = collationIsCaseSensitive(db);
         }
-        return synchronizedDb;
-    }
-
-    @Override
-    public void close() {
-        if (synchronizedDb != null) {
-            synchronizedDb.close();
-        }
-        super.close();
+        return sIsCollationCaseSensitive;
     }
 
     /**
@@ -301,7 +281,7 @@ public class DBHelper
      *
      * @return This method is supposed to return {@code false} in normal circumstances.
      */
-    private boolean collationIsCaseSensitive(@NonNull final SQLiteDatabase db) {
+    private static boolean collationIsCaseSensitive(@NonNull final SQLiteDatabase db) {
         final String dropTable = "DROP TABLE IF EXISTS collation_cs_check";
         try {
             // Drop and create table
@@ -330,17 +310,45 @@ public class DBHelper
             return cs;
 
         } catch (@NonNull final SQLException e) {
-            Logger.error(TAG, e);
+            ServiceLocator.getInstance().getLogger().error(TAG, e);
             throw e;
         } finally {
             try {
                 db.execSQL(dropTable);
             } catch (@NonNull final SQLException e) {
-                Logger.error(TAG, e);
+                ServiceLocator.getInstance().getLogger().error(TAG, e);
             }
         }
     }
 
+    /**
+     * Get the main database.
+     *
+     * @return database connection
+     *
+     * @throws SQLiteException if the database cannot be opened
+     */
+    @NonNull
+    public SynchronizedDb getDb() {
+        synchronized (this) {
+            if (synchronizedDb == null) {
+                // Dev note: don't move this to the constructor, "this" must
+                // be fully constructed before we can pass it to the SynchronizedDb constructor
+                synchronizedDb = new SynchronizedDb(SYNCHRONIZER, this,
+                                                    getCollation(getWritableDatabase()),
+                                                    stmtCacheSize);
+            }
+        }
+        return synchronizedDb;
+    }
+
+    @Override
+    public void close() {
+        if (synchronizedDb != null) {
+            synchronizedDb.close();
+        }
+        super.close();
+    }
 
     /**
      * Create all database triggers.
@@ -578,13 +586,10 @@ public class DBHelper
      */
     @Override
     public void onCreate(@NonNull final SQLiteDatabase db) {
-        initCollation(db);
-
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
         // Create all the app & user data tables in the correct dependency order
-        TableDefinition.onCreate(db, sIsCollationCaseSensitive,
-                                 DBDefinitions.ALL_TABLES.values());
+        TableDefinition.onCreate(db, getCollation(db), DBDefinitions.ALL_TABLES.values());
 
         // insert the builtin styles so foreign key rules are possible.
         StyleDaoImpl.onPostCreate(db);
@@ -609,7 +614,6 @@ public class DBHelper
     public void onUpgrade(@NonNull final SQLiteDatabase db,
                           final int oldVersion,
                           final int newVersion) {
-        initCollation(db);
 
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
@@ -629,14 +633,15 @@ public class DBHelper
                     try {
                         FileUtils.rename(destFile, destination);
                     } catch (@NonNull final IOException e) {
-                        Logger.error(TAG, e, "failed to rename source=" + destFile
-                                             + " TO destination=" + destination, e);
+                        ServiceLocator.getInstance().getLogger()
+                                      .error(TAG, e, "failed to rename source=" + destFile
+                                                     + " TO destination=" + destination, e);
                     }
                 }
                 // and create a new copy
                 FileUtils.copy(new File(db.getPath()), destFile);
             } catch (@NonNull final IOException e) {
-                Logger.error(TAG, e);
+                ServiceLocator.getInstance().getLogger().error(TAG, e);
             }
         }
 
@@ -909,24 +914,10 @@ public class DBHelper
 
     @Override
     public void onOpen(@NonNull final SQLiteDatabase db) {
-        initCollation(db);
-
         // Turn ON foreign key support so that CASCADE etc. works.
         // This is the same as db.execSQL("PRAGMA foreign_keys = ON");
         db.setForeignKeyConstraintsEnabled(true);
     }
-
-    /**
-     * MUST be called as the first line from {@link #onCreate(SQLiteDatabase)},
-     * {@link #onUpgrade(SQLiteDatabase, int, int)} nd {@link #onOpen(SQLiteDatabase)}
-     * to cover all possible startup paths.
-     */
-    private void initCollation(@NonNull final SQLiteDatabase db) {
-        if (sIsCollationCaseSensitive == null) {
-            sIsCollationCaseSensitive = collationIsCaseSensitive(db);
-        }
-    }
-
 
     private void removeDuplicateAuthors_v23(@NonNull final SQLiteDatabase db) {
 

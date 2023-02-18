@@ -46,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.covers.Cover;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -327,9 +326,10 @@ public final class SyncReaderProcessor
             } catch (@NonNull final StorageException | IOException e) {
                 // We're called in a loop, and the chance of an exception here is very low
                 // so let's log it, and quietly continue.
-                Logger.error(TAG, e, "processCoverImage|uuid="
-                                     + localBook.getString(DBKey.BOOK_UUID, null)
-                                     + "|cIdx=" + cIdx);
+                ServiceLocator.getInstance().getLogger()
+                              .error(TAG, e, "processCoverImage|uuid="
+                                             + localBook.getString(DBKey.BOOK_UUID, null)
+                                             + "|cIdx=" + cIdx);
             }
         }
         remoteBook.remove(Book.BKEY_TMP_FILE_SPEC[cIdx]);

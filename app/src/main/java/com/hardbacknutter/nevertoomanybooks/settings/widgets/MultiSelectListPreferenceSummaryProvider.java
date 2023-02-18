@@ -24,7 +24,7 @@ import androidx.preference.MultiSelectListPreference;
 import androidx.preference.Preference;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 public final class MultiSelectListPreferenceSummaryProvider
         implements Preference.SummaryProvider<MultiSelectListPreference> {
@@ -41,7 +41,7 @@ public final class MultiSelectListPreferenceSummaryProvider
      * {@link androidx.preference.Preference.SummaryProvider} implementation.
      *
      * @return a singleton instance of this simple
-     * {@link androidx.preference.Preference.SummaryProvider} implementation
+     *         {@link androidx.preference.Preference.SummaryProvider} implementation
      */
     @NonNull
     public static MultiSelectListPreferenceSummaryProvider getInstance() {
@@ -62,13 +62,15 @@ public final class MultiSelectListPreferenceSummaryProvider
 
             } else {
                 // This re-surfaces sometimes after a careless dev. change.
-                Logger.error(TAG, new Throwable(),
-                             "MultiSelectListPreference:"
-                             + "\n s=" + s
-                             + "\n key=" + preference.getKey()
-                             + "\n entries=" + String.join(",", preference.getEntries())
-                             + "\n entryValues=" + String.join(",", preference.getEntryValues())
-                             + "\n values=" + preference.getValues());
+                ServiceLocator.getInstance().getLogger()
+                              .error(TAG, new Throwable(),
+                                     "MultiSelectListPreference:"
+                                     + "\n s=" + s
+                                     + "\n key=" + preference.getKey()
+                                     + "\n entries=" + String.join(",", preference.getEntries())
+                                     + "\n entryValues="
+                                     + String.join(",", preference.getEntryValues())
+                                     + "\n values=" + preference.getValues());
             }
         }
 

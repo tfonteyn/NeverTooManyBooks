@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,7 +35,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StripInfoDao;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
 import com.hardbacknutter.nevertoomanybooks.network.HttpNotFoundException;
@@ -128,7 +127,8 @@ public class StripInfoWriter
                     }
                 } catch (@NonNull final JSONException e) {
                     // ignore, just move on to the next book
-                    Logger.error(TAG, e, "bookId=" + book.getId());
+                    ServiceLocator.getInstance().getLogger()
+                                  .error(TAG, e, "bookId=" + book.getId());
                 } catch (@NonNull final StorageException ignore) {
                     // ignore, can't happen here
                 }

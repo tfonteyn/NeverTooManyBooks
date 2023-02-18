@@ -45,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.database.tasks.OptimizeDbTask;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildFtsTask;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildIndexesTask;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildTitleOrderByColumnTask;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.BuildLanguageMappingsTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
@@ -174,7 +173,7 @@ public class StartupViewModel
             cleanObsoleteDirectories(context);
 
             // from here on, we have access to our log file
-            Logger.cycleLogs();
+            ServiceLocator.getInstance().getLogger().cycleLogs();
 
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 

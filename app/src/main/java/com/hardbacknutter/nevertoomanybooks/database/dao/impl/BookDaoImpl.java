@@ -61,7 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -214,9 +213,10 @@ public class BookDaoImpl
             // go!
             final long newBookId = db.insert(TBL_BOOKS.getName(), cv);
             if (newBookId <= 0) {
-                Logger.error(TAG, new Throwable(), "Insert failed"
-                                                   + "|table=" + TBL_BOOKS.getName()
-                                                   + "|cv=" + cv);
+                ServiceLocator.getInstance().getLogger()
+                              .error(TAG, new Throwable(), "Insert failed"
+                                                           + "|table=" + TBL_BOOKS.getName()
+                                                           + "|cv=" + cv);
 
                 book.putLong(DBKey.PK_ID, 0);
                 book.remove(DBKey.BOOK_UUID);
@@ -397,7 +397,7 @@ public class BookDaoImpl
                 db.setTransactionSuccessful();
             }
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(TAG, e, "Failed to delete book");
+            ServiceLocator.getInstance().getLogger().error(TAG, e, "Failed to delete book");
 
         } finally {
             if (txLock != null) {

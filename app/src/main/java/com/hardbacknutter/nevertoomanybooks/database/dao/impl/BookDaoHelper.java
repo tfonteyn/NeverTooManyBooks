@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.Cover;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -396,10 +397,11 @@ public class BookDaoHelper {
                                     } catch (@NonNull final NumberFormatException e) {
                                         // We do NOT want to fail at this point.
                                         // Log, but skip this field.
-                                        Logger.warn(TAG, e.getMessage(),
-                                                    "columnName(int)=" + columnName,
-                                                    "entry=" + entry,
-                                                    "book=" + book);
+                                        ServiceLocator.getInstance().getLogger()
+                                                      .warn(TAG, e.getMessage(),
+                                                            "columnName(int)=" + columnName,
+                                                            "entry=" + entry,
+                                                            "book=" + book);
                                     }
                                 }
                                 break;
@@ -413,10 +415,11 @@ public class BookDaoHelper {
                                     // very likely looking at a "list price" field coming
                                     // from an import which cannot be parsed.
                                     // Log, but skip this field.
-                                    Logger.warn(TAG, e.getMessage(),
-                                                "columnName(float)=" + columnName,
-                                                "entry=" + entry,
-                                                "book=" + book);
+                                    ServiceLocator.getInstance().getLogger()
+                                                  .warn(TAG, e.getMessage(),
+                                                        "columnName(float)=" + columnName,
+                                                        "entry=" + entry,
+                                                        "book=" + book);
                                 }
                                 break;
                             }

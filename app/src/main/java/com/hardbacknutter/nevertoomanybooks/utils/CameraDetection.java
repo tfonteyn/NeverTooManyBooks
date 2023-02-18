@@ -30,7 +30,7 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 public final class CameraDetection {
@@ -69,7 +69,7 @@ public final class CameraDetection {
                 list.add(cc.get(CameraCharacteristics.LENS_FACING));
             }
         } catch (@NonNull final CameraAccessException e) {
-            Logger.error(TAG, e);
+            ServiceLocator.getInstance().getLogger().error(TAG, e);
         }
 
         return list;

@@ -30,7 +30,7 @@ import androidx.annotation.Nullable;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 public final class ExMsg {
 
@@ -131,7 +131,7 @@ public final class ExMsg {
                 msg = context.getString(R.string.error_storage_no_space_left);
             } else {
                 // write to logfile for future reporting enhancements.
-                Logger.warn(TAG, "errno=" + errno);
+                ServiceLocator.getInstance().getLogger().warn(TAG, "errno=" + errno);
                 msg = Os.strerror(errno);
             }
         }

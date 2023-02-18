@@ -25,8 +25,8 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.fields.endicon.ExtEndIconDelegate;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 
@@ -131,7 +131,7 @@ public class TextViewField<T>
                 // it's possible that it gets the column type wrong.
                 // See {@link TypedCursor} class docs.
                 // Also see {@link SearchCoordinator#accumulateStringData}
-                Logger.error(TAG, e, value);
+                ServiceLocator.getInstance().getLogger().error(TAG, e, value);
 
                 view.setText(rawValue != null ? String.valueOf(rawValue) : "");
             }

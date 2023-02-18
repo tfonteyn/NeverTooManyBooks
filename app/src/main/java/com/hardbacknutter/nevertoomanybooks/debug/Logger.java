@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.debug;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -46,12 +47,13 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
- * ALWAYS call methods like this:
+ * Static methods are DEBUG ONLY.
+ * <p>
+ * ALWAYS call debug methods like this:
  * * if (BuildConfig.DEBUG ) {
  * *     Logger.blah(...);
  * * }
@@ -73,6 +75,11 @@ public final class Logger {
 
     /** serious errors are written to this file. */
     public static final String ERROR_LOG_FILE = "error.log";
+    /**
+     * Sub directory of {@link Context#getFilesDir()}.
+     * log files.
+     */
+    public static final String DIR_LOG = "log";
 
     /** Keep the last 3 log files. */
     private static final int LOGFILE_COPIES = 3;
@@ -80,54 +87,14 @@ public final class Logger {
     /** Prefix for logfile entries. Not used on the console. */
     private static final String ERROR = "ERROR";
     private static final String WARN = "WARN";
+    @NonNull
+    private final File logDir;
 
-    private Logger() {
-    }
-
-    /**
-     * ERROR message. Send to the logfile (always) and the console (when in DEBUG mode).
-     * <p>
-     * Use sparingly, writing to the log is expensive.
-     *
-     * @param tag    log tag
-     * @param e      cause
-     * @param params to concat
-     */
-    public static void error(@NonNull final String tag,
-                             @Nullable final Throwable e,
-                             @Nullable final Object... params) {
-        final String msg;
-        if (params != null) {
-            msg = '|' + concat(params);
-        } else {
-            msg = "";
-        }
-        writeToLog(tag, ERROR, msg, e);
-
-        if (BuildConfig.DEBUG /* always */) {
-            e(tag, e, msg);
-        }
-    }
-
-    /**
-     * WARN message. Send to the logfile (always) and the console (when in DEBUG mode).
-     * <p>
-     * Use sparingly, writing to the log is expensive.
-     * <p>
-     * Use when an error or unusual result should be noted, but will not affect the flow of the app.
-     * No stacktrace!
-     *
-     * @param tag    log tag
-     * @param params to concat
-     */
-    public static void warn(@NonNull final String tag,
-                            @NonNull final Object... params) {
-
-        final String msg = concat(params);
-        writeToLog(tag, WARN, msg, null);
-
-        if (BuildConfig.DEBUG /* always */) {
-            w(tag, msg);
+    public Logger(@NonNull final Context context) {
+        logDir = new File(context.getApplicationContext().getFilesDir(), DIR_LOG);
+        if (!logDir.exists()) {
+            //noinspection ResultOfMethodCallIgnored
+            logDir.mkdirs();
         }
     }
 
@@ -155,57 +122,6 @@ public final class Logger {
             message.append('\n').append(getStackTraceString(e));
         }
         return message.toString();
-    }
-
-    /**
-     * This is an expensive call... file open+close... BOOOO!
-     *
-     * @param tag     log tag
-     * @param type    warn,error,...
-     * @param message to write
-     * @param e       optional Throwable
-     */
-    private static void writeToLog(@NonNull final String tag,
-                                   @NonNull final String type,
-                                   @NonNull final String message,
-                                   @Nullable final Throwable e) {
-        // do not write to the file if we're running in a JUnit test.
-        if (BuildConfig.DEBUG /* always */) {
-            if (TestFlags.isJUnit) {
-                return;
-            }
-        }
-
-        final String exMsg;
-        if (e != null) {
-            exMsg = '|' + getStackTraceString(e);
-        } else {
-            exMsg = "";
-        }
-
-        // UTC based
-        final String fullMsg = LocalDateTime.now(ZoneOffset.UTC)
-                                            .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-                               + '|' + tag + '|' + type + '|' + message + exMsg;
-
-        try {
-            final File logFile = new File(ServiceLocator.getLogDir(), ERROR_LOG_FILE);
-            try (FileOutputStream fos = new FileOutputStream(logFile, true);
-                 OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
-                 PrintWriter out = new PrintWriter(new BufferedWriter(osw))) {
-                out.println(fullMsg);
-            }
-        } catch (@NonNull final Exception ignore) {
-            // do nothing - we can't log an error in the logger
-        }
-    }
-
-    @NonNull
-    public static String getErrorLog()
-            throws IOException {
-        return String.join("\n", Files.readAllLines(
-                Paths.get(ServiceLocator.getLogDir().getAbsolutePath(),
-                          ERROR_LOG_FILE), StandardCharsets.UTF_8));
     }
 
     /**
@@ -301,25 +217,6 @@ public final class Logger {
         return sb.toString();
     }
 
-    /**
-     * Cycle the log each time the app is started; preserve previous if non-empty.
-     */
-    public static void cycleLogs() {
-        File logFile = null;
-        try {
-            logFile = new File(ServiceLocator.getLogDir(), ERROR_LOG_FILE);
-            if (logFile.exists() && logFile.length() > 0) {
-                final File backup = new File(logFile.getPath() + ".bak");
-                FileUtils.copyWithBackup(logFile, backup, LOGFILE_COPIES);
-            }
-        } catch (@NonNull final Exception ignore) {
-            // do nothing - we can't log an error in the logger
-        }
-
-        FileUtils.delete(logFile);
-    }
-
-
     /** JUnit aware wrapper for {@link Log#w(String, String)}. */
     public static void w(@NonNull final String tag,
                          @NonNull final Object... params) {
@@ -382,6 +279,126 @@ public final class Logger {
             } else {
                 Log.d(tag, msg, e);
             }
+        }
+    }
+
+    @NonNull
+    public String getErrorLog()
+            throws IOException {
+        return String.join("\n", Files.readAllLines(
+                Paths.get(logDir.getAbsolutePath(), ERROR_LOG_FILE), StandardCharsets.UTF_8));
+    }
+
+    @NonNull
+    public File getLogDir() {
+        return logDir;
+    }
+
+    /**
+     * Cycle the log each time the app is started; preserve previous if non-empty.
+     */
+    public void cycleLogs() {
+        File logFile = null;
+        try {
+            logFile = new File(logDir, ERROR_LOG_FILE);
+            if (logFile.exists() && logFile.length() > 0) {
+                final File backup = new File(logFile.getPath() + ".bak");
+                FileUtils.copyWithBackup(logFile, backup, LOGFILE_COPIES);
+            }
+        } catch (@NonNull final Exception ignore) {
+            // do nothing - we can't log an error in the logger
+        }
+
+        FileUtils.delete(logFile);
+    }
+
+    /**
+     * ERROR message. Send to the logfile (always) and the console (when in DEBUG mode).
+     * <p>
+     * Use sparingly, writing to the log is expensive.
+     *
+     * @param tag    log tag
+     * @param e      cause
+     * @param params to concat
+     */
+    public void error(@NonNull final String tag,
+                      @Nullable final Throwable e,
+                      @Nullable final Object... params) {
+        final String msg;
+        if (params != null) {
+            msg = '|' + concat(params);
+        } else {
+            msg = "";
+        }
+        writeToLog(tag, ERROR, msg, e);
+
+        if (BuildConfig.DEBUG /* always */) {
+            e(tag, e, msg);
+        }
+    }
+
+    /**
+     * WARN message. Send to the logfile (always) and the console (when in DEBUG mode).
+     * <p>
+     * Use sparingly, writing to the log is expensive.
+     * <p>
+     * Use when an error or unusual result should be noted, but will not affect the flow of the app.
+     * No stacktrace!
+     *
+     * @param tag    log tag
+     * @param params to concat
+     */
+    public void warn(@NonNull final String tag,
+                     @NonNull final Object... params) {
+
+        final String msg = concat(params);
+        writeToLog(tag, WARN, msg, null);
+
+        if (BuildConfig.DEBUG /* always */) {
+            w(tag, msg);
+        }
+    }
+
+    /**
+     * This is an expensive call... file open+close... BOOOO!
+     *
+     * @param tag     log tag
+     * @param type    warn,error,...
+     * @param message to write
+     * @param e       optional Throwable
+     */
+    private void writeToLog(@NonNull final String tag,
+                            @NonNull final String type,
+                            @NonNull final String message,
+                            @Nullable final Throwable e) {
+        // do not write to the file if we're running in a JUnit test.
+        if (BuildConfig.DEBUG /* always */) {
+            if (TestFlags.isJUnit) {
+                return;
+            }
+        }
+
+        final String exMsg;
+        if (e != null) {
+            exMsg = '|' + getStackTraceString(e);
+        } else {
+            exMsg = "";
+        }
+
+        // UTC based
+        final String fullMsg = LocalDateTime.now(ZoneOffset.UTC)
+                                            .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                               + '|' + tag + '|' + type + '|' + message + exMsg;
+
+        try {
+            final File logFile = new File(logDir, ERROR_LOG_FILE);
+            try (FileOutputStream fos = new FileOutputStream(logFile, true);
+                 OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
+                 PrintWriter out = new PrintWriter(new BufferedWriter(osw))) {
+                out.println(fullMsg);
+            }
+        } catch (@NonNull final Exception ignore) {
+            // do nothing - we can't log an error in the logger
         }
     }
 }

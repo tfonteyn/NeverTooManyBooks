@@ -32,10 +32,10 @@ import java.util.Locale;
 import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.EntityBookLinksDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.MoveBooksDao;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
@@ -114,7 +114,7 @@ final class SaveChangesHelper {
                         // return the item who 'lost' it's books
                         onSuccess.accept(item);
                     } catch (@NonNull final DaoWriteException e) {
-                        Logger.error(TAG, e);
+                        ServiceLocator.getInstance().getLogger().error(TAG, e);
                         StandardDialogs.showError(context, R.string.error_storage_not_writable);
                     }
                 })

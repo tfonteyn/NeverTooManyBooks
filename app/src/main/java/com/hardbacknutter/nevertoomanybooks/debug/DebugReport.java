@@ -117,7 +117,7 @@ public class DebugReport {
 
     public void addLogs(final int maxFiles)
             throws IOException {
-        files.addAll(collectFiles(ServiceLocator.getLogDir(), maxFiles));
+        files.addAll(collectFiles(ServiceLocator.getInstance().getLogger().getLogDir(), maxFiles));
     }
 
     public void addPreferences()

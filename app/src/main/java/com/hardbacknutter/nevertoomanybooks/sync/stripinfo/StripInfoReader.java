@@ -50,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
@@ -314,7 +313,7 @@ public class StripInfoReader
 
                 } catch (@NonNull final DaoWriteException | SQLiteDoneException | JSONException e) {
                     // log, but don't fail
-                    Logger.error(TAG, e);
+                    ServiceLocator.getInstance().getLogger().error(TAG, e);
                     results.booksFailed++;
                 }
 

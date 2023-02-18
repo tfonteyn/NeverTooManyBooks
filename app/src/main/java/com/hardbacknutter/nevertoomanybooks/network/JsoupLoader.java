@@ -35,6 +35,7 @@ import javax.net.ssl.SSLProtocolException;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
@@ -209,9 +210,9 @@ public class JsoupLoader {
                 // at com.android.org.conscrypt.NativeCrypto.SSL_read(Native Method)
                 // ...
                 // Log it as WARN, so at least we can get to know the frequency of these issues.
-                Logger.warn(TAG, "loadDocument"
-                                 + "|e=" + e.getMessage()
-                                 + "|mDocRequestUrl=\"" + docRequestUrl + '\"');
+                ServiceLocator.getInstance().getLogger()
+                              .warn(TAG, "loadDocument", "e=" + e.getMessage(),
+                                    "mDocRequestUrl=\"" + docRequestUrl + '\"');
                 // we'll retry.
                 attemptsLeft--;
                 if (attemptsLeft == 0) {

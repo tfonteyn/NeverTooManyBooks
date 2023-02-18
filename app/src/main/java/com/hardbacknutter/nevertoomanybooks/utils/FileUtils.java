@@ -47,7 +47,7 @@ import java.util.zip.CRC32;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
 
@@ -62,8 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
  * <p>
  * TODO: implement the sample code for 'watching'  Environment.getExternalStorageDirectory()
  * and/or isExternalStorageRemovable()
- * <p>
- * Also see {@link CoverDir}.
  */
 public final class FileUtils {
 
@@ -324,7 +322,7 @@ public final class FileUtils {
             return new StatFs(root.getPath()).getAvailableBytes();
 
         } catch (@NonNull final IllegalArgumentException e) {
-            Logger.error(TAG, e);
+            ServiceLocator.getInstance().getLogger().error(TAG, e);
             throw new IOException(e);
         }
     }

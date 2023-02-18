@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -40,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatemen
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
@@ -237,7 +237,7 @@ public class FtsDaoImpl
             }
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
-            Logger.error(TAG, e);
+            ServiceLocator.getInstance().getLogger().error(TAG, e);
             gotError = true;
             db.drop(tmpTableName);
 
@@ -280,7 +280,7 @@ public class FtsDaoImpl
 
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
-            Logger.error(TAG, e, ERROR_FAILED_TO_UPDATE_FTS);
+            ServiceLocator.getInstance().getLogger().error(TAG, e, ERROR_FAILED_TO_UPDATE_FTS);
         }
     }
 
@@ -299,7 +299,7 @@ public class FtsDaoImpl
 
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
-            Logger.error(TAG, e, ERROR_FAILED_TO_UPDATE_FTS);
+            ServiceLocator.getInstance().getLogger().error(TAG, e, ERROR_FAILED_TO_UPDATE_FTS);
         }
     }
 

@@ -52,7 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -92,7 +91,7 @@ public class EditBookViewModel
     /** Log tag. */
     private static final String TAG = "EditBookViewModel";
     /** Log string. */
-    private static final String COULD_NOT_UPDATE = "Could not update";
+    private static final String UPDATE_FAILED = "Update failed:";
     /** Log string. */
     private static final String ORIGINAL = "original=";
     /** Log string. */
@@ -682,7 +681,8 @@ public class EditBookViewModel
             return true;
 
         } catch (@NonNull final DaoWriteException e) {
-            Logger.error(TAG, e, COULD_NOT_UPDATE, ORIGINAL + original, MODIFIED + modified);
+            ServiceLocator.getInstance().getLogger()
+                          .error(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
         }
         return false;
     }
@@ -701,7 +701,8 @@ public class EditBookViewModel
             return true;
 
         } catch (@NonNull final DaoWriteException e) {
-            Logger.error(TAG, e, COULD_NOT_UPDATE, ORIGINAL + original, MODIFIED + modified);
+            ServiceLocator.getInstance().getLogger()
+                          .error(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
         }
         return false;
     }
@@ -723,7 +724,8 @@ public class EditBookViewModel
             return true;
 
         } catch (@NonNull final DaoWriteException e) {
-            Logger.error(TAG, e, COULD_NOT_UPDATE, ORIGINAL + original, MODIFIED + modified);
+            ServiceLocator.getInstance().getLogger()
+                          .error(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
         }
         return false;
     }
@@ -742,7 +744,8 @@ public class EditBookViewModel
             return true;
 
         } catch (@NonNull final DaoWriteException e) {
-            Logger.error(TAG, e, COULD_NOT_UPDATE, ORIGINAL + original, MODIFIED + modified);
+            ServiceLocator.getInstance().getLogger()
+                          .error(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
         }
 
         return false;
@@ -766,7 +769,8 @@ public class EditBookViewModel
             return true;
 
         } catch (@NonNull final DaoWriteException e) {
-            Logger.error(TAG, e, COULD_NOT_UPDATE, ORIGINAL + original, MODIFIED + modified);
+            ServiceLocator.getInstance().getLogger()
+                          .error(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
         }
         return false;
     }
@@ -785,7 +789,8 @@ public class EditBookViewModel
             return true;
 
         } catch (@NonNull final DaoWriteException e) {
-            Logger.error(TAG, e, COULD_NOT_UPDATE, ORIGINAL + original, MODIFIED + modified);
+            ServiceLocator.getInstance().getLogger()
+                          .error(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
         }
 
         return false;

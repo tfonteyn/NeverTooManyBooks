@@ -45,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -454,7 +453,7 @@ public class SearchBookUpdatesViewModel
                     bookDao.update(context, delta);
                 } catch (@NonNull final StorageException | DaoWriteException e) {
                     // ignore, but log it.
-                    Logger.error(TAG, e);
+                    ServiceLocator.getInstance().getLogger().error(TAG, e);
                 }
             }
         }
@@ -532,7 +531,7 @@ public class SearchBookUpdatesViewModel
      * @param e exception
      */
     private void postSearch(@NonNull final Exception e) {
-        Logger.error(TAG, e);
+        ServiceLocator.getInstance().getLogger().error(TAG, e);
 
         if (currentCursor != null) {
             currentCursor.close();

@@ -188,7 +188,7 @@ public class CropImageActivity
                     setResult(Activity.RESULT_OK, new Intent().setData(destinationUri));
                 }
             } catch (@NonNull final IOException e) {
-                Logger.error(TAG, e);
+                ServiceLocator.getInstance().getLogger().error(TAG, e);
                 bitmap = null;
             }
         }

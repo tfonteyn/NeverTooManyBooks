@@ -32,7 +32,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BedethequeCacheDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -209,7 +208,7 @@ public class BedethequeAuthorResolver
                     return true;
                 } catch (@NonNull final DaoWriteException e) {
                     // log, but ignore - should never happen unless disk full
-                    Logger.error(TAG, e, "");
+                    ServiceLocator.getInstance().getLogger().error(TAG, e, "");
                 }
             }
         }

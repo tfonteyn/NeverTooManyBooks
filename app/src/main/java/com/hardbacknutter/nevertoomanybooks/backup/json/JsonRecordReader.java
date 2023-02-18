@@ -59,7 +59,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
@@ -311,7 +310,7 @@ public class JsonRecordReader
                     results.certificates++;
                 } catch (@NonNull final CertificateEncodingException e) {
                     // log but don't quit
-                    Logger.error(TAG, e);
+                    ServiceLocator.getInstance().getLogger().error(TAG, e);
                 }
             }
         }

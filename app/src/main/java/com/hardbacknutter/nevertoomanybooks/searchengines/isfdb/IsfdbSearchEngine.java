@@ -56,7 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -1005,7 +1004,8 @@ public class IsfdbSearchEngine
             } catch (@NonNull final IndexOutOfBoundsException e) {
                 // does not happen now, but could happen if we come about non-standard entries,
                 // or if ISFDB website changes
-                Logger.error(TAG, e, "path: " + document.location() + "\n\nLI: " + li);
+                ServiceLocator.getInstance().getLogger()
+                              .error(TAG, e, "path: " + document.location() + "\n\nLI: " + li);
             }
         }
 
@@ -1258,7 +1258,7 @@ public class IsfdbSearchEngine
 
         } else {
             // dunno, let's log it
-            Logger.warn(TAG, "parseDoc|pageUrl=" + pageUrl);
+            ServiceLocator.getInstance().getLogger().warn(TAG, "parseDoc|pageUrl=" + pageUrl);
         }
 
         return editions;

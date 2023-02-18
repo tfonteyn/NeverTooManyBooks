@@ -36,7 +36,6 @@ import java.lang.ref.WeakReference;
 
 import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityStartupBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsFragment;
@@ -220,7 +219,7 @@ public class StartupActivity
      * @param e to report
      */
     private void onFailure(@Nullable final Exception e) {
-        Logger.error(TAG, e, "");
+        ServiceLocator.getInstance().getLogger().error(TAG, e, "");
 
         final String msg = ExMsg.map(this, e)
                                 .orElse(getString(R.string.error_unknown_long,

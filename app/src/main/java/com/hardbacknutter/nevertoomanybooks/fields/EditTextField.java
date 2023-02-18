@@ -32,8 +32,8 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.fields.endicon.ExtEndIconDelegate;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.EditFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
@@ -166,7 +166,7 @@ public class EditTextField<T, V extends EditText>
                 // it's possible that it gets the column type wrong.
                 // See {@link TypedCursor} class docs.
                 // Also see {@link SearchCoordinator#accumulateStringData}
-                Logger.error(TAG, e, value);
+                ServiceLocator.getInstance().getLogger().error(TAG, e, value);
                 text = rawValue != null ? String.valueOf(rawValue) : "";
             }
 

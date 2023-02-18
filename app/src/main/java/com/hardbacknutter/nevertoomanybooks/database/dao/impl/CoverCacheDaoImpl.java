@@ -41,13 +41,13 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.Cover;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.CacheDbHelper;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CoverCacheDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
 
 /**
@@ -133,7 +133,7 @@ public class CoverCacheDaoImpl
                 return (int) stmt.simpleQueryForLongOrZero();
             }
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(TAG, e);
+            ServiceLocator.getInstance().getLogger().error(TAG, e);
         }
         return 0;
     }
@@ -146,7 +146,7 @@ public class CoverCacheDaoImpl
                                  CacheDbHelper.IMAGE_ID + " LIKE ?",
                                  new String[]{uuid + '%'});
         } catch (@NonNull final SQLiteException e) {
-            Logger.error(TAG, e);
+            ServiceLocator.getInstance().getLogger().error(TAG, e);
         }
         return false;
     }
@@ -156,7 +156,7 @@ public class CoverCacheDaoImpl
         try {
             db.execSQL("DELETE FROM " + CacheDbHelper.TBL_IMAGE.getName());
         } catch (@NonNull final SQLiteException e) {
-            Logger.error(TAG, e);
+            ServiceLocator.getInstance().getLogger().error(TAG, e);
         }
     }
 
@@ -191,7 +191,7 @@ public class CoverCacheDaoImpl
                 }
             }
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(TAG, e);
+            ServiceLocator.getInstance().getLogger().error(TAG, e);
         }
         return null;
     }
@@ -259,7 +259,7 @@ public class CoverCacheDaoImpl
 
             } catch (@NonNull final RuntimeException e) {
                 // do not crash... ever! This is just a cache!
-                Logger.error(TAG, e);
+                ServiceLocator.getInstance().getLogger().error(TAG, e);
                 // and disable the cache
                 // We don't bother cancelling any pending tasks... oh well...
                 ImageUtils.setImageCachingEnabled(false);

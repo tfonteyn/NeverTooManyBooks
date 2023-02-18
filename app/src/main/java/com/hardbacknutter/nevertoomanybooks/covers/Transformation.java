@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,7 +34,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 class Transformation {
 
@@ -185,7 +185,7 @@ class Transformation {
                     }
                 } catch (@NonNull final OutOfMemoryError e) {
                     // logging is likely to fail if we're out of memory, but let's try at least
-                    Logger.error(TAG, e);
+                    ServiceLocator.getInstance().getLogger().error(TAG, e);
                 }
             }
             return Optional.of(bitmap);

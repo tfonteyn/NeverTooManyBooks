@@ -41,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -189,7 +188,8 @@ public class CalibreContentServerWriter
                     }
                 } catch (@NonNull final JSONException e) {
                     // ignore, just move on to the next book
-                    Logger.error(TAG, e, "bookId=" + book.getId());
+                    ServiceLocator.getInstance().getLogger()
+                                  .error(TAG, e, "bookId=" + book.getId());
                 }
 
                 delta++;

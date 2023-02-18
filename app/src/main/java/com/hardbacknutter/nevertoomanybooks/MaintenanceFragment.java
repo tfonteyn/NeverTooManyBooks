@@ -299,8 +299,9 @@ public class MaintenanceFragment
     private long count(@Nullable final FileFilter coverFilter)
             throws StorageException {
         final Context context = getContext();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         //noinspection ConstantConditions
-        return FileUtils.getUsedSpace(ServiceLocator.getLogDir(), null)
+        return FileUtils.getUsedSpace(serviceLocator.getLogger().getLogDir(), null)
                + FileUtils.getUsedSpace(ServiceLocator.getUpgradesDir(), null)
                + FileUtils.getUsedSpace(CoverDir.getTemp(context), null)
                + FileUtils.getUsedSpace(CoverDir.getDir(context), coverFilter);
@@ -309,8 +310,9 @@ public class MaintenanceFragment
     private long delete(@Nullable final FileFilter coverFilter)
             throws StorageException {
         final Context context = getContext();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         //noinspection ConstantConditions
-        return FileUtils.deleteDirectory(ServiceLocator.getLogDir(), null, null)
+        return FileUtils.deleteDirectory(serviceLocator.getLogger().getLogDir(), null, null)
                + FileUtils.deleteDirectory(ServiceLocator.getUpgradesDir(), null, null)
                + FileUtils.deleteDirectory(CoverDir.getTemp(context), null, null)
                + FileUtils.deleteDirectory(CoverDir.getDir(context), coverFilter, null);
