@@ -729,6 +729,9 @@ public class BooksOnBookshelf
      *     <li>The pixel offset of that row from the top of the screen.</li>
      * </ol>
      * Note that we convert the list/layout position to the adapter position and store the latter.
+     * <p>
+     * TODO: we're calling this probably from places where we shouldn't
+     *  example: should we call this from #onRowChanged or #onBookDeleted ?
      */
     private void saveListPosition() {
         if (!isDestroyed()) {
@@ -1960,14 +1963,17 @@ public class BooksOnBookshelf
                 return true;
 
             } else if (itemId == R.id.MENU_LEVEL_PREFERRED_EXPANSION) {
+                // URGENT: if we use last-saved position we're totally off from where we need to be
                 expandAllNodes(vm.getStyle(BooksOnBookshelf.this).getExpansionLevel(), false);
                 return true;
 
             } else if (itemId == R.id.MENU_LEVEL_EXPAND) {
+                // position on the last-saved node
                 expandAllNodes(1, true);
                 return true;
 
             } else if (itemId == R.id.MENU_LEVEL_COLLAPSE) {
+                // position on the last-saved node
                 expandAllNodes(1, false);
                 return true;
             }
@@ -1992,8 +1998,8 @@ public class BooksOnBookshelf
                                     final boolean expand) {
             // It is possible that the list will be empty, if so, ignore
             if (adapter != null && adapter.getItemCount() > 0) {
-                saveListPosition();
                 vm.expandAllNodes(topLevel, expand);
+                // position on the last-saved node
                 displayList(null);
             }
         }
