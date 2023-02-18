@@ -72,7 +72,7 @@ public class BookInsertTest
         ArrayList<Long> bookIdList;
         ArrayList<AuthorWork> works;
 
-        assertFalse(serviceLocator.isCollationCaseSensitive());
+        assertFalse(serviceLocator.getDb().isCollationCaseSensitive());
 
         final BookDao bookDao = serviceLocator.getBookDao();
 

@@ -194,7 +194,7 @@ public class DBHelper
 
         // now recreate
         for (final TableDefinition table : DBDefinitions.ALL_TABLES.values()) {
-            table.createIndices(db);
+            table.createIndices(db, sIsCollationCaseSensitive);
         }
 
         db.execSQL("analyze");
@@ -264,16 +264,6 @@ public class DBHelper
     }
 
     /**
-     * Check if the collation we use is case sensitive.
-     *
-     * @return {@code true} if case-sensitive (i.e. up to "you" to add lower/upper calls)
-     */
-    public boolean isCollationCaseSensitive() {
-        //noinspection ConstantConditions
-        return sIsCollationCaseSensitive;
-    }
-
-    /**
      * Get the main database.
      *
      * @return database connection
@@ -286,8 +276,9 @@ public class DBHelper
             if (synchronizedDb == null) {
                 // Dev note: don't move this to the constructor, "this" must
                 // be fully constructed before we can pass it to the SynchronizedDb constructor
+                //noinspection ConstantConditions
                 synchronizedDb = new SynchronizedDb(SYNCHRONIZER, this,
-                                                    stmtCacheSize);
+                                                    sIsCollationCaseSensitive, stmtCacheSize);
             }
         }
         return synchronizedDb;
@@ -592,7 +583,8 @@ public class DBHelper
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
         // Create all the app & user data tables in the correct dependency order
-        TableDefinition.onCreate(db, DBDefinitions.ALL_TABLES.values());
+        TableDefinition.onCreate(db, sIsCollationCaseSensitive,
+                                 DBDefinitions.ALL_TABLES.values());
 
         // insert the builtin styles so foreign key rules are possible.
         StyleDaoImpl.onPostCreate(db);

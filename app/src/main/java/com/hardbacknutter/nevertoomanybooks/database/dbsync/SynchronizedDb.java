@@ -66,6 +66,7 @@ public class SynchronizedDb
 
     @NonNull
     private final SQLiteOpenHelper sqLiteOpenHelper;
+    private final boolean collationCaseSensitive;
     private final int preparedStmtCacheSize;
 
     /** Underlying (and open for writing) database. */
@@ -103,8 +104,9 @@ public class SynchronizedDb
      * @throws SQLiteException if the database cannot be opened
      */
     public SynchronizedDb(@NonNull final Synchronizer synchronizer,
-                          @NonNull final SQLiteOpenHelper sqLiteOpenHelper) {
-        this(synchronizer, sqLiteOpenHelper, -1);
+                          @NonNull final SQLiteOpenHelper sqLiteOpenHelper,
+                          final boolean collationCaseSensitive) {
+        this(synchronizer, sqLiteOpenHelper, collationCaseSensitive, -1);
     }
 
     /**
@@ -123,10 +125,11 @@ public class SynchronizedDb
      */
     public SynchronizedDb(@NonNull final Synchronizer synchronizer,
                           @NonNull final SQLiteOpenHelper sqLiteOpenHelper,
-                          @IntRange(to = SQLiteDatabase.MAX_SQL_CACHE_SIZE)
-                          final int preparedStmtCacheSize) {
+                          final boolean collationCaseSensitive,
+                          @IntRange(to = SQLiteDatabase.MAX_SQL_CACHE_SIZE) final int preparedStmtCacheSize) {
         this.synchronizer = synchronizer;
         this.sqLiteOpenHelper = sqLiteOpenHelper;
+        this.collationCaseSensitive = collationCaseSensitive;
         this.preparedStmtCacheSize = preparedStmtCacheSize;
 
         // Trigger onCreate/onUpdate/... for the database
@@ -139,14 +142,23 @@ public class SynchronizedDb
     }
 
     /**
+     * Check if the collation this database uses is case sensitive.
+     *
+     * @return {@code true} if case-sensitive (i.e. up to "you" to add lower/upper calls)
+     */
+    public boolean isCollationCaseSensitive() {
+        return collationCaseSensitive;
+    }
+
+    /**
      * DEBUG only.
      */
     @SuppressWarnings("unused")
     private static void debugDumpInfo(@NonNull final SQLiteDatabase db) {
         final String[] sql = {"SELECT sqlite_version() AS sqlite_version",
-                              "PRAGMA encoding",
-                              "PRAGMA collation_list",
-                              "PRAGMA foreign_keys",
+                "PRAGMA encoding",
+                "PRAGMA collation_list",
+                "PRAGMA foreign_keys",
                               "PRAGMA recursive_triggers",
                               };
         for (final String s : sql) {
@@ -236,7 +248,7 @@ public class SynchronizedDb
                 sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + table.getName());
             }
             table.create(sqLiteDatabase, withDomainConstraints);
-            table.createIndices(sqLiteDatabase);
+            table.createIndices(sqLiteDatabase, collationCaseSensitive);
         } finally {
             if (txLock != null) {
                 txLock.unlock();

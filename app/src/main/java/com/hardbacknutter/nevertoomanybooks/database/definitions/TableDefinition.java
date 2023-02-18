@@ -110,15 +110,17 @@ public class TableDefinition {
      * @param tables Table list
      */
     public static void onCreate(@NonNull final SQLiteDatabase db,
+                                final boolean collationCaseSensitive,
                                 @NonNull final Collection<TableDefinition> tables) {
         for (final TableDefinition table : tables) {
             table.create(db, true);
-            table.createIndices(db);
+            table.createIndices(db, collationCaseSensitive);
         }
     }
 
     /**
-     * Create this table. Don't forget to call {@link #createIndices(SQLiteDatabase)} if needed.
+     * Create this table.
+     * Don't forget to call {@link #createIndices(SQLiteDatabase, boolean)} if needed.
      *
      * @param db                    Database Access
      * @param withDomainConstraints Indicates if fields should have constraints applied
@@ -133,9 +135,10 @@ public class TableDefinition {
      *
      * @param db Database Access
      */
-    public void createIndices(@NonNull final SQLiteDatabase db) {
+    public void createIndices(@NonNull final SQLiteDatabase db,
+                              final boolean collationCaseSensitive) {
         for (final IndexDefinition index : indexes) {
-            index.create(db);
+            index.create(db, collationCaseSensitive);
         }
     }
 

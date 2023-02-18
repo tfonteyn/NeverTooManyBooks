@@ -175,6 +175,8 @@ public class CacheDbHelper
                                   DOM_BDT_AUTHOR_RESOLVED_NAME_OB);
     }
 
+    private final boolean collationCaseSensitive;
+
     /** DO NOT USE INSIDE THIS CLASS! ONLY FOR USE BY CLIENTS VIA {@link #getDb()}. */
     @Nullable
     private SynchronizedDb db;
@@ -184,8 +186,10 @@ public class CacheDbHelper
      *
      * @param context Current context
      */
-    public CacheDbHelper(@NonNull final Context context) {
+    public CacheDbHelper(@NonNull final Context context,
+                         final boolean collationCaseSensitive) {
         super(context.getApplicationContext(), DATABASE_NAME, CURSOR_FACTORY, DATABASE_VERSION);
+        this.collationCaseSensitive = collationCaseSensitive;
     }
 
     /**
@@ -199,7 +203,7 @@ public class CacheDbHelper
             if (db == null) {
                 // Dev note: don't move this to the constructor, "this" must
                 // be fully constructed before we can pass it to the SynchronizedDb constructor
-                db = new SynchronizedDb(SYNCHRONIZER, this);
+                db = new SynchronizedDb(SYNCHRONIZER, this, collationCaseSensitive);
             }
             return db;
         }
@@ -215,7 +219,8 @@ public class CacheDbHelper
 
     @Override
     public void onCreate(@NonNull final SQLiteDatabase db) {
-        TableDefinition.onCreate(db, List.of(TBL_IMAGE, TBL_BDT_AUTHORS));
+        TableDefinition.onCreate(db, collationCaseSensitive,
+                                 List.of(TBL_IMAGE, TBL_BDT_AUTHORS));
     }
 
     @Override

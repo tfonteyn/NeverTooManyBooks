@@ -447,15 +447,10 @@ public final class ServiceLocator {
     public SynchronizedDb getCacheDb() {
         synchronized (this) {
             if (cacheDbHelper == null) {
-                cacheDbHelper = new CacheDbHelper(appContext);
+                cacheDbHelper = new CacheDbHelper(appContext, getDb().isCollationCaseSensitive());
             }
         }
         return cacheDbHelper.getDb();
-    }
-
-    public boolean isCollationCaseSensitive() {
-        //noinspection ConstantConditions
-        return dbHelper.isCollationCaseSensitive();
     }
 
     @NonNull

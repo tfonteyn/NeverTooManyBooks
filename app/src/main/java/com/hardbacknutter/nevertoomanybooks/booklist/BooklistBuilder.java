@@ -330,9 +330,6 @@ class BooklistBuilder {
         /** divider to convert nanoseconds to milliseconds. */
         private static final int NANO_TO_MILLIS = 1_000_000;
 
-        /** Supposed to be {@code false}. */
-        private final boolean collationIsCaseSensitive;
-
         @NonNull
         private final Style style;
 
@@ -403,8 +400,6 @@ class BooklistBuilder {
             this.style = style;
             filteredOnBookshelf = isFilteredOnBookshelf;
             this.rebuildMode = rebuildMode;
-
-            collationIsCaseSensitive = ServiceLocator.getInstance().isCollationCaseSensitive();
 
             /*
              * Temporary table used to store a flattened booklist tree structure.
@@ -523,7 +518,7 @@ class BooklistBuilder {
                     INSERT_INTO_ + listTable.getName() + " (" + destColumns + ") "
                     + SELECT_ + sourceColumns
                     + _FROM_ + buildFrom(leftOuterJoins) + buildWhere(context, filters)
-                    + _ORDER_BY_ + buildOrderBy();
+                    + _ORDER_BY_ + buildOrderBy(db.isCollationCaseSensitive());
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
                 Log.d(TAG, "build|sqlForInitialInsert=" + sqlForInitialInsert);
@@ -558,11 +553,12 @@ class BooklistBuilder {
                            + ((System.nanoTime() - t0) / NANO_TO_MILLIS) + " ms");
             }
 
-            if (!collationIsCaseSensitive) {
+            if (!db.isCollationCaseSensitive()) {
                 // can't use IndexDefinition class as it does not support sorting clause for now.
                 final String indexCols = orderByDomainExpressions
                         .stream()
-                        .map(de -> de.getDomain().getOrderByString(de.getSort(), false))
+                        .map(de -> de.getDomain().getOrderByString(
+                                de.getSort(), db.isCollationCaseSensitive()))
                         .collect(Collectors.joining(",", "(", ")"));
 
                 db.execSQL("CREATE INDEX " + listTable.getName() + "_SDI ON "
@@ -1023,11 +1019,11 @@ class BooklistBuilder {
          * @return ORDER BY clause
          */
         @NonNull
-        private String buildOrderBy() {
+        private String buildOrderBy(final boolean collationCaseSensitive) {
             return orderByDomainExpressions
                     .stream()
                     .map(de -> de.getDomain()
-                                 .getOrderByString(de.getSort(), collationIsCaseSensitive))
+                                 .getOrderByString(de.getSort(), collationCaseSensitive))
                     .collect(Collectors.joining(","));
         }
     }

@@ -27,8 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-
 /**
  * Class to store an index using a table name and a list of domain definitions.
  */
@@ -72,8 +70,9 @@ class IndexDefinition {
      *
      * @param db Database Access
      */
-    public void create(@NonNull final SQLiteDatabase db) {
-        db.execSQL(getCreateStatement());
+    public void create(@NonNull final SQLiteDatabase db,
+                       final boolean collationCaseSensitive) {
+        db.execSQL(getCreateStatement(collationCaseSensitive));
     }
 
     /**
@@ -82,9 +81,7 @@ class IndexDefinition {
      * @return SQL Fragment
      */
     @NonNull
-    private String getCreateStatement() {
-        final boolean collationIsCaseSensitive = ServiceLocator.getInstance()
-                                                               .isCollationCaseSensitive();
+    private String getCreateStatement(final boolean collationCaseSensitive) {
         final StringBuilder sql = new StringBuilder("CREATE");
         if (unique) {
             sql.append(" UNIQUE");
@@ -93,7 +90,7 @@ class IndexDefinition {
            .append(" ON ").append(table.getName())
            .append(domains.stream()
                           .map(domain -> domain.getOrderByString(Sort.Unsorted,
-                                                                 collationIsCaseSensitive))
+                                                                 collationCaseSensitive))
                           .collect(Collectors.joining(",", "(", ")")));
 
         return sql.toString();

@@ -117,8 +117,8 @@ public class Domain {
 
     @NonNull
     public String getOrderByString(@NonNull final Sort sort,
-                                   final boolean collationIsCaseSensitive) {
-        if (collationIsCaseSensitive) {
+                                   final boolean collationCaseSensitive) {
+        if (collationCaseSensitive) {
             // Lowercase the DATA from the name column
             // but not the column name itself!
             // This should never happen, but see the DAO method docs.
