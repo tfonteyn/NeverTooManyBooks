@@ -23,10 +23,8 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.AuthorCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.StringList;
-import com.hardbacknutter.nevertoomanybooks.debug.TestFlags;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -57,11 +55,6 @@ class AuthorStringListTest {
             + "\\(\\\\*3\\), Don";
 
     private StringList<Author> coder;
-
-    @BeforeAll
-    static void startUp() {
-        TestFlags.isJUnit = true;
-    }
 
     @BeforeEach
     void setUp() {

@@ -19,9 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.entities;
 
-import com.hardbacknutter.nevertoomanybooks.debug.TestFlags;
-
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,11 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * Test the regular expressions used by {@link DataHolderUtils#requireAuthor}.
  */
 class AuthorTest {
-
-    @BeforeAll
-    static void startUp() {
-        TestFlags.isJUnit = true;
-    }
 
     @Test
     void fromString00() {

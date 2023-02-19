@@ -31,6 +31,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
@@ -39,7 +40,6 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.debug.TestFlags;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
@@ -53,6 +53,16 @@ public class ImageDownloader {
 
     /** The prefix an embedded image url would have. */
     private static final String DATA_IMAGE_JPEG_BASE_64 = "data:image/jpeg;base64,";
+
+    /**
+     * DEBUG HACK... when running in JUnit, this variable is set to 'true'
+     * by the test code.
+     * <p>
+     * When running as a JUnit test, the file.renameTo done during the
+     * {@link ImageUtils#copy(InputStream, File)} operation will fail.
+     * As that is independent from the JUnit test/purpose, we will fake success here.
+     */
+    public static boolean IGNORE_RENAME_FAILURE = false;
 
     @NonNull
     private final FutureHttpGet<File> futureHttpGet;
@@ -144,13 +154,10 @@ public class ImageDownloader {
         } catch (@NonNull final IOException e) {
             FileUtils.delete(destination);
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS || TestFlags.isJUnit) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS || IGNORE_RENAME_FAILURE) {
                 ServiceLocator.getInstance().getLogger().d(TAG, e, "saveImage");
 
-                // When running as a JUnit test, the file.renameTo done during the
-                // FileUtils.copyInputStream operation will fail.
-                // As that is independent from the JUnit test/purpose, we fake success here.
-                if (TestFlags.isJUnit) {
+                if (IGNORE_RENAME_FAILURE) {
                     return Optional.of(destination);
                 }
             }

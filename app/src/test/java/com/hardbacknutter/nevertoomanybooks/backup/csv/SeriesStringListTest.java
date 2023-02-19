@@ -23,10 +23,8 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.SeriesCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.StringList;
-import com.hardbacknutter.nevertoomanybooks.debug.TestFlags;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -52,11 +50,6 @@ class SeriesStringListTest {
             + " The Alchemist's \\\\* Question)";
 
     private StringList<Series> coder;
-
-    @BeforeAll
-    static void startUp() {
-        TestFlags.isJUnit = true;
-    }
 
     @BeforeEach
     void setUp() {

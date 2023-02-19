@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,11 +22,9 @@ package com.hardbacknutter.nevertoomanybooks.database;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
-import com.hardbacknutter.nevertoomanybooks.debug.TestFlags;
+
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -34,11 +32,6 @@ import static org.junit.jupiter.api.Assertions.fail;
  * Sanity check for duplicate table names and aliases.
  */
 class DBDefinitionsTest {
-
-    @BeforeAll
-    static void startUp() {
-        TestFlags.isJUnit = true;
-    }
 
     @Test
     void duplicates() {

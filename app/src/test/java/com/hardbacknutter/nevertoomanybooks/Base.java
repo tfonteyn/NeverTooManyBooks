@@ -38,7 +38,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.ContextMock;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.SharedPreferencesMock;
-import com.hardbacknutter.nevertoomanybooks.debug.TestFlags;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryThingSearchEngine;
@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -93,11 +92,6 @@ public class Base {
     protected Locale locale0;
 
     private Locale jdkLocale;
-
-    @BeforeAll
-    static void startUp() {
-        TestFlags.isJUnit = true;
-    }
 
     /**
      * @param locale0 to use for
@@ -174,6 +168,10 @@ public class Base {
         doNothing().when(configuration).setLocale(any(Locale.class));
 
         when(localeList.get(0)).thenAnswer((Answer<Locale>) invocation -> locale0);
+
+
+        // See class docs.
+        ImageDownloader.IGNORE_RENAME_FAILURE = true;
 
         ServiceLocator.create(context, BundleMock::create);
 
