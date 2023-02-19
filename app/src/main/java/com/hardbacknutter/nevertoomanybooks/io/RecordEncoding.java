@@ -30,11 +30,11 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlRecordReader;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 
 /**
@@ -90,7 +90,8 @@ public enum RecordEncoding {
         }
 
         if (BuildConfig.DEBUG /* always */) {
-            Logger.w(TAG, "getEncoding|Unknown entry=" + entryName);
+            ServiceLocator.getInstance().getLogger()
+                          .w(TAG, "getEncoding|Unknown entry=" + entryName);
         }
         return Optional.empty();
     }

@@ -49,6 +49,7 @@ import javax.net.ssl.SSLException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
@@ -112,16 +113,17 @@ public abstract class FutureHttpBase<T> {
 
     public static void dumpSSLException(@NonNull final HttpsURLConnection request,
                                         @NonNull final SSLException e) {
+        final Logger logger = ServiceLocator.getInstance().getLogger();
         try {
-            Logger.w("dumpSSLException", request.getURL().toString());
+            logger.w("dumpSSLException", request.getURL().toString());
             final Certificate[] serverCertificates = request.getServerCertificates();
             if (serverCertificates != null && serverCertificates.length > 0) {
                 for (final Certificate c : serverCertificates) {
-                    Logger.w("dumpSSLException", c.toString());
+                    logger.w("dumpSSLException", c.toString());
                 }
             }
         } catch (@NonNull final Exception ex) {
-            Logger.d("dumpSSLException", ex, "");
+            logger.d("dumpSSLException", ex, "");
         }
 
     }

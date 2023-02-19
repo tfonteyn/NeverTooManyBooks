@@ -75,13 +75,14 @@ public final class AppLocaleImpl
     @Override
     @NonNull
     public Context apply(@NonNull final Context context) {
-        Logger.d(TAG + "|BEFORE", "Locale.getDefault()    : ",
+        final Logger logger = ServiceLocator.getInstance().getLogger();
+        logger.d(TAG + "|BEFORE", "Locale.getDefault()    : ",
                  String.valueOf(Locale.getDefault()));
-        Logger.d(TAG + "|BEFORE", "user getLocales()      : ",
+        logger.d(TAG + "|BEFORE", "user getLocales()      : ",
                  String.valueOf(context.getResources().getConfiguration().getLocales()));
-        Logger.d(TAG + "|BEFORE", "system getLocales()    : ",
+        logger.d(TAG + "|BEFORE", "system getLocales()    : ",
                  String.valueOf(Resources.getSystem().getConfiguration().getLocales()));
-        Logger.d(TAG + "|BEFORE", "LocaleList.getDefault(): ",
+        logger.d(TAG + "|BEFORE", "LocaleList.getDefault(): ",
                  String.valueOf(LocaleList.getDefault()));
 
         // Create the Locale at first access, or if the persisted is different from the current.
@@ -122,13 +123,13 @@ public final class AppLocaleImpl
             onLocaleChanged(localizedContext);
         }
 
-        Logger.d(TAG, "Locale.getDefault()    : ",
+        logger.d(TAG, "Locale.getDefault()    : ",
                  String.valueOf(Locale.getDefault()));
-        Logger.d(TAG, "localizedContext       : ",
+        logger.d(TAG, "localizedContext       : ",
                  String.valueOf(localizedContext.getResources().getConfiguration().getLocales()));
-        Logger.d(TAG, "system getLocales()    : ",
+        logger.d(TAG, "system getLocales()    : ",
                  String.valueOf(Resources.getSystem().getConfiguration().getLocales()));
-        Logger.d(TAG, "LocaleList.getDefault(): ",
+        logger.d(TAG, "LocaleList.getDefault(): ",
                  String.valueOf(LocaleList.getDefault()));
         return localizedContext;
     }

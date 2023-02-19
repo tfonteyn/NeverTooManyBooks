@@ -36,7 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 import org.jsoup.Jsoup;
@@ -125,8 +124,9 @@ public class JsoupLoader {
 
         while (attemptsLeft > 0) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                Logger.d(TAG, "loadDocument",
-                         "REQUESTED|mDocRequestUrl=\"" + docRequestUrl + '\"');
+                ServiceLocator.getInstance().getLogger()
+                              .d(TAG, "loadDocument",
+                                 "REQUESTED|mDocRequestUrl=\"" + docRequestUrl + '\"');
             }
 
             try {
@@ -142,11 +142,12 @@ public class JsoupLoader {
                             request.getInputStream())) {
 
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                            Logger.d(TAG, "loadDocument",
-                                     "AFTER open"
-                                     + "\ncon.getURL=" + request.getURL()
-                                     + "\nlocation  =" + request.getHeaderField(
-                                             HttpUtils.LOCATION));
+                            ServiceLocator.getInstance().getLogger()
+                                          .d(TAG, "loadDocument",
+                                             "AFTER open"
+                                             + "\ncon.getURL=" + request.getURL()
+                                             + "\nlocation  =" + request.getHeaderField(
+                                                     HttpUtils.LOCATION));
                         }
 
                         // the original url will change after a redirect.
@@ -155,7 +156,9 @@ public class JsoupLoader {
                         if (locationHeader == null || locationHeader.isEmpty()) {
                             locationHeader = request.getURL().toString();
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                                Logger.d(TAG, "loadDocument", "location header not set, using url");
+                                ServiceLocator.getInstance().getLogger()
+                                              .d(TAG, "loadDocument",
+                                                 "location header not set, using url");
                             }
                         }
 
@@ -179,8 +182,9 @@ public class JsoupLoader {
                         */
                         final Document document = Jsoup.parse(is, charSetName, locationHeader);
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                            Logger.d(TAG, "loadDocument",
-                                     "AFTER parsing|document.location()=" + document.location());
+                            ServiceLocator.getInstance().getLogger()
+                                          .d(TAG, "loadDocument",
+                                             "AFTER parsing|document.location()=" + document.location());
                         }
 
                         return document;
@@ -236,7 +240,8 @@ public class JsoupLoader {
                 document = null;
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                    Logger.e(TAG, e, "docRequestUrl=" + docRequestUrl);
+                    ServiceLocator.getInstance().getLogger()
+                                  .e(TAG, e, "docRequestUrl=" + docRequestUrl);
                 }
                 throw e;
             }

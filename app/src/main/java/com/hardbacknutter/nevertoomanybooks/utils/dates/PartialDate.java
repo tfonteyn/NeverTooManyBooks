@@ -41,7 +41,7 @@ import java.util.StringJoiner;
 import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 /**
  * TEST: <a href="https://issuetracker.google.com/issues/158417777">DateTimeParseException</a>
@@ -196,7 +196,7 @@ public class PartialDate
                 }
             } catch (@NonNull final DateTimeParseException e) {
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.d(TAG, e, "dateStr=" + dateStr);
+                    ServiceLocator.getInstance().getLogger().d(TAG, e, "dateStr=" + dateStr);
                 }
             }
         }

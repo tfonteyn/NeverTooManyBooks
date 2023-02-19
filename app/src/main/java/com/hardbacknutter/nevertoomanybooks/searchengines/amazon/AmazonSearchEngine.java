@@ -36,9 +36,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -271,7 +271,7 @@ public class AmazonSearchEngine
         final Element titleElement = document.selectFirst("span#productTitle");
         if (titleElement == null) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.d(TAG, "parse", "no title?");
+                ServiceLocator.getInstance().getLogger().d(TAG, "parse", "no title?");
             }
             return;
         }
@@ -452,7 +452,7 @@ public class AmazonSearchEngine
 
                 default:
                     if (BuildConfig.DEBUG /* always */) {
-                        Logger.d(TAG, "parse", "label=" + label);
+                        ServiceLocator.getInstance().getLogger().d(TAG, "parse", "label=" + label);
                     }
                     break;
             }

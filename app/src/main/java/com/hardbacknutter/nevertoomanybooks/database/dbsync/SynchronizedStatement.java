@@ -31,6 +31,7 @@ import java.io.Closeable;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
@@ -349,10 +350,10 @@ public class SynchronizedStatement
             final long id = statement.executeInsert();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
-                Log.d(TAG, "executeInsert|" + statement + "|id=" + id);
-
+                final Logger logger = ServiceLocator.getInstance().getLogger();
+                logger.d(TAG, "executeInsert", statement + "|id=" + id);
                 if (id == -1) {
-                    Logger.e(TAG, new Throwable(), "Insert failed|mStatement=" + statement);
+                    logger.e(TAG, new Throwable(), "Insert failed|mStatement=" + statement);
                 }
             }
             return id;

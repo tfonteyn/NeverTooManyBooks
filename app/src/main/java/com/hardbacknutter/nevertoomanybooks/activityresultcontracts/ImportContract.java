@@ -32,9 +32,9 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 public class ImportContract
         extends ActivityResultContract<Void, Optional<ImportResults>> {
@@ -65,7 +65,8 @@ public class ImportContract
     public Optional<ImportResults> parseResult(final int resultCode,
                                                @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
+            ServiceLocator.getInstance().getLogger()
+                          .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {

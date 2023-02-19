@@ -38,7 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
@@ -176,7 +175,8 @@ public abstract class SearchEngineBase
                 final Locale locale = ServiceLocator.getInstance().getAppLocale()
                                                     .getLocale(context, root);
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.d(TAG, "getLocale", "locale=" + locale);
+                    ServiceLocator.getInstance().getLogger()
+                                  .d(TAG, "getLocale", "locale=" + locale);
                 }
                 return locale != null ? locale : Locale.US;
         }

@@ -37,7 +37,6 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
@@ -248,7 +247,8 @@ public class DataManager
 
         } else if (value == null) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.w(TAG, "put|key=`" + key + "`|value=<NULL>");
+                ServiceLocator.getInstance().getLogger()
+                              .w(TAG, "put|key=`" + key + "`|value=<NULL>");
             }
             putNull(key);
 
@@ -274,10 +274,10 @@ public class DataManager
             } catch (@NonNull final NumberFormatException ignore) {
                 //TEST: should we really ignore this, next step will return raw value.
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.d(TAG, "get",
-                             "NumberFormatException"
-                             + "|name=" + key
-                             + "|value=`" + rawData.get(key) + '`');
+                    ServiceLocator.getInstance().getLogger()
+                                  .d(TAG, "get", "NumberFormatException"
+                                                 + "|name=" + key
+                                                 + "|value=`" + rawData.get(key) + '`');
                 }
             }
         }

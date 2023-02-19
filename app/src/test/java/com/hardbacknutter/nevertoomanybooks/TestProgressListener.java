@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
 
@@ -43,11 +42,12 @@ public class TestProgressListener
                                 @Nullable final String message) {
         progressCurrentPos += delta;
         // eat all message when in debug; it's to much of a slow down otherwise.
-        if (BuildConfig.DEBUG  /* always */) {
-            Logger.d(tag, "publishProgressStep",
-                     "progressCurrentPos=" + progressCurrentPos
-                     + "|delta=" + delta
-                     + "|message=" + message);
+        if (!BuildConfig.DEBUG  /* always */) {
+            ServiceLocator.getInstance().getLogger()
+                          .d(tag, "publishProgressStep",
+                             "progressCurrentPos=" + progressCurrentPos
+                             + "|delta=" + delta
+                             + "|message=" + message);
         }
 
     }
@@ -55,8 +55,9 @@ public class TestProgressListener
     @Override
     public void publishProgress(@NonNull final TaskProgress message) {
         // eat all message when in debug; it's to much of a slow down otherwise.
-        if (BuildConfig.DEBUG  /* always */) {
-            Logger.d(tag, "publishProgress", "message=" + message);
+        if (!BuildConfig.DEBUG  /* always */) {
+            ServiceLocator.getInstance().getLogger()
+                          .d(tag, "publishProgress", "message=" + message);
         }
     }
 
@@ -71,7 +72,8 @@ public class TestProgressListener
 
     @Override
     public void setIndeterminate(@Nullable final Boolean indeterminate) {
-        Logger.d(tag, "setIndeterminate", String.valueOf(indeterminate));
+        ServiceLocator.getInstance().getLogger()
+                      .d(tag, "setIndeterminate", String.valueOf(indeterminate));
     }
 
     @Override
@@ -81,7 +83,7 @@ public class TestProgressListener
 
     @Override
     public void setMaxPos(final int maxPos) {
-        Logger.d(tag, "setMaxPos", String.valueOf(maxPos));
+        ServiceLocator.getInstance().getLogger().d(tag, "setMaxPos", String.valueOf(maxPos));
         this.maxPos = maxPos;
     }
 }

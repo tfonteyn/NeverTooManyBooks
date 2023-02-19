@@ -32,7 +32,6 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
@@ -99,9 +98,10 @@ public class Cover {
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-            Logger.d(TAG, new Throwable("getPersistedFile"),
-                     this + "|file=" + (coverFile == null ? "null" : coverFile.getAbsolutePath())
-            );
+            ServiceLocator.getInstance().getLogger()
+                          .d(TAG, new Throwable("getPersistedFile"),
+                             this + "|file=" + (coverFile == null ? "null"
+                                                                  : coverFile.getAbsolutePath()));
         }
 
         if (coverFile != null && coverFile.exists()) {

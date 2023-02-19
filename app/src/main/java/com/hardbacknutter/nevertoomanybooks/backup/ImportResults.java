@@ -136,16 +136,16 @@ public class ImportResults
         failedLinesNr.add(row);
         booksFailed++;
 
+        final Logger logger = ServiceLocator.getInstance().getLogger();
         if (booksFailed <= MAX_FAIL_LINES) {
-            ServiceLocator.getInstance().getLogger()
-                          .warn(TAG, "Import failed for book " + row + "|e=" + e.getMessage());
+            logger.warn(TAG, "Import failed for book " + row + "|e=" + e.getMessage());
         }
         if (BuildConfig.DEBUG /* always */) {
             if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS && booksFailed > MAX_FAIL_LINES) {
-                Logger.w(TAG, "Import failed for book " + row + "|e=" + e.getMessage());
+                logger.w(TAG, "Import failed for book " + row + "|e=" + e.getMessage());
             } else if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS_EXT) {
                 // logging with the full exception is VERY HEAVY
-                Logger.e(TAG, e, "Import failed for book " + row);
+                logger.e(TAG, e, "Import failed for book " + row);
             }
         }
     }

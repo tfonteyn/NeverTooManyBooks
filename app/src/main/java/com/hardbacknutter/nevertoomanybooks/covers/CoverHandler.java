@@ -63,7 +63,6 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditPictureC
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PickVisualMediaContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.TakePictureContract;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -375,12 +374,13 @@ public class CoverHandler {
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-            Logger.d("TAG", new Throwable("createTempCoverFile"),
-                     "bookId=" + book.getId()
-                     + "|cIdx=" + cIdx
-                     + "|exists=" + coverFile.exists()
-                     + "|file=" + coverFile.getAbsolutePath()
-            );
+            ServiceLocator.getInstance().getLogger()
+                          .d("TAG", new Throwable("createTempCoverFile"),
+                             "bookId=" + book.getId()
+                             + "|cIdx=" + cIdx
+                             + "|exists=" + coverFile.exists()
+                             + "|file=" + coverFile.getAbsolutePath()
+                          );
         }
         return coverFile;
     }

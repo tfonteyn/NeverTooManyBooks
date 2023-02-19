@@ -25,7 +25,6 @@ import android.content.Context;
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -74,7 +73,6 @@ public class IsbnTest
         final Book book = ((SearchEngine.ByIsbn) searchEngine)
                 .searchByIsbn(context, "9020612476", new boolean[]{false, false});
 
-        Logger.d(TAG, "", book.toString());
         assertNotNull(book);
         assertFalse(book.isEmpty());
         assertEquals("De Discus valt aan", book.getString(DBKey.TITLE, null));

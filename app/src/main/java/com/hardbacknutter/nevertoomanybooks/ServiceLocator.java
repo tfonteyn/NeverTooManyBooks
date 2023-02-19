@@ -81,6 +81,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TocEntryDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.debug.LoggerImpl;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocaleImpl;
@@ -250,9 +251,14 @@ public final class ServiceLocator {
     @NonNull
     public Logger getLogger() {
         if (logger == null) {
-            logger = new Logger(appContext);
+            logger = new LoggerImpl(appContext);
         }
         return logger;
+    }
+
+    @VisibleForTesting
+    public void setLogger(@Nullable final Logger logger) {
+        this.logger = logger;
     }
 
     @NonNull

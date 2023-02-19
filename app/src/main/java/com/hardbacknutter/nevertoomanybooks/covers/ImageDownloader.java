@@ -39,7 +39,6 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.TestFlags;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
@@ -146,7 +145,7 @@ public class ImageDownloader {
             FileUtils.delete(destination);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS || TestFlags.isJUnit) {
-                Logger.d(TAG, e, "saveImage");
+                ServiceLocator.getInstance().getLogger().d(TAG, e, "saveImage");
 
                 // When running as a JUnit test, the file.renameTo done during the
                 // FileUtils.copyInputStream operation will fail.

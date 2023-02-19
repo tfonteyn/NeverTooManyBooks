@@ -64,7 +64,6 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.validators.LongValidator
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.NonBlankValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.OrValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
@@ -975,11 +974,13 @@ public class Book
             }
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                Logger.d(TAG, new Throwable("getCoverFile"),
-                         "bookId=" + getId()
-                         + "|cIdx=" + cIdx
-                         + "|file=" + (coverFile == null ? "null" : coverFile.getAbsolutePath())
-                );
+                ServiceLocator.getInstance().getLogger()
+                              .d(TAG, new Throwable("getCoverFile"),
+                                 "bookId=" + getId()
+                                 + "|cIdx=" + cIdx
+                                 + "|file=" + (coverFile == null ? "null"
+                                                                 : coverFile.getAbsolutePath())
+                              );
             }
             if (coverFile != null && coverFile.exists()) {
                 return Optional.of(coverFile);
@@ -1033,24 +1034,26 @@ public class Book
 
             if (file != null) {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                    Logger.d(TAG, new Throwable("setCover"),
-                             "editing"
-                             + "|bookId=" + getId()
-                             + "|cIdx=" + cIdx
-                             + "|file=" + file.getAbsolutePath()
-                    );
+                    ServiceLocator.getInstance().getLogger()
+                                  .d(TAG, new Throwable("setCover"),
+                                     "editing"
+                                     + "|bookId=" + getId()
+                                     + "|cIdx=" + cIdx
+                                     + "|file=" + file.getAbsolutePath()
+                                  );
                 }
                 // #storeCovers will do the actual storing
                 putString(BKEY_TMP_FILE_SPEC[cIdx], file.getAbsolutePath());
 
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                    Logger.d(TAG, new Throwable("setCover"),
-                             "editing"
-                             + "|bookId=" + getId()
-                             + "|cIdx=" + cIdx
-                             + "|deleting"
-                    );
+                    ServiceLocator.getInstance().getLogger()
+                                  .d(TAG, new Throwable("setCover"),
+                                     "editing"
+                                     + "|bookId=" + getId()
+                                     + "|cIdx=" + cIdx
+                                     + "|deleting"
+                                  );
                 }
                 // explicitly set to "" to let #storeCovers do the delete
                 putString(BKEY_TMP_FILE_SPEC[cIdx], "");
@@ -1078,12 +1081,13 @@ public class Book
                     // No further action needed as we have the cover "in-place"
                     // ... not actually sure when this would be the case; keep an eye on logs
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                        Logger.d(TAG, new Throwable("setCover"),
-                                 "readOnly"
-                                 + "|bookId=" + getId()
-                                 + "|cIdx=" + cIdx
-                                 + "|uuid, in-place"
-                        );
+                        ServiceLocator.getInstance().getLogger()
+                                      .d(TAG, new Throwable("setCover"),
+                                         "readOnly"
+                                         + "|bookId=" + getId()
+                                         + "|cIdx=" + cIdx
+                                         + "|uuid, in-place"
+                                      );
                     }
                 } else {
                     // Rename the temp file to the uuid permanent file name

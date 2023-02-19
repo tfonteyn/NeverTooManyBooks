@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminViewModel;
@@ -65,8 +65,9 @@ public class SearchSitesSingleListContract
     public Optional<ArrayList<Site>> parseResult(final int resultCode,
                                                  @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent
-                                         + "|listKey=" + listKey);
+            ServiceLocator.getInstance().getLogger()
+                          .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent
+                                                 + "|listKey=" + listKey);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {

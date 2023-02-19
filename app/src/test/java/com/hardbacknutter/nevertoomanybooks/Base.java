@@ -114,6 +114,13 @@ public class Base {
         Locale.setDefault(jdkLocale);
     }
 
+    @NonNull
+    protected static File getTmpDir() {
+        final String tmpDir = System.getProperty("java.io.tmpdir");
+        //noinspection ConstantConditions
+        return new File(tmpDir);
+    }
+
     /**
      * Each test <strong>should</strong> call {@link #setLocale(Locale)} as needed.
      * The default is Locale.US.
@@ -136,6 +143,8 @@ public class Base {
         when(app.getApplicationContext()).thenReturn(context);
 
         when(context.getResources()).thenReturn(resources);
+
+        when(context.getFilesDir()).thenAnswer((Answer<File>) invocation -> getTmpDir());
 
         when(context.getExternalFilesDirs(eq(Environment.DIRECTORY_PICTURES))).thenAnswer(
                 (Answer<File[]>) invocation -> {
@@ -167,6 +176,7 @@ public class Base {
 
 
         ServiceLocator.create(context, BundleMock::create);
+        ServiceLocator.getInstance().setLogger(new TestLogger(getTmpDir()));
 
         setupStringResources(resources);
         setupLanguageMap(context);

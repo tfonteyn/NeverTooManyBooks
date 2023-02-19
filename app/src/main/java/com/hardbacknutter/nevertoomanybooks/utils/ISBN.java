@@ -37,7 +37,7 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
 
@@ -236,7 +236,7 @@ public class ISBN {
                     }
                 } catch (@NonNull final NumberFormatException e) {
                     if (BuildConfig.DEBUG /* always */) {
-                        Logger.d(TAG, e, "text=`" + text + '`');
+                        ServiceLocator.getInstance().getLogger().d(TAG, e, "text=`" + text + '`');
                     }
                 }
 

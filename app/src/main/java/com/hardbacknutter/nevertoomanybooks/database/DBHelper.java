@@ -958,6 +958,8 @@ public class DBHelper
             return;
         }
 
+        final Logger logger = ServiceLocator.getInstance().getLogger();
+
         // for each duplicate author, weed out the duplicates and delete them
         for (final List<Long> idList : authorDuplicates) {
             final long keep = idList.get(0);
@@ -975,30 +977,27 @@ public class DBHelper
             try (SQLiteStatement stmt = db.compileStatement(sql)) {
                 rowCount = stmt.executeUpdateDelete();
             } catch (@NonNull final Exception e) {
-                Logger.e(TAG, e, "Update TBL_BOOK_AUTHOR: keep=" + keep + ", ids=" + ids);
+                logger.error(TAG, e, "Update TBL_BOOK_AUTHOR: keep=" + keep + ", ids=" + ids);
                 throw e;
             }
-            Logger.w(TAG, "Update TBL_BOOK_AUTHOR: rowCount=" + rowCount);
 
             sql = "UPDATE " + TBL_TOC_ENTRIES.getName() + " SET " + DBKey.FK_AUTHOR + "=" + keep
                   + " WHERE " + DBKey.FK_AUTHOR + " IN (" + ids + ')';
             try (SQLiteStatement stmt = db.compileStatement(sql)) {
                 rowCount = stmt.executeUpdateDelete();
             } catch (@NonNull final Exception e) {
-                Logger.e(TAG, e, "Update TBL_TOC_ENTRIES: keep=" + keep + ", ids=" + ids);
+                logger.error(TAG, e, "Update TBL_TOC_ENTRIES: keep=" + keep + ", ids=" + ids);
                 throw e;
             }
-            Logger.w(TAG, "Update TBL_TOC_ENTRIES: rowCount=" + rowCount);
 
             sql = "DELETE FROM " + TBL_AUTHORS.getName()
                   + " WHERE " + DBKey.PK_ID + " IN (" + ids + ')';
             try (SQLiteStatement stmt = db.compileStatement(sql)) {
                 rowCount = stmt.executeUpdateDelete();
             } catch (@NonNull final Exception e) {
-                Logger.e(TAG, e, "Delete TBL_AUTHORS: ids=" + ids);
+                logger.error(TAG, e, "Delete TBL_AUTHORS: ids=" + ids);
                 throw e;
             }
-            Logger.w(TAG, "Delete TBL_AUTHORS: rowCount=" + rowCount);
         }
     }
 
@@ -1039,6 +1038,8 @@ public class DBHelper
             return;
         }
 
+        final Logger logger = ServiceLocator.getInstance().getLogger();
+
         // for each duplicate toc entry, weed out the duplicates and delete them
         for (final List<Long> idList : entryDuplicates) {
             final long keep = idList.get(0);
@@ -1056,19 +1057,17 @@ public class DBHelper
             try (SQLiteStatement stmt = db.compileStatement(sql)) {
                 rowCount = stmt.executeUpdateDelete();
             } catch (@NonNull final Exception e) {
-                Logger.e(TAG, e, "Update TBL_BOOK_TOC_ENTRIES: keep=" + keep + ", ids=" + ids);
+                logger.error(TAG, e, "Update TBL_BOOK_TOC_ENTRIES: keep=" + keep + ", ids=" + ids);
                 throw e;
             }
-            Logger.w(TAG, "Update TBL_BOOK_TOC_ENTRIES: rowCount=" + rowCount);
 
             sql = "DELETE FROM " + TBL_TOC_ENTRIES + " WHERE " + DBKey.PK_ID + " IN (" + ids + ')';
             try (SQLiteStatement stmt = db.compileStatement(sql)) {
                 rowCount = stmt.executeUpdateDelete();
             } catch (@NonNull final Exception e) {
-                Logger.e(TAG, e, "Delete TBL_TOC_ENTRIES: keep=" + keep + ", ids=" + ids);
+                logger.error(TAG, e, "Delete TBL_TOC_ENTRIES: keep=" + keep + ", ids=" + ids);
                 throw e;
             }
-            Logger.w(TAG, "Delete TBL_TOC_ENTRIES: rowCount=" + rowCount);
         }
     }
 }

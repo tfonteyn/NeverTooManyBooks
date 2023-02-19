@@ -47,8 +47,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -87,11 +87,10 @@ public class StripInfoSearchEngine
                    SearchEngine.ViewBookByExternalId,
                    SearchEngine.ByBarcode {
 
+    public static final String COLLECTION_FORM_URL = "/ajax_collectie.php";
     /** Log tag. */
     private static final String TAG = "StripInfoSearchEngine";
-
     private static final String PK_USE_BEDETHEQUE = "stripinfo.resolve.authors.bedetheque";
-
     /** Color string values as used on the site. Complete 2019-10-29. */
     private static final String COLOR_STRINGS = "Kleur|Zwart/wit|Zwart/wit met steunkleur";
     /** Param 1: external book ID; really a 'long'. */
@@ -124,9 +123,6 @@ public class StripInfoSearchEngine
             (byte) 0x46, (byte) 0x54, (byte) 0x59, (byte) 0x4b};
     /** JSoup selector to get book url tags. */
     private static final String A_HREF_STRIP = "a[href*=/strip/]";
-
-    public static final String COLLECTION_FORM_URL = "/ajax_collectie.php";
-
     /** Delegate common Element handling. */
     private final JSoupHelper jSoupHelper = new JSoupHelper();
     @Nullable
@@ -483,7 +479,7 @@ public class StripInfoSearchEngine
 
             } catch (@NonNull final Exception e) {
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.d(TAG, e, "row=" + row);
+                    ServiceLocator.getInstance().getLogger().d(TAG, e, "row=" + row);
                 }
             }
         }
@@ -573,7 +569,7 @@ public class StripInfoSearchEngine
      *
      * @param document to parse
      * @param cIdx     0..n image index
-     * @param book Bundle to update
+     * @param book     Bundle to update
      *
      * @throws StorageException on storage related failures
      */
@@ -766,7 +762,7 @@ public class StripInfoSearchEngine
      * @param book            Bundle to update
      *
      * @return the website book id, or {@code 0} if not found.
-     * The latter should never happen unless the website structure was changed.
+     *         The latter should never happen unless the website structure was changed.
      */
     private long processExternalId(@NonNull final Element titleUrlElement,
                                    @NonNull final Book book) {
@@ -815,7 +811,7 @@ public class StripInfoSearchEngine
      * Currently known (2019-10-11):
      * - the color scheme of the comic.
      *
-     * @param td       label td
+     * @param td   label td
      * @param book Bundle to update
      *
      * @return 1 if we found a value td; 0 otherwise.
@@ -1013,7 +1009,7 @@ public class StripInfoSearchEngine
      * Parse the userdata.
      *
      * @param document   root element
-     * @param book   Bundle to update
+     * @param book       Bundle to update
      * @param externalId StripInfo id for the book
      */
     private void processUserdata(@NonNull final Element document,
@@ -1028,8 +1024,9 @@ public class StripInfoSearchEngine
 
             } catch (@NonNull final IOException | StorageException e) {
                 if (BuildConfig.DEBUG  /* always */) {
-                    Logger.d(TAG, e, "stripId=" + externalId
-                                     + "|collectieId=" + collectionId);
+                    ServiceLocator.getInstance().getLogger()
+                                  .d(TAG, e, "stripId=" + externalId
+                                             + "|collectieId=" + collectionId);
                 }
             }
         }

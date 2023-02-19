@@ -40,7 +40,6 @@ import java.util.StringJoiner;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.network.ConnectionValidator;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpPost;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -170,7 +169,8 @@ public class StripInfoAuth
                     }
                 } catch (@NonNull final JSONException e) {
                     if (BuildConfig.DEBUG /* always */) {
-                        Logger.e(TAG, e, "cookie.getValue()=" + cookie.getValue());
+                        ServiceLocator.getInstance().getLogger()
+                                      .e(TAG, e, "cookie.getValue()=" + cookie.getValue());
                     }
                 }
             }

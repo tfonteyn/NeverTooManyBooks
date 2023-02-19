@@ -24,6 +24,8 @@ import android.annotation.SuppressLint;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
@@ -57,13 +59,14 @@ public class XmlDumpParser
     @CallSuper
     public void startDocument()
             throws SAXException {
-        Logger.d(TAG, "startDocument", "<?xml version=\"1.0\"?>");
+        ServiceLocator.getInstance().getLogger()
+                      .d(TAG, "startDocument", "<?xml version=\"1.0\"?>");
     }
 
     @CallSuper
     public void endDocument()
             throws SAXException {
-        Logger.d(TAG, "endDocument", "");
+        ServiceLocator.getInstance().getLogger().d(TAG, "endDocument", "");
     }
 
     @CallSuper
@@ -94,7 +97,7 @@ public class XmlDumpParser
               .append(attributes.getValue(i)).append("\"");
         }
         sb.append(">");
-        Logger.d(TAG, "startElement", sb.toString());
+        ServiceLocator.getInstance().getLogger().d(TAG, "startElement", sb.toString());
     }
 
     @CallSuper
@@ -102,7 +105,7 @@ public class XmlDumpParser
                            final String localName,
                            final String qName)
             throws SAXException {
-        Logger.d(TAG, "endElement", "</" + qName + ">");
+        ServiceLocator.getInstance().getLogger().d(TAG, "endElement", "</" + qName + ">");
     }
 
     @CallSuper
@@ -114,7 +117,7 @@ public class XmlDumpParser
         for (int i = start; i < start + length; i++) {
             sb.append(ch[i]);
         }
-        Logger.d(TAG, "characters", sb.toString());
+        ServiceLocator.getInstance().getLogger().d(TAG, "characters", sb.toString());
     }
 
     @CallSuper
@@ -126,19 +129,20 @@ public class XmlDumpParser
         for (int i = start; i < start + length; i++) {
             sb.append(ch[i]);
         }
-        Logger.d(TAG, "ignorableWhitespace", sb.toString());
+        ServiceLocator.getInstance().getLogger().d(TAG, "ignorableWhitespace", sb.toString());
     }
 
     @CallSuper
     public void processingInstruction(final String target,
                                       final String data)
             throws SAXException {
-        Logger.d(TAG, "processingInstruction", "<?" + target + " " + data + "?>");
+        ServiceLocator.getInstance().getLogger()
+                      .d(TAG, "processingInstruction", "<?" + target + " " + data + "?>");
     }
 
     @CallSuper
     public void skippedEntity(final String name)
             throws SAXException {
-        Logger.d(TAG, "skippedEntity", "&" + name + ";");
+        ServiceLocator.getInstance().getLogger().d(TAG, "skippedEntity", "&" + name + ";");
     }
 }

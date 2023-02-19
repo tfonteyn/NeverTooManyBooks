@@ -31,7 +31,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 
@@ -109,7 +108,8 @@ public class CalibreDaoImpl
                 // encoded library data.
                 // Log and bail out but do NOT throw an error!
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
-                    Logger.w(TAG, "CalibreLibrary invalid(1) for book=" + book.getId());
+                    ServiceLocator.getInstance().getLogger()
+                                  .w(TAG, "CalibreLibrary invalid(1) for book=" + book.getId());
                 }
                 return false;
             }
@@ -118,7 +118,8 @@ public class CalibreDaoImpl
             // encoded library data.
             // Log and bail out but do NOT throw an error!
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
-                Logger.w(TAG, "CalibreLibrary invalid(2) for book=" + book.getId());
+                ServiceLocator.getInstance().getLogger()
+                              .w(TAG, "CalibreLibrary invalid(2) for book=" + book.getId());
             }
             return false;
         }

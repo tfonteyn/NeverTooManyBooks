@@ -40,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
@@ -171,9 +170,9 @@ public class DBCleaner {
             }
 
             if (BuildConfig.DEBUG /* always */) {
-                Logger.d(TAG, "dates",
-                         "key=" + key
-                         + "|rows.size()=" + rows.size());
+                ServiceLocator.getInstance().getLogger().d(TAG, "dates",
+                                                           "key=" + key
+                                                           + "|rows.size()=" + rows.size());
             }
             try (SynchronizedStatement stmt = db.compileStatement(
                     UPDATE_ + DBDefinitions.TBL_BOOKS.getName()

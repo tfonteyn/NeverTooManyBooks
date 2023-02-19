@@ -26,8 +26,8 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 abstract class BaseDaoImpl {
 
@@ -79,7 +79,7 @@ abstract class BaseDaoImpl {
     BaseDaoImpl(@NonNull final SynchronizedDb db,
                 @NonNull final String logTag) {
         if (BuildConfig.DEBUG /* always */) {
-            Logger.d(TAG, "Constructor", logTag);
+            ServiceLocator.getInstance().getLogger().d(TAG, "Constructor", logTag);
         }
 
         this.db = db;

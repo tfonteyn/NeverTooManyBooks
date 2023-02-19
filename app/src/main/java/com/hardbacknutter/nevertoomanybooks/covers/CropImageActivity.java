@@ -66,7 +66,6 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityCropimageBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
@@ -226,7 +225,9 @@ public class CropImageActivity
         public final Optional<Uri> parseResult(final int resultCode,
                                                @Nullable final Intent intent) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
+                ServiceLocator.getInstance().getLogger()
+                              .d(TAG, "parseResult",
+                                 "|resultCode=" + resultCode + "|intent=" + intent);
             }
 
             if (intent == null || resultCode != Activity.RESULT_OK) {

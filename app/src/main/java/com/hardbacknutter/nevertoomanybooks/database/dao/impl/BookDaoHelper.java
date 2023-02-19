@@ -43,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableInfo;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
@@ -261,9 +260,11 @@ public class BookDaoHelper {
                        book.remove(key);
 
                        if (BuildConfig.DEBUG /* always */) {
-                           Logger.d(TAG, "preprocessExternalIds", "NumberFormatException"
-                                                                  + "|name=" + key
-                                                                  + "|value=`" + o + '`');
+                           ServiceLocator.getInstance().getLogger()
+                                         .d(TAG, "preprocessExternalIds",
+                                            "NumberFormatException"
+                                            + "|name=" + key
+                                            + "|value=`" + o + '`');
                        }
                    }
                });
@@ -469,8 +470,9 @@ public class BookDaoHelper {
                 final String fileSpec = book.getString(Book.BKEY_TMP_FILE_SPEC[cIdx]);
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                    Logger.d(TAG, "storeCovers",
-                             "BKEY_TMP_FILE_SPEC[" + cIdx + "]=`" + fileSpec + '`');
+                    ServiceLocator.getInstance().getLogger()
+                                  .d(TAG, "storeCovers",
+                                     "BKEY_TMP_FILE_SPEC[" + cIdx + "]=`" + fileSpec + '`');
                 }
 
                 final Cover cover = new Cover(uuid, cIdx);

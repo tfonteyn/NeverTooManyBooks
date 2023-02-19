@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
@@ -165,8 +166,9 @@ public final class CoverDir {
         }
 
         if (BuildConfig.DEBUG /* always */) {
-            Logger.d(TAG, "initVolume", "volume=" + volume
-                                        + "|actualVolume=" + actualVolume);
+            ServiceLocator.getInstance().getLogger()
+                          .d(TAG, "initVolume", "volume=" + volume
+                                                + "|actualVolume=" + actualVolume);
             dumpStorageInfo(context, storage);
         }
 
@@ -225,10 +227,11 @@ public final class CoverDir {
         //      isEmulated=false
         //      isRemovable=true
         //      getState=mounted
+        final Logger logger = ServiceLocator.getInstance().getLogger();
         final List<StorageVolume> storageVolumes = storage.getStorageVolumes();
         for (final StorageVolume sv : storageVolumes) {
             if (Build.VERSION.SDK_INT >= 30) {
-                Logger.d(TAG, "init",
+                logger.d(TAG, "init",
                          "uuid=" + sv.getUuid()
                          + "|sv.getDescription=" + sv.getDescription(context)
                          + "|getDirectory=" + sv.getDirectory()
@@ -238,7 +241,7 @@ public final class CoverDir {
                          + "|isRemovable=" + sv.isRemovable()
                          + "|getState=" + sv.getState());
             } else {
-                Logger.d(TAG, "init",
+                logger.d(TAG, "init",
                          "uuid=" + sv.getUuid()
                          + "|sv.getDescription=" + sv.getDescription(context)
                          + "|isPrimary=" + sv.isPrimary()

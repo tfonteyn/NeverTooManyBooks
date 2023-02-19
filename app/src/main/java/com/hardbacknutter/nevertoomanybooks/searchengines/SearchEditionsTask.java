@@ -31,7 +31,7 @@ import java.util.LinkedHashSet;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUnavailableException;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
@@ -102,7 +102,7 @@ public class SearchEditionsTask
                 // Silently ignore individual failures,
                 // we'll return what we get from the sites that worked.
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.d(TAG, e, "site=" + site);
+                    ServiceLocator.getInstance().getLogger().d(TAG, e, "site=" + site);
                 }
             }
         }

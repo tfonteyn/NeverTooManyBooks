@@ -33,7 +33,7 @@ import java.util.EnumSet;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 public abstract class SyncContractBase
         extends ActivityResultContract<Void, EnumSet<SyncContractBase.Outcome>> {
@@ -72,7 +72,8 @@ public abstract class SyncContractBase
     public EnumSet<SyncContractBase.Outcome> parseResult(final int resultCode,
                                                          @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
+            ServiceLocator.getInstance().getLogger()
+                          .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
