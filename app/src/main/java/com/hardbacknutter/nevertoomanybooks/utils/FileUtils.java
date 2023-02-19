@@ -235,7 +235,7 @@ public final class FileUtils {
             for (final File file : root.listFiles(filter)) {
                 if (file.isFile()) {
                     totalSize += file.length();
-                    FileUtils.delete(file);
+                    delete(file);
                 } else if (file.isDirectory()) {
                     totalSize += deleteDirectory(file, filter);
                 }
