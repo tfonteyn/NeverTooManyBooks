@@ -62,7 +62,7 @@ public class ImageDownloader {
      * {@link ImageUtils#copy(InputStream, File)} operation will fail.
      * As that is independent from the JUnit test/purpose, we will fake success here.
      */
-    public static boolean IGNORE_RENAME_FAILURE = false;
+    public static boolean IGNORE_RENAME_FAILURE;
 
     @NonNull
     private final FutureHttpGet<File> futureHttpGet;
