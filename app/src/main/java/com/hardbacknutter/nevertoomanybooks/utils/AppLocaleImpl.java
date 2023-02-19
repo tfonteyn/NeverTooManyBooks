@@ -95,16 +95,7 @@ public final class AppLocaleImpl
         }
 
         // Recreate the user-locale list adding the preferred one at the start.
-        // Use the SYSTEM locales; see
-        // https://medium.com/@hectorricardomendez/how-to-get-the-current-locale-in-android-fc12d8be6242
-        // Key-Takeaway #5: To get the list of preferred locales of the device (as defined in
-        // the Settings), call Resources.getSystem().getConfiguration().getLocales()
-        //
-        // although, at this point, it seems LocaleList.getDefault() DOES return the correct list,
-        // so we could use that.
-        final List<Locale> locales = LocaleListUtils.getSystemLocales();
-//        final List<Locale> locales = LocaleListUtils.asList(context);
-
+        final List<Locale> locales = ServiceLocator.getInstance().getSystemLocales();
         locales.add(0, preferredLocale);
         final LocaleList updatedLocaleList = new LocaleList(locales.toArray(Z_ARRAY));
 
@@ -139,7 +130,7 @@ public final class AppLocaleImpl
     public Locale create(@Nullable final String localeSpec) {
 
         if (localeSpec == null || localeSpec.isEmpty() || SYSTEM_LANGUAGE.equals(localeSpec)) {
-            return LocaleListUtils.getSystemLocale();
+            return ServiceLocator.getInstance().getSystemLocale();
         } else {
             // Create a Locale from a concatenated Locale string (e.g. 'de', 'en_AU')
             final String[] parts;

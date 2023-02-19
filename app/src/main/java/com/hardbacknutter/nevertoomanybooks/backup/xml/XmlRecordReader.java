@@ -114,7 +114,9 @@ public class XmlRecordReader
             throws DataReaderException,
                    IOException {
         final Bundle bundle = ServiceLocator.newBundle();
-        fromXml(record, new InfoReader(bundle));
+        final Locale systemLocale = ServiceLocator.getInstance().getSystemLocale();
+
+        fromXml(record, new InfoReader(bundle), systemLocale);
         if (bundle.isEmpty()) {
             return Optional.empty();
         } else {
@@ -139,17 +141,19 @@ public class XmlRecordReader
      *
      * @param record   source to read from
      * @param accessor the EntityReader to convert XML to the object
+     * @param locale   to use
      *
      * @throws DataReaderException on a decoding/parsing of data issue
      * @throws IOException         on generic/other IO failures
      */
     private void fromXml(@NonNull final ArchiveReaderRecord record,
-                         @NonNull final EntityReader<String> accessor)
+                         @NonNull final EntityReader<String> accessor,
+                         @NonNull final Locale locale)
             throws DataReaderException,
                    IOException {
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
-        final XmlFilter rootFilter = new XmlFilter();
+        final XmlFilter rootFilter = new XmlFilter(locale);
         // Allow reading BookCatalogue archive data.
         buildLegacyFilters(rootFilter, accessor);
         // Current version filters

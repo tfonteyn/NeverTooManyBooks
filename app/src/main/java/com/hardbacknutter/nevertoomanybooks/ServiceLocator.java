@@ -21,7 +21,9 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.LocaleList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,6 +34,10 @@ import java.io.File;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
@@ -132,6 +138,9 @@ public final class ServiceLocator {
     /** Allows injecting a Mock Bundle supplier for JUnit tests. */
     @NonNull
     private Supplier<Bundle> bundleSupplier = Bundle::new;
+
+    @Nullable
+    private Supplier<List<Locale>> systemLocaleSupplier;
 
     @Nullable
     private AppLocale appLocale;
@@ -251,6 +260,45 @@ public final class ServiceLocator {
     @NonNull
     public static Bundle newBundle() {
         return sInstance.bundleSupplier.get();
+    }
+
+    /**
+     * Return the device Locale.
+     *
+     * @return Locale
+     */
+    @NonNull
+    public Locale getSystemLocale() {
+        if (systemLocaleSupplier == null) {
+            return Resources.getSystem().getConfiguration().getLocales().get(0);
+        } else {
+            return systemLocaleSupplier.get().get(0);
+        }
+    }
+
+    @NonNull
+    public List<Locale> getSystemLocales() {
+        if (systemLocaleSupplier == null) {
+            // Using SYSTEM Locales versus USER Locales, see:
+            // https://medium.com/@hectorricardomendez/how-to-get-the-current-locale-in-android-fc12d8be6242
+            // Key-Takeaway #5: To get the list of preferred locales of the device (as defined in
+            // the Settings), call Resources.getSystem().getConfiguration().getLocales()
+            //
+            // although, at this point, it seems LocaleList.getDefault() DOES return
+            // the correct list, so we could use that. It's not clear if it matters.
+            final LocaleList localeList = Resources.getSystem().getConfiguration().getLocales();
+            final LinkedHashSet<Locale> linkedHashSet = new LinkedHashSet<>();
+            for (int i = 0; i < localeList.size(); i++) {
+                linkedHashSet.add(localeList.get(i));
+            }
+            return new ArrayList<>(linkedHashSet);
+        } else {
+            return systemLocaleSupplier.get();
+        }
+    }
+
+    public void setSystemLocaleSupplier(@NonNull final Supplier<List<Locale>> supplier) {
+        this.systemLocaleSupplier = supplier;
     }
 
     @NonNull
@@ -477,11 +525,6 @@ public final class ServiceLocator {
             }
         }
         return bookDao;
-    }
-
-    @VisibleForTesting
-    public void setBookDao(@Nullable final BookDao dao) {
-        bookDao = dao;
     }
 
     @NonNull

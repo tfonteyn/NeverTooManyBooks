@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,9 +21,9 @@ package com.hardbacknutter.nevertoomanybooks.utils.dates;
 
 import java.time.LocalDateTime;
 
-import org.junit.jupiter.api.Test;
-
 import com.hardbacknutter.nevertoomanybooks.Base;
+
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;

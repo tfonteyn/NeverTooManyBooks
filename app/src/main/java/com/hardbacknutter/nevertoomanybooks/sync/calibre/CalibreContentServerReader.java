@@ -144,7 +144,7 @@ public class CalibreContentServerReader
     @NonNull
     private final CalibreContentServer server;
     @NonNull
-    private final DateParser dateParser = new ISODateParser();
+    private final DateParser dateParser;
 
     /** The physical library from which we'll be importing. */
     @Nullable
@@ -166,14 +166,18 @@ public class CalibreContentServerReader
         updateOption = helper.getUpdateOption();
         syncDate = helper.getSyncDate();
 
+
         //ENHANCE: add support for SyncProcessor
 
         doCovers = helper.getRecordTypes().contains(RecordType.Cover);
         library = helper.getExtraArgs().getParcelable(CalibreContentServer.BKEY_LIBRARY);
 
         server = new CalibreContentServer(context);
-        bookDao = ServiceLocator.getInstance().getBookDao();
-        calibreLibraryDao = ServiceLocator.getInstance().getCalibreLibraryDao();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+
+        bookDao = serviceLocator.getBookDao();
+        calibreLibraryDao = serviceLocator.getCalibreLibraryDao();
+        dateParser = new ISODateParser();
 
         eBookString = context.getString(R.string.book_format_ebook);
         booksString = context.getString(R.string.lbl_books);

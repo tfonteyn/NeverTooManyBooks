@@ -31,6 +31,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.File;
+import java.util.List;
 import java.util.Locale;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -175,9 +176,11 @@ public class Base {
         when(localeList.get(0)).thenAnswer((Answer<Locale>) invocation -> locale0);
 
         ServiceLocator.create(context, BundleMock::create);
+
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        serviceLocator.setSystemLocaleSupplier(() -> List.of(Locale.US));
         serviceLocator.setLogger(new TestLogger(getTmpDir()));
-        serviceLocator.setNetworkChecker(new TestNetworkChecker());
+        serviceLocator.setNetworkChecker(new TestNetworkChecker(true));
 
         setupStringResources(resources);
         setupLanguageMap(context);

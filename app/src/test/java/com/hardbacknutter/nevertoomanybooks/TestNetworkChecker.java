@@ -29,14 +29,20 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
-import com.hardbacknutter.nevertoomanybooks.debug.TestFlags;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkChecker;
 
 public class TestNetworkChecker
         implements NetworkChecker {
+
+    private final boolean connected;
+
+    public TestNetworkChecker(final boolean connected) {
+        this.connected = connected;
+    }
+
     @Override
     public boolean isNetworkAvailable(@NonNull final Context context) {
-        return TestFlags.isInternetConnected;
+        return connected;
     }
 
     @Override

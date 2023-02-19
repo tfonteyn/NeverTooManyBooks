@@ -31,7 +31,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreCustomField;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 
 /**
  * Supported archive entry types.
@@ -155,7 +154,7 @@ public enum RecordType {
      */
     @NonNull
     public static Optional<RecordType> getType(@NonNull final String entryName) {
-        final String name = entryName.toLowerCase(LocaleListUtils.getSystemLocale());
+        final String name = entryName.toLowerCase(ServiceLocator.getInstance().getSystemLocale());
 
         for (final RecordType type : values()) {
             if (name.startsWith(type.prefix)) {

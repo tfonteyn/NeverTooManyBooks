@@ -229,11 +229,12 @@ public class Money
      * @return ISO code.
      */
     @Nullable
-    private static String fromSymbol(@NonNull final String symbol) {
+    private static String fromSymbol(@NonNull final String symbol,
+                                     @NonNull final Locale locale) {
         if (CURRENCY_MAP.isEmpty()) {
             createCurrencyMap();
         }
-        final String key = symbol.trim().toLowerCase(LocaleListUtils.getSystemLocale());
+        final String key = symbol.trim().toLowerCase(locale);
         return CURRENCY_MAP.get(key);
     }
 
@@ -319,7 +320,7 @@ public class Money
             currencyCode = currencyStr.trim().toUpperCase(localeList.get(0));
             // if we don't have a normalized ISO3 code, see if we can convert it to one.
             if (currencyCode.length() != 3) {
-                currencyCode = fromSymbol(currencyStr);
+                currencyCode = fromSymbol(currencyStr, localeList.get(0));
             }
         }
 

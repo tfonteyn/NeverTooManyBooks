@@ -27,15 +27,15 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
-
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 
 /**
  * The XmlFilter objects build a tree of filters and XmlHandler objects
  * that make this process more manageable.
  */
+@SuppressWarnings("WeakerAccess")
 final class XmlFilter {
 
     /** The tag for this specific filter. */
@@ -53,12 +53,15 @@ final class XmlFilter {
     /** Action to perform, if any, when the associated tag is finished. */
     @Nullable
     private Consumer<ElementContext> endAction;
+    @NonNull
+    private final Locale systemLocale;
 
     /**
      * Constructor for the root tag.
      */
-    XmlFilter() {
-        tagName = "";
+    XmlFilter(@NonNull final Locale locale) {
+        this(locale, "");
+
     }
 
     /**
@@ -66,7 +69,9 @@ final class XmlFilter {
      *
      * @param pattern The tag that this filter handles
      */
-    private XmlFilter(@NonNull final String pattern) {
+    private XmlFilter(@NonNull final Locale locale,
+                      @NonNull final String pattern) {
+        systemLocale = locale;
         tagName = pattern;
     }
 
@@ -99,7 +104,7 @@ final class XmlFilter {
         final String curr = iterator.next();
         XmlFilter sub = getSubFilter(curr);
         if (sub == null) {
-            sub = new XmlFilter(curr);
+            sub = new XmlFilter(systemLocale, curr);
             addFilter(sub);
         }
         if (iterator.hasNext()) {
@@ -217,8 +222,7 @@ final class XmlFilter {
      * @throws IllegalStateException if the filter already exists
      */
     private void addFilter(@NonNull final XmlFilter filter) {
-        final String lcPat = filter.getTagName().toLowerCase(
-                LocaleListUtils.getSystemLocale());
+        final String lcPat = filter.getTagName().toLowerCase(systemLocale);
         if (subFilterHash.containsKey(lcPat)) {
             throw new IllegalStateException("Filter " + filter.getTagName() + " already exists");
         }

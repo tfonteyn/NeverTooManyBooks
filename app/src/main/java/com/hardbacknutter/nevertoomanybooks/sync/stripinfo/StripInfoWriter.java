@@ -92,17 +92,18 @@ public class StripInfoWriter
         // reset; won't take effect until the next publish call.
         progressListener.setIndeterminate(null);
 
+        final ServiceLocator sl = ServiceLocator.getInstance();
 
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         final LocalDateTime dateSince;
         if (syncWriterHelper.isIncremental()) {
-            dateSince = new ISODateParser().parse(
-                    global.getString(StripInfoAuth.PK_LAST_SYNC, null));
+            dateSince = new ISODateParser()
+                    .parse(global.getString(StripInfoAuth.PK_LAST_SYNC, null));
         } else {
             dateSince = null;
         }
 
-        final ServiceLocator sl = ServiceLocator.getInstance();
+
         final BookDao bookDao = sl.getBookDao();
         final StripInfoDao stripInfoDao = sl.getStripInfoDao();
         try (Cursor cursor = bookDao.fetchBooksForExportToStripInfo(dateSince)) {
