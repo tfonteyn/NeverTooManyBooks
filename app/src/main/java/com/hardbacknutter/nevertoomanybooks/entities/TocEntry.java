@@ -41,6 +41,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 /**
  * Represent a single title within an TOC(Anthology).
  * <p>
+ * Currently limited to having ONE author only.
+ * <p>
  * <strong>Note:</strong>
  * these are always inserted/updated ONLY when a book is inserted/updated
  * Hence writes are always a {@code List<TocEntry>} in one go.
