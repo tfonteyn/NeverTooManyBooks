@@ -84,7 +84,7 @@ final class XmlFilter {
      */
     @NonNull
     public XmlFilter addFilter(@NonNull final String... filters) {
-        if (filters.length <= 0) {
+        if (filters.length == 0) {
             throw new IllegalArgumentException();
         }
         return addFilter(Arrays.asList(filters).iterator());
