@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.amazon;
 
 import android.content.Context;
-import android.os.LocaleList;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
@@ -31,6 +30,7 @@ import androidx.annotation.WorkerThread;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.sync.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
@@ -76,7 +77,7 @@ import org.jsoup.select.Elements;
  * <p>
  * Should really implement the Amazon API.
  * <a href="https://docs.aws.amazon.com/en_pv/AWSECommerceService/latest/DG/becomingAssociate.html">
- *     becomingAssociate</a>
+ * becomingAssociate</a>
  * <p>
  * Implementing SearchEngine.ByText using
  * <pre>
@@ -92,12 +93,11 @@ public class AmazonSearchEngine
         implements SearchEngine.ByBarcode,
                    SearchEngine.CoverByIsbn {
 
-    /** Website character encoding. */
-    static final String CHARSET = "UTF-8";
-
     /** Preferences - Type: {@code String}. */
     public static final String PK_HOST_URL = EngineId.Amazon.getPreferenceKey()
                                              + Prefs.pk_suffix_host_url;
+    /** Website character encoding. */
+    static final String CHARSET = "UTF-8";
     /** Log tag. */
     private static final String TAG = "AmazonSearchEngine";
 
@@ -261,8 +261,6 @@ public class AmazonSearchEngine
                       @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
-        final Locale siteLocale = getLocale(context, document.location().split("/")[2]);
-
         // This is WEIRD...
         // Unless we do this seemingly needless select, the next select (for the title)
         // will return null.
@@ -281,7 +279,11 @@ public class AmazonSearchEngine
         final String title = titleElement.text().trim();
         book.putString(DBKey.TITLE, title);
 
-        parsePrice(document, book, new LocaleList(siteLocale));
+        final Locale siteLocale = getLocale(context, document.location().split("/")[2]);
+
+        final List<Locale> localeList = LocaleListUtils.asList(context);
+        localeList.add(0, siteLocale);
+        parsePrice(document, book, localeList);
 
         parseAuthors(document, book, siteLocale);
 
@@ -310,10 +312,10 @@ public class AmazonSearchEngine
 
     private void parsePrice(@NonNull final Document document,
                             @NonNull final Book book,
-                            @NonNull final LocaleList siteLocale) {
+                            @NonNull final List<Locale> localeList) {
         final Element price = document.selectFirst("span.offer-price");
         if (price != null) {
-            final Money money = new Money(siteLocale, price.text());
+            final Money money = new Money(localeList, price.text());
             if (money.isValid()) {
                 // parsing was ok, store it
                 book.putMoney(DBKey.PRICE_LISTED, money);
@@ -340,6 +342,11 @@ public class AmazonSearchEngine
         }
     }
 
+    /**
+     * @param document   to parse
+     * @param book       to update
+     * @param siteLocale to use for case manipulation
+     */
     private void parseDetails(@NonNull final Document document,
                               @NonNull final Book book,
                               @NonNull final Locale siteLocale) {
@@ -452,6 +459,11 @@ public class AmazonSearchEngine
         }
     }
 
+    /**
+     * @param document   to parse
+     * @param book       to update
+     * @param siteLocale to use for case manipulation
+     */
     private void parseAuthors(@NonNull final Document document,
                               @NonNull final Book book,
                               @NonNull final Locale siteLocale) {

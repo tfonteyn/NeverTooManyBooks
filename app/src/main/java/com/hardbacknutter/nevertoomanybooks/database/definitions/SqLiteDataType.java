@@ -27,7 +27,7 @@ import androidx.annotation.NonNull;
 
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 
 /**
  * <a href="https://sqlite.org/datatype3.html#storage_classes_and_datatypes">
@@ -117,7 +117,7 @@ public enum SqLiteDataType
     @NonNull
     static SqLiteDataType getInstance(@NonNull final String typeName) {
         // We MUST use the system locale here.
-        final String lcName = typeName.toLowerCase(ServiceLocator.getSystemLocaleList().get(0));
+        final String lcName = typeName.toLowerCase(LocaleListUtils.getSystemLocale());
         final SqLiteDataType type = MAP.get(lcName);
         if (type != null) {
             return type;

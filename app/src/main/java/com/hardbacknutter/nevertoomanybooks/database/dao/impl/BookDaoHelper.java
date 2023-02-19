@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.os.LocaleList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -47,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableInfo;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
@@ -75,6 +75,8 @@ public class BookDaoHelper {
     private final boolean isNew;
 
     @NonNull
+    private final List<Locale> localeList;
+    @NonNull
     private final Locale bookLocale;
 
     public BookDaoHelper(@NonNull final Context context,
@@ -86,6 +88,9 @@ public class BookDaoHelper {
         // Handle Language field FIRST, we need it for _OB fields.
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         bookLocale = this.book.getAndUpdateLocale(context, userLocale, true);
+
+        localeList = LocaleListUtils.asList(context);
+        localeList.add(0, bookLocale);
     }
 
     /**
@@ -141,10 +146,7 @@ public class BookDaoHelper {
             final String currencyKey = key + DBKey.CURRENCY_SUFFIX;
             if (book.contains(key) && !book.contains(currencyKey)) {
                 // Handle a price without a currency.
-                // We presume the user bought the book in their own currency.
-                // Try to parse the string using their own Locale
-                final Money money = new Money(new LocaleList(bookLocale),
-                                              book.getString(key));
+                final Money money = new Money(localeList, book.getString(key));
                 // If the currency could be decoded, store the Money back into the book
                 if (money.isValid()) {
                     book.putMoney(key, money);
@@ -337,7 +339,8 @@ public class BookDaoHelper {
     @NonNull
     ContentValues filterValues(@NonNull final Context context,
                                @NonNull final TableInfo tableInfo) {
-        return filterValues(context, tableInfo, book, new LocaleList(bookLocale));
+
+        return filterValues(context, tableInfo, book, localeList);
     }
 
     /**
@@ -359,11 +362,10 @@ public class BookDaoHelper {
      */
     @SuppressWarnings("WeakerAccess")
     @NonNull
-    ContentValues filterValues(final Context context,
+    ContentValues filterValues(@NonNull final Context context,
                                @NonNull final TableInfo tableInfo,
                                @NonNull final Book book,
-                               @NonNull final LocaleList localeList) {
-
+                               @NonNull final List<Locale> localeList) {
         final ContentValues cv = new ContentValues();
         for (final String key : book.keySet()) {
             // We've seen empty keys in old BC imports - this is likely due to a csv column

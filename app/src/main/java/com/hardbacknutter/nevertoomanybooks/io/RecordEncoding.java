@@ -30,12 +30,12 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlRecordReader;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 
 /**
  * Detecting record encoding in {@link #getEncoding} is based purely on filename extension.
@@ -76,7 +76,7 @@ public enum RecordEncoding {
      */
     @NonNull
     public static Optional<RecordEncoding> getEncoding(@NonNull final String entryName) {
-        final String name = entryName.toLowerCase(ServiceLocator.getSystemLocaleList().get(0));
+        final String name = entryName.toLowerCase(LocaleListUtils.getSystemLocale());
 
         // (faster?) shortcut check for covers
         if (name.endsWith(".jpg")) {

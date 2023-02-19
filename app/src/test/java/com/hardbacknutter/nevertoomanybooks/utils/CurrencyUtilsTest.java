@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
@@ -39,7 +40,7 @@ class CurrencyUtilsTest
     @Test
     void splitPrice10() {
 
-        final Locale locale = Locale.UK;
+        final List<Locale> locale = List.of(Locale.UK);
         Money money;
 
         money = new Money(locale, "$10.50");
@@ -57,7 +58,7 @@ class CurrencyUtilsTest
 
     @Test
     void parsingMustFail() {
-        final Locale locale = Locale.UK;
+        final List<Locale> locale = List.of(Locale.UK);
         final Money money;
 
         // The Money constructor EXPECTS a price WITH currency;
@@ -70,7 +71,7 @@ class CurrencyUtilsTest
     /** Country with '.' as thousands, and ',' as decimal separator. */
     @Test
     void splitPrice20() {
-        final Locale locale = new Locale("nl", "BE");
+        final List<Locale> locale = List.of(new Locale("nl", "BE"));
         Money money;
 
         money = new Money(locale, "fr10,50");
@@ -85,7 +86,7 @@ class CurrencyUtilsTest
     /** Country with '.' as thousands, and ',' as decimal separator. */
     @Test
     void splitPrice21() {
-        final Locale locale = new Locale("nl", "NL");
+        final List<Locale> locale = List.of(new Locale("nl", "NL"));
         final Money money;
 
         money = new Money(locale, "£10.50");
@@ -96,7 +97,7 @@ class CurrencyUtilsTest
     /** Country with '.' as thousands, and ',' as decimal separator. */
     @Test
     void splitPrice22() {
-        final Locale locale = new Locale("nl", "NL");
+        final List<Locale> locale = List.of(new Locale("nl", "NL"));
         final Money money;
 
         money = new Money(locale, "EUR 10.50");

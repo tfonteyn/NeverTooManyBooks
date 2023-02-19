@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.os.LocaleList;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -32,12 +33,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
@@ -50,21 +53,18 @@ public final class AppLocaleImpl
 
     /** Log tag. */
     private static final String TAG = "AppLocale";
-
+    private static final Locale[] Z_ARRAY = new Locale[0];
     @NonNull
     private final Collection<WeakReference<OnLocaleChangedListener>>
             localeChangedListeners = new ArrayList<>();
-
     /** Cache for Locales; key: the BOOK language (ISO3). */
     private final Map<String, Locale> cache = new HashMap<>();
-
     /**
      * The currently active/preferred user Locale.
      * See {@link #apply} for why we store it.
      */
     @Nullable
     private Locale preferredLocale;
-
     /**
      * Remember the current Locale spec to detect when language is switched.
      * See {@link #apply}.
@@ -75,17 +75,14 @@ public final class AppLocaleImpl
     @Override
     @NonNull
     public Context apply(@NonNull final Context context) {
-        // URGENT: this debug code proofs that we're doing this wrong.
-        //  We need to experiment more, but at first glance:
-        //   list = new LocaleList(preferredAppLocale, context.getResources().getConfiguration().getLocales())
-        //   deltaConfig.setLocales(list)
-        //
-//        Logger.d(TAG, "user getLocales()      : ",
-//                 String.valueOf(context.getResources().getConfiguration().getLocales()));
-//        Logger.d(TAG, "system getLocales()    : ",
-//                 String.valueOf(Resources.getSystem().getConfiguration().getLocales()));
-//        Logger.d(TAG, "LocaleList.getDefault(): ",
-//                 String.valueOf(LocaleList.getDefault()));
+        Logger.d(TAG + "|BEFORE", "Locale.getDefault()    : ",
+                 String.valueOf(Locale.getDefault()));
+        Logger.d(TAG + "|BEFORE", "user getLocales()      : ",
+                 String.valueOf(context.getResources().getConfiguration().getLocales()));
+        Logger.d(TAG + "|BEFORE", "system getLocales()    : ",
+                 String.valueOf(Resources.getSystem().getConfiguration().getLocales()));
+        Logger.d(TAG + "|BEFORE", "LocaleList.getDefault(): ",
+                 String.valueOf(LocaleList.getDefault()));
 
         // Create the Locale at first access, or if the persisted is different from the current.
         final String localeSpec = getPersistedLocaleSpec();
@@ -96,18 +93,43 @@ public final class AppLocaleImpl
             preferredLocale = create(localeSpec);
         }
 
-        // Update the JDK usage of Locale - this MUST be done each and every time!
+        // Recreate the user-locale list adding the preferred one at the start.
+        // Use the SYSTEM locales; see
+        // https://medium.com/@hectorricardomendez/how-to-get-the-current-locale-in-android-fc12d8be6242
+        // Key-Takeaway #5: To get the list of preferred locales of the device (as defined in
+        // the Settings), call Resources.getSystem().getConfiguration().getLocales()
+        //
+        // although, at this point, it seems LocaleList.getDefault() DOES return the correct list,
+        // so we could use that.
+        final List<Locale> locales = LocaleListUtils.getSystemLocales();
+//        final List<Locale> locales = LocaleListUtils.asList(context);
+
+        locales.add(0, preferredLocale);
+        final LocaleList updatedLocaleList = new LocaleList(locales.toArray(Z_ARRAY));
+
+        // Update the JDK usage of Locale.
+        // This MUST be done each and every time when an Activity starts!
         Locale.setDefault(preferredLocale);
 
-        // Update the Android usage of Locale - this MUST be done each and every time!
+        // Update the Android usage of Locale.
+        // This MUST be done each and every time when an Activity starts!
         final Configuration deltaConfig = new Configuration();
-        deltaConfig.setLocale(preferredLocale);
+        deltaConfig.setLocales(updatedLocaleList);
         final Context localizedContext = context.createConfigurationContext(deltaConfig);
 
         if (changed) {
             // refresh Locale aware components; only needed when the Locale was indeed changed.
-            onLocaleChanged(context);
+            onLocaleChanged(localizedContext);
         }
+
+        Logger.d(TAG, "Locale.getDefault()    : ",
+                 String.valueOf(Locale.getDefault()));
+        Logger.d(TAG, "localizedContext       : ",
+                 String.valueOf(localizedContext.getResources().getConfiguration().getLocales()));
+        Logger.d(TAG, "system getLocales()    : ",
+                 String.valueOf(Resources.getSystem().getConfiguration().getLocales()));
+        Logger.d(TAG, "LocaleList.getDefault(): ",
+                 String.valueOf(LocaleList.getDefault()));
         return localizedContext;
     }
 
@@ -116,7 +138,7 @@ public final class AppLocaleImpl
     public Locale create(@Nullable final String localeSpec) {
 
         if (localeSpec == null || localeSpec.isEmpty() || SYSTEM_LANGUAGE.equals(localeSpec)) {
-            return ServiceLocator.getSystemLocaleList().get(0);
+            return LocaleListUtils.getSystemLocale();
         } else {
             // Create a Locale from a concatenated Locale string (e.g. 'de', 'en_AU')
             final String[] parts;

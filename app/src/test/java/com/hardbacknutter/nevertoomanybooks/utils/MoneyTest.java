@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,11 +20,12 @@
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Locale;
 
-import org.junit.jupiter.api.Test;
-
 import com.hardbacknutter.nevertoomanybooks.Base;
+
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -32,38 +33,40 @@ class MoneyTest
         extends Base {
 
     private static final BigDecimal twelveDotThreeFour = BigDecimal.valueOf(12.34d);
+    public static final List<Locale> UK = List.of(Locale.UK);
+    public static final List<Locale> FRANCE = List.of(Locale.FRANCE);
 
     @Test
     void uk00() {
-        final Money m = new Money(Locale.UK, "GBP&nbsp;12.34");
+        final Money m = new Money(UK, "GBP&nbsp;12.34");
         assertEquals(twelveDotThreeFour, m.getValue());
         assertEquals(Money.GBP, m.getCurrencyCode());
     }
 
     @Test
     void uk01() {
-        final Money m = new Money(Locale.UK, "£ 12.34");
+        final Money m = new Money(UK, "£ 12.34");
         assertEquals(twelveDotThreeFour, m.getValue());
         assertEquals(Money.GBP, m.getCurrencyCode());
     }
 
     @Test
     void uk02() {
-        final Money m = new Money(Locale.UK, "£12.34");
+        final Money m = new Money(UK, "£12.34");
         assertEquals(twelveDotThreeFour, m.getValue());
         assertEquals(Money.GBP, m.getCurrencyCode());
     }
 
     @Test
     void uk03() {
-        final Money m = new Money(Locale.UK, "GBP12.34");
+        final Money m = new Money(UK, "GBP12.34");
         assertEquals(twelveDotThreeFour, m.getValue());
         assertEquals(Money.GBP, m.getCurrencyCode());
     }
 
     @Test
     void uk04() {
-        final Money m = new Money(Locale.UK, "£12");
+        final Money m = new Money(UK, "£12");
         assertEquals(BigDecimal.valueOf(12.0d), m.getValue());
         assertEquals(Money.GBP, m.getCurrencyCode());
     }
@@ -71,28 +74,28 @@ class MoneyTest
 
     @Test
     void fr01() {
-        final Money m = new Money(Locale.FRANCE, "12,34&nbsp;€");
+        final Money m = new Money(FRANCE, "12,34&nbsp;€");
         assertEquals(twelveDotThreeFour, m.getValue());
         assertEquals(Money.EUR, m.getCurrencyCode());
     }
 
     @Test
     void fr02() {
-        final Money m = new Money(Locale.FRANCE, "12,34 €");
+        final Money m = new Money(FRANCE, "12,34 €");
         assertEquals(twelveDotThreeFour, m.getValue());
         assertEquals(Money.EUR, m.getCurrencyCode());
     }
 
     @Test
     void fr03() {
-        final Money m = new Money(Locale.FRANCE, "12,34€");
+        final Money m = new Money(FRANCE, "12,34€");
         assertEquals(twelveDotThreeFour, m.getValue());
         assertEquals(Money.EUR, m.getCurrencyCode());
     }
 
     @Test
     void fr04() {
-        final Money m = new Money(Locale.FRANCE, "12,34 eur");
+        final Money m = new Money(FRANCE, "12,34 eur");
         assertEquals(twelveDotThreeFour, m.getValue());
         assertEquals(Money.EUR, m.getCurrencyCode());
     }

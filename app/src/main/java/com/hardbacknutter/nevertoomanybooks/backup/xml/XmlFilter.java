@@ -30,7 +30,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 
 /**
  * The XmlFilter objects build a tree of filters and XmlHandler objects
@@ -218,7 +218,7 @@ final class XmlFilter {
      */
     private void addFilter(@NonNull final XmlFilter filter) {
         final String lcPat = filter.getTagName().toLowerCase(
-                ServiceLocator.getSystemLocaleList().get(0));
+                LocaleListUtils.getSystemLocale());
         if (subFilterHash.containsKey(lcPat)) {
             throw new IllegalStateException("Filter " + filter.getTagName() + " already exists");
         }

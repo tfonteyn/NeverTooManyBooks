@@ -25,6 +25,7 @@ import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 
+import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -37,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -213,7 +215,9 @@ public class MaintenanceDaoImpl
 
         final String rebuildObTitle;
         if (reorder) {
-            rebuildObTitle = ReorderHelper.reorder(context, title, locale);
+            final List<Locale> localeList = LocaleListUtils.asList(context);
+            localeList.add(0, locale);
+            rebuildObTitle = ReorderHelper.reorder(context, title, localeList);
         } else {
             // Use the actual/original title
             rebuildObTitle = title;

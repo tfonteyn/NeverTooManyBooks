@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 
 import java.time.Month;
 import java.time.format.TextStyle;
+import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -41,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
@@ -143,7 +145,12 @@ class Formatter
                         bookLocale = ServiceLocator.getInstance().getAppLocale()
                                                    .getLocale(context, lang);
                     }
-                    return ReorderHelper.reorder(context, text, bookLocale);
+
+                    final List<Locale> localeList = LocaleListUtils.asList(context);
+                    if (bookLocale != null) {
+                        localeList.add(0, bookLocale);
+                    }
+                    return ReorderHelper.reorder(context, text, localeList);
                 } else {
                     return text;
                 }
@@ -153,7 +160,7 @@ class Formatter
                     return context.getString(R.string.bob_empty_publisher);
 
                 } else if (reorderTitleForDisplaying) {
-                    return ReorderHelper.reorder(context, text, null);
+                    return ReorderHelper.reorder(context, text);
                 } else {
                     return text;
                 }

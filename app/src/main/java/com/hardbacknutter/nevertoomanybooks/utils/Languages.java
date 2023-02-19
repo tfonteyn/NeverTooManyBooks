@@ -21,14 +21,13 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.LocaleList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import java.util.HashMap;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
@@ -103,7 +102,7 @@ public class Languages {
      * @param iso3    the ISO code
      *
      * @return the display name for the language,
-     * or the input string itself if it was an invalid ISO code
+     *         or the input string itself if it was an invalid ISO code
      */
     @NonNull
     public String getDisplayNameFromISO3(@NonNull final Context context,
@@ -188,7 +187,7 @@ public class Languages {
      *                   (either bibliographic or terminology coded)
      *
      * @return a language code that can be used with {@code new Locale(x)},
-     * or the incoming string if conversion failed.
+     *         or the incoming string if conversion failed.
      */
     @NonNull
     String getLocaleIsoFromISO3(@NonNull final Locale userLocale,
@@ -394,16 +393,9 @@ public class Languages {
      * @param context Current context
      */
     public void createLanguageMappingCache(@NonNull final Context context) {
-        final LinkedHashSet<Locale> locales = new LinkedHashSet<>();
-
-        final LocaleList localeList = context.getResources().getConfiguration().getLocales();
-        for (int i = 0; i < localeList.size(); i++) {
-            locales.add(localeList.get(i));
-        }
-        locales.addAll(ServiceLocator.getSystemLocales());
+        final List<Locale> locales = LocaleListUtils.asList(context);
         // Always add English
         locales.add(Locale.ENGLISH);
-
         locales.forEach(this::createLanguageMappingCache);
 
         // Locales from SearchEngine's are added automatically as/when needed
@@ -455,18 +447,10 @@ public class Languages {
      * @return {@code true} if sites should be enabled by default.
      */
     public boolean isUserLanguage(@NonNull final Context context,
-                                  @SuppressWarnings("SameParameterValue")
                                   @NonNull final String iso) {
-        final LocaleList localeList = context.getResources().getConfiguration().getLocales();
-        for (int i = 0; i < localeList.size(); i++) {
-            if (iso.equals(localeList.get(i).getISO3Language())) {
-                return true;
-            }
-        }
-
-        return ServiceLocator.getSystemLocales()
-                             .stream()
-                             .map(Locale::getISO3Language)
-                             .anyMatch(iso::equals);
+        return LocaleListUtils.asList(context)
+                              .stream()
+                              .map(Locale::getISO3Language)
+                              .anyMatch(iso::equals);
     }
 }

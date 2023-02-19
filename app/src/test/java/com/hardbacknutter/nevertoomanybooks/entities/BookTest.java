@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.entities;
 
 import androidx.annotation.NonNull;
 
+import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
@@ -110,7 +111,8 @@ class BookTest
         setLocale(Locale.FRANCE);
 
         book.putString(DBKey.LANGUAGE, "eng");
-        book.putMoney(DBKey.PRICE_LISTED, new Money(Locale.ENGLISH, "EUR 45"));
+        book.putMoney(DBKey.PRICE_LISTED, new Money(List.of(Locale.ENGLISH),
+                                                    "EUR 45"));
 
         final BookDaoHelper bdh = new BookDaoHelper(context, book, true);
         bdh.processPrice(DBKey.PRICE_LISTED);

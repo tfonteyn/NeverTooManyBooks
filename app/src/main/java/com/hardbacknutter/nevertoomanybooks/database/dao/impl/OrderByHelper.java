@@ -25,9 +25,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.function.BiFunction;
 
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 public final class OrderByHelper {
@@ -91,7 +93,9 @@ public final class OrderByHelper {
 
         final String result;
         if (forSorting(context)) {
-            result = ReorderHelper.reorder(context, title, locale);
+            final List<Locale> localeList = LocaleListUtils.asList(context);
+            localeList.add(0, locale);
+            result = ReorderHelper.reorder(context, title, localeList);
         } else {
             result = title;
         }

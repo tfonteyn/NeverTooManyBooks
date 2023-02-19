@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.backup.xml;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.LocaleList;
 import android.util.Base64;
 import android.util.Log;
 
@@ -39,6 +38,8 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
+import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
@@ -59,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 import org.xml.sax.Attributes;
@@ -87,7 +89,7 @@ public class XmlRecordReader
 
     private static final String TAG = "XmlRecordReader";
     @NonNull
-    private final LocaleList userLocale;
+    private final List<Locale> locales;
 
     /**
      * Stack for popping tags on if we go into one.
@@ -105,7 +107,7 @@ public class XmlRecordReader
      * @param context Current context
      */
     public XmlRecordReader(@NonNull final Context context) {
-        userLocale = context.getResources().getConfiguration().getLocales();
+        locales = LocaleListUtils.asList(context);
     }
 
     @Override
@@ -232,12 +234,12 @@ public class XmlRecordReader
 
                     case XmlUtils.TAG_FLOAT:
                         accessor.putFloat(currentTag.name, ParseUtils.parseFloat(
-                                userLocale, currentTag.value));
+                                locales, currentTag.value));
                         break;
 
                     case XmlUtils.TAG_DOUBLE:
                         accessor.putDouble(currentTag.name, ParseUtils.parseDouble(
-                                userLocale, currentTag.value));
+                                locales, currentTag.value));
                         break;
 
                     default:

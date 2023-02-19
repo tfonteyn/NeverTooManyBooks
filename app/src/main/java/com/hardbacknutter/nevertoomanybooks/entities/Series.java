@@ -430,7 +430,7 @@ public class Series
         final String label;
         if (ReorderHelper.forDisplay(context)) {
             // Using the locale here is overkill;  see #getLocale(..)
-            label = ReorderHelper.reorder(context, title, null);
+            label = ReorderHelper.reorder(context, title);
         } else {
             label = title;
         }

@@ -287,7 +287,7 @@ public class TocEntry
                            @Nullable final Style style) {
         if (ReorderHelper.forDisplay(context)) {
             // Using the locale here is overkill;  see #getLocale(..)
-            return ReorderHelper.reorder(context, title, null);
+            return ReorderHelper.reorder(context, title);
         } else {
             return title;
         }

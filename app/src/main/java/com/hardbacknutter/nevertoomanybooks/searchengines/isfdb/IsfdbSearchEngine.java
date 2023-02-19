@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
 import android.content.Context;
-import android.os.LocaleList;
 import android.util.Log;
 
 import androidx.annotation.IntRange;
@@ -43,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -72,6 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
@@ -98,14 +99,12 @@ public class IsfdbSearchEngine
                    SearchEngine.CoverByIsbn,
                    SearchEngine.AlternativeEditions {
 
-    /** Preferences - Type: {@code String}. */
-    static final String PK_HOST_URL = EngineId.Isfdb.getPreferenceKey()
-                                      + Prefs.pk_suffix_host_url;
-
     /** Preferences - Type: {@code boolean}. */
     public static final String PK_USE_PUBLISHER = EngineId.Isfdb.getPreferenceKey()
                                                   + ".search.uses.publisher";
-
+    /** Preferences - Type: {@code String}. */
+    static final String PK_HOST_URL = EngineId.Isfdb.getPreferenceKey()
+                                      + Prefs.pk_suffix_host_url;
     /**
      * The site claims to use ISO-8859-1.
      * <pre>
@@ -924,8 +923,9 @@ public class IsfdbSearchEngine
                             if (nextElementSibling != null) {
                                 tmpString = nextElementSibling.ownText();
                                 if (!tmpString.isEmpty()) {
-                                    final LocaleList localeList =
-                                            new LocaleList(getLocale(context));
+                                    final List<Locale> localeList =
+                                            LocaleListUtils.asList(context);
+                                    localeList.add(0, getLocale(context));
                                     final Money money = new Money(localeList, tmpString);
                                     if (money.getCurrencyCode() != null) {
                                         book.putDouble(DBKey.PRICE_LISTED, money.doubleValue());
@@ -1337,7 +1337,7 @@ public class IsfdbSearchEngine
      * So for Amazon we only get a single link which is ok as the ASIN is the same in all.
      *
      * @param elements LI elements
-     * @param book to update
+     * @param book     to update
      */
     private void processExternalIdElements(@NonNull final Collection<Element> elements,
                                            @NonNull final Book book) {
@@ -1518,10 +1518,10 @@ public class IsfdbSearchEngine
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
 
+        final List<Locale> localeList = LocaleListUtils.asList(context);
+        localeList.add(0, getLocale(context));
         final IsfdbPublicationListHandler listHandler =
-                new IsfdbPublicationListHandler(this,
-                                                fetchCovers, maxRecords,
-                                                new LocaleList(getLocale(context)));
+                new IsfdbPublicationListHandler(this, fetchCovers, maxRecords, localeList);
 
         try {
             final SAXParser parser = factory.newSAXParser();

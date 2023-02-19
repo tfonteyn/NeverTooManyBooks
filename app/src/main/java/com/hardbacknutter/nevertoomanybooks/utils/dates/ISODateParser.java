@@ -32,7 +32,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 
 /**
  * Parser for dates coming from the database or other sources
@@ -138,7 +138,7 @@ public class ISODateParser
                 .appendZoneRegionId()
                 .appendLiteral(']')
                 // Uses ResolverStyle.SMART and 'null' Chronology
-                .toFormatter(ServiceLocator.getSystemLocaleList().get(0));
+                .toFormatter(LocaleListUtils.getSystemLocale());
 
         parsers.add(sqliteIsoDateTime);
     }

@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
-import android.os.LocaleList;
-
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,6 +26,7 @@ import androidx.annotation.Nullable;
 import java.io.EOFException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -122,7 +121,7 @@ class IsfdbPublicationListHandler
     @NonNull
     private final boolean[] fetchCovers;
     @NonNull
-    private final LocaleList localeList;
+    private final List<Locale> localeList;
     /** XML content. */
     @SuppressWarnings("StringBufferField")
     private final StringBuilder builder = new StringBuilder();
@@ -144,7 +143,7 @@ class IsfdbPublicationListHandler
     IsfdbPublicationListHandler(@NonNull final IsfdbSearchEngine isfdbApiSearchEngine,
                                 @NonNull final boolean[] fetchCovers,
                                 final int maxBooks,
-                                @NonNull final LocaleList localeList) {
+                                @NonNull final List<Locale> localeList) {
         searchEngine = isfdbApiSearchEngine;
 
         this.fetchCovers = fetchCovers;

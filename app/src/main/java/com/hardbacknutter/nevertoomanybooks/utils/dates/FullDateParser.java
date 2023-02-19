@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.utils.dates;
 
 import android.content.Context;
-import android.os.LocaleList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,11 +33,10 @@ import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 
 /**
  * Parser for dates comes from the internet and/or the user (either as direct input, or by import).
@@ -93,7 +91,7 @@ public class FullDateParser
     };
 
     @NonNull
-    private final LinkedHashSet<Locale> locales;
+    private final List<Locale> locales;
     @NonNull
     private final DateParser isoDateParser;
     /** List of patterns we'll use to parse dates. */
@@ -108,13 +106,7 @@ public class FullDateParser
      * @param context Current context; not stored, only used to get the locales.
      */
     public FullDateParser(@NonNull final Context context) {
-        this.locales = new LinkedHashSet<>();
-        final LocaleList localeList = context.getResources().getConfiguration().getLocales();
-        for (int i = 0; i < localeList.size(); i++) {
-            locales.add(localeList.get(i));
-        }
-        locales.addAll(ServiceLocator.getSystemLocales());
-
+        this.locales = LocaleListUtils.asList(context);
         isoDateParser = new ISODateParser();
     }
 
@@ -122,8 +114,8 @@ public class FullDateParser
      * Constructor for testing.
      */
     @VisibleForTesting
-    public FullDateParser(@NonNull final Collection<Locale> locales) {
-        this.locales = new LinkedHashSet<>(locales);
+    public FullDateParser(@NonNull final List<Locale> locales) {
+        this.locales = locales;
         isoDateParser = new ISODateParser();
     }
 
@@ -163,9 +155,7 @@ public class FullDateParser
         if (result == null) {
             if (numericalParsers == null) {
                 numericalParsers = new ArrayList<>();
-
-                addPatterns(numericalParsers, NUMERICAL_PATTERNS,
-                            ServiceLocator.getSystemLocales());
+                addPatterns(numericalParsers, NUMERICAL_PATTERNS, locales);
             }
             result = parse(numericalParsers, dateStr, locale);
 
@@ -229,7 +219,7 @@ public class FullDateParser
      */
     private void addPatterns(@NonNull final Collection<DateTimeFormatter> group,
                              @NonNull final String[] patterns,
-                             @NonNull final Collection<Locale> locales) {
+                             @NonNull final List<Locale> locales) {
         // prevent duplicate locales
         final Collection<Locale> added = new HashSet<>();
         for (final Locale locale : locales) {
@@ -259,7 +249,7 @@ public class FullDateParser
                             @NonNull final Collection<DateTimeFormatter> group,
                             @SuppressWarnings("SameParameterValue")
                             @NonNull final String[] patterns,
-                            @NonNull final Collection<Locale> locales) {
+                            @NonNull final List<Locale> locales) {
 
         final String english = Locale.ENGLISH.getISO3Language();
 

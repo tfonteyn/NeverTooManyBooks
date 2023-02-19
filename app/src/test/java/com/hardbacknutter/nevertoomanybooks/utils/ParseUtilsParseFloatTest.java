@@ -19,9 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
-import android.os.LocaleList;
-
 import java.text.DecimalFormat;
+import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
@@ -53,7 +52,7 @@ class ParseUtilsParseFloatTest
 
     @Test
     void parseFloat10() {
-        final LocaleList LOCALE = new LocaleList(Locale.ENGLISH);
+        final List<Locale> LOCALE = List.of(Locale.ENGLISH);
         assertEquals(1234.56f, ParseUtils.parseFloat(LOCALE, DEC_SEP_IS_DOT));
         assertEquals(1234.56f, ParseUtils.parseFloat(LOCALE, DEC_SEP_IS_DOT_THOUSANDS_IS_COMMA));
 
@@ -63,7 +62,7 @@ class ParseUtilsParseFloatTest
 
     @Test
     void parseFloat11() {
-        final LocaleList LOCALE = new LocaleList(Locale.US);
+        final List<Locale> LOCALE = List.of(Locale.US);
         assertEquals(1234.56f, ParseUtils.parseFloat(LOCALE, DEC_SEP_IS_DOT));
         assertEquals(1234.56f, ParseUtils.parseFloat(LOCALE, DEC_SEP_IS_DOT_THOUSANDS_IS_COMMA));
 
@@ -73,7 +72,7 @@ class ParseUtilsParseFloatTest
 
     @Test
     void parseFloat12() {
-        final LocaleList LOCALE = new LocaleList(Locale.UK);
+        final List<Locale> LOCALE = List.of(Locale.UK);
         assertEquals(1234.56f, ParseUtils.parseFloat(LOCALE, DEC_SEP_IS_DOT));
         assertEquals(1234.56f, ParseUtils.parseFloat(LOCALE, DEC_SEP_IS_DOT_THOUSANDS_IS_COMMA));
 
@@ -83,7 +82,7 @@ class ParseUtilsParseFloatTest
 
     @Test
     void parseFloat20() {
-        final LocaleList LOCALE = new LocaleList(new Locale("fr"));
+        final List<Locale> LOCALE = List.of(new Locale("fr"));
         assertEquals(1234.56f, ParseUtils.parseFloat(LOCALE, DEC_SEP_IS_COMMA));
         assertNotEquals(1234.56f, ParseUtils.parseFloat(LOCALE, DEC_SEP_IS_COMMA_THOUSANDS_IS_DOT));
 
@@ -93,7 +92,7 @@ class ParseUtilsParseFloatTest
 
     @Test
     void parseFloat21() {
-        final LocaleList LOCALE = new LocaleList(new Locale("fr", "FR"));
+        final List<Locale> LOCALE = List.of(new Locale("fr", "FR"));
         assertEquals(1234.56f, ParseUtils.parseFloat(LOCALE, DEC_SEP_IS_COMMA));
         assertNotEquals(1234.56f, ParseUtils.parseFloat(LOCALE, DEC_SEP_IS_COMMA_THOUSANDS_IS_DOT));
 
@@ -103,7 +102,7 @@ class ParseUtilsParseFloatTest
 
     @Test
     void parseFloat30() {
-        final LocaleList LOCALE = new LocaleList(new Locale("de"));
+        final List<Locale> LOCALE = List.of(new Locale("de"));
         assertEquals(1234.56f, ParseUtils.parseFloat(LOCALE, DEC_SEP_IS_COMMA));
         assertEquals(1234.56f, ParseUtils.parseFloat(LOCALE, DEC_SEP_IS_COMMA_THOUSANDS_IS_DOT));
 
@@ -113,7 +112,7 @@ class ParseUtilsParseFloatTest
 
     @Test
     void parseFloat31() {
-        final LocaleList LOCALE = new LocaleList(new Locale("de", "DE"));
+        final List<Locale> LOCALE = List.of(new Locale("de", "DE"));
         assertEquals(1234.56f, ParseUtils.parseFloat(LOCALE, DEC_SEP_IS_COMMA));
         assertEquals(1234.56f, ParseUtils.parseFloat(LOCALE, DEC_SEP_IS_COMMA_THOUSANDS_IS_DOT));
 
@@ -123,7 +122,7 @@ class ParseUtilsParseFloatTest
 
     @Test
     void parseFloat40() {
-        final LocaleList LOCALE = new LocaleList(new Locale("nl"));
+        final List<Locale> LOCALE = List.of(new Locale("nl"));
         assertEquals(1234.56f, ParseUtils.parseFloat(LOCALE, DEC_SEP_IS_COMMA));
         assertEquals(1234.56f, ParseUtils.parseFloat(LOCALE, DEC_SEP_IS_COMMA_THOUSANDS_IS_DOT));
 
@@ -133,7 +132,7 @@ class ParseUtilsParseFloatTest
 
     @Test
     void parseFloat41() {
-        final LocaleList LOCALE = new LocaleList(new Locale("nl", "NL"));
+        final List<Locale> LOCALE = List.of(new Locale("nl", "NL"));
         assertEquals(1234.56f, ParseUtils.parseFloat(LOCALE, DEC_SEP_IS_COMMA));
         assertEquals(1234.56f, ParseUtils.parseFloat(LOCALE, DEC_SEP_IS_COMMA_THOUSANDS_IS_DOT));
 

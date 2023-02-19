@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
-import android.os.LocaleList;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -31,12 +30,12 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.Currency;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 /**
  * Value class to represent a value + currency.
@@ -144,7 +143,7 @@ public class Money
      *                          optionally followed by user/system locales.
      * @param priceWithCurrency price to decode
      */
-    public Money(@NonNull final LocaleList localeList,
+    public Money(@NonNull final List<Locale> localeList,
                  @NonNull final CharSequence priceWithCurrency) {
 
         if (!parse(localeList, priceWithCurrency)) {
@@ -234,7 +233,7 @@ public class Money
         if (CURRENCY_MAP.isEmpty()) {
             createCurrencyMap();
         }
-        final String key = symbol.trim().toLowerCase(ServiceLocator.getSystemLocaleList().get(0));
+        final String key = symbol.trim().toLowerCase(LocaleListUtils.getSystemLocale());
         return CURRENCY_MAP.get(key);
     }
 
@@ -261,7 +260,7 @@ public class Money
         return 0;
     }
 
-    public boolean parse(@NonNull final LocaleList localeList,
+    public boolean parse(@NonNull final List<Locale> localeList,
                          @NonNull final CharSequence priceWithCurrency) {
 
         // website html cleaning
@@ -311,7 +310,7 @@ public class Money
         return false;
     }
 
-    private boolean parse(@NonNull final LocaleList localeList,
+    private boolean parse(@NonNull final List<Locale> localeList,
                           @Nullable final String currencyStr,
                           @Nullable final String valueStr) {
 

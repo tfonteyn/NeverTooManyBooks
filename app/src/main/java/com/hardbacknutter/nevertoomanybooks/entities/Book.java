@@ -68,6 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
@@ -460,7 +461,9 @@ public class Book
                            @Nullable final Details details,
                            @Nullable final Style style) {
         if (ReorderHelper.forDisplay(context)) {
-            return ReorderHelper.reorder(context, getTitle(), getLocale(context));
+            final List<Locale> localeList = LocaleListUtils.asList(context);
+            localeList.add(0, getLocale(context));
+            return ReorderHelper.reorder(context, getTitle(), localeList);
         } else {
             return getTitle();
         }

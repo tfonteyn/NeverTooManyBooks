@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.content.Context;
-import android.os.LocaleList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,13 +27,11 @@ import androidx.annotation.Nullable;
 import java.text.DecimalFormat;
 import java.text.Normalizer;
 import java.text.ParseException;
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 /**
  * {@link #parseFloat} / {@link #parseDouble}.
@@ -288,7 +285,7 @@ public final class ParseUtils {
 
     public static float toFloat(@NonNull final Context context,
                                 @Nullable final Object source) {
-        return toFloat(context.getResources().getConfiguration().getLocales(), source);
+        return toFloat(LocaleListUtils.asList(context), source);
     }
 
     /**
@@ -301,7 +298,7 @@ public final class ParseUtils {
      *
      * @throws NumberFormatException if the source was not compatible.
      */
-    public static float toFloat(@NonNull final LocaleList localeList,
+    public static float toFloat(@NonNull final List<Locale> localeList,
                                 @Nullable final Object source)
             throws NumberFormatException {
 
@@ -327,7 +324,7 @@ public final class ParseUtils {
 
     public static double toDouble(@NonNull final Context context,
                                   @Nullable final Object source) {
-        return toDouble(context.getResources().getConfiguration().getLocales(), source);
+        return toDouble(LocaleListUtils.asList(context), source);
     }
 
     /**
@@ -340,7 +337,7 @@ public final class ParseUtils {
      *
      * @throws NumberFormatException if the source was not compatible.
      */
-    public static double toDouble(@NonNull final LocaleList localeList,
+    public static double toDouble(@NonNull final List<Locale> localeList,
                                   @Nullable final Object source)
             throws NumberFormatException {
 
@@ -454,7 +451,7 @@ public final class ParseUtils {
      *
      * @throws NumberFormatException if the source was not compatible.
      */
-    public static float parseFloat(@NonNull final LocaleList localeList,
+    public static float parseFloat(@NonNull final List<Locale> localeList,
                                    @Nullable final String source)
             throws NumberFormatException {
 
@@ -467,8 +464,10 @@ public final class ParseUtils {
             return Float.parseFloat(source);
         }
 
-        final LinkedHashSet<Locale> locales =
-                combineLocales(localeList, ServiceLocator.getSystemLocales());
+        // Create a NEW list, and add Locale.US to use for
+        // '.' as decimal and ',' as thousands separator.
+        final List<Locale> locales = new ArrayList<>(localeList);
+        locales.add(Locale.US);
 
         // we check in order - first match returns.
         for (final Locale locale : locales) {
@@ -495,7 +494,7 @@ public final class ParseUtils {
      *
      * @throws NumberFormatException if the source was not compatible.
      */
-    public static double parseDouble(@NonNull final LocaleList localeList,
+    public static double parseDouble(@NonNull final List<Locale> localeList,
                                      @Nullable final String source)
             throws NumberFormatException {
 
@@ -513,8 +512,10 @@ public final class ParseUtils {
             return Double.parseDouble(source);
         }
 
-        final LinkedHashSet<Locale> locales =
-                combineLocales(localeList, ServiceLocator.getSystemLocales());
+        // Create a NEW list, and add Locale.US to use for
+        // '.' as decimal and ',' as thousands separator.
+        final List<Locale> locales = new ArrayList<>(localeList);
+        locales.add(Locale.US);
 
         // we check in order - first match returns.
         for (final Locale locale : locales) {
@@ -530,25 +531,11 @@ public final class ParseUtils {
                     }
                 }
 
-            } catch (@NonNull final ParseException ignore) {
+            } catch (@NonNull final ParseException | IndexOutOfBoundsException ignore) {
                 // ignore
             }
         }
         throw new NumberFormatException(ERROR_NOT_A_DOUBLE + source);
-    }
-
-
-    @NonNull
-    private static LinkedHashSet<Locale> combineLocales(@NonNull final LocaleList userLocales,
-                                                        @NonNull final List<Locale> systemLocales) {
-        final LinkedHashSet<Locale> locales = new LinkedHashSet<>();
-        for (int i = 0; i < userLocales.size(); i++) {
-            locales.add(userLocales.get(i));
-        }
-        locales.addAll(systemLocales);
-        // Locale.US is used for '.' as decimal and ',' as thousands separator.
-        locales.add(Locale.US);
-        return locales;
     }
 
 

@@ -133,7 +133,7 @@ public class Publisher
                            @Nullable final Style style) {
         if (ReorderHelper.forDisplay(context)) {
             // Using the locale here is overkill;  see #getLocale(..)
-            return ReorderHelper.reorder(context, name, null);
+            return ReorderHelper.reorder(context, name);
         } else {
             return name;
         }

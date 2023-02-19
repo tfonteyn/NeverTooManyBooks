@@ -21,14 +21,13 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.os.LocaleList;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -69,6 +68,13 @@ public final class ReorderHelper {
                                 .getBoolean(PK_SHOW_TITLE_REORDERED, false);
     }
 
+
+    @NonNull
+    public static String reorder(@NonNull final Context context,
+                                 @NonNull final String title) {
+        return reorder(context, title, LocaleListUtils.asList(context));
+    }
+
     /**
      * Unconditionally reformat the given (title) string.
      * <p>
@@ -76,16 +82,16 @@ public final class ReorderHelper {
      * It move "The, A, An" etc... to the end of the title. e.g. "The title" -> "title, The".
      * This is case sensitive on purpose.
      *
-     * @param context     Current context
-     * @param title       to reorder
-     * @param titleLocale Locale for the title.
+     * @param context    Current context
+     * @param title      to reorder
+     * @param localeList to try find prefixes for
      *
      * @return reordered title, or the original if the pattern was not found
      */
     @NonNull
     public static String reorder(@NonNull final Context context,
                                  @NonNull final String title,
-                                 @Nullable final Locale titleLocale) {
+                                 @NonNull final List<Locale> localeList) {
 
         final String[] titleWords = title.split(" ");
         // Single word titles (or empty titles).. just return.
@@ -93,20 +99,8 @@ public final class ReorderHelper {
             return title;
         }
 
-        // we check in order - first match returns.
-        // 1. the Locale passed in (can be 'null' -> we skip it)
-        // 2. the user preferred Locale
-        // 3. the user device Locale
-        // 4. ENGLISH.
-        final LinkedHashSet<Locale> locales = new LinkedHashSet<>();
-        if (titleLocale != null) {
-            locales.add(titleLocale);
-        }
-        final LocaleList localeList = context.getResources().getConfiguration().getLocales();
-        for (int i = 0; i < localeList.size(); i++) {
-            locales.add(localeList.get(i));
-        }
-        locales.addAll(ServiceLocator.getSystemLocales());
+        // Create a NEW list, and always add Locale.ENGLISH
+        final List<Locale> locales = new ArrayList<>(localeList);
         locales.add(Locale.ENGLISH);
 
         final AppLocale appLocale = ServiceLocator.getInstance().getAppLocale();

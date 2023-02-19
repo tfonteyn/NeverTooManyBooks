@@ -38,8 +38,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.HtmlFormatter;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 
 /**
  * Class to manage the display of 'tips' within the application. Each tip dialog has
@@ -128,7 +128,7 @@ public final class TipManager {
      */
     public void reset(@NonNull final Context context,
                       @NonNull final String prefix) {
-        final Locale systemLocale = ServiceLocator.getSystemLocaleList().get(0);
+        final Locale systemLocale = LocaleListUtils.getSystemLocale();
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         final SharedPreferences.Editor ed = prefs.edit();
         for (final String key : prefs.getAll().keySet()) {

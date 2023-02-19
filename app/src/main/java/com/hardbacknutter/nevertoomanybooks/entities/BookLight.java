@@ -134,7 +134,7 @@ public class BookLight
                            @Nullable final Details details,
                            @Nullable final Style style) {
         if (ReorderHelper.forDisplay(context)) {
-            return ReorderHelper.reorder(context, title, null);
+            return ReorderHelper.reorder(context, title);
         } else {
             return title;
         }
