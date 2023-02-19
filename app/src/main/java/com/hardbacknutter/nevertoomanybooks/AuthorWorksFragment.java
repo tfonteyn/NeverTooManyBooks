@@ -41,6 +41,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.Collections;
+import java.util.List;
 
 import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.DisplayBookLauncher;
@@ -196,7 +197,7 @@ public class AuthorWorksFragment
         final int overlayType = Prefs.getFastScrollerOverlayType(context);
         FastScroller.attach(worksListView, overlayType);
 
-        adapter = new TocAdapter(context, vm.getStyle(), vm.getAuthor(), vm.getWorks());
+        adapter = new TocAdapter(context, vm.getStyle(), List.of(vm.getAuthor()), vm.getWorks());
 
         // click -> get the book(s) for that entry and display.
         adapter.setOnRowClickListener(

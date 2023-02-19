@@ -64,8 +64,8 @@ public class TocAdapter
     private final List<AuthorWork> works;
     @NonNull
     private final Style style;
-    @Nullable
-    private final Author mainAuthor;
+    @NonNull
+    private final List<Author> authors;
     @Nullable
     private OnRowClickListener rowClickListener;
     @Nullable
@@ -76,19 +76,19 @@ public class TocAdapter
     /**
      * Constructor.
      *
-     * @param context    Current context
-     * @param mainAuthor the author who 'owns' the works list
-     * @param works      to show
+     * @param context Current context
+     * @param authors the author who 'owns' the works list
+     * @param works   to show
      */
     @SuppressLint("UseCompatLoadingForDrawables")
     public TocAdapter(@NonNull final Context context,
                       @NonNull final Style style,
-                      @Nullable final Author mainAuthor,
+                      @NonNull final List<Author> authors,
                       @NonNull final List<AuthorWork> works) {
         inflater = LayoutInflater.from(context);
         this.contextMenuMode = ShowContextMenu.getPreferredMode(context);
         this.style = style;
-        this.mainAuthor = mainAuthor;
+        this.authors = authors;
         this.works = works;
     }
 
@@ -151,7 +151,10 @@ public class TocAdapter
         holder.onBind(work);
 
         // only display a primary author for this work if different from the main author
-        final boolean same = Objects.equals(work.getPrimaryAuthor(), mainAuthor);
+        boolean same = false;
+        if (!authors.isEmpty()) {
+            same = Objects.equals(work.getPrimaryAuthor(), authors.get(0));
+        }
         holder.vb.author.setVisibility(same ? View.GONE : View.VISIBLE);
     }
 

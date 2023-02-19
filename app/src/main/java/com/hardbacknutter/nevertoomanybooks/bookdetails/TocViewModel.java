@@ -41,20 +41,24 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 public class TocViewModel
         extends ViewModel {
 
-    /** The list of TOC entries we're displaying. */
+    /**
+     * The list of TOC entries we're displaying.
+     * Permanent reference; the adapter will not need refreshing.
+     */
     @NonNull
     private final List<AuthorWork> works = new ArrayList<>();
 
     private long bookId;
-
+    /**
+     * The list of Author. We normally only use the first one as primary-author.
+     * But a side effect is that this forms a permanent reference;
+     * the adapter will not need refreshing.
+     */
+    @NonNull
+    private final List<Author> authors = new ArrayList<>();
+    /** screen sub title. */
     @Nullable
     private String bookTitle;
-
-    @Nullable
-    private String authors;
-
-    @Nullable
-    private Author primaryAuthor;
     private boolean embedded;
 
     /**
@@ -62,13 +66,11 @@ public class TocViewModel
      * <p>
      * In full-screen mode, we get all we need from the arguments.
      * In embedded mode, we don't use any arguments,
-     * but rely on {@link #reload(Context, Book)} being called.
+     * but rely on {@link #reload(Book)} being called.
      *
-     * @param context Current context
-     * @param args    Bundle with arguments
+     * @param args Bundle with arguments
      */
-    public void init(@NonNull final Context context,
-                     @NonNull final Bundle args) {
+    public void init(@NonNull final Bundle args) {
         if (works.isEmpty()) {
             embedded = args.getBoolean(TocFragment.BKEY_EMBEDDED, false);
 
@@ -82,8 +84,7 @@ public class TocViewModel
 
             final List<Author> authorList = args.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
             if (authorList != null && !authorList.isEmpty()) {
-                authors = Author.getLabel(context, authorList);
-                primaryAuthor = authorList.get(0);
+                authors.addAll(authorList);
             }
         }
     }
@@ -92,8 +93,7 @@ public class TocViewModel
         return embedded;
     }
 
-    public void reload(@NonNull final Context context,
-                       @NonNull final Book book) {
+    public void reload(@NonNull final Book book) {
         bookId = book.getId();
         bookTitle = book.getTitle();
 
@@ -101,19 +101,17 @@ public class TocViewModel
         works.addAll(book.getToc());
 
         final List<Author> authorList = book.getAuthors();
-        if (!authorList.isEmpty()) {
-            authors = Author.getLabel(context, authorList);
-            primaryAuthor = authorList.get(0);
-        }
+        authors.clear();
+        authors.addAll(authorList);
     }
 
     public long getBookId() {
         return bookId;
     }
 
-    @Nullable
-    public Author getPrimaryAuthor() {
-        return primaryAuthor;
+    @NonNull
+    public List<Author> getAuthors() {
+        return authors;
     }
 
     @NonNull
@@ -122,11 +120,11 @@ public class TocViewModel
     }
 
     @NonNull
-    Optional<String> getScreenTitle() {
-        if (authors != null && !authors.isEmpty()) {
-            return Optional.of(authors);
-        } else {
+    Optional<String> getScreenTitle(@NonNull final Context context) {
+        if (authors.isEmpty()) {
             return Optional.empty();
+        } else {
+            return Optional.of(Author.getLabel(context, authors));
         }
     }
 
@@ -142,5 +140,4 @@ public class TocViewModel
             return Optional.empty();
         }
     }
-
 }

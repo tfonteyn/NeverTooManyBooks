@@ -113,7 +113,7 @@ public class TocFragment
         aVm.init(getContext(), args);
 
         vm = new ViewModelProvider(this).get(TocViewModel.class);
-        vm.init(getContext(), args);
+        vm.init(args);
     }
 
     @Override
@@ -138,7 +138,7 @@ public class TocFragment
         final int overlayType = Prefs.getFastScrollerOverlayType(context);
         FastScroller.attach(vb.toc, overlayType);
 
-        adapter = new TocAdapter(context, aVm.getStyle(), vm.getPrimaryAuthor(), vm.getWorks());
+        adapter = new TocAdapter(context, aVm.getStyle(), vm.getAuthors(), vm.getWorks());
         adapter.setOnRowClickListener((v, position) -> {
             // If there's only one book, there is no point doing this
             // as we're already on the book.
@@ -154,15 +154,14 @@ public class TocFragment
 
         if (!vm.isEmbedded()) {
             final Toolbar toolbar = getToolbar();
-            vm.getScreenTitle().ifPresent(toolbar::setTitle);
+            vm.getScreenTitle(getContext()).ifPresent(toolbar::setTitle);
             vm.getScreenSubtitle().ifPresent(toolbar::setSubtitle);
         }
     }
 
     @SuppressLint("NotifyDataSetChanged")
     public void reload(@NonNull final Book book) {
-        //noinspection ConstantConditions
-        vm.reload(getContext(), book);
+        vm.reload(book);
         adapter.notifyDataSetChanged();
     }
 }
