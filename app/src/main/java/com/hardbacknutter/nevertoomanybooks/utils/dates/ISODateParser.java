@@ -138,7 +138,7 @@ public class ISODateParser
                 .appendZoneRegionId()
                 .appendLiteral(']')
                 // Uses ResolverStyle.SMART and 'null' Chronology
-                .toFormatter(ServiceLocator.getSystemLocale());
+                .toFormatter(ServiceLocator.getSystemLocaleList().get(0));
 
         parsers.add(sqliteIsoDateTime);
     }

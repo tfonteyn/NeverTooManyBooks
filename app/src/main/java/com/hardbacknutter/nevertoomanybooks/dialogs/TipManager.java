@@ -128,7 +128,7 @@ public final class TipManager {
      */
     public void reset(@NonNull final Context context,
                       @NonNull final String prefix) {
-        final Locale systemLocale = ServiceLocator.getSystemLocale();
+        final Locale systemLocale = ServiceLocator.getSystemLocaleList().get(0);
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         final SharedPreferences.Editor ed = prefs.edit();
         for (final String key : prefs.getAll().keySet()) {

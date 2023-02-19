@@ -234,7 +234,7 @@ public class Money
         if (CURRENCY_MAP.isEmpty()) {
             createCurrencyMap();
         }
-        final String key = symbol.trim().toLowerCase(ServiceLocator.getSystemLocale());
+        final String key = symbol.trim().toLowerCase(ServiceLocator.getSystemLocaleList().get(0));
         return CURRENCY_MAP.get(key);
     }
 

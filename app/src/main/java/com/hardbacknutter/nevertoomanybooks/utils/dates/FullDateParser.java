@@ -113,7 +113,8 @@ public class FullDateParser
         for (int i = 0; i < localeList.size(); i++) {
             locales.add(localeList.get(i));
         }
-        locales.add(ServiceLocator.getSystemLocale());
+        locales.addAll(ServiceLocator.getSystemLocales());
+
         isoDateParser = new ISODateParser();
     }
 
@@ -162,8 +163,9 @@ public class FullDateParser
         if (result == null) {
             if (numericalParsers == null) {
                 numericalParsers = new ArrayList<>();
+
                 addPatterns(numericalParsers, NUMERICAL_PATTERNS,
-                            List.of(ServiceLocator.getSystemLocale()));
+                            ServiceLocator.getSystemLocales());
             }
             result = parse(numericalParsers, dateStr, locale);
 

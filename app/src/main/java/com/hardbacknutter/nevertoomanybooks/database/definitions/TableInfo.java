@@ -80,7 +80,7 @@ public class TableInfo {
      */
     @Nullable
     public ColumnInfo getColumn(@NonNull final String name) {
-        final String lcName = name.toLowerCase(ServiceLocator.getSystemLocale());
+        final String lcName = name.toLowerCase(ServiceLocator.getSystemLocaleList().get(0));
         return columns.get(lcName);
     }
 
@@ -95,7 +95,7 @@ public class TableInfo {
     @NonNull
     private Map<String, ColumnInfo> describeTable(@NonNull final SQLiteDatabase db,
                                                   @NonNull final String tableName) {
-        final Locale systemLocale = ServiceLocator.getSystemLocale();
+        final Locale systemLocale = ServiceLocator.getSystemLocaleList().get(0);
 
         final Map<String, ColumnInfo> allColumns = new HashMap<>();
         try (Cursor colCsr = db.rawQuery("PRAGMA table_info(" + tableName + ')', null)) {

@@ -369,9 +369,9 @@ public enum EngineId
         // Certain sites should only be enabled by default if the device or user set language
         // matches the site language.
         final boolean activateIfDutch = ServiceLocator.getInstance().getLanguages()
-                                                      .isLang(context, "nld");
+                                                      .isUserLanguage(context, "nld");
         final boolean activateIfFrench = ServiceLocator.getInstance().getLanguages()
-                                                       .isLang(context, "fra");
+                                                       .isUserLanguage(context, "fra");
 
         //NEWTHINGS: adding a new search engine: add to the list type as needed.
 

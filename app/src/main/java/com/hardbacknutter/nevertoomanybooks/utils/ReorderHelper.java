@@ -21,12 +21,14 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.os.LocaleList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map;
 
@@ -96,37 +98,41 @@ public final class ReorderHelper {
         // 2. the user preferred Locale
         // 3. the user device Locale
         // 4. ENGLISH.
-        final Locale[] locales = {titleLocale,
-                context.getResources().getConfiguration().getLocales().get(0),
-                ServiceLocator.getSystemLocale(),
-                Locale.ENGLISH};
+        final LinkedHashSet<Locale> locales = new LinkedHashSet<>();
+        if (titleLocale != null) {
+            locales.add(titleLocale);
+        }
+        final LocaleList localeList = context.getResources().getConfiguration().getLocales();
+        for (int i = 0; i < localeList.size(); i++) {
+            locales.add(localeList.get(i));
+        }
+        locales.addAll(ServiceLocator.getSystemLocales());
+        locales.add(Locale.ENGLISH);
 
         final AppLocale appLocale = ServiceLocator.getInstance().getAppLocale();
 
         for (final Locale locale : locales) {
-            if (locale != null) {
-                // Creating the pattern is slow, so we cache it for every Locale.
-                String words = LOCALE_PREFIX_MAP.get(locale);
-                if (words == null) {
-                    // the resources bundle in the language that the book (item) is written in.
-                    final Resources res = appLocale.getLocalizedResources(context, locale);
-                    words = res.getString(R.string.pv_reformat_titles_prefixes);
-                    LOCALE_PREFIX_MAP.put(locale, words);
-                }
+            // Creating the pattern is slow, so we cache it for every Locale.
+            String words = LOCALE_PREFIX_MAP.get(locale);
+            if (words == null) {
+                // the resources bundle in the language that the book (item) is written in.
+                final Resources res = appLocale.getLocalizedResources(context, locale);
+                words = res.getString(R.string.pv_reformat_titles_prefixes);
+                LOCALE_PREFIX_MAP.put(locale, words);
+            }
 
-                // case sensitive, see notes in
-                // src/main/res/values/string.xml/pv_reformat_titles_prefixes
-                if (words.contains(titleWords[0])) {
-                    final StringBuilder newTitle = new StringBuilder();
-                    for (int i = 1; i < titleWords.length; i++) {
-                        if (i != 1) {
-                            newTitle.append(' ');
-                        }
-                        newTitle.append(titleWords[i]);
+            // case sensitive, see notes in
+            // src/main/res/values/string.xml/pv_reformat_titles_prefixes
+            if (words.contains(titleWords[0])) {
+                final StringBuilder newTitle = new StringBuilder();
+                for (int i = 1; i < titleWords.length; i++) {
+                    if (i != 1) {
+                        newTitle.append(' ');
                     }
-                    newTitle.append(", ").append(titleWords[0]);
-                    return newTitle.toString();
+                    newTitle.append(titleWords[i]);
                 }
+                newTitle.append(", ").append(titleWords[0]);
+                return newTitle.toString();
             }
         }
         return title;

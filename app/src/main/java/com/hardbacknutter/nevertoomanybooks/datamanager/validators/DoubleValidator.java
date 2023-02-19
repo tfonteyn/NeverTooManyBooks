@@ -26,7 +26,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
@@ -44,8 +43,6 @@ public class DoubleValidator
 
     /**
      * Constructor; default value is 0d.
-     * <p>
-     * getSystemLocale: the user types it in (or it came from an external source)
      */
     public DoubleValidator() {
         defaultValue = 0d;
@@ -71,8 +68,7 @@ public class DoubleValidator
                 value = defaultValue;
             } else {
                 try {
-                    value = ParseUtils.parseDouble(ServiceLocator.getSystemLocaleList(),
-                                                   stringValue);
+                    value = ParseUtils.toDouble(context, stringValue);
 
                 } catch (@NonNull final NumberFormatException e) {
                     throw new ValidatorException(

@@ -217,7 +217,8 @@ final class XmlFilter {
      * @throws IllegalStateException if the filter already exists
      */
     private void addFilter(@NonNull final XmlFilter filter) {
-        final String lcPat = filter.getTagName().toLowerCase(ServiceLocator.getSystemLocale());
+        final String lcPat = filter.getTagName().toLowerCase(
+                ServiceLocator.getSystemLocaleList().get(0));
         if (subFilterHash.containsKey(lcPat)) {
             throw new IllegalStateException("Filter " + filter.getTagName() + " already exists");
         }

@@ -117,7 +117,7 @@ public enum SqLiteDataType
     @NonNull
     static SqLiteDataType getInstance(@NonNull final String typeName) {
         // We MUST use the system locale here.
-        final String lcName = typeName.toLowerCase(ServiceLocator.getSystemLocale());
+        final String lcName = typeName.toLowerCase(ServiceLocator.getSystemLocaleList().get(0));
         final SqLiteDataType type = MAP.get(lcName);
         if (type != null) {
             return type;

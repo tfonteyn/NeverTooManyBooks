@@ -76,7 +76,7 @@ public enum RecordEncoding {
      */
     @NonNull
     public static Optional<RecordEncoding> getEncoding(@NonNull final String entryName) {
-        final String name = entryName.toLowerCase(ServiceLocator.getSystemLocale());
+        final String name = entryName.toLowerCase(ServiceLocator.getSystemLocaleList().get(0));
 
         // (faster?) shortcut check for covers
         if (name.endsWith(".jpg")) {

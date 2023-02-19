@@ -116,7 +116,7 @@ public final class AppLocaleImpl
     public Locale create(@Nullable final String localeSpec) {
 
         if (localeSpec == null || localeSpec.isEmpty() || SYSTEM_LANGUAGE.equals(localeSpec)) {
-            return ServiceLocator.getSystemLocale();
+            return ServiceLocator.getSystemLocaleList().get(0);
         } else {
             // Create a Locale from a concatenated Locale string (e.g. 'de', 'en_AU')
             final String[] parts;

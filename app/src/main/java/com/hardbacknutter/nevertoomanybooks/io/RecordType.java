@@ -155,7 +155,7 @@ public enum RecordType {
      */
     @NonNull
     public static Optional<RecordType> getType(@NonNull final String entryName) {
-        final String name = entryName.toLowerCase(ServiceLocator.getSystemLocale());
+        final String name = entryName.toLowerCase(ServiceLocator.getSystemLocaleList().get(0));
 
         for (final RecordType type : values()) {
             if (name.startsWith(type.prefix)) {

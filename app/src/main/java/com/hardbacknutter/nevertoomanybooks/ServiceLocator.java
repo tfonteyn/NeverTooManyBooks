@@ -34,6 +34,8 @@ import java.io.File;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.function.Supplier;
 
@@ -239,23 +241,13 @@ public final class ServiceLocator {
     }
 
     /**
-     * Return the device Locale.
+     * Temporary hack to easy migration to full use of a single LocaleList.
+     * Return the device LocaleList.
      * <p>
      * When running a JUnit test, this method will always return {@code Locale.US}.
      *
-     * @return Locale
+     * @return LocaleList
      */
-    @NonNull
-    public static Locale getSystemLocale() {
-        // While running JUnit tests we cannot get access or mock Resources.getSystem(),
-        // ... so we need to cheat.
-        if (BuildConfig.DEBUG && TestFlags.isJUnit) {
-            return Locale.US;
-        }
-
-        return Resources.getSystem().getConfiguration().getLocales().get(0);
-    }
-
     @NonNull
     public static LocaleList getSystemLocaleList() {
         // While running JUnit tests we cannot get access or mock Resources.getSystem(),
@@ -265,6 +257,31 @@ public final class ServiceLocator {
         }
 
         return Resources.getSystem().getConfiguration().getLocales();
+    }
+
+    /**
+     * Temporary hack to easy migration to full use of a single LocaleList.
+     * Return the device Locales.
+     * <p>
+     * When running a JUnit test, this method will always return {@code Locale.US}.
+     *
+     * @return list
+     */
+    @NonNull
+    public static List<Locale> getSystemLocales() {
+        // While running JUnit tests we cannot get access or mock Resources.getSystem(),
+        // ... so we need to cheat.
+        if (BuildConfig.DEBUG && TestFlags.isJUnit) {
+            return List.of(Locale.US);
+        }
+
+        final LocaleList localeList = Resources.getSystem().getConfiguration().getLocales();
+        final List<Locale> systemLocales = new ArrayList<>();
+        for (int i = 0; i < localeList.size(); i++) {
+            systemLocales.add(localeList.get(i));
+        }
+
+        return systemLocales;
     }
 
     /**

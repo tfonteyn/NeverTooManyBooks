@@ -28,8 +28,8 @@ import androidx.annotation.Nullable;
 import java.text.DecimalFormat;
 import java.text.Normalizer;
 import java.text.ParseException;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -467,9 +467,8 @@ public final class ParseUtils {
             return Float.parseFloat(source);
         }
 
-        // Locale.US is used for '.' as decimal and ',' as thousands separator.
         final LinkedHashSet<Locale> locales =
-                combineLocales(localeList, ServiceLocator.getSystemLocale(), Locale.US);
+                combineLocales(localeList, ServiceLocator.getSystemLocales());
 
         // we check in order - first match returns.
         for (final Locale locale : locales) {
@@ -484,17 +483,6 @@ public final class ParseUtils {
         }
 
         throw new NumberFormatException(ERROR_NOT_A_FLOAT + source);
-    }
-
-    @NonNull
-    private static LinkedHashSet<Locale> combineLocales(@NonNull final LocaleList sourceLocale,
-                                                        @NonNull final Locale... otherLocales) {
-        final LinkedHashSet<Locale> locales = new LinkedHashSet<>();
-        for (int i = 0; i < sourceLocale.size(); i++) {
-            locales.add(sourceLocale.get(i));
-        }
-        locales.addAll(Arrays.asList(otherLocales));
-        return locales;
     }
 
     /**
@@ -525,9 +513,8 @@ public final class ParseUtils {
             return Double.parseDouble(source);
         }
 
-        // Locale.US is used for '.' as decimal and ',' as thousands separator.
         final LinkedHashSet<Locale> locales =
-                combineLocales(localeList, ServiceLocator.getSystemLocale(), Locale.US);
+                combineLocales(localeList, ServiceLocator.getSystemLocales());
 
         // we check in order - first match returns.
         for (final Locale locale : locales) {
@@ -549,6 +536,21 @@ public final class ParseUtils {
         }
         throw new NumberFormatException(ERROR_NOT_A_DOUBLE + source);
     }
+
+
+    @NonNull
+    private static LinkedHashSet<Locale> combineLocales(@NonNull final LocaleList userLocales,
+                                                        @NonNull final List<Locale> systemLocales) {
+        final LinkedHashSet<Locale> locales = new LinkedHashSet<>();
+        for (int i = 0; i < userLocales.size(); i++) {
+            locales.add(userLocales.get(i));
+        }
+        locales.addAll(systemLocales);
+        // Locale.US is used for '.' as decimal and ',' as thousands separator.
+        locales.add(Locale.US);
+        return locales;
+    }
+
 
     /**
      * Normalize a given string to contain only ASCII characters for flexible text comparison.
