@@ -453,7 +453,7 @@ public class SearchBookUpdatesViewModel
                     bookDao.update(context, delta);
                 } catch (@NonNull final StorageException | DaoWriteException e) {
                     // ignore, but log it.
-                    ServiceLocator.getInstance().getLogger().error(TAG, e);
+                    ServiceLocator.getInstance().getLogger().e(TAG, e);
                 }
             }
         }
@@ -531,7 +531,7 @@ public class SearchBookUpdatesViewModel
      * @param e exception
      */
     private void postSearch(@NonNull final Exception e) {
-        ServiceLocator.getInstance().getLogger().error(TAG, e);
+        ServiceLocator.getInstance().getLogger().e(TAG, e);
 
         if (currentCursor != null) {
             currentCursor.close();

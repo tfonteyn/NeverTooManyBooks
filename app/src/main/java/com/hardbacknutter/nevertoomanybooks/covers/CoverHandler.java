@@ -375,7 +375,7 @@ public class CoverHandler {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
             ServiceLocator.getInstance().getLogger()
-                          .d("TAG", new Throwable("createTempCoverFile"),
+                          .e("TAG", new Throwable("createTempCoverFile"),
                              "bookId=" + book.getId()
                              + "|cIdx=" + cIdx
                              + "|exists=" + coverFile.exists()

@@ -236,7 +236,8 @@ public class ISBN {
                     }
                 } catch (@NonNull final NumberFormatException e) {
                     if (BuildConfig.DEBUG /* always */) {
-                        ServiceLocator.getInstance().getLogger().d(TAG, e, "text=`" + text + '`');
+                        ServiceLocator.getInstance().getLogger()
+                                      .e(TAG, e, "text=`" + text + '`');
                     }
                 }
 

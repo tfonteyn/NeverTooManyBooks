@@ -589,7 +589,7 @@ public class DataManager
                                  @NonNull final Serializable value) {
         if (BuildConfig.DEBUG /* always */) {
             ServiceLocator.getInstance().getLogger()
-                          .d(TAG, new Throwable(),
+                          .e(TAG, new Throwable("putSerializable"),
                              "putSerializable|key=" + key
                              + "|type=" + value.getClass().getCanonicalName());
         }

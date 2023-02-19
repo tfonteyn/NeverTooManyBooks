@@ -329,9 +329,9 @@ public final class SyncReaderProcessor
                 // We're called in a loop, and the chance of an exception here is very low
                 // so let's log it, and quietly continue.
                 ServiceLocator.getInstance().getLogger()
-                              .error(TAG, e, "processCoverImage|uuid="
-                                             + localBook.getString(DBKey.BOOK_UUID, null)
-                                             + "|cIdx=" + cIdx);
+                              .e(TAG, e, "processCoverImage|uuid="
+                                         + localBook.getString(DBKey.BOOK_UUID, null)
+                                         + "|cIdx=" + cIdx);
             }
         }
         remoteBook.remove(Book.BKEY_TMP_FILE_SPEC[cIdx]);

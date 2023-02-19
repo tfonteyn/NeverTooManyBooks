@@ -69,7 +69,7 @@ public final class CameraDetection {
                 list.add(cc.get(CameraCharacteristics.LENS_FACING));
             }
         } catch (@NonNull final CameraAccessException e) {
-            ServiceLocator.getInstance().getLogger().error(TAG, e);
+            ServiceLocator.getInstance().getLogger().e(TAG, e);
         }
 
         return list;

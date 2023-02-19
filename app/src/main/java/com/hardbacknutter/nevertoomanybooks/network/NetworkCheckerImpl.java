@@ -199,13 +199,13 @@ public class NetworkCheckerImpl
                 }
 
                 if (BuildConfig.DEBUG /* always */) {
-                    ServiceLocator.getInstance().getLogger().d(TAG, e, "");
+                    ServiceLocator.getInstance().getLogger().e(TAG, e);
                 }
                 throw new UnknownHostException(host);
 
             } catch (@NonNull final RejectedExecutionException | InterruptedException e) {
                 if (BuildConfig.DEBUG /* always */) {
-                    ServiceLocator.getInstance().getLogger().d(TAG, e, "");
+                    ServiceLocator.getInstance().getLogger().e(TAG, e);
                 }
                 throw new UnknownHostException(host);
 

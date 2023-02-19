@@ -109,8 +109,10 @@ public class StartupActivity
                 data -> nextStage(Stage.RunTasks)));
 
         // Not called for now, see {@link StartupViewModel} #mTaskListener.
-        vm.onFailure().observe(this, message -> message.getData().ifPresent(
-                data -> onFailure(data.getResult())));
+        vm.onFailure().observe(this, message -> message.getData().ifPresent(data -> {
+            final Exception e = data.getResult();
+            onFailure(e == null ? new Throwable("eh?") : e);
+        }));
 
         nextStage(Stage.Init);
     }
@@ -215,11 +217,9 @@ public class StartupActivity
 
     /**
      * A fatal error happened preventing startup.
-     *
-     * @param e to report
      */
-    private void onFailure(@Nullable final Exception e) {
-        ServiceLocator.getInstance().getLogger().error(TAG, e, "");
+    private void onFailure(@NonNull final Throwable e) {
+        ServiceLocator.getInstance().getLogger().e(TAG, e);
 
         final String msg = ExMsg.map(this, e)
                                 .orElse(getString(R.string.error_unknown_long,

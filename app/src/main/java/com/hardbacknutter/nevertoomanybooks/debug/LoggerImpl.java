@@ -52,16 +52,19 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
-@SuppressWarnings("UseOfSystemOutOrSystemErr")
 public class LoggerImpl
         implements Logger {
 
+    public static final String ERROR_LOG_FILE = "error.log";
+    /** Sub directory of {@link Context#getFilesDir()}. */
+    public static final String DIR_LOG = "log";
     /** Keep the last 3 log files. */
     private static final int LOGFILE_COPIES = 3;
 
     /** Prefix for logfile entries. Not used on the console. */
     private static final String ERROR = "ERROR";
     private static final String WARN = "WARN";
+    private static final String DEBUG = "DEBUG";
     @NonNull
     private final File logDir;
 
@@ -198,48 +201,7 @@ public class LoggerImpl
         }
     }
 
-    /** Wrapper for {@link Log#e(String, String, Throwable)}. */
-    public void e(@NonNull final String tag,
-                  @Nullable final Throwable e,
-                  @NonNull final String msg) {
-        if (BuildConfig.DEBUG /* always */) {
-            Log.e(tag, msg, e);
-        }
-    }
-
-    /**
-     * Wrapper for {@link Log#d(String, String)} with an extra 'method' parameter.
-     *
-     * @param tag    Used to identify the source of a log message.  It usually identifies
-     *               the class or activity where the log call occurs.
-     * @param method the calling method (added to force the developer to log the method name)
-     * @param msg    The message you would like logged.
-     */
-    public void d(@NonNull final String tag,
-                  @NonNull final String method,
-                  @NonNull final String msg) {
-        if (BuildConfig.DEBUG /* always */) {
-            Log.d(tag, method + "|" + msg);
-        }
-    }
-
     @Override
-    public void d(@NonNull final String tag,
-                  @NonNull final Throwable e,
-                  @NonNull final String msg) {
-        if (BuildConfig.DEBUG /* always */) {
-            Log.d(tag, msg, e);
-        }
-    }
-
-    /** Wrapper for {@link Log#w(String, String)}. */
-    public void w(@NonNull final String tag,
-                  @NonNull final Object... params) {
-        if (BuildConfig.DEBUG /* always */) {
-            Log.w(tag, concat(params));
-        }
-    }
-
     @NonNull
     public String getErrorLog()
             throws IOException {
@@ -247,14 +209,13 @@ public class LoggerImpl
                 Paths.get(logDir.getAbsolutePath(), ERROR_LOG_FILE), StandardCharsets.UTF_8));
     }
 
+    @Override
     @NonNull
     public File getLogDir() {
         return logDir;
     }
 
-    /**
-     * Cycle the log each time the app is started; preserve previous if non-empty.
-     */
+    @Override
     public void cycleLogs() {
         File logFile = null;
         try {
@@ -270,50 +231,41 @@ public class LoggerImpl
         FileUtils.delete(logFile);
     }
 
-    /**
-     * ERROR message. Send to the logfile (always) and the console (when in DEBUG mode).
-     * <p>
-     * Use sparingly, writing to the log is expensive.
-     *
-     * @param tag    log tag
-     * @param e      cause
-     * @param params to concat
-     */
-    public void error(@NonNull final String tag,
-                      @Nullable final Throwable e,
-                      @Nullable final Object... params) {
-        final String msg;
-        if (params != null) {
-            msg = '|' + concat(params);
-        } else {
-            msg = "";
-        }
+    @Override
+    public void e(@NonNull final String tag,
+                  @NonNull final Throwable e,
+                  @Nullable final Object... params) {
+
+        final String msg = concat(params);
         writeToLog(tag, ERROR, msg, e);
 
         if (BuildConfig.DEBUG /* always */) {
-            e(tag, e, msg);
+            Log.e(tag, msg, e);
         }
     }
 
-    /**
-     * WARN message. Send to the logfile (always) and the console (when in DEBUG mode).
-     * <p>
-     * Use sparingly, writing to the log is expensive.
-     * <p>
-     * Use when an error or unusual result should be noted, but will not affect the flow of the app.
-     * No stacktrace!
-     *
-     * @param tag    log tag
-     * @param params to concat
-     */
-    public void warn(@NonNull final String tag,
-                     @NonNull final Object... params) {
+    @Override
+    public void w(@NonNull final String tag,
+                  @Nullable final Object... params) {
 
         final String msg = concat(params);
         writeToLog(tag, WARN, msg, null);
 
         if (BuildConfig.DEBUG /* always */) {
-            w(tag, msg);
+            Log.w(tag, msg);
+        }
+    }
+
+    @Override
+    public void d(@NonNull final String tag,
+                  @NonNull final String method,
+                  @Nullable final Object... params) {
+
+        final String msg = method + "|" + concat(params);
+        writeToLog(tag, DEBUG, msg, null);
+
+        if (BuildConfig.DEBUG /* always */) {
+            Log.d(tag, msg);
         }
     }
 

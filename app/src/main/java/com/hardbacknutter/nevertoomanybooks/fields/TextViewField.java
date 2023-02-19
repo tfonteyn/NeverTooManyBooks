@@ -131,7 +131,7 @@ public class TextViewField<T>
                 // it's possible that it gets the column type wrong.
                 // See {@link TypedCursor} class docs.
                 // Also see {@link SearchCoordinator#accumulateStringData}
-                ServiceLocator.getInstance().getLogger().error(TAG, e, value);
+                ServiceLocator.getInstance().getLogger().e(TAG, e, value);
 
                 view.setText(rawValue != null ? String.valueOf(rawValue) : "");
             }

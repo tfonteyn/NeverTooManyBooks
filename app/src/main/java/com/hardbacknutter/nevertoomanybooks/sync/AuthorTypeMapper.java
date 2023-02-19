@@ -139,7 +139,7 @@ public class AuthorTypeMapper {
         }
 
         // unknown, log it for future enhancement.
-        ServiceLocator.getInstance().getLogger().warn(TAG, "map|typeName=`" + typeName + "`");
+        ServiceLocator.getInstance().getLogger().w(TAG, "map|typeName=`" + typeName + "`");
         return TYPE_UNKNOWN;
     }
 }

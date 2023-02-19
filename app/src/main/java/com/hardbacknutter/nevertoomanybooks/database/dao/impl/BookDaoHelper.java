@@ -406,10 +406,10 @@ public class BookDaoHelper {
                                         // We do NOT want to fail at this point.
                                         // Log, but skip this field.
                                         ServiceLocator.getInstance().getLogger()
-                                                      .warn(TAG, e.getMessage(),
-                                                            "columnName(int)=" + columnName,
-                                                            "entry=" + entry,
-                                                            "book=" + book);
+                                                      .w(TAG, e.getMessage(),
+                                                         "columnName(int)=" + columnName,
+                                                         "entry=" + entry,
+                                                         "book=" + book);
                                     }
                                 }
                                 break;
@@ -424,10 +424,10 @@ public class BookDaoHelper {
                                     // from an import which cannot be parsed.
                                     // Log, but skip this field.
                                     ServiceLocator.getInstance().getLogger()
-                                                  .warn(TAG, e.getMessage(),
-                                                        "columnName(float)=" + columnName,
-                                                        "entry=" + entry,
-                                                        "book=" + book);
+                                                  .w(TAG, e.getMessage(),
+                                                     "columnName(float)=" + columnName,
+                                                     "entry=" + entry,
+                                                     "book=" + book);
                                 }
                                 break;
                             }

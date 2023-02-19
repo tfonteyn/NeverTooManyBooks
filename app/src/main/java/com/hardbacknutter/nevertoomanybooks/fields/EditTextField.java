@@ -166,7 +166,7 @@ public class EditTextField<T, V extends EditText>
                 // it's possible that it gets the column type wrong.
                 // See {@link TypedCursor} class docs.
                 // Also see {@link SearchCoordinator#accumulateStringData}
-                ServiceLocator.getInstance().getLogger().error(TAG, e, value);
+                ServiceLocator.getInstance().getLogger().e(TAG, e, value);
                 text = rawValue != null ? String.valueOf(rawValue) : "";
             }
 

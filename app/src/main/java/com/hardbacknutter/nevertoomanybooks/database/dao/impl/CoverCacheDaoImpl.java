@@ -133,7 +133,7 @@ public class CoverCacheDaoImpl
                 return (int) stmt.simpleQueryForLongOrZero();
             }
         } catch (@NonNull final RuntimeException e) {
-            ServiceLocator.getInstance().getLogger().error(TAG, e);
+            ServiceLocator.getInstance().getLogger().e(TAG, e);
         }
         return 0;
     }
@@ -146,7 +146,7 @@ public class CoverCacheDaoImpl
                                  CacheDbHelper.IMAGE_ID + " LIKE ?",
                                  new String[]{uuid + '%'});
         } catch (@NonNull final SQLiteException e) {
-            ServiceLocator.getInstance().getLogger().error(TAG, e);
+            ServiceLocator.getInstance().getLogger().e(TAG, e);
         }
         return false;
     }
@@ -156,7 +156,7 @@ public class CoverCacheDaoImpl
         try {
             db.execSQL("DELETE FROM " + CacheDbHelper.TBL_IMAGE.getName());
         } catch (@NonNull final SQLiteException e) {
-            ServiceLocator.getInstance().getLogger().error(TAG, e);
+            ServiceLocator.getInstance().getLogger().e(TAG, e);
         }
     }
 
@@ -191,7 +191,7 @@ public class CoverCacheDaoImpl
                 }
             }
         } catch (@NonNull final RuntimeException e) {
-            ServiceLocator.getInstance().getLogger().error(TAG, e);
+            ServiceLocator.getInstance().getLogger().e(TAG, e);
         }
         return null;
     }
@@ -259,7 +259,7 @@ public class CoverCacheDaoImpl
 
             } catch (@NonNull final RuntimeException e) {
                 // do not crash... ever! This is just a cache!
-                ServiceLocator.getInstance().getLogger().error(TAG, e);
+                ServiceLocator.getInstance().getLogger().e(TAG, e);
                 // and disable the cache
                 // We don't bother cancelling any pending tasks... oh well...
                 ImageUtils.setImageCachingEnabled(false);

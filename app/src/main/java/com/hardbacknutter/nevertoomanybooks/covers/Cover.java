@@ -99,9 +99,9 @@ public class Cover {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
             ServiceLocator.getInstance().getLogger()
-                          .d(TAG, new Throwable("getPersistedFile"),
-                             this + "|file=" + (coverFile == null ? "null"
-                                                                  : coverFile.getAbsolutePath()));
+                          .e(TAG, new Throwable("getPersistedFile"),
+                             this + "|file="
+                             + (coverFile == null ? "null" : coverFile.getAbsolutePath()));
         }
 
         if (coverFile != null && coverFile.exists()) {

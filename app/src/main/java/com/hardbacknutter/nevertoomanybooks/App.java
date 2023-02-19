@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.debug.LoggerImpl;
 import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 
@@ -50,7 +51,7 @@ public class App
     private static final int ACRA_LOGFILE_LINES = 1_000;
     private static final String EMAIL_ACRA_ATTACHMENTS = "NeverTooManyBooks-acra-report.txt";
     private static final String APPLICATION_LOG_FILE =
-            Logger.DIR_LOG + File.separatorChar + Logger.ERROR_LOG_FILE;
+            LoggerImpl.DIR_LOG + File.separatorChar + LoggerImpl.ERROR_LOG_FILE;
 
     /** Flag to indicate the startup can skip a full init. */
     private boolean hotStart;
@@ -102,7 +103,7 @@ public class App
                         final File file = new File(logger.getLogDir(), "ntmb.hprof");
                         Debug.dumpHprofData(file.getAbsolutePath());
                     } catch (@NonNull final IOException e) {
-                        logger.error(TAG, e);
+                        logger.e(TAG, e);
                     }
                 }
             });

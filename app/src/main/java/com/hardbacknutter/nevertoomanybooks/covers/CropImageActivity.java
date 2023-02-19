@@ -127,7 +127,7 @@ public class CropImageActivity
             }
 
         } catch (@NonNull final StorageException e) {
-            ServiceLocator.getInstance().getLogger().error(TAG, e);
+            ServiceLocator.getInstance().getLogger().e(TAG, e);
             new MaterialAlertDialogBuilder(this)
                     .setIcon(R.drawable.ic_baseline_error_24)
                     .setMessage(e.getUserMessage(this))
@@ -136,7 +136,7 @@ public class CropImageActivity
                     .show();
 
         } catch (@NonNull final IOException e) {
-            ServiceLocator.getInstance().getLogger().error(TAG, e);
+            ServiceLocator.getInstance().getLogger().e(TAG, e);
             new MaterialAlertDialogBuilder(this)
                     .setIcon(R.drawable.ic_baseline_error_24)
                     .setMessage(R.string.error_storage_not_accessible)
@@ -189,7 +189,7 @@ public class CropImageActivity
                     setResult(Activity.RESULT_OK, new Intent().setData(destinationUri));
                 }
             } catch (@NonNull final IOException e) {
-                ServiceLocator.getInstance().getLogger().error(TAG, e);
+                ServiceLocator.getInstance().getLogger().e(TAG, e);
                 bitmap = null;
             }
         }

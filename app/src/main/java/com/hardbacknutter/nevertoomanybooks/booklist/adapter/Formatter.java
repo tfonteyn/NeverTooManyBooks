@@ -211,7 +211,8 @@ class Formatter
                         }
                     } catch (@NonNull final NumberFormatException e) {
                         if (BuildConfig.DEBUG /* always */) {
-                            ServiceLocator.getInstance().getLogger().d(TAG, e, "RATING=" + text);
+                            ServiceLocator.getInstance().getLogger()
+                                          .e(TAG, e, "RATING=" + text);
                         }
                     }
                     return text;

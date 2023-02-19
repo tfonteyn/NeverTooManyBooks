@@ -685,7 +685,7 @@ public class EditBookViewModel
 
         } catch (@NonNull final DaoWriteException e) {
             ServiceLocator.getInstance().getLogger()
-                          .error(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
+                          .e(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
         }
         return false;
     }
@@ -705,7 +705,7 @@ public class EditBookViewModel
 
         } catch (@NonNull final DaoWriteException e) {
             ServiceLocator.getInstance().getLogger()
-                          .error(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
+                          .e(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
         }
         return false;
     }
@@ -728,7 +728,7 @@ public class EditBookViewModel
 
         } catch (@NonNull final DaoWriteException e) {
             ServiceLocator.getInstance().getLogger()
-                          .error(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
+                          .e(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
         }
         return false;
     }
@@ -748,7 +748,7 @@ public class EditBookViewModel
 
         } catch (@NonNull final DaoWriteException e) {
             ServiceLocator.getInstance().getLogger()
-                          .error(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
+                          .e(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
         }
 
         return false;
@@ -773,7 +773,7 @@ public class EditBookViewModel
 
         } catch (@NonNull final DaoWriteException e) {
             ServiceLocator.getInstance().getLogger()
-                          .error(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
+                          .e(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
         }
         return false;
     }
@@ -793,7 +793,7 @@ public class EditBookViewModel
 
         } catch (@NonNull final DaoWriteException e) {
             ServiceLocator.getInstance().getLogger()
-                          .error(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
+                          .e(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
         }
 
         return false;

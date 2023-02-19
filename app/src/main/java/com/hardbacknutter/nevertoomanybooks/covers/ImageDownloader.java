@@ -155,7 +155,7 @@ public class ImageDownloader {
             FileUtils.delete(destination);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS || IGNORE_RENAME_FAILURE) {
-                ServiceLocator.getInstance().getLogger().d(TAG, e, "saveImage");
+                ServiceLocator.getInstance().getLogger().e(TAG, e, "saveImage");
 
                 if (IGNORE_RENAME_FAILURE) {
                     return Optional.of(destination);

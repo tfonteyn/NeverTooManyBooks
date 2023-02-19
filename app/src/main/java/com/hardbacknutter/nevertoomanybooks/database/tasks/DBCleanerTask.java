@@ -68,7 +68,7 @@ public class DBCleanerTask
 
             if (modified > 0) {
                 ServiceLocator.getInstance().getLogger()
-                              .warn(TAG, "reposition modified=" + modified);
+                              .w(TAG, "reposition modified=" + modified);
             }
             return true;
 

@@ -459,7 +459,7 @@ public class BooklistAdapter
             }
         } catch (@NonNull final CursorIndexOutOfBoundsException e) {
             // Seen a number of times. No longer reproducible, but paranoia...
-            ServiceLocator.getInstance().getLogger().error(TAG, e, "|level=" + level);
+            ServiceLocator.getInstance().getLogger().e(TAG, e, "|level=" + level);
         }
         return null;
     }

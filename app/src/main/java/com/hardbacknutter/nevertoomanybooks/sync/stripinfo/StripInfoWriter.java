@@ -129,7 +129,7 @@ public class StripInfoWriter
                 } catch (@NonNull final JSONException e) {
                     // ignore, just move on to the next book
                     ServiceLocator.getInstance().getLogger()
-                                  .error(TAG, e, "bookId=" + book.getId());
+                                  .e(TAG, e, "bookId=" + book.getId());
                 } catch (@NonNull final StorageException ignore) {
                     // ignore, can't happen here
                 }

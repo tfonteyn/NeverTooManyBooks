@@ -479,7 +479,7 @@ public class StripInfoSearchEngine
 
             } catch (@NonNull final Exception e) {
                 if (BuildConfig.DEBUG /* always */) {
-                    ServiceLocator.getInstance().getLogger().d(TAG, e, "row=" + row);
+                    ServiceLocator.getInstance().getLogger().e(TAG, e, "row=" + row);
                 }
             }
         }
@@ -1025,7 +1025,7 @@ public class StripInfoSearchEngine
             } catch (@NonNull final IOException | StorageException e) {
                 if (BuildConfig.DEBUG  /* always */) {
                     ServiceLocator.getInstance().getLogger()
-                                  .d(TAG, e, "stripId=" + externalId
+                                  .e(TAG, e, "stripId=" + externalId
                                              + "|collectieId=" + collectionId);
                 }
             }

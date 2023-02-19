@@ -1523,7 +1523,7 @@ public class BooksOnBookshelf
     private void onBuildFailed(@NonNull final LiveDataEvent<TaskResult<Throwable>> message) {
         vb.progressCircle.hide();
         message.getData().ifPresent(data -> {
-            ServiceLocator.getInstance().getLogger().error(TAG, data.getResult());
+            ServiceLocator.getInstance().getLogger().e(TAG, data.getResult());
 
             vm.onBuildFailed();
 

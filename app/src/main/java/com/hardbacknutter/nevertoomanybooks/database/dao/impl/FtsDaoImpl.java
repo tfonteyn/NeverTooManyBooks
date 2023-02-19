@@ -237,7 +237,7 @@ public class FtsDaoImpl
             }
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
-            ServiceLocator.getInstance().getLogger().error(TAG, e);
+            ServiceLocator.getInstance().getLogger().e(TAG, e);
             gotError = true;
             db.drop(tmpTableName);
 
@@ -280,7 +280,7 @@ public class FtsDaoImpl
 
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
-            ServiceLocator.getInstance().getLogger().error(TAG, e, ERROR_FAILED_TO_UPDATE_FTS);
+            ServiceLocator.getInstance().getLogger().e(TAG, e, ERROR_FAILED_TO_UPDATE_FTS);
         }
     }
 
@@ -299,7 +299,7 @@ public class FtsDaoImpl
 
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
-            ServiceLocator.getInstance().getLogger().error(TAG, e, ERROR_FAILED_TO_UPDATE_FTS);
+            ServiceLocator.getInstance().getLogger().e(TAG, e, ERROR_FAILED_TO_UPDATE_FTS);
         }
     }
 

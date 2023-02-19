@@ -63,14 +63,14 @@ public final class MultiSelectListPreferenceSummaryProvider
             } else {
                 // This re-surfaces sometimes after a careless dev. change.
                 ServiceLocator.getInstance().getLogger()
-                              .error(TAG, new Throwable(),
-                                     "MultiSelectListPreference:"
-                                     + "\n s=" + s
-                                     + "\n key=" + preference.getKey()
-                                     + "\n entries=" + String.join(",", preference.getEntries())
-                                     + "\n entryValues="
-                                     + String.join(",", preference.getEntryValues())
-                                     + "\n values=" + preference.getValues());
+                              .e(TAG, new Throwable(),
+                                 "MultiSelectListPreference:"
+                                 + "\n s=" + s
+                                 + "\n key=" + preference.getKey()
+                                 + "\n entries=" + String.join(",", preference.getEntries())
+                                 + "\n entryValues="
+                                 + String.join(",", preference.getEntryValues())
+                                 + "\n values=" + preference.getValues());
             }
         }
 

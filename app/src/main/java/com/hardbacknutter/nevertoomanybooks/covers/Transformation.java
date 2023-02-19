@@ -185,7 +185,7 @@ class Transformation {
                     }
                 } catch (@NonNull final OutOfMemoryError e) {
                     // logging is likely to fail if we're out of memory, but let's try at least
-                    ServiceLocator.getInstance().getLogger().error(TAG, e);
+                    ServiceLocator.getInstance().getLogger().e(TAG, e);
                 }
             }
             return Optional.of(bitmap);

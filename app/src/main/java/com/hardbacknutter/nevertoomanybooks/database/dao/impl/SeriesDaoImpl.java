@@ -437,7 +437,7 @@ public class SeriesDaoImpl
                     db.setTransactionSuccessful();
                 }
             } catch (@NonNull final RuntimeException | DaoWriteException e) {
-                ServiceLocator.getInstance().getLogger().error(TAG, e);
+                ServiceLocator.getInstance().getLogger().e(TAG, e);
             } finally {
                 if (txLock != null) {
                     db.endTransaction(txLock);

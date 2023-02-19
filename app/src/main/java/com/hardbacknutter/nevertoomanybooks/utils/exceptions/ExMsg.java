@@ -131,7 +131,7 @@ public final class ExMsg {
                 msg = context.getString(R.string.error_storage_no_space_left);
             } else {
                 // write to logfile for future reporting enhancements.
-                ServiceLocator.getInstance().getLogger().warn(TAG, "errno=" + errno);
+                ServiceLocator.getInstance().getLogger().w(TAG, "errno=" + errno);
                 msg = Os.strerror(errno);
             }
         }

@@ -113,7 +113,7 @@ public class MaintenanceDaoImpl
 
         } catch (@NonNull final RuntimeException e) {
             // log to file, this is bad.
-            ServiceLocator.getInstance().getLogger().error(TAG, e);
+            ServiceLocator.getInstance().getLogger().e(TAG, e);
         }
     }
 

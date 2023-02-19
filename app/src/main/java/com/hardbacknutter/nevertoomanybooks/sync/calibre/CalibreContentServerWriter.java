@@ -190,7 +190,7 @@ public class CalibreContentServerWriter
                 } catch (@NonNull final JSONException e) {
                     // ignore, just move on to the next book
                     ServiceLocator.getInstance().getLogger()
-                                  .error(TAG, e, "bookId=" + book.getId());
+                                  .e(TAG, e, "bookId=" + book.getId());
                 }
 
                 delta++;

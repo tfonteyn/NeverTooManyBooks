@@ -975,11 +975,11 @@ public class Book
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                 ServiceLocator.getInstance().getLogger()
-                              .d(TAG, new Throwable("getCoverFile"),
+                              .e(TAG, new Throwable("getCoverFile"),
                                  "bookId=" + getId()
                                  + "|cIdx=" + cIdx
-                                 + "|file=" + (coverFile == null ? "null"
-                                                                 : coverFile.getAbsolutePath())
+                                 + "|file="
+                                 + (coverFile == null ? "null" : coverFile.getAbsolutePath())
                               );
             }
             if (coverFile != null && coverFile.exists()) {
@@ -1035,7 +1035,7 @@ public class Book
             if (file != null) {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                     ServiceLocator.getInstance().getLogger()
-                                  .d(TAG, new Throwable("setCover"),
+                                  .e(TAG, new Throwable("setCover"),
                                      "editing"
                                      + "|bookId=" + getId()
                                      + "|cIdx=" + cIdx
@@ -1048,7 +1048,7 @@ public class Book
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                     ServiceLocator.getInstance().getLogger()
-                                  .d(TAG, new Throwable("setCover"),
+                                  .e(TAG, new Throwable("setCover"),
                                      "editing"
                                      + "|bookId=" + getId()
                                      + "|cIdx=" + cIdx
@@ -1082,7 +1082,7 @@ public class Book
                     // ... not actually sure when this would be the case; keep an eye on logs
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                         ServiceLocator.getInstance().getLogger()
-                                      .d(TAG, new Throwable("setCover"),
+                                      .e(TAG, new Throwable("setCover"),
                                          "readOnly"
                                          + "|bookId=" + getId()
                                          + "|cIdx=" + cIdx

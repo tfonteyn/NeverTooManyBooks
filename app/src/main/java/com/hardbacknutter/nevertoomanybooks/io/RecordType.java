@@ -163,7 +163,8 @@ public enum RecordType {
         }
 
         if (BuildConfig.DEBUG /* always */) {
-            ServiceLocator.getInstance().getLogger().w(TAG, "getType|Unknown entry=" + entryName);
+            ServiceLocator.getInstance().getLogger()
+                          .w(TAG, "getType|Unknown entry=" + entryName);
         }
         return Optional.empty();
     }

@@ -215,8 +215,8 @@ public class JsoupLoader {
                 // ...
                 // Log it as WARN, so at least we can get to know the frequency of these issues.
                 ServiceLocator.getInstance().getLogger()
-                              .warn(TAG, "loadDocument", "e=" + e.getMessage(),
-                                    "mDocRequestUrl=\"" + docRequestUrl + '\"');
+                              .w(TAG, "loadDocument", "e=" + e.getMessage(),
+                                 "mDocRequestUrl=\"" + docRequestUrl + '\"');
                 // we'll retry.
                 attemptsLeft--;
                 if (attemptsLeft == 0) {

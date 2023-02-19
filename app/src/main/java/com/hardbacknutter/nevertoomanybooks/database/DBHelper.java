@@ -185,11 +185,11 @@ public class DBHelper
                 try {
                     db.execSQL("DROP INDEX " + indexName);
                 } catch (@NonNull final SQLException e) {
-                    ServiceLocator.getInstance().getLogger().error(TAG, e);
+                    ServiceLocator.getInstance().getLogger().e(TAG, e);
                     throw e;
                 } catch (@NonNull final RuntimeException e) {
                     ServiceLocator.getInstance().getLogger()
-                                  .error(TAG, e, "DROP INDEX failed: " + indexName);
+                                  .e(TAG, e, "DROP INDEX failed: " + indexName);
                 }
             }
         }
@@ -310,13 +310,13 @@ public class DBHelper
             return cs;
 
         } catch (@NonNull final SQLException e) {
-            ServiceLocator.getInstance().getLogger().error(TAG, e);
+            ServiceLocator.getInstance().getLogger().e(TAG, e);
             throw e;
         } finally {
             try {
                 db.execSQL(dropTable);
             } catch (@NonNull final SQLException e) {
-                ServiceLocator.getInstance().getLogger().error(TAG, e);
+                ServiceLocator.getInstance().getLogger().e(TAG, e);
             }
         }
     }
@@ -635,14 +635,14 @@ public class DBHelper
                         FileUtils.rename(destFile, destination);
                     } catch (@NonNull final IOException e) {
                         serviceLocator.getLogger()
-                                      .error(TAG, e, "failed to rename source=" + destFile
-                                                     + " TO destination=" + destination, e);
+                                      .e(TAG, e, "failed to rename source=" + destFile
+                                                 + " TO destination=" + destination, e);
                     }
                 }
                 // and create a new copy
                 FileUtils.copy(new File(db.getPath()), destFile);
             } catch (@NonNull final IOException e) {
-                serviceLocator.getLogger().error(TAG, e);
+                serviceLocator.getLogger().e(TAG, e);
             }
         }
 
@@ -976,7 +976,7 @@ public class DBHelper
             try (SQLiteStatement stmt = db.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             } catch (@NonNull final Exception e) {
-                logger.error(TAG, e, "Update TBL_BOOK_AUTHOR: keep=" + keep + ", ids=" + ids);
+                logger.e(TAG, e, "Update TBL_BOOK_AUTHOR: keep=" + keep + ", ids=" + ids);
                 throw e;
             }
 
@@ -985,7 +985,7 @@ public class DBHelper
             try (SQLiteStatement stmt = db.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             } catch (@NonNull final Exception e) {
-                logger.error(TAG, e, "Update TBL_TOC_ENTRIES: keep=" + keep + ", ids=" + ids);
+                logger.e(TAG, e, "Update TBL_TOC_ENTRIES: keep=" + keep + ", ids=" + ids);
                 throw e;
             }
 
@@ -994,7 +994,7 @@ public class DBHelper
             try (SQLiteStatement stmt = db.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             } catch (@NonNull final Exception e) {
-                logger.error(TAG, e, "Delete TBL_AUTHORS: ids=" + ids);
+                logger.e(TAG, e, "Delete TBL_AUTHORS: ids=" + ids);
                 throw e;
             }
         }
@@ -1055,7 +1055,7 @@ public class DBHelper
             try (SQLiteStatement stmt = db.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             } catch (@NonNull final Exception e) {
-                logger.error(TAG, e, "Update TBL_BOOK_TOC_ENTRIES: keep=" + keep + ", ids=" + ids);
+                logger.e(TAG, e, "Update TBL_BOOK_TOC_ENTRIES: keep=" + keep + ", ids=" + ids);
                 throw e;
             }
 
@@ -1063,7 +1063,7 @@ public class DBHelper
             try (SQLiteStatement stmt = db.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             } catch (@NonNull final Exception e) {
-                logger.error(TAG, e, "Delete TBL_TOC_ENTRIES: keep=" + keep + ", ids=" + ids);
+                logger.e(TAG, e, "Delete TBL_TOC_ENTRIES: keep=" + keep + ", ids=" + ids);
                 throw e;
             }
         }

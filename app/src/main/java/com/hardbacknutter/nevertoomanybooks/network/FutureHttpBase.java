@@ -121,7 +121,7 @@ public abstract class FutureHttpBase<T> {
                 }
             }
         } catch (@NonNull final Exception ex) {
-            logger.d("dumpSSLException", ex, "");
+            logger.e("dumpSSLException", ex);
         }
 
     }

@@ -35,40 +35,11 @@ public class TestLogger
     private final File logDir;
 
     TestLogger(@NonNull final File tmpDir) {
-        logDir = new File(tmpDir, DIR_LOG);
+        logDir = new File(tmpDir, LoggerImpl.DIR_LOG);
         if (!logDir.exists()) {
             //noinspection ResultOfMethodCallIgnored
             logDir.mkdirs();
         }
-    }
-
-    @Override
-    public void e(@NonNull final String tag,
-                  @Nullable final Throwable e,
-                  @NonNull final String msg) {
-        System.out.println("JUnit|ERROR|" + tag + "|" + msg
-                           + (e != null ? "|" + e.getMessage() : "")
-                           + "\n" + LoggerImpl.getStackTraceString(e));
-    }
-
-    @Override
-    public void d(@NonNull final String tag,
-                  @NonNull final Throwable e,
-                  @NonNull final String msg) {
-        e(tag, e, msg);
-    }
-
-    @Override
-    public void d(@NonNull final String tag,
-                  @NonNull final String method,
-                  @NonNull final String msg) {
-        System.out.println("JUnit|DEBUG|" + tag + "|" + method + "|" + msg);
-    }
-
-    @Override
-    public void w(@NonNull final String tag,
-                  @NonNull final Object... params) {
-        System.out.println("JUnit|WARN|" + tag + "|" + LoggerImpl.concat(params));
     }
 
     @NonNull
@@ -89,15 +60,23 @@ public class TestLogger
     }
 
     @Override
-    public void error(@NonNull final String tag,
-                      @Nullable final Throwable e,
-                      @Nullable final Object... params) {
-        e(tag, e, LoggerImpl.concat(params));
+    public void e(@NonNull final String tag,
+                  @NonNull final Throwable e,
+                  @Nullable final Object... params) {
+        System.out.println("JUnit|ERROR|" + tag + "|" + LoggerImpl.concat(params)
+                           + "|" + e.getMessage() + "\n" + LoggerImpl.getStackTraceString(e));
     }
 
     @Override
-    public void warn(@NonNull final String tag,
-                     @NonNull final Object... params) {
-        w(tag, params);
+    public void w(@NonNull final String tag,
+                  @Nullable final Object... params) {
+        System.out.println("JUnit|WARN|" + tag + "|" + LoggerImpl.concat(params));
+    }
+
+    @Override
+    public void d(@NonNull final String tag,
+                  @NonNull final String method,
+                  @Nullable final Object... params) {
+        System.out.println("JUnit|DEBUG|" + tag + "|" + method + "|" + LoggerImpl.concat(params));
     }
 }

@@ -458,7 +458,7 @@ public class CalibreContentServerReader
             }
         } catch (@NonNull final DaoWriteException | SQLiteDoneException | JSONException e) {
             // log, but don't fail
-            ServiceLocator.getInstance().getLogger().error(TAG, e);
+            ServiceLocator.getInstance().getLogger().e(TAG, e);
             results.booksFailed++;
         }
     }

@@ -114,7 +114,7 @@ public class BookshelfFiltersViewModel
                 ServiceLocator.getInstance().getBookshelfDao().update(context, bookshelf);
             } catch (@NonNull final DaoWriteException e) {
                 // log, but ignore - should never happen unless disk full
-                ServiceLocator.getInstance().getLogger().error(TAG, e, "");
+                ServiceLocator.getInstance().getLogger().e(TAG, e);
             }
         }
         return true;

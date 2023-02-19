@@ -101,7 +101,7 @@ public class SearchEditionsTask
                 // Silently ignore individual failures,
                 // we'll return what we get from the sites that worked.
                 if (BuildConfig.DEBUG /* always */) {
-                    ServiceLocator.getInstance().getLogger().d(TAG, e, "site=" + site);
+                    ServiceLocator.getInstance().getLogger().e(TAG, e, "site=" + site);
                 }
             }
         }

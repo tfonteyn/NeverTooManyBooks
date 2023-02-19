@@ -114,7 +114,7 @@ final class SaveChangesHelper {
                         // return the item who 'lost' it's books
                         onSuccess.accept(item);
                     } catch (@NonNull final DaoWriteException e) {
-                        ServiceLocator.getInstance().getLogger().error(TAG, e);
+                        ServiceLocator.getInstance().getLogger().e(TAG, e);
                         StandardDialogs.showError(context, R.string.error_storage_not_writable);
                     }
                 })

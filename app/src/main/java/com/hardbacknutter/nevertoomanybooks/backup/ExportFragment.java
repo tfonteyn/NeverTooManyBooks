@@ -475,7 +475,7 @@ public class ExportFragment
             getActivity().finish();
 
         } catch (@NonNull final ActivityNotFoundException e) {
-            ServiceLocator.getInstance().getLogger().error(TAG, e);
+            ServiceLocator.getInstance().getLogger().e(TAG, e);
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_baseline_error_24)

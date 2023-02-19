@@ -65,7 +65,7 @@ public class SettingsViewModel
             }
         } catch (@NonNull final IOException e) {
             // log but ignore, just report we can't move
-            ServiceLocator.getInstance().getLogger().error(TAG, e);
+            ServiceLocator.getInstance().getLogger().e(TAG, e);
         }
         return false;
     }

@@ -263,7 +263,7 @@ public class EditBookFragment
             setResultsAndFinish();
 
         } catch (@NonNull final StorageException | DaoWriteException e) {
-            ServiceLocator.getInstance().getLogger().error(TAG, e);
+            ServiceLocator.getInstance().getLogger().e(TAG, e);
             StandardDialogs.showError(getContext(), e.getUserMessage(getContext()));
         }
     }

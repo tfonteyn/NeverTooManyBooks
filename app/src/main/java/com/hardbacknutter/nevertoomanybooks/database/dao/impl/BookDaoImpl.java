@@ -214,9 +214,9 @@ public class BookDaoImpl
             final long newBookId = db.insert(TBL_BOOKS.getName(), cv);
             if (newBookId <= 0) {
                 ServiceLocator.getInstance().getLogger()
-                              .error(TAG, new Throwable(), "Insert failed"
-                                                           + "|table=" + TBL_BOOKS.getName()
-                                                           + "|cv=" + cv);
+                              .e(TAG, new Throwable(), "Insert failed"
+                                                       + "|table=" + TBL_BOOKS.getName()
+                                                       + "|cv=" + cv);
 
                 book.putLong(DBKey.PK_ID, 0);
                 book.remove(DBKey.BOOK_UUID);
@@ -397,7 +397,7 @@ public class BookDaoImpl
                 db.setTransactionSuccessful();
             }
         } catch (@NonNull final RuntimeException e) {
-            ServiceLocator.getInstance().getLogger().error(TAG, e, "Failed to delete book");
+            ServiceLocator.getInstance().getLogger().e(TAG, e, "Failed to delete book");
 
         } finally {
             if (txLock != null) {

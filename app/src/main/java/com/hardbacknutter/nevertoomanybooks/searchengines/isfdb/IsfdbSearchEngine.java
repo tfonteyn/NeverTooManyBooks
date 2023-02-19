@@ -1010,7 +1010,7 @@ public class IsfdbSearchEngine
                 // does not happen now, but could happen if we come about non-standard entries,
                 // or if ISFDB website changes
                 ServiceLocator.getInstance().getLogger()
-                              .error(TAG, e, "path: " + document.location() + "\n\nLI: " + li);
+                              .e(TAG, e, "path: " + document.location() + "\n\nLI: " + li);
             }
         }
 
@@ -1263,7 +1263,7 @@ public class IsfdbSearchEngine
 
         } else {
             // dunno, let's log it
-            ServiceLocator.getInstance().getLogger().warn(TAG, "parseDoc|pageUrl=" + pageUrl);
+            ServiceLocator.getInstance().getLogger().w(TAG, "parseDoc|pageUrl=" + pageUrl);
         }
 
         return editions;

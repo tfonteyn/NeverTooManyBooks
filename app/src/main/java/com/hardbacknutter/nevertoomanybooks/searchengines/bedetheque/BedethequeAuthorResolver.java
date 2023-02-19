@@ -208,7 +208,7 @@ public class BedethequeAuthorResolver
                     return true;
                 } catch (@NonNull final DaoWriteException e) {
                     // log, but ignore - should never happen unless disk full
-                    ServiceLocator.getInstance().getLogger().error(TAG, e, "");
+                    ServiceLocator.getInstance().getLogger().e(TAG, e);
                 }
             }
         }

@@ -138,7 +138,7 @@ public class ImportResults
 
         final Logger logger = ServiceLocator.getInstance().getLogger();
         if (booksFailed <= MAX_FAIL_LINES) {
-            logger.warn(TAG, "Import failed for book " + row + "|e=" + e.getMessage());
+            logger.w(TAG, "Import failed for book " + row + "|e=" + e.getMessage());
         }
         if (BuildConfig.DEBUG /* always */) {
             if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS && booksFailed > MAX_FAIL_LINES) {

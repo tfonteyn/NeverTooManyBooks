@@ -19,9 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.debug;
 
-import android.content.Context;
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -30,39 +27,6 @@ import java.io.IOException;
 
 
 public interface Logger {
-
-    /** serious errors are written to this file. */
-    String ERROR_LOG_FILE = "error.log";
-    /**
-     * Sub directory of {@link Context#getFilesDir()}.
-     * log files.
-     */
-    String DIR_LOG = "log";
-
-    /** JUnit aware wrapper for {@link Log#e(String, String, Throwable)}. */
-    void e(@NonNull final String tag,
-           @Nullable final Throwable e,
-           @NonNull final String msg);
-
-    void d(@NonNull final String tag,
-           @NonNull final Throwable e,
-           @NonNull final String msg);
-
-    /**
-     * JUnit aware wrapper for {@link Log#d(String, String)} with an extra 'method' parameter.
-     *
-     * @param tag    Used to identify the source of a log message.  It usually identifies
-     *               the class or activity where the log call occurs.
-     * @param method the calling method (added to force the developer to log the method name)
-     * @param msg    The message you would like logged.
-     */
-    void d(@NonNull final String tag,
-           @NonNull final String method,
-           @NonNull final String msg);
-
-    /** JUnit aware wrapper for {@link Log#w(String, String)}. */
-    void w(@NonNull final String tag,
-           @NonNull final Object... params);
 
     @NonNull
     String getErrorLog()
@@ -78,30 +42,32 @@ public interface Logger {
 
     /**
      * ERROR message. Send to the logfile (always) and the console (when in DEBUG mode).
-     * <p>
-     * Use sparingly, writing to the log is expensive.
      *
      * @param tag    log tag
      * @param e      cause
-     * @param params to concat
+     * @param params objects/text to log
      */
-    void error(@NonNull final String tag,
-               @Nullable final Throwable e,
-               @Nullable final Object... params);
+    void e(@NonNull final String tag,
+           @NonNull final Throwable e,
+           @Nullable final Object... params);
 
     /**
      * WARN message. Send to the logfile (always) and the console (when in DEBUG mode).
-     * <p>
-     * Use sparingly, writing to the log is expensive.
-     * <p>
-     * Use when an error or unusual result should be noted, but will not affect the flow of the app.
-     * No stacktrace!
      *
      * @param tag    log tag
-     * @param params to concat
+     * @param params objects/text to log
      */
-    void warn(@NonNull final String tag,
-              @NonNull final Object... params);
+    void w(@NonNull final String tag,
+           @Nullable final Object... params);
 
-
+    /**
+     * DEBUG message.
+     *
+     * @param tag    log tag
+     * @param method the calling method (added to force the developer to log the method name)
+     * @param params objects/text to log
+     */
+    void d(@NonNull final String tag,
+           @NonNull final String method,
+           @Nullable final Object... params);
 }

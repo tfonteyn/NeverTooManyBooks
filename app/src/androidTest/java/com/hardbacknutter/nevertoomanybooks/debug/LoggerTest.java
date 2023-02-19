@@ -61,15 +61,15 @@ public class LoggerTest {
 
         for (int i = 0; i < 6; i++) {
             final Object[] params1 = {"message " + (msgNr++)};
-            logger.warn("loop=" + i, params1);
+            logger.w("loop=" + i, params1);
             final Object[] params = {"message " + (msgNr++)};
-            logger.warn("loop=" + i, params);
+            logger.w("loop=" + i, params);
             logger.cycleLogs();
         }
 
         files = FileUtils.collectFiles(logDir, null);
         // 4 files: .bak, .bak.1, .bak.2, .bak.3
         assertEquals(4, files.size());
-        logger.warn("final", files.toString());
+        logger.w("final", files.toString());
     }
 }

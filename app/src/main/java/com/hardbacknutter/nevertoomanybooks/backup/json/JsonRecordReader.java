@@ -310,7 +310,7 @@ public class JsonRecordReader
                     results.certificates++;
                 } catch (@NonNull final CertificateEncodingException e) {
                     // log but don't quit
-                    ServiceLocator.getInstance().getLogger().error(TAG, e);
+                    ServiceLocator.getInstance().getLogger().e(TAG, e);
                 }
             }
         }

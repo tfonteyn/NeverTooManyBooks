@@ -84,7 +84,7 @@ public class MoneyFormatter
         } catch (@NonNull final IllegalArgumentException e) {
             if (BuildConfig.DEBUG /* always */) {
                 ServiceLocator.getInstance().getLogger()
-                              .d(TAG, e, "currency=" + rawValue.getCurrencyCode()
+                              .e(TAG, e, "currency=" + rawValue.getCurrencyCode()
                                          + "|value=" + rawValue.getValue());
             }
 
