@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.googlebooks;
 
-import android.util.Log;
-
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
@@ -31,6 +29,7 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -413,7 +412,8 @@ class GoogleBooksEntryHandler
             default:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
                     // see what we are missing.
-                    Log.d(TAG, "endElement|Skipping|" + localName + "->`" + builder + '`');
+                    ServiceLocator.getInstance().getLogger()
+                                  .d(TAG, "endElement|Skipping", localName + "->`" + builder + '`');
                 }
                 break;
 

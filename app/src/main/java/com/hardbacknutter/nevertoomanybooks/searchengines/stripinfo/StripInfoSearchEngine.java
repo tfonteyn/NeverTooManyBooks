@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
@@ -467,7 +466,8 @@ public class StripInfoSearchEngine
 
                                 default:
                                     if (BuildConfig.DEBUG /* always */) {
-                                        Log.d(TAG, "parseDoc|unknown label=" + label);
+                                        ServiceLocator.getInstance().getLogger()
+                                                      .d(TAG, "parseDoc", "unknown label=" + label);
                                     }
                             }
                             i++;

@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.dialogs;
 
 import android.os.Bundle;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.NumberPicker;
@@ -50,6 +49,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
@@ -122,7 +122,8 @@ public class PartialDatePickerDialogFragment
 
                 } else {
                     if (BuildConfig.DEBUG /* always */) {
-                        Log.d(TAG, "id=" + picker.getId());
+                        ServiceLocator.getInstance().getLogger()
+                                      .d(TAG, "valueChangeListener", "id=" + picker.getId());
                     }
                 }
             };

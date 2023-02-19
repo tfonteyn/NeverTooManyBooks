@@ -73,12 +73,10 @@ public class Throttler {
                 wait = 0;
             }
             lastRequestTime = now + wait;
-            //Log.d(TAG, "lastRequestTime=" + lastRequestTime);
         }
 
         if (wait > 0) {
             try {
-                //Log.d(TAG, "wait=" + wait);
                 Thread.sleep(wait);
             } catch (@NonNull final InterruptedException ignore) {
             }

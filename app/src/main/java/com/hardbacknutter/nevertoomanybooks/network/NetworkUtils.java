@@ -23,7 +23,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
-import android.util.Log;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
@@ -46,6 +45,7 @@ import java.util.concurrent.TimeoutException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.TestFlags;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
@@ -107,12 +107,13 @@ public final class NetworkUtils {
                         .getBoolean(Prefs.pk_network_allow_metered, true);
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-                    Log.d(TAG, "getNetworkCapabilities"
-                               + "|hasInternet=" + hasInternet
-                               + "|isValidated=" + isValidated
-                               + "|isMetered=" + isNotMetered
-                               + "|isMeteredAllowed=" + isMeteredAllowed
-                         );
+                    ServiceLocator.getInstance().getLogger()
+                                  .d(TAG, "getNetworkCapabilities",
+                                     "hasInternet=" + hasInternet
+                                     + "|isValidated=" + isValidated
+                                     + "|isMetered=" + isNotMetered
+                                     + "|isMeteredAllowed=" + isMeteredAllowed
+                                  );
                 }
 
                 return hasInternet
@@ -207,13 +208,13 @@ public final class NetworkUtils {
                 }
 
                 if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "", e);
+                    ServiceLocator.getInstance().getLogger().d(TAG, e, "");
                 }
                 throw new UnknownHostException(host);
 
             } catch (@NonNull final RejectedExecutionException | InterruptedException e) {
                 if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "", e);
+                    ServiceLocator.getInstance().getLogger().d(TAG, e, "");
                 }
                 throw new UnknownHostException(host);
 

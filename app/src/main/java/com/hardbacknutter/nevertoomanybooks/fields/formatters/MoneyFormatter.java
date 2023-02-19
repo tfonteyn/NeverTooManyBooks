@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.fields.formatters;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,6 +30,7 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 /**
@@ -83,8 +83,9 @@ public class MoneyFormatter
 
         } catch (@NonNull final IllegalArgumentException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "currency=" + rawValue.getCurrencyCode()
-                           + "|value=" + rawValue.getValue(), e);
+                ServiceLocator.getInstance().getLogger()
+                              .d(TAG, e, "currency=" + rawValue.getCurrencyCode()
+                                         + "|value=" + rawValue.getValue());
             }
 
             return context.getString(R.string.fallback_currency_format,

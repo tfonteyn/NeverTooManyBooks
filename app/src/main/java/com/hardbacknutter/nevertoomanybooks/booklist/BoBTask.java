@@ -91,7 +91,9 @@ public class BoBTask
      */
     public BoBTask() {
         super(R.id.TASK_ID_BOOKLIST_BUILDER, TAG);
-        Log.d(TAG, "NEW TASK_ID_BOOKLIST_BUILDER");
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
+            Log.d(TAG, "NEW TASK_ID_BOOKLIST_BUILDER");
+        }
     }
 
     public void build(@NonNull final Bookshelf bookshelf,

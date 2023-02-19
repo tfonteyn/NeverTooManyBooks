@@ -24,7 +24,6 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -589,8 +588,10 @@ public class DataManager
     private void putSerializable(@NonNull final String key,
                                  @NonNull final Serializable value) {
         if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG, "putSerializable|key=" + key
-                       + "|type=" + value.getClass().getCanonicalName(), new Throwable());
+            ServiceLocator.getInstance().getLogger()
+                          .d(TAG, new Throwable(),
+                             "putSerializable|key=" + key
+                             + "|type=" + value.getClass().getCanonicalName());
         }
         rawData.putSerializable(key, value);
     }

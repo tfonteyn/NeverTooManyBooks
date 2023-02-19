@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.network;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
@@ -36,6 +34,7 @@ import java.util.concurrent.CancellationException;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 public final class FutureHttpGet<T>
@@ -129,10 +128,11 @@ public final class FutureHttpGet<T>
                 // UnknownHostException: DNS or other low-level network issue
                 // FileNotFoundException: seen on some sites. A retry and the site was ok.
                 if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "open"
-                               + "|retry=" + retry
-                               + "|url=`" + request.getURL() + '`'
-                               + "|e=" + e);
+                    ServiceLocator.getInstance().getLogger()
+                                  .d(TAG, "open",
+                                     "|retry=" + retry
+                                     + "|url=`" + request.getURL() + '`'
+                                     + "|e=" + e);
                 }
 
                 retry--;
@@ -149,7 +149,8 @@ public final class FutureHttpGet<T>
         }
 
         if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG, "open|giving up|url=`" + request.getURL() + '`');
+            ServiceLocator.getInstance().getLogger()
+                          .d(TAG, "open|giving up", "url=`" + request.getURL() + '`');
         }
         throw new NetworkException("Giving up");
     }

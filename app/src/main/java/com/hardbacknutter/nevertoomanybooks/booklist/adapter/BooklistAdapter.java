@@ -26,7 +26,6 @@ import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
 import android.graphics.Color;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,6 +46,7 @@ import java.util.Objects;
 import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
@@ -459,9 +459,7 @@ public class BooklistAdapter
             }
         } catch (@NonNull final CursorIndexOutOfBoundsException e) {
             // Seen a number of times. No longer reproducible, but paranoia...
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "|level=" + level, e);
-            }
+            ServiceLocator.getInstance().getLogger().error(TAG, e, "|level=" + level);
         }
         return null;
     }

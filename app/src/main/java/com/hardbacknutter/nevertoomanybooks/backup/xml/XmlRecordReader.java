@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.backup.xml;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Base64;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -47,8 +46,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
@@ -397,22 +394,8 @@ public class XmlRecordReader
                                     @NonNull final EntityReader<String> accessor) {
 
         rootFilter.addFilter("collection", "item")
-                  .setStartAction(elementContext -> {
-
-                      currentTag = new TagInfo(elementContext);
-
-                      if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                          Log.d(TAG, "buildLegacyFilters|StartAction"
-                                     + "|localName=" + elementContext.getLocalName()
-                                     + "|currentTag=" + currentTag);
-                      }
-                  })
+                  .setStartAction(elementContext -> currentTag = new TagInfo(elementContext))
                   .setEndAction(elementContext -> {
-                      if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                          Log.d(TAG, "buildLegacyFilters|EndAction"
-                                     + "|localName=" + elementContext.getLocalName()
-                                     + "|currentTag=" + currentTag);
-                      }
                       try {
                           final String body = elementContext.getBody();
                           switch (currentTag.type) {

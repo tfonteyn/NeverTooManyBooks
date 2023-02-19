@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.network;
 
-import android.util.Log;
-
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -275,7 +273,8 @@ public abstract class FutureHttpBase<T> {
         try {
             futureHttp = ASyncExecutor.SERVICE.submit(() -> {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-                    Log.d(TAG, "url=\"" + url + '\"');
+                    ServiceLocator.getInstance().getLogger()
+                                  .d(TAG, "submit", "url=\"" + url + '\"');
                 }
 
                 HttpURLConnection request = null;

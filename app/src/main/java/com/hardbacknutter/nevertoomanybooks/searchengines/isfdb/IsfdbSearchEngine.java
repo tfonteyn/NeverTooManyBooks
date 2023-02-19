@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
@@ -57,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -784,8 +784,9 @@ public class IsfdbSearchEngine
         // sanity check
         if (allContentBoxes.isEmpty()) {
             if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "parseDoc|no contentbox found|document.location()="
-                           + document.location());
+                ServiceLocator.getInstance().getLogger()
+                              .d(TAG, "parseDoc|no contentbox found",
+                                 "document.location()=" + document.location());
             }
             return;
         }
@@ -820,10 +821,11 @@ public class IsfdbSearchEngine
                 }
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB) {
+                    final Logger logger = ServiceLocator.getInstance().getLogger();
                     if (fieldName == null) {
-                        Log.d(TAG, "fetch|" + li);
+                        logger.d(TAG, "fetch", "li=" + li);
                     } else {
-                        Log.d(TAG, "fetch|fieldName=" + fieldName);
+                        logger.d(TAG, "fetch", "fieldName=" + fieldName);
                     }
                 }
 
