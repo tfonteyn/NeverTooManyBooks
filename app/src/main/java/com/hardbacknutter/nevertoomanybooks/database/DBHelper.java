@@ -969,13 +969,12 @@ public class DBHelper
                                      .map(String::valueOf)
                                      .collect(Collectors.joining(","));
 
-            int rowCount;
             String sql;
 
             sql = "UPDATE " + TBL_BOOK_AUTHOR.getName() + " SET " + DBKey.FK_AUTHOR + "=" + keep
                   + " WHERE " + DBKey.FK_AUTHOR + " IN (" + ids + ')';
             try (SQLiteStatement stmt = db.compileStatement(sql)) {
-                rowCount = stmt.executeUpdateDelete();
+                stmt.executeUpdateDelete();
             } catch (@NonNull final Exception e) {
                 logger.error(TAG, e, "Update TBL_BOOK_AUTHOR: keep=" + keep + ", ids=" + ids);
                 throw e;
@@ -984,7 +983,7 @@ public class DBHelper
             sql = "UPDATE " + TBL_TOC_ENTRIES.getName() + " SET " + DBKey.FK_AUTHOR + "=" + keep
                   + " WHERE " + DBKey.FK_AUTHOR + " IN (" + ids + ')';
             try (SQLiteStatement stmt = db.compileStatement(sql)) {
-                rowCount = stmt.executeUpdateDelete();
+                stmt.executeUpdateDelete();
             } catch (@NonNull final Exception e) {
                 logger.error(TAG, e, "Update TBL_TOC_ENTRIES: keep=" + keep + ", ids=" + ids);
                 throw e;
@@ -993,7 +992,7 @@ public class DBHelper
             sql = "DELETE FROM " + TBL_AUTHORS.getName()
                   + " WHERE " + DBKey.PK_ID + " IN (" + ids + ')';
             try (SQLiteStatement stmt = db.compileStatement(sql)) {
-                rowCount = stmt.executeUpdateDelete();
+                stmt.executeUpdateDelete();
             } catch (@NonNull final Exception e) {
                 logger.error(TAG, e, "Delete TBL_AUTHORS: ids=" + ids);
                 throw e;
@@ -1049,13 +1048,12 @@ public class DBHelper
                                      .map(String::valueOf)
                                      .collect(Collectors.joining(","));
 
-            int rowCount;
             String sql;
 
             sql = "UPDATE " + TBL_BOOK_TOC_ENTRIES + " SET " + DBKey.FK_TOC_ENTRY + "=" + keep
                   + " WHERE " + DBKey.FK_TOC_ENTRY + " IN (" + ids + ')';
             try (SQLiteStatement stmt = db.compileStatement(sql)) {
-                rowCount = stmt.executeUpdateDelete();
+                stmt.executeUpdateDelete();
             } catch (@NonNull final Exception e) {
                 logger.error(TAG, e, "Update TBL_BOOK_TOC_ENTRIES: keep=" + keep + ", ids=" + ids);
                 throw e;
@@ -1063,7 +1061,7 @@ public class DBHelper
 
             sql = "DELETE FROM " + TBL_TOC_ENTRIES + " WHERE " + DBKey.PK_ID + " IN (" + ids + ')';
             try (SQLiteStatement stmt = db.compileStatement(sql)) {
-                rowCount = stmt.executeUpdateDelete();
+                stmt.executeUpdateDelete();
             } catch (@NonNull final Exception e) {
                 logger.error(TAG, e, "Delete TBL_TOC_ENTRIES: keep=" + keep + ", ids=" + ids);
                 throw e;
