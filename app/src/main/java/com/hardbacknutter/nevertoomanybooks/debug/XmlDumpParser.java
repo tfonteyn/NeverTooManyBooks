@@ -33,6 +33,10 @@ import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * DEBUG only.
+ * <p>
+ * When needed replace "extends DefaultHandler" on a class that needs debugging
+ * with "extends XmlDumpParser" (and obviously make sure all methods call the super
+ * as indicated by @CallSuper
  */
 @SuppressWarnings("RedundantThrows")
 @SuppressLint("LogConditional")
