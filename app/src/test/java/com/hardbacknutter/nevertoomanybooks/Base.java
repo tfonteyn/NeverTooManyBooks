@@ -174,9 +174,10 @@ public class Base {
 
         when(localeList.get(0)).thenAnswer((Answer<Locale>) invocation -> locale0);
 
-
         ServiceLocator.create(context, BundleMock::create);
-        ServiceLocator.getInstance().setLogger(new TestLogger(getTmpDir()));
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        serviceLocator.setLogger(new TestLogger(getTmpDir()));
+        serviceLocator.setNetworkChecker(new TestNetworkChecker());
 
         setupStringResources(resources);
         setupLanguageMap(context);

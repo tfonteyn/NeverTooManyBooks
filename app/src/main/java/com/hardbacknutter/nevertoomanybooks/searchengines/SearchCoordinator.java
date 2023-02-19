@@ -63,7 +63,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.sync.ColorMapper;
 import com.hardbacknutter.nevertoomanybooks.sync.FormatMapper;
 import com.hardbacknutter.nevertoomanybooks.sync.Mapper;
@@ -604,7 +603,8 @@ public class SearchCoordinator
 
         // Developer sanity checks
         if (BuildConfig.DEBUG /* always */) {
-            if (!NetworkUtils.isNetworkAvailable(ServiceLocator.getAppContext())) {
+            if (!ServiceLocator.getInstance().getNetworkChecker()
+                               .isNetworkAvailable(ServiceLocator.getAppContext())) {
                 throw new IllegalStateException("network should be checked before starting search");
             }
 

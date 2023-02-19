@@ -82,6 +82,8 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TocEntryDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.LoggerImpl;
+import com.hardbacknutter.nevertoomanybooks.network.NetworkChecker;
+import com.hardbacknutter.nevertoomanybooks.network.NetworkCheckerImpl;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocaleImpl;
@@ -114,6 +116,9 @@ public final class ServiceLocator {
 
     @Nullable
     private Logger logger;
+
+    @Nullable
+    private NetworkChecker networkChecker;
 
     @Nullable
     private StylesHelper stylesHelper;
@@ -260,6 +265,20 @@ public final class ServiceLocator {
     public void setLogger(@Nullable final Logger logger) {
         this.logger = logger;
     }
+
+    @NonNull
+    public NetworkChecker getNetworkChecker() {
+        if (networkChecker == null) {
+            networkChecker = new NetworkCheckerImpl();
+        }
+        return networkChecker;
+    }
+
+    @VisibleForTesting
+    public void setNetworkChecker(@Nullable final NetworkChecker networkChecker) {
+        this.networkChecker = networkChecker;
+    }
+
 
     @NonNull
     public File getUpgradesDir() {

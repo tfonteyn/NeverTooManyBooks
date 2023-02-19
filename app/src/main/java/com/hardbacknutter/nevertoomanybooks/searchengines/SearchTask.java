@@ -32,7 +32,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUnavailableException;
-import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
@@ -194,7 +193,7 @@ public class SearchTask
         // Checking this each time a search starts is not needed...
         // But it makes error handling slightly easier and doing
         // it here offloads it from the UI thread.
-        if (!NetworkUtils.isNetworkAvailable(context)) {
+        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable(context)) {
             throw new NetworkUnavailableException(this.getClass().getName());
         }
 

@@ -45,9 +45,9 @@ import java.util.Locale;
 import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
@@ -281,7 +281,8 @@ public interface SearchEngine
                    IOException,
                    SocketTimeoutException,
                    MalformedURLException {
-        NetworkUtils.ping(getHostUrl(), getEngineId().requireConfig().getConnectTimeoutInMs());
+        ServiceLocator.getInstance().getNetworkChecker()
+                      .ping(getHostUrl(), getEngineId().requireConfig().getConnectTimeoutInMs());
     }
 
     enum RegistrationAction {

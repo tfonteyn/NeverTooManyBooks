@@ -46,27 +46,22 @@ import java.util.concurrent.TimeoutException;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.debug.TestFlags;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
 
-public final class NetworkUtils {
+public class NetworkCheckerImpl
+        implements NetworkChecker {
 
     /** Log tag. */
-    private static final String TAG = "NetworkUtils";
+    private static final String TAG = "NetworkCheckerImpl";
 
     /** Timeout for {@link #ping(String, int)}; connection to the DNS server. */
     private static final long DNS_TIMEOUT_MS = 5_000L;
 
-    private NetworkUtils() {
-    }
 
     /**
      * Check if we have network access; taking into account whether the user permits
      * metered (i.e. pay-per-usage) networks or not.
-     * <p>
-     * When running a JUnit test, this method will always
-     * return {@link TestFlags#isInternetConnected}.
      *
      * @param context Current context
      *
@@ -74,11 +69,7 @@ public final class NetworkUtils {
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     @AnyThread
-    public static boolean isNetworkAvailable(@NonNull final Context context) {
-        if (BuildConfig.DEBUG && TestFlags.isJUnit) {
-            return TestFlags.isInternetConnected;
-        }
-
+    public boolean isNetworkAvailable(@NonNull final Context context) {
         final ConnectivityManager connMgr = (ConnectivityManager)
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);
         final Network network = connMgr.getActiveNetwork();
@@ -140,8 +131,8 @@ public final class NetworkUtils {
      * @throws MalformedURLException  if the URL does not start with {@code http} or {@code https}
      */
     @WorkerThread
-    public static void ping(@NonNull final String urlStr,
-                            final int timeoutInMs)
+    public void ping(@NonNull final String urlStr,
+                     final int timeoutInMs)
             throws UnknownHostException,
                    IOException,
                    SocketTimeoutException,

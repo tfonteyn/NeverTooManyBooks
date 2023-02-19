@@ -34,7 +34,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUnavailableException;
-import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
@@ -83,7 +82,7 @@ public class SearchEditionsTask
         // Always add the original isbn!
         isbnList.add(isbn);
 
-        if (!NetworkUtils.isNetworkAvailable(context)) {
+        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable(context)) {
             throw new NetworkUnavailableException(this.getClass().getName());
         }
 

@@ -56,7 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.ReaderResults;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUnavailableException;
-import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
@@ -194,7 +193,7 @@ public class StripInfoReader
                    StorageException,
                    IOException {
 
-        if (!NetworkUtils.isNetworkAvailable(context)) {
+        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable(context)) {
             throw new NetworkUnavailableException(this.getClass().getName());
         }
 

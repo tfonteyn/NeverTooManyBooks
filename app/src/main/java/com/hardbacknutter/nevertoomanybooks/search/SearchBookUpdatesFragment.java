@@ -48,13 +48,13 @@ import java.util.Collection;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchSitesSingleListContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooksOutput;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentUpdateFromInternetBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowUpdateFromInternetBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
@@ -186,7 +186,7 @@ public class SearchBookUpdatesFragment
     private void afterOnViewCreated() {
         // Warn the user, but don't abort.
         //noinspection ConstantConditions
-        if (!NetworkUtils.isNetworkAvailable(getContext())) {
+        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable(getContext())) {
             Snackbar.make(vb.getRoot(), R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();
         }
@@ -209,7 +209,7 @@ public class SearchBookUpdatesFragment
         }
 
         //noinspection ConstantConditions
-        if (!NetworkUtils.isNetworkAvailable(getContext())) {
+        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable(getContext())) {
             Snackbar.make(vb.getRoot(), R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();
             return;

@@ -45,11 +45,11 @@ import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchSitesSingleListContract;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
@@ -121,7 +121,8 @@ public abstract class SearchBookBaseFragment
 
         // Warn the user, but don't abort.
         //noinspection ConstantConditions
-        if (!NetworkUtils.isNetworkAvailable(getContext())) {
+        if (!ServiceLocator.getInstance().getNetworkChecker()
+                           .isNetworkAvailable(getContext())) {
             Snackbar.make(view, R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();
         }
@@ -221,7 +222,7 @@ public abstract class SearchBookBaseFragment
 
         // Warn the user, AND abort.
         //noinspection ConstantConditions
-        if (!NetworkUtils.isNetworkAvailable(getContext())) {
+        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable(getContext())) {
             //noinspection ConstantConditions
             Snackbar.make(getView(), R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();
