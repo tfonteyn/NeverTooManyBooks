@@ -93,7 +93,7 @@ public class LoggerImpl
             if (parameter instanceof Exception) {
                 e = (Exception) parameter;
             } else {
-                message.append(parameter.toString()).append('|');
+                message.append(parameter).append('|');
             }
         }
         message.append('.');
