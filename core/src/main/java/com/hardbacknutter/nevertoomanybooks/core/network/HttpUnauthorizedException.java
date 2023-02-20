@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,9 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.network;
-
-import android.content.Context;
+package com.hardbacknutter.nevertoomanybooks.core.network;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,8 +25,6 @@ import androidx.annotation.StringRes;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
-
-import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
  * Dedicated 401 HTTP_UNAUTHORIZED providing a user readable/localized message.
@@ -45,20 +41,9 @@ public class HttpUnauthorizedException
      * @param statusMessage the original status message from the HTTP request
      * @param url           (optional) The full url, for debugging
      */
-    HttpUnauthorizedException(@StringRes final int siteResId,
+    public HttpUnauthorizedException(@StringRes final int siteResId,
                               @NonNull final String statusMessage,
                               @Nullable final URL url) {
         super(siteResId, HttpURLConnection.HTTP_UNAUTHORIZED, statusMessage, url);
-    }
-
-    @NonNull
-    @Override
-    public String getUserMessage(@NonNull final Context context) {
-        if (getSiteResId() != 0) {
-            return context.getString(R.string.error_site_authorization_failed,
-                                     context.getString(getSiteResId()));
-        } else {
-            return context.getString(R.string.error_authorization_failed);
-        }
     }
 }

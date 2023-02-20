@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -71,6 +71,7 @@ import javax.net.ssl.TrustManagerFactory;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
@@ -78,14 +79,14 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.network.ConnectionValidator;
-import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
-import com.hardbacknutter.nevertoomanybooks.network.FutureHttpPost;
-import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpPost;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -317,7 +318,7 @@ public class CalibreContentServer
                  .putString(PK_LOCAL_FOLDER_URI, uri.toString())
                  .apply();
         } catch (@NonNull final SecurityException e) {
-            ServiceLocator.getInstance().getLogger().e(TAG, e, "uri=" + uri);
+            LoggerFactory.getLogger().e(TAG, e, "uri=" + uri);
             throw e;
         }
     }
@@ -417,7 +418,7 @@ public class CalibreContentServer
         final FutureHttpGet<FRT> httpGet = FutureHttpGet.createGet(R.string.site_calibre);
         httpGet.setConnectTimeout(connectTimeoutInMs)
                .setReadTimeout(readTimeoutInMs)
-               .setRequestProperty(HttpUtils.AUTHORIZATION, authHeader)
+               .setRequestProperty(HttpConstants.AUTHORIZATION, authHeader)
                .setSSLContext(sslContext);
         return httpGet;
     }
@@ -427,8 +428,8 @@ public class CalibreContentServer
         final FutureHttpPost<FRT> httpPost = new FutureHttpPost<>(R.string.site_calibre);
         httpPost.setConnectTimeout(connectTimeoutInMs)
                 .setReadTimeout(readTimeoutInMs)
-                .setRequestProperty(HttpUtils.CONTENT_TYPE, HttpUtils.CONTENT_TYPE_JSON)
-                .setRequestProperty(HttpUtils.AUTHORIZATION, authHeader)
+                .setRequestProperty(HttpConstants.CONTENT_TYPE, HttpConstants.CONTENT_TYPE_JSON)
+                .setRequestProperty(HttpConstants.AUTHORIZATION, authHeader)
                 .setSSLContext(sslContext);
         return httpPost;
     }

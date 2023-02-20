@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,9 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.network;
-
-import android.content.Context;
+package com.hardbacknutter.nevertoomanybooks.core.network;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,8 +25,6 @@ import androidx.annotation.StringRes;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
-
-import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
  * Dedicated 404 HTTP_NOT_FOUND providing a user readable/localized message.
@@ -38,7 +34,7 @@ public class HttpNotFoundException
 
     private static final long serialVersionUID = 6461290696382042369L;
     @Nullable
-    private String message;
+    private String localisedMessage;
 
     /**
      * Constructor.
@@ -47,7 +43,7 @@ public class HttpNotFoundException
      * @param statusMessage the original status message from the HTTP request
      * @param url           (optional) The full url, for debugging
      */
-    HttpNotFoundException(@StringRes final int siteResId,
+    public HttpNotFoundException(@StringRes final int siteResId,
                           @NonNull final String statusMessage,
                           @Nullable final URL url) {
         super(siteResId, HttpURLConnection.HTTP_NOT_FOUND, statusMessage, url);
@@ -58,21 +54,12 @@ public class HttpNotFoundException
      *
      * @param message to use
      */
-    void setUserMessage(@NonNull final String message) {
-        this.message = message;
+    public void setUserMessage(@NonNull final String message) {
+        this.localisedMessage = message;
     }
 
-    @NonNull
-    @Override
-    public String getUserMessage(@NonNull final Context context) {
-        if (message != null) {
-            return message;
-
-        } else if (getSiteResId() != 0) {
-            return context.getString(R.string.error_network_site_access_failed,
-                                     context.getString(getSiteResId()));
-        } else {
-            return context.getString(R.string.httpErrorFileNotFound);
-        }
+    @Nullable
+    public String getUserMessage() {
+        return localisedMessage;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,6 +35,7 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -247,7 +248,7 @@ public class DataManager
 
         } else if (value == null) {
             if (BuildConfig.DEBUG /* always */) {
-                ServiceLocator.getInstance().getLogger()
+                LoggerFactory.getLogger()
                               .w(TAG, "put|key=`" + key + "`|value=<NULL>");
             }
             putNull(key);
@@ -274,7 +275,7 @@ public class DataManager
             } catch (@NonNull final NumberFormatException ignore) {
                 //TEST: should we really ignore this, next step will return raw value.
                 if (BuildConfig.DEBUG /* always */) {
-                    ServiceLocator.getInstance().getLogger()
+                    LoggerFactory.getLogger()
                                   .d(TAG, "get", "NumberFormatException"
                                                  + "|name=" + key
                                                  + "|value=`" + rawData.get(key) + '`');
@@ -589,7 +590,7 @@ public class DataManager
     private void putSerializable(@NonNull final String key,
                                  @NonNull final Serializable value) {
         if (BuildConfig.DEBUG /* always */) {
-            ServiceLocator.getInstance().getLogger()
+            LoggerFactory.getLogger()
                           .e(TAG, new Throwable("putSerializable"),
                              "putSerializable|key=" + key
                              + "|type=" + value.getClass().getCanonicalName());

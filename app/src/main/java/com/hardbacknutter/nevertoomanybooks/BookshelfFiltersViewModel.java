@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,8 +35,9 @@ import java.util.TreeMap;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.FilterFactory;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 public class BookshelfFiltersViewModel
@@ -114,7 +115,7 @@ public class BookshelfFiltersViewModel
                 ServiceLocator.getInstance().getBookshelfDao().update(context, bookshelf);
             } catch (@NonNull final DaoWriteException e) {
                 // log, but ignore - should never happen unless disk full
-                ServiceLocator.getInstance().getLogger().e(TAG, e);
+                LoggerFactory.getLogger().e(TAG, e);
             }
         }
         return true;

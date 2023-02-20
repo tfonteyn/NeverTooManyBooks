@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,12 +40,13 @@ import java.util.StringJoiner;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.network.ConnectionValidator;
-import com.hardbacknutter.nevertoomanybooks.network.FutureHttpPost;
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpPost;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
@@ -169,7 +170,7 @@ public class StripInfoAuth
                     }
                 } catch (@NonNull final JSONException e) {
                     if (BuildConfig.DEBUG /* always */) {
-                        ServiceLocator.getInstance().getLogger()
+                        LoggerFactory.getLogger()
                                       .e(TAG, e, "cookie.getValue()=" + cookie.getValue());
                     }
                 }

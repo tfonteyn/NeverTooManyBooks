@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,7 +41,7 @@ import java.util.StringJoiner;
 import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 
 /**
  * TEST: <a href="https://issuetracker.google.com/issues/158417777">DateTimeParseException</a>
@@ -196,7 +196,7 @@ public class PartialDate
                 }
             } catch (@NonNull final DateTimeParseException e) {
                 if (BuildConfig.DEBUG /* always */) {
-                    ServiceLocator.getInstance().getLogger()
+                    LoggerFactory.getLogger()
                                   .e(TAG, e, "dateStr=" + dateStr);
                 }
             }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -65,10 +65,12 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityCropimageBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 /**
  * The activity can crop specific region of interest from an image.
@@ -127,16 +129,17 @@ public class CropImageActivity
             }
 
         } catch (@NonNull final StorageException e) {
-            ServiceLocator.getInstance().getLogger().e(TAG, e);
+            LoggerFactory.getLogger().e(TAG, e);
             new MaterialAlertDialogBuilder(this)
                     .setIcon(R.drawable.ic_baseline_error_24)
-                    .setMessage(e.getUserMessage(this))
+                    .setMessage(ExMsg.map(this, e)
+                                     .orElse(getString(R.string.error_unknown)))
                     .setPositiveButton(android.R.string.ok, (d, w) -> finish())
                     .create()
                     .show();
 
         } catch (@NonNull final IOException e) {
-            ServiceLocator.getInstance().getLogger().e(TAG, e);
+            LoggerFactory.getLogger().e(TAG, e);
             new MaterialAlertDialogBuilder(this)
                     .setIcon(R.drawable.ic_baseline_error_24)
                     .setMessage(R.string.error_storage_not_accessible)
@@ -189,7 +192,7 @@ public class CropImageActivity
                     setResult(Activity.RESULT_OK, new Intent().setData(destinationUri));
                 }
             } catch (@NonNull final IOException e) {
-                ServiceLocator.getInstance().getLogger().e(TAG, e);
+                LoggerFactory.getLogger().e(TAG, e);
                 bitmap = null;
             }
         }
@@ -225,7 +228,7 @@ public class CropImageActivity
         public final Optional<Uri> parseResult(final int resultCode,
                                                @Nullable final Intent intent) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                ServiceLocator.getInstance().getLogger()
+                LoggerFactory.getLogger()
                               .d(TAG, "parseResult",
                                  "|resultCode=" + resultCode + "|intent=" + intent);
             }

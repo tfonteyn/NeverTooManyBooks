@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,11 +34,11 @@ import java.io.IOException;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.Logger;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 /**
  * The movable external directory for covers.
@@ -166,7 +166,7 @@ public final class CoverDir {
         }
 
         if (BuildConfig.DEBUG /* always */) {
-            ServiceLocator.getInstance().getLogger()
+            LoggerFactory.getLogger()
                           .d(TAG, "initVolume", "volume=" + volume
                                                 + "|actualVolume=" + actualVolume);
             dumpStorageInfo(context, storage);
@@ -227,7 +227,7 @@ public final class CoverDir {
         //      isEmulated=false
         //      isRemovable=true
         //      getState=mounted
-        final Logger logger = ServiceLocator.getInstance().getLogger();
+        final Logger logger = LoggerFactory.getLogger();
         final List<StorageVolume> storageVolumes = storage.getStorageVolumes();
         for (final StorageVolume sv : storageVolumes) {
             if (Build.VERSION.SDK_INT >= 30) {

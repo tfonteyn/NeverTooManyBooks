@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -38,6 +38,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.ContextMock;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.SharedPreferencesMock;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
@@ -173,11 +174,11 @@ public class Base {
         // See class docs.
         ImageDownloader.IGNORE_RENAME_FAILURE = true;
 
+        LoggerFactory.setLogger(new TestLogger(getTmpDir()));
         ServiceLocator.create(context, BundleMock::create);
 
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         serviceLocator.setSystemLocaleSupplier(() -> List.of(Locale.US));
-        serviceLocator.setLogger(new TestLogger(getTmpDir()));
         serviceLocator.setNetworkChecker(new TestNetworkChecker(true));
 
         setupStringResources(resources);

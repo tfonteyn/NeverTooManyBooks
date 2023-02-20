@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.network;
+package com.hardbacknutter.nevertoomanybooks.core.network;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -30,7 +30,6 @@ import java.io.UncheckedIOException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.security.cert.Certificate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -43,20 +42,14 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLException;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.Logger;
-import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UncheckedSAXException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UncheckedStorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.UncheckedSAXException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedStorageException;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 
 import org.xml.sax.SAXException;
 
-@SuppressWarnings({"UnusedReturnValue", "WeakerAccess", "unused"})
 public abstract class FutureHttpBase<T> {
 
     /** The default number of times we try to connect; i.e. one RETRY. */
@@ -106,24 +99,7 @@ public abstract class FutureHttpBase<T> {
 
         // Set the default user agent.
         // Potentially overridden by calling #setRequestProperty.
-        requestProperties.put(HttpUtils.USER_AGENT, HttpUtils.USER_AGENT_VALUE);
-    }
-
-    public static void dumpSSLException(@NonNull final HttpsURLConnection request,
-                                        @NonNull final SSLException e) {
-        final Logger logger = ServiceLocator.getInstance().getLogger();
-        try {
-            logger.w("dumpSSLException", request.getURL().toString());
-            final Certificate[] serverCertificates = request.getServerCertificates();
-            if (serverCertificates != null && serverCertificates.length > 0) {
-                for (final Certificate c : serverCertificates) {
-                    logger.w("dumpSSLException", c.toString());
-                }
-            }
-        } catch (@NonNull final Exception ex) {
-            logger.e("dumpSSLException", ex);
-        }
-
+        requestProperties.put(HttpConstants.USER_AGENT, HttpConstants.USER_AGENT_VALUE);
     }
 
     /**
@@ -272,11 +248,6 @@ public abstract class FutureHttpBase<T> {
                    IOException {
         try {
             futureHttp = ASyncExecutor.SERVICE.submit(() -> {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-                    ServiceLocator.getInstance().getLogger()
-                                  .d(TAG, "submit", "url=\"" + url + '\"');
-                }
-
                 HttpURLConnection request = null;
                 try {
                     request = (HttpURLConnection) new URL(url).openConnection();

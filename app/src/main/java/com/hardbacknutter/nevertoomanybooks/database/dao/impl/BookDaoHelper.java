@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 /**
  * Preprocess a Book for storage. This class does not access to database.
@@ -260,7 +260,7 @@ public class BookDaoHelper {
                        book.remove(key);
 
                        if (BuildConfig.DEBUG /* always */) {
-                           ServiceLocator.getInstance().getLogger()
+                           LoggerFactory.getLogger()
                                          .d(TAG, "preprocessExternalIds",
                                             "NumberFormatException"
                                             + "|name=" + key
@@ -405,7 +405,7 @@ public class BookDaoHelper {
                                     } catch (@NonNull final NumberFormatException e) {
                                         // We do NOT want to fail at this point.
                                         // Log, but skip this field.
-                                        ServiceLocator.getInstance().getLogger()
+                                        LoggerFactory.getLogger()
                                                       .w(TAG, e.getMessage(),
                                                          "columnName(int)=" + columnName,
                                                          "entry=" + entry,
@@ -423,7 +423,7 @@ public class BookDaoHelper {
                                     // very likely looking at a "list price" field coming
                                     // from an import which cannot be parsed.
                                     // Log, but skip this field.
-                                    ServiceLocator.getInstance().getLogger()
+                                    LoggerFactory.getLogger()
                                                   .w(TAG, e.getMessage(),
                                                      "columnName(float)=" + columnName,
                                                      "entry=" + entry,
@@ -470,7 +470,7 @@ public class BookDaoHelper {
                 final String fileSpec = book.getString(Book.BKEY_TMP_FILE_SPEC[cIdx]);
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                    ServiceLocator.getInstance().getLogger()
+                    LoggerFactory.getLogger()
                                   .d(TAG, "storeCovers",
                                      "BKEY_TMP_FILE_SPEC[" + cIdx + "]=`" + fileSpec + '`');
                 }

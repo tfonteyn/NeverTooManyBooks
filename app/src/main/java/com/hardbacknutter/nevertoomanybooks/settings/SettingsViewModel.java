@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,7 +28,7 @@ import androidx.lifecycle.ViewModel;
 
 import java.io.IOException;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.StorageMoverTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
@@ -65,7 +65,7 @@ public class SettingsViewModel
             }
         } catch (@NonNull final IOException e) {
             // log but ignore, just report we can't move
-            ServiceLocator.getInstance().getLogger().e(TAG, e);
+            LoggerFactory.getLogger().e(TAG, e);
         }
         return false;
     }

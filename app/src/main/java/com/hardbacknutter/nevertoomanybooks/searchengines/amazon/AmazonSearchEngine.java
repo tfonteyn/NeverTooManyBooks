@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,7 +36,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -55,7 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
@@ -271,7 +271,7 @@ public class AmazonSearchEngine
         final Element titleElement = document.selectFirst("span#productTitle");
         if (titleElement == null) {
             if (BuildConfig.DEBUG /* always */) {
-                ServiceLocator.getInstance().getLogger().d(TAG, "parse", "no title?");
+                LoggerFactory.getLogger().d(TAG, "parse", "no title?");
             }
             return;
         }
@@ -452,7 +452,7 @@ public class AmazonSearchEngine
 
                 default:
                     if (BuildConfig.DEBUG /* always */) {
-                        ServiceLocator.getInstance().getLogger().d(TAG, "parse", "label=" + label);
+                        LoggerFactory.getLogger().d(TAG, "parse", "label=" + label);
                     }
                     break;
             }

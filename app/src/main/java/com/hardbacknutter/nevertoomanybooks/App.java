@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.core.Logger;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.debug.LoggerImpl;
 import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
@@ -98,7 +99,7 @@ public class App
 
             Thread.currentThread().setUncaughtExceptionHandler((thread, throwable) -> {
                 if (throwable instanceof OutOfMemoryError) {
-                    final Logger logger = ServiceLocator.getInstance().getLogger();
+                    final Logger logger = LoggerFactory.getLogger();
                     try {
                         final File file = new File(logger.getLogDir(), "ntmb.hprof");
                         Debug.dumpHprofData(file.getAbsolutePath());
@@ -107,6 +108,12 @@ public class App
                     }
                 }
             });
+            final File logDir = new File(getFilesDir(), LoggerImpl.DIR_LOG);
+            if (!logDir.exists()) {
+                //noinspection ResultOfMethodCallIgnored
+                logDir.mkdirs();
+            }
+            LoggerFactory.setLogger(new LoggerImpl(logDir));
 
             ServiceLocator.create(getApplicationContext());
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.SearchFtsFragment;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 
 public class SearchFtsContract
         extends ActivityResultContract<SearchCriteria, Optional<SearchCriteria>> {
@@ -55,7 +55,7 @@ public class SearchFtsContract
     public Optional<SearchCriteria> parseResult(final int resultCode,
                                                 @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            ServiceLocator.getInstance().getLogger()
+            LoggerFactory.getLogger()
                           .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 

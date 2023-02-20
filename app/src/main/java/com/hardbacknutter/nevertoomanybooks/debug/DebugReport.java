@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -53,6 +53,7 @@ import java.util.zip.ZipOutputStream;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.io.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
@@ -117,7 +118,7 @@ public class DebugReport {
 
     public void addLogs(final int maxFiles)
             throws IOException {
-        files.addAll(collectFiles(ServiceLocator.getInstance().getLogger().getLogDir(), maxFiles));
+        files.addAll(collectFiles(LoggerFactory.getLogger().getLogDir(), maxFiles));
     }
 
     public void addPreferences()

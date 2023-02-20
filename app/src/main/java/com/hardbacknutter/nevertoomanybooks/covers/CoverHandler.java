@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditPictureContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PickVisualMediaContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.TakePictureContract;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -69,12 +70,12 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 
 /**
@@ -309,13 +310,11 @@ public class CoverHandler {
                         // destination
                         getTempFile()));
 
-            } catch (@NonNull final StorageException e) {
-                StandardDialogs.showError(context, e.getUserMessage(context));
-
-            } catch (@NonNull final IOException e) {
+            } catch (@NonNull final StorageException | IOException e) {
                 StandardDialogs.showError(context, ExMsg
                         .map(context, e)
                         .orElse(context.getString(R.string.error_unknown)));
+
             }
             return true;
 
@@ -323,10 +322,7 @@ public class CoverHandler {
             try {
                 editPicture(createTempCoverFile(book));
 
-            } catch (@NonNull final StorageException e) {
-                StandardDialogs.showError(context, e.getUserMessage(context));
-
-            } catch (@NonNull final IOException e) {
+            } catch (@NonNull final StorageException | IOException e) {
                 StandardDialogs.showError(context, ExMsg
                         .map(context, e)
                         .orElse(context.getString(R.string.error_unknown)));
@@ -374,7 +370,7 @@ public class CoverHandler {
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-            ServiceLocator.getInstance().getLogger()
+            LoggerFactory.getLogger()
                           .e("TAG", new Throwable("createTempCoverFile"),
                              "bookId=" + book.getId()
                              + "|cIdx=" + cIdx
@@ -502,10 +498,7 @@ public class CoverHandler {
             showProgress();
             vm.execute(new Transformation(file).setScale(true), file);
 
-        } catch (@NonNull final StorageException e) {
-            StandardDialogs.showError(context, e.getUserMessage(context));
-
-        } catch (@NonNull final IOException e) {
+        } catch (@NonNull final StorageException |IOException e) {
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "Unable to copy content to file", e);
             }
@@ -534,7 +527,9 @@ public class CoverHandler {
                 takePictureLauncher.launch(dstFile);
 
             } catch (@NonNull final StorageException e) {
-                StandardDialogs.showError(context, e.getUserMessage(context));
+                StandardDialogs.showError(context, ExMsg
+                        .map(context, e)
+                        .orElse(context.getString(R.string.error_unknown)));
 
             } catch (@NonNull final ActivityNotFoundException e) {
                 // No Camera? we should not get here... flw
@@ -590,10 +585,7 @@ public class CoverHandler {
             showProgress();
             vm.execute(new Transformation(file).setRotation(angle), file);
 
-        } catch (@NonNull final StorageException e) {
-            StandardDialogs.showError(context, e.getUserMessage(context));
-
-        } catch (@NonNull final IOException e) {
+        } catch (@NonNull final StorageException | IOException e) {
             StandardDialogs.showError(context, ExMsg
                     .map(context, e)
                     .orElse(context.getString(R.string.error_unknown)));
@@ -626,11 +618,7 @@ public class CoverHandler {
                         fragmentView.post(() -> coverHandlerOwner.reloadImage(cIdx));
                         return;
                 }
-            } catch (@NonNull final StorageException e) {
-                final Context context = fragmentView.getContext();
-                StandardDialogs.showError(context, e.getUserMessage(context));
-
-            } catch (@NonNull final IOException e) {
+            } catch (@NonNull final StorageException | IOException e) {
                 final Context context = fragmentView.getContext();
                 StandardDialogs.showError(context, ExMsg
                         .map(context, e)

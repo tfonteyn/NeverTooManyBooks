@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,21 +17,15 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.database.dao;
-
-import android.content.Context;
+package com.hardbacknutter.nevertoomanybooks.core.database;
 
 import androidx.annotation.NonNull;
-
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.LocalizedException;
 
 /**
  * On purpose <strong>NOT</strong> an IOException, to force the developer to deal with it.
  */
 public class DaoWriteException
-        extends Exception
-        implements LocalizedException {
+        extends Exception {
 
     private static final long serialVersionUID = -2857466683799399619L;
 
@@ -42,11 +36,5 @@ public class DaoWriteException
     public DaoWriteException(@NonNull final String message,
                              @NonNull final Throwable cause) {
         super(message, cause);
-    }
-
-    @NonNull
-    @Override
-    public String getUserMessage(@NonNull final Context context) {
-        return context.getString(R.string.error_storage_not_writable);
     }
 }

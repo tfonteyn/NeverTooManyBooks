@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,6 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlRecordReader;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 
 /**
  * Detecting record encoding in {@link #getEncoding} is based purely on filename extension.
@@ -89,7 +90,7 @@ public enum RecordEncoding {
         }
 
         if (BuildConfig.DEBUG /* always */) {
-            ServiceLocator.getInstance().getLogger()
+            LoggerFactory.getLogger()
                           .w(TAG, "getEncoding|Unknown entry=" + entryName);
         }
         return Optional.empty();

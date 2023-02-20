@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_AFTERWORD;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_ARTIST;
@@ -139,7 +139,7 @@ public class AuthorTypeMapper {
         }
 
         // unknown, log it for future enhancement.
-        ServiceLocator.getInstance().getLogger().w(TAG, "map|typeName=`" + typeName + "`");
+        LoggerFactory.getLogger().w(TAG, "map|typeName=`" + typeName + "`");
         return TYPE_UNKNOWN;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
 
@@ -43,7 +44,7 @@ public class TestProgressListener
         progressCurrentPos += delta;
         // eat all message when in debug; it's to much of a slow down otherwise.
         if (!BuildConfig.DEBUG  /* always */) {
-            ServiceLocator.getInstance().getLogger()
+            LoggerFactory.getLogger()
                           .d(tag, "publishProgressStep",
                              "progressCurrentPos=" + progressCurrentPos
                              + "|delta=" + delta
@@ -56,7 +57,7 @@ public class TestProgressListener
     public void publishProgress(@NonNull final TaskProgress message) {
         // eat all message when in debug; it's to much of a slow down otherwise.
         if (!BuildConfig.DEBUG  /* always */) {
-            ServiceLocator.getInstance().getLogger()
+            LoggerFactory.getLogger()
                           .d(tag, "publishProgress", "message=" + message);
         }
     }
@@ -72,7 +73,7 @@ public class TestProgressListener
 
     @Override
     public void setIndeterminate(@Nullable final Boolean indeterminate) {
-        ServiceLocator.getInstance().getLogger()
+        LoggerFactory.getLogger()
                       .d(tag, "setIndeterminate", String.valueOf(indeterminate));
     }
 
@@ -83,7 +84,7 @@ public class TestProgressListener
 
     @Override
     public void setMaxPos(final int maxPos) {
-        ServiceLocator.getInstance().getLogger().d(tag, "setMaxPos", String.valueOf(maxPos));
+        LoggerFactory.getLogger().d(tag, "setMaxPos", String.valueOf(maxPos));
         this.maxPos = maxPos;
     }
 }

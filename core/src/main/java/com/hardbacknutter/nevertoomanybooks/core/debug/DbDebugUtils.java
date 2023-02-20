@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -18,13 +18,16 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.core.database;
+package com.hardbacknutter.nevertoomanybooks.core.debug;
 
 import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.core.Logger;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
+import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 
 @SuppressWarnings("unused")
 public final class DbDebugUtils {
@@ -35,19 +38,17 @@ public final class DbDebugUtils {
     }
 
     private static void debugDumpInfo(@NonNull final SynchronizedDb db) {
-        final Logger logger = db.getLogger();
-        if (logger != null) {
-            final String[] sql = {"SELECT sqlite_version() AS sqlite_version",
-                    "PRAGMA encoding",
-                    "PRAGMA collation_list",
-                    "PRAGMA foreign_keys",
-                    "PRAGMA recursive_triggers",
-            };
-            for (final String s : sql) {
-                try (Cursor cursor = db.rawQuery(s, null)) {
-                    if (cursor.moveToNext()) {
-                        logger.d(TAG, "debugDumpInfo", s + " = " + cursor.getString(0));
-                    }
+        final Logger logger = LoggerFactory.getLogger();
+        final String[] sql = {"SELECT sqlite_version() AS sqlite_version",
+                "PRAGMA encoding",
+                "PRAGMA collation_list",
+                "PRAGMA foreign_keys",
+                "PRAGMA recursive_triggers",
+        };
+        for (final String s : sql) {
+            try (Cursor cursor = db.rawQuery(s, null)) {
+                if (cursor.moveToNext()) {
+                    logger.d(TAG, "debugDumpInfo", s + " = " + cursor.getString(0));
                 }
             }
         }
@@ -68,28 +69,26 @@ public final class DbDebugUtils {
                                  @NonNull final String orderBy,
                                  @NonNull final String tag,
                                  @NonNull final String header) {
-        final Logger logger = db.getLogger();
-        if (logger != null) {
-            logger.d(tag, "dumpTable", tableDefinition.getName() + ": " + header);
+        final Logger logger = LoggerFactory.getLogger();
+        logger.d(tag, "dumpTable", tableDefinition.getName() + ": " + header);
 
-            final String sql =
-                    "SELECT * FROM " + tableDefinition.getName()
-                    + " ORDER BY " + orderBy + " LIMIT " + limit;
-            try (Cursor cursor = db.rawQuery(sql, null)) {
-                final StringBuilder columnHeading = new StringBuilder("\n");
-                final String[] columnNames = cursor.getColumnNames();
-                for (final String column : columnNames) {
-                    columnHeading.append(String.format("%-12s  ", column));
-                }
-                logger.d(tag, columnHeading.toString());
+        final String sql =
+                "SELECT * FROM " + tableDefinition.getName()
+                + " ORDER BY " + orderBy + " LIMIT " + limit;
+        try (Cursor cursor = db.rawQuery(sql, null)) {
+            final StringBuilder columnHeading = new StringBuilder("\n");
+            final String[] columnNames = cursor.getColumnNames();
+            for (final String column : columnNames) {
+                columnHeading.append(String.format("%-12s  ", column));
+            }
+            logger.d(tag, columnHeading.toString());
 
-                while (cursor.moveToNext()) {
-                    final StringBuilder line = new StringBuilder();
-                    for (int c = 0; c < cursor.getColumnCount(); c++) {
-                        line.append(String.format("%-12s  ", cursor.getString(c)));
-                    }
-                    logger.d(tag, line.toString());
+            while (cursor.moveToNext()) {
+                final StringBuilder line = new StringBuilder();
+                for (int c = 0; c < cursor.getColumnCount(); c++) {
+                    line.append(String.format("%-12s  ", cursor.getString(c)));
                 }
+                logger.d(tag, line.toString());
             }
         }
     }

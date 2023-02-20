@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -47,6 +47,7 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForWritingContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNodeDao;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentMaintenanceBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.SqliteShellFragment;
@@ -56,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.utils.FileSize;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 @Keep
 public class MaintenanceFragment
@@ -132,11 +133,7 @@ public class MaintenanceFragment
             try {
                 bytes = purge(bookUuidList, false);
 
-            } catch (@NonNull final StorageException e) {
-                StandardDialogs.showError(context, e.getUserMessage(context));
-                return;
-
-            } catch (@NonNull final SecurityException e) {
+            } catch (@NonNull final StorageException | SecurityException e) {
                 StandardDialogs.showError(context, ExMsg
                         .map(context, e)
                         .orElse(getString(R.string.error_storage_not_accessible)));
@@ -156,10 +153,7 @@ public class MaintenanceFragment
                         try {
                             purge(bookUuidList, true);
 
-                        } catch (@NonNull final StorageException e) {
-                            StandardDialogs.showError(context, e.getUserMessage(context));
-
-                        } catch (@NonNull final SecurityException e) {
+                        } catch (@NonNull final StorageException | SecurityException e) {
                             StandardDialogs.showError(context, ExMsg
                                     .map(context, e)
                                     .orElse(getString(R.string.error_storage_not_accessible)));
@@ -302,7 +296,7 @@ public class MaintenanceFragment
         final Context context = getContext();
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         //noinspection ConstantConditions
-        return FileUtils.getUsedSpace(serviceLocator.getLogger().getLogDir(), null)
+        return FileUtils.getUsedSpace(LoggerFactory.getLogger().getLogDir(), null)
                + FileUtils.getUsedSpace(serviceLocator.getUpgradesDir(), null)
                + FileUtils.getUsedSpace(CoverDir.getTemp(context), null)
                + FileUtils.getUsedSpace(CoverDir.getDir(context), coverFilter);
@@ -313,7 +307,7 @@ public class MaintenanceFragment
         final Context context = getContext();
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         //noinspection ConstantConditions
-        return FileUtils.deleteDirectory(serviceLocator.getLogger().getLogDir(), null)
+        return FileUtils.deleteDirectory(LoggerFactory.getLogger().getLogDir(), null)
                + FileUtils.deleteDirectory(serviceLocator.getUpgradesDir(), null)
                + FileUtils.deleteDirectory(CoverDir.getTemp(context), null)
                + FileUtils.deleteDirectory(CoverDir.getDir(context), coverFilter);

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,9 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.network;
-
-import android.content.Context;
+package com.hardbacknutter.nevertoomanybooks.core.network;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,16 +26,11 @@ import androidx.annotation.StringRes;
 import java.io.IOException;
 import java.net.URL;
 
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.LocalizedException;
-
 /**
  * Signals that a HTTP request resulted in a not OK HTTP response.
  */
 public class HttpStatusException
-        extends IOException
-        implements LocalizedException {
+        extends IOException {
 
     private static final long serialVersionUID = 7064030911654231924L;
 
@@ -60,7 +53,7 @@ public class HttpStatusException
      * @param statusMessage the original status message from the HTTP request
      * @param url           (optional) The full url, for debugging
      */
-    HttpStatusException(@StringRes final int siteResId,
+    public HttpStatusException(@StringRes final int siteResId,
                         final int statusCode,
                         @NonNull final String statusMessage,
                         @Nullable final URL url) {
@@ -72,7 +65,7 @@ public class HttpStatusException
     }
 
     @StringRes
-    int getSiteResId() {
+    public int getSiteResId() {
         return siteResId;
     }
 
@@ -88,31 +81,5 @@ public class HttpStatusException
     @Nullable
     public URL getUrl() {
         return url;
-    }
-
-    @NonNull
-    @Override
-    public String getUserMessage(@NonNull final Context context) {
-        final String msg;
-        if (getSiteResId() != 0) {
-            msg = context.getString(R.string.error_network_site_access_failed,
-                                    context.getString(getSiteResId()));
-        } else {
-            msg = context.getString(R.string.httpError);
-        }
-
-        return msg + " (" + statusCode + ")";
-    }
-
-    @Override
-    @NonNull
-    public String toString() {
-        return "HttpStatusException{"
-               + "statusCode=" + statusCode
-               + ", statusMessage=" + statusMessage
-               + ", url=" + url
-               + ", siteResId=" + ServiceLocator.getAppContext().getString(siteResId)
-               + ", " + super.toString()
-               + '}';
     }
 }

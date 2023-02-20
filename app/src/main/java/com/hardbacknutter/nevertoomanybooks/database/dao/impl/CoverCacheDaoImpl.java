@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,14 +41,14 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.covers.Cover;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.CacheDbHelper;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CoverCacheDao;
-import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 
 /**
  * DB Helper for Covers DB.
@@ -133,7 +133,7 @@ public class CoverCacheDaoImpl
                 return (int) stmt.simpleQueryForLongOrZero();
             }
         } catch (@NonNull final RuntimeException e) {
-            ServiceLocator.getInstance().getLogger().e(TAG, e);
+            LoggerFactory.getLogger().e(TAG, e);
         }
         return 0;
     }
@@ -146,7 +146,7 @@ public class CoverCacheDaoImpl
                                  CacheDbHelper.IMAGE_ID + " LIKE ?",
                                  new String[]{uuid + '%'});
         } catch (@NonNull final SQLiteException e) {
-            ServiceLocator.getInstance().getLogger().e(TAG, e);
+            LoggerFactory.getLogger().e(TAG, e);
         }
         return false;
     }
@@ -156,7 +156,7 @@ public class CoverCacheDaoImpl
         try {
             db.execSQL("DELETE FROM " + CacheDbHelper.TBL_IMAGE.getName());
         } catch (@NonNull final SQLiteException e) {
-            ServiceLocator.getInstance().getLogger().e(TAG, e);
+            LoggerFactory.getLogger().e(TAG, e);
         }
     }
 
@@ -191,7 +191,7 @@ public class CoverCacheDaoImpl
                 }
             }
         } catch (@NonNull final RuntimeException e) {
-            ServiceLocator.getInstance().getLogger().e(TAG, e);
+            LoggerFactory.getLogger().e(TAG, e);
         }
         return null;
     }
@@ -259,7 +259,7 @@ public class CoverCacheDaoImpl
 
             } catch (@NonNull final RuntimeException e) {
                 // do not crash... ever! This is just a cache!
-                ServiceLocator.getInstance().getLogger().e(TAG, e);
+                LoggerFactory.getLogger().e(TAG, e);
                 // and disable the cache
                 // We don't bother cancelling any pending tasks... oh well...
                 ImageUtils.setImageCachingEnabled(false);

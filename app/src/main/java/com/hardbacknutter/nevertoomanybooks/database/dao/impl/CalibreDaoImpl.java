@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,13 +24,14 @@ import androidx.annotation.NonNull;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 
@@ -108,7 +109,7 @@ public class CalibreDaoImpl
                 // encoded library data.
                 // Log and bail out but do NOT throw an error!
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
-                    ServiceLocator.getInstance().getLogger()
+                    LoggerFactory.getLogger()
                                   .w(TAG, "CalibreLibrary invalid(1) for book=" + book.getId());
                 }
                 return false;
@@ -118,7 +119,7 @@ public class CalibreDaoImpl
             // encoded library data.
             // Log and bail out but do NOT throw an error!
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
-                ServiceLocator.getInstance().getLogger()
+                LoggerFactory.getLogger()
                               .w(TAG, "CalibreLibrary invalid(2) for book=" + book.getId());
             }
             return false;

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,9 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils.exceptions;
+package com.hardbacknutter.nevertoomanybooks.core.storage;
 
-import android.content.Context;
 import android.system.ErrnoException;
 import android.system.OsConstants;
 
@@ -27,8 +26,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.IOException;
-
-import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
  * Used to transmogrify an {@link IOException} caused by an {@link ErrnoException},
@@ -47,7 +44,6 @@ public class DiskFullException
 
     private static final long serialVersionUID = 5177125869592785634L;
 
-
     public DiskFullException(@NonNull final Throwable cause) {
         super(cause);
     }
@@ -56,11 +52,5 @@ public class DiskFullException
         return e instanceof IOException
                && e.getCause() instanceof ErrnoException
                && ((ErrnoException) e.getCause()).errno == OsConstants.ENOSPC;
-    }
-
-    @NonNull
-    @Override
-    public String getUserMessage(@NonNull final Context context) {
-        return context.getString(R.string.error_storage_no_space_left);
     }
 }

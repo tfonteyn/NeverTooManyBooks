@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,14 +17,9 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils.exceptions;
+package com.hardbacknutter.nevertoomanybooks.core.storage;
 
-import android.content.Context;
-
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
  * Thrown when external storage media is not available.
@@ -41,18 +36,5 @@ public class CoverStorageException
     public CoverStorageException(@Nullable final String message,
                                  @Nullable final Throwable cause) {
         super(message, cause);
-    }
-
-    /**
-     * The default user displayable message.
-     *
-     * @param context Current context
-     *
-     * @return text
-     */
-    @NonNull
-    @Override
-    public String getUserMessage(@NonNull final Context context) {
-        return context.getString(R.string.error_storage_not_writable);
     }
 }

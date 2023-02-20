@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.covers.Cover;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
@@ -70,7 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 /**
  * Represents the underlying data for a book.
@@ -974,7 +975,7 @@ public class Book
             }
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                ServiceLocator.getInstance().getLogger()
+                LoggerFactory.getLogger()
                               .e(TAG, new Throwable("getCoverFile"),
                                  "bookId=" + getId()
                                  + "|cIdx=" + cIdx
@@ -1034,7 +1035,7 @@ public class Book
 
             if (file != null) {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                    ServiceLocator.getInstance().getLogger()
+                    LoggerFactory.getLogger()
                                   .e(TAG, new Throwable("setCover"),
                                      "editing"
                                      + "|bookId=" + getId()
@@ -1047,7 +1048,7 @@ public class Book
 
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                    ServiceLocator.getInstance().getLogger()
+                    LoggerFactory.getLogger()
                                   .e(TAG, new Throwable("setCover"),
                                      "editing"
                                      + "|bookId=" + getId()
@@ -1081,7 +1082,7 @@ public class Book
                     // No further action needed as we have the cover "in-place"
                     // ... not actually sure when this would be the case; keep an eye on logs
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                        ServiceLocator.getInstance().getLogger()
+                        LoggerFactory.getLogger()
                                       .e(TAG, new Throwable("setCover"),
                                          "readOnly"
                                          + "|bookId=" + getId()

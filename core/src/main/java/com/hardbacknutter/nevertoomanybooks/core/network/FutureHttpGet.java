@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.network;
+package com.hardbacknutter.nevertoomanybooks.core.network;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
@@ -33,9 +33,9 @@ import java.util.Objects;
 import java.util.concurrent.CancellationException;
 import java.util.function.Function;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 public final class FutureHttpGet<T>
         extends FutureHttpBase<T> {
@@ -128,11 +128,8 @@ public final class FutureHttpGet<T>
                 // UnknownHostException: DNS or other low-level network issue
                 // FileNotFoundException: seen on some sites. A retry and the site was ok.
                 if (BuildConfig.DEBUG /* always */) {
-                    ServiceLocator.getInstance().getLogger()
-                                  .d(TAG, "open",
-                                     "|retry=" + retry
-                                     + "|url=`" + request.getURL() + '`'
-                                     + "|e=" + e);
+                    LoggerFactory.getLogger().d(TAG, "open", "retry=" + retry
+                            , "url=`" + request.getURL() + '`', "e=" + e);
                 }
 
                 retry--;
@@ -149,8 +146,8 @@ public final class FutureHttpGet<T>
         }
 
         if (BuildConfig.DEBUG /* always */) {
-            ServiceLocator.getInstance().getLogger()
-                          .d(TAG, "open|giving up", "url=`" + request.getURL() + '`');
+            LoggerFactory.getLogger()
+                         .d(TAG, "open|giving up", "url=`" + request.getURL() + '`');
         }
         throw new NetworkException("Giving up");
     }

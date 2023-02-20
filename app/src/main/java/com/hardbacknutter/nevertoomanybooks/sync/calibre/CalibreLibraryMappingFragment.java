@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,7 +41,7 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentCalibreLibraryMapperBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditCalibreLibraryBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -134,7 +134,9 @@ public class CalibreLibraryMappingFragment
                 addBookshelf(bookshelf, vb.bookshelf);
 
             } catch (@NonNull final DaoWriteException e) {
-                Snackbar.make(vb.getRoot(), e.getUserMessage(getContext()),
+                Snackbar.make(vb.getRoot(), ExMsg
+                                      .map(getContext(), e)
+                                      .orElse(getString(R.string.error_unknown)),
                               Snackbar.LENGTH_LONG).show();
             }
         });
@@ -319,7 +321,9 @@ public class CalibreLibraryMappingFragment
                     addBookshelf(bookshelf, holder.vb.bookshelf);
 
                 } catch (@NonNull final DaoWriteException e) {
-                    Snackbar.make(holder.itemView, e.getUserMessage(getContext()),
+                    Snackbar.make(holder.itemView, ExMsg
+                                          .map(getContext(), e)
+                                          .orElse(getString(R.string.error_unknown)),
                                   Snackbar.LENGTH_LONG).show();
                 }
             });

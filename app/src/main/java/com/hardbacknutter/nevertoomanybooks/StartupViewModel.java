@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,6 +40,7 @@ import java.util.HashSet;
 import java.util.stream.Stream;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.DBCleanerTask;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.OptimizeDbTask;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildFtsTask;
@@ -173,7 +174,7 @@ public class StartupViewModel
             cleanObsoleteDirectories(context);
 
             // from here on, we have access to our log file
-            ServiceLocator.getInstance().getLogger().cycleLogs();
+            LoggerFactory.getLogger().cycleLogs();
 
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 

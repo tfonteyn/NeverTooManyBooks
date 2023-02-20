@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -45,8 +45,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
@@ -55,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.core.Logger;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -187,10 +186,10 @@ public class DBHelper
                 try {
                     db.execSQL("DROP INDEX " + indexName);
                 } catch (@NonNull final SQLException e) {
-                    ServiceLocator.getInstance().getLogger().e(TAG, e);
+                    LoggerFactory.getLogger().e(TAG, e);
                     throw e;
                 } catch (@NonNull final RuntimeException e) {
-                    ServiceLocator.getInstance().getLogger()
+                    LoggerFactory.getLogger()
                                   .e(TAG, e, "DROP INDEX failed: " + indexName);
                 }
             }
@@ -312,13 +311,13 @@ public class DBHelper
             return cs;
 
         } catch (@NonNull final SQLException e) {
-            ServiceLocator.getInstance().getLogger().e(TAG, e);
+            LoggerFactory.getLogger().e(TAG, e);
             throw e;
         } finally {
             try {
                 db.execSQL(dropTable);
             } catch (@NonNull final SQLException e) {
-                ServiceLocator.getInstance().getLogger().e(TAG, e);
+                LoggerFactory.getLogger().e(TAG, e);
             }
         }
     }
@@ -334,14 +333,9 @@ public class DBHelper
     public SynchronizedDb getDb() {
         synchronized (this) {
             if (synchronizedDb == null) {
-                Logger logger = null;
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
-                    logger = ServiceLocator.getInstance().getLogger();
-                }
-
                 // Dev note: don't move this to the constructor, "this" must
                 // be fully constructed before we can pass it to the SynchronizedDb constructor
-                synchronizedDb = new SynchronizedDb(SYNCHRONIZER, this, logger,
+                synchronizedDb = new SynchronizedDb(SYNCHRONIZER, this,
                                                     getCollation(getWritableDatabase()),
                                                     stmtCacheSize);
             }
@@ -641,7 +635,7 @@ public class DBHelper
                     try {
                         FileUtils.rename(destFile, destination);
                     } catch (@NonNull final IOException e) {
-                        serviceLocator.getLogger()
+                        LoggerFactory.getLogger()
                                       .e(TAG, e, "failed to rename source=" + destFile
                                                  + " TO destination=" + destination, e);
                     }
@@ -649,7 +643,7 @@ public class DBHelper
                 // and create a new copy
                 FileUtils.copy(new File(db.getPath()), destFile);
             } catch (@NonNull final IOException e) {
-                serviceLocator.getLogger().e(TAG, e);
+                LoggerFactory.getLogger().e(TAG, e);
             }
         }
 
@@ -965,7 +959,7 @@ public class DBHelper
             return;
         }
 
-        final Logger logger = ServiceLocator.getInstance().getLogger();
+        final Logger logger = LoggerFactory.getLogger();
 
         // for each duplicate author, weed out the duplicates and delete them
         for (final List<Long> idList : authorDuplicates) {
@@ -1044,7 +1038,7 @@ public class DBHelper
             return;
         }
 
-        final Logger logger = ServiceLocator.getInstance().getLogger();
+        final Logger logger = LoggerFactory.getLogger();
 
         // for each duplicate toc entry, weed out the duplicates and delete them
         for (final List<Long> idList : entryDuplicates) {

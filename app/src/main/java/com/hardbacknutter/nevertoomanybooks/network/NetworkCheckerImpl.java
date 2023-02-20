@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -45,9 +45,9 @@ import java.util.concurrent.TimeoutException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 
 public class NetworkCheckerImpl
         implements NetworkChecker {
@@ -98,7 +98,7 @@ public class NetworkCheckerImpl
                         .getBoolean(Prefs.pk_network_allow_metered, true);
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-                    ServiceLocator.getInstance().getLogger()
+                    LoggerFactory.getLogger()
                                   .d(TAG, "getNetworkCapabilities",
                                      "hasInternet=" + hasInternet
                                      + "|isValidated=" + isValidated
@@ -199,13 +199,13 @@ public class NetworkCheckerImpl
                 }
 
                 if (BuildConfig.DEBUG /* always */) {
-                    ServiceLocator.getInstance().getLogger().e(TAG, e);
+                    LoggerFactory.getLogger().e(TAG, e);
                 }
                 throw new UnknownHostException(host);
 
             } catch (@NonNull final RejectedExecutionException | InterruptedException e) {
                 if (BuildConfig.DEBUG /* always */) {
-                    ServiceLocator.getInstance().getLogger().e(TAG, e);
+                    LoggerFactory.getLogger().e(TAG, e);
                 }
                 throw new UnknownHostException(host);
 

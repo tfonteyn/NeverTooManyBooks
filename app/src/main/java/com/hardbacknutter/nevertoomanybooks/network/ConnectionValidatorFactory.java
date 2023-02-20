@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,34 +17,34 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.hardbacknutter.nevertoomanybooks.network;
 
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 
-import java.io.IOException;
+import java.security.cert.CertificateException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.LocalizedException;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoAuth;
 
-/**
- * Should be thrown if the device has a generic network issue.
- * This is basically an IOException with a localized message.
- */
-public class NetworkException
-        extends IOException
-        implements LocalizedException {
-
-    private static final long serialVersionUID = -7713421228493196516L;
-
-    NetworkException(@NonNull final String message) {
-        super(message);
+public final class ConnectionValidatorFactory {
+    private ConnectionValidatorFactory() {
     }
 
     @NonNull
-    @Override
-    public String getUserMessage(@NonNull final Context context) {
-        return context.getString(R.string.error_network_failed_try_again);
+    public static ConnectionValidator create(@NonNull final Context context,
+                                             @StringRes final int siteResId)
+            throws CertificateException {
+        if (siteResId == R.string.site_calibre) {
+            return new CalibreContentServer(context);
+        } else if (siteResId == R.string.site_stripinfo_be) {
+            return new StripInfoAuth();
+        } else {
+            throw new IllegalArgumentException(String.valueOf(siteResId));
+        }
     }
 }

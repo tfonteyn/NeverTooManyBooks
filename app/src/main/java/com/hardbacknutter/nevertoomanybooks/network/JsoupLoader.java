@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,8 +35,11 @@ import javax.net.ssl.SSLProtocolException;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpNotFoundException;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -124,7 +127,7 @@ public class JsoupLoader {
 
         while (attemptsLeft > 0) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                ServiceLocator.getInstance().getLogger()
+                LoggerFactory.getLogger()
                               .d(TAG, "loadDocument",
                                  "REQUESTED|mDocRequestUrl=\"" + docRequestUrl + '\"');
             }
@@ -142,21 +145,21 @@ public class JsoupLoader {
                             request.getInputStream())) {
 
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                            ServiceLocator.getInstance().getLogger()
+                            LoggerFactory.getLogger()
                                           .d(TAG, "loadDocument",
                                              "AFTER open"
                                              + "\ncon.getURL=" + request.getURL()
                                              + "\nlocation  =" + request.getHeaderField(
-                                                     HttpUtils.LOCATION));
+                                                     HttpConstants.LOCATION));
                         }
 
                         // the original url will change after a redirect.
                         // We need the actual url for further processing.
-                        String locationHeader = request.getHeaderField(HttpUtils.LOCATION);
+                        String locationHeader = request.getHeaderField(HttpConstants.LOCATION);
                         if (locationHeader == null || locationHeader.isEmpty()) {
                             locationHeader = request.getURL().toString();
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                                ServiceLocator.getInstance().getLogger()
+                                LoggerFactory.getLogger()
                                               .d(TAG, "loadDocument",
                                                  "location header not set, using url");
                             }
@@ -182,7 +185,7 @@ public class JsoupLoader {
                         */
                         final Document document = Jsoup.parse(is, charSetName, locationHeader);
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                            ServiceLocator.getInstance().getLogger()
+                            LoggerFactory.getLogger()
                                           .d(TAG, "loadDocument",
                                              "AFTER parsing|document.location()=" + document.location());
                         }
@@ -214,7 +217,7 @@ public class JsoupLoader {
                 // at com.android.org.conscrypt.NativeCrypto.SSL_read(Native Method)
                 // ...
                 // Log it as WARN, so at least we can get to know the frequency of these issues.
-                ServiceLocator.getInstance().getLogger()
+                LoggerFactory.getLogger()
                               .w(TAG, "loadDocument", "e=" + e.getMessage(),
                                  "mDocRequestUrl=\"" + docRequestUrl + '\"');
                 // we'll retry.
@@ -240,7 +243,7 @@ public class JsoupLoader {
                 document = null;
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                    ServiceLocator.getInstance().getLogger()
+                    LoggerFactory.getLogger()
                                   .e(TAG, e, "docRequestUrl=" + docRequestUrl);
                 }
                 throw e;

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,29 +17,28 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.network;
+package com.hardbacknutter.nevertoomanybooks.core.storage;
 
-import android.content.Context;
-
-import androidx.annotation.NonNull;
-
-import com.hardbacknutter.nevertoomanybooks.R;
+import androidx.annotation.Nullable;
 
 /**
- * Should be thrown if the device has no network connectivity at all for whatever reason.
+ * Dev note: DO NOT make this an IOException (again).
  */
-public class NetworkUnavailableException
-        extends NetworkException {
+public class StorageException
+        extends Exception{
 
-    private static final long serialVersionUID = 769176879601492110L;
+    private static final long serialVersionUID = 6521262373361215281L;
 
-    public NetworkUnavailableException(@NonNull final String message) {
+    protected StorageException(@Nullable final String message) {
         super(message);
     }
 
-    @NonNull
-    @Override
-    public String getUserMessage(@NonNull final Context context) {
-        return context.getString(R.string.error_network_please_connect);
+    protected StorageException(@Nullable final String message,
+                               @Nullable final Throwable cause) {
+        super(message, cause);
+    }
+
+    protected StorageException(@Nullable final Throwable cause) {
+        super(cause);
     }
 }

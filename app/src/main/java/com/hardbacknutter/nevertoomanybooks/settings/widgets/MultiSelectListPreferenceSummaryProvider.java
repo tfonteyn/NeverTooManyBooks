@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,7 +24,7 @@ import androidx.preference.MultiSelectListPreference;
 import androidx.preference.Preference;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 
 public final class MultiSelectListPreferenceSummaryProvider
         implements Preference.SummaryProvider<MultiSelectListPreference> {
@@ -62,7 +62,7 @@ public final class MultiSelectListPreferenceSummaryProvider
 
             } else {
                 // This re-surfaces sometimes after a careless dev. change.
-                ServiceLocator.getInstance().getLogger()
+                LoggerFactory.getLogger()
                               .e(TAG, new Throwable(),
                                  "MultiSelectListPreference:"
                                  + "\n s=" + s

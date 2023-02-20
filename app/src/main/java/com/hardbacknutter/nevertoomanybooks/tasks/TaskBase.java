@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,8 +35,9 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UncheckedDaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UncheckedStorageException;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
+import com.hardbacknutter.nevertoomanybooks.core.database.UncheckedDaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedStorageException;
 
 /**
  * Common base for MutableLiveData / TaskListener driven tasks.

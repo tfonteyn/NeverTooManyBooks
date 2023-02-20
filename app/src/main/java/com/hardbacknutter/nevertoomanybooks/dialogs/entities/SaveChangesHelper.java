@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,8 +32,8 @@ import java.util.Locale;
 import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.EntityBookLinksDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.MoveBooksDao;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -114,7 +114,7 @@ final class SaveChangesHelper {
                         // return the item who 'lost' it's books
                         onSuccess.accept(item);
                     } catch (@NonNull final DaoWriteException e) {
-                        ServiceLocator.getInstance().getLogger().e(TAG, e);
+                        LoggerFactory.getLogger().e(TAG, e);
                         StandardDialogs.showError(context, R.string.error_storage_not_writable);
                     }
                 })

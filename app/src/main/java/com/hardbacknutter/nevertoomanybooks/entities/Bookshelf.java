@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,8 +39,9 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 
 /**
@@ -282,7 +283,7 @@ public class Bookshelf
             ServiceLocator.getInstance().getBookshelfDao().update(context, this);
         } catch (@NonNull final DaoWriteException e) {
             // log, but ignore - should never happen unless disk full
-            ServiceLocator.getInstance().getLogger().e(TAG, e);
+            LoggerFactory.getLogger().e(TAG, e);
         }
     }
 
@@ -386,7 +387,7 @@ public class Bookshelf
             ServiceLocator.getInstance().getBookshelfDao().update(context, this);
         } catch (@NonNull final DaoWriteException e) {
             // log, but ignore - should never happen unless disk full
-            ServiceLocator.getInstance().getLogger().e(TAG, e);
+            LoggerFactory.getLogger().e(TAG, e);
         }
     }
 
@@ -403,7 +404,7 @@ public class Bookshelf
                 ServiceLocator.getInstance().getBookshelfDao().update(context, this);
             } catch (@NonNull final DaoWriteException e) {
                 // log, but ignore - should never happen unless disk full
-                ServiceLocator.getInstance().getLogger().e(TAG, e);
+                LoggerFactory.getLogger().e(TAG, e);
             }
         }
     }

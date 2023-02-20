@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,7 +25,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.fields.endicon.ExtEndIconDelegate;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
@@ -131,7 +131,7 @@ public class TextViewField<T>
                 // it's possible that it gets the column type wrong.
                 // See {@link TypedCursor} class docs.
                 // Also see {@link SearchCoordinator#accumulateStringData}
-                ServiceLocator.getInstance().getLogger().e(TAG, e, value);
+                LoggerFactory.getLogger().e(TAG, e, value);
 
                 view.setText(rawValue != null ? String.valueOf(rawValue) : "");
             }

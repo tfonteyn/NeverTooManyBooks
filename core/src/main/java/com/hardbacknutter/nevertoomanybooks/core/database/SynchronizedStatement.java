@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,7 +27,9 @@ import androidx.annotation.Nullable;
 
 import java.io.Closeable;
 
+import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.Logger;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 
 /**
  * Wrapper for statements that ensures locking is used.
@@ -51,10 +53,6 @@ public class SynchronizedStatement
     /** Indicates this is a 'read-only' statement. */
     private final boolean readOnly;
 
-    @SuppressWarnings("FieldNotUsedInToString")
-    @Nullable
-    private final Logger logger;
-
     /**
      * Constructor. Do not use directly!
      * <p>
@@ -64,14 +62,11 @@ public class SynchronizedStatement
      * @param synchronizer to use
      * @param statement    to execute
      * @param readOnly     flag; is the statement a read-only operation
-     * @param logger       (optional) logger; passed in when in de debug mode
      */
     public SynchronizedStatement(@NonNull final Synchronizer synchronizer,
                                  @NonNull final SQLiteStatement statement,
-                                 final boolean readOnly,
-                                 @Nullable final Logger logger) {
+                                 final boolean readOnly) {
         this.synchronizer = synchronizer;
-        this.logger = logger;
         this.statement = statement;
         this.readOnly = readOnly;
     }
@@ -200,8 +195,9 @@ public class SynchronizedStatement
         final Synchronizer.SyncLock sharedLock = synchronizer.getSharedLock();
         try {
             final long result = statement.simpleQueryForLong();
-            if (logger != null) {
-                logger.d(TAG, "simpleQueryForLong", statement + "|result=" + result);
+            if (BuildConfig.DEBUG && LoggerFactory.DEBUG_EXEC_SQL) {
+                LoggerFactory.getLogger()
+                             .d(TAG, "simpleQueryForLong", statement + "|result=" + result);
             }
             return result;
         } finally {
@@ -222,8 +218,9 @@ public class SynchronizedStatement
         final Synchronizer.SyncLock sharedLock = synchronizer.getSharedLock();
         try {
             final long result = statement.simpleQueryForLong();
-            if (logger != null) {
-                logger.d(TAG, "simpleQueryForLongOrZero", statement + "|result=" + result);
+            if (BuildConfig.DEBUG && LoggerFactory.DEBUG_EXEC_SQL) {
+                LoggerFactory.getLogger()
+                             .d(TAG, "simpleQueryForLongOrZero", statement + "|result=" + result);
             }
             return result;
         } catch (@NonNull final SQLiteDoneException ignore) {
@@ -251,8 +248,9 @@ public class SynchronizedStatement
         try {
             final String result = statement.simpleQueryForString();
 
-            if (logger != null) {
-                logger.d(TAG, "simpleQueryForString", statement + "|result=" + result);
+            if (BuildConfig.DEBUG && LoggerFactory.DEBUG_EXEC_SQL) {
+                LoggerFactory.getLogger()
+                             .d(TAG, "simpleQueryForString", statement + "|result=" + result);
             }
             return result;
 
@@ -277,8 +275,9 @@ public class SynchronizedStatement
             return statement.simpleQueryForString();
 
         } catch (@NonNull final SQLiteDoneException e) {
-            if (logger != null) {
-                logger.d(TAG, "simpleQueryForStringOrNull", statement + "|NULL");
+            if (BuildConfig.DEBUG && LoggerFactory.DEBUG_EXEC_SQL) {
+                LoggerFactory.getLogger()
+                             .d(TAG, "simpleQueryForStringOrNull", statement + "|NULL");
             }
             return null;
         } finally {
@@ -300,8 +299,9 @@ public class SynchronizedStatement
             txLock = synchronizer.getExclusiveLock();
         }
         try {
-            if (logger != null) {
-                logger.d(TAG, "execute", statement);
+            if (BuildConfig.DEBUG && LoggerFactory.DEBUG_EXEC_SQL) {
+                LoggerFactory.getLogger()
+                             .d(TAG, "execute", statement);
             }
             statement.execute();
         } finally {
@@ -321,8 +321,10 @@ public class SynchronizedStatement
         final Synchronizer.SyncLock exclusiveLock = synchronizer.getExclusiveLock();
         try {
             final int rowsAffected = statement.executeUpdateDelete();
-            if (logger != null) {
-                logger.d(TAG, "executeUpdateDelete", statement + "|rowsAffected=" + rowsAffected);
+            if (BuildConfig.DEBUG && LoggerFactory.DEBUG_EXEC_SQL) {
+                LoggerFactory.getLogger()
+                             .d(TAG, "executeUpdateDelete",
+                                statement + "|rowsAffected=" + rowsAffected);
             }
             return rowsAffected;
         } finally {
@@ -343,7 +345,8 @@ public class SynchronizedStatement
         try {
             final long id = statement.executeInsert();
 
-            if (logger != null) {
+            if (BuildConfig.DEBUG && LoggerFactory.DEBUG_EXEC_SQL) {
+                final Logger logger = LoggerFactory.getLogger();
                 logger.d(TAG, "executeInsert", statement + "|id=" + id);
                 if (id == -1) {
                     logger.e(TAG, new Throwable(), "Insert failed|" + statement);
@@ -360,7 +363,7 @@ public class SynchronizedStatement
     public String toString() {
         return "SynchronizedStatement{"
                + ", readOnly=" + readOnly
-               + ", statement=" + statement.toString()
+               + ", statement=" + statement
                + '}';
     }
 }

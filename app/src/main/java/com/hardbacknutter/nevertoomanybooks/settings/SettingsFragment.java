@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -64,7 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 /**
  * Global settings page.
@@ -467,7 +467,9 @@ public class SettingsFragment
 
         } catch (@NonNull final StorageException e) {
             // This should never happen... flw
-            StandardDialogs.showError(getContext(), e.getUserMessage(getContext()));
+            StandardDialogs.showError(getContext(), ExMsg
+                    .map(getContext(), e)
+                    .orElse(getContext().getString(R.string.error_unknown)));
             return false;
         }
     }

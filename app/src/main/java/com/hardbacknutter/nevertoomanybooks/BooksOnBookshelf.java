@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -99,6 +99,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfHeaderBinding;
@@ -1523,7 +1524,7 @@ public class BooksOnBookshelf
     private void onBuildFailed(@NonNull final LiveDataEvent<TaskResult<Throwable>> message) {
         vb.progressCircle.hide();
         message.getData().ifPresent(data -> {
-            ServiceLocator.getInstance().getLogger().e(TAG, data.getResult());
+            LoggerFactory.getLogger().e(TAG, data.getResult());
 
             vm.onBuildFailed();
 

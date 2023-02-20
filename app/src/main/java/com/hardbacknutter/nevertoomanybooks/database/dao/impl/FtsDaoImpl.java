@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -237,7 +237,7 @@ public class FtsDaoImpl
             }
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
-            ServiceLocator.getInstance().getLogger().e(TAG, e);
+            LoggerFactory.getLogger().e(TAG, e);
             gotError = true;
             db.drop(tmpTableName);
 
@@ -280,7 +280,7 @@ public class FtsDaoImpl
 
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
-            ServiceLocator.getInstance().getLogger().e(TAG, e, ERROR_FAILED_TO_UPDATE_FTS);
+            LoggerFactory.getLogger().e(TAG, e, ERROR_FAILED_TO_UPDATE_FTS);
         }
     }
 
@@ -299,7 +299,7 @@ public class FtsDaoImpl
 
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
-            ServiceLocator.getInstance().getLogger().e(TAG, e, ERROR_FAILED_TO_UPDATE_FTS);
+            LoggerFactory.getLogger().e(TAG, e, ERROR_FAILED_TO_UPDATE_FTS);
         }
     }
 

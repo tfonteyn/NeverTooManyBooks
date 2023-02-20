@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,12 +32,12 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.Logger;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.ReaderResults;
 import com.hardbacknutter.nevertoomanybooks.io.RecordReader;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.LocalizedException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 /**
  * Value class to report back what was imported.
@@ -126,17 +126,16 @@ public class ImportResults
         final String message;
         if (msg != null) {
             message = msg;
-        } else if (e instanceof LocalizedException) {
-            message = ((LocalizedException) e).getUserMessage(context);
         } else {
-            message = context.getString(R.string.error_import_csv_line, row);
+            message = ExMsg.map(context, e).orElse(
+                    context.getString(R.string.error_import_csv_line, row));
         }
 
         failedLinesMessage.add(message);
         failedLinesNr.add(row);
         booksFailed++;
 
-        final Logger logger = ServiceLocator.getInstance().getLogger();
+        final Logger logger = LoggerFactory.getLogger();
         if (booksFailed <= MAX_FAIL_LINES) {
             logger.w(TAG, "Import failed for book " + row + "|e=" + e.getMessage());
         }

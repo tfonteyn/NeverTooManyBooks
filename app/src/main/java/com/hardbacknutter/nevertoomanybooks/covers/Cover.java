@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,8 +32,9 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 /**
  * Represents a persisted cover file with a name based on the book uuid and the cover index number.
@@ -98,7 +99,7 @@ public class Cover {
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-            ServiceLocator.getInstance().getLogger()
+            LoggerFactory.getLogger()
                           .e(TAG, new Throwable("getPersistedFile"),
                              this + "|file="
                              + (coverFile == null ? "null" : coverFile.getAbsolutePath()));

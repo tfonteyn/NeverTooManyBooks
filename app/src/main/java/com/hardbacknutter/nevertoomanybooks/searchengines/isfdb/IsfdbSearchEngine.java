@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -55,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.Logger;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
@@ -64,8 +65,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
-import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
@@ -78,8 +79,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UncheckedSAXException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.UncheckedSAXException;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -269,8 +270,8 @@ public class IsfdbSearchEngine
 
         // added due to https://github.com/square/okhttp/issues/1517
         // it's a server issue, this is a workaround.
-        final Document document = loadDocument(context, url, Map.of(HttpUtils.CONNECTION,
-                                                                    HttpUtils.CONNECTION_CLOSE));
+        final Document document = loadDocument(context, url, Map.of(HttpConstants.CONNECTION,
+                                                                    HttpConstants.CONNECTION_CLOSE));
         if (!isCancelled()) {
             parse(context, document, fetchCovers, book);
             // ISFDB only shows the books language on the publications page.
@@ -786,7 +787,7 @@ public class IsfdbSearchEngine
         // sanity check
         if (allContentBoxes.isEmpty()) {
             if (BuildConfig.DEBUG /* always */) {
-                ServiceLocator.getInstance().getLogger()
+                LoggerFactory.getLogger()
                               .d(TAG, "parseDoc|no contentbox found",
                                  "document.location()=" + document.location());
             }
@@ -823,7 +824,7 @@ public class IsfdbSearchEngine
                 }
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB) {
-                    final Logger logger = ServiceLocator.getInstance().getLogger();
+                    final Logger logger = LoggerFactory.getLogger();
                     if (fieldName == null) {
                         logger.d(TAG, "fetch", "li=" + li);
                     } else {
@@ -1011,7 +1012,7 @@ public class IsfdbSearchEngine
             } catch (@NonNull final IndexOutOfBoundsException e) {
                 // does not happen now, but could happen if we come about non-standard entries,
                 // or if ISFDB website changes
-                ServiceLocator.getInstance().getLogger()
+                LoggerFactory.getLogger()
                               .e(TAG, e, "path: " + document.location() + "\n\nLI: " + li);
             }
         }
@@ -1265,7 +1266,7 @@ public class IsfdbSearchEngine
 
         } else {
             // dunno, let's log it
-            ServiceLocator.getInstance().getLogger().w(TAG, "parseDoc|pageUrl=" + pageUrl);
+            LoggerFactory.getLogger().w(TAG, "parseDoc|pageUrl=" + pageUrl);
         }
 
         return editions;
@@ -1310,8 +1311,8 @@ public class IsfdbSearchEngine
         final String url = getHostUrl() + String.format(CGI_BY_EXTERNAL_ID, edition.getIsfdbId());
         // added due to https://github.com/square/okhttp/issues/1517
         // it's a server issue, this is a workaround.
-        return loadDocument(context, url, Map.of(HttpUtils.CONNECTION,
-                                                 HttpUtils.CONNECTION_CLOSE));
+        return loadDocument(context, url, Map.of(HttpConstants.CONNECTION,
+                                                 HttpConstants.CONNECTION_CLOSE));
     }
 
 

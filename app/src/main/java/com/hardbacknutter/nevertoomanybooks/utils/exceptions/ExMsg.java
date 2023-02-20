@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,15 +22,26 @@ package com.hardbacknutter.nevertoomanybooks.utils.exceptions;
 import android.content.Context;
 import android.system.Os;
 import android.system.OsConstants;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.security.cert.Certificate;
 import java.util.Optional;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.Logger;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.network.NetworkException;
+import com.hardbacknutter.nevertoomanybooks.core.network.NetworkUnavailableException;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpNotFoundException;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpStatusException;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpUnauthorizedException;
 
 public final class ExMsg {
 
@@ -70,72 +81,129 @@ public final class ExMsg {
     @Nullable
     private static String getMsg(@NonNull final Context context,
                                  @NonNull final Throwable e) {
-        String msg = null;
 
         // Use the embedded localised message if possible
         if (e instanceof LocalizedException) {
-            msg = ((LocalizedException) e).getUserMessage(context);
+            return ((LocalizedException) e).getUserMessage(context);
+
+        } else if (e instanceof DiskFullException) {
+            return context.getString(R.string.error_storage_no_space_left);
+        } else if (e instanceof StorageException) {
+            return context.getString(R.string.error_storage_not_accessible);
+        } else if (e instanceof DaoWriteException) {
+            return context.getString(R.string.error_storage_not_writable);
+        } else if (e instanceof NetworkUnavailableException) {
+            return context.getString(R.string.error_network_please_connect);
+        } else if (e instanceof NetworkException) {
+            return context.getString(R.string.error_network_failed_try_again);
+
+        } else if (e instanceof HttpNotFoundException) {
+            final HttpNotFoundException he = (HttpNotFoundException) e;
+            final String msg = he.getUserMessage();
+            if (msg != null) {
+                return msg;
+            }
+            if (he.getSiteResId() != 0) {
+                return context.getString(R.string.error_network_site_access_failed,
+                                         context.getString(he.getSiteResId()));
+            } else {
+                return context.getString(R.string.httpErrorFileNotFound);
+            }
+
+        } else if (e instanceof HttpUnauthorizedException) {
+            final HttpUnauthorizedException he = (HttpUnauthorizedException) e;
+            if (he.getSiteResId() != 0) {
+                return context.getString(R.string.error_site_authorization_failed,
+                                         context.getString(he.getSiteResId()));
+            } else {
+                return context.getString(R.string.error_authorization_failed);
+            }
+
+        } else if (e instanceof HttpStatusException) {
+            final HttpStatusException he = (HttpStatusException) e;
+            if (he.getSiteResId() != 0) {
+                return context.getString(R.string.error_network_site_access_failed,
+                                         context.getString(he.getSiteResId()))
+                       + " (" + he.getStatusCode() + ")";
+            } else {
+                return context.getString(R.string.httpError) + " (" + he.getStatusCode() + ")";
+            }
 
         } else if (e instanceof com.hardbacknutter.org.json.JSONException) {
             // we're supposed to catch all JSONException!
-            Log.e(TAG, "Please log a bug if you see this message: ", e);
-            msg = context.getString(R.string.error_unknown_long,
-                                    context.getString(R.string.pt_maintenance));
+            LoggerFactory.getLogger().e(TAG, e, "Please log a bug if you see this message");
+            return context.getString(R.string.error_unknown_long,
+                                     context.getString(R.string.pt_maintenance));
 
         } else if (e instanceof java.io.FileNotFoundException) {
-            msg = context.getString(R.string.httpErrorFile);
+            return context.getString(R.string.httpErrorFile);
 
         } else if (e instanceof java.util.zip.ZipException) {
             //TODO: a ZipException is very generic, we'd need to look at the actual text.
-            msg = context.getString(R.string.error_import_archive_invalid);
+            return context.getString(R.string.error_import_archive_invalid);
 
         } else if (e instanceof android.database.SQLException
                    || e instanceof java.sql.SQLException) {
-            msg = context.getString(R.string.error_unknown_long,
-                                    context.getString(R.string.pt_maintenance));
+            return context.getString(R.string.error_unknown_long,
+                                     context.getString(R.string.pt_maintenance));
 
         } else if (e instanceof java.io.EOFException) {
-            msg = context.getString(R.string.error_network_failed_try_again);
+            return context.getString(R.string.error_network_failed_try_again);
 
         } else if (e instanceof java.net.SocketTimeoutException) {
-            msg = context.getString(R.string.httpErrorTimeout);
+            return context.getString(R.string.httpErrorTimeout);
 
         } else if (e instanceof java.net.MalformedURLException
                    || e instanceof java.net.UnknownHostException) {
-            msg = context.getString(R.string.error_unknown_host, e.getMessage())
-                  + '\n' + context.getString(R.string.error_search_failed_network);
+            return context.getString(R.string.error_unknown_host, e.getMessage())
+                   + '\n' + context.getString(R.string.error_search_failed_network);
 
         } else if (e instanceof java.security.cert.CertificateEncodingException) {
-            msg = context.getString(R.string.error_certificate_invalid);
+            return context.getString(R.string.error_certificate_invalid);
 
         } else if (e instanceof java.security.cert.CertificateException) {
             // There was something wrong with certificates/key on OUR end
-            msg = context.getString(R.string.httpErrorFailedSslHandshake);
+            return context.getString(R.string.httpErrorFailedSslHandshake);
 
         } else if (e instanceof javax.net.ssl.SSLException) {
             // TODO: give user detailed message
             // There was something wrong with certificates/key on the REMOTE end
-            msg = context.getString(R.string.httpErrorFailedSslHandshake);
+            return context.getString(R.string.httpErrorFailedSslHandshake);
 
         } else if (e instanceof StackOverflowError) {
             // This is BAD.... but we've only ever seen this in the emulator ... flw
             // ^^^ 2022-04-06
             // TODO: give user detailed message
-            msg = context.getString(R.string.error_unknown_long,
-                                    context.getString(R.string.pt_maintenance));
+            return context.getString(R.string.error_unknown_long,
+                                     context.getString(R.string.pt_maintenance));
 
         } else if (e instanceof android.system.ErrnoException) {
             final int errno = ((android.system.ErrnoException) e).errno;
             // write failed: ENOSPC (No space left on device)
             if (errno == OsConstants.ENOSPC) {
-                msg = context.getString(R.string.error_storage_no_space_left);
+                return context.getString(R.string.error_storage_no_space_left);
             } else {
                 // write to logfile for future reporting enhancements.
-                ServiceLocator.getInstance().getLogger().w(TAG, "errno=" + errno);
-                msg = Os.strerror(errno);
+                LoggerFactory.getLogger().w(TAG, "errno=" + errno);
+                return Os.strerror(errno);
             }
         }
+        return null;
+    }
 
-        return msg;
+    public static void dumpSSLException(@NonNull final HttpsURLConnection request,
+                                        @NonNull final SSLException e) {
+        final Logger logger = LoggerFactory.getLogger();
+        try {
+            logger.w("dumpSSLException", request.getURL().toString());
+            final Certificate[] serverCertificates = request.getServerCertificates();
+            if (serverCertificates != null && serverCertificates.length > 0) {
+                for (final Certificate c : serverCertificates) {
+                    logger.w("dumpSSLException", c.toString());
+                }
+            }
+        } catch (@NonNull final Exception ex) {
+            logger.e("dumpSSLException", ex);
+        }
     }
 }

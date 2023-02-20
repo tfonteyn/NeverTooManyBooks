@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoReader;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoWriter;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 /**
  * Note: {@link #hasLastUpdateDateField} / {@link #syncDateIsUserEditable}:

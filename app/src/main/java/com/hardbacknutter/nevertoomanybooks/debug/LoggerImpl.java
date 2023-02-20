@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -69,12 +69,8 @@ public class LoggerImpl
     @NonNull
     private final File logDir;
 
-    public LoggerImpl(@NonNull final Context context) {
-        logDir = new File(context.getApplicationContext().getFilesDir(), DIR_LOG);
-        if (!logDir.exists()) {
-            //noinspection ResultOfMethodCallIgnored
-            logDir.mkdirs();
-        }
+    public LoggerImpl(@NonNull final File logDir) {
+        this.logDir = logDir;
     }
 
     /**

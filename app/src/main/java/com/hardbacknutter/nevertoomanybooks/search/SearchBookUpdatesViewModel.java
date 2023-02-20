@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,10 +41,11 @@ import java.util.TreeMap;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -57,7 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.ParcelUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 public class SearchBookUpdatesViewModel
         extends SearchCoordinator {
@@ -453,7 +454,7 @@ public class SearchBookUpdatesViewModel
                     bookDao.update(context, delta);
                 } catch (@NonNull final StorageException | DaoWriteException e) {
                     // ignore, but log it.
-                    ServiceLocator.getInstance().getLogger().e(TAG, e);
+                    LoggerFactory.getLogger().e(TAG, e);
                 }
             }
         }
@@ -531,7 +532,7 @@ public class SearchBookUpdatesViewModel
      * @param e exception
      */
     private void postSearch(@NonNull final Exception e) {
-        ServiceLocator.getInstance().getLogger().e(TAG, e);
+        LoggerFactory.getLogger().e(TAG, e);
 
         if (currentCursor != null) {
             currentCursor.close();

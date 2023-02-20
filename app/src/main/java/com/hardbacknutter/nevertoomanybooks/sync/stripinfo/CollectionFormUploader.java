@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,14 +35,14 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
-import com.hardbacknutter.nevertoomanybooks.network.FutureHttpPost;
-import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpPost;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -95,8 +95,8 @@ public class CollectionFormUploader {
         futureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs())
                       .setReadTimeout(config.getReadTimeoutInMs())
                       .setThrottler(config.getThrottler())
-                      .setRequestProperty(HttpUtils.CONTENT_TYPE,
-                                          HttpUtils.CONTENT_TYPE_FORM_URL_ENCODED);
+                      .setRequestProperty(HttpConstants.CONTENT_TYPE,
+                                          HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED);
     }
 
     /**

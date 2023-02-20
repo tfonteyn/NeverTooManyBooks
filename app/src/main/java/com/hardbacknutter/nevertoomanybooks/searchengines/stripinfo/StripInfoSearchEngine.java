@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -46,7 +46,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -68,7 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -466,7 +466,7 @@ public class StripInfoSearchEngine
 
                                 default:
                                     if (BuildConfig.DEBUG /* always */) {
-                                        ServiceLocator.getInstance().getLogger()
+                                        LoggerFactory.getLogger()
                                                       .d(TAG, "parseDoc", "unknown label=" + label);
                                     }
                             }
@@ -479,7 +479,7 @@ public class StripInfoSearchEngine
 
             } catch (@NonNull final Exception e) {
                 if (BuildConfig.DEBUG /* always */) {
-                    ServiceLocator.getInstance().getLogger().e(TAG, e, "row=" + row);
+                    LoggerFactory.getLogger().e(TAG, e, "row=" + row);
                 }
             }
         }
@@ -1024,7 +1024,7 @@ public class StripInfoSearchEngine
 
             } catch (@NonNull final IOException | StorageException e) {
                 if (BuildConfig.DEBUG  /* always */) {
-                    ServiceLocator.getInstance().getLogger()
+                    LoggerFactory.getLogger()
                                   .e(TAG, e, "stripId=" + externalId
                                              + "|collectieId=" + collectionId);
                 }

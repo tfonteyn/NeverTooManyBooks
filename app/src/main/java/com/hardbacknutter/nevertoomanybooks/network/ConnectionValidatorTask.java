@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,7 +31,7 @@ import java.security.cert.CertificateException;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 public class ConnectionValidatorTask
         extends MTask<Boolean> {
@@ -84,7 +84,7 @@ public class ConnectionValidatorTask
                    CertificateException,
                    CredentialsException {
 
-        server = ConnectionValidator.create(context, siteResId);
+        server = ConnectionValidatorFactory.create(context, siteResId);
         return server.validateConnection(context);
     }
 }

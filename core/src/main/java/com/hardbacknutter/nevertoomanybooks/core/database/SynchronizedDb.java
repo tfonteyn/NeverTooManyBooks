@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,7 +30,8 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.core.Logger;
+import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 
 /**
  * Database wrapper class that performs thread synchronization on all operations.
@@ -67,10 +68,6 @@ public class SynchronizedDb
     @NonNull
     private final SQLiteDatabase sqLiteDatabase;
 
-    @SuppressWarnings("FieldNotUsedInToString")
-    @Nullable
-    private final Logger logger;
-
     /** Sync object to use. */
     @NonNull
     private final Synchronizer synchronizer;
@@ -103,9 +100,8 @@ public class SynchronizedDb
      */
     public SynchronizedDb(@NonNull final Synchronizer synchronizer,
                           @NonNull final SQLiteOpenHelper sqLiteOpenHelper,
-                          @Nullable final Logger logger,
                           final boolean collationCaseSensitive) {
-        this(synchronizer, sqLiteOpenHelper, logger, collationCaseSensitive, -1);
+        this(synchronizer, sqLiteOpenHelper, collationCaseSensitive, -1);
     }
 
     /**
@@ -124,12 +120,10 @@ public class SynchronizedDb
      */
     public SynchronizedDb(@NonNull final Synchronizer synchronizer,
                           @NonNull final SQLiteOpenHelper sqLiteOpenHelper,
-                          @Nullable final Logger logger,
                           final boolean collationCaseSensitive,
                           @IntRange(to = SQLiteDatabase.MAX_SQL_CACHE_SIZE) final int preparedStmtCacheSize) {
         this.synchronizer = synchronizer;
         this.sqLiteOpenHelper = sqLiteOpenHelper;
-        this.logger = logger;
         this.collationCaseSensitive = collationCaseSensitive;
         this.preparedStmtCacheSize = preparedStmtCacheSize;
 
@@ -140,11 +134,6 @@ public class SynchronizedDb
         } finally {
             syncLock.unlock();
         }
-    }
-
-    @Nullable
-    public Logger getLogger() {
-        return logger;
     }
 
     /**
@@ -373,7 +362,7 @@ public class SynchronizedDb
             //   readOnly = sql.trim().toUpperCase(Locale.ENGLISH).startsWith("SELECT");
             final boolean readOnly = sql.charAt(0) == 'S' || sql.charAt(0) == 's';
 
-            return new SynchronizedStatement(synchronizer, statement, readOnly, logger);
+            return new SynchronizedStatement(synchronizer, statement, readOnly);
         } finally {
             if (txLock != null) {
                 txLock.unlock();
@@ -385,8 +374,8 @@ public class SynchronizedDb
      * Locking-aware wrapper for underlying database method.
      */
     public void execSQL(@NonNull final String sql) {
-        if (logger != null) {
-            logger.d(TAG, "execSQL", sql);
+        if (BuildConfig.DEBUG && LoggerFactory.DEBUG_EXEC_SQL) {
+            LoggerFactory.getLogger().d(TAG, "execSQL", sql);
         }
 
         Synchronizer.SyncLock txLock = null;
@@ -406,7 +395,6 @@ public class SynchronizedDb
             }
         }
     }
-
 
     /**
      * Locking-aware wrapper for underlying database method.

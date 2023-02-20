@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -48,11 +48,12 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ViewBookOnWebsiteHandler;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -83,7 +84,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.LongNumberFormatte
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 @SuppressWarnings("WeakerAccess")
 public class EditBookViewModel
@@ -685,7 +686,7 @@ public class EditBookViewModel
             return true;
 
         } catch (@NonNull final DaoWriteException e) {
-            ServiceLocator.getInstance().getLogger()
+            LoggerFactory.getLogger()
                           .e(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
         }
         return false;
@@ -705,7 +706,7 @@ public class EditBookViewModel
             return true;
 
         } catch (@NonNull final DaoWriteException e) {
-            ServiceLocator.getInstance().getLogger()
+            LoggerFactory.getLogger()
                           .e(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
         }
         return false;
@@ -728,7 +729,7 @@ public class EditBookViewModel
             return true;
 
         } catch (@NonNull final DaoWriteException e) {
-            ServiceLocator.getInstance().getLogger()
+            LoggerFactory.getLogger()
                           .e(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
         }
         return false;
@@ -748,7 +749,7 @@ public class EditBookViewModel
             return true;
 
         } catch (@NonNull final DaoWriteException e) {
-            ServiceLocator.getInstance().getLogger()
+            LoggerFactory.getLogger()
                           .e(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
         }
 
@@ -773,7 +774,7 @@ public class EditBookViewModel
             return true;
 
         } catch (@NonNull final DaoWriteException e) {
-            ServiceLocator.getInstance().getLogger()
+            LoggerFactory.getLogger()
                           .e(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
         }
         return false;
@@ -793,7 +794,7 @@ public class EditBookViewModel
             return true;
 
         } catch (@NonNull final DaoWriteException e) {
-            ServiceLocator.getInstance().getLogger()
+            LoggerFactory.getLogger()
                           .e(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
         }
 

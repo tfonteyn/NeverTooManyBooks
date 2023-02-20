@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,7 +33,7 @@ import java.util.EnumSet;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 
 public abstract class SyncContractBase
         extends ActivityResultContract<Void, EnumSet<SyncContractBase.Outcome>> {
@@ -72,7 +72,7 @@ public abstract class SyncContractBase
     public EnumSet<SyncContractBase.Outcome> parseResult(final int resultCode,
                                                          @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            ServiceLocator.getInstance().getLogger()
+            LoggerFactory.getLogger()
                           .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 

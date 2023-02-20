@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,11 +40,12 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UncheckedStorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedStorageException;
 
 public class ImageDownloader {
 
@@ -155,7 +156,7 @@ public class ImageDownloader {
             FileUtils.delete(destination);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS || IGNORE_RENAME_FAILURE) {
-                ServiceLocator.getInstance().getLogger().e(TAG, e, "saveImage");
+                LoggerFactory.getLogger().e(TAG, e, "saveImage");
 
                 if (IGNORE_RENAME_FAILURE) {
                     return Optional.of(destination);

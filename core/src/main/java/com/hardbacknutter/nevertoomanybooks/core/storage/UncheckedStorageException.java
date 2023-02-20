@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils.exceptions;
+package com.hardbacknutter.nevertoomanybooks.core.storage;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,62 +27,60 @@ import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
 import java.util.Objects;
 
-import org.xml.sax.SAXException;
-
 /**
- * Wraps a {@link SAXException} with an unchecked exception.
+ * Wraps a {@link StorageException} with an unchecked exception.
  */
-public class UncheckedSAXException
+public class UncheckedStorageException
         extends RuntimeException {
 
-    private static final long serialVersionUID = 7389841331152934803L;
+    private static final long serialVersionUID = 8559698702101274197L;
 
     /**
      * Constructs an instance of this class.
      *
      * @param message the detail message, can be null
-     * @param cause   the {@code SAXException}
+     * @param cause   the {@code StorageException}
      *
      * @throws NullPointerException if the cause is {@code null}
      */
-    public UncheckedSAXException(@Nullable final String message,
-                                 @NonNull final SAXException cause) {
+    public UncheckedStorageException(@Nullable final String message,
+                                     @NonNull final StorageException cause) {
         super(message, Objects.requireNonNull(cause));
     }
 
     /**
      * Constructs an instance of this class.
      *
-     * @param cause the {@code SAXException}
+     * @param cause the {@code StorageException}
      *
      * @throws NullPointerException if the cause is {@code null}
      */
-    public UncheckedSAXException(@NonNull final SAXException cause) {
+    public UncheckedStorageException(@NonNull final StorageException cause) {
         super(Objects.requireNonNull(cause));
     }
 
     /**
      * Returns the cause of this exception.
      *
-     * @return the {@code SAXException} which is the cause of this exception.
+     * @return the {@code StorageException} which is the cause of this exception.
      */
     @Override
-    public SAXException getCause() {
-        return (SAXException) super.getCause();
+    public StorageException getCause() {
+        return (StorageException) super.getCause();
     }
 
     /**
      * Called to read the object from a stream.
      *
      * @throws InvalidObjectException if the object is invalid or has a cause that is not
-     *                                an {@code SAXException}
+     *                                an {@code StorageException}
      */
     private void readObject(@NonNull final ObjectInputStream ois)
             throws IOException, ClassNotFoundException {
         ois.defaultReadObject();
         final Throwable cause = super.getCause();
-        if (!(cause instanceof SAXException)) {
-            throw new InvalidObjectException("Cause must be an SAXException");
+        if (!(cause instanceof StorageException)) {
+            throw new InvalidObjectException("Cause must be an StorageException");
         }
     }
 }

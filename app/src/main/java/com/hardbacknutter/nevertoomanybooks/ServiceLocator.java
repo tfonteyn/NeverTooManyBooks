@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,7 +41,6 @@ import java.util.Locale;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
-import com.hardbacknutter.nevertoomanybooks.core.Logger;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.CacheDbHelper;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
@@ -87,7 +86,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.SeriesDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StripInfoDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TocEntryDaoImpl;
-import com.hardbacknutter.nevertoomanybooks.debug.LoggerImpl;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkChecker;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkCheckerImpl;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -119,9 +117,6 @@ public final class ServiceLocator {
     /** TODO: allow this to be injected. */
     @Nullable
     private CacheDbHelper cacheDbHelper;
-
-    @Nullable
-    private Logger logger;
 
     @Nullable
     private NetworkChecker networkChecker;
@@ -299,19 +294,6 @@ public final class ServiceLocator {
 
     public void setSystemLocaleSupplier(@NonNull final Supplier<List<Locale>> supplier) {
         this.systemLocaleSupplier = supplier;
-    }
-
-    @NonNull
-    public Logger getLogger() {
-        if (logger == null) {
-            logger = new LoggerImpl(appContext);
-        }
-        return logger;
-    }
-
-    @VisibleForTesting
-    public void setLogger(@Nullable final Logger logger) {
-        this.logger = logger;
     }
 
     @NonNull

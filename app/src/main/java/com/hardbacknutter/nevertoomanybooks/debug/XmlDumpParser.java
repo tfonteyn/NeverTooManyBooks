@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,7 +24,7 @@ import android.annotation.SuppressLint;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
@@ -63,14 +63,14 @@ public class XmlDumpParser
     @CallSuper
     public void startDocument()
             throws SAXException {
-        ServiceLocator.getInstance().getLogger()
+        LoggerFactory.getLogger()
                       .d(TAG, "startDocument", "<?xml version=\"1.0\"?>");
     }
 
     @CallSuper
     public void endDocument()
             throws SAXException {
-        ServiceLocator.getInstance().getLogger().d(TAG, "endDocument", "");
+        LoggerFactory.getLogger().d(TAG, "endDocument", "");
     }
 
     @CallSuper
@@ -101,7 +101,7 @@ public class XmlDumpParser
               .append(attributes.getValue(i)).append("\"");
         }
         sb.append(">");
-        ServiceLocator.getInstance().getLogger().d(TAG, "startElement", sb.toString());
+        LoggerFactory.getLogger().d(TAG, "startElement", sb.toString());
     }
 
     @CallSuper
@@ -109,7 +109,7 @@ public class XmlDumpParser
                            final String localName,
                            final String qName)
             throws SAXException {
-        ServiceLocator.getInstance().getLogger().d(TAG, "endElement", "</" + qName + ">");
+        LoggerFactory.getLogger().d(TAG, "endElement", "</" + qName + ">");
     }
 
     @CallSuper
@@ -121,7 +121,7 @@ public class XmlDumpParser
         for (int i = start; i < start + length; i++) {
             sb.append(ch[i]);
         }
-        ServiceLocator.getInstance().getLogger().d(TAG, "characters", sb.toString());
+        LoggerFactory.getLogger().d(TAG, "characters", sb.toString());
     }
 
     @CallSuper
@@ -133,20 +133,20 @@ public class XmlDumpParser
         for (int i = start; i < start + length; i++) {
             sb.append(ch[i]);
         }
-        ServiceLocator.getInstance().getLogger().d(TAG, "ignorableWhitespace", sb.toString());
+        LoggerFactory.getLogger().d(TAG, "ignorableWhitespace", sb.toString());
     }
 
     @CallSuper
     public void processingInstruction(final String target,
                                       final String data)
             throws SAXException {
-        ServiceLocator.getInstance().getLogger()
+        LoggerFactory.getLogger()
                       .d(TAG, "processingInstruction", "<?" + target + " " + data + "?>");
     }
 
     @CallSuper
     public void skippedEntity(final String name)
             throws SAXException {
-        ServiceLocator.getInstance().getLogger().d(TAG, "skippedEntity", "&" + name + ";");
+        LoggerFactory.getLogger().d(TAG, "skippedEntity", "&" + name + ";");
     }
 }

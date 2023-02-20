@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,32 +22,14 @@ package com.hardbacknutter.nevertoomanybooks.network;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
-import java.security.cert.CertificateException;
 
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
-import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoAuth;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 public interface ConnectionValidator {
-
-    @NonNull
-    static ConnectionValidator create(@NonNull final Context context,
-                                      @StringRes final int siteResId)
-            throws CertificateException {
-        if (siteResId == R.string.site_calibre) {
-            return new CalibreContentServer(context);
-        } else if (siteResId == R.string.site_stripinfo_be) {
-            return new StripInfoAuth();
-        } else {
-            throw new IllegalArgumentException(String.valueOf(siteResId));
-        }
-    }
 
     /**
      * Make a short call to test the connection.
