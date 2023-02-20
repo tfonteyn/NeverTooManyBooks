@@ -26,6 +26,7 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.database.DBCleaner;
@@ -60,7 +61,9 @@ public class DBCleanerTask
 
     @WorkerThread
     @Override
-    protected Boolean doWork(@NonNull final Context context) {
+    protected Boolean doWork() {
+        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+
         publishProgress(1, context.getString(R.string.progress_msg_optimizing));
 
         try {

@@ -38,14 +38,14 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
-import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 /**
  * Handles downloading, checking and cleanup of files.
@@ -100,7 +100,7 @@ public class FileManager {
      * <p>
      *
      * @param context Current context
-     * @param caller  to check for any cancellations
+     * @param progressListener  to check for any cancellations
      * @param isbn    to search for, <strong>must</strong> be valid.
      * @param cIdx    0..n image index
      * @param sizes   a list of images sizes in order of preference
@@ -113,7 +113,7 @@ public class FileManager {
     @NonNull
     @WorkerThread
     public ImageFileInfo search(@NonNull final Context context,
-                                @NonNull final Cancellable caller,
+                                @NonNull final ProgressListener progressListener,
                                 @NonNull final String isbn,
                                 @IntRange(from = 0, to = 1) final int cIdx,
                                 @NonNull final Size... sizes)
@@ -134,7 +134,7 @@ public class FileManager {
         // The idea is to check all sites for the same size first.
         // If none respond with that size, try the next size inline.
         for (final Size size : sizes) {
-            if (caller.isCancelled()) {
+            if (progressListener.isCancelled()) {
                 return new ImageFileInfo(isbn);
             }
 
@@ -148,7 +148,7 @@ public class FileManager {
                 // Should we search this site ?
                 if (currentSearch.contains(site.getEngineId())) {
 
-                    if (caller.isCancelled()) {
+                    if (progressListener.isCancelled()) {
                         return new ImageFileInfo(isbn);
                     }
 
@@ -157,7 +157,7 @@ public class FileManager {
                     if (searchEngine instanceof SearchEngine.CoverByIsbn
                         && searchEngine.isAvailable()) {
 
-                        searchEngine.setCaller(caller);
+                        searchEngine.setCaller(progressListener);
 
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                             Log.d(TAG, "search|SEARCHING"

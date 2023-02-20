@@ -21,16 +21,16 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
-import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -56,7 +56,7 @@ public class IsbnTest
         super.setup();
 
         searchEngine = Site.Type.Data.getSite(EngineId.Bedetheque).getSearchEngine();
-        searchEngine.setCaller(new MockCancellable());
+        searchEngine.setCaller(new TestProgressListener(TAG));
     }
 
     @Test
@@ -79,18 +79,5 @@ public class IsbnTest
         assertEquals("Softcover", book.getString(DBKey.FORMAT, null));
         assertEquals("anglais", book.getString(DBKey.LANGUAGE, null));
         // this is good enough... the local junit tests do the full parse test
-    }
-
-    private static class MockCancellable
-            implements Cancellable {
-        @Override
-        public void cancel() {
-
-        }
-
-        @Override
-        public boolean isCancelled() {
-            return false;
-        }
     }
 }

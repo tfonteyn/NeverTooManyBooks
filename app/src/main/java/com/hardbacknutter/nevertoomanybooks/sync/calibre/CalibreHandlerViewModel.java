@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,10 +34,10 @@ import java.security.cert.CertificateException;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 
 public class CalibreHandlerViewModel
         extends ViewModel {

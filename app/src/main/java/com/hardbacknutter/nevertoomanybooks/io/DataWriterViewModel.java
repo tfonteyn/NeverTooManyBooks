@@ -34,12 +34,13 @@ import java.security.cert.CertificateException;
 import javax.net.ssl.SSLException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 public abstract class DataWriterViewModel<RESULTS>
         extends ViewModel {
@@ -133,13 +134,15 @@ public abstract class DataWriterViewModel<RESULTS>
         @WorkerThread
         @Override
         @NonNull
-        protected RESULTS doWork(@NonNull final Context context)
+        protected RESULTS doWork()
                 throws DataWriterException,
                        CertificateException,
                        CredentialsException,
                        SSLException,
                        StorageException,
                        IOException {
+            final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+
 
             //noinspection ConstantConditions
             return helper.write(context, this);

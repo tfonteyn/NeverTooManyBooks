@@ -22,13 +22,13 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -40,6 +40,7 @@ import org.junit.Test;
 public class AuthorTest
         extends BaseDBTest {
 
+    private static final String TAG = "AuthorTest";
     private AuthorResolver resolver;
 
     @Before
@@ -47,7 +48,7 @@ public class AuthorTest
             throws DaoWriteException, StorageException {
         super.setup();
 
-        resolver = new BedethequeAuthorResolver(context, new NotCancellable());
+        resolver = new BedethequeAuthorResolver(context, new TestProgressListener(TAG));
 
         ServiceLocator.getInstance().getBedethequeCacheDao().clearCache();
     }
@@ -123,20 +124,5 @@ public class AuthorTest
         Assert.assertEquals("Liu", realAuthor.getFamilyName());
         Assert.assertEquals("Yi-chi", realAuthor.getGivenNames());
         Assert.assertNull(realAuthor.getRealAuthor());
-    }
-
-
-
-    private static class NotCancellable
-            implements Cancellable {
-        @Override
-        public void cancel() {
-
-        }
-
-        @Override
-        public boolean isCancelled() {
-            return false;
-        }
     }
 }

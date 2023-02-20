@@ -29,13 +29,13 @@ import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.network.NetworkUnavailableException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.core.network.NetworkUnavailableException;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 /**
  * Searches a single {@link SearchEngine}.
@@ -184,8 +184,9 @@ public class SearchTask
     @NonNull
     @Override
     @WorkerThread
-    protected Book doWork(@NonNull final Context context)
+    protected Book doWork()
             throws StorageException, SearchException, CredentialsException, IOException {
+        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
         publishProgress(1, context.getString(R.string.progress_msg_searching_site,
                                              searchEngine.getName(context)));

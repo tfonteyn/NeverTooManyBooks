@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,7 +26,7 @@ import androidx.annotation.Nullable;
 import javax.xml.parsers.ParserConfigurationException;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
-import com.hardbacknutter.nevertoomanybooks._mocks.MockCancellable;
+import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -42,6 +42,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 public class SeriesParserTest
         extends Base {
 
+    private static final String TAG = "SeriesParserTest";
+
     private BedethequeSearchEngine searchEngine;
 
     @BeforeEach
@@ -51,7 +53,7 @@ public class SeriesParserTest
 
         searchEngine = (BedethequeSearchEngine) Site.Type.Data
                 .getSite(EngineId.Bedetheque).getSearchEngine();
-        searchEngine.setCaller(new MockCancellable());
+        searchEngine.setCaller(new TestProgressListener(TAG));
     }
 
     @Test

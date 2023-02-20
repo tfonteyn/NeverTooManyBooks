@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,7 +26,7 @@ import java.util.Locale;
 import javax.xml.parsers.ParserConfigurationException;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
-import com.hardbacknutter.nevertoomanybooks._mocks.MockCancellable;
+import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
@@ -50,6 +50,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class IsfdbEditionsHandlerTest
         extends Base {
 
+    private static final String TAG = "IsfdbEditionsHandlerTes";
+
     private String sBaseUrl;
 
     private IsfdbSearchEngine searchEngine;
@@ -60,7 +62,7 @@ class IsfdbEditionsHandlerTest
         super.setup();
         searchEngine = (IsfdbSearchEngine) Site.Type.Data
                 .getSite(EngineId.Isfdb).getSearchEngine();
-        searchEngine.setCaller(new MockCancellable());
+        searchEngine.setCaller(new TestProgressListener(TAG));
         sBaseUrl = searchEngine.getHostUrl();
     }
 

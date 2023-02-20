@@ -27,12 +27,13 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 /**
  * Hard coded not to fetch any images.
@@ -95,8 +96,9 @@ public class IsfdbGetBookTask
     @NonNull
     @Override
     @WorkerThread
-    protected Book doWork(@NonNull final Context context)
+    protected Book doWork()
             throws StorageException, SearchException, CredentialsException {
+        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
         // create a new instance just for our own use
         searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine();

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,6 +21,8 @@ package com.hardbacknutter.nevertoomanybooks.tasks;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 
 /**
  * <strong>Warning:</strong> To prevent unintended garbage collection, you must store

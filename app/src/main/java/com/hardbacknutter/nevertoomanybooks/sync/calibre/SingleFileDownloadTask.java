@@ -28,9 +28,10 @@ import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.org.json.JSONException;
 
 class SingleFileDownloadTask
@@ -83,10 +84,12 @@ class SingleFileDownloadTask
 
     @NonNull
     @Override
-    protected Uri doWork(@NonNull final Context context)
+    protected Uri doWork()
             throws IOException,
                    StorageException,
                    JSONException {
+        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+
 
         setIndeterminate(true);
         publishProgress(0, context.getString(R.string.progress_msg_please_wait));

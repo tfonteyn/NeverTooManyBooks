@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -53,7 +53,8 @@ public class BuildLanguageMappingsTask
     @NonNull
     @Override
     @WorkerThread
-    protected Boolean doWork(@NonNull final Context context) {
+    protected Boolean doWork() {
+        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
         ServiceLocator.getInstance().getLanguages().createLanguageMappingCache(context);
         return true;
     }

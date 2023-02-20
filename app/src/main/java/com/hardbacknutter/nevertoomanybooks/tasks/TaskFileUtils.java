@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,7 +32,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
- * File utilities with support for a {@link Cancellable}; for use from tasks.
+ * File utilities with support for a {@link ProgressListener}; for use from tasks.
  */
 public final class TaskFileUtils {
     private TaskFileUtils() {
@@ -43,19 +43,19 @@ public final class TaskFileUtils {
      *
      * @param sourceDir   directory
      * @param destDir     directory
-     * @param cancellable (optional) to check for user cancellation
+     * @param progressListener (optional) to check for user cancellation
      *
      * @throws IOException on generic/other IO failures
      */
     static void copyDirectory(@NonNull final File sourceDir,
                               @NonNull final File destDir,
-                              @Nullable final Cancellable cancellable)
+                              @Nullable final ProgressListener progressListener)
             throws IOException {
         // sanity check
         if (sourceDir.isDirectory() && destDir.isDirectory()) {
             //noinspection ConstantConditions
             for (final File file : sourceDir.listFiles()) {
-                if (cancellable != null && cancellable.isCancelled()) {
+                if (progressListener != null && progressListener.isCancelled()) {
                     return;
                 }
                 final BasicFileAttributes fileAttr =
@@ -67,7 +67,7 @@ public final class TaskFileUtils {
                     final File destSubDir = new File(destDir, file.getName());
                     //noinspection ResultOfMethodCallIgnored
                     destSubDir.mkdir();
-                    copyDirectory(file, destSubDir, cancellable);
+                    copyDirectory(file, destSubDir, progressListener);
                 }
             }
         }
@@ -79,7 +79,7 @@ public final class TaskFileUtils {
      *
      * @param root        directory
      * @param filter      (optional) to apply; {@code null} for all files.
-     * @param cancellable (optional) to check for user cancellation
+     * @param progressListener (optional) to check for user cancellation
      *
      * @return number of bytes deleted
      *
@@ -87,20 +87,20 @@ public final class TaskFileUtils {
      */
     public static long deleteDirectory(@NonNull final File root,
                                        @Nullable final FileFilter filter,
-                                       @Nullable final Cancellable cancellable) {
+                                       @Nullable final ProgressListener progressListener) {
         long totalSize = 0;
         // sanity check
         if (root.isDirectory()) {
             //noinspection ConstantConditions
             for (final File file : root.listFiles(filter)) {
-                if (cancellable != null && cancellable.isCancelled()) {
+                if (progressListener != null && progressListener.isCancelled()) {
                     return totalSize;
                 }
                 if (file.isFile()) {
                     totalSize += file.length();
                     FileUtils.delete(file);
                 } else if (file.isDirectory()) {
-                    totalSize += deleteDirectory(file, filter, cancellable);
+                    totalSize += deleteDirectory(file, filter, progressListener);
                 }
             }
         }

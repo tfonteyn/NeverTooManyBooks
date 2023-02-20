@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,6 +30,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 public class StorageMoverTask
@@ -84,8 +85,9 @@ public class StorageMoverTask
 
     @Nullable
     @Override
-    protected Integer doWork(@NonNull final Context context)
+    protected Integer doWork()
             throws IOException {
+        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
         publishProgress(0, context.getString(R.string.progress_msg_please_wait));
 

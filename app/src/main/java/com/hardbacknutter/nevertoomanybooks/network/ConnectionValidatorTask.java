@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.network;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
@@ -29,9 +28,10 @@ import java.io.IOException;
 import java.security.cert.CertificateException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 public class ConnectionValidatorTask
         extends MTask<Boolean> {
@@ -68,8 +68,6 @@ public class ConnectionValidatorTask
     /**
      * Make a test connection.
      *
-     * @param context The localised Application context
-     *
      * @return {@code true} on success
      *
      * @throws CredentialsException on authentication/login failures
@@ -78,11 +76,13 @@ public class ConnectionValidatorTask
      */
     @Nullable
     @Override
-    protected Boolean doWork(@NonNull final Context context)
+    protected Boolean doWork()
             throws IOException,
                    StorageException,
                    CertificateException,
                    CredentialsException {
+        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+
 
         server = ConnectionValidatorFactory.create(context, siteResId);
         return server.validateConnection(context);

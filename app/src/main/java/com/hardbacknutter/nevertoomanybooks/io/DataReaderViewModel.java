@@ -34,12 +34,13 @@ import java.security.cert.CertificateException;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 public abstract class DataReaderViewModel<METADATA, RESULTS>
         extends ViewModel {
@@ -162,12 +163,14 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
         @WorkerThread
         @Override
         @NonNull
-        protected Optional<METADATA> doWork(@NonNull final Context context)
+        protected Optional<METADATA> doWork()
                 throws DataReaderException,
                        CertificateException,
                        CredentialsException,
                        StorageException,
                        IOException {
+            final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+
 
             //noinspection ConstantConditions
             return helper.readMetaData(context);
@@ -210,12 +213,14 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
         @WorkerThread
         @Override
         @NonNull
-        protected RESULTS doWork(@NonNull final Context context)
+        protected RESULTS doWork()
                 throws CertificateException,
                        CredentialsException,
                        DataReaderException,
                        StorageException,
                        IOException {
+            final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+
 
             //noinspection ConstantConditions
             return helper.read(context, this);

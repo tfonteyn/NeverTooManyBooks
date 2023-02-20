@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -60,7 +60,9 @@ public class RebuildTitleOrderByColumnTask
     @NonNull
     @Override
     @WorkerThread
-    protected Boolean doWork(@NonNull final Context context) {
+    protected Boolean doWork() {
+        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+
         // incorrect progress message, but it's half-true.
         publishProgress(1, context.getString(R.string.progress_msg_rebuilding_search_index));
 

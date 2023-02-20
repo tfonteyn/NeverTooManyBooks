@@ -27,7 +27,8 @@ import java.util.Locale;
 import javax.xml.parsers.ParserConfigurationException;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
-import com.hardbacknutter.nevertoomanybooks._mocks.MockCancellable;
+import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -39,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,6 +56,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class IsfdbBookHandlerTest
         extends JSoupBase {
 
+    private static final String TAG = "IsfdbBookHandlerTest";
+
     private IsfdbSearchEngine searchEngine;
 
     @BeforeEach
@@ -64,7 +66,7 @@ class IsfdbBookHandlerTest
         super.setup();
         searchEngine = (IsfdbSearchEngine) Site.Type.Data
                 .getSite(EngineId.Isfdb).getSearchEngine();
-        searchEngine.setCaller(new MockCancellable());
+        searchEngine.setCaller(new TestProgressListener(TAG));
 
         // Override the default 'false'
         mockPreferences.edit().putBoolean(IsfdbSearchEngine.PK_SERIES_FROM_TOC, true).apply();

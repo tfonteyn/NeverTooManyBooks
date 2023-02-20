@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,7 +31,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
-import com.hardbacknutter.nevertoomanybooks._mocks.MockCancellable;
+import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 
@@ -45,6 +45,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class IsfdbXmlPublicationTest
         extends Base {
 
+    private static final String TAG = "IsfdbXmlPublicationTest";
+
     private IsfdbSearchEngine searchEngine;
 
     @BeforeEach
@@ -53,7 +55,7 @@ class IsfdbXmlPublicationTest
         super.setup();
         searchEngine = (IsfdbSearchEngine) Site.Type.Data
                 .getSite(EngineId.Isfdb).getSearchEngine();
-        searchEngine.setCaller(new MockCancellable());
+        searchEngine.setCaller(new TestProgressListener(TAG));
 
         // Override the default 'false'
         mockPreferences.edit().putBoolean(IsfdbSearchEngine.PK_SERIES_FROM_TOC, true).apply();

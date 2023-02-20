@@ -20,19 +20,17 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.kbnl;
 
-import android.content.Context;
-
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
-import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -49,8 +47,6 @@ public class IsbnTest
 
     private static final String TAG = "IsbnTest";
 
-    private Context context;
-
     private SearchEngine searchEngine;
 
     @Before
@@ -58,10 +54,8 @@ public class IsbnTest
             throws DaoWriteException, StorageException {
         super.setup();
 
-        context = serviceLocator.getLocalizedAppContext();
-
         searchEngine = Site.Type.Data.getSite(EngineId.KbNl).getSearchEngine();
-        searchEngine.setCaller(new MockCancellable());
+        searchEngine.setCaller(new TestProgressListener(TAG));
     }
 
     @Test
@@ -78,18 +72,5 @@ public class IsbnTest
         assertEquals("De Discus valt aan", book.getString(DBKey.TITLE, null));
         assertEquals("1973", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         // this is good enough... the local junit tests do the full parse test
-    }
-
-    private static class MockCancellable
-            implements Cancellable {
-        @Override
-        public void cancel() {
-
-        }
-
-        @Override
-        public boolean isCancelled() {
-            return false;
-        }
     }
 }

@@ -26,7 +26,8 @@ import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
-import com.hardbacknutter.nevertoomanybooks._mocks.MockCancellable;
+import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -37,7 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,6 +51,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class BedethequeTest
         extends JSoupBase {
 
+    private static final String TAG = "BedethequeTest";
+
     private static final String UTF_8 = "UTF-8";
 
     private BedethequeSearchEngine searchEngine;
@@ -63,7 +65,7 @@ public class BedethequeTest
         super.setup();
         searchEngine = (BedethequeSearchEngine) Site.Type.Data
                 .getSite(EngineId.Bedetheque).getSearchEngine();
-        searchEngine.setCaller(new MockCancellable());
+        searchEngine.setCaller(new TestProgressListener(TAG));
     }
 
     @Test

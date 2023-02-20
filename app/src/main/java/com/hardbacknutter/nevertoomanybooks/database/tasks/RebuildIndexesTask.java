@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,6 +26,7 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
@@ -60,7 +61,9 @@ public class RebuildIndexesTask
     @NonNull
     @Override
     @WorkerThread
-    protected Boolean doWork(@NonNull final Context context) {
+    protected Boolean doWork() {
+        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+
         publishProgress(1, context.getString(R.string.progress_msg_rebuilding_search_index));
 
         try {

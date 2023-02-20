@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,6 +32,7 @@ import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 
 /**
@@ -72,7 +73,8 @@ public class TransFormTask
     @NonNull
     @Override
     @WorkerThread
-    protected TransformedData doWork(@NonNull final Context context) {
+    protected TransformedData doWork() {
+        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
         if (transformation.transform().isPresent()) {
             try {

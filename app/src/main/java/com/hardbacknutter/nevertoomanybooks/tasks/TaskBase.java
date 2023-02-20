@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.tasks;
 
-import android.content.Context;
 import android.os.Process;
 
 import androidx.annotation.AnyThread;
@@ -34,10 +33,10 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.database.UncheckedDaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedStorageException;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 
 /**
  * Common base for MutableLiveData / TaskListener driven tasks.
@@ -128,9 +127,8 @@ abstract class TaskBase<Result>
             Thread.currentThread().setName(taskName);
             Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
 
-            final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
             try {
-                final Result result = doWork(context);
+                final Result result = doWork();
                 if (isCancelled()) {
                     status = Status.Cancelled;
                     setTaskCancelled(result);
@@ -159,8 +157,6 @@ abstract class TaskBase<Result>
     /**
      * The actual 'work' method.
      *
-     * @param context The localised Application context
-     *
      * @return task result
      *
      * @throws CancellationException if the user cancelled us
@@ -168,7 +164,7 @@ abstract class TaskBase<Result>
      */
     @Nullable
     @WorkerThread
-    protected abstract Result doWork(@NonNull Context context)
+    protected abstract Result doWork()
             throws CancellationException, Exception;
 
     /**

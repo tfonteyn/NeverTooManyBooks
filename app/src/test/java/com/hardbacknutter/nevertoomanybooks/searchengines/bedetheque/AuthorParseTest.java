@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,7 +24,7 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
-import com.hardbacknutter.nevertoomanybooks._mocks.MockCancellable;
+import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +38,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class AuthorParseTest
         extends JSoupBase {
 
+    private static final String TAG = "AuthorParseTest";
+
     private static final String UTF_8 = "UTF-8";
 
     private BedethequeAuthorResolver resolver;
@@ -47,7 +49,7 @@ class AuthorParseTest
             throws ParserConfigurationException, SAXException {
         super.setup();
 
-        resolver = new BedethequeAuthorResolver(context, new MockCancellable());
+        resolver = new BedethequeAuthorResolver(context, new TestProgressListener(TAG));
     }
 
     @Test

@@ -26,7 +26,8 @@ import java.util.Locale;
 import javax.xml.parsers.ParserConfigurationException;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
-import com.hardbacknutter.nevertoomanybooks._mocks.MockCancellable;
+import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -34,7 +35,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,6 +47,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class OpenLibrarySearchEngineTest
         extends Base {
 
+    private static final String TAG = "OpenLibrarySETest";
+
     private OpenLibrarySearchEngine searchEngine;
 
     @BeforeEach
@@ -55,7 +57,7 @@ class OpenLibrarySearchEngineTest
         super.setup();
         searchEngine = (OpenLibrarySearchEngine) Site.Type.Data
                 .getSite(EngineId.OpenLibrary).getSearchEngine();
-        searchEngine.setCaller(new MockCancellable());
+        searchEngine.setCaller(new TestProgressListener(TAG));
     }
 
     @Test
