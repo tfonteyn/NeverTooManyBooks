@@ -45,6 +45,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
@@ -52,14 +54,14 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
+import com.hardbacknutter.nevertoomanybooks.core.Logger;
+import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedCursor;
+import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
+import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
+import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookshelfDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.CalibreCustomFieldDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -332,9 +334,14 @@ public class DBHelper
     public SynchronizedDb getDb() {
         synchronized (this) {
             if (synchronizedDb == null) {
+                Logger logger = null;
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
+                    logger = ServiceLocator.getInstance().getLogger();
+                }
+
                 // Dev note: don't move this to the constructor, "this" must
                 // be fully constructed before we can pass it to the SynchronizedDb constructor
-                synchronizedDb = new SynchronizedDb(SYNCHRONIZER, this,
+                synchronizedDb = new SynchronizedDb(SYNCHRONIZER, this, logger,
                                                     getCollation(getWritableDatabase()),
                                                     stmtCacheSize);
             }

@@ -30,13 +30,13 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
+import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
+import com.hardbacknutter.nevertoomanybooks.core.database.DomainExpression;
+import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
+import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.Sort;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
 /**

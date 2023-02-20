@@ -25,10 +25,10 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.adapter.BooklistAdapter;
+import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
+import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
+import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
 /**
  * A value class containing a minimal amount of details of a single row

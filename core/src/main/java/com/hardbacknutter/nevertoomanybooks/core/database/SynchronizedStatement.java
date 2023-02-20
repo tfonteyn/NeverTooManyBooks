@@ -17,22 +17,17 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.database.dbsync;
+package com.hardbacknutter.nevertoomanybooks.core.database;
 
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteStatement;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.Closeable;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.core.Logger;
 
 /**
  * Wrapper for statements that ensures locking is used.
@@ -56,6 +51,10 @@ public class SynchronizedStatement
     /** Indicates this is a 'read-only' statement. */
     private final boolean readOnly;
 
+    @SuppressWarnings("FieldNotUsedInToString")
+    @Nullable
+    private final Logger logger;
+
     /**
      * Constructor. Do not use directly!
      * <p>
@@ -63,20 +62,18 @@ public class SynchronizedStatement
      * (why? -> compileStatement uses locks)
      *
      * @param synchronizer to use
-     * @param db           Database Access
-     * @param sql          the sql for this statement
+     * @param statement    to execute
+     * @param readOnly     flag; is the statement a read-only operation
+     * @param logger       (optional) logger; passed in when in de debug mode
      */
     public SynchronizedStatement(@NonNull final Synchronizer synchronizer,
-                                 @NonNull final SQLiteDatabase db,
-                                 @NonNull final String sql) {
+                                 @NonNull final SQLiteStatement statement,
+                                 final boolean readOnly,
+                                 @Nullable final Logger logger) {
         this.synchronizer = synchronizer;
-        statement = db.compileStatement(sql);
-
-        // readOnly is not a debug flag, but used to get a shared versus exclusive lock.
-        // The toUpper was VERY slow (profiler test)... there are only "select" and "savepoint"
-        // we don't use the latter... so test on 's' only, and assume trim() is not needed.
-        //   readOnly = sql.trim().toUpperCase(Locale.ENGLISH).startsWith("SELECT");
-        readOnly = sql.charAt(0) == 'S' || sql.charAt(0) == 's';
+        this.logger = logger;
+        this.statement = statement;
+        this.readOnly = readOnly;
     }
 
     /**
@@ -91,9 +88,6 @@ public class SynchronizedStatement
     public void bindString(final int index,
                            @Nullable final String value) {
         if (value == null) {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "bindString|binding NULL", new Throwable());
-            }
             statement.bindNull(index);
         } else {
             statement.bindString(index, value);
@@ -206,8 +200,8 @@ public class SynchronizedStatement
         final Synchronizer.SyncLock sharedLock = synchronizer.getSharedLock();
         try {
             final long result = statement.simpleQueryForLong();
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
-                Log.d(TAG, "simpleQueryForLong|" + statement + "|result=" + result);
+            if (logger != null) {
+                logger.d(TAG, "simpleQueryForLong", statement + "|result=" + result);
             }
             return result;
         } finally {
@@ -228,8 +222,8 @@ public class SynchronizedStatement
         final Synchronizer.SyncLock sharedLock = synchronizer.getSharedLock();
         try {
             final long result = statement.simpleQueryForLong();
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
-                Log.d(TAG, "simpleQueryForLongOrZero|" + statement + "|result=" + result);
+            if (logger != null) {
+                logger.d(TAG, "simpleQueryForLongOrZero", statement + "|result=" + result);
             }
             return result;
         } catch (@NonNull final SQLiteDoneException ignore) {
@@ -257,8 +251,8 @@ public class SynchronizedStatement
         try {
             final String result = statement.simpleQueryForString();
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
-                Log.d(TAG, "simpleQueryForString|" + statement + "|result=" + result);
+            if (logger != null) {
+                logger.d(TAG, "simpleQueryForString", statement + "|result=" + result);
             }
             return result;
 
@@ -283,8 +277,8 @@ public class SynchronizedStatement
             return statement.simpleQueryForString();
 
         } catch (@NonNull final SQLiteDoneException e) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
-                Log.d(TAG, "simpleQueryForStringOrNull|" + statement + "|NULL");
+            if (logger != null) {
+                logger.d(TAG, "simpleQueryForStringOrNull", statement + "|NULL");
             }
             return null;
         } finally {
@@ -306,8 +300,8 @@ public class SynchronizedStatement
             txLock = synchronizer.getExclusiveLock();
         }
         try {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
-                Log.d(TAG, "execute|" + statement);
+            if (logger != null) {
+                logger.d(TAG, "execute", statement);
             }
             statement.execute();
         } finally {
@@ -327,8 +321,8 @@ public class SynchronizedStatement
         final Synchronizer.SyncLock exclusiveLock = synchronizer.getExclusiveLock();
         try {
             final int rowsAffected = statement.executeUpdateDelete();
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
-                Log.d(TAG, "executeUpdateDelete|" + statement + "|rowsAffected=" + rowsAffected);
+            if (logger != null) {
+                logger.d(TAG, "executeUpdateDelete", statement + "|rowsAffected=" + rowsAffected);
             }
             return rowsAffected;
         } finally {
@@ -349,11 +343,10 @@ public class SynchronizedStatement
         try {
             final long id = statement.executeInsert();
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
-                final Logger logger = ServiceLocator.getInstance().getLogger();
+            if (logger != null) {
                 logger.d(TAG, "executeInsert", statement + "|id=" + id);
                 if (id == -1) {
-                    logger.e(TAG, new Throwable(), "Insert failed|mStatement=" + statement);
+                    logger.e(TAG, new Throwable(), "Insert failed|" + statement);
                 }
             }
             return id;

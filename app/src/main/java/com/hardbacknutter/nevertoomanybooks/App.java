@@ -30,7 +30,7 @@ import androidx.annotation.NonNull;
 import java.io.File;
 import java.io.IOException;
 
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.core.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.LoggerImpl;
 import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;

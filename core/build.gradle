@@ -1,0 +1,90 @@
+plugins {
+    id("com.android.library")
+    id("org.jetbrains.kotlin.android")
+    id("de.mannodermaus.android-junit5")
+}
+
+android {
+    namespace 'com.hardbacknutter.nevertoomanybooks.core'
+    compileSdk rootProject.ext.compileSdk
+
+    defaultConfig {
+        minSdk rootProject.ext.minSdkVersion
+        targetSdk rootProject.ext.targetSdkVersion
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments["runnerBuilder"] =
+                "de.mannodermaus.junit5.AndroidJUnit5Builder"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
+                    'proguard-rules.pro'
+        }
+        beta {
+            initWith release
+        }
+        debug {
+            debuggable true
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+
+        // https://developer.android.com/studio/releases/#4-0-0-desugar
+        coreLibraryDesugaringEnabled true
+    }
+
+    kotlinOptions {
+        jvmTarget = 11
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+            // Can be enabled to make Log.x work. OR, use Logger.x
+            returnDefaultValues = false
+            all {
+                reports {
+                    junitXml.getRequired().set(true)
+                    html.getRequired().set(false)
+                }
+            }
+        }
+    }
+
+    lint {
+        // allow command line builds to complete
+        abortOnError false
+    }
+}
+
+dependencies {
+    implementation("androidx.appcompat:appcompat:${androidx_appcompat_version}")
+
+    // local tests use JUnit5
+    testImplementation("org.mockito:mockito-core:${mockito_version}")
+    testImplementation("org.mockito:mockito-junit-jupiter:${mockito_version}")
+
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${jupiter_version}")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${jupiter_version}")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:${jupiter_version}")
+
+    androidTestImplementation("de.mannodermaus.junit5:android-test-core:${mannodermaus_version}")
+    androidTestRuntimeOnly("de.mannodermaus.junit5:android-test-runner:${mannodermaus_version}")
+
+    // device tests use JUnit4
+    androidTestImplementation("androidx.test:core:${androidx_test_core_version}")
+    androidTestImplementation("androidx.test:runner:${androidx_test_runner_version}")
+    androidTestImplementation("androidx.test:rules:${androidx_test_rules_version}")
+
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:" +
+            "${kotlinx_coroutines_core}")
+}

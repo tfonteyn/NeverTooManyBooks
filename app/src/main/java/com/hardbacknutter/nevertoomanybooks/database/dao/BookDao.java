@@ -33,10 +33,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
+import com.hardbacknutter.nevertoomanybooks.core.database.TypedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.TypedCursor;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;

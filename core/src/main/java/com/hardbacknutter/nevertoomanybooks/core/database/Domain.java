@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.database.definitions;
+package com.hardbacknutter.nevertoomanybooks.core.database;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -122,7 +122,7 @@ public class Domain {
             // Lowercase the DATA from the name column
             // but not the column name itself!
             // This should never happen, but see the DAO method docs.
-            return "lower(" + name + ')' + collationClause + sort.getExpression();
+            return "LOWER(" + name + ')' + collationClause + sort.getExpression();
         } else {
             return name + collationClause + sort.getExpression();
         }

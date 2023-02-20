@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.database.definitions;
+package com.hardbacknutter.nevertoomanybooks.core.database;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -28,10 +28,7 @@ import androidx.annotation.Nullable;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
-
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 /**
  * Details of a database table as retrieved from {@code PRAGMA table_info(tableName)}.
@@ -80,8 +77,7 @@ public class TableInfo {
      */
     @Nullable
     public ColumnInfo getColumn(@NonNull final String name) {
-        final String lcName = name.toLowerCase(ServiceLocator.getInstance().getSystemLocale());
-        return columns.get(lcName);
+        return columns.get(name);
     }
 
     /**
@@ -95,13 +91,12 @@ public class TableInfo {
     @NonNull
     private Map<String, ColumnInfo> describeTable(@NonNull final SQLiteDatabase db,
                                                   @NonNull final String tableName) {
-        final Locale systemLocale = ServiceLocator.getInstance().getSystemLocale();
 
         final Map<String, ColumnInfo> allColumns = new HashMap<>();
         try (Cursor colCsr = db.rawQuery("PRAGMA table_info(" + tableName + ')', null)) {
             while (colCsr.moveToNext()) {
                 final ColumnInfo col = new ColumnInfo(colCsr);
-                allColumns.put(col.getName().toLowerCase(systemLocale), col);
+                allColumns.put(col.getName(), col);
             }
         }
 

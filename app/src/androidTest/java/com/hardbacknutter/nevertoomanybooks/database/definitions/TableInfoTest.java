@@ -21,11 +21,12 @@ package com.hardbacknutter.nevertoomanybooks.database.definitions;
 
 import androidx.test.filters.MediumTest;
 
-import org.junit.Test;
-
+import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
+import com.hardbacknutter.nevertoomanybooks.core.database.TableInfo;
 import com.hardbacknutter.nevertoomanybooks.database.BaseSetup;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
+
+import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
 

@@ -27,7 +27,7 @@ import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
+import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 
 abstract class BaseDaoImpl {
 

@@ -17,24 +17,20 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.database.dbsync;
+package com.hardbacknutter.nevertoomanybooks.core.database;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
+import android.database.sqlite.SQLiteStatement;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.database.TypedCursor;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.TableInfo;
+import com.hardbacknutter.nevertoomanybooks.core.Logger;
 
 /**
  * Database wrapper class that performs thread synchronization on all operations.
@@ -54,16 +50,14 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableInfo;
 public class SynchronizedDb
         implements AutoCloseable {
 
+    public static final int DEFAULT_STMT_CACHE_SIZE = 25;
     /** Log tag. */
     private static final String TAG = "SynchronizedDb";
-
     private static final String ERROR_TX_LOCK_WAS_NULL = "Lock passed in was NULL";
     private static final String ERROR_TX_ALREADY_STARTED = "TX already started";
     private static final String ERROR_TX_NOT_STARTED = "No TX started";
     private static final String ERROR_TX_INSIDE_SHARED = "Inside shared TX";
     private static final String ERROR_TX_WRONG_LOCK = "Wrong lock";
-    public static final int DEFAULT_STMT_CACHE_SIZE = 25;
-
     @NonNull
     private final SQLiteOpenHelper sqLiteOpenHelper;
     private final boolean collationCaseSensitive;
@@ -72,6 +66,10 @@ public class SynchronizedDb
     /** Underlying (and open for writing) database. */
     @NonNull
     private final SQLiteDatabase sqLiteDatabase;
+
+    @SuppressWarnings("FieldNotUsedInToString")
+    @Nullable
+    private final Logger logger;
 
     /** Sync object to use. */
     @NonNull
@@ -105,8 +103,9 @@ public class SynchronizedDb
      */
     public SynchronizedDb(@NonNull final Synchronizer synchronizer,
                           @NonNull final SQLiteOpenHelper sqLiteOpenHelper,
+                          @Nullable final Logger logger,
                           final boolean collationCaseSensitive) {
-        this(synchronizer, sqLiteOpenHelper, collationCaseSensitive, -1);
+        this(synchronizer, sqLiteOpenHelper, logger, collationCaseSensitive, -1);
     }
 
     /**
@@ -125,10 +124,12 @@ public class SynchronizedDb
      */
     public SynchronizedDb(@NonNull final Synchronizer synchronizer,
                           @NonNull final SQLiteOpenHelper sqLiteOpenHelper,
+                          @Nullable final Logger logger,
                           final boolean collationCaseSensitive,
                           @IntRange(to = SQLiteDatabase.MAX_SQL_CACHE_SIZE) final int preparedStmtCacheSize) {
         this.synchronizer = synchronizer;
         this.sqLiteOpenHelper = sqLiteOpenHelper;
+        this.logger = logger;
         this.collationCaseSensitive = collationCaseSensitive;
         this.preparedStmtCacheSize = preparedStmtCacheSize;
 
@@ -141,6 +142,11 @@ public class SynchronizedDb
         }
     }
 
+    @Nullable
+    public Logger getLogger() {
+        return logger;
+    }
+
     /**
      * Check if the collation this database uses is case sensitive.
      *
@@ -148,26 +154,6 @@ public class SynchronizedDb
      */
     public boolean isCollationCaseSensitive() {
         return collationCaseSensitive;
-    }
-
-    /**
-     * DEBUG only.
-     */
-    @SuppressWarnings("unused")
-    private static void debugDumpInfo(@NonNull final SQLiteDatabase db) {
-        final String[] sql = {"SELECT sqlite_version() AS sqlite_version",
-                "PRAGMA encoding",
-                "PRAGMA collation_list",
-                "PRAGMA foreign_keys",
-                              "PRAGMA recursive_triggers",
-                              };
-        for (final String s : sql) {
-            try (Cursor cursor = db.rawQuery(s, null)) {
-                if (cursor.moveToNext()) {
-                    Log.d(TAG, "debugDumpInfo|" + s + " = " + cursor.getString(0));
-                }
-            }
-        }
     }
 
     /**
@@ -226,11 +212,8 @@ public class SynchronizedDb
         // We're being paranoid here... we should always be called in a transaction,
         // which means we should not bother with LOCK_EXCLUSIVE.
         // But having the logic in place because: 1) future proof + 2) developer boo-boo,
-
-        if (BuildConfig.DEBUG /* always */) {
-            if (!sqLiteDatabase.inTransaction()) {
-                throw new TransactionException(TransactionException.REQUIRED);
-            }
+        if (!sqLiteDatabase.inTransaction()) {
+            throw new TransactionException(TransactionException.REQUIRED);
         }
 
         Synchronizer.SyncLock txLock = null;
@@ -339,8 +322,8 @@ public class SynchronizedDb
      * loops should use {@link #compileStatement} instead.
      *
      * @return the number of rows affected if a whereClause is passed in, 0
-     * otherwise. To remove all rows and get a count pass "1" as the
-     * whereClause.
+     *         otherwise. To remove all rows and get a count pass "1" as the
+     *         whereClause.
      */
     @SuppressWarnings("UnusedReturnValue")
     public int delete(@NonNull final String table,
@@ -382,7 +365,15 @@ public class SynchronizedDb
         }
 
         try {
-            return new SynchronizedStatement(synchronizer, sqLiteDatabase, sql);
+            final SQLiteStatement statement = sqLiteDatabase.compileStatement(sql);
+            // readOnly is used to get a shared versus exclusive lock.
+            // The toUpperCase call was VERY slow (profiler test)
+            // As there are only "select" and "savepoint" and  we don't use the latter:
+            // test on 's' only, and assume trim() is not needed.
+            //   readOnly = sql.trim().toUpperCase(Locale.ENGLISH).startsWith("SELECT");
+            final boolean readOnly = sql.charAt(0) == 'S' || sql.charAt(0) == 's';
+
+            return new SynchronizedStatement(synchronizer, statement, readOnly, logger);
         } finally {
             if (txLock != null) {
                 txLock.unlock();
@@ -394,8 +385,8 @@ public class SynchronizedDb
      * Locking-aware wrapper for underlying database method.
      */
     public void execSQL(@NonNull final String sql) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
-            Log.d(TAG, "ENTER|execSQL|sql=" + sql);
+        if (logger != null) {
+            logger.d(TAG, "execSQL", sql);
         }
 
         Synchronizer.SyncLock txLock = null;
@@ -633,42 +624,4 @@ public class SynchronizedDb
         return synchronizer;
     }
 
-    /**
-     * DEBUG. Dumps the content of this table to the debug output.
-     *
-     * @param tableDefinition to dump
-     * @param limit           LIMIT limit
-     * @param orderBy         ORDER BY orderBy
-     * @param tag             log tag to use
-     * @param header          a header which will be logged first
-     */
-    public void dumpTable(@NonNull final TableDefinition tableDefinition,
-                          final int limit,
-                          @NonNull final String orderBy,
-                          @NonNull final String tag,
-                          @NonNull final String header) {
-        if (BuildConfig.DEBUG /* always */) {
-            Log.d(tag, "Table: " + tableDefinition.getName() + ": " + header);
-
-            final String sql =
-                    "SELECT * FROM " + tableDefinition.getName()
-                    + " ORDER BY " + orderBy + " LIMIT " + limit;
-            try (Cursor cursor = rawQuery(sql, null)) {
-                final StringBuilder columnHeading = new StringBuilder("\n");
-                final String[] columnNames = cursor.getColumnNames();
-                for (final String column : columnNames) {
-                    columnHeading.append(String.format("%-12s  ", column));
-                }
-                Log.d(tag, columnHeading.toString());
-
-                while (cursor.moveToNext()) {
-                    final StringBuilder line = new StringBuilder();
-                    for (int c = 0; c < cursor.getColumnCount(); c++) {
-                        line.append(String.format("%-12s  ", cursor.getString(c)));
-                    }
-                    Log.d(tag, line.toString());
-                }
-            }
-        }
-    }
 }

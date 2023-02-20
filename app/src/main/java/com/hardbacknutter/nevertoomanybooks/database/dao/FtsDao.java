@@ -28,8 +28,8 @@ import androidx.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
+import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 public interface FtsDao {

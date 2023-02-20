@@ -17,14 +17,14 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.database.definitions;
+package com.hardbacknutter.nevertoomanybooks.core.database;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
 
 /**
  * A data class representing a domain + the sql column expression + a sorting flag.
@@ -88,9 +88,9 @@ public class DomainExpression {
      */
     public DomainExpression(@NonNull final Domain domain,
                             @NonNull final Sort sort) {
-        if (BuildConfig.DEBUG /* Always */) {
+        if (BuildConfig.DEBUG /* always */) {
             if (sort == Sort.Unsorted) {
-                throw new IllegalArgumentException("Must be Asc/Desc sorted");
+                throw new IllegalArgumentException("Sort must be Asc/Desc");
             }
         }
         this.domain = domain;

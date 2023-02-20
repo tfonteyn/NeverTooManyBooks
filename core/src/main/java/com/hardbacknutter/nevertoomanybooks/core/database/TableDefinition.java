@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.database.definitions;
+package com.hardbacknutter.nevertoomanybooks.core.database;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDoneException;
@@ -39,8 +39,8 @@ import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
+import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
+
 
 /**
  * Class to store table name and a list of domain definitions.
@@ -55,34 +55,26 @@ public class TableDefinition {
     private static final String TABLE_EXISTS_SQL_TEMP =
             "SELECT COUNT(*) FROM sqlite_temp_master WHERE type='table' AND name=?";
 
-    /** List of index definitions for this table. */
-    private final Collection<IndexDefinition> indexes = new ArrayList<>();
-    /** Used for checking if an index has already been added. Only used in DEBUG. */
-    private final Collection<Integer> debugIndexNameDuplicates = new HashSet<>();
-
     /** List of domains in this table. */
     private final List<Domain> domains = new ArrayList<>();
-    /** Used for checking if a domain has already been added. Only used in DEBUG. */
-    private final Collection<Integer> debugDomainNameDuplicates = new HashSet<>();
-
+    /** List of index definitions for this table. */
+    private final Collection<IndexDefinition> indexes = new ArrayList<>();
     /** List of domains forming primary key. */
     private final List<Domain> primaryKey = new ArrayList<>();
-
     /** List of parent tables (tables referred to by foreign keys on this table). */
     private final Map<TableDefinition, FkReference> parents =
             Collections.synchronizedMap(new HashMap<>());
-
     /** List of child tables (tables referring to by foreign keys to this table). */
     private final Map<TableDefinition, FkReference> children =
             Collections.synchronizedMap(new HashMap<>());
-
     @NonNull
     private final String name;
     @NonNull
     private final String alias;
+    @Nullable
+    private final DebugHelper debugHelper;
     @NonNull
     private TableType type = TableType.Standard;
-
     /** Cached table structure info. */
     @Nullable
     private TableInfo tableInfo;
@@ -97,6 +89,12 @@ public class TableDefinition {
                            @NonNull final String alias) {
         this.name = name;
         this.alias = alias;
+
+        if (BuildConfig.DEBUG /* always */) {
+            debugHelper = new DebugHelper();
+        } else {
+            debugHelper = null;
+        }
     }
 
     /**
@@ -147,28 +145,12 @@ public class TableDefinition {
      */
     public void clear() {
         domains.clear();
-        debugDomainNameDuplicates.clear();
         indexes.clear();
-        debugIndexNameDuplicates.clear();
         primaryKey.clear();
 
-//        // Need to make local copies to avoid 'collection modified' errors
-//        final Collection<TableDefinition> tmpParents = new ArrayList<>();
-//        for (final FkReference fk : parents.values()) {
-//            tmpParents.add(fk.primaryKeyTable);
-//        }
-//        for (final TableDefinition parent : tmpParents) {
-//            removeReference(parent);
-//        }
-//
-//        // Need to make local copies to avoid 'collection modified' errors
-//        final Collection<TableDefinition> tmpChildren = new ArrayList<>();
-//        for (final FkReference fk : children.values()) {
-//            tmpChildren.add(fk.foreignKeyTable);
-//        }
-//        for (final TableDefinition child : tmpChildren) {
-//            child.removeReference(this);
-//        }
+        if (debugHelper != null) {
+            debugHelper.clear();
+        }
 
         parents.values().stream()
                .map(FkReference::getPrimaryKeyTable)
@@ -235,14 +217,8 @@ public class TableDefinition {
      */
     @NonNull
     public TableDefinition addDomains(@NonNull final Domain... domains) {
-        if (BuildConfig.DEBUG /* always */) {
-            Arrays.stream(domains).forEach(domain -> {
-                final int nameHash = domain.getName().hashCode();
-                if (debugDomainNameDuplicates.contains(nameHash)) {
-                    throw new IllegalArgumentException("Duplicate domain: " + domain);
-                }
-                debugDomainNameDuplicates.add(nameHash);
-            });
+        if (debugHelper != null) {
+            debugHelper.addDomains(domains);
         }
         Collections.addAll(this.domains, domains);
         return this;
@@ -322,12 +298,10 @@ public class TableDefinition {
                                         @NonNull final Domain... foreignKeyDomains) {
         final FkReference fk = new FkReference(primaryKeyTable, this, foreignKeyDomains);
 
-        if (BuildConfig.DEBUG /* always */) {
-            if (fk.getForeignKeyTable() != this) {
-                throw new IllegalArgumentException(
-                        "Foreign key does not include this table as child");
-            }
+        if (fk.getForeignKeyTable() != this) {
+            throw new IllegalStateException("Foreign key does not include this table as child");
         }
+
         parents.put(fk.primaryKeyTable, fk);
         if (!fk.primaryKeyTable.children.containsKey(this)) {
             fk.primaryKeyTable.children.put(this, fk);
@@ -359,13 +333,8 @@ public class TableDefinition {
     public TableDefinition addIndex(@NonNull final String nameSuffix,
                                     final boolean unique,
                                     @NonNull final Domain... domains) {
-        if (BuildConfig.DEBUG /* always */) {
-            // Make sure not already defined
-            final int nameHash = nameSuffix.hashCode();
-            if (debugIndexNameDuplicates.contains(nameHash)) {
-                throw new IllegalStateException("Duplicate nameSuffix: " + nameSuffix);
-            }
-            debugIndexNameDuplicates.add(nameHash);
+        if (debugHelper != null) {
+            debugHelper.addIndex(nameSuffix);
         }
 
         indexes.add(new IndexDefinition(this, nameSuffix + "_" + (indexes.size() + 1),
@@ -560,53 +529,6 @@ public class TableDefinition {
         }
     }
 
-//    /**
-//     * The use of recreateAndReload is dangerous right now and can break updates.
-//     *
-//     * More specifically: the recreateAndReload routine can only be used ONCE per table.
-//     * We'll need to keep previous table definitions as BC used to do.
-//     * <p>
-//     * Alter the physical table in the database.
-//     * Takes care of newly added (based on TableDefinition),
-//     * removes obsolete, and renames columns. The latter based on a list/map passed in.
-//     *
-//     * <strong>DOES NOT CREATE INDEXES - those MUST be recreated afterwards by the caller</strong>
-//     *
-//     * <a href="https://www.sqlite.org/lang_altertable.html#making_other_kinds_of_table_schema_changes">
-//     * SQLite - making_other_kinds_of_table_schema_changes</a>
-//     * <p>
-//     * The 12 steps in summary:
-//     * <ol>
-//     *  <li>If foreign key constraints are enabled,
-//     *      disable them using PRAGMA foreign_keys=OFF.</li>
-//     *  <li>Create new table</li>
-//     *  <li>Copy data</li>
-//     *  <li>Drop old table</li>
-//     *  <li>Rename new into old</li>
-//     *  <li>If foreign keys constraints were originally enabled, re-enable them now.</li>
-//     * </ol>
-//     *
-//     * @param db       Database Access
-//     * @param toRename (optional) Map of fields to be renamed
-//     * @param toRemove (optional) List of fields to be removed
-//     */
-//    public void recreateAndReload(@NonNull final SQLiteDatabase db,
-//                                  @SuppressWarnings("SameParameterValue")
-//                                  @Nullable final Map<String, String> toRename,
-//                                  @Nullable final Collection<String> toRemove) {
-//
-//        final String dstTableName = "copyOf" + name;
-//        // With constraints... sqlite does not allow to add constraints later.
-//        // Without indexes.
-//        db.execSQL(def(dstTableName, true));
-//
-//        // This handles re-ordered fields etc.
-//        copyTableSafely(db, dstTableName, toRemove, toRename);
-//
-//        db.execSQL("DROP TABLE " + name);
-//        db.execSQL("ALTER TABLE " + dstTableName + " RENAME TO " + name);
-//    }
-
     /**
      * Provide a safe table copy method that is insulated from risks associated with
      * column order. This method will copy all columns from the source to the destination;
@@ -654,6 +576,53 @@ public class TableDefinition {
                 + " SELECT " + String.join(",", srcColumns) + " FROM " + name;
         db.execSQL(sql);
     }
+
+//    /**
+//     * The use of recreateAndReload is dangerous right now and can break updates.
+//     *
+//     * More specifically: the recreateAndReload routine can only be used ONCE per table.
+//     * We'll need to keep previous table definitions as BC used to do.
+//     * <p>
+//     * Alter the physical table in the database.
+//     * Takes care of newly added (based on TableDefinition),
+//     * removes obsolete, and renames columns. The latter based on a list/map passed in.
+//     *
+//     * <strong>DOES NOT CREATE INDEXES - those MUST be recreated afterwards by the caller</strong>
+//     *
+//     * <a href="https://www.sqlite.org/lang_altertable.html#making_other_kinds_of_table_schema_changes">
+//     * SQLite - making_other_kinds_of_table_schema_changes</a>
+//     * <p>
+//     * The 12 steps in summary:
+//     * <ol>
+//     *  <li>If foreign key constraints are enabled,
+//     *      disable them using PRAGMA foreign_keys=OFF.</li>
+//     *  <li>Create new table</li>
+//     *  <li>Copy data</li>
+//     *  <li>Drop old table</li>
+//     *  <li>Rename new into old</li>
+//     *  <li>If foreign keys constraints were originally enabled, re-enable them now.</li>
+//     * </ol>
+//     *
+//     * @param db       Database Access
+//     * @param toRename (optional) Map of fields to be renamed
+//     * @param toRemove (optional) List of fields to be removed
+//     */
+//    public void recreateAndReload(@NonNull final SQLiteDatabase db,
+//                                  @SuppressWarnings("SameParameterValue")
+//                                  @Nullable final Map<String, String> toRename,
+//                                  @Nullable final Collection<String> toRemove) {
+//
+//        final String dstTableName = "copyOf" + name;
+//        // With constraints... sqlite does not allow to add constraints later.
+//        // Without indexes.
+//        db.execSQL(def(dstTableName, true));
+//
+//        // This handles re-ordered fields etc.
+//        copyTableSafely(db, dstTableName, toRemove, toRename);
+//
+//        db.execSQL("DROP TABLE " + name);
+//        db.execSQL("ALTER TABLE " + dstTableName + " RENAME TO " + name);
+//    }
 
     /**
      * Return the SQL that can be used to define this table.
@@ -718,6 +687,17 @@ public class TableDefinition {
         return sql.toString();
     }
 
+    /**
+     * Supported/used table types.
+     *
+     * @see <a href=https://sqlite.org/fts3.html">https://sqlite.org/fts3.html</a>
+     */
+    public enum TableType {
+        Standard,
+        Temporary,
+        FTS
+    }
+
 //    /**
 //     * NOT USED RIGHT NOW. BEFORE USING SHOULD BE ENHANCED WITH PREPROCESS_TITLE IF NEEDED
 //     * <p>
@@ -758,15 +738,35 @@ public class TableDefinition {
 //        }
 //    }
 
-    /**
-     * Supported/used table types.
-     *
-     * @see <a href=https://sqlite.org/fts3.html">https://sqlite.org/fts3.html</a>
-     */
-    public enum TableType {
-        Standard,
-        Temporary,
-        FTS
+    private static class DebugHelper {
+        /** Used for checking if a domain has already been added. Only used in DEBUG. */
+        private final Collection<Integer> debugDomainNameDuplicates = new HashSet<>();
+        /** Used for checking if an index has already been added. Only used in DEBUG. */
+        private final Collection<Integer> debugIndexNameDuplicates = new HashSet<>();
+
+        void clear() {
+            debugDomainNameDuplicates.clear();
+            debugIndexNameDuplicates.clear();
+        }
+
+        void addDomains(@NonNull final Domain... domains) {
+            Arrays.stream(domains).forEach(domain -> {
+                final int nameHash = domain.getName().hashCode();
+                if (debugDomainNameDuplicates.contains(nameHash)) {
+                    throw new IllegalStateException("Duplicate domain: " + domain);
+                }
+                debugDomainNameDuplicates.add(nameHash);
+            });
+        }
+
+        void addIndex(@NonNull final String nameSuffix) {
+            // Make sure not already defined
+            final int nameHash = nameSuffix.hashCode();
+            if (debugIndexNameDuplicates.contains(nameHash)) {
+                throw new IllegalStateException("Duplicate nameSuffix: " + nameSuffix);
+            }
+            debugIndexNameDuplicates.add(nameHash);
+        }
     }
 
     /**
@@ -821,7 +821,10 @@ public class TableDefinition {
         @NonNull
         String getPredicate() {
             final List<Domain> pk = primaryKeyTable.getPrimaryKey();
-            SanityCheck.requireValue(pk, () -> "No primary key for table: " + primaryKeyTable);
+
+            if (pk.isEmpty()) {
+                throw new IllegalStateException("No primary key for table: " + primaryKeyTable);
+            }
 
             final StringJoiner sql = new StringJoiner(" AND ", "(", ")");
             for (int i = 0; i < pk.size(); i++) {

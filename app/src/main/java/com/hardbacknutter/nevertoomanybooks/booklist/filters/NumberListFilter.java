@@ -26,8 +26,8 @@ import androidx.annotation.NonNull;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
+import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
+import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 
 /**
  * A non-persistable {@link Filter}.

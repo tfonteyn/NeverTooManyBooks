@@ -22,7 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database;
 import java.util.Collection;
 import java.util.HashSet;
 
-import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
+import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 
 import org.junit.jupiter.api.Test;
 

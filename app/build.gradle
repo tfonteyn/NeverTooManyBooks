@@ -230,10 +230,11 @@ android {
 }
 
 dependencies {
+    implementation project(path: ":core")
+    implementation project(path: ":fastscroller")
     // We're using an updated/repacked org.json, version 20220924
     // https://github.com/stleary/JSON-java
     implementation project(path: ":repacked-org-json")
-    implementation project(path: ":fastscroller")
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:${desugar_version}")
 

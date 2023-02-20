@@ -28,12 +28,16 @@ import androidx.annotation.Nullable;
 
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.Logger;
+import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
+import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
+import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedCursor;
+import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
+import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
+import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 
 /**
  * {@link SQLiteOpenHelper} for the cache database.
@@ -201,9 +205,15 @@ public class CacheDbHelper
     public SynchronizedDb getDb() {
         synchronized (this) {
             if (db == null) {
+                Logger logger = null;
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
+                    logger = ServiceLocator.getInstance().getLogger();
+                }
+
                 // Dev note: don't move this to the constructor, "this" must
                 // be fully constructed before we can pass it to the SynchronizedDb constructor
-                db = new SynchronizedDb(SYNCHRONIZER, this, collationCaseSensitive);
+                db = new SynchronizedDb(SYNCHRONIZER, this, logger,
+                                        collationCaseSensitive);
             }
             return db;
         }

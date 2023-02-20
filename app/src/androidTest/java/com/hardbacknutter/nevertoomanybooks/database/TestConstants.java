@@ -21,7 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.database;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
+import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;

@@ -48,3 +48,4 @@ rootProject.name = "NeverTooManyBooks"
 include ':app'
 include ':fastscroller'
 include ':repacked-org-json'
+include ':core'

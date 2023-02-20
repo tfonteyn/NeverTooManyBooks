@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.database.definitions;
+package com.hardbacknutter.nevertoomanybooks.core.database;
 
 import android.database.Cursor;
 import android.os.Parcel;
@@ -26,8 +26,6 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 
 import java.util.Map;
-
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 /**
  * <a href="https://sqlite.org/datatype3.html#storage_classes_and_datatypes">
@@ -113,12 +111,13 @@ public enum SqLiteDataType
      * determination of column affinity</a>
      * <p>
      * We only lookup the more common types.
+     *
+     * @param typeName one of the {@link #MAP} keys
+     *                 Must be lower-case
      */
     @NonNull
     static SqLiteDataType getInstance(@NonNull final String typeName) {
-        // We MUST use the system locale here.
-        final String lcName = typeName.toLowerCase(ServiceLocator.getInstance().getSystemLocale());
-        final SqLiteDataType type = MAP.get(lcName);
+        final SqLiteDataType type = MAP.get(typeName);
         if (type != null) {
             return type;
         }

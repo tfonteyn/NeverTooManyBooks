@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.database;
+package com.hardbacknutter.nevertoomanybooks.core.database;
 
 import android.annotation.SuppressLint;
 import android.database.Cursor;
@@ -26,13 +26,6 @@ import android.database.sqlite.SQLiteQuery;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.TableInfo;
 
 /**
  * Wrapper for {@link SynchronizedCursor}.
@@ -69,10 +62,10 @@ public class TypedCursor
      * @param query     Part of standard cursor constructor.
      * @param sync      Synchronizer object
      */
-    public TypedCursor(@NonNull final SQLiteCursorDriver driver,
-                       @NonNull final String editTable,
-                       @NonNull final SQLiteQuery query,
-                       @NonNull final Synchronizer sync) {
+    TypedCursor(@NonNull final SQLiteCursorDriver driver,
+                @NonNull final String editTable,
+                @NonNull final SQLiteQuery query,
+                @NonNull final Synchronizer sync) {
         super(driver, editTable, query, sync);
     }
 
@@ -97,7 +90,6 @@ public class TypedCursor
     @SuppressLint("WrongConstant")
     @Override
     public int getType(final int columnIndex) {
-
         // initialise once.
         if (db != null && tableDefinition != null && tableInfo == null) {
             tableInfo = db.getTableInfo(tableDefinition);

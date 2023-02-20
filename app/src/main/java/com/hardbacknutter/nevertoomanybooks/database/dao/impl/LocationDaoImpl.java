@@ -21,9 +21,9 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LocationDao;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 
 public class LocationDaoImpl
         extends InlineStringDaoImpl

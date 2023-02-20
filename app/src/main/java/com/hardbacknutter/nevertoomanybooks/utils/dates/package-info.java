@@ -43,7 +43,7 @@
  * but <strong>string COMPARE as in 'where' clauses</strong> will cause faulty results.
  * <p>
  * Affected columns are those of type
- * {@link  com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType#DateTime}.
+ * {@link  com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType#DateTime}.
  * Status on 2020-09-26:
  * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#DATE_ADDED__UTC}
  * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#DATE_LAST_UPDATED__UTC}
@@ -51,7 +51,7 @@
  * {@link com.hardbacknutter.nevertoomanybooks.database.CacheDbHelper}#IMAGE_LAST_UPDATED__UTC
  * <p>
  * Columns of type
- * {@link  com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType#Date}
+ * {@link  com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType#Date}
  * Status on 2020-09-26:
  * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#READ_START__DATE}
  * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#READ_END__DATE}

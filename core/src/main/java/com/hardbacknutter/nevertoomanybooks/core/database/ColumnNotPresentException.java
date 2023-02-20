@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,23 +17,19 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.database.dbsync;
+package com.hardbacknutter.nevertoomanybooks.core.database;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 
-public class TransactionException
+/**
+ * Debug exception to make it clear when we've got SQL issues...
+ */
+public class ColumnNotPresentException
         extends RuntimeException {
 
-    public static final String REQUIRED = "TX required";
+    private static final long serialVersionUID = -5065796313450875326L;
 
-    private static final long serialVersionUID = 8342179163992505514L;
-
-    public TransactionException(@Nullable final String message) {
-        super(message);
-    }
-
-    TransactionException(@Nullable final String message,
-                         @Nullable final Exception cause) {
-        super(message, cause);
+    public ColumnNotPresentException(@NonNull final String columnName) {
+        super("Column `" + columnName + "` not present in cursor");
     }
 }

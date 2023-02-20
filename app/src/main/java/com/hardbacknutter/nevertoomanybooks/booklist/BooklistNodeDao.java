@@ -34,12 +34,13 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.database.DbDebugUtils;
+import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
+import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
+import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
+import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
+import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LIST_NODE_STATE;
@@ -498,8 +499,8 @@ public class BooklistNodeDao {
                        + "|fromLevel=" + nodeLevel
                        + "|endRowExcl=" + endRowExcl);
 
-            db.dumpTable(TBL_BOOK_LIST_NODE_STATE, 10, DBKey.PK_ID,
-                         "saveNodesBetween", "before delete");
+            DbDebugUtils.dumpTable(db, TBL_BOOK_LIST_NODE_STATE, 10, DBKey.PK_ID,
+                                   "saveNodesBetween", "before delete");
         }
 
         int rowsUpdated;
@@ -521,8 +522,8 @@ public class BooklistNodeDao {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
             Log.d(TAG, "saveNodesBetween|rowsDeleted=" + rowsUpdated);
-            db.dumpTable(TBL_BOOK_LIST_NODE_STATE, 10, DBKey.PK_ID,
-                         "saveNodesBetween", "delete done");
+            DbDebugUtils.dumpTable(db, TBL_BOOK_LIST_NODE_STATE, 10, DBKey.PK_ID,
+                                   "saveNodesBetween", "delete done");
         }
 
         // Read all nodes below the given node (again inc. start, excl. end),
@@ -540,8 +541,8 @@ public class BooklistNodeDao {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
             Log.d(TAG, "saveNodesBetween|rowsInserted=" + rowsUpdated);
-            db.dumpTable(TBL_BOOK_LIST_NODE_STATE, 10, DBKey.PK_ID,
-                         "saveNodesBetween", "insert done");
+            DbDebugUtils.dumpTable(db, TBL_BOOK_LIST_NODE_STATE, 10, DBKey.PK_ID,
+                                   "saveNodesBetween", "insert done");
         }
     }
 
