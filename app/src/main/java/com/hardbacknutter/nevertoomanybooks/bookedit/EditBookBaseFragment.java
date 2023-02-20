@@ -47,15 +47,17 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.dialogs.PartialDatePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.widgets.datepicker.DatePickerListener;
 import com.hardbacknutter.nevertoomanybooks.widgets.datepicker.DateRangePicker;
@@ -104,7 +106,8 @@ public abstract class EditBookBaseFragment
                                      Lifecycle.State.RESUMED);
 
         //noinspection ConstantConditions
-        dateParser = new FullDateParser(getContext());
+        dateParser = new FullDateParser(ServiceLocator.getInstance().getSystemLocale(),
+                                        LocaleListUtils.asList(getContext()));
 
         partialDatePickerLauncher.registerForFragmentResult(getChildFragmentManager(),
                                                             RK_DATE_PICKER_PARTIAL, this);

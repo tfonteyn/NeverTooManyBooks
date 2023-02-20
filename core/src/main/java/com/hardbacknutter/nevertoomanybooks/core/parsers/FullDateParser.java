@@ -17,9 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils.dates;
-
-import android.content.Context;
+package com.hardbacknutter.nevertoomanybooks.core.parsers;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,8 +33,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 
 /**
  * Parser for dates comes from the internet and/or the user (either as direct input, or by import).
@@ -102,21 +98,22 @@ public class FullDateParser
 
     /**
      * Constructor.
-     *
-     * @param context Current context; not stored, only used to get the locales.
      */
-    public FullDateParser(@NonNull final Context context) {
-        this.locales = LocaleListUtils.asList(context);
-        isoDateParser = new ISODateParser();
+    public FullDateParser(@NonNull final Locale systemLocale,
+                          @NonNull final List<Locale> userLocales) {
+        this.locales = userLocales;
+        isoDateParser = new ISODateParser(systemLocale);
     }
 
     /**
      * Constructor for testing.
+     *
+     * @param locales list with at least one element
      */
     @VisibleForTesting
     public FullDateParser(@NonNull final List<Locale> locales) {
         this.locales = locales;
-        isoDateParser = new ISODateParser();
+        isoDateParser = new ISODateParser(locales.get(0));
     }
 
     /**

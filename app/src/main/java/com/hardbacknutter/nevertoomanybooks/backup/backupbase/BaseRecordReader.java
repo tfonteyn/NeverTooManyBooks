@@ -33,14 +33,14 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.RecordReader;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 public abstract class BaseRecordReader
@@ -65,7 +65,7 @@ public abstract class BaseRecordReader
 
     protected BaseRecordReader(@NonNull final Context context) {
         bookDao = ServiceLocator.getInstance().getBookDao();
-        dateParser = new ISODateParser();
+        dateParser = new ISODateParser(ServiceLocator.getInstance().getSystemLocale());
 
         booksString = context.getString(R.string.lbl_books);
         progressMessage = context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);

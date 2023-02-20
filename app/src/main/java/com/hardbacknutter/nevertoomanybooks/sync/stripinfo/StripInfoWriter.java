@@ -33,6 +33,7 @@ import java.time.format.DateTimeFormatter;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StripInfoDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -41,7 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterHelper;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 import com.hardbacknutter.org.json.JSONException;
 
@@ -97,7 +97,7 @@ public class StripInfoWriter
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         final LocalDateTime dateSince;
         if (syncWriterHelper.isIncremental()) {
-            dateSince = new ISODateParser()
+            dateSince = new ISODateParser(ServiceLocator.getInstance().getSystemLocale())
                     .parse(global.getString(StripInfoAuth.PK_LAST_SYNC, null));
         } else {
             dateSince = null;

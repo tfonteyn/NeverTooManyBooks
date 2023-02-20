@@ -36,13 +36,13 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 
@@ -168,7 +168,7 @@ class Formatter
                 if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_read_status);
                 } else {
-                    if (ParseUtils.parseBoolean(text, true)) {
+                    if (NumberParser.parseBoolean(text, true)) {
                         return context.getString(R.string.lbl_read);
                     } else {
                         return context.getString(R.string.lbl_unread);

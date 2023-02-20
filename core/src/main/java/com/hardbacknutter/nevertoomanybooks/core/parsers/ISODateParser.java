@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils.dates;
+package com.hardbacknutter.nevertoomanybooks.core.parsers;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,8 +31,7 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import java.util.Locale;
 
 /**
  * Parser for dates coming from the database or other sources
@@ -44,8 +43,14 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 public class ISODateParser
         implements DateParser {
 
+    @NonNull
+    private final Locale locale;
     /** List of patterns we'll use to parse ISO datetime stamps.. */
     private Collection<DateTimeFormatter> parsers;
+
+    public ISODateParser(@NonNull final Locale locale) {
+        this.locale = locale;
+    }
 
     /**
      * Attempt to parse a date string using ISO parsers.
@@ -138,7 +143,7 @@ public class ISODateParser
                 .appendZoneRegionId()
                 .appendLiteral(']')
                 // Uses ResolverStyle.SMART and 'null' Chronology
-                .toFormatter(ServiceLocator.getInstance().getSystemLocale());
+                .toFormatter(locale);
 
         parsers.add(sqliteIsoDateTime);
     }

@@ -43,13 +43,14 @@ import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterHelperBase;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
@@ -156,7 +157,8 @@ public class ExportHelper
             final String lastDone = PreferenceManager.getDefaultSharedPreferences(context)
                                                      .getString(key, null);
             if (lastDone != null && !lastDone.isEmpty()) {
-                return new ISODateParser().parse(lastDone);
+                return new ISODateParser(
+                        ServiceLocator.getInstance().getSystemLocale()).parse(lastDone);
             }
         }
         return null;

@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableInfo;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 import com.hardbacknutter.nevertoomanybooks.covers.Cover;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -47,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
@@ -401,7 +401,7 @@ public class BookDaoHelper {
                                     cv.put(columnName, (Boolean) entry ? 1 : 0);
                                 } else {
                                     try {
-                                        cv.put(columnName, ParseUtils.toInt(entry));
+                                        cv.put(columnName, NumberParser.toInt(entry));
                                     } catch (@NonNull final NumberFormatException e) {
                                         // We do NOT want to fail at this point.
                                         // Log, but skip this field.
@@ -416,7 +416,7 @@ public class BookDaoHelper {
                             }
                             case Cursor.FIELD_TYPE_FLOAT: {
                                 try {
-                                    cv.put(columnName, ParseUtils.toDouble(localeList, entry));
+                                    cv.put(columnName, NumberParser.toDouble(localeList, entry));
                                 } catch (@NonNull final NumberFormatException e) {
                                     // We do NOT want to fail at this point.
                                     // Although the conclusion cannot be 100%, we're

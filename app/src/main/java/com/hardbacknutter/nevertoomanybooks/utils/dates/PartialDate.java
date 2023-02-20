@@ -196,7 +196,8 @@ public class PartialDate
                 }
             } catch (@NonNull final DateTimeParseException e) {
                 if (BuildConfig.DEBUG /* always */) {
-                    ServiceLocator.getInstance().getLogger().e(TAG, e, "dateStr=" + dateStr);
+                    ServiceLocator.getInstance().getLogger()
+                                  .e(TAG, e, "dateStr=" + dateStr);
                 }
             }
         }

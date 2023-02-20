@@ -42,6 +42,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -54,8 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
@@ -457,7 +459,7 @@ public class OpenLibrarySearchEngine
      * @param response    the complete response; a String containing JSON
      * @param fetchCovers Set to {@code true} if we want to get covers
      *                    The array is guaranteed to have at least one element.
-     * @param book    Bundle to update
+     * @param book        Bundle to update
      *
      * @return {@code true} on success, {@code false} if we were cancelled.
      *
@@ -505,7 +507,7 @@ public class OpenLibrarySearchEngine
      * @param document    JSON result data
      * @param fetchCovers Set to {@code true} if we want to get covers
      *                    The array is guaranteed to have at least one element.
-     * @param book    Bundle to update
+     * @param book        Bundle to update
      *
      * @throws StorageException on storage related failures
      */
@@ -516,7 +518,9 @@ public class OpenLibrarySearchEngine
                        @NonNull final Book book)
             throws StorageException {
 
-        final DateParser dateParser = new FullDateParser(context);
+        final DateParser dateParser = new FullDateParser(
+                ServiceLocator.getInstance().getSystemLocale(),
+                LocaleListUtils.asList(context));
 
         // store the isbn; we might override it later on though (e.g. isbn 13v10)
         // not sure if this is needed though. Need more data.

@@ -24,8 +24,9 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
  * FieldFormatter for 'Number' fields with the value being a 'double'
@@ -71,7 +72,7 @@ public class DoubleNumberFormatter
         }
 
         try {
-            return ParseUtils.toDouble(context, text);
+            return NumberParser.toDouble(LocaleListUtils.asList(context), text);
 
         } catch (@NonNull final NumberFormatException e) {
             // this should never happen... flw

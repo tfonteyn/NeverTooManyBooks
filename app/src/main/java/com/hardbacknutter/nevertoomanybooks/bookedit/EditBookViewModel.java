@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ViewBookOnWebsiteHandler;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
@@ -80,8 +81,8 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.LanguageFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.ListFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.LongNumberFormatter;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 @SuppressWarnings("WeakerAccess")
@@ -974,10 +975,9 @@ public class EditBookViewModel
                                    getField(R.id.price_paid).ifPresent(destField -> {
                                        if (destField.isEmpty()) {
                                            // Paranoia... parse it to a double.
-                                           final double value = ParseUtils.toDouble(
-                                                   context,
-                                                   requireField(R.id.price_listed).getValue()
-                                           );
+                                           final double value = NumberParser.toDouble(
+                                                   LocaleListUtils.asList(context),
+                                                   requireField(R.id.price_listed).getValue());
                                            getBook().putDouble(DBKey.PRICE_PAID, value);
                                            destField.setValue(value);
                                        }

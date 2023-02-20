@@ -35,10 +35,11 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
  * Class to manage a set of related data.
@@ -295,7 +296,7 @@ public class DataManager
      */
     public boolean getBoolean(@NonNull final String key)
             throws NumberFormatException {
-        return ParseUtils.toBoolean(rawData.get(key));
+        return NumberParser.toBoolean(rawData.get(key));
     }
 
     /**
@@ -321,7 +322,7 @@ public class DataManager
     @Override
     public int getInt(@NonNull final String key)
             throws NumberFormatException {
-        return (int) ParseUtils.toLong(rawData.get(key));
+        return (int) NumberParser.toLong(rawData.get(key));
     }
 
     /**
@@ -347,7 +348,7 @@ public class DataManager
     @Override
     public long getLong(@NonNull final String key)
             throws NumberFormatException {
-        return ParseUtils.toLong(rawData.get(key));
+        return NumberParser.toLong(rawData.get(key));
     }
 
     /**
@@ -374,7 +375,7 @@ public class DataManager
     public double getDouble(@NonNull final Context context,
                             @NonNull final String key)
             throws NumberFormatException {
-        return ParseUtils.toDouble(context, rawData.get(key));
+        return NumberParser.toDouble(LocaleListUtils.asList(context), rawData.get(key));
     }
 
     /**
@@ -401,7 +402,7 @@ public class DataManager
     public float getFloat(@NonNull final Context context,
                           @NonNull final String key)
             throws NumberFormatException {
-        return ParseUtils.toFloat(context, rawData.get(key));
+        return NumberParser.toFloat(LocaleListUtils.asList(context), rawData.get(key));
     }
 
     /**

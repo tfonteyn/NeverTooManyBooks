@@ -26,8 +26,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 
 /**
  * Validator to apply a default value and validate as Double.
@@ -68,7 +69,7 @@ public class DoubleValidator
                 value = defaultValue;
             } else {
                 try {
-                    value = ParseUtils.toDouble(context, stringValue);
+                    value = NumberParser.toDouble(LocaleListUtils.asList(context), stringValue);
 
                 } catch (@NonNull final NumberFormatException e) {
                     throw new ValidatorException(

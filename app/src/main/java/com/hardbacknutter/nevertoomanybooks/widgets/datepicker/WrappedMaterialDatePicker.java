@@ -40,7 +40,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 
 /**
  * Crazy wrapper around a {@link MaterialDatePicker}

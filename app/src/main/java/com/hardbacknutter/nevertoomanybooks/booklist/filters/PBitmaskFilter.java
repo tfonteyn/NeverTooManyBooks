@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 
 /**
  * A persistable {@link Filter}.
@@ -138,7 +138,7 @@ public class PBitmaskFilter
             this.value = null;
         } else {
             try {
-                int tmp = (int) ParseUtils.toLong(value);
+                int tmp = (int) NumberParser.toLong(value);
 
                 this.value = new HashSet<>();
                 int bit = 1;

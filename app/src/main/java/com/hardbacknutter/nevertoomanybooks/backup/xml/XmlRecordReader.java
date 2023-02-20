@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.backupbase.ArchiveReaderAbstract;
 import com.hardbacknutter.nevertoomanybooks.backup.backupbase.ArchiveWriterAbstract;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
@@ -58,7 +59,6 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -234,12 +234,12 @@ public class XmlRecordReader
                         break;
 
                     case XmlUtils.TAG_FLOAT:
-                        accessor.putFloat(currentTag.name, ParseUtils.parseFloat(
+                        accessor.putFloat(currentTag.name, NumberParser.parseFloat(
                                 locales, currentTag.value));
                         break;
 
                     case XmlUtils.TAG_DOUBLE:
-                        accessor.putDouble(currentTag.name, ParseUtils.parseDouble(
+                        accessor.putDouble(currentTag.name, NumberParser.parseDouble(
                                 locales, currentTag.value));
                         break;
 

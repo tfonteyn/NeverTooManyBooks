@@ -26,8 +26,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
  * Validator to apply a default value and validate as Boolean.
@@ -61,7 +61,7 @@ public class BooleanValidator
             return;
         }
         try {
-            ParseUtils.toBoolean(o);
+            NumberParser.toBoolean(o);
         } catch (@NonNull final NumberFormatException e) {
             throw new ValidatorException(context.getString(R.string.vldt_boolean_expected_for_x,
                                                            context.getString(errorLabelResId)));

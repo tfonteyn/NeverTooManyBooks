@@ -33,11 +33,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.utils.ParcelUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
 
 public class CalibreLibrary
         extends LibraryBase {
@@ -189,7 +190,8 @@ public class CalibreLibrary
     @Nullable
     public LocalDateTime getLastSyncDate() {
         if (!lastSyncDate.isEmpty()) {
-            return new ISODateParser().parse(lastSyncDate);
+            return new ISODateParser(
+                    ServiceLocator.getInstance().getSystemLocale()).parse(lastSyncDate);
         }
 
         return null;

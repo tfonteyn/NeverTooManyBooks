@@ -55,6 +55,8 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.Logger;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -75,8 +77,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UncheckedSAXException;
@@ -778,7 +778,9 @@ public class IsfdbSearchEngine
                       @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
-        final DateParser dateParser = new FullDateParser(context);
+        final DateParser dateParser = new FullDateParser(
+                ServiceLocator.getInstance().getSystemLocale(),
+                LocaleListUtils.asList(context));
 
         final Elements allContentBoxes = document.select(CSS_Q_DIV_CONTENTBOX);
         // sanity check

@@ -34,7 +34,7 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 
 abstract class DatePickerBase<S>
         implements MaterialPickerOnPositiveButtonClickListener<S> {

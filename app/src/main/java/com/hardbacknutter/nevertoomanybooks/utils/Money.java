@@ -37,6 +37,8 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
+
 /**
  * Value class to represent a value + currency.
  * <p>
@@ -328,7 +330,7 @@ public class Money
             if (valueStr != null && !valueStr.isEmpty()) {
                 try {
                     // buffer just in case the Currency.getInstance() throws.
-                    final double tmpValue = ParseUtils.parseDouble(localeList, valueStr);
+                    final double tmpValue = NumberParser.parseDouble(localeList, valueStr);
                     // re-get the code just in case it used a recognised but non-standard string
                     currency = Currency.getInstance(currencyCode);
                     value = BigDecimal.valueOf(tmpValue);

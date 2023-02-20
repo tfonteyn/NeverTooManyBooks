@@ -60,6 +60,8 @@ import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -74,8 +76,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 /**
@@ -971,7 +972,8 @@ public class SearchCoordinator
         private final Collection<Mapper> mappers = new ArrayList<>();
 
         ResultsAccumulator(@NonNull final Context context) {
-            dateParser = new FullDateParser(context);
+            dateParser = new FullDateParser(ServiceLocator.getInstance().getSystemLocale(),
+                                            LocaleListUtils.asList(context));
 
             if (FormatMapper.isMappingAllowed(context)) {
                 mappers.add(new FormatMapper());

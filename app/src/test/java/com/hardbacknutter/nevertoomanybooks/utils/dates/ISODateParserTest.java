@@ -22,6 +22,9 @@ package com.hardbacknutter.nevertoomanybooks.utils.dates;
 import java.time.LocalDateTime;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +37,7 @@ class ISODateParserTest
     /** "yyyy" */
     @Test
     void isoYear() {
-        final DateParser parser = new ISODateParser();
+        final DateParser parser = new ISODateParser(ServiceLocator.getInstance().getSystemLocale());
 
         assertEquals(LocalDateTime.of(1987, 1, 1,
                                       0, 0, 0),
@@ -44,7 +47,7 @@ class ISODateParserTest
     /** "yyyy-MM" */
     @Test
     void isoYearMonth() {
-        final DateParser parser = new ISODateParser();
+        final DateParser parser = new ISODateParser(ServiceLocator.getInstance().getSystemLocale());
 
         assertEquals(LocalDateTime.of(1987, 6, 1,
                                       0, 0, 0),
@@ -58,7 +61,7 @@ class ISODateParserTest
     /** "yyyy-MM-dd" */
     @Test
     void isoYearMonthDay() {
-        final DateParser parser = new ISODateParser();
+        final DateParser parser = new ISODateParser(ServiceLocator.getInstance().getSystemLocale());
 
         assertEquals(LocalDateTime.of(1987, 6, 10,
                                       0, 0, 0),
@@ -75,7 +78,7 @@ class ISODateParserTest
      */
     @Test
     void isoDateTime() {
-        final DateParser parser = new ISODateParser();
+        final DateParser parser = new ISODateParser(ServiceLocator.getInstance().getSystemLocale());
 
         assertEquals(LocalDateTime.of(2020, 9, 1,
                                       14, 20, 21, 542_000_000),
@@ -101,7 +104,7 @@ class ISODateParserTest
     /** JDK 'T' variations */
     @Test
     void isoTeaTime() {
-        final DateParser parser = new ISODateParser();
+        final DateParser parser = new ISODateParser(ServiceLocator.getInstance().getSystemLocale());
 
         assertEquals(LocalDateTime.of(2020, 8, 12,
                                       14, 29, 9, 414_000_000),

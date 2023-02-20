@@ -29,8 +29,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 
 /**
  * Validator to apply a default value and validate as a Date.
@@ -63,7 +65,11 @@ public class DateValidator
         if (value == null || value.isEmpty()) {
             value = defaultValue;
         } else {
-            final LocalDateTime date = new FullDateParser(context).parse(value);
+            final LocalDateTime date = new FullDateParser(
+                    ServiceLocator.getInstance().getSystemLocale(),
+                    LocaleListUtils.asList(context))
+                    .parse(value);
+
             if (date != null) {
                 value = date.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
             } else {

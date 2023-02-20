@@ -32,9 +32,9 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
 
 /**
  * Class to encapsulate the INFO block from an archive.
@@ -151,7 +151,7 @@ public class ArchiveMetaData
      */
     @NonNull
     public Optional<LocalDateTime> getCreatedLocalDate() {
-        final LocalDateTime date = new ISODateParser()
+        final LocalDateTime date = new ISODateParser(ServiceLocator.getInstance().getSystemLocale())
                 .parse(getData().getString(INFO_CREATED_DATE));
         if (date != null) {
             return Optional.of(date);
