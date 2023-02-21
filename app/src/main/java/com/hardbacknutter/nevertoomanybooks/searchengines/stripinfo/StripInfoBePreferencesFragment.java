@@ -87,14 +87,15 @@ public class StripInfoBePreferencesFragment
                 }
             });
 
+            final Context context = getContext();
             //noinspection ConstantConditions
-            final String defValue = String.valueOf(
-                    Bookshelf.getBookshelf(getContext(), Bookshelf.PREFERRED, Bookshelf.DEFAULT)
-                             .getId());
-
+            final String id = String.valueOf(
+                    Bookshelf.getBookshelf(context, Bookshelf.PREFERRED)
+                             .map(Bookshelf::getId)
+                             .orElse((long) Bookshelf.DEFAULT));
             final Pair<CharSequence[], CharSequence[]> values = getBookshelves();
-            initBookshelfMapperPref(BookshelfMapper.PK_BOOKSHELF_OWNED, defValue, values);
-            initBookshelfMapperPref(BookshelfMapper.PK_BOOKSHELF_WISHLIST, defValue, values);
+            initBookshelfMapperPref(BookshelfMapper.PK_BOOKSHELF_OWNED, id, values);
+            initBookshelfMapperPref(BookshelfMapper.PK_BOOKSHELF_WISHLIST, id, values);
         }
     }
 
