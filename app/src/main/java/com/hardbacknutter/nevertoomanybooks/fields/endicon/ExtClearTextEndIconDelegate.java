@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -42,9 +42,9 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.MultiOnFocusChangeListener;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
 
 /**
  * <a href="https://github.com/material-components/material-components-android/pull/2025">

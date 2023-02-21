@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,8 +37,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAdvancedSearchBinding;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
 
 /**
  * FIXME: open screen, click in field -> keyboard up * now rotate screen... logcat msg
