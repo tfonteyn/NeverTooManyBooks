@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -107,8 +107,10 @@ public class BookshelfCoder
             }
         }
 
-        return Optional.of(Bookshelf.getBookshelf(context,
-                                                  Bookshelf.PREFERRED,
-                                                  Bookshelf.DEFAULT));
+        final Optional<Bookshelf> bookshelf = Bookshelf.getBookshelf(context, Bookshelf.PREFERRED);
+        if (bookshelf.isPresent()) {
+            return bookshelf;
+        }
+        return Bookshelf.getBookshelf(context, Bookshelf.DEFAULT);
     }
 }
