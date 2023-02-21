@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.InputType;
 
