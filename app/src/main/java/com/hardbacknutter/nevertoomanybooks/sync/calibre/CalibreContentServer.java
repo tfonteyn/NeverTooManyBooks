@@ -139,9 +139,9 @@ public class CalibreContentServer
     static final String PREF_KEY = "calibre";
 
     /** Type: {@code String}. Matches "res/xml/preferences_calibre.xml". */
-    public static final String PK_HOST_URL = PREF_KEY + Prefs.pk_suffix_host_url;
-    public static final String PK_HOST_USER = PREF_KEY + ".host.user";
-    public static final String PK_HOST_PASS = PREF_KEY + ".host.password";
+    static final String PK_HOST_URL = PREF_KEY + Prefs.pk_suffix_host_url;
+    static final String PK_HOST_USER = PREF_KEY + ".host.user";
+    static final String PK_HOST_PASS = PREF_KEY + ".host.password";
     /** A text "None" as value. Can/will be seen. This is the python equivalent of {@code null}. */
     static final String VALUE_IS_NONE = "None";
     /** Response root tag: Total number of items found in a query. */
@@ -292,8 +292,8 @@ public class CalibreContentServer
     }
 
     @AnyThread
-    public static void setFolderUri(@NonNull final Context context,
-                                    @NonNull final Uri uri)
+    static void setFolderUri(@NonNull final Context context,
+                             @NonNull final Uri uri)
             throws SecurityException {
         final ContentResolver contentResolver = context.getContentResolver();
 
@@ -325,7 +325,7 @@ public class CalibreContentServer
 
     @NonNull
     @AnyThread
-    public static Optional<Uri> getFolderUri(@NonNull final Context context) {
+    static Optional<Uri> getFolderUri(@NonNull final Context context) {
 
         final String folder = PreferenceManager.getDefaultSharedPreferences(context)
                                                .getString(PK_LOCAL_FOLDER_URI, "");
@@ -480,8 +480,10 @@ public class CalibreContentServer
 
         final CalibreLibraryDao libraryDao = ServiceLocator.getInstance().getCalibreLibraryDao();
 
-        final Bookshelf currentBookshelf = Bookshelf
-                .getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT);
+        final long currentBookshelfId = Bookshelf
+                .getBookshelf(context, Bookshelf.PREFERRED)
+                .map(Bookshelf::getId)
+                .orElse((long) Bookshelf.DEFAULT);
 
         final JSONObject source = new JSONObject(
                 fetch(serverUri + ULR_AJAX_LIBRARY_INFO, BUFFER_SMALL));
@@ -524,7 +526,7 @@ public class CalibreContentServer
             }
             if (library == null) {
                 // must be a new one.
-                library = new CalibreLibrary(uuid, libraryId, name, currentBookshelf.getId());
+                library = new CalibreLibrary(uuid, libraryId, name, currentBookshelfId);
 
             } else {
                 // we found it by uuid or id, update it with the server info
