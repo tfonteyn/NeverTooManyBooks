@@ -220,11 +220,7 @@ public class Bookshelf
         final String name = PreferenceManager.getDefaultSharedPreferences(context)
                                              .getString(PK_BOOKSHELF_CURRENT, null);
         if (name != null && !name.isEmpty()) {
-            final Bookshelf bookshelf = ServiceLocator.getInstance().getBookshelfDao()
-                                                      .findByName(name);
-            if (bookshelf != null) {
-                return Optional.of(bookshelf);
-            }
+            return ServiceLocator.getInstance().getBookshelfDao().findByName(name);
         }
         return Optional.empty();
     }
