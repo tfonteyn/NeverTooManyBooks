@@ -145,7 +145,7 @@ public class SearchCoordinator
 
     /**
      * Sites to search on. If this list is empty, all searches will return {@code false}.
-     * This list includes both enabled and disabled sites.
+     * This list includes both active and disabled sites.
      */
     private ArrayList<Site> allSites;
     /** Base message for progress updates. */
@@ -733,7 +733,9 @@ public class SearchCoordinator
             return false;
         }
 
-        if (!searchEngine.isAvailable()) {
+        final SearchEngineConfig config = engineId.getConfig();
+        // Sanity check; should not happen when we get here... flw
+        if (config == null) {
             return false;
         }
 

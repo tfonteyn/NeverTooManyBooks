@@ -134,21 +134,7 @@ public interface SearchEngine
     boolean supportsMultipleCoverSizes();
 
     /**
-     * Generic test if this site (engine) can be considered for searching.
-     * <p>
-     * Implementations can for example check for developer keys, ...
-     * <strong>MUST NOT run network code / test for connection.</strong>
-     *
-     * @return {@code true} if we can consider this site for searching.
-     */
-    @AnyThread
-    default boolean isAvailable() {
-        return true;
-    }
-
-    /**
      * Reset the engine, ready for a new search.
-     * This is called by {@link Site#getSearchEngine()}.
      */
     void reset();
 
