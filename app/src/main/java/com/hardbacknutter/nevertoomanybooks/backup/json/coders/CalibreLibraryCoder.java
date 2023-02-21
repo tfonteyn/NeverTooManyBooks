@@ -243,7 +243,7 @@ public class CalibreLibraryCoder
         if (bookshelf == null) {
             // have we created the workaround before?
             final String name = "Calibre '" + libName + "'";
-            bookshelf = bookshelfDao.findByName(name);
+            bookshelf = bookshelfDao.findByName(name).orElse(null);
             if (bookshelf == null) {
                 // make a new one
                 bookshelf = new Bookshelf(name, BuiltinStyle.DEFAULT_UUID);
