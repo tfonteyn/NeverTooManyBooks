@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,7 +36,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import java.util.Optional;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
@@ -69,7 +69,7 @@ public class SearchBookByExternalIdFragment
     private FragmentBooksearchByExternalIdBinding vb;
     /** Set when the user selects a site. */
     @Nullable
-    private SearchEngine.ByExternalId searchEngine;
+    private EngineId engineId;
 
     private SearchBookByExternalIdViewModel vm;
 
@@ -139,7 +139,7 @@ public class SearchBookByExternalIdFragment
 
         // on NOTHING selected
         if (viewId == View.NO_ID) {
-            searchEngine = null;
+            engineId = null;
             // disable, but don't clear it
             vb.externalId.setEnabled(false);
             return;
@@ -153,29 +153,16 @@ public class SearchBookByExternalIdFragment
 
         // on false->true transition
 
-        final Optional<SearchEngineConfig> oConfig =
-                SearchEngineConfig.getByViewId(viewId);
-        if (oConfig.isEmpty()) {
-            throw new IllegalStateException();
-        }
-        final SearchEngineConfig config = oConfig.get();
+        final SearchEngineConfig config = SearchEngineConfig
+                .getByViewId(viewId).orElseThrow(IllegalStateException::new);
 
-        searchEngine = (SearchEngine.ByExternalId)
-                Site.Type.Data.getSite(config.getEngineId()).getSearchEngine();
+        this.engineId = config.getEngineId();
+        //noinspection ConstantConditions
+        EngineId.promptToRegister(getContext(), List.of(Site.Type.Data.getSite(engineId)),
+                                  "searchByExternalId", () -> updateUI(config));
+    }
 
-        if (!searchEngine.isAvailable()) {
-            // If the selected site needs registration, prompt the user.
-            //noinspection ConstantConditions
-            searchEngine.promptToRegister(getContext(), true, null, action -> {
-                if (action == SearchEngine.RegistrationAction.NotNow
-                    || action == SearchEngine.RegistrationAction.Cancelled) {
-                    // Clear the selection.
-                    // Do not disable the button, allowing the user to change their mind.
-                    vb.sitesGroup.clearCheck();
-                }
-            });
-            return;
-        }
+    private void updateUI(@NonNull final SearchEngineConfig config) {
 
         final int keyboardIcon;
         final int inputType;
@@ -237,7 +224,7 @@ public class SearchBookByExternalIdFragment
         //noinspection ConstantConditions
         final String externalId = vb.externalId.getText().toString().trim();
         //noinspection ConstantConditions
-        return coordinator.searchByExternalId(searchEngine, externalId);
+        return coordinator.searchByExternalId(engineId, externalId);
     }
 
     @Override
