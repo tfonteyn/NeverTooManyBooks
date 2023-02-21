@@ -130,7 +130,7 @@ public class BookTest {
         FileUtils.collectFiles(tempDir, jpgFilter).forEach(File::delete);
 
 
-        bookshelf[0] = Bookshelf.getBookshelf(context, Bookshelf.DEFAULT);
+        bookshelf[0] = Bookshelf.getBookshelf(context, Bookshelf.DEFAULT).orElseThrow();
         bookshelfList.clear();
         bookshelfList.add(bookshelf[0]);
 
