@@ -27,8 +27,6 @@ import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-
 /**
  * Wraps a {@link DaoWriteException} with an unchecked exception.
  */
