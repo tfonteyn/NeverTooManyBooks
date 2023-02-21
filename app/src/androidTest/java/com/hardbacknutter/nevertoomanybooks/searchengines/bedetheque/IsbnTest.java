@@ -29,7 +29,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 import org.junit.Before;
@@ -55,7 +54,7 @@ public class IsbnTest
             throws DaoWriteException, StorageException {
         super.setup();
 
-        searchEngine = Site.Type.Data.getSite(EngineId.Bedetheque).getSearchEngine();
+        searchEngine = EngineId.Bedetheque.createSearchEngine();
         searchEngine.setCaller(new TestProgressListener(TAG));
     }
 

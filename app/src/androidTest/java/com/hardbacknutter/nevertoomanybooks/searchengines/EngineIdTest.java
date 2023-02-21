@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -46,9 +46,10 @@ public class EngineIdTest {
             Log.d(TAG, "\n------------------------------------------\n\n" + type);
 
             for (final Site site : sites) {
-                final SearchEngineConfig config = site.getEngineId().getConfig();
+                final EngineId engineId = site.getEngineId();
+                final SearchEngineConfig config = engineId.getConfig();
                 assertNotNull(config);
-                final SearchEngine searchEngine = site.getSearchEngine();
+                final SearchEngine searchEngine = engineId.createSearchEngine();
                 assertNotNull(searchEngine);
 
                 Log.d(TAG, "\n" + config + "\n\n" + site + "\n\n" + searchEngine);
