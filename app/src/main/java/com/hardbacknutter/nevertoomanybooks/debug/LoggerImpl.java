@@ -230,7 +230,7 @@ public class LoggerImpl
 
     @Override
     public void e(@NonNull final String tag,
-                  @NonNull final Throwable e,
+                  @Nullable final Throwable e,
                   @Nullable final Object... params) {
 
         final String msg = concat(params);

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -47,7 +47,7 @@ public interface Logger {
      * @param params objects/text to log
      */
     void e(@NonNull final String tag,
-           @NonNull final Throwable e,
+           @Nullable final Throwable e,
            @Nullable final Object... params);
 
     /**

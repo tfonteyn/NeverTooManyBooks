@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -61,10 +61,11 @@ public class TestLogger
 
     @Override
     public void e(@NonNull final String tag,
-                  @NonNull final Throwable e,
+                  @Nullable final Throwable e,
                   @Nullable final Object... params) {
         System.out.println("JUnit|ERROR|" + tag + "|" + LoggerImpl.concat(params)
-                           + "|" + e.getMessage() + "\n" + LoggerImpl.getStackTraceString(e));
+                           + "|" + (e == null ? null : e.getMessage())
+                           + "\n" + LoggerImpl.getStackTraceString(e));
     }
 
     @Override
