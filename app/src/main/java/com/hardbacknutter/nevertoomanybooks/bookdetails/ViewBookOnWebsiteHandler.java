@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -117,15 +117,17 @@ public class ViewBookOnWebsiteHandler
         if (oConfig.isPresent()) {
             final Domain domain = oConfig.get().getExternalIdDomain();
             if (domain != null) {
-                final SearchEngine.ViewBookByExternalId searchEngine =
-                        (SearchEngine.ViewBookByExternalId)
-                                Site.Type.ViewOnSite.getSite(oConfig.get().getEngineId())
-                                                    .getSearchEngine();
+                final EngineId engineId = oConfig.get().getEngineId();
+                // sanity check
+                if (Site.Type.ViewOnSite.contains(engineId)) {
+                    final SearchEngine.ViewBookByExternalId searchEngine =
+                            (SearchEngine.ViewBookByExternalId) engineId.createSearchEngine();
 
-                final String externalId = rowData.getString(domain.getName());
-                final String url = searchEngine.createBrowserUrl(externalId);
-                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-                return true;
+                    final String externalId = rowData.getString(domain.getName());
+                    final String url = searchEngine.createBrowserUrl(externalId);
+                    context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                    return true;
+                }
             }
         }
         return false;
