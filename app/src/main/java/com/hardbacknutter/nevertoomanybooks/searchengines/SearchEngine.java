@@ -144,8 +144,7 @@ public interface SearchEngine
     boolean supportsMultipleCoverSizes();
 
     /**
-     * Generic test to be implemented by individual site search managers to check if
-     * this site can be consider for searching.
+     * Generic test if this site (engine) can be considered for searching.
      * <p>
      * Implementations can for example check for developer keys, ...
      * <strong>MUST NOT run network code / test for connection.</strong>
