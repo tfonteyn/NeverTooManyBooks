@@ -24,11 +24,11 @@ import android.database.Cursor;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -45,20 +45,20 @@ public interface BookshelfDao
      *
      * @param bookshelf to find the id of
      *
-     * @return the Bookshelf, or {@code null} if not found
+     * @return the Bookshelf
      */
-    @Nullable
-    Bookshelf findByName(@NonNull Bookshelf bookshelf);
+    @NonNull
+    Optional<Bookshelf> findByName(@NonNull Bookshelf bookshelf);
 
     /**
      * Find a {@link Bookshelf} with the given name.
      *
      * @param name of bookshelf to find
      *
-     * @return the Bookshelf, or {@code null} if not found
+     * @return the Bookshelf
      */
-    @Nullable
-    Bookshelf findByName(@NonNull String name);
+    @NonNull
+    Optional<Bookshelf> findByName(@NonNull String name);
 
     /**
      * Get the filters defined for the given bookshelf.

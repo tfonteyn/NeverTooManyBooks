@@ -33,18 +33,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.FilterFactory;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.BookshelfMergeHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -115,21 +116,22 @@ public class BookshelfDaoImpl
     }
 
     @Override
-    @Nullable
-    public Bookshelf findByName(@NonNull final String name) {
+    @NonNull
+    public Optional<Bookshelf> findByName(@NonNull final String name) {
 
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{name})) {
             if (cursor.moveToFirst()) {
                 final DataHolder rowData = new CursorRow(cursor);
-                return new Bookshelf(rowData.getLong(DBKey.PK_ID), rowData);
+                return Optional.of(new Bookshelf(rowData.getLong(DBKey.PK_ID), rowData));
             } else {
-                return null;
+                return Optional.empty();
             }
         }
     }
 
     @Override
-    public Bookshelf findByName(@NonNull final Bookshelf bookshelf) {
+    @NonNull
+    public Optional<Bookshelf> findByName(@NonNull final Bookshelf bookshelf) {
         return findByName(bookshelf.getName());
     }
 
@@ -237,8 +239,7 @@ public class BookshelfDaoImpl
 
     @Override
     public void fixId(@NonNull final Bookshelf bookshelf) {
-        final Bookshelf found = findByName(bookshelf);
-        bookshelf.setId(found == null ? 0 : found.getId());
+        bookshelf.setId(findByName(bookshelf).map(Bookshelf::getId).orElse(0L));
     }
 
     @Override
