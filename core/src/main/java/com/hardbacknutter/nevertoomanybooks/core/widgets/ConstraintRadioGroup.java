@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.widgets;
+package com.hardbacknutter.nevertoomanybooks.core.widgets;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -38,7 +38,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
  * <p>
  * Usage:
  * <pre>{@code
- *       <com.hardbacknutter.nevertoomanybooks.widgets.ConstraintRadioGroup
+ *       <com.hardbacknutter.nevertoomanybooks.core.widgets.ConstraintRadioGroup
  *         android:id="@+id/rb_books_group"
  *         android:layout_width="0dp"
  *         android:layout_height="0dp"

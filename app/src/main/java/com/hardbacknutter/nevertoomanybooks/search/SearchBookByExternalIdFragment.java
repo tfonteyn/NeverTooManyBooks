@@ -43,13 +43,13 @@ import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.ConstraintRadioGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByExternalIdBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
-import com.hardbacknutter.nevertoomanybooks.widgets.ConstraintRadioGroup;
 
 public class SearchBookByExternalIdFragment
         extends SearchBookBaseFragment {
