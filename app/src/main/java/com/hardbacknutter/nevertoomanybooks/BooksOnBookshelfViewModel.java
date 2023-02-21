@@ -268,7 +268,8 @@ public class BooksOnBookshelfViewModel
                 // check for an explicit bookshelf set
                 if (args.containsKey(DBKey.FK_BOOKSHELF)) {
                     // might be null, that's ok.
-                    bookshelf = Bookshelf.getBookshelf(context, args.getInt(DBKey.FK_BOOKSHELF));
+                    bookshelf = Bookshelf.getBookshelf(context, args.getInt(DBKey.FK_BOOKSHELF))
+                                         .orElse(null);
                 }
             }
         } else {
@@ -284,7 +285,10 @@ public class BooksOnBookshelfViewModel
         // Set the last/preferred bookshelf if not explicitly set above
         // or use the default == first start of the app
         if (bookshelf == null) {
-            bookshelf = Bookshelf.getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT);
+            bookshelf = Bookshelf
+                    .getBookshelf(context, Bookshelf.PREFERRED)
+                    .orElseGet(() -> Bookshelf.getBookshelf(context, Bookshelf.DEFAULT)
+                                              .orElseThrow());
         }
     }
 
@@ -333,7 +337,7 @@ public class BooksOnBookshelfViewModel
      */
     void reloadBookshelfList(@NonNull final Context context) {
         bookshelfList.clear();
-        bookshelfList.add(Bookshelf.getBookshelf(context, Bookshelf.ALL_BOOKS));
+        bookshelfList.add(Bookshelf.getBookshelf(context, Bookshelf.ALL_BOOKS).orElseThrow());
         bookshelfList.addAll(ServiceLocator.getInstance().getBookshelfDao().getAll());
     }
 
@@ -396,7 +400,10 @@ public class BooksOnBookshelfViewModel
 
         bookshelf = ServiceLocator.getInstance().getBookshelfDao().getById(bookshelfId);
         if (bookshelf == null) {
-            bookshelf = Bookshelf.getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.ALL_BOOKS);
+            bookshelf = Bookshelf
+                    .getBookshelf(context, Bookshelf.PREFERRED)
+                    .orElseGet(() -> Bookshelf.getBookshelf(context, Bookshelf.ALL_BOOKS)
+                                              .orElseThrow());
         }
         bookshelf.setAsPreferred();
 
@@ -412,8 +419,11 @@ public class BooksOnBookshelfViewModel
 
     @SuppressWarnings("UnusedReturnValue")
     private boolean reloadSelectedBookshelf(@NonNull final Context context) {
-        final Bookshelf newBookshelf =
-                Bookshelf.getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.ALL_BOOKS);
+
+        final Bookshelf newBookshelf = Bookshelf
+                .getBookshelf(context, Bookshelf.PREFERRED)
+                .orElseGet(() -> Bookshelf.getBookshelf(context, Bookshelf.ALL_BOOKS)
+                                          .orElseThrow());
         if (!newBookshelf.equals(bookshelf)) {
             // if it was.. switch to it.
             bookshelf = newBookshelf;
