@@ -58,7 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbnBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
@@ -221,8 +221,8 @@ public class SearchBookByIsbnFragment
 
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
-            Site.promptToRegister(getContext(), coordinator.getSiteList(),
-                                  "searchByIsbn", this::afterOnViewCreated);
+            EngineId.promptToRegister(getContext(), coordinator.getSiteList(),
+                                      "searchByIsbn", this::afterOnViewCreated);
         } else {
             afterOnViewCreated();
         }

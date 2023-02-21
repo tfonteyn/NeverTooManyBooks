@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentUpdateFromIntern
 import com.hardbacknutter.nevertoomanybooks.databinding.RowUpdateFromInternetBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
@@ -168,9 +169,9 @@ public class SearchBookUpdatesFragment
         if (savedInstanceState == null) {
             TipManager.getInstance()
                       .display(getContext(), R.string.tip_update_fields_from_internet, () ->
-                              Site.promptToRegister(getContext(), vm.getSiteList(),
-                                                    "update_from_internet",
-                                                    this::afterOnViewCreated));
+                              EngineId.promptToRegister(getContext(), vm.getSiteList(),
+                                                        "update_from_internet",
+                                                        this::afterOnViewCreated));
         } else {
             afterOnViewCreated();
         }

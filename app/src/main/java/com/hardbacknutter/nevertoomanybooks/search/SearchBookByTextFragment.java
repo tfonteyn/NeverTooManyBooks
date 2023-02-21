@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
@@ -128,8 +129,8 @@ public class SearchBookByTextFragment
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
             TipManager.getInstance().display(getContext(), R.string.tip_book_search_by_text, () ->
-                    Site.promptToRegister(getContext(), coordinator.getSiteList(),
-                                          "searchByText", null));
+                    EngineId.promptToRegister(getContext(), coordinator.getSiteList(),
+                                              "searchByText", null));
         }
     }
 
@@ -137,8 +138,8 @@ public class SearchBookByTextFragment
         if (sites != null
             && sites.stream()
                     .filter(Site::isActive)
-                    .map(Site::getSearchEngine)
-                    .anyMatch(se -> se instanceof SearchEngine.ByText)) {
+                    .map(Site::getEngineId)
+                    .anyMatch(engineId -> engineId.supports(SearchEngine.SearchBy.Text))) {
             vb.btnSearch.setEnabled(true);
             vb.txtCanSearch.setVisibility(View.GONE);
         } else {
