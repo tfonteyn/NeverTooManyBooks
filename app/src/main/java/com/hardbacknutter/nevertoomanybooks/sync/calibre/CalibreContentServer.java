@@ -480,10 +480,9 @@ public class CalibreContentServer
 
         final CalibreLibraryDao libraryDao = ServiceLocator.getInstance().getCalibreLibraryDao();
 
-        final long currentBookshelfId = Bookshelf
-                .getBookshelf(context, Bookshelf.PREFERRED)
-                .map(Bookshelf::getId)
-                .orElse((long) Bookshelf.DEFAULT);
+        final long currentBookshelfId = Bookshelf.getBookshelf(context, Bookshelf.PREFERRED)
+                                                 .map(Bookshelf::getId)
+                                                 .orElse((long) Bookshelf.DEFAULT);
 
         final JSONObject source = new JSONObject(
                 fetch(serverUri + ULR_AJAX_LIBRARY_INFO, BUFFER_SMALL));

@@ -90,10 +90,9 @@ public class StripInfoBePreferencesFragment
 
             final Context context = getContext();
             //noinspection ConstantConditions
-            final String id = String.valueOf(
-                    Bookshelf.getBookshelf(context, Bookshelf.PREFERRED)
-                             .map(Bookshelf::getId)
-                             .orElse((long) Bookshelf.DEFAULT));
+            final long id = Bookshelf.getBookshelf(context, Bookshelf.PREFERRED)
+                                     .map(Bookshelf::getId)
+                                     .orElse((long) Bookshelf.DEFAULT);
             final Pair<CharSequence[], CharSequence[]> values = getBookshelves();
             initBookshelfMapperPref(BookshelfMapper.PK_BOOKSHELF_OWNED, id, values);
             initBookshelfMapperPref(BookshelfMapper.PK_BOOKSHELF_WISHLIST, id, values);
@@ -123,7 +122,7 @@ public class StripInfoBePreferencesFragment
 
     private void initBookshelfMapperPref(
             @NonNull final CharSequence key,
-            @NonNull final String defValue,
+            final long defaultId,
             @NonNull final Pair<CharSequence[], CharSequence[]> values) {
 
         final ListPreference p = findPreference(key);
@@ -136,6 +135,7 @@ public class StripInfoBePreferencesFragment
         // step. At that time, the default value is ONLY available from xml.
         // Internally it will then use this to set the value.
         // Workaround: set the default, and if the pref has no value, set it as well...
+        final String defValue = String.valueOf(defaultId);
         p.setDefaultValue(defValue);
         if (p.getValue() == null) {
             p.setValue(defValue);
