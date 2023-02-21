@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -75,8 +75,8 @@ abstract class CollectionBaseParser {
     CollectionBaseParser(@NonNull final Context context,
                          @NonNull final BookshelfMapper bookshelfMapper) {
 
-        ownedBooksBookshelf = bookshelfMapper.getOwnedBooksBookshelf(context);
-        wishListBookshelf = bookshelfMapper.getWishListBookshelf(context);
+        ownedBooksBookshelf = bookshelfMapper.getOwnedBooksBookshelf(context).orElse(null);
+        wishListBookshelf = bookshelfMapper.getWishListBookshelf(context).orElse(null);
     }
 
     @AnyThread

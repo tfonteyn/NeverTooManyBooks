@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,7 +22,8 @@ package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -41,11 +42,11 @@ public class BookshelfMapper {
     public static final String PK_BOOKSHELF_OWNED =
             EngineId.StripInfoBe.getPreferenceKey() + ".bookshelf.owned";
 
-    @Nullable
-    private static Bookshelf getBookshelf(@NonNull final Context context,
-                                          @NonNull final String key) {
-        final int id = Prefs.getIntListPref(context, key, Bookshelf.DEFAULT);
-        return Bookshelf.getBookshelf(context, id);
+    @NonNull
+    private static Optional<Bookshelf> getBookshelf(@NonNull final Context context,
+                                                    @NonNull final String key) {
+        final int id = Prefs.getIntListPref(context, key, 0);
+        return id == 0 ? Optional.empty() : Bookshelf.getBookshelf(context, id);
     }
 
     /**
@@ -53,10 +54,10 @@ public class BookshelfMapper {
      *
      * @param context Current context
      *
-     * @return Bookshelf, or {@code null} if not configured.
+     * @return the wish-list Bookshelf if configured
      */
-    @Nullable
-    Bookshelf getWishListBookshelf(@NonNull final Context context) {
+    @NonNull
+    Optional<Bookshelf> getWishListBookshelf(@NonNull final Context context) {
         return getBookshelf(context, PK_BOOKSHELF_WISHLIST);
     }
 
@@ -65,10 +66,10 @@ public class BookshelfMapper {
      *
      * @param context Current context
      *
-     * @return Bookshelf, or {@code null} if not configured.
+     * @return the owned-books Bookshelf if configured
      */
-    @Nullable
-    Bookshelf getOwnedBooksBookshelf(@NonNull final Context context) {
+    @NonNull
+    Optional<Bookshelf> getOwnedBooksBookshelf(@NonNull final Context context) {
         return getBookshelf(context, PK_BOOKSHELF_OWNED);
     }
 }

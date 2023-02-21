@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -77,8 +77,10 @@ class UserCollectionTest
             throws ParserConfigurationException, SAXException {
         super.setup();
 
-        when(bookshelfMapper.getOwnedBooksBookshelf(any())).thenReturn(ownedBookshelf);
-        when(bookshelfMapper.getWishListBookshelf(any())).thenReturn(wishlistBookshelf);
+        when(bookshelfMapper.getOwnedBooksBookshelf(any()))
+                .thenReturn(Optional.of(ownedBookshelf));
+        when(bookshelfMapper.getWishListBookshelf(any()))
+                .thenReturn(Optional.of(wishlistBookshelf));
     }
 
     @Test
