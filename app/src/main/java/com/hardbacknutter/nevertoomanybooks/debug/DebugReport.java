@@ -54,9 +54,9 @@ import java.util.zip.ZipOutputStream;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.io.RecordWriter;
-import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 

@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 
-import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 
 /**
  * File utilities with support for a {@link ProgressListener}; for use from tasks.

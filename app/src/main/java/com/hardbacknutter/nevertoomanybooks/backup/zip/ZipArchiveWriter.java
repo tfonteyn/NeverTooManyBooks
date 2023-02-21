@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,10 +39,10 @@ import java.util.zip.ZipOutputStream;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.backupbase.ArchiveWriterAbstract;
+import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.io.RecordEncoding;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.io.RecordWriter;
-import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
  * Implementation of ZIP-specific writer functions.

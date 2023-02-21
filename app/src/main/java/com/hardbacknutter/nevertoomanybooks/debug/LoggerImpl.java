@@ -50,8 +50,8 @@ import java.time.format.DateTimeFormatter;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.Logger;
+import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 public class LoggerImpl
         implements Logger {

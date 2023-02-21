@@ -45,14 +45,14 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
+import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterHelperBase;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 /**
  * The glue between the ViewModel and the underlying business logic to perform an export/backup.

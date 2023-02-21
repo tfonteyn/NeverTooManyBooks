@@ -35,9 +35,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 public final class ImageUtils {
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,10 +30,10 @@ import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
+import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
  * Export the main database file.

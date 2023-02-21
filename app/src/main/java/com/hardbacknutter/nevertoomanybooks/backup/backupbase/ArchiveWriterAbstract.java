@@ -44,6 +44,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
+import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
@@ -52,8 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordEncoding;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.io.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 /**
  * Implementation of <strong>encoding-agnostic</strong> {@link DataWriter} methods.

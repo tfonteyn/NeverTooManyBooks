@@ -31,7 +31,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 
 public class StorageMoverTask
         extends MTask<Integer> {
