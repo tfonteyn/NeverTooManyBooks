@@ -49,11 +49,12 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutp
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ViewBookOnWebsiteHandler;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -84,7 +85,6 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.LongNumberFormatte
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 @SuppressWarnings("WeakerAccess")
 public class EditBookViewModel
@@ -603,7 +603,7 @@ public class EditBookViewModel
      */
     boolean isSingleUsage(@NonNull final Context context,
                           @NonNull final Author author) {
-        final Locale bookLocale = book.getLocale(context);
+        final Locale bookLocale = book.getLocaleOrUserLocale(context);
 
         final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
         final long books = authorDao.countBooks(context, author, bookLocale);
@@ -632,7 +632,7 @@ public class EditBookViewModel
      */
     boolean isSingleUsage(@NonNull final Context context,
                           @NonNull final Series series) {
-        final Locale bookLocale = book.getLocale(context);
+        final Locale bookLocale = book.getLocaleOrUserLocale(context);
         final long nrOfReferences = ServiceLocator.getInstance().getSeriesDao()
                                                   .countBooks(context, series, bookLocale);
         return nrOfReferences <= (book.isNew() ? 0 : 1);
@@ -648,7 +648,7 @@ public class EditBookViewModel
      */
     boolean isSingleUsage(@NonNull final Context context,
                           @NonNull final Publisher publisher) {
-        final Locale bookLocale = book.getLocale(context);
+        final Locale bookLocale = book.getLocaleOrUserLocale(context);
         final long nrOfReferences = ServiceLocator.getInstance().getPublisherDao()
                                                   .countBooks(context, publisher, bookLocale);
         return nrOfReferences <= (book.isNew() ? 0 : 1);
@@ -674,7 +674,7 @@ public class EditBookViewModel
                               @NonNull final Author modified) {
         try {
             ServiceLocator.getInstance().getAuthorDao()
-                          .insert(context, modified, book.getLocale(context));
+                          .insert(context, modified, book.getLocaleOrUserLocale(context));
             final List<Author> list = book.getAuthors();
             // unlink the original, and link with the new one
             // Note that the original *might* be orphaned at this time.
@@ -700,7 +700,7 @@ public class EditBookViewModel
 
         try {
             ServiceLocator.getInstance().getAuthorDao()
-                          .update(context, original, book.getLocale(context));
+                          .update(context, original, book.getLocaleOrUserLocale(context));
             book.pruneAuthors(context, true);
             book.refreshAuthors(context);
             return true;
@@ -717,7 +717,7 @@ public class EditBookViewModel
                               @NonNull final Series modified) {
         try {
             ServiceLocator.getInstance().getSeriesDao()
-                          .insert(context, modified, book.getLocale(context));
+                          .insert(context, modified, book.getLocaleOrUserLocale(context));
             final List<Series> list = book.getSeries();
             // unlink the original, and link with the new one
             // Note that the original *might* be orphaned at this time.
@@ -743,7 +743,7 @@ public class EditBookViewModel
 
         try {
             ServiceLocator.getInstance().getSeriesDao()
-                          .update(context, original, book.getLocale(context));
+                          .update(context, original, book.getLocaleOrUserLocale(context));
             book.pruneSeries(context, true);
             book.refreshSeries(context);
             return true;
@@ -762,7 +762,7 @@ public class EditBookViewModel
 
         try {
             ServiceLocator.getInstance().getPublisherDao()
-                          .insert(context, modified, book.getLocale(context));
+                          .insert(context, modified, book.getLocaleOrUserLocale(context));
             final List<Publisher> list = book.getPublishers();
             // unlink the original, and link with the new one
             // Note that the original *might* be orphaned at this time.
@@ -788,7 +788,7 @@ public class EditBookViewModel
 
         try {
             ServiceLocator.getInstance().getPublisherDao()
-                          .update(context, original, book.getLocale(context));
+                          .update(context, original, book.getLocaleOrUserLocale(context));
             book.prunePublishers(context, true);
             book.refreshPublishers(context);
             return true;
@@ -804,25 +804,25 @@ public class EditBookViewModel
     void fixId(@NonNull final Context context,
                @NonNull final Author author) {
         ServiceLocator.getInstance().getAuthorDao()
-                      .fixId(context, author, true, book.getLocale(context));
+                      .fixId(context, author, true, book.getLocaleOrUserLocale(context));
     }
 
     void fixId(@NonNull final Context context,
                @NonNull final Series series) {
         ServiceLocator.getInstance().getSeriesDao()
-                      .fixId(context, series, true, book.getLocale(context));
+                      .fixId(context, series, true, book.getLocaleOrUserLocale(context));
     }
 
     void fixId(@NonNull final Context context,
                @NonNull final Publisher publisher) {
         ServiceLocator.getInstance().getPublisherDao()
-                      .fixId(context, publisher, true, book.getLocale(context));
+                      .fixId(context, publisher, true, book.getLocaleOrUserLocale(context));
     }
 
     void fixId(@NonNull final Context context,
                @NonNull final TocEntry tocEntry) {
         ServiceLocator.getInstance().getTocEntryDao()
-                      .fixId(context, tocEntry, true, book.getLocale(context));
+                      .fixId(context, tocEntry, true, book.getLocaleOrUserLocale(context));
     }
 
     /**

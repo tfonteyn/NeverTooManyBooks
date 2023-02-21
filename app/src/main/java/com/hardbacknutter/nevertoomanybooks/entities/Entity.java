@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Locale;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 
@@ -73,14 +74,12 @@ public interface Entity {
     /**
      * Get the Locale of the Entity.
      *
-     * @param context        Current context
-     * @param fallbackLocale Locale to use if the Entity does not have a Locale of its own.
+     * @param context Current context
      *
-     * @return the Entity Locale, or the fallbackLocale.
+     * @return the Entity Locale
      */
     @NonNull
-    default Locale getLocale(@NonNull final Context context,
-                             @NonNull final Locale fallbackLocale) {
-        return fallbackLocale;
+    default Optional<Locale> getLocale(@NonNull final Context context) {
+        return Optional.empty();
     }
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -498,15 +499,13 @@ public class Series
      * Get the Locale for a Series.
      * This is defined as the Locale for the language from the first book in the Series.
      *
-     * @param context    Current context
-     * @param bookLocale Locale to use if the item has none set
+     * @param context Current context
      *
      * @return the Locale of the Series
      */
-    @Override
     @NonNull
-    public Locale getLocale(@NonNull final Context context,
-                            @NonNull final Locale bookLocale) {
+    @Override
+    public Optional<Locale> getLocale(@NonNull final Context context) {
         //TODO: need a reliable way to cache the Locale here. i.e. store the language of a series.
         // See also {@link #pruneList} were we use batch mode.
         final String lang = ServiceLocator.getInstance().getSeriesDao().getLanguage(id);
@@ -514,10 +513,11 @@ public class Series
             final Locale seriesLocale = ServiceLocator.getInstance().getAppLocale()
                                                       .getLocale(context, lang);
             if (seriesLocale != null) {
-                return seriesLocale;
+                return Optional.of(seriesLocale);
             }
         }
-        return bookLocale;
+
+        return Optional.empty();
     }
 
     @NonNull

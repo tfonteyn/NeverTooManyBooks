@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,7 +37,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -66,6 +65,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
  * http://www.loc.gov/marc/relators/relaterm.html</a>
  * <p>
  * TODO: further cleanup of the {@link #getStyledName} and {@link #getStyledName} methods
+ * <p>
+ * ENHANCE: The Author Locale should be based on the main language the author writes in.
  */
 public class Author
         implements Parcelable, Entity, Mergeable {
@@ -922,26 +923,6 @@ public class Author
         if (includeBookFields) {
             type = source.type;
         }
-    }
-
-    /**
-     * Get the Locale of the actual item; e.g. a book written in Spanish should
-     * return an Spanish Locale even if for example the user runs the app in German,
-     * and the device in Danish.
-     * <p>
-     * An item not using a locale, should just returns the fallbackLocale itself.
-     *
-     * @param context    Current context
-     * @param userLocale Locale to use if the item does not have a Locale of its own.
-     *
-     * @return the item Locale, or the userLocale.
-     */
-    @Override
-    @NonNull
-    public Locale getLocale(@NonNull final Context context,
-                            @NonNull final Locale userLocale) {
-        //ENHANCE: The Author Locale should be based on the main language the author writes in.
-        return userLocale;
     }
 
     @Override

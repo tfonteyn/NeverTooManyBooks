@@ -32,6 +32,7 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -39,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
@@ -85,7 +85,7 @@ public class TocEntryDaoImpl
         return mergeHelper.merge(context, list,
                                  current -> {
                                      if (lookupLocale) {
-                                         return current.getLocale(context, bookLocale);
+                                         return current.getLocale(context).orElse(bookLocale);
                                      } else {
                                          return bookLocale;
                                      }
@@ -115,8 +115,9 @@ public class TocEntryDaoImpl
 
         final OrderByHelper.OrderByData obd;
         if (lookupLocale) {
-            obd = OrderByHelper.createOrderByData(context, tocEntry.getTitle(),
-                                                  bookLocale, tocEntry::getLocale);
+            obd = OrderByHelper.createOrderByData(
+                    context, tocEntry.getTitle(), bookLocale,
+                    (c, defLocale) -> tocEntry.getLocale(c).orElse(defLocale));
         } else {
             obd = OrderByHelper.createOrderByData(context, tocEntry.getTitle(),
                                                   bookLocale, null);

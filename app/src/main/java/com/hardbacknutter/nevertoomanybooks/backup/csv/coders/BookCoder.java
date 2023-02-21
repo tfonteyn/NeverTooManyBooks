@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -122,7 +122,7 @@ public class BookCoder {
         }
 
         // check/fix the language
-        final Locale bookLocale = book.getLocale(context);
+        final Locale bookLocale = book.getLocaleOrUserLocale(context);
 
         // Database access is strictly limited to fetching ID's for the list elements.
         decodeAuthors(book);

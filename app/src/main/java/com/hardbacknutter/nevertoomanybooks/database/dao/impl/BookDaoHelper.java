@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableInfo;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.Cover;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -48,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 /**
  * Preprocess a Book for storage. This class does not access to database.
@@ -86,7 +86,7 @@ public class BookDaoHelper {
 
         // Handle Language field FIRST, we need it for _OB fields.
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-        bookLocale = this.book.getAndUpdateLocale(context, userLocale, true);
+        bookLocale = this.book.getAndUpdateLocale(context, true).orElse(userLocale);
 
         localeList = LocaleListUtils.asList(context);
         localeList.add(0, bookLocale);

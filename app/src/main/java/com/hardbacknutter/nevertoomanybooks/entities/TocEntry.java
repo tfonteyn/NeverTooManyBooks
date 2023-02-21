@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,7 +29,6 @@ import androidx.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -54,6 +53,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
  * when last book is gone? or keep them for adding to new books / wish list?
  * - consider to add a purge based on book for orphaned TocEntry
  * - a purge based on Author is already done)
+ * <p>
+ * ENHANCE: The TocEntry Locale should be based on either a specific language
+ *  setting for the TocEntry itself, or on the Locale of the primary book.
  */
 public class TocEntry
         implements Parcelable, Entity, Mergeable, AuthorWork {
@@ -72,7 +74,8 @@ public class TocEntry
             return new TocEntry[size];
         }
     };
-
+    /** in-memory use only. Number of books this TocEntry appears in. */
+    private final int bookCount;
     /** Row ID. */
     private long id;
     @NonNull
@@ -81,9 +84,6 @@ public class TocEntry
     private String title;
     @NonNull
     private PartialDate firstPublicationDate;
-
-    /** in-memory use only. Number of books this TocEntry appears in. */
-    private final int bookCount;
 
     /**
      * Constructor.
@@ -318,25 +318,6 @@ public class TocEntry
 
     public void setFirstPublicationDate(@NonNull final PartialDate firstPublicationDate) {
         this.firstPublicationDate = firstPublicationDate;
-    }
-
-    /**
-     * Get the Locale of the actual item; e.g. a book written in Spanish should
-     * return an Spanish Locale even if for example the user runs the app in German,
-     * and the device in Danish.
-     *
-     * @param context    Current context
-     * @param bookLocale Locale to use if the item has none set
-     *
-     * @return the item Locale, or the bookLocale.
-     */
-    @Override
-    @NonNull
-    public Locale getLocale(@NonNull final Context context,
-                            @NonNull final Locale bookLocale) {
-        //ENHANCE: The TocEntry Locale should be based on either a specific language
-        // setting for the TocEntry itself, or on the Locale of the primary book.
-        return bookLocale;
     }
 
     @NonNull

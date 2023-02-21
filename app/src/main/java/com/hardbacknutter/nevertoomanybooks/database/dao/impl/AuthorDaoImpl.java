@@ -35,6 +35,7 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -43,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorMergeHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
@@ -145,7 +145,7 @@ public class AuthorDaoImpl
 
         final Locale authorLocale;
         if (lookupLocale) {
-            authorLocale = author.getLocale(context, bookLocale);
+            authorLocale = author.getLocale(context).orElse(bookLocale);
         } else {
             authorLocale = bookLocale;
         }
@@ -390,7 +390,7 @@ public class AuthorDaoImpl
         return mergeHelper.merge(context, list,
                                  current -> {
                                      if (lookupLocale) {
-                                         return current.getLocale(context, bookLocale);
+                                         return current.getLocale(context).orElse(bookLocale);
                                      } else {
                                          return bookLocale;
                                      }
@@ -447,7 +447,7 @@ public class AuthorDaoImpl
         // bookLocale is not used.
 
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-        final Locale authorLocale = author.getLocale(context, userLocale);
+        final Locale authorLocale = author.getLocale(context).orElse(userLocale);
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -497,7 +497,7 @@ public class AuthorDaoImpl
         // bookLocale is not used.
 
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-        final Locale authorLocale = author.getLocale(context, userLocale);
+        final Locale authorLocale = author.getLocale(context).orElse(userLocale);
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -653,7 +653,7 @@ public class AuthorDaoImpl
                 // delete old links and store all new links
                 // We KNOW there are no updates needed.
                 bookDao.insertAuthors(context, bookId, false, destList,
-                                      true, book.getLocale(context));
+                                      true, book.getLocaleOrUserLocale(context));
             }
 
             // delete the obsolete source.

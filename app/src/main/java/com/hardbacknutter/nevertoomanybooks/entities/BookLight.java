@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,7 +27,7 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
@@ -117,14 +117,17 @@ public class BookLight
     }
 
     @NonNull
-    public Locale getLocale(@NonNull final Context context,
-                            @NonNull final Locale defValue) {
+    @Override
+    public Optional<Locale> getLocale(@NonNull final Context context) {
         if (language.isEmpty()) {
-            return defValue;
+            return Optional.empty();
         } else {
             final Locale locale = ServiceLocator.getInstance().getAppLocale()
                                                 .getLocale(context, language);
-            return Objects.requireNonNullElse(locale, defValue);
+            if (locale != null) {
+                return Optional.of(locale);
+            }
+            return Optional.empty();
         }
     }
 

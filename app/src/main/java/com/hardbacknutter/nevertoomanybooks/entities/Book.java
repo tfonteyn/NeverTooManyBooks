@@ -40,7 +40,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -50,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.Cover;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
@@ -71,7 +71,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 /**
  * Represents the underlying data for a book.
@@ -462,7 +461,7 @@ public class Book
                            @Nullable final Style style) {
         if (ReorderHelper.forDisplay(context)) {
             final List<Locale> localeList = LocaleListUtils.asList(context);
-            localeList.add(0, getLocale(context));
+            localeList.add(0, getLocaleOrUserLocale(context));
             return ReorderHelper.reorder(context, getTitle(), localeList);
         } else {
             return getTitle();
@@ -475,10 +474,7 @@ public class Book
         return new PartialDate(getString(DBKey.FIRST_PUBLICATION__DATE));
     }
 
-
     /**
-     * Convenience method.
-     * <p>
      * Get the Book's Locale (based on its language).
      *
      * @param context Current context
@@ -486,54 +482,53 @@ public class Book
      * @return the Locale, or the users preferred Locale if no language was set.
      */
     @NonNull
-    public Locale getLocale(@NonNull final Context context) {
-        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-        return getAndUpdateLocale(context, userLocale, false);
+    public Optional<Locale> getLocale(@NonNull final Context context) {
+        final Optional<Locale> updatedLocale = getAndUpdateLocale(context, false);
+        if (updatedLocale.isPresent()) {
+            return updatedLocale;
+        } else {
+            return Optional.of(context.getResources().getConfiguration().getLocales().get(0));
+        }
     }
 
     /**
-     * Get the Book's Locale (based on its language).
+     * Convenience method which return the locale directly.
      *
      * @param context Current context
-     * @param unused  a Book will <strong>always</strong> use the user-locale as fallback.
      *
      * @return the Locale, or the users preferred Locale if no language was set.
      */
     @NonNull
-    public Locale getLocale(@NonNull final Context context,
-                            @NonNull final Locale unused) {
-        return getLocale(context);
+    public Locale getLocaleOrUserLocale(@NonNull final Context context) {
+        return getAndUpdateLocale(context, false)
+                .orElse(context.getResources().getConfiguration().getLocales().get(0));
     }
 
     /**
      * Use the book's language setting to determine the Locale.
      *
      * @param context        Current context
-     * @param fallbackLocale Locale to use if the Book does not have a Locale of its own.
      * @param updateLanguage {@code true} to update the language field with the ISO code
      *                       if needed. {@code false} to leave it unchanged.
      *
      * @return the Locale.
      */
     @NonNull
-    public Locale getAndUpdateLocale(@NonNull final Context context,
-                                     @NonNull final Locale fallbackLocale,
-                                     final boolean updateLanguage) {
-        Locale bookLocale = null;
+    public Optional<Locale> getAndUpdateLocale(@NonNull final Context context,
+                                               final boolean updateLanguage) {
         if (contains(DBKey.LANGUAGE)) {
             final String lang = getString(DBKey.LANGUAGE);
 
-            bookLocale = ServiceLocator.getInstance().getAppLocale().getLocale(context, lang);
-            if (bookLocale == null) {
-                return fallbackLocale;
-
-            } else if (updateLanguage) {
-                putString(DBKey.LANGUAGE, lang);
+            final Locale bookLocale =
+                    ServiceLocator.getInstance().getAppLocale().getLocale(context, lang);
+            if (bookLocale != null) {
+                if (updateLanguage) {
+                    putString(DBKey.LANGUAGE, lang);
+                }
+                return Optional.of(bookLocale);
             }
         }
-
-        // none, use fallback.
-        return Objects.requireNonNullElse(bookLocale, fallbackLocale);
+        return Optional.empty();
     }
 
 
@@ -590,7 +585,7 @@ public class Book
     public void refreshAuthors(@NonNull final Context context) {
         if (contains(BKEY_AUTHOR_LIST)) {
             final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
-            final Locale bookLocale = getLocale(context);
+            final Locale bookLocale = getLocaleOrUserLocale(context);
             final ArrayList<Author> list = getAuthors();
             for (final Author author : list) {
                 authorDao.refresh(context, author, true, bookLocale);
@@ -603,7 +598,8 @@ public class Book
         final ArrayList<Author> authors = getAuthors();
         if (!authors.isEmpty()) {
             final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
-            if (authorDao.pruneList(context, authors, lookupLocale, getLocale(context))) {
+            if (authorDao.pruneList(context, authors, lookupLocale,
+                                    getLocaleOrUserLocale(context))) {
                 stage.setStage(EntityStage.Stage.Dirty);
             }
         }
@@ -677,7 +673,7 @@ public class Book
     public void refreshSeries(@NonNull final Context context) {
         if (contains(BKEY_SERIES_LIST)) {
             final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
-            final Locale bookLocale = getLocale(context);
+            final Locale bookLocale = getLocaleOrUserLocale(context);
             final ArrayList<Series> list = getSeries();
             for (final Series series : list) {
                 seriesDao.refresh(context, series, true, bookLocale);
@@ -691,7 +687,8 @@ public class Book
             final ArrayList<Series> series = getSeries();
             if (!series.isEmpty()) {
                 final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
-                if (seriesDao.pruneList(context, series, lookupLocale, getLocale(context))) {
+                if (seriesDao.pruneList(context, series, lookupLocale,
+                                        getLocaleOrUserLocale(context))) {
                     stage.setStage(EntityStage.Stage.Dirty);
                 }
             }
@@ -745,7 +742,7 @@ public class Book
     public void refreshPublishers(@NonNull final Context context) {
         if (contains(BKEY_PUBLISHER_LIST)) {
             final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
-            final Locale bookLocale = getLocale(context);
+            final Locale bookLocale = getLocaleOrUserLocale(context);
             final ArrayList<Publisher> list = getPublishers();
             for (final Publisher publisher : list) {
                 publisherDao.refresh(context, publisher, true, bookLocale);
@@ -759,7 +756,8 @@ public class Book
             final ArrayList<Publisher> publishers = getPublishers();
             if (!publishers.isEmpty()) {
                 final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
-                if (publisherDao.pruneList(context, publishers, lookupLocale, getLocale(context))) {
+                if (publisherDao.pruneList(context, publishers, lookupLocale,
+                                           getLocaleOrUserLocale(context))) {
                     stage.setStage(EntityStage.Stage.Dirty);
                 }
             }
@@ -976,12 +974,12 @@ public class Book
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                 LoggerFactory.getLogger()
-                              .e(TAG, new Throwable("getCoverFile"),
-                                 "bookId=" + getId()
-                                 + "|cIdx=" + cIdx
-                                 + "|file="
-                                 + (coverFile == null ? "null" : coverFile.getAbsolutePath())
-                              );
+                             .e(TAG, new Throwable("getCoverFile"),
+                                "bookId=" + getId()
+                                + "|cIdx=" + cIdx
+                                + "|file="
+                                + (coverFile == null ? "null" : coverFile.getAbsolutePath())
+                             );
             }
             if (coverFile != null && coverFile.exists()) {
                 return Optional.of(coverFile);
@@ -1036,12 +1034,12 @@ public class Book
             if (file != null) {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                     LoggerFactory.getLogger()
-                                  .e(TAG, new Throwable("setCover"),
-                                     "editing"
-                                     + "|bookId=" + getId()
-                                     + "|cIdx=" + cIdx
-                                     + "|file=" + file.getAbsolutePath()
-                                  );
+                                 .e(TAG, new Throwable("setCover"),
+                                    "editing"
+                                    + "|bookId=" + getId()
+                                    + "|cIdx=" + cIdx
+                                    + "|file=" + file.getAbsolutePath()
+                                 );
                 }
                 // #storeCovers will do the actual storing
                 putString(BKEY_TMP_FILE_SPEC[cIdx], file.getAbsolutePath());
@@ -1049,12 +1047,12 @@ public class Book
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                     LoggerFactory.getLogger()
-                                  .e(TAG, new Throwable("setCover"),
-                                     "editing"
-                                     + "|bookId=" + getId()
-                                     + "|cIdx=" + cIdx
-                                     + "|deleting"
-                                  );
+                                 .e(TAG, new Throwable("setCover"),
+                                    "editing"
+                                    + "|bookId=" + getId()
+                                    + "|cIdx=" + cIdx
+                                    + "|deleting"
+                                 );
                 }
                 // explicitly set to "" to let #storeCovers do the delete
                 putString(BKEY_TMP_FILE_SPEC[cIdx], "");
@@ -1083,12 +1081,12 @@ public class Book
                     // ... not actually sure when this would be the case; keep an eye on logs
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                         LoggerFactory.getLogger()
-                                      .e(TAG, new Throwable("setCover"),
-                                         "readOnly"
-                                         + "|bookId=" + getId()
-                                         + "|cIdx=" + cIdx
-                                         + "|uuid, in-place"
-                                      );
+                                     .e(TAG, new Throwable("setCover"),
+                                        "readOnly"
+                                        + "|bookId=" + getId()
+                                        + "|cIdx=" + cIdx
+                                        + "|uuid, in-place"
+                                     );
                     }
                 } else {
                     // Rename the temp file to the uuid permanent file name

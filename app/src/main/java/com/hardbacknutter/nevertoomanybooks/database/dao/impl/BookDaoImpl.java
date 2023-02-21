@@ -215,9 +215,9 @@ public class BookDaoImpl
             final long newBookId = db.insert(TBL_BOOKS.getName(), cv);
             if (newBookId <= 0) {
                 LoggerFactory.getLogger()
-                              .e(TAG, new Throwable(), "Insert failed"
-                                                       + "|table=" + TBL_BOOKS.getName()
-                                                       + "|cv=" + cv);
+                             .e(TAG, new Throwable(), "Insert failed"
+                                                      + "|table=" + TBL_BOOKS.getName()
+                                                      + "|cv=" + cv);
 
                 book.putLong(DBKey.PK_ID, 0);
                 book.remove(DBKey.BOOK_UUID);
@@ -434,7 +434,7 @@ public class BookDaoImpl
         final boolean doUpdates = !flags.contains(BookFlag.RunInBatch);
 
         // unconditional lookup of the book locale!
-        final Locale bookLocale = book.getLocale(context);
+        final Locale bookLocale = book.getLocaleOrUserLocale(context);
 
         if (book.contains(Book.BKEY_BOOKSHELF_LIST)) {
             // Bookshelves will be inserted if new, but not updated
@@ -795,8 +795,9 @@ public class BookDaoImpl
 
                 final OrderByHelper.OrderByData obd;
                 if (lookupLocale) {
-                    obd = OrderByHelper.createOrderByData(context, tocEntry.getTitle(),
-                                                          bookLocale, tocEntry::getLocale);
+                    obd = OrderByHelper.createOrderByData(
+                            context, tocEntry.getTitle(), bookLocale,
+                            (c, defLocale) -> tocEntry.getLocale(c).orElse(defLocale));
                 } else {
                     obd = OrderByHelper.createOrderByData(context, tocEntry.getTitle(),
                                                           bookLocale, null);

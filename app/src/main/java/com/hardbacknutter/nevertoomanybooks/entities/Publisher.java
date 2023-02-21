@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,7 +27,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
@@ -36,6 +35,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 /**
  * Represents a Publisher.
+ * <p>
+ * ENHANCE: The Publisher Locale should be based on the country where they are.
  */
 public class Publisher
         implements Parcelable, Entity, Mergeable {
@@ -165,14 +166,6 @@ public class Publisher
      */
     public void copyFrom(@NonNull final Publisher source) {
         name = source.name;
-    }
-
-    @Override
-    @NonNull
-    public Locale getLocale(@NonNull final Context context,
-                            @NonNull final Locale bookLocale) {
-        //ENHANCE: The Publisher Locale should be based on the country where they are.
-        return bookLocale;
     }
 
     @NonNull

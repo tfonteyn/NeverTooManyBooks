@@ -34,6 +34,7 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -41,7 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -91,8 +91,9 @@ public class SeriesDaoImpl
 
         final OrderByHelper.OrderByData obd;
         if (lookupLocale) {
-            obd = OrderByHelper.createOrderByData(context, series.getTitle(),
-                                                  bookLocale, series::getLocale);
+            obd = OrderByHelper.createOrderByData(
+                    context, series.getTitle(), bookLocale,
+                    (c, defLocale) -> series.getLocale(c).orElse(defLocale));
         } else {
             obd = OrderByHelper.createOrderByData(context, series.getTitle(),
                                                   bookLocale, null);
@@ -244,7 +245,7 @@ public class SeriesDaoImpl
         return mergeHelper.merge(context, list,
                                  current -> {
                                      if (lookupLocale) {
-                                         return current.getLocale(context, bookLocale);
+                                         return current.getLocale(context).orElse(bookLocale);
                                      } else {
                                          return bookLocale;
                                      }
@@ -294,7 +295,8 @@ public class SeriesDaoImpl
             throws DaoWriteException {
 
         final OrderByHelper.OrderByData obd = OrderByHelper.createOrderByData(
-                context, series.getTitle(), bookLocale, series::getLocale);
+                context, series.getTitle(), bookLocale,
+                (c, defLocale) -> series.getLocale(c).orElse(defLocale));
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             stmt.bindString(1, series.getTitle());
@@ -319,7 +321,8 @@ public class SeriesDaoImpl
             throws DaoWriteException {
 
         final OrderByHelper.OrderByData obd = OrderByHelper.createOrderByData(
-                context, series.getTitle(), bookLocale, series::getLocale);
+                context, series.getTitle(), bookLocale,
+                (c, defLocale) -> series.getLocale(c).orElse(defLocale));
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
             stmt.bindString(1, series.getTitle());
@@ -391,7 +394,7 @@ public class SeriesDaoImpl
                 // delete old links and store all new links
                 // We KNOW there are no updates needed.
                 bookDao.insertSeries(context, bookId, false, destList,
-                                     true, book.getLocale(context));
+                                     true, book.getLocaleOrUserLocale(context));
             }
 
             // delete the obsolete source.
