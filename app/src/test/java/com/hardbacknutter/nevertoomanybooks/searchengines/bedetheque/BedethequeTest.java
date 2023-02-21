@@ -36,7 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 import org.jsoup.nodes.Document;
@@ -63,8 +62,7 @@ public class BedethequeTest
     public void setup()
             throws ParserConfigurationException, SAXException {
         super.setup();
-        searchEngine = (BedethequeSearchEngine) Site.Type.Data
-                .getSite(EngineId.Bedetheque).getSearchEngine();
+        searchEngine = (BedethequeSearchEngine) EngineId.Bedetheque.createSearchEngine();
         searchEngine.setCaller(new TestProgressListener(TAG));
     }
 

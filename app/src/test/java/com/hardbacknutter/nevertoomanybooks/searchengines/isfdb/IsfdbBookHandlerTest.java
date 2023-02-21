@@ -37,7 +37,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
@@ -64,8 +63,7 @@ class IsfdbBookHandlerTest
     public void setup()
             throws ParserConfigurationException, SAXException {
         super.setup();
-        searchEngine = (IsfdbSearchEngine) Site.Type.Data
-                .getSite(EngineId.Isfdb).getSearchEngine();
+        searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine();
         searchEngine.setCaller(new TestProgressListener(TAG));
 
         // Override the default 'false'

@@ -30,7 +30,6 @@ import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,8 +50,7 @@ public class SeriesParserTest
             throws ParserConfigurationException, SAXException {
         super.setup();
 
-        searchEngine = (BedethequeSearchEngine) Site.Type.Data
-                .getSite(EngineId.Bedetheque).getSearchEngine();
+        searchEngine = (BedethequeSearchEngine) EngineId.Bedetheque.createSearchEngine();
         searchEngine.setCaller(new TestProgressListener(TAG));
     }
 

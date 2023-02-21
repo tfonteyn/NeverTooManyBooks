@@ -34,7 +34,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,8 +54,7 @@ class OpenLibrarySearchEngineTest
     public void setup()
             throws ParserConfigurationException, SAXException {
         super.setup();
-        searchEngine = (OpenLibrarySearchEngine) Site.Type.Data
-                .getSite(EngineId.OpenLibrary).getSearchEngine();
+        searchEngine = (OpenLibrarySearchEngine) EngineId.OpenLibrary.createSearchEngine();
         searchEngine.setCaller(new TestProgressListener(TAG));
     }
 

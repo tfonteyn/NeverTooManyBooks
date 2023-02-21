@@ -33,7 +33,6 @@ import javax.xml.parsers.SAXParserFactory;
 import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,8 +52,7 @@ class IsfdbXmlPublicationTest
     public void setup()
             throws ParserConfigurationException, SAXException {
         super.setup();
-        searchEngine = (IsfdbSearchEngine) Site.Type.Data
-                .getSite(EngineId.Isfdb).getSearchEngine();
+        searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine();
         searchEngine.setCaller(new TestProgressListener(TAG));
 
         // Override the default 'false'
