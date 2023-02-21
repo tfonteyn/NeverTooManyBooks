@@ -89,25 +89,32 @@ public class SearchEditionsTask
             throw new NetworkUnavailableException(this.getClass().getName());
         }
 
-        for (final Site site : Site.filterActive(Site.Type.AltEditions.getSites())) {
-            final SearchEngine searchEngine = site.getSearchEngine();
-            searchEngine.setCaller(this);
-            try {
-                // can we reach the site ?
-                searchEngine.ping();
+        Site.Type.AltEditions
+                .getSites()
+                .stream()
+                .filter(Site::isActive)
+                .map(site -> site.getEngineId().createSearchEngine())
+                .forEach(searchEngine -> {
+                    searchEngine.setCaller(this);
+                    try {
+                        // can we reach the site ?
+                        searchEngine.ping();
 
-                isbnList.addAll(((SearchEngine.AlternativeEditions) searchEngine)
-                                        .searchAlternativeEditions(context, isbn));
+                        isbnList.addAll(((SearchEngine.AlternativeEditions) searchEngine)
+                                                .searchAlternativeEditions(context, isbn));
 
-            } catch (@NonNull final IOException | CredentialsException | SearchException
-                    | RuntimeException e) {
-                // Silently ignore individual failures,
-                // we'll return what we get from the sites that worked.
-                if (BuildConfig.DEBUG /* always */) {
-                    LoggerFactory.getLogger().e(TAG, e, "site=" + site);
-                }
-            }
-        }
+                    } catch (@NonNull final IOException | CredentialsException |
+                                            SearchException
+                                            | RuntimeException e) {
+                        // Silently ignore individual failures,
+                        // we'll return what we get from the sites that worked.
+                        if (BuildConfig.DEBUG /* always */) {
+                            LoggerFactory.getLogger()
+                                         .e(TAG, e, "searchEngine="
+                                                    + searchEngine.getName(context));
+                        }
+                    }
+                });
         return isbnList;
     }
 }
