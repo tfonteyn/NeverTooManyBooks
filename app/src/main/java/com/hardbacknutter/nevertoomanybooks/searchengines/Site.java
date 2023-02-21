@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -146,7 +146,7 @@ public final class Site
      * @param sites to filter
      *
      * @return new list instance containing the <strong>original</strong> site objects;
-     * filtered for being active. The order is the same.
+     *         filtered for being active. The order is the same.
      */
     @NonNull
     public static List<Site> filterActive(@NonNull final Collection<Site> sites) {
@@ -168,7 +168,10 @@ public final class Site
                                         @NonNull final String callerIdString,
                                         @Nullable final Runnable onFinished) {
 
-        final Deque<Site> stack = new ArrayDeque<>(sites);
+        final Deque<SearchEngine> stack = sites.stream()
+                                               .filter(Site::isActive)
+                                               .map(Site::getSearchEngine)
+                                               .collect(Collectors.toCollection(ArrayDeque::new));
         promptToRegister(context, stack, callerIdString, onFinished);
     }
 
@@ -177,42 +180,39 @@ public final class Site
      * {@link #promptToRegister(Context, Collection, String, Runnable)}.
      *
      * @param context        Current context
-     * @param sites          the stack of sites to check
+     * @param searchEngines  the stack of active engines to check
      * @param callerIdString String used to flag in preferences if we showed the alert from
      *                       that caller already or not.
      * @param onFinished     (optional) Runnable to call when all sites have been processed.
      */
     private static void promptToRegister(@NonNull final Context context,
-                                         @NonNull final Deque<Site> sites,
+                                         @NonNull final Deque<SearchEngine> searchEngines,
                                          @NonNull final String callerIdString,
                                          @Nullable final Runnable onFinished) {
-        while (!sites.isEmpty()) {
-            final Site site = sites.poll();
+        while (!searchEngines.isEmpty()) {
+            final SearchEngine searchEngine = searchEngines.poll();
             //noinspection ConstantConditions
-            if (site.isActive()) {
-                final SearchEngine searchEngine = site.getSearchEngine();
-                if (searchEngine.promptToRegister(context, false, callerIdString, action -> {
-                    switch (action) {
-                        case Register:
-                            throw new IllegalStateException("Engine must handle Register");
+            if (searchEngine.promptToRegister(context, false, callerIdString, action -> {
+                switch (action) {
+                    case Register:
+                        throw new IllegalStateException("Engine must handle Register");
 
-                        case NotNow:
-                        case NotEver:
-                            // restart the loop with the remaining sites to check.
-                            promptToRegister(context, sites, callerIdString, onFinished);
-                            return;
+                    case NotNow:
+                    case NotEver:
+                        // restart the loop with the remaining sites to check.
+                        promptToRegister(context, searchEngines, callerIdString, onFinished);
+                        return;
 
-                        case Cancelled:
-                            // user explicitly cancelled, we're done here
-                            if (onFinished != null) {
-                                onFinished.run();
-                            }
-                            break;
-                    }
-                })) {
-                    // we are showing a registration dialog, quit the loop
-                    return;
+                    case Cancelled:
+                        // user explicitly cancelled, we're done here
+                        if (onFinished != null) {
+                            onFinished.run();
+                        }
+                        break;
                 }
+            })) {
+                // we are showing a registration dialog, quit the loop
+                return;
             }
         }
 
