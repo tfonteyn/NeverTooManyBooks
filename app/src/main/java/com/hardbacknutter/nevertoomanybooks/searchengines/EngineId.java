@@ -22,15 +22,28 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.annotation.UiThread;
+import androidx.appcompat.app.AlertDialog;
+import androidx.preference.PreferenceManager;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayDeque;
+import java.util.Collection;
+import java.util.Deque;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -429,6 +442,81 @@ public enum EngineId
         }
     }
 
+    /**
+     * Bring up an Alert to the user if the given list includes a site where registration
+     * is beneficial (but not required... it's just one of many engines here).
+     *
+     * @param context        Current context
+     * @param sites          the list to check
+     * @param callerIdString String used to flag in preferences if we showed the alert from
+     *                       that caller already or not.
+     * @param onFinished     (optional) Runnable to call when all sites have been processed.
+     */
+    public static void promptToRegister(@NonNull final Context context,
+                                        @NonNull final Collection<Site> sites,
+                                        @NonNull final String callerIdString,
+                                        @Nullable final Runnable onFinished) {
+
+        final Deque<EngineId> stack = sites.stream()
+                                           .filter(Site::isActive)
+                                           .map(Site::getEngineId)
+                                           .collect(Collectors.toCollection(ArrayDeque::new));
+        promptToRegister(context, stack, callerIdString, onFinished);
+    }
+
+    /**
+     * Recursive stack-based prompt for registration.
+     *
+     * @param context        Current context
+     * @param engineIds      the stack of active engines to check
+     * @param callerIdString String used to flag in preferences if we showed the alert from
+     *                       that caller already or not.
+     * @param onFinished     (optional) Runnable to call when all sites have been processed.
+     */
+    private static void promptToRegister(@NonNull final Context context,
+                                         @NonNull final Deque<EngineId> engineIds,
+                                         @NonNull final String callerIdString,
+                                         @Nullable final Runnable onFinished) {
+        while (!engineIds.isEmpty()) {
+            final EngineId engineId = engineIds.poll();
+            //noinspection ConstantConditions
+            if (engineId.promptToRegister(context, false, callerIdString, action -> {
+                switch (action) {
+                    case Register:
+                        throw new IllegalStateException("Engine must handle Register");
+
+                    case NotNow:
+                    case NotEver:
+                        // restart the loop with the remaining sites to check.
+                        promptToRegister(context, engineIds, callerIdString, onFinished);
+                        return;
+
+                    case Cancelled:
+                        // user explicitly cancelled, we're done here
+                        if (onFinished != null) {
+                            onFinished.run();
+                        }
+                        break;
+                }
+            })) {
+                // we are showing a registration dialog, quit the loop
+                return;
+            }
+        }
+
+        // all engines have registration, or were dismissed.
+        if (onFinished != null) {
+            onFinished.run();
+        }
+    }
+
+    /**
+     * Is this engine enabled <strong>AT ALL</strong>.
+     * <p>
+     * Dev. note: {@code false} in release-builds for engines still under development;
+     *
+     * @return flag
+     */
     public boolean isEnabled() {
         return enabled;
     }
@@ -519,6 +607,114 @@ public enum EngineId
         }
     }
 
+
+    /**
+     * ENHANCE: when needed... this method parked here for future thoughts.
+     *  sites which need a registration of some sorts.
+     * <p>
+     * Check if we have a key/account; if not alert the user.
+     *
+     * @param context        Current context; <strong>MUST</strong> be passed in
+     *                       as this call might do UI interaction.
+     * @param required       {@code true} if we <strong>must</strong> have access to the site.
+     *                       {@code false} if it would be beneficial but not mandatory.
+     * @param callerIdString String used to flag in preferences if we showed the alert from
+     *                       that caller already or not.
+     * @param onResult       called after user selects an outcome
+     *
+     * @return {@code true} if an alert is currently shown
+     */
+    @UiThread
+    private boolean promptToRegister(@NonNull final Context context,
+                                     final boolean required,
+                                     @Nullable final String callerIdString,
+                                     @Nullable final Consumer<RegistrationAction> onResult) {
+
+        return false;
+    }
+
+    /**
+     * Show a registration request dialog.
+     *
+     * @param context        Current context
+     * @param required       {@code true} if we <strong>must</strong> have access.
+     *                       {@code false} if it would be beneficial.
+     * @param callerIdString String used to flag in preferences if we showed the alert from
+     *                       that caller already or not.
+     * @param onResult       called after user selects an outcome
+     *
+     * @return {@code true} if an alert is currently shown
+     */
+    @UiThread
+    boolean showRegistrationDialog(@NonNull final Context context,
+                                   final boolean required,
+                                   @Nullable final String callerIdString,
+                                   @NonNull final Consumer<RegistrationAction> onResult) {
+
+        final String showAlertPrefKey;
+        if (callerIdString != null) {
+            showAlertPrefKey = getPreferenceKey() + ".hide_alert." + callerIdString;
+        } else {
+            showAlertPrefKey = null;
+        }
+
+        final boolean showAlert;
+        if (required || showAlertPrefKey == null) {
+            showAlert = true;
+        } else {
+            showAlert = !PreferenceManager.getDefaultSharedPreferences(context)
+                                          .getBoolean(showAlertPrefKey, false);
+        }
+
+        if (showAlert) {
+            final String siteName = createSearchEngine().getHostUrl();
+
+            final AlertDialog.Builder dialogBuilder = new MaterialAlertDialogBuilder(context)
+                    .setIcon(R.drawable.ic_baseline_warning_24)
+                    .setTitle(siteName)
+                    .setNegativeButton(R.string.action_not_now, (d, w) ->
+                            onResult.accept(RegistrationAction.NotNow))
+                    .setPositiveButton(R.string.action_learn_more, (d, w) ->
+                            onResult.accept(RegistrationAction.Register))
+                    .setOnCancelListener(
+                            d -> onResult.accept(RegistrationAction.Cancelled));
+
+            // Use the Dialog's themed context!
+            final TextView messageView = new TextView(dialogBuilder.getContext());
+
+            if (required) {
+                messageView.setText(context.getString(
+                        R.string.confirm_registration_required, siteName));
+
+            } else {
+                messageView.setText(context.getString(
+                        R.string.confirm_registration_benefits, siteName,
+                        context.getString(R.string.lbl_credentials)));
+
+                // If it's not required, allow the user to permanently hide this alert
+                // for the given caller.
+                if (showAlertPrefKey != null) {
+                    dialogBuilder.setPositiveButton(context.getString(
+                            R.string.action_disable_message), (d, w) -> {
+                        PreferenceManager.getDefaultSharedPreferences(context)
+                                         .edit().putBoolean(showAlertPrefKey, true).apply();
+                        onResult.accept(RegistrationAction.NotEver);
+                    });
+                }
+            }
+
+            messageView.setAutoLinkMask(Linkify.WEB_URLS);
+            messageView.setMovementMethod(LinkMovementMethod.getInstance());
+
+            dialogBuilder.setView(messageView)
+                         .create()
+                         .show();
+        }
+
+        return showAlert;
+    }
+
+
     @Override
     public int describeContents() {
         return 0;
@@ -541,5 +737,16 @@ public enum EngineId
                + ", clazz=" + clazz.getName()
                + ", enabled=" + enabled
                + '}';
+    }
+
+    private enum RegistrationAction {
+        /** User selected to 'learn more' and register on the given site. */
+        Register,
+        /** User does not want to bother now, but wants to be reminded later. */
+        NotNow,
+        /** Not interested, don't bother the user again. */
+        NotEver,
+        /** Cancelled without selecting any option. */
+        Cancelled
     }
 }

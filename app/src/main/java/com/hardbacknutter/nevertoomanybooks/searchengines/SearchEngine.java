@@ -20,20 +20,12 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import android.content.Context;
-import android.text.method.LinkMovementMethod;
-import android.text.util.Linkify;
-import android.widget.TextView;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
-import androidx.appcompat.app.AlertDialog;
-import androidx.preference.PreferenceManager;
-
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -42,9 +34,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.function.Consumer;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
@@ -170,110 +160,6 @@ public interface SearchEngine
      */
     void setCaller(@Nullable Cancellable caller);
 
-    /**
-     * Optional to implement: sites which need a registration of some sorts.
-     * <p>
-     * Check if we have a key/account; if not alert the user.
-     *
-     * @param context        Current context; <strong>MUST</strong> be passed in
-     *                       as this call might do UI interaction.
-     * @param required       {@code true} if we <strong>must</strong> have access to the site.
-     *                       {@code false} if it would be beneficial but not mandatory.
-     * @param callerIdString String used to flag in preferences if we showed the alert from
-     *                       that caller already or not.
-     * @param onResult       called after user selects an outcome
-     *
-     * @return {@code true} if an alert is currently shown
-     */
-    @UiThread
-    default boolean promptToRegister(@NonNull final Context context,
-                                     final boolean required,
-                                     @Nullable final String callerIdString,
-                                     @Nullable final Consumer<RegistrationAction> onResult) {
-        return false;
-    }
-
-    /**
-     * Show a registration request dialog.
-     *
-     * @param context        Current context
-     * @param required       {@code true} if we <strong>must</strong> have access.
-     *                       {@code false} if it would be beneficial.
-     * @param callerIdString String used to flag in preferences if we showed the alert from
-     *                       that caller already or not.
-     * @param onResult       called after user selects an outcome
-     *
-     * @return {@code true} if an alert is currently shown
-     */
-    @UiThread
-    default boolean showRegistrationDialog(@NonNull final Context context,
-                                           final boolean required,
-                                           @Nullable final String callerIdString,
-                                           @NonNull final Consumer<RegistrationAction> onResult) {
-
-        final String key;
-        if (callerIdString != null) {
-            key = getEngineId().getPreferenceKey() + ".hide_alert." + callerIdString;
-        } else {
-            key = null;
-        }
-
-        final boolean showAlert;
-        if (required || key == null) {
-            showAlert = true;
-        } else {
-            showAlert = !PreferenceManager.getDefaultSharedPreferences(context)
-                                          .getBoolean(key, false);
-        }
-
-        if (showAlert) {
-            final String siteName = getHostUrl();
-
-            final AlertDialog.Builder dialogBuilder = new MaterialAlertDialogBuilder(context)
-                    .setIcon(R.drawable.ic_baseline_warning_24)
-                    .setTitle(siteName)
-                    .setNegativeButton(R.string.action_not_now, (d, w) ->
-                            onResult.accept(RegistrationAction.NotNow))
-                    .setPositiveButton(R.string.action_learn_more, (d, w) ->
-                            onResult.accept(RegistrationAction.Register))
-                    .setOnCancelListener(
-                            d -> onResult.accept(RegistrationAction.Cancelled));
-
-            // Use the Dialog's themed context!
-            final TextView messageView = new TextView(dialogBuilder.getContext());
-
-            if (required) {
-                messageView.setText(context.getString(
-                        R.string.confirm_registration_required, siteName));
-
-            } else {
-                messageView.setText(context.getString(
-                        R.string.confirm_registration_benefits, siteName,
-                        context.getString(R.string.lbl_credentials)));
-
-                // If it's not required, allow the user to permanently hide this alert
-                // for the given caller.
-                if (key != null) {
-                    dialogBuilder.setPositiveButton(context.getString(
-                            R.string.action_disable_message), (d, w) -> {
-                        PreferenceManager.getDefaultSharedPreferences(context)
-                                         .edit().putBoolean(key, true).apply();
-                        onResult.accept(RegistrationAction.NotEver);
-                    });
-                }
-            }
-
-            messageView.setAutoLinkMask(Linkify.WEB_URLS);
-            messageView.setMovementMethod(LinkMovementMethod.getInstance());
-
-            dialogBuilder.setView(messageView)
-                         .create()
-                         .show();
-        }
-
-        return showAlert;
-    }
-
     @WorkerThread
     default void ping()
             throws UnknownHostException,
@@ -282,17 +168,6 @@ public interface SearchEngine
                    MalformedURLException {
         ServiceLocator.getInstance().getNetworkChecker()
                       .ping(getHostUrl(), getEngineId().requireConfig().getConnectTimeoutInMs());
-    }
-
-    enum RegistrationAction {
-        /** User selected to 'learn more' and register on the given site. */
-        Register,
-        /** User does not want to bother now, but wants to be reminded later. */
-        NotNow,
-        /** Not interested, don't bother the user again. */
-        NotEver,
-        /** Cancelled without selecting any option. */
-        Cancelled
     }
 
     /** Optional. */
