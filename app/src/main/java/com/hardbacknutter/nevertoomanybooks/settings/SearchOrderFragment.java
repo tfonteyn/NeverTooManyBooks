@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -172,19 +172,19 @@ public class SearchOrderFragment
 
             // only show the info for Data lists. Irrelevant for others.
             if (site.getType() == Site.Type.Data) {
-                final SearchEngine searchEngine = site.getSearchEngine();
+                final EngineId engineId = site.getEngineId();
                 // do not list SearchEngine.CoverByIsbn, it's irrelevant to the user.
                 final Collection<String> info = new ArrayList<>();
-                if (searchEngine instanceof SearchEngine.ByIsbn) {
+                if (engineId.supports(SearchEngine.SearchBy.Isbn)) {
                     info.add(context.getString(R.string.lbl_isbn));
                 }
-                if (searchEngine instanceof SearchEngine.ByBarcode) {
+                if (engineId.supports(SearchEngine.SearchBy.Barcode)) {
                     info.add(context.getString(R.string.lbl_barcode));
                 }
-                if (searchEngine instanceof SearchEngine.ByExternalId) {
+                if (engineId.supports(SearchEngine.SearchBy.ExternalId)) {
                     info.add(context.getString(R.string.lbl_tab_lbl_ext_id));
                 }
-                if (searchEngine instanceof SearchEngine.ByText) {
+                if (engineId.supports(SearchEngine.SearchBy.Text)) {
                     info.add(context.getString(android.R.string.search_go));
                 }
                 infoView.setText(context.getString(R.string.brackets,

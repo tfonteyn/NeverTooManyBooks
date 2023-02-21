@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -586,6 +586,10 @@ public enum EngineId
     @NonNull
     public SearchEngineConfig requireConfig() {
         return Objects.requireNonNull(config);
+    }
+
+    public boolean supports(@NonNull final SearchEngine.SearchBy by) {
+        return by.clazz.isAssignableFrom(clazz);
     }
 
     /**
