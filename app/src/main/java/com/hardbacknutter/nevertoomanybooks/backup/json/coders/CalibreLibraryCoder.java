@@ -29,9 +29,9 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreVirtualLibrary;
@@ -66,7 +66,12 @@ public class CalibreLibraryCoder
         data.put(DBKey.CALIBRE_LIBRARY_LAST_SYNC_DATE__UTC, library.getLastSyncDateAsString());
 
         final Bookshelf libraryBookshelf = Bookshelf
-                .getBookshelf(context, library.getMappedBookshelfId(), Bookshelf.PREFERRED);
+                .getBookshelf(context, library.getMappedBookshelfId())
+                .orElseGet(() -> Bookshelf
+                        .getBookshelf(context, Bookshelf.PREFERRED)
+                        .orElseGet(() -> Bookshelf
+                                .getBookshelf(context, Bookshelf.DEFAULT)
+                                .orElseThrow()));
 
         data.put(DBKey.FK_BOOKSHELF, bookshelfCoder.encode(libraryBookshelf));
 
@@ -80,8 +85,8 @@ public class CalibreLibraryCoder
                 vlData.put(DBKey.CALIBRE_VIRT_LIB_EXPR, vlib.getExpr());
 
                 final Bookshelf vlibBookshelf = Bookshelf
-                        .getBookshelf(context, vlib.getMappedBookshelfId(),
-                                      library.getMappedBookshelfId());
+                        .getBookshelf(context, vlib.getMappedBookshelfId())
+                        .orElse(libraryBookshelf);
 
                 vlData.put(DBKey.FK_BOOKSHELF, bookshelfCoder.encode(vlibBookshelf));
 
@@ -233,7 +238,8 @@ public class CalibreLibraryCoder
         final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
 
         // try original
-        Bookshelf bookshelf = Bookshelf.getBookshelf(context, data.getLong(DBKey.FK_BOOKSHELF));
+        Bookshelf bookshelf = Bookshelf.getBookshelf(context, data.getLong(DBKey.FK_BOOKSHELF))
+                                       .orElse(null);
         if (bookshelf == null) {
             // have we created the workaround before?
             final String name = "Calibre '" + libName + "'";
