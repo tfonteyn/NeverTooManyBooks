@@ -35,6 +35,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -46,12 +47,12 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeAuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -594,7 +595,7 @@ public class LastDodoSearchEngine
     private void processPublisher(@NonNull final Element td,
                                   @NonNull final Book book) {
         for (final Element a : td.select("a")) {
-            final String name = ParseUtils.cleanText(a.text());
+            final String name = SearchEngineUtils.cleanText(a.text());
             final Publisher currentPublisher = Publisher.from(name);
             // check if already present
             if (book.getPublishers().stream().anyMatch(pub -> pub.equals(currentPublisher))) {
@@ -624,7 +625,7 @@ public class LastDodoSearchEngine
                              @NonNull final String key,
                              @NonNull final Book book) {
         if (td != null) {
-            final String text = ParseUtils.cleanText(td.text());
+            final String text = SearchEngineUtils.cleanText(td.text());
             if (!text.isEmpty()) {
                 book.putString(key, text);
             }

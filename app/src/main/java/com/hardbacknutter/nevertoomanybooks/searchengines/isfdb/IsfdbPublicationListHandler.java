@@ -28,16 +28,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -359,7 +359,7 @@ class IsfdbPublicationListHandler
                 case XML_NOTE: {
                     // can contain html tags!
                     addIfNotPresent(DBKey.DESCRIPTION,
-                                    ParseUtils.cleanText(builder.toString()));
+                                    SearchEngineUtils.cleanText(builder.toString()));
                     break;
                 }
                 case XML_ID_TYPE: {

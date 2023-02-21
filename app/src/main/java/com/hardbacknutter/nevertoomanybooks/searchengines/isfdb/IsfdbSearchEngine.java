@@ -56,8 +56,12 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.Logger;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.UncheckedSAXException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -65,22 +69,18 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
-import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.UncheckedSAXException;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -543,11 +543,11 @@ public class IsfdbSearchEngine
                     final String href = a.attr("href");
 
                     if (title == null && href.contains(CGI_TITLE)) {
-                        title = ParseUtils.cleanName(a.text());
+                        title = SearchEngineUtils.cleanName(a.text());
                         //ENHANCE: tackle 'variant' titles later
 
                     } else if (author == null && href.contains(CGI_EA)) {
-                        author = Author.from(ParseUtils.cleanName(a.text()));
+                        author = Author.from(SearchEngineUtils.cleanName(a.text()));
 
                     } else if (addSeriesFromToc && href.contains(CGI_PE)) {
                         final Series series = Series.from(a.text());
@@ -591,7 +591,7 @@ public class IsfdbSearchEngine
                 // i.e. if this entry has the same title as the book title
                 if ((firstPublicationYear == null || firstPublicationYear.isEmpty())
                     && title.equalsIgnoreCase(bookTitle)) {
-                    firstPublicationYear = ParseUtils.digits(year);
+                    firstPublicationYear = SearchEngineUtils.digits(year);
                 }
 
                 toc.add(new TocEntry(author, title, year));
@@ -1021,7 +1021,7 @@ public class IsfdbSearchEngine
         final Element recordIDDiv = contentBox.select("span.recordID").first();
         if (recordIDDiv != null) {
             tmpString = recordIDDiv.ownText();
-            tmpString = ParseUtils.digits(tmpString);
+            tmpString = SearchEngineUtils.digits(tmpString);
             if (!tmpString.isEmpty()) {
                 try {
                     final long record = Long.parseLong(tmpString);
@@ -1068,7 +1068,8 @@ public class IsfdbSearchEngine
         if (toc.size() == 1) {
             // if the content table has only one entry,
             // then this will have the first publication year for sure
-            tmpString = ParseUtils.digits(toc.get(0).getFirstPublicationDate().getIsoString());
+            tmpString = SearchEngineUtils.digits(
+                    toc.get(0).getFirstPublicationDate().getIsoString());
             if (!tmpString.isEmpty()) {
                 book.putString(DBKey.FIRST_PUBLICATION__DATE, tmpString);
             }

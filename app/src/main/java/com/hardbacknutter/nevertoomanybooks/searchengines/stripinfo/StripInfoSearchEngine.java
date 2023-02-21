@@ -47,6 +47,7 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -59,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeAuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.BookshelfMapper;
@@ -66,9 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.CollectionFormParser;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoAuth;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -370,7 +370,7 @@ public class StripInfoSearchEngine
 
                     final Element titleUrlElement = titleHeader.selectFirst(A_HREF_STRIP);
                     if (titleUrlElement != null) {
-                        book.putString(DBKey.TITLE, ParseUtils
+                        book.putString(DBKey.TITLE, SearchEngineUtils
                                 .cleanText(titleUrlElement.text()));
                         // extract the external (site) id from the url
                         externalId = processExternalId(titleUrlElement, book);
@@ -798,7 +798,7 @@ public class StripInfoSearchEngine
                             @NonNull final Book book) {
         final Element dataElement = td.nextElementSibling();
         if (dataElement != null && dataElement.childNodeSize() == 1) {
-            book.putString(key, ParseUtils.cleanText(dataElement.text()));
+            book.putString(key, SearchEngineUtils.cleanText(dataElement.text()));
             return 1;
         }
         return 0;
@@ -920,7 +920,7 @@ public class StripInfoSearchEngine
         if (dataElement != null) {
             final Elements as = dataElement.select("a");
             for (int i = 0; i < as.size(); i++) {
-                final String text = ParseUtils.cleanText(as.get(i).text());
+                final String text = SearchEngineUtils.cleanText(as.get(i).text());
                 final Series currentSeries = Series.from3(text);
                 // check if already present
                 if (book.getSeries().stream()
@@ -948,7 +948,7 @@ public class StripInfoSearchEngine
         if (dataElement != null) {
             final Elements aas = dataElement.select("a");
             for (int i = 0; i < aas.size(); i++) {
-                final String name = ParseUtils.cleanText(aas.get(i).text());
+                final String name = SearchEngineUtils.cleanText(aas.get(i).text());
                 final Publisher currentPublisher = Publisher.from(name);
                 // check if already present
                 if (book.getPublishers().stream()
@@ -993,7 +993,7 @@ public class StripInfoSearchEngine
                         .matcher(text)
                         .replaceAll(Matcher.quoteReplacement("</b>\n<br>"));
 
-                content.append(ParseUtils.cleanText(text));
+                content.append(SearchEngineUtils.cleanText(text));
                 if (i < sections.size() - 1) {
                     // separate multiple sections
                     content.append("\n<br>\n<br>");
