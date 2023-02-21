@@ -29,12 +29,13 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.util.Collections;
+import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -43,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
@@ -62,17 +62,16 @@ public class FileManager {
     @NonNull
     private final Map<String, ImageFileInfo> files = Collections.synchronizedMap(new HashMap<>());
 
-    /** The Sites the user wants to search for cover images. */
-    @NonNull
-    private final List<Site> siteList;
+    /** The sites the user wants to search for cover images. */
+    private final List<EngineId> engineIds;
 
     /**
      * Constructor.
      *
-     * @param sites site list
+     * @param engineIds to search on
      */
-    FileManager(@NonNull final List<Site> sites) {
-        siteList = sites;
+    FileManager(@NonNull final List<EngineId> engineIds) {
+        this.engineIds = engineIds;
     }
 
     /**
@@ -90,20 +89,20 @@ public class FileManager {
     }
 
     /**
-     * Search for a file according to preference of {@link Size} and {@link Site}.
+     * Search for a file according to preference of {@link Size} and {@link EngineId}.
      * <p>
      * First checks the cache. If we already have a good image, abort the search and use it.
      * <p>
-     * We loop on {@link Size} first, and for each, loop again on {@link Site}.
+     * We loop on {@link Size} first, and for each, loop again on {@link EngineId}.
      * The for() loop will break/return <strong>as soon as a cover file is found.</strong>
      * The first Site which has an image is accepted.
      * <p>
      *
-     * @param context Current context
-     * @param progressListener  to check for any cancellations
-     * @param isbn    to search for, <strong>must</strong> be valid.
-     * @param cIdx    0..n image index
-     * @param sizes   a list of images sizes in order of preference
+     * @param context          Current context
+     * @param progressListener to check for any cancellations
+     * @param isbn             to search for, <strong>must</strong> be valid.
+     * @param cIdx             0..n image index
+     * @param sizes            a list of images sizes in order of preference
      *
      * @return a {@link ImageFileInfo} object with or without a valid fileSpec.
      *
@@ -119,14 +118,10 @@ public class FileManager {
                                 @NonNull final Size... sizes)
             throws StorageException, CredentialsException {
 
-        final List<Site> enabledSites = Site.filterActive(siteList);
+        // We will disable sites on the fly for the *current* search without modifying the list
+        final Set<EngineId> currentSearch = EnumSet.copyOf(engineIds);
 
-        // We will disable sites on the fly for the *current* search without
-        // modifying the list by using a simple bitmask.
-        final Set<EngineId> currentSearch = enabledSites
-                .stream()
-                .map(Site::getEngineId)
-                .collect(Collectors.toSet());
+        final Map<EngineId, SearchEngine> engineCache = new EnumMap<>(EngineId.class);
 
         ImageFileInfo imageFileInfo;
 
@@ -144,21 +139,24 @@ public class FileManager {
                 return imageFileInfo;
             }
 
-            for (final Site site : enabledSites) {
+            for (final EngineId engineId : engineIds) {
                 // Should we search this site ?
-                if (currentSearch.contains(site.getEngineId())) {
+                if (currentSearch.contains(engineId)) {
 
                     if (progressListener.isCancelled()) {
                         return new ImageFileInfo(isbn);
                     }
 
                     // Is this Site's SearchEngine available and suitable?
-                    final SearchEngine searchEngine = site.getSearchEngine();
-                    if (searchEngine instanceof SearchEngine.CoverByIsbn
-                        && searchEngine.isAvailable()) {
+                    if (engineId.supports(SearchEngine.SearchBy.Isbn)) {
 
-                        // caller is the FetchImageTask
-                        searchEngine.setCaller(progressListener);
+                        SearchEngine searchEngine = engineCache.get(engineId);
+                        if (searchEngine == null) {
+                            searchEngine = engineId.createSearchEngine();
+                            // caller is the FetchImageTask
+                            searchEngine.setCaller(progressListener);
+                            engineCache.put(engineId, searchEngine);
+                        }
 
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                             Log.d(TAG, "search|SEARCHING"
@@ -176,7 +174,7 @@ public class FileManager {
                         } catch (@NonNull final SearchException e) {
                             // ignore, don't let a single search break the loop.
                             // disable it for THIS search
-                            currentSearch.remove(site.getEngineId());
+                            currentSearch.remove(engineId);
 
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                                 Log.d(TAG, "search|FAILED"
@@ -214,12 +212,12 @@ public class FileManager {
                         // if the site we just searched only supports one image,
                         // disable it for THIS search
                         if (!searchEngine.supportsMultipleCoverSizes()) {
-                            currentSearch.remove(site.getEngineId());
+                            currentSearch.remove(engineId);
                         }
                     } else {
                         // if the site we just searched was not available,
                         // disable it for THIS search
-                        currentSearch.remove(site.getEngineId());
+                        currentSearch.remove(engineId);
                     }
                 }
                 // loop for next site

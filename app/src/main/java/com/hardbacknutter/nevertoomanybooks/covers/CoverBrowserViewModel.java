@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
@@ -45,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEditionsTask;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
@@ -170,7 +172,12 @@ public class CoverBrowserViewModel
             if (sites == null) {
                 sites = Site.Type.Covers.getSites();
             }
-            fileManager = new FileManager(sites);
+            // Filter for active engines only
+            final List<EngineId> engineIds = sites.stream()
+                                                  .filter(Site::isActive)
+                                                  .map(Site::getEngineId)
+                                                  .collect(Collectors.toList());
+            fileManager = new FileManager(engineIds);
         }
     }
 
@@ -280,7 +287,7 @@ public class CoverBrowserViewModel
      * @param isbn to search
      *
      * @return a {@link ImageFileInfo} object with or without a valid fileSpec,
-     * or {@code null} if there is no cached file at all
+     *         or {@code null} if there is no cached file at all
      */
     @Nullable
     ImageFileInfo getFileInfo(@NonNull final String isbn) {
