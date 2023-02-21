@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,49 +23,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.text.Normalizer;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 
-/**
- * {@link NumberParser#parseFloat} / {@link NumberParser#parseDouble}.
- * <p>
- * Tested with Device running in US Locale, app in Dutch.
- * A price field with content "10.45".
- * The inputType field on the screen was set to "numberDecimal"
- * the keypad does NOT allow the use of ',' as used in Dutch for the decimal separator.
- * Using the Dutch Locale, parsing returns "1045" as the '.' is seen as the thousands separator.
- * <p>
- * 2nd test with the device running in Dutch, and the app set to system Locale.
- * Again the keypad only allowed the '.' to be used.
- * <p>
- * Known issue. Stated to be fixed in Android O == 8.0
- * <a href="https://issuetracker.google.com/issues/36907764">36907764</a>
- * <a href="https://issuetracker.google.com/issues/37015783">37015783</a>
- * <p>
- * <a href="https://stackoverflow.com/questions/3821539#28466764">
- * decimal-separator-comma-with-numberdecimal-inputtype-in-edittext</a>
- * <p>
- * But I test with Android 8.0 ... Americans just can't see beyond their border...
- * To be clear: parsing works fine; it's just the user not able to input the
- * right decimal/thousand separators for their Locale.
- */
 @SuppressWarnings("WeakerAccess")
 public final class ParseUtils {
 
     /** See {@link #toAscii}. */
     private static final Pattern ASCII_PATTERN = Pattern.compile("[^\\p{ASCII}]");
-
-    /** Fields can contain div tags which we remove to make the text shorter. */
-    private static final Pattern DIV_PATTERN = Pattern.compile("(\n*\\s*<div>\\s*|\\s*</div>)");
-    /** Convert "&amp;" to '&'. */
-    private static final Pattern AMPERSAND_LITERAL = Pattern.compile("&amp;", Pattern.LITERAL);
-    /** a CR is replaced with a space. */
-    private static final Pattern CR_LITERAL = Pattern.compile("\n", Pattern.LITERAL);
-    /** Trim extraneous punctuation and whitespace from the titles and authors. */
-    private static final Pattern CLEANUP_TITLE_PATTERN =
-            Pattern.compile("[,.':;`~@#$%^&*(\\-=_+]*$");
 
     private ParseUtils() {
     }
@@ -202,58 +167,4 @@ public final class ParseUtils {
                             .replaceAll("");
     }
 
-    /**
-     * Filter a string of all non-digits.
-     *
-     * @param s string to parse
-     *
-     * @return stripped string
-     */
-    @NonNull
-    public static String digits(@Nullable final String s) {
-        if (s == null || s.isEmpty()) {
-            return "";
-        }
-        final StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < s.length(); i++) {
-            final char c = s.charAt(i);
-            // allows an X anywhere instead of just at the end; doesn't really matter.
-            if (Character.isDigit(c)) {
-                sb.append(c);
-            }
-        }
-        // ... but let empty Strings here just return.
-        return sb.toString();
-    }
-
-    @NonNull
-    public static String cleanText(@NonNull final String s) {
-        String text = s.trim();
-        // add more rules when needed.
-        if (text.contains("&")) {
-            text = AMPERSAND_LITERAL.matcher(text).replaceAll(Matcher.quoteReplacement("&"));
-        }
-        if (text.contains("<div>")) {
-            // the div elements only create empty lines, we remove them to save screen space
-            text = DIV_PATTERN.matcher(text).replaceAll("");
-        }
-        if (text.contains("\n")) {
-            text = CR_LITERAL.matcher(text).replaceAll(" ").trim();
-        }
-        return text;
-    }
-
-    /**
-     * Variant of {@link #cleanText(String)} which does additional cleanup
-     * specific to author names and titles.
-     *
-     * @param s to clean
-     *
-     * @return cleansed string
-     */
-    @NonNull
-    public static String cleanName(@NonNull final String s) {
-        final String tmp = cleanText(s.trim());
-        return CLEANUP_TITLE_PATTERN.matcher(tmp).replaceAll("").trim();
-    }
 }
