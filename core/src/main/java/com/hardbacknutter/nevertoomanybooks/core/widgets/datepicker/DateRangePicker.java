@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.widgets.datepicker;
+package com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
@@ -30,7 +30,7 @@ import com.google.android.material.datepicker.MaterialDatePicker;
 
 import java.lang.ref.WeakReference;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
 
 /**
  * Uses a {@link MaterialDatePicker} to let the user pick a date range.
