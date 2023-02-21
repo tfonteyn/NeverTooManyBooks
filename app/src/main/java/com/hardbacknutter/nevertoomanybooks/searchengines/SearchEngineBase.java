@@ -123,11 +123,6 @@ public abstract class SearchEngineBase
     }
 
     @Override
-    public boolean prefersIsbn10() {
-        return config.prefersIsbn10();
-    }
-
-    @Override
     public boolean supportsMultipleCoverSizes() {
         return config.supportsMultipleCoverSizes();
     }
@@ -230,6 +225,7 @@ public abstract class SearchEngineBase
         return httpGet;
     }
 
+    @SuppressWarnings("WeakerAccess")
     @NonNull
     public <T> FutureHttpGet<T> createFutureHeadRequest() {
         final FutureHttpGet<T> httpGet = FutureHttpGet

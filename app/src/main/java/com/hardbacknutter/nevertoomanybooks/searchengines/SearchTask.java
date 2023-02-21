@@ -52,7 +52,7 @@ public class SearchTask
     @NonNull
     private final boolean[] fetchCovers = new boolean[2];
     /** What criteria to search by. */
-    private By by;
+    private SearchEngine.SearchBy by;
     /** Search criteria. Usage depends on {@link #by}. */
     @Nullable
     private String externalId;
@@ -97,13 +97,13 @@ public class SearchTask
         return searchEngine;
     }
 
-    void setSearchBy(@NonNull final By by) {
-        this.by = by;
+    @NonNull
+    SearchEngine.SearchBy getSearchBy() {
+        return by;
     }
 
-    @NonNull
-    By getSearchBy() {
-        return by;
+    void setSearchBy(@NonNull final SearchEngine.SearchBy by) {
+        this.by = by;
     }
 
     /**
@@ -234,12 +234,5 @@ public class SearchTask
         }
 
         return book;
-    }
-
-    public enum By {
-        ExternalId,
-        Isbn,
-        Barcode,
-        Text
     }
 }

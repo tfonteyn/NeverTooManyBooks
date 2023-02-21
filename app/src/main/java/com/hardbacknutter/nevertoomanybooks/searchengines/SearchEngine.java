@@ -43,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
- * The interface a search engine for a {@link Site} needs to implement.
+ * The interface a search engine for an {@link EngineId} needs to implement.
  * <p>
  * More details in {@link EngineId}.
  * <p>
@@ -111,18 +111,6 @@ public interface SearchEngine
     @AnyThread
     @NonNull
     Locale getLocale(@NonNull Context context);
-
-    /**
-     * Indicates if ISBN code should be forced down to ISBN10 (if possible) before a search.
-     * <p>
-     * By default, we search on the ISBN entered by the user.
-     * A preference setting per site can override this.
-     * If set, and an ISBN13 is passed in, it will be translated to an ISBN10 before starting
-     * the search.
-     *
-     * @return {@code true} if ISBN10 should be preferred.
-     */
-    boolean prefersIsbn10();
 
     /**
      * {@link SearchEngine.CoverByIsbn} only.
@@ -298,6 +286,42 @@ public interface SearchEngine
                        CredentialsException;
     }
 
+    enum SearchBy {
+        ExternalId(ByExternalId.class),
+        Isbn(ByIsbn.class),
+        Barcode(ByBarcode.class),
+        Text(ByText.class);
+
+        @NonNull
+        final Class<? extends SearchEngine> clazz;
+
+        SearchBy(@NonNull final Class<? extends SearchEngine> clazz) {
+            this.clazz = clazz;
+        }
+    }
+
+    /** Optional. */
+    @FunctionalInterface
+    interface AlternativeEditions {
+
+        /**
+         * Find alternative editions (their ISBN) for the given ISBN.
+         *
+         * @param context   Current context
+         * @param validIsbn to search for, <strong>must</strong> be valid.
+         *
+         * @return a list of isbn numbers for alternative editions of the original, can be empty.
+         *
+         * @throws CredentialsException on authentication/login failures
+         */
+        @WorkerThread
+        @NonNull
+        List<String> searchAlternativeEditions(@NonNull Context context,
+                                               @NonNull String validIsbn)
+                throws SearchException,
+                       CredentialsException;
+    }
+
     /** Optional. */
     interface CoverByIsbn
             extends SearchEngine {
@@ -341,8 +365,8 @@ public interface SearchEngine
          * @param cIdx      0..n image index
          *
          * @return ArrayList with a single fileSpec (This is for convenience, as the result
-         * is meant to be stored into the book-data as a parcelable array;
-         * and it allows extending to multiple images at a future time)
+         *         is meant to be stored into the book-data as a parcelable array;
+         *         and it allows extending to multiple images at a future time)
          *
          * @throws CredentialsException on authentication/login failures
          * @throws StorageException     on storage related failures
@@ -372,27 +396,5 @@ public interface SearchEngine
             }
             return list;
         }
-    }
-
-    /** Optional. */
-    @FunctionalInterface
-    interface AlternativeEditions {
-
-        /**
-         * Find alternative editions (their ISBN) for the given ISBN.
-         *
-         * @param context   Current context
-         * @param validIsbn to search for, <strong>must</strong> be valid.
-         *
-         * @return a list of isbn numbers for alternative editions of the original, can be empty.
-         *
-         * @throws CredentialsException on authentication/login failures
-         */
-        @WorkerThread
-        @NonNull
-        List<String> searchAlternativeEditions(@NonNull Context context,
-                                               @NonNull String validIsbn)
-                throws SearchException,
-                       CredentialsException;
     }
 }

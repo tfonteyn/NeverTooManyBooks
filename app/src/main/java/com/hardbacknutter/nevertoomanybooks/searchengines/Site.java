@@ -25,15 +25,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,11 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminFragment;
 
 /**
- * Encapsulates a {@link SearchEngine} instance + the {@link Type} and the active state.
- *
- * @see EngineId
- * @see SearchEngine
- * @see SearchEngineConfig
+ * Encapsulates an {@link EngineId} + the {@link Type} of the site and its active state.
  */
 public final class Site
         implements Parcelable {
@@ -81,7 +74,6 @@ public final class Site
      */
     private static final String PREF_SUFFIX_ACTIVE = "enabled";
 
-    /** SearchEngine ID. Used to (re)create {@link #searchEngine}. */
     @NonNull
     private final EngineId engineId;
 
@@ -91,10 +83,6 @@ public final class Site
 
     /** user preference: active/deactivated this site. */
     private boolean active;
-
-    /** The cached search engine for a specific site. */
-    @Nullable
-    private SearchEngine searchEngine;
 
     /**
      * Constructor.
@@ -120,11 +108,7 @@ public final class Site
     private Site(@NonNull final Site from) {
         engineId = from.engineId;
         type = from.type;
-
-        // Copy the current state
         active = from.active;
-        // don't copy the searchEngine, let it be recreated.
-        searchEngine = null;
     }
 
     /**
@@ -138,88 +122,6 @@ public final class Site
         //noinspection ConstantConditions
         type = in.readParcelable(Type.class.getClassLoader());
         active = in.readByte() != 0;
-    }
-
-    /**
-     * Get the active sites in the <strong>given</strong> list.
-     *
-     * @param sites to filter
-     *
-     * @return new list instance containing the <strong>original</strong> site objects;
-     *         filtered for being active. The order is the same.
-     */
-    @NonNull
-    public static List<Site> filterActive(@NonNull final Collection<Site> sites) {
-        return sites.stream().filter(Site::isActive).collect(Collectors.toList());
-    }
-
-    /**
-     * Bring up an Alert to the user if the given list includes a site where registration
-     * is beneficial (but not required... it's just one of many engines here).
-     *
-     * @param context        Current context
-     * @param sites          the list to check
-     * @param callerIdString String used to flag in preferences if we showed the alert from
-     *                       that caller already or not.
-     * @param onFinished     (optional) Runnable to call when all sites have been processed.
-     */
-    public static void promptToRegister(@NonNull final Context context,
-                                        @NonNull final Collection<Site> sites,
-                                        @NonNull final String callerIdString,
-                                        @Nullable final Runnable onFinished) {
-
-        final Deque<SearchEngine> stack = sites.stream()
-                                               .filter(Site::isActive)
-                                               .map(Site::getSearchEngine)
-                                               .collect(Collectors.toCollection(ArrayDeque::new));
-        promptToRegister(context, stack, callerIdString, onFinished);
-    }
-
-    /**
-     * Recursive stack-based version of
-     * {@link #promptToRegister(Context, Collection, String, Runnable)}.
-     *
-     * @param context        Current context
-     * @param searchEngines  the stack of active engines to check
-     * @param callerIdString String used to flag in preferences if we showed the alert from
-     *                       that caller already or not.
-     * @param onFinished     (optional) Runnable to call when all sites have been processed.
-     */
-    private static void promptToRegister(@NonNull final Context context,
-                                         @NonNull final Deque<SearchEngine> searchEngines,
-                                         @NonNull final String callerIdString,
-                                         @Nullable final Runnable onFinished) {
-        while (!searchEngines.isEmpty()) {
-            final SearchEngine searchEngine = searchEngines.poll();
-            //noinspection ConstantConditions
-            if (searchEngine.promptToRegister(context, false, callerIdString, action -> {
-                switch (action) {
-                    case Register:
-                        throw new IllegalStateException("Engine must handle Register");
-
-                    case NotNow:
-                    case NotEver:
-                        // restart the loop with the remaining sites to check.
-                        promptToRegister(context, searchEngines, callerIdString, onFinished);
-                        return;
-
-                    case Cancelled:
-                        // user explicitly cancelled, we're done here
-                        if (onFinished != null) {
-                            onFinished.run();
-                        }
-                        break;
-                }
-            })) {
-                // we are showing a registration dialog, quit the loop
-                return;
-            }
-        }
-
-        // all engines have registration, or were dismissed.
-        if (onFinished != null) {
-            onFinished.run();
-        }
     }
 
     @NonNull
@@ -238,22 +140,6 @@ public final class Site
     @NonNull
     public EngineId getEngineId() {
         return engineId;
-    }
-
-    /**
-     * Get the {@link SearchEngine} instance for this site.
-     * If the engine was cached, it will be reset before being returned.
-     *
-     * @return (cached) instance
-     */
-    @NonNull
-    public SearchEngine getSearchEngine() {
-        if (searchEngine == null) {
-            searchEngine = engineId.createSearchEngine();
-        }
-
-        searchEngine.reset();
-        return searchEngine;
     }
 
     /**
@@ -290,8 +176,7 @@ public final class Site
     @Override
     @NonNull
     public String toString() {
-        return "Site{" + "engineId=" + engineId + ", type=" + type + ", active=" + active
-               + ", searchEngine=" + searchEngine + '}';
+        return "Site{" + "engineId=" + engineId + ", type=" + type + ", active=" + active + '}';
     }
 
     /**
@@ -416,6 +301,9 @@ public final class Site
             return new Site(s);
         }
 
+        public boolean contains(@NonNull final EngineId engineId) {
+            return siteList.stream().anyMatch(site -> site.engineId == engineId);
+        }
 
         /**
          * Get a <strong>deep-copy</strong> of the list.
