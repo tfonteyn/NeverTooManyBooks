@@ -36,7 +36,6 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
@@ -59,15 +58,19 @@ public class ViewBookOnWebsiteHandler
             final SubMenu subMenu = subMenuItem.getSubMenu();
             final Resources res = context.getResources();
 
-            for (final Site site : Site.Type.ViewOnSite.getSites()) {
-                final EngineId engineId = site.getEngineId();
-                final SearchEngineConfig config = Objects.requireNonNull(engineId.getConfig());
-                subMenu.add(R.id.MENU_GROUP_BOOK,
-                            config.getDomainMenuResId(),
-                            res.getInteger(config.getDomainMenuOrderResId()),
-                            engineId.getLabelResId())
-                       .setIcon(R.drawable.ic_baseline_link_24);
-            }
+            Site.Type.ViewOnSite
+                    .getSites()
+                    .stream()
+                    .map(Site::getEngineId)
+                    .forEach(engineId -> {
+                        final SearchEngineConfig config =
+                                Objects.requireNonNull(engineId.getConfig());
+                        subMenu.add(R.id.MENU_GROUP_BOOK,
+                                    config.getDomainMenuResId(),
+                                    res.getInteger(config.getDomainMenuOrderResId()),
+                                    engineId.getLabelResId())
+                               .setIcon(R.drawable.ic_baseline_link_24);
+                    });
         }
     }
 
@@ -115,19 +118,17 @@ public class ViewBookOnWebsiteHandler
         final Optional<SearchEngineConfig> oConfig =
                 SearchEngineConfig.getByMenuId(menuItem.getItemId());
         if (oConfig.isPresent()) {
-            final Domain domain = oConfig.get().getExternalIdDomain();
+            final SearchEngineConfig config = oConfig.get();
+            final Domain domain = config.getExternalIdDomain();
             if (domain != null) {
-                final EngineId engineId = oConfig.get().getEngineId();
-                // sanity check
-                if (Site.Type.ViewOnSite.contains(engineId)) {
-                    final SearchEngine.ViewBookByExternalId searchEngine =
-                            (SearchEngine.ViewBookByExternalId) engineId.createSearchEngine();
+                final SearchEngine.ViewBookByExternalId searchEngine =
+                        (SearchEngine.ViewBookByExternalId)
+                                config.getEngineId().createSearchEngine();
 
-                    final String externalId = rowData.getString(domain.getName());
-                    final String url = searchEngine.createBrowserUrl(externalId);
-                    context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-                    return true;
-                }
+                final String externalId = rowData.getString(domain.getName());
+                final String url = searchEngine.createBrowserUrl(externalId);
+                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                return true;
             }
         }
         return false;
