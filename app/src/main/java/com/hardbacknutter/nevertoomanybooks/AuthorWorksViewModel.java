@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -101,7 +101,11 @@ public class AuthorWorksViewModel
                     String.valueOf(authorId));
 
             final long bookshelfId = args.getLong(DBKey.FK_BOOKSHELF, Bookshelf.ALL_BOOKS);
-            bookshelf = Bookshelf.getBookshelf(context, bookshelfId, Bookshelf.ALL_BOOKS);
+
+            bookshelf = Bookshelf.getBookshelf(context, bookshelfId)
+                                 .orElseGet(() -> Bookshelf
+                                         .getBookshelf(context, Bookshelf.ALL_BOOKS)
+                                         .orElseThrow());
             allBookshelves = bookshelf.getId() == Bookshelf.ALL_BOOKS;
 
             withTocEntries = args.getBoolean(AuthorWorksFragment.BKEY_WITH_TOC, withTocEntries);
