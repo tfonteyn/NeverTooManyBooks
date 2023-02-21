@@ -177,12 +177,14 @@ public class Bookshelf
      * @param context Current context
      * @param id      of bookshelf to get
      *
-     * @return the bookshelf, or {@code null} if not found
+     * @return the bookshelf
      */
     @NonNull
     public static Optional<Bookshelf> getBookshelf(@NonNull final Context context,
                                                    final long id) {
-        if (id == ALL_BOOKS) {
+        if (id == 0) {
+            return Optional.empty();
+        } else if (id == ALL_BOOKS) {
             return getAllBooksBookshelf(context);
         } else if (id == DEFAULT) {
             return getDefaultBookshelf(context);
