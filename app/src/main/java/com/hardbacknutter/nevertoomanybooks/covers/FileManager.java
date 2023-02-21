@@ -157,6 +157,7 @@ public class FileManager {
                     if (searchEngine instanceof SearchEngine.CoverByIsbn
                         && searchEngine.isAvailable()) {
 
+                        // caller is the FetchImageTask
                         searchEngine.setCaller(progressListener);
 
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
