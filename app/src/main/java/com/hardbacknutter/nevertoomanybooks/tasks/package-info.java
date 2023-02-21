@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,7 +22,7 @@
  * March 2021: restructured tasks once again, dropping all android.os.ASyncTask usage:
  * <p>
  * {@link com.hardbacknutter.nevertoomanybooks.tasks.LTask}
- * They use a {@link com.hardbacknutter.nevertoomanybooks.tasks.TaskListener}.
+ * They use a {@link com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener}.
  * <p>
  * <p>
  * {@link com.hardbacknutter.nevertoomanybooks.tasks.MTask}

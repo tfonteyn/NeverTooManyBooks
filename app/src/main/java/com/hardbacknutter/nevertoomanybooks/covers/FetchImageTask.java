@@ -29,9 +29,9 @@ import androidx.annotation.WorkerThread;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
 /**
  * Fetch an image from the {@link FileManager}.
