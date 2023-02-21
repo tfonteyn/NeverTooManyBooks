@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,6 +29,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * {@link NumberParser#parseFloat} / {@link NumberParser#parseDouble}.
+ * <p>
+ * Tested with Device running in US Locale, app in Dutch.
+ * A price field with content "10.45".
+ * The inputType field on the screen was set to "numberDecimal"
+ * the keypad does NOT allow the use of ',' as used in Dutch for the decimal separator.
+ * Using the Dutch Locale, parsing returns "1045" as the '.' is seen as the thousands separator.
+ * <p>
+ * 2nd test with the device running in Dutch, and the app set to system Locale.
+ * Again the keypad only allowed the '.' to be used.
+ * <p>
+ * Known issue. Stated to be fixed in Android O == 8.0
+ * <a href="https://issuetracker.google.com/issues/36907764">36907764</a>
+ * <a href="https://issuetracker.google.com/issues/37015783">37015783</a>
+ * <p>
+ * <a href="https://stackoverflow.com/questions/3821539#28466764">
+ * decimal-separator-comma-with-numberdecimal-inputtype-in-edittext</a>
+ * <p>
+ * But I test with Android 8.0 ... Americans just can't see beyond their border...
+ * To be clear: parsing works fine; it's just the user not able to input the
+ * right decimal/thousand separators for their Locale.
+ */
 public final class NumberParser {
     /** log error string. */
     private static final String ERROR_NOT_A_BOOLEAN = "Not a boolean: ";
