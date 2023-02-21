@@ -49,14 +49,15 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditSearchOrderBinding;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
-import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.SimpleItemTouchHelperCallback;
-import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 
 /**
  * Handles the order of sites to search, and the individual site being enabled or not.

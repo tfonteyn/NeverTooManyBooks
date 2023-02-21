@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,8 +33,8 @@ import androidx.annotation.Nullable;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.ItemTouchHelperViewHolder;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
-import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.ItemTouchHelperViewHolder;
 
 
 /**

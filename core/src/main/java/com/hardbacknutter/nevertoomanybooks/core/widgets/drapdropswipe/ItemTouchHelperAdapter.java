@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,7 +33,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hardbacknutter.nevertoomanybooks.widgets.ddsupport;
+package com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe;
 
 import android.view.View;
 

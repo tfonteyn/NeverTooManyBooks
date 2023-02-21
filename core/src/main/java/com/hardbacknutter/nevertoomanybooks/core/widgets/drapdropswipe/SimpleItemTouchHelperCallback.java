@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,7 +33,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hardbacknutter.nevertoomanybooks.widgets.ddsupport;
+package com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe;
 
 import android.graphics.Canvas;
 
@@ -45,7 +45,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * An implementation of {@link ItemTouchHelper.Callback} that enables basic drag & drop and
- * swipe-to-dismiss. Drag events are automatically started by an item long-press.<br><br>
+ * swipe-to-dismiss. Drag events are automatically started by an item long-press.
+ * <p>
  * Expects the {@code RecyclerView.Adapter<} to listen for {@link ItemTouchHelperAdapter}
  * callbacks and the {@code RecyclerView.ViewHolder} to implement {@link ItemTouchHelperViewHolder}.
  *

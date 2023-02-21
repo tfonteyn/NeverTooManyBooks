@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,22 +33,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hardbacknutter.nevertoomanybooks.widgets.ddsupport;
+package com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.ItemTouchHelper;
 
 /**
- * Listener for manual initiation of a drag.
+ * Interface to notify an item ViewHolder of relevant callbacks
+ * from {@link ItemTouchHelper.Callback}.
+ *
+ * @author Paul Burke (ipaulpro)
  */
-@FunctionalInterface
-public interface StartDragListener {
+public interface ItemTouchHelperViewHolder {
 
     /**
-     * Called when a view is requesting a start of a drag.
-     *
-     * @param viewHolder The holder of the view to drag.
+     * Called when the {@link ItemTouchHelper} first registers an item as being moved or swiped.
+     * Implementations should update the item view to indicate it's active state.
      */
-    void onStartDrag(@NonNull RecyclerView.ViewHolder viewHolder);
+    void onItemDragStarted();
 
+
+    /**
+     * Called when the {@link ItemTouchHelper} has completed the move or swipe,
+     * and the active item state should be cleared.
+     */
+    void onItemDragFinished();
 }
+

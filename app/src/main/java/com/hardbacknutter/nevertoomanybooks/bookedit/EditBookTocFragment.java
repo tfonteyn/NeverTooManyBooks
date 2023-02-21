@@ -59,6 +59,8 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookTocBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditTocEntryBinding;
@@ -80,8 +82,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecycle
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
-import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.SimpleItemTouchHelperCallback;
-import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 
 /**
  * The ISFDB direct interaction should be seen as temporary as this class

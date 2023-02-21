@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -52,6 +52,8 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleCon
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PreferredStylesContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStylesBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditPreferredStylesBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -60,8 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
-import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.SimpleItemTouchHelperCallback;
-import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 
 /**
  * {@link Style} maintenance.

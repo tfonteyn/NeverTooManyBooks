@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,8 +33,8 @@ import java.util.Collections;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
-import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.ItemTouchHelperAdapter;
-import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.ItemTouchHelperAdapter;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 
 /**
  * Base class for implementing a RecyclerView with Drag&Drop support for re-arranging rows.

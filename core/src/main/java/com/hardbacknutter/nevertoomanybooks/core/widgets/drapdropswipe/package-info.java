@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,4 +27,4 @@
  * <p>
  * https://github.com/iPaulPro/Android-ItemTouchHelper-Demo
  */
-package com.hardbacknutter.nevertoomanybooks.widgets.ddsupport;
+package com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe;
