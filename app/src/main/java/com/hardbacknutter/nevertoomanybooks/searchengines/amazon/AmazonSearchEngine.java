@@ -37,6 +37,7 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -55,7 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
@@ -175,7 +175,8 @@ public class AmazonSearchEngine
                                @NonNull final String url,
                                @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
-
+        // FIXME: for some weird reason Amazon will now throw a 503 / SSLHandshake exception
+        //  if the book is not found.
         final Document document = loadDocument(context, url, null);
         final Book book = new Book();
         if (!isCancelled()) {
@@ -183,7 +184,6 @@ public class AmazonSearchEngine
         }
         return book;
     }
-
 
     @NonNull
     @Override
@@ -212,7 +212,6 @@ public class AmazonSearchEngine
             return genericSearch(context,
                                  getHostUrl() + String.format(BY_EXTERNAL_ID, barcode),
                                  fetchCovers);
-
         } else {
             // not supported
             return new Book();
