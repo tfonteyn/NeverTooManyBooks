@@ -100,10 +100,10 @@ public class BookshelfCoder
 
         final String name = data.optString(DBKey.BOOKSHELF_NAME);
         if (name != null && !name.isEmpty()) {
-            final Bookshelf bookshelf =
+            final Optional<Bookshelf> bookshelf =
                     ServiceLocator.getInstance().getBookshelfDao().findByName(name);
-            if (bookshelf != null) {
-                return Optional.of(bookshelf);
+            if (bookshelf.isPresent()) {
+                return bookshelf;
             }
         }
 
