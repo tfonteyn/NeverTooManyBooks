@@ -28,8 +28,8 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
@@ -144,7 +144,10 @@ abstract class LibraryBase
             throws DaoWriteException {
 
         final Bookshelf current = Bookshelf
-                .getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT);
+                .getBookshelf(context, Bookshelf.PREFERRED)
+                .orElseGet(() -> Bookshelf
+                        .getBookshelf(context, Bookshelf.DEFAULT)
+                        .orElseThrow());
 
         final Bookshelf bookshelf = new Bookshelf(name, current.getStyle(context));
         ServiceLocator.getInstance().getBookshelfDao().insert(context, bookshelf);
