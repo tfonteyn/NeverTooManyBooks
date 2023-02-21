@@ -33,12 +33,13 @@ import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.LifecycleOwner;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfContentBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
@@ -141,16 +142,24 @@ public class EditBookshelfDialogFragment
         // Here we reject using a name which already exists IF the user meant to create a NEW shelf.
 
         // Check if there is an existing one with the same name
-        final Bookshelf existingBookshelf = dao.findByName(bookshelf);
+        final Optional<Bookshelf> existingBookshelf = dao.findByName(bookshelf);
 
         // Are we adding a new one but trying to use an existing name? -> REJECT
-        if (bookshelf.getId() == 0 && existingBookshelf != null) {
+        if (bookshelf.getId() == 0 && existingBookshelf.isPresent()) {
             vb.lblBookshelf.setError(getString(R.string.warning_x_already_exists,
                                                getString(R.string.lbl_bookshelf)));
             return false;
         }
 
-        if (existingBookshelf == null) {
+        if (existingBookshelf.isPresent()) {
+            // There is one with the same name; ask whether to merge the 2
+            SaveChangesHelper.askToMerge(
+                    this, dao, bookshelf,
+                    savedBookshelf -> Launcher.setResult(this, requestKey,
+                                                         savedBookshelf.getId()),
+                    R.string.confirm_merge_bookshelves,
+                    existingBookshelf.get());
+        } else {
             try {
                 // We have a unique/new name; either add or update and we're done
                 if (bookshelf.getId() == 0) {
@@ -166,14 +175,6 @@ public class EditBookshelfDialogFragment
             } catch (@NonNull final DaoWriteException e) {
                 return false;
             }
-        } else {
-            // There is one with the same name; ask whether to merge the 2
-            SaveChangesHelper.askToMerge(
-                    this, dao, bookshelf,
-                    savedBookshelf -> Launcher.setResult(this, requestKey,
-                                                         savedBookshelf.getId()),
-                    R.string.confirm_merge_bookshelves,
-                    existingBookshelf);
         }
         return false;
     }
