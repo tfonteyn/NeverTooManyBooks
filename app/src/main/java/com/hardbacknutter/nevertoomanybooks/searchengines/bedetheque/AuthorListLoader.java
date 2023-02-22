@@ -29,8 +29,8 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

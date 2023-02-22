@@ -32,6 +32,8 @@ import java.security.cert.CertificateException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
@@ -43,8 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoReader;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoWriter;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 /**
  * Note: {@link #hasLastUpdateDateField} / {@link #syncDateIsUserEditable}:

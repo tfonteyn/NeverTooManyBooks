@@ -23,8 +23,8 @@ import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 
+import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 public interface ConnectionValidator {
 

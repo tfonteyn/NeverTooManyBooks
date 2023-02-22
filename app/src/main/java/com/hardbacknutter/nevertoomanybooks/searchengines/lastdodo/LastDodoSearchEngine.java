@@ -35,6 +35,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -52,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeAuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

@@ -48,9 +48,9 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.JsonArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
-import com.hardbacknutter.nevertoomanybooks.utils.UriInfo;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.UriInfo;
 
 /**
  * Archive encoding (formats) (partially) supported.

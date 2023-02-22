@@ -27,9 +27,9 @@ import androidx.annotation.WorkerThread;
 import java.io.Closeable;
 import java.io.IOException;
 
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
  * <ul>
