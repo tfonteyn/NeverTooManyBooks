@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils;
+package com.hardbacknutter.nevertoomanybooks.core.utils;
 
 import android.os.Bundle;
 import android.os.Parcel;
@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * {@link #readParcelableList(Parcel, List, ClassLoader)}
  * {@link #writeParcelableList(Parcel, List, int)}
- * are copied from the standard Android API 29 libraries.
+ * are copied from the standard Android API 29 {@link Parcel}.
  */
 public final class ParcelUtils {
 
@@ -45,6 +45,7 @@ public final class ParcelUtils {
      * {@link #readParcelableList(Parcel, List, ClassLoader)} if required.
      *
      * @see #readParcelableList(Parcel, List, ClassLoader)
+     * @see Parcel#writeParcelableList(List, int)
      */
     public static <T extends Parcelable> void writeParcelableList(@NonNull final Parcel out,
                                                                   @Nullable final List<T> val,
@@ -69,7 +70,9 @@ public final class ParcelUtils {
      * list was {@code null}, {@code list} is cleared.
      *
      * @see #writeParcelableList(Parcel, List, int)
+     * @see Parcel#readParcelableList(List, ClassLoader)
      */
+    @SuppressWarnings("ForLoopWithMissingComponent")
     @NonNull
     public static <T extends Parcelable> List<T> readParcelableList(
             @NonNull final Parcel in,

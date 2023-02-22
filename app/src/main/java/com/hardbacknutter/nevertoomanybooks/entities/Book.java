@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.Cover;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
@@ -179,8 +180,8 @@ public class Book
     /**
      * Bundle key for an {@code ArrayList<Long>} of book ID's.
      *
-     * @see com.hardbacknutter.nevertoomanybooks.utils.ParcelUtils#wrap(List)
-     * @see com.hardbacknutter.nevertoomanybooks.utils.ParcelUtils#unwrap(Bundle, String)
+     * @see ParcelUtils#wrap(List)
+     * @see ParcelUtils#unwrap(Bundle, String)
      */
     public static final String BKEY_BOOK_ID_LIST = TAG + ":id_list";
     /**
