@@ -405,7 +405,7 @@ public class BooksOnBookshelfViewModel
                     .orElseGet(() -> Bookshelf.getBookshelf(context, Bookshelf.ALL_BOOKS)
                                               .orElseThrow());
         }
-        bookshelf.setAsPreferred();
+        bookshelf.setAsPreferred(context);
 
         if (previousBookshelfId != bookshelf.getId()) {
             resetSelectedBook();
@@ -462,7 +462,7 @@ public class BooksOnBookshelfViewModel
         // set as the global default.
         ServiceLocator.getInstance().getStyles().setDefault(style.getUuid());
         // save the new bookshelf/style combination
-        bookshelf.setAsPreferred();
+        bookshelf.setAsPreferred(context);
         bookshelf.setStyle(context, style);
     }
 

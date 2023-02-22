@@ -227,9 +227,12 @@ public class Bookshelf
 
     /**
      * Set this bookshelf as the current/preferred.
+     *
+     * @param context Current context
      */
-    public void setAsPreferred() {
-        ServiceLocator.getPreferences().edit().putString(PK_BOOKSHELF_CURRENT, name).apply();
+    public void setAsPreferred(@NonNull final Context context) {
+        PreferenceManager.getDefaultSharedPreferences(context)
+                         .edit().putString(PK_BOOKSHELF_CURRENT, name).apply();
     }
 
     @Override
