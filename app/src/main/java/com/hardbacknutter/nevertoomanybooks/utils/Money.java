@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -42,7 +42,13 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 /**
  * Value class to represent a value + currency.
  * <p>
- * Normally {@link #doubleValue()} should be used for the value.
+ * Normally {@link #getValue()} should be used for displaying the value
+ * with {@link #getCurrency()} or {@link #getCurrencyCode()}.
+ * In practice we're often forced to use {@link #doubleValue()} due to limitations
+ * in Android classes and/or the need to convert to/from external source.
+ * <p>
+ * FIXME: 2023-01-01: after recent(?) updates/changes (e.g. use Book throughout
+ *  instead of plain Bundle) we should be able to store/get Money directly.
  *
  * <p>
  * Casting involves rounding to int/long by adding 0.5 to positive values.
@@ -58,8 +64,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
  * <a href="https://javamoney.github.io">JavaMoney</a>
  * - a wonderful library, might have issues on Android though.
  * <a href="https://www.joda.org/joda-money/">Joda Money</a> not tried, but looks small and neat.
- * <p>
- * For now, migrating to using BigDecimal and storing in the db as int?
  */
 public class Money
         extends Number
@@ -215,11 +219,12 @@ public class Money
         CURRENCY_MAP.put("Δρ", "GRD"); // Greek Drachma
         CURRENCY_MAP.put("₺", "TRY "); // Turkish Lira
 
-        // some others as seen on ISFDB site
+        // some others
         CURRENCY_MAP.put("r$", "BRL"); // Brazilian Real
         CURRENCY_MAP.put("kr", "DKK"); // Denmark Krone
         CURRENCY_MAP.put("ft", "HUF"); // Hungarian Forint
         CURRENCY_MAP.put("lei", "RON"); // Romanian Leu (Lei)
+        CURRENCY_MAP.put("kn", "HRK");  // Croatian Kuna
     }
 
     /**
@@ -437,7 +442,8 @@ public class Money
     }
 
     /**
-     * Convert from a pre-euro currencies (List complete 2021-01-01)
+     * Convert from a pre-euro currencies (List complete 2023-01-01)
+     * <a href="https://en.wikipedia.org/wiki/Eurozone">Eurozone</a>
      * <p>
      * Values in euro, or without currency are returned as-is in euro.
      * <p>
@@ -458,88 +464,86 @@ public class Money
             case "EUR":
                 return new Money(value, EUR);
 
+            // Austria
+            case "ATS":
+                return new Money(value.divide(BigDecimal.valueOf(13.7603d),
+                                              RoundingMode.HALF_UP), EUR);
+            // Belgium + Luxembourg
             case "BEF":
             case "LUF":
                 return new Money(value.divide(BigDecimal.valueOf(40.3399d),
                                               RoundingMode.HALF_UP), EUR);
-
-            case "NLD":
-                return new Money(value.divide(BigDecimal.valueOf(2.20371d),
+            // Croatia
+            case "HRK":
+                return new Money(value.divide(BigDecimal.valueOf(7.53450d),
                                               RoundingMode.HALF_UP), EUR);
-
+            // Cyprus
+            case "CYP":
+                return new Money(value.divide(BigDecimal.valueOf(0.585274d),
+                                              RoundingMode.HALF_UP), EUR);
+            // Estonia
+            case "EEK":
+                return new Money(value.divide(BigDecimal.valueOf(15.6466d),
+                                              RoundingMode.HALF_UP), EUR);
+            // Finland
+            case "FIM":
+                return new Money(value.divide(BigDecimal.valueOf(5.94573d),
+                                              RoundingMode.HALF_UP), EUR);
+            // France + Monaco
             case "FRF":
             case "MCF":
                 return new Money(value.divide(BigDecimal.valueOf(6.55957d),
                                               RoundingMode.HALF_UP), EUR);
-
+            // Germany
             case "DEM":
                 return new Money(value.divide(BigDecimal.valueOf(1.95583d),
                                               RoundingMode.HALF_UP), EUR);
-
-            case "IEP":
-                return new Money(value.divide(BigDecimal.valueOf(0.787564d),
-                                              RoundingMode.HALF_UP), EUR);
-
-            case "ITL":
-                return new Money(value.divide(BigDecimal.valueOf(1.93627d),
-                                              RoundingMode.HALF_UP), EUR);
-
+            // Greece
             case "GRD":
                 return new Money(value.divide(BigDecimal.valueOf(340.75d),
                                               RoundingMode.HALF_UP), EUR);
-
-            case "ESP":
-                return new Money(value.divide(BigDecimal.valueOf(166.386d),
+            // Ireland
+            case "IEP":
+                return new Money(value.divide(BigDecimal.valueOf(0.787564d),
                                               RoundingMode.HALF_UP), EUR);
-
-            case "PTE":
-                return new Money(value.divide(BigDecimal.valueOf(200.482d),
-                                              RoundingMode.HALF_UP), EUR);
-
-            case "ATS":
-                return new Money(value.divide(BigDecimal.valueOf(13.7603d),
-                                              RoundingMode.HALF_UP), EUR);
-
-            case "CYP":
-                return new Money(value.divide(BigDecimal.valueOf(0.585274d),
-                                              RoundingMode.HALF_UP), EUR);
-
-            case "EEK":
-                return new Money(value.divide(BigDecimal.valueOf(15.6466d),
-                                              RoundingMode.HALF_UP), EUR);
-
-            case "FIM":
-                return new Money(value.divide(BigDecimal.valueOf(5.94573d),
-                                              RoundingMode.HALF_UP), EUR);
-
-            case "LVL":
-                return new Money(value.divide(BigDecimal.valueOf(0.702804d),
-                                              RoundingMode.HALF_UP), EUR);
-
-            case "LTL":
-                return new Money(value.divide(BigDecimal.valueOf(3.45280d),
-                                              RoundingMode.HALF_UP), EUR);
-
-            case "MTL":
-                return new Money(value.divide(BigDecimal.valueOf(0.429300d),
-                                              RoundingMode.HALF_UP), EUR);
-
+            // Italy + San Marino + Vatican City
+            case "ITL":
             case "SML":
-                return new Money(value.divide(BigDecimal.valueOf(1936.27d),
-                                              RoundingMode.HALF_UP), EUR);
-
-            case "SKK":
-                return new Money(value.divide(BigDecimal.valueOf(30.1260d),
-                                              RoundingMode.HALF_UP), EUR);
-
-            case "SIT":
-                return new Money(value.divide(BigDecimal.valueOf(239.640d),
-                                              RoundingMode.HALF_UP), EUR);
-
             case "VAL":
                 return new Money(value.divide(BigDecimal.valueOf(1936.27d),
                                               RoundingMode.HALF_UP), EUR);
-
+            // Latvia
+            case "LVL":
+                return new Money(value.divide(BigDecimal.valueOf(0.702804d),
+                                              RoundingMode.HALF_UP), EUR);
+            // Lithuania
+            case "LTL":
+                return new Money(value.divide(BigDecimal.valueOf(3.45280d),
+                                              RoundingMode.HALF_UP), EUR);
+            // Malta
+            case "MTL":
+                return new Money(value.divide(BigDecimal.valueOf(0.429300d),
+                                              RoundingMode.HALF_UP), EUR);
+            // Netherlands
+            case "NLD":
+                return new Money(value.divide(BigDecimal.valueOf(2.20371d),
+                                              RoundingMode.HALF_UP), EUR);
+            // Portugal
+            case "PTE":
+                return new Money(value.divide(BigDecimal.valueOf(200.482d),
+                                              RoundingMode.HALF_UP), EUR);
+            // Slovakia
+            case "SKK":
+                return new Money(value.divide(BigDecimal.valueOf(30.1260d),
+                                              RoundingMode.HALF_UP), EUR);
+            // Slovenia
+            case "SIT":
+                return new Money(value.divide(BigDecimal.valueOf(239.640d),
+                                              RoundingMode.HALF_UP), EUR);
+            // Spain
+            case "ESP":
+                return new Money(value.divide(BigDecimal.valueOf(166.386d),
+                                              RoundingMode.HALF_UP), EUR);
             default:
                 return new Money(value, currency);
         }
