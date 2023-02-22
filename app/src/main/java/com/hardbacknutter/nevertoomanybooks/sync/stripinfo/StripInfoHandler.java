@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,10 +19,13 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
 
+import android.content.Context;
+
 import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 
 public class StripInfoHandler {
@@ -33,12 +36,15 @@ public class StripInfoHandler {
     /**
      * Check if SYNC menus should be shown at all. This does not affect searching.
      *
+     * @param context Current context
+     *
      * @return {@code true} if menus should be shown
      */
     @AnyThread
-    public static boolean isSyncEnabled() {
+    public static boolean isSyncEnabled(@NonNull final Context context) {
         if (BuildConfig.ENABLE_STRIP_INFO_LOGIN) {
-            return ServiceLocator.getPreferences().getBoolean(PK_ENABLED, false);
+            return PreferenceManager.getDefaultSharedPreferences(context)
+                                    .getBoolean(PK_ENABLED, false);
         } else {
             return false;
         }

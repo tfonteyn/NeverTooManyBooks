@@ -449,7 +449,7 @@ public class BooksOnBookshelf
         // Reminder: this method cannot be called from onResume... registerForActivityResult
         // can only be called from onCreate
 
-        if (SyncServer.CalibreCS.isEnabled()) {
+        if (SyncServer.CalibreCS.isEnabled(this)) {
             if (calibreSyncLauncher == null) {
                 calibreSyncLauncher = registerForActivityResult(
                         new CalibreSyncContract(), result -> {
@@ -461,7 +461,7 @@ public class BooksOnBookshelf
             }
         }
 
-        if (SyncServer.StripInfo.isEnabled()) {
+        if (SyncServer.StripInfo.isEnabled(this)) {
             if (stripInfoSyncLauncher == null) {
                 stripInfoSyncLauncher = registerForActivityResult(
                         new StripInfoSyncContract(), result -> {
@@ -478,7 +478,7 @@ public class BooksOnBookshelf
      * Create the (optional) handlers.
      */
     private void createHandlers() {
-        if (calibreHandler == null && SyncServer.CalibreCS.isEnabled()) {
+        if (calibreHandler == null && SyncServer.CalibreCS.isEnabled(this)) {
             try {
                 calibreHandler = new CalibreHandler(this, this)
                         .setProgressFrame(findViewById(R.id.progress_frame));
@@ -551,9 +551,9 @@ public class BooksOnBookshelf
      */
     private void updateSyncMenuVisibility() {
         final boolean enable =
-                SyncServer.CalibreCS.isEnabled() && calibreSyncLauncher != null
+                SyncServer.CalibreCS.isEnabled(this) && calibreSyncLauncher != null
                 ||
-                SyncServer.StripInfo.isEnabled() && stripInfoSyncLauncher != null;
+                SyncServer.StripInfo.isEnabled(this) && stripInfoSyncLauncher != null;
 
         //noinspection ConstantConditions
         getNavigationMenuItem(R.id.SUBMENU_SYNC).setVisible(enable);
@@ -1343,10 +1343,10 @@ public class BooksOnBookshelf
         final Menu menu = popupMenu.getMenu();
         if (menuItem.getItemId() == R.id.SUBMENU_SYNC) {
             menu.findItem(R.id.MENU_SYNC_CALIBRE)
-                .setVisible(SyncServer.CalibreCS.isEnabled() && calibreSyncLauncher != null);
+                .setVisible(SyncServer.CalibreCS.isEnabled(this) && calibreSyncLauncher != null);
 
             menu.findItem(R.id.MENU_SYNC_STRIP_INFO)
-                .setVisible(SyncServer.StripInfo.isEnabled() && stripInfoSyncLauncher != null);
+                .setVisible(SyncServer.StripInfo.isEnabled(this) && stripInfoSyncLauncher != null);
         }
 
         popupMenu.setTitle(menuItem.getTitle())

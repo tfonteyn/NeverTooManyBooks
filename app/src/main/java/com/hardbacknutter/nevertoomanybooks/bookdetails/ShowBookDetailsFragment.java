@@ -242,9 +242,9 @@ public class ShowBookDetailsFragment
      */
     private void createSyncDelegates() {
 
-        if (SyncServer.CalibreCS.isEnabled()) {
+        //noinspection ConstantConditions
+        if (SyncServer.CalibreCS.isEnabled(getContext())) {
             try {
-                //noinspection ConstantConditions
                 calibreHandler = new CalibreHandler(getContext(), this)
                         .setProgressFrame(getProgressFrame());
                 calibreHandler.onViewCreated(this);

@@ -124,7 +124,7 @@ public class BoBTask
         }
         fixedDomainList.forEach(builder::addDomain);
 
-        if (CalibreHandler.isSyncEnabled()) {
+        if (CalibreHandler.isSyncEnabled(context)) {
             if (calibreDomainList.isEmpty()) {
                 initCalibreDomainExpressions();
             }

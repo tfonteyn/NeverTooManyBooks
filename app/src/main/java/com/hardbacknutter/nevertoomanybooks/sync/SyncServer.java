@@ -108,12 +108,12 @@ public enum SyncServer
         return labelResId;
     }
 
-    public boolean isEnabled() {
+    public boolean isEnabled(@NonNull final Context context) {
         switch (this) {
             case CalibreCS:
-                return CalibreHandler.isSyncEnabled();
+                return CalibreHandler.isSyncEnabled(context);
             case StripInfo:
-                return StripInfoHandler.isSyncEnabled();
+                return StripInfoHandler.isSyncEnabled(context);
 
             default:
                 throw new IllegalArgumentException();
