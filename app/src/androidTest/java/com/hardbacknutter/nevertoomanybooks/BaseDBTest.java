@@ -24,9 +24,9 @@ import android.os.StrictMode;
 
 import androidx.annotation.CallSuper;
 
-import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 
 import org.junit.After;
 import org.junit.Before;
@@ -51,7 +51,7 @@ public abstract class BaseDBTest {
         serviceLocator = ServiceLocator.getInstance();
         context = serviceLocator.getLocalizedAppContext();
 
-        CoverDir.initVolume(ServiceLocator.getAppContext(), 0);
+        CoverDir.initVolume(context, 0);
         serviceLocator.getDb();
     }
 
