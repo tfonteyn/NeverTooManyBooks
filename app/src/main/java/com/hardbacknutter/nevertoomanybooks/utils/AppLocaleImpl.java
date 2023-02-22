@@ -27,6 +27,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -85,7 +86,7 @@ public final class AppLocaleImpl
 //                 String.valueOf(LocaleList.getDefault()));
 
         // Create the Locale at first access, or if the persisted is different from the current.
-        final String localeSpec = getPersistedLocaleSpec();
+        final String localeSpec = getPersistedLocaleSpec(context);
 
         final boolean changed = preferredLocale == null || !preferredLocaleSpec.equals(localeSpec);
         if (changed) {
@@ -255,9 +256,9 @@ public final class AppLocaleImpl
 
     @Override
     @NonNull
-    public String getPersistedLocaleSpec() {
-        return ServiceLocator.getPreferences()
-                             .getString(Prefs.pk_ui_locale, SYSTEM_LANGUAGE);
+    public String getPersistedLocaleSpec(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getString(Prefs.pk_ui_locale, SYSTEM_LANGUAGE);
     }
 
     @Override
