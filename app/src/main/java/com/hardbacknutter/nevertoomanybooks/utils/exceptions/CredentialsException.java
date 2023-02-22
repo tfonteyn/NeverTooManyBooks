@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,19 +19,14 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils.exceptions;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
-
-import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
  * Authentication.
  */
 public class CredentialsException
-        extends Exception
-        implements LocalizedException {
+        extends Exception {
 
     private static final long serialVersionUID = -8898712365307463338L;
 
@@ -51,10 +46,8 @@ public class CredentialsException
         this.siteResId = siteResId;
     }
 
-    @NonNull
-    @Override
-    public String getUserMessage(@NonNull final Context context) {
-        return context.getString(R.string.error_site_authentication_failed,
-                                 context.getString(siteResId));
+    @StringRes
+    public int getSiteResId() {
+        return siteResId;
     }
 }

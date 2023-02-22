@@ -35,13 +35,13 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.Logger;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.DiskFullException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.network.NetworkException;
-import com.hardbacknutter.nevertoomanybooks.core.network.NetworkUnavailableException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpStatusException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpUnauthorizedException;
+import com.hardbacknutter.nevertoomanybooks.core.network.NetworkException;
+import com.hardbacknutter.nevertoomanybooks.core.network.NetworkUnavailableException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 public final class ExMsg {
 
@@ -96,6 +96,11 @@ public final class ExMsg {
             return context.getString(R.string.error_network_please_connect);
         } else if (e instanceof NetworkException) {
             return context.getString(R.string.error_network_failed_try_again);
+
+        } else if (e instanceof CredentialsException) {
+            final CredentialsException ce = (CredentialsException) e;
+            return context.getString(R.string.error_site_authentication_failed,
+                                     context.getString(ce.getSiteResId()));
 
         } else if (e instanceof HttpNotFoundException) {
             final HttpNotFoundException he = (HttpNotFoundException) e;
