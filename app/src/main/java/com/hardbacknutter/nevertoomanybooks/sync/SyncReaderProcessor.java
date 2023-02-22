@@ -27,6 +27,7 @@ import android.os.Parcelable;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -420,9 +421,10 @@ public final class SyncReaderProcessor
         private final Map<String, SyncField> fields = new LinkedHashMap<>();
         private final Map<String, String> relatedFields = new LinkedHashMap<>();
 
-        public Builder(@NonNull final String preferencePrefix) {
+        public Builder(@NonNull final Context context,
+                       @NonNull final String preferencePrefix) {
             this.preferencePrefix = preferencePrefix;
-            prefs = ServiceLocator.getPreferences();
+            prefs = PreferenceManager.getDefaultSharedPreferences(context);
         }
 
         /**

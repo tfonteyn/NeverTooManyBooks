@@ -162,7 +162,7 @@ public class SearchBookUpdatesViewModel
     @NonNull
     private SyncReaderProcessor.Builder createSyncProcessorBuilder(@NonNull final Context context) {
         final SyncReaderProcessor.Builder builder =
-                new SyncReaderProcessor.Builder(SYNC_PROCESSOR_PREFIX);
+                new SyncReaderProcessor.Builder(context, SYNC_PROCESSOR_PREFIX);
 
         // Cover fields will be at the top of the list.
         builder.add(context.getString(R.string.lbl_cover_front),

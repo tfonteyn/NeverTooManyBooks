@@ -173,7 +173,7 @@ public class StripInfoReader
 
 
         final SyncReaderProcessor.Builder builder =
-                new SyncReaderProcessor.Builder(SYNC_PROCESSOR_PREFIX);
+                new SyncReaderProcessor.Builder(context, SYNC_PROCESSOR_PREFIX);
 
         // add the sorted fields
         map.forEach(builder::add);
