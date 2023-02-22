@@ -95,11 +95,13 @@ public interface SearchEngine
     /**
      * Get the host url.
      *
+     * @param context Current context
+     *
      * @return url, including scheme.
      */
     @AnyThread
     @NonNull
-    String getHostUrl();
+    String getHostUrl(@NonNull Context context);
 
     /**
      * Get the Locale for this engine.
@@ -178,13 +180,15 @@ public interface SearchEngine
         /**
          * Create a url to open a book on the website with the external id.
          *
+         * @param context    Current context
          * @param externalId to open
          *
          * @return url
          */
         @AnyThread
         @NonNull
-        String createBrowserUrl(@NonNull String externalId);
+        String createBrowserUrl(@NonNull Context context,
+                                @NonNull String externalId);
     }
 
     /** Optional. But every engine should really implement this. */

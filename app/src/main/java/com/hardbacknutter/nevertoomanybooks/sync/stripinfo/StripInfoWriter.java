@@ -34,16 +34,16 @@ import java.time.format.DateTimeFormatter;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StripInfoDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
-import com.hardbacknutter.nevertoomanybooks.core.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterHelper;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.org.json.JSONException;
 
 public class StripInfoWriter
@@ -59,7 +59,7 @@ public class StripInfoWriter
     private final boolean deleteLocalBook;
 
     @NonNull
-    private final CollectionFormUploader collectionForm = new CollectionFormUploader();
+    private final CollectionFormUploader collectionForm;
 
     @SuppressWarnings("FieldCanBeLocal")
     private SyncWriterResults results;
@@ -67,10 +67,13 @@ public class StripInfoWriter
     /**
      * Constructor.
      *
+     * @param context          Current context
      * @param syncWriterHelper export configuration
      */
-    public StripInfoWriter(@NonNull final SyncWriterHelper syncWriterHelper) {
+    public StripInfoWriter(@NonNull final Context context,
+                           @NonNull final SyncWriterHelper syncWriterHelper) {
         this.syncWriterHelper = syncWriterHelper;
+        collectionForm = new CollectionFormUploader(context);
         deleteLocalBook = this.syncWriterHelper.isDeleteLocalBooks();
     }
 
@@ -130,7 +133,7 @@ public class StripInfoWriter
                 } catch (@NonNull final JSONException e) {
                     // ignore, just move on to the next book
                     LoggerFactory.getLogger()
-                                  .e(TAG, e, "bookId=" + book.getId());
+                                 .e(TAG, e, "bookId=" + book.getId());
                 } catch (@NonNull final StorageException ignore) {
                     // ignore, can't happen here
                 }

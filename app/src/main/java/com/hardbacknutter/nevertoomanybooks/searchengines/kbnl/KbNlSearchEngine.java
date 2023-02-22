@@ -145,7 +145,7 @@ public class KbNlSearchEngine
 
         futureHttpGet = createFutureHeadRequest();
         try {
-            futureHttpGet.get(getHostUrl() + "/cbs/", request -> true);
+            futureHttpGet.get(getHostUrl(context) + "/cbs/", request -> true);
         } catch (@NonNull final IOException e) {
             throw new SearchException(getName(context), e);
         }
@@ -161,7 +161,8 @@ public class KbNlSearchEngine
             final SAXParser parser = factory.newSAXParser();
 
             // Do the search... we'll either get a parsed list-page back, or the parsed book page.
-            String url = getHostUrl() + String.format(SEARCH_URL, dbVersion, setNr, validIsbn);
+            String url = getHostUrl(context) + String.format(SEARCH_URL, dbVersion, setNr,
+                                                             validIsbn);
             futureHttpGet.get(url, request -> processRequest(request, handler, parser, book));
 
             // If it was a list page, fetch and parse the 1st book found;
@@ -169,7 +170,7 @@ public class KbNlSearchEngine
             final String show = book.getString(KbNlHandlerBase.BKEY_SHOW_URL, null);
             if (show != null && !show.isEmpty()) {
                 book.clearData();
-                url = getHostUrl() + String.format(BOOK_URL, dbVersion, setNr, show);
+                url = getHostUrl(context) + String.format(BOOK_URL, dbVersion, setNr, show);
                 futureHttpGet.get(url, request -> processRequest(request, handler, parser, book));
             }
         } catch (@NonNull final SAXException e) {

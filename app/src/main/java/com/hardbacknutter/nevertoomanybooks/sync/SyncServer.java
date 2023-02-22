@@ -158,7 +158,7 @@ public enum SyncServer
                 return new CalibreContentServerWriter(context, helper);
 
             case StripInfo:
-                return new StripInfoWriter(helper);
+                return new StripInfoWriter(context, helper);
 
             default:
                 throw new IllegalStateException(DataWriter.ERROR_NO_WRITER_AVAILABLE);

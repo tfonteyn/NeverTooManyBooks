@@ -36,13 +36,13 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -181,7 +181,7 @@ public class UserCollection {
         progressListener.publishProgress(1, context.getString(
                 R.string.progress_msg_loading_page, pageNr));
 
-        final String url = searchEngine.getHostUrl()
+        final String url = searchEngine.getHostUrl(context)
                            + String.format(URL_MY_BOOKS, userId, pageNr, FLAGS);
 
         final Document document = jsoupLoader.loadDocument(context, url, null);

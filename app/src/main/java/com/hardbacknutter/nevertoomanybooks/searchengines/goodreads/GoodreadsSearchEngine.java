@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -18,6 +18,8 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.goodreads;
+
+import android.content.Context;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
@@ -48,8 +50,9 @@ public class GoodreadsSearchEngine
 
     @NonNull
     @Override
-    public String createBrowserUrl(@NonNull final String externalId) {
-        return getHostUrl() + "/book/show/" + externalId;
+    public String createBrowserUrl(@NonNull final Context context,
+                                   @NonNull final String externalId) {
+        return getHostUrl(context) + "/book/show/" + externalId;
     }
 }
 

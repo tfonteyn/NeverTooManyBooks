@@ -43,7 +43,7 @@ public final class ConnectionValidatorFactory {
         if (siteResId == R.string.site_calibre) {
             return new CalibreContentServer(context);
         } else if (siteResId == R.string.site_stripinfo_be) {
-            return new StripInfoAuth();
+            return new StripInfoAuth(context);
         } else {
             throw new IllegalArgumentException(String.valueOf(siteResId));
         }

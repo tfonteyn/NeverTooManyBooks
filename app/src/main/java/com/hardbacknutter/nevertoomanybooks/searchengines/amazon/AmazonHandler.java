@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -179,7 +179,7 @@ public class AmazonHandler
         // Start the intent even if for some reason the fields string is empty.
         // If we don't the user will not see anything happen / we'd need to popup
         // an explanation why we cannot search.
-        final String url = EngineId.Amazon.requireConfig().getHostUrl()
+        final String url = EngineId.Amazon.requireConfig().getHostUrl(context)
                            + ADV_SEARCH_BOOKS
                            + fields.trim();
         context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));

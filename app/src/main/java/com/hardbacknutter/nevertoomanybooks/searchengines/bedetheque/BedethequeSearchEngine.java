@@ -97,9 +97,10 @@ public class BedethequeSearchEngine
     public BedethequeSearchEngine(@NonNull final SearchEngineConfig config) {
         super(config);
 
-        cookieManager = ServiceLocator.getInstance().getCookieManager();
-
-        extraRequestProperties = Map.of(HttpConstants.REFERER, getHostUrl() + "/search");
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        cookieManager = serviceLocator.getCookieManager();
+        extraRequestProperties = Map.of(
+                HttpConstants.REFERER, getHostUrl(ServiceLocator.getAppContext()) + "/search");
     }
 
     @NonNull
@@ -115,7 +116,7 @@ public class BedethequeSearchEngine
                 final FutureHttpGet<HttpCookie> head = createFutureHeadRequest();
                 // Reminder: the "request" will be connected and the response code will be OK,
                 // so just extract the cookie we need for the next request
-                csrfCookie = head.get(getHostUrl() + "/search", request -> cookieManager
+                csrfCookie = head.get(getHostUrl(context) + "/search", request -> cookieManager
                         .getCookieStore()
                         .getCookies()
                         .stream()
@@ -144,7 +145,7 @@ public class BedethequeSearchEngine
         final Book book = new Book();
 
         //The site is very "defensive". We must specify the full url and set the "Referer".
-        final String url = getHostUrl() + "/search/albums?RechIdSerie=&RechIdAuteur="
+        final String url = getHostUrl(context) + "/search/albums?RechIdSerie=&RechIdAuteur="
                            + '&' + requireCookieNameValueString(context)
                            + "&RechSerie=&RechTitre=&RechEditeur=&RechCollection="
                            + "&RechStyle=&RechAuteur="
@@ -444,7 +445,7 @@ public class BedethequeSearchEngine
      * Map Bedetheque specific formats to our generalized ones if allowed.
      *
      * @param context       Current context
-     * @param book      Bundle to update
+     * @param book          Bundle to update
      * @param currentFormat original french format string
      * @param softcover     {@code true} if the books is a softcover, {@code false} for hardcover
      */

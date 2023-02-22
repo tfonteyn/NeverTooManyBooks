@@ -88,13 +88,13 @@ public class StripInfoAuth
     @NonNull
     private final CookieManager cookieManager;
 
-    public StripInfoAuth() {
+    public StripInfoAuth(@NonNull final Context context) {
         // Setup BEFORE doing first request!
         cookieManager = ServiceLocator.getInstance().getCookieManager();
 
         final SearchEngineConfig config = EngineId.StripInfoBe.requireConfig();
 
-        hostUrl = config.getHostUrl();
+        hostUrl = config.getHostUrl(context);
 
         futureHttpPost = new FutureHttpPost<>(EngineId.StripInfoBe.getLabelResId());
         futureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs())

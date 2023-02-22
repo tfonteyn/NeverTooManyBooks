@@ -35,14 +35,14 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.UncheckedSAXException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.UncheckedSAXException;
 
 import org.xml.sax.SAXException;
 
@@ -92,7 +92,7 @@ public class GoogleBooksSearchEngine
         final Book book = new Book();
 
         // %3A  :
-        final String url = getHostUrl() + "/books/feeds/volumes?q=ISBN%3A" + validIsbn;
+        final String url = getHostUrl(context) + "/books/feeds/volumes?q=ISBN%3A" + validIsbn;
         fetchBook(context, url, fetchCovers, book);
         return book;
     }
@@ -114,7 +114,7 @@ public class GoogleBooksSearchEngine
         // %3A  :
         if (author != null && !author.isEmpty()
             && title != null && !title.isEmpty()) {
-            final String url = getHostUrl() + "/books/feeds/volumes?q="
+            final String url = getHostUrl(context) + "/books/feeds/volumes?q="
                                + "intitle%3A" + encodeSpaces(title)
                                + "%2B"
                                + "inauthor%3A" + encodeSpaces(author);

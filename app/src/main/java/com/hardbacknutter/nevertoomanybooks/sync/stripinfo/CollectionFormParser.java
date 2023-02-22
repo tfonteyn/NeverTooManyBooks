@@ -32,14 +32,14 @@ import java.io.UncheckedIOException;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpPost;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -90,7 +90,7 @@ public class CollectionFormParser
 
         final SearchEngineConfig config = EngineId.StripInfoBe.requireConfig();
 
-        postUrl = config.getHostUrl() + StripInfoSearchEngine.COLLECTION_FORM_URL;
+        postUrl = config.getHostUrl(context) + StripInfoSearchEngine.COLLECTION_FORM_URL;
 
         futureHttpPost = new FutureHttpPost<>(R.string.site_stripinfo_be);
         futureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs())

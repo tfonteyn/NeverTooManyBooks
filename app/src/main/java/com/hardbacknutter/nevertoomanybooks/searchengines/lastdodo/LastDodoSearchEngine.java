@@ -176,8 +176,9 @@ public class LastDodoSearchEngine
 
     @NonNull
     @Override
-    public String createBrowserUrl(@NonNull final String externalId) {
-        return getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
+    public String createBrowserUrl(@NonNull final Context context,
+                                   @NonNull final String externalId) {
+        return getHostUrl(context) + String.format(BY_EXTERNAL_ID, externalId);
     }
 
     @NonNull
@@ -188,7 +189,7 @@ public class LastDodoSearchEngine
 
         final Book book = new Book();
 
-        final String url = getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
+        final String url = getHostUrl(context) + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             parse(context, document, fetchCovers, book, getAuthorResolver(context));
@@ -208,7 +209,7 @@ public class LastDodoSearchEngine
         // This is silly...
         // 2022-05-31: searching the site with the ISBN now REQUIRES the dashes between
         // the digits.
-        final String url = getHostUrl() + String.format(BY_ISBN, ISBN.formatIsbn(validIsbn));
+        final String url = getHostUrl(context) + String.format(BY_ISBN, ISBN.formatIsbn(validIsbn));
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
@@ -246,7 +247,7 @@ public class LastDodoSearchEngine
                 String url = urlElement.attr("href");
                 // sanity check - it normally does NOT have the protocol/site part
                 if (url.startsWith("/")) {
-                    url = getHostUrl() + url;
+                    url = getHostUrl(context) + url;
                 }
                 final Document redirected = loadDocument(context, url, null);
                 if (!isCancelled()) {

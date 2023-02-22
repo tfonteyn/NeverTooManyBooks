@@ -43,22 +43,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -182,8 +182,9 @@ public class OpenLibrarySearchEngine
 
     @NonNull
     @Override
-    public String createBrowserUrl(@NonNull final String externalId) {
-        return getHostUrl() + "/books/" + externalId;
+    public String createBrowserUrl(@NonNull final Context context,
+                                   @NonNull final String externalId) {
+        return getHostUrl(context) + "/books/" + externalId;
     }
 
     @NonNull
@@ -195,7 +196,7 @@ public class OpenLibrarySearchEngine
 
         final Book book = new Book();
 
-        final String url = getHostUrl() + String.format(BASE_BOOK_URL, "OLID", externalId);
+        final String url = getHostUrl(context) + String.format(BASE_BOOK_URL, "OLID", externalId);
 
         fetchBook(context, url, fetchCovers, book);
         return book;
@@ -215,7 +216,7 @@ public class OpenLibrarySearchEngine
 
         final Book book = new Book();
 
-        final String url = getHostUrl() + String.format(BASE_BOOK_URL, "ISBN", validIsbn);
+        final String url = getHostUrl(context) + String.format(BASE_BOOK_URL, "ISBN", validIsbn);
 
         fetchBook(context, url, fetchCovers, book);
         return book;

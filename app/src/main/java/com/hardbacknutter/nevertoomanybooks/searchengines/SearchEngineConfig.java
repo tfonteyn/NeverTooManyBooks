@@ -26,6 +26,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.IntegerRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
+import com.hardbacknutter.nevertoomanybooks.core.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.core.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -184,8 +186,8 @@ public final class SearchEngineConfig {
     }
 
     @NonNull
-    public String getHostUrl() {
-        return ServiceLocator.getPreferences().getString(
+    public String getHostUrl(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getString(
                 engineId.getPreferenceKey() + Prefs.pk_suffix_host_url,
                 engineId.getDefaultUrl());
     }

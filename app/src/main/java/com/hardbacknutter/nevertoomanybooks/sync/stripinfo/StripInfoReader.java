@@ -206,7 +206,7 @@ public class StripInfoReader
 
         searchEngine.setCaller(progressListener);
 
-        final StripInfoAuth loginHelper = new StripInfoAuth();
+        final StripInfoAuth loginHelper = new StripInfoAuth(context);
         final String userId = loginHelper.login();
 
         searchEngine.setLoginHelper(loginHelper);

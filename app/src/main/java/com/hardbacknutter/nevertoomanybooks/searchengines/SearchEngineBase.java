@@ -118,8 +118,8 @@ public abstract class SearchEngineBase
 
     @NonNull
     @Override
-    public String getHostUrl() {
-        return config.getHostUrl();
+    public String getHostUrl(@NonNull final Context context) {
+        return config.getHostUrl(context);
     }
 
     @Override
