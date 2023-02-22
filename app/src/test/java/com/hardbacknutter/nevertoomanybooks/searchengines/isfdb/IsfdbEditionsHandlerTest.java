@@ -61,7 +61,7 @@ class IsfdbEditionsHandlerTest
         super.setup();
         searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine();
         searchEngine.setCaller(new TestProgressListener(TAG));
-        sBaseUrl = searchEngine.getHostUrl();
+        sBaseUrl = searchEngine.getHostUrl(context);
     }
 
     @Test
