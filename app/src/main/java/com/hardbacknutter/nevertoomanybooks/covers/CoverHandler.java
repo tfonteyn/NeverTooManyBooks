@@ -356,7 +356,7 @@ public class CoverHandler {
      * @throws IOException      on failure to make a copy of the permanent file
      */
     @NonNull
-    private File createTempCoverFile(final Book book)
+    private File createTempCoverFile(@NonNull final Book book)
             throws StorageException, IOException {
 
         // the temp file we'll return
