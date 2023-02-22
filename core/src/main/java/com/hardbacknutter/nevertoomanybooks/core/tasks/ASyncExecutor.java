@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.core.tasks;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -35,6 +33,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 
 public final class ASyncExecutor {
 
@@ -87,7 +87,7 @@ public final class ASyncExecutor {
             new RejectedExecutionHandler() {
                 public void rejectedExecution(@NonNull final Runnable r,
                                               @NonNull final ThreadPoolExecutor e) {
-                    Log.w(TAG, "Exceeded ThreadPoolExecutor pool size");
+                    LoggerFactory.getLogger().w(TAG, "Exceeded ThreadPoolExecutor pool size");
                     // As a last ditch fallback, run it on an executor with an unbounded queue.
                     // Create this executor lazily, hopefully almost never.
                     synchronized (this) {
