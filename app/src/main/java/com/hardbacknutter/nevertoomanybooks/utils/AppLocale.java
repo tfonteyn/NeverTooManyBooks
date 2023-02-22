@@ -101,17 +101,6 @@ public interface AppLocale {
                                     @NonNull Locale desiredLocale);
 
     /**
-     * Check if the passed localeSpec is different from the user preferred Locale.
-     *
-     * @param localeSpec to test
-     *
-     * @return {@code true} if different
-     */
-    default boolean isChanged(@Nullable final String localeSpec) {
-        return localeSpec == null || !localeSpec.equals(getPersistedLocaleSpec());
-    }
-
-    /**
      * Get the user-preferred Locale as stored in the preferences.
      *
      * @return a Locale specification as used for Android resources;
