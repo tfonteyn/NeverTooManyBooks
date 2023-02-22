@@ -42,6 +42,7 @@ import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
+import com.hardbacknutter.nevertoomanybooks.core.network.NetworkChecker;
 import com.hardbacknutter.nevertoomanybooks.database.CacheDbHelper;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
@@ -86,7 +87,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.SeriesDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StripInfoDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TocEntryDaoImpl;
-import com.hardbacknutter.nevertoomanybooks.network.NetworkChecker;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkCheckerImpl;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;

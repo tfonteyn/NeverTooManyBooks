@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,7 +29,7 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
-import com.hardbacknutter.nevertoomanybooks.network.NetworkChecker;
+import com.hardbacknutter.nevertoomanybooks.core.network.NetworkChecker;
 
 public class TestNetworkChecker
         implements NetworkChecker {
