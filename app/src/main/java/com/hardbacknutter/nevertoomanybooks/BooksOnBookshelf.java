@@ -524,7 +524,7 @@ public class BooksOnBookshelf
 
         fabMenu.setOnClickListener(view -> onFabMenuItemSelected(view.getId()));
         fabMenu.getItem(vb.fab4SearchExternalId.getId())
-               .ifPresent(item -> item.setEnabled(EditBookExternalIdFragment.isShowTab()));
+               .ifPresent(item -> item.setEnabled(EditBookExternalIdFragment.isShowTab(this)));
     }
 
     private void createBooklistView() {
@@ -691,7 +691,7 @@ public class BooksOnBookshelf
 
         updateSyncMenuVisibility();
         fabMenu.getItem(vb.fab4SearchExternalId.getId())
-               .ifPresent(item -> item.setEnabled(EditBookExternalIdFragment.isShowTab()));
+               .ifPresent(item -> item.setEnabled(EditBookExternalIdFragment.isShowTab(this)));
 
         // Initialize/Update the list of bookshelves
         vm.reloadBookshelfList(this);

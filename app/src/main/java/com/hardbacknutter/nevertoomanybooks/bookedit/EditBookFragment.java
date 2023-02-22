@@ -52,8 +52,9 @@ import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookBinding;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -61,7 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 public class EditBookFragment
@@ -314,7 +314,7 @@ public class EditBookFragment
                                         R.string.lbl_tab_table_of_content,
                                         R.string.lbl_table_of_content));
             }
-            if (EditBookExternalIdFragment.isShowTab()) {
+            if (EditBookExternalIdFragment.isShowTab(container)) {
                 tabList.add(new TabInfo(EditBookExternalIdFragment.class,
                                         R.string.lbl_tab_lbl_ext_id,
                                         R.string.lbl_tab_lbl_ext_id));
