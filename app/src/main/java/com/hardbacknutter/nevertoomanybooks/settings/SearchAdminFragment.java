@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -64,7 +64,8 @@ public class SearchAdminFragment
                     final boolean hasSites = vm.validate();
                     if (hasSites) {
                         // 2022-05-29: we now always persist.
-                        vm.persist();
+                        //noinspection ConstantConditions
+                        vm.persist(getContext());
                         // but to keep changes minimal, we still return the list if it's single.
                         if (vm.getTypes().size() == 1) {
                             final Site.Type type = vm.getTypes().get(0);

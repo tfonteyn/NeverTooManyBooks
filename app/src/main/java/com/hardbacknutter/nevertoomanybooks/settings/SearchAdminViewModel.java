@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -126,9 +127,9 @@ public class SearchAdminViewModel
     /**
      * Persist ALL lists.
      */
-    void persist() {
+    void persist(@NonNull final Context context) {
         for (final Map.Entry<Site.Type, ArrayList<Site>> entry : typeAndSites.entrySet()) {
-            entry.getKey().setSiteList(entry.getValue());
+            entry.getKey().setSiteList(context, entry.getValue());
         }
     }
 
