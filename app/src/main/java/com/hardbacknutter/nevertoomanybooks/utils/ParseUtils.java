@@ -22,15 +22,9 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.text.Normalizer;
-import java.util.regex.Pattern;
-
 
 @SuppressWarnings("WeakerAccess")
 public final class ParseUtils {
-
-    /** See {@link #toAscii}. */
-    private static final Pattern ASCII_PATTERN = Pattern.compile("[^\\p{ASCII}]");
 
     private ParseUtils() {
     }
@@ -153,18 +147,5 @@ public final class ParseUtils {
         return sb.toString().trim();
     }
 
-
-    /**
-     * Normalize a given string to contain only ASCII characters for flexible text comparison.
-     *
-     * @param text to normalize
-     *
-     * @return ascii text
-     */
-    @NonNull
-    public static String toAscii(@NonNull final CharSequence text) {
-        return ASCII_PATTERN.matcher(Normalizer.normalize(text, Normalizer.Form.NFD))
-                            .replaceAll("");
-    }
 
 }

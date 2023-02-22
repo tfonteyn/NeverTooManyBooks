@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,7 +26,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
+import com.hardbacknutter.nevertoomanybooks.core.utils.AsciiNormalizer;
 
 public final class SqlEncode {
 
@@ -64,7 +64,7 @@ public final class SqlEncode {
     @NonNull
     public static String orderByColumn(@NonNull final CharSequence value,
                                        @NonNull final Locale locale) {
-        final String s = ParseUtils.toAscii(value);
+        final String s = AsciiNormalizer.toAscii(value);
         // remove all non-word characters. i.e. all characters not in [a-zA-Z_0-9]
         return NON_WORD_CHARACTER_PATTERN.matcher(s).replaceAll("").toLowerCase(locale);
     }

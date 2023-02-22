@@ -31,6 +31,7 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.AsciiNormalizer;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BedethequeCacheDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -38,7 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 import org.jsoup.nodes.Document;
@@ -100,9 +100,9 @@ public class BedethequeAuthorResolver
      * @return [0A-Z] of the first character
      */
     private char firstChar(@NonNull final CharSequence name) {
-        final char c1 = ParseUtils.toAscii(String.valueOf(name.charAt(0)))
-                                  .toUpperCase(locale)
-                                  .charAt(0);
+        final char c1 = AsciiNormalizer.toAscii(String.valueOf(name.charAt(0)))
+                                       .toUpperCase(locale)
+                                       .charAt(0);
         return Character.isAlphabetic(c1) ? c1 : '0';
     }
 

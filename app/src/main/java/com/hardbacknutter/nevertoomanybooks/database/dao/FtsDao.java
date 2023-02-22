@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.AsciiNormalizer;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 public interface FtsDao {
 
@@ -58,7 +58,7 @@ public interface FtsDao {
         }
 
         // Convert the text to pure ASCII. We'll use an array to loop over it.
-        final char[] chars = ParseUtils.toAscii(searchText).toCharArray();
+        final char[] chars = AsciiNormalizer.toAscii(searchText).toCharArray();
         // Cached length
         final int len = chars.length;
         // Initial position

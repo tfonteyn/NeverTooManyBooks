@@ -37,12 +37,12 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.AsciiNormalizer;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -180,7 +180,7 @@ public class FtsDaoImpl
         if (text == null) {
             stmt.bindNull(position);
         } else {
-            stmt.bindString(position, ParseUtils.toAscii(text));
+            stmt.bindString(position, AsciiNormalizer.toAscii(text));
         }
     }
 

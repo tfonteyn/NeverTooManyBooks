@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,8 +26,8 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.core.utils.AsciiNormalizer;
 import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 
 interface Mergeable {
@@ -45,7 +45,7 @@ interface Mergeable {
         return Objects.hash(
                 x.getNameFields()
                  .stream()
-                 .map(ParseUtils::toAscii)
+                 .map(AsciiNormalizer::toAscii)
                  .collect(Collectors.toList()));
     }
 
