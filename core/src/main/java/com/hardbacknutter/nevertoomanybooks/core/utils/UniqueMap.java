@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils;
+package com.hardbacknutter.nevertoomanybooks.core.utils;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -26,7 +26,7 @@ import androidx.annotation.Nullable;
 import java.util.HashMap;
 
 /**
- * Wraps a HashMap with an add(...) method that ensures values are unique.
+ * Wraps a HashMap with {@link #put(Object, Object)} method that ensures values are unique.
  *
  * @param <K> Type of Key values
  * @param <V> Type of data values
