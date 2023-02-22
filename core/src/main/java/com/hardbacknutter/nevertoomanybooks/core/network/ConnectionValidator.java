@@ -17,13 +17,12 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.network;
+package com.hardbacknutter.nevertoomanybooks.core.network;
 
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 
-import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 public interface ConnectionValidator {
