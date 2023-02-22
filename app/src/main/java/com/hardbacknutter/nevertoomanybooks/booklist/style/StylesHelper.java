@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -99,11 +99,13 @@ public class StylesHelper {
     /**
      * store the given style as the user default one.
      *
-     * @param uuid style to set
+     * @param context Current context
+     * @param uuid    style to set
      */
-    public void setDefault(@NonNull final String uuid) {
-        ServiceLocator.getPreferences()
-                      .edit().putString(PK_DEFAULT_STYLE, uuid).apply();
+    public void setDefault(@NonNull final Context context,
+                           @NonNull final String uuid) {
+        PreferenceManager.getDefaultSharedPreferences(context)
+                         .edit().putString(PK_DEFAULT_STYLE, uuid).apply();
     }
 
     /**

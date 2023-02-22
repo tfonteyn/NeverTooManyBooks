@@ -460,7 +460,7 @@ public class BooksOnBookshelfViewModel
         Objects.requireNonNull(bookshelf, Bookshelf.TAG);
 
         // set as the global default.
-        ServiceLocator.getInstance().getStyles().setDefault(style.getUuid());
+        ServiceLocator.getInstance().getStyles().setDefault(context, style.getUuid());
         // save the new bookshelf/style combination
         bookshelf.setAsPreferred(context);
         bookshelf.setStyle(context, style);
