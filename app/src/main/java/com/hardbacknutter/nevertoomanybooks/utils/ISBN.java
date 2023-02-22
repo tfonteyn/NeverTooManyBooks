@@ -38,6 +38,7 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
@@ -891,8 +892,8 @@ public class ISBN {
         @NonNull
         public static Validity getLevel(@NonNull final Context context) {
 
-            final int value = Prefs.getIntListPref(context, Prefs.pk_edit_book_isbn_checks,
-                                                   Loose.value);
+            final int value = IntListPref.getInt(context, Prefs.pk_edit_book_isbn_checks,
+                                                 Loose.value);
             switch (value) {
                 case 2:
                     return Strict;

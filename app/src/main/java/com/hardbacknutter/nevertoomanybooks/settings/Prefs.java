@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,11 +22,10 @@ package com.hardbacknutter.nevertoomanybooks.settings;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.preference.ListPreference;
-import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.fastscroller.OverlayProviderFactory;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 
 /**
  * All keys <strong>MUST</strong> be kept in sync with "src/main/res/xml/preferences*.xml"
@@ -88,38 +87,10 @@ public final class Prefs {
         }
     }
 
-    /**
-     * {@link ListPreference} stores the selected value as a String.
-     * But they are really Integer values. Hence this transmogrification....
-     *
-     * @param context  Current context
-     * @param key      The name of the preference to retrieve.
-     * @param defValue Value to return if this preference does not exist,
-     *                 or if the stored value is somehow invalid
-     *
-     * @return int (stored as String) global preference
-     */
-    public static int getIntListPref(@NonNull final Context context,
-                                     @NonNull final String key,
-                                     final int defValue) {
-        final String value = PreferenceManager.getDefaultSharedPreferences(context)
-                                              .getString(key, null);
-        if (value == null || value.isEmpty()) {
-            return defValue;
-        }
-
-        // we should never have an invalid setting in the prefs... flw
-        try {
-            return Integer.parseInt(value);
-        } catch (@NonNull final NumberFormatException ignore) {
-            return defValue;
-        }
-    }
-
     @OverlayProviderFactory.OverlayType
     public static int getFastScrollerOverlayType(@NonNull final Context context) {
-        return getIntListPref(context,
-                              pk_booklist_fastscroller_overlay,
-                              OverlayProviderFactory.TYPE_MD2);
+        return IntListPref.getInt(context,
+                                  pk_booklist_fastscroller_overlay,
+                                  OverlayProviderFactory.TYPE_MD2);
     }
 }

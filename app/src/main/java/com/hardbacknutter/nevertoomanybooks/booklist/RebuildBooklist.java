@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,6 +25,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 public enum RebuildBooklist
@@ -65,8 +66,8 @@ public enum RebuildBooklist
      */
     @NonNull
     public static RebuildBooklist getPreferredMode(@NonNull final Context context) {
-        final int value = Prefs.getIntListPref(context, Prefs.pk_booklist_rebuild_state,
-                                               FromSaved.value);
+        final int value = IntListPref.getInt(context, Prefs.pk_booklist_rebuild_state,
+                                             FromSaved.value);
         switch (value) {
             case 3:
                 return Preferred;

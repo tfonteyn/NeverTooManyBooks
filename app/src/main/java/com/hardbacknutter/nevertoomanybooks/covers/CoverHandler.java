@@ -67,6 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
+import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -557,8 +558,8 @@ public class CoverHandler {
             }
 
             // Should we apply an explicit rotation angle?
-            final int explicitRotation = Prefs
-                    .getIntListPref(context, Prefs.pk_camera_image_autorotate, 0);
+            final int explicitRotation = IntListPref
+                    .getInt(context, Prefs.pk_camera_image_autorotate, 0);
 
             // What action (if any) should we take after we're done?
             final NextAction action = NextAction.getAction(context);
@@ -692,8 +693,8 @@ public class CoverHandler {
         @NonNull
         static NextAction getAction(@NonNull final Context context) {
 
-            final int value = Prefs.getIntListPref(context, Prefs.pk_camera_image_action,
-                                                   Done.value);
+            final int value = IntListPref.getInt(context, Prefs.pk_camera_image_action,
+                                                 Done.value);
             switch (value) {
                 case 2:
                     return Edit;

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,6 +25,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 public enum ShowContextMenu
@@ -64,8 +65,8 @@ public enum ShowContextMenu
      */
     @NonNull
     public static ShowContextMenu getPreferredMode(@NonNull final Context context) {
-        final int value = Prefs.getIntListPref(context, Prefs.pk_booklist_context_menu,
-                                               Button.value);
+        final int value = IntListPref.getInt(context, Prefs.pk_booklist_context_menu,
+                                             Button.value);
         switch (value) {
             case 2:
                 return NoButton;

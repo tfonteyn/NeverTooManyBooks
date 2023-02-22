@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.Logger;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
@@ -203,7 +204,7 @@ public final class CoverDir {
     }
 
     public static int getVolume(@NonNull final Context context) {
-        return Prefs.getIntListPref(context, Prefs.pk_storage_volume, 0);
+        return IntListPref.getInt(context, Prefs.pk_storage_volume, 0);
     }
 
     private static void dumpStorageInfo(@NonNull final Context context,

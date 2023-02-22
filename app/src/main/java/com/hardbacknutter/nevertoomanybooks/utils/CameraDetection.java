@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 public final class CameraDetection {
@@ -91,7 +92,7 @@ public final class CameraDetection {
      */
     public static int getPreferredCameraLensFacing(@NonNull final Context context) {
         // By default -1, which for the scanner contract call means 'no preference'
-        int lensFacing = Prefs.getIntListPref(context, Prefs.pk_camera_lens_facing, NO_PREFERENCE);
+        int lensFacing = IntListPref.getInt(context, Prefs.pk_camera_lens_facing, NO_PREFERENCE);
         // we must verify the id, as the preference could have been imported from another device
         if (!getCameras(context).contains(lensFacing)) {
             lensFacing = NO_PREFERENCE;

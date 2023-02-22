@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.math.MathUtils;
 
+import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 public final class NightMode {
@@ -55,7 +56,7 @@ public final class NightMode {
      * @param context Current context
      */
     public static void apply(@NonNull final Context context) {
-        apply(Prefs.getIntListPref(context, Prefs.pk_ui_theme, 0));
+        apply(IntListPref.getInt(context, Prefs.pk_ui_theme, 0));
     }
 
     /**
