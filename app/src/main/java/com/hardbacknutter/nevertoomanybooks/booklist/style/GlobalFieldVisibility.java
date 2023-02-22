@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
 import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
 
 import java.util.Set;
 
@@ -106,7 +107,7 @@ public class GlobalFieldVisibility
      * @return {@code true} if the user wants to use this field.
      */
     public static boolean isUsed(@NonNull final String dbdKey) {
-        return ServiceLocator.getPreferences()
-                             .getBoolean(PREFS_PREFIX_FIELD_VISIBILITY + dbdKey, true);
+        return PreferenceManager.getDefaultSharedPreferences(ServiceLocator.getAppContext())
+                                .getBoolean(PREFS_PREFIX_FIELD_VISIBILITY + dbdKey, true);
     }
 }

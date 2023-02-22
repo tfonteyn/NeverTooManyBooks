@@ -88,9 +88,14 @@ public class StripInfoAuth
     @NonNull
     private final CookieManager cookieManager;
 
+    @NonNull
+    private final SharedPreferences prefs;
+
     public StripInfoAuth(@NonNull final Context context) {
         // Setup BEFORE doing first request!
         cookieManager = ServiceLocator.getInstance().getCookieManager();
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         final SearchEngineConfig config = EngineId.StripInfoBe.requireConfig();
 
@@ -205,7 +210,6 @@ public class StripInfoAuth
             throws IOException, CredentialsException, StorageException {
 
         // Always FIRST check the configuration for having a username/password.
-        final SharedPreferences prefs = ServiceLocator.getPreferences();
         final String username = prefs.getString(PK_HOST_USER, "");
         final String password = prefs.getString(PK_HOST_PASS, "");
         if (username.isEmpty() || password.isEmpty()) {

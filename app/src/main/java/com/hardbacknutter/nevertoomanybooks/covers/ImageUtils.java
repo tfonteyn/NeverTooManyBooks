@@ -26,6 +26,7 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
+import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -178,15 +179,15 @@ public final class ImageUtils {
      */
     @AnyThread
     public static boolean isImageCachingEnabled() {
-        return ServiceLocator.getPreferences()
-                             .getBoolean(Prefs.pk_image_cache_resized, false);
+        return PreferenceManager.getDefaultSharedPreferences(ServiceLocator.getAppContext())
+                                .getBoolean(Prefs.pk_image_cache_resized, false);
     }
 
     public static void setImageCachingEnabled(final boolean enable) {
-        ServiceLocator.getPreferences()
-                      .edit()
-                      .putBoolean(Prefs.pk_image_cache_resized, enable)
-                      .apply();
+        PreferenceManager.getDefaultSharedPreferences(ServiceLocator.getAppContext())
+                         .edit()
+                         .putBoolean(Prefs.pk_image_cache_resized, enable)
+                         .apply();
     }
 
     /**
