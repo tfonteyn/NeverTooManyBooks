@@ -84,6 +84,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
@@ -266,11 +267,11 @@ public class CalibreContentServer
             sslContext = null;
         }
 
-        connectTimeoutInMs = Prefs.getTimeoutValueInMs(
-                PREF_KEY + "." + Prefs.pk_timeout_connect_in_seconds,
+        connectTimeoutInMs = SearchEngineConfig.getTimeoutValueInMs(
+                context, PREF_KEY + "." + Prefs.pk_timeout_connect_in_seconds,
                 CONNECT_TIMEOUT_IN_MS);
-        readTimeoutInMs = Prefs.getTimeoutValueInMs(
-                PREF_KEY + "." + Prefs.pk_timeout_read_in_seconds,
+        readTimeoutInMs = SearchEngineConfig.getTimeoutValueInMs(
+                context, PREF_KEY + "." + Prefs.pk_timeout_read_in_seconds,
                 READ_TIMEOUT_IN_MS);
 
         calibreCustomFields.addAll(ServiceLocator.getInstance().getCalibreCustomFieldDao()

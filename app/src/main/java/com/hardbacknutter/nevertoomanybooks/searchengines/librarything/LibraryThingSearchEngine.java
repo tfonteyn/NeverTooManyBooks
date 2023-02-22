@@ -80,8 +80,9 @@ public class LibraryThingSearchEngine
      * @param config the search engine configuration
      */
     @Keep
-    public LibraryThingSearchEngine(@NonNull final SearchEngineConfig config) {
-        super(config);
+    public LibraryThingSearchEngine(@NonNull final Context context,
+                                    @NonNull final SearchEngineConfig config) {
+        super(context, config);
     }
 
     @NonNull
@@ -125,7 +126,7 @@ public class LibraryThingSearchEngine
                                                   @NonNull final String validIsbn)
             throws SearchException {
 
-        futureHttpGet = createFutureGetRequest();
+        futureHttpGet = createFutureGetRequest(context);
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final LibraryThingEditionHandler handler = new LibraryThingEditionHandler();

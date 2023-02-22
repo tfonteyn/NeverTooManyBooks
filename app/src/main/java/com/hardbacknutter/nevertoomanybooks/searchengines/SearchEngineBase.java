@@ -66,9 +66,10 @@ public abstract class SearchEngineBase
      *
      * @param config the search engine configuration
      */
-    public SearchEngineBase(@NonNull final SearchEngineConfig config) {
+    public SearchEngineBase(@NonNull final Context context,
+                            @NonNull final SearchEngineConfig config) {
         this.config = config;
-        imageDownloader = new ImageDownloader(createFutureGetRequest());
+        imageDownloader = new ImageDownloader(createFutureGetRequest(context));
     }
 
     /**
@@ -215,24 +216,24 @@ public abstract class SearchEngineBase
      * @return new {@link FutureHttpGet} instance
      */
     @NonNull
-    public <T> FutureHttpGet<T> createFutureGetRequest() {
+    public <T> FutureHttpGet<T> createFutureGetRequest(@NonNull final Context context) {
         final FutureHttpGet<T> httpGet = FutureHttpGet
                 .createGet(config.getEngineId().getLabelResId());
 
-        httpGet.setConnectTimeout(config.getConnectTimeoutInMs())
-               .setReadTimeout(config.getReadTimeoutInMs())
+        httpGet.setConnectTimeout(config.getConnectTimeoutInMs(context))
+               .setReadTimeout(config.getReadTimeoutInMs(context))
                .setThrottler(config.getThrottler());
         return httpGet;
     }
 
     @SuppressWarnings("WeakerAccess")
     @NonNull
-    public <T> FutureHttpGet<T> createFutureHeadRequest() {
+    public <T> FutureHttpGet<T> createFutureHeadRequest(@NonNull final Context context) {
         final FutureHttpGet<T> httpGet = FutureHttpGet
                 .createHead(config.getEngineId().getLabelResId());
 
-        httpGet.setConnectTimeout(config.getConnectTimeoutInMs())
-               .setReadTimeout(config.getReadTimeoutInMs())
+        httpGet.setConnectTimeout(config.getConnectTimeoutInMs(context))
+               .setReadTimeout(config.getReadTimeoutInMs(context))
                .setThrottler(config.getThrottler());
         return httpGet;
     }

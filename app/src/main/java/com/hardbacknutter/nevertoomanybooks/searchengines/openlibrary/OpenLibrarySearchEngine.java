@@ -176,8 +176,9 @@ public class OpenLibrarySearchEngine
      * @param config the search engine configuration
      */
     @Keep
-    public OpenLibrarySearchEngine(@NonNull final SearchEngineConfig config) {
-        super(config);
+    public OpenLibrarySearchEngine(@NonNull final Context context,
+                                   @NonNull final SearchEngineConfig config) {
+        super(context, config);
     }
 
     @NonNull
@@ -290,7 +291,7 @@ public class OpenLibrarySearchEngine
                            @NonNull final Book book)
             throws StorageException, SearchException {
 
-        futureHttpGet = createFutureGetRequest();
+        futureHttpGet = createFutureGetRequest(context);
 
         try {
             // get and store the result into a string.

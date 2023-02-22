@@ -142,9 +142,10 @@ public interface SearchEngine
                    IOException,
                    SocketTimeoutException,
                    MalformedURLException {
+        final Context context = ServiceLocator.getAppContext();
         ServiceLocator.getInstance().getNetworkChecker()
-                      .ping(getHostUrl(ServiceLocator.getAppContext()),
-                            getEngineId().requireConfig().getConnectTimeoutInMs());
+                      .ping(getHostUrl(context),
+                            getEngineId().requireConfig().getConnectTimeoutInMs(context));
     }
 
     enum SearchBy {

@@ -89,8 +89,9 @@ public class LastDodoSearchEngine
      * @param config the search engine configuration
      */
     @Keep
-    public LastDodoSearchEngine(@NonNull final SearchEngineConfig config) {
-        super(config);
+    public LastDodoSearchEngine(@NonNull final Context context,
+                                @NonNull final SearchEngineConfig config) {
+        super(context, config);
     }
 
     /**

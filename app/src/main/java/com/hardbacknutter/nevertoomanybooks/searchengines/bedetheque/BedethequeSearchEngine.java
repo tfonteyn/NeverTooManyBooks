@@ -94,13 +94,13 @@ public class BedethequeSearchEngine
      * @param config the search engine configuration
      */
     @Keep
-    public BedethequeSearchEngine(@NonNull final SearchEngineConfig config) {
-        super(config);
+    public BedethequeSearchEngine(@NonNull final Context context,
+                                  @NonNull final SearchEngineConfig config) {
+        super(context, config);
 
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        cookieManager = serviceLocator.getCookieManager();
+        cookieManager = ServiceLocator.getInstance().getCookieManager();
         extraRequestProperties = Map.of(
-                HttpConstants.REFERER, getHostUrl(ServiceLocator.getAppContext()) + "/search");
+                HttpConstants.REFERER, getHostUrl(context) + "/search");
     }
 
     @NonNull
@@ -113,7 +113,7 @@ public class BedethequeSearchEngine
             throws SearchException {
         if (csrfCookie == null || csrfCookie.hasExpired()) {
             try {
-                final FutureHttpGet<HttpCookie> head = createFutureHeadRequest();
+                final FutureHttpGet<HttpCookie> head = createFutureHeadRequest(context);
                 // Reminder: the "request" will be connected and the response code will be OK,
                 // so just extract the cookie we need for the next request
                 csrfCookie = head.get(getHostUrl(context) + "/search", request -> cookieManager

@@ -137,8 +137,9 @@ public class AmazonSearchEngine
      * @param config the search engine configuration
      */
     @Keep
-    public AmazonSearchEngine(@NonNull final SearchEngineConfig config) {
-        super(config);
+    public AmazonSearchEngine(@NonNull final Context context,
+                              @NonNull final SearchEngineConfig config) {
+        super(context, config);
     }
 
     @NonNull

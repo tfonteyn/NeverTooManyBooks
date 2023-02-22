@@ -97,8 +97,8 @@ public class StripInfoAuth
         hostUrl = config.getHostUrl(context);
 
         futureHttpPost = new FutureHttpPost<>(EngineId.StripInfoBe.getLabelResId());
-        futureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs())
-                      .setReadTimeout(config.getReadTimeoutInMs())
+        futureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs(context))
+                      .setReadTimeout(config.getReadTimeoutInMs(context))
                       .setThrottler(config.getThrottler());
     }
 

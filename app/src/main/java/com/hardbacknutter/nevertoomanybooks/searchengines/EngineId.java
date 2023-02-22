@@ -600,14 +600,15 @@ public enum EngineId
     @NonNull
     public SearchEngine createSearchEngine() {
         try {
+            final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
             final Constructor<? extends SearchEngine> c =
-                    clazz.getConstructor(SearchEngineConfig.class);
-            return c.newInstance(config);
+                    clazz.getConstructor(Context.class, SearchEngineConfig.class);
+            return c.newInstance(context, config);
 
         } catch (@NonNull final NoSuchMethodException | IllegalAccessException
                                 | InstantiationException | InvocationTargetException e) {
             throw new IllegalStateException(
-                    clazz + " must implement SearchEngine(SearchEngineConfig)", e);
+                    clazz + " must implement SearchEngine(Context, SearchEngineConfig)", e);
         }
     }
 

@@ -24,7 +24,6 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.fastscroller.OverlayProviderFactory;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 
 /**
@@ -74,17 +73,6 @@ public final class Prefs {
 
 
     private Prefs() {
-    }
-
-    public static int getTimeoutValueInMs(@NonNull final String key,
-                                          final int defValueInMs) {
-        final int seconds = ServiceLocator.getPreferences().getInt(key, 0);
-        // <1000 as sanity check for roque preference file imports
-        if (seconds > 0 && seconds < 1000) {
-            return seconds * 1000;
-        } else {
-            return defValueInMs;
-        }
     }
 
     @OverlayProviderFactory.OverlayType

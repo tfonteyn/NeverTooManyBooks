@@ -93,8 +93,8 @@ public class CollectionFormParser
         postUrl = config.getHostUrl(context) + StripInfoSearchEngine.COLLECTION_FORM_URL;
 
         futureHttpPost = new FutureHttpPost<>(R.string.site_stripinfo_be);
-        futureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs())
-                      .setReadTimeout(config.getReadTimeoutInMs())
+        futureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs(context))
+                      .setReadTimeout(config.getReadTimeoutInMs(context))
                       .setThrottler(config.getThrottler())
                       .setRequestProperty(HttpConstants.CONTENT_TYPE,
                                           HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED);

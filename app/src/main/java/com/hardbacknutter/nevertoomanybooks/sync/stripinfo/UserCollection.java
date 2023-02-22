@@ -146,7 +146,7 @@ public class UserCollection {
                    @NonNull final BookshelfMapper bookshelfMapper) {
         this.userId = userId;
         this.searchEngine = searchEngine;
-        jsoupLoader = new JsoupLoader(this.searchEngine.createFutureGetRequest());
+        jsoupLoader = new JsoupLoader(this.searchEngine.createFutureGetRequest(context));
         rowParser = new RowParser(context, bookshelfMapper);
     }
 

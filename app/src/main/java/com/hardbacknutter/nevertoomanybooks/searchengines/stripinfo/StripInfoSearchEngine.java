@@ -135,8 +135,9 @@ public class StripInfoSearchEngine
      * @param config the search engine configuration
      */
     @Keep
-    public StripInfoSearchEngine(@NonNull final SearchEngineConfig config) {
-        super(config);
+    public StripInfoSearchEngine(@NonNull final Context context,
+                                 @NonNull final SearchEngineConfig config) {
+        super(context, config);
     }
 
     @Nullable

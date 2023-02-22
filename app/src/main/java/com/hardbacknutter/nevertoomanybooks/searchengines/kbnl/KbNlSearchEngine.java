@@ -119,8 +119,9 @@ public class KbNlSearchEngine
      * @param config the search engine configuration
      */
     @Keep
-    public KbNlSearchEngine(@NonNull final SearchEngineConfig config) {
-        super(config);
+    public KbNlSearchEngine(@NonNull final Context context,
+                            @NonNull final SearchEngineConfig config) {
+        super(context, config);
 
         ServiceLocator.getInstance().getCookieManager();
     }
@@ -143,7 +144,7 @@ public class KbNlSearchEngine
                    SearchException,
                    CredentialsException {
 
-        futureHttpGet = createFutureHeadRequest();
+        futureHttpGet = createFutureHeadRequest(context);
         try {
             futureHttpGet.get(getHostUrl(context) + "/cbs/", request -> true);
         } catch (@NonNull final IOException e) {
@@ -152,7 +153,7 @@ public class KbNlSearchEngine
 
         final Book book = new Book();
 
-        futureHttpGet = createFutureGetRequest();
+        futureHttpGet = createFutureGetRequest(context);
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final DefaultHandler handler = new KbNlBookHandler(context, book);

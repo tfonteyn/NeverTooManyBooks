@@ -44,8 +44,9 @@ public class GoodreadsSearchEngine
      * @param config the search engine configuration
      */
     @Keep
-    public GoodreadsSearchEngine(@NonNull final SearchEngineConfig config) {
-        super(config);
+    public GoodreadsSearchEngine(@NonNull final Context context,
+                                 @NonNull final SearchEngineConfig config) {
+        super(context, config);
     }
 
     @NonNull

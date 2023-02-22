@@ -247,8 +247,9 @@ public class IsfdbSearchEngine
      * @param config the search engine configuration
      */
     @Keep
-    public IsfdbSearchEngine(@NonNull final SearchEngineConfig config) {
-        super(config, CHARSET_DECODE_PAGE);
+    public IsfdbSearchEngine(@NonNull final Context context,
+                             @NonNull final SearchEngineConfig config) {
+        super(context, config, CHARSET_DECODE_PAGE);
     }
 
     @NonNull
@@ -1522,7 +1523,7 @@ public class IsfdbSearchEngine
                                          @SuppressWarnings("SameParameterValue") final int maxRecords)
             throws StorageException, SearchException {
 
-        futureHttpGet = createFutureGetRequest();
+        futureHttpGet = createFutureGetRequest(context);
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
 

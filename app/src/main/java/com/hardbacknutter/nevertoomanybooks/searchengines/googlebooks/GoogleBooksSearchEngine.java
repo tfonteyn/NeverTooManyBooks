@@ -78,8 +78,9 @@ public class GoogleBooksSearchEngine
      * @param config the search engine configuration
      */
     @Keep
-    public GoogleBooksSearchEngine(@NonNull final SearchEngineConfig config) {
-        super(config);
+    public GoogleBooksSearchEngine(@NonNull final Context context,
+                                   @NonNull final SearchEngineConfig config) {
+        super(context, config);
     }
 
     @NonNull
@@ -141,7 +142,7 @@ public class GoogleBooksSearchEngine
             throws StorageException,
                    SearchException {
 
-        futureHttpGet = createFutureGetRequest();
+        futureHttpGet = createFutureGetRequest(context);
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         // get the booklist, can return multiple books ('entry' elements)
