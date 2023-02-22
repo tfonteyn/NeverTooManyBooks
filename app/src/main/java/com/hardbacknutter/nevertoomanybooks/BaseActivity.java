@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -147,7 +147,7 @@ public abstract class BaseActivity
             final Fragment fragment;
             try {
                 fragment = fragmentClass.newInstance();
-            } catch (final IllegalAccessException | InstantiationException e) {
+            } catch (@NonNull final IllegalAccessException | InstantiationException e) {
                 throw new IllegalStateException("Not a fragment: " + fragmentClass.getName());
             }
             fragment.setArguments(getIntent().getExtras());
