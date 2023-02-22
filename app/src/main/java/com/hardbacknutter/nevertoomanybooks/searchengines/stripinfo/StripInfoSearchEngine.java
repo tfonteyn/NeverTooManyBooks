@@ -186,7 +186,7 @@ public class StripInfoSearchEngine
             if (loginHelper == null) {
                 loginHelper = new StripInfoAuth();
                 try {
-                    loginHelper.login(context);
+                    loginHelper.login();
                 } catch (@NonNull final IOException | StorageException e) {
                     loginHelper = null;
                     throw new SearchException(getName(context), e);

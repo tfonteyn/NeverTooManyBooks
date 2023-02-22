@@ -436,7 +436,7 @@ public class CalibreContentServer
 
     @WorkerThread
     @Override
-    public boolean validateConnection(@NonNull final Context context)
+    public boolean validateConnection()
             throws StorageException,
                    IOException {
         return !fetch(serverUri + ULR_AJAX_LIBRARY_INFO, BUFFER_SMALL).isEmpty();

@@ -85,6 +85,6 @@ public class ConnectionValidatorTask
 
 
         server = ConnectionValidatorFactory.create(context, siteResId);
-        return server.validateConnection(context);
+        return server.validateConnection();
     }
 }

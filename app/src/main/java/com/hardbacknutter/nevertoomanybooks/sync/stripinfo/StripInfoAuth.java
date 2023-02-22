@@ -41,12 +41,12 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
-import com.hardbacknutter.nevertoomanybooks.network.ConnectionValidator;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpPost;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.network.ConnectionValidator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
@@ -181,9 +181,9 @@ public class StripInfoAuth
 
     @WorkerThread
     @Override
-    public boolean validateConnection(@NonNull final Context context)
+    public boolean validateConnection()
             throws IOException, CredentialsException, StorageException {
-        login(context);
+        login();
         return true;
     }
 
@@ -193,8 +193,6 @@ public class StripInfoAuth
      * Will check the cookie to see if we're already logged in,
      * and return with success immediately.
      *
-     * @param context Current context
-     *
      * @return the valid user id
      *
      * @throws CredentialsException on authentication/login failures
@@ -203,11 +201,11 @@ public class StripInfoAuth
      */
     @WorkerThread
     @NonNull
-    public String login(@NonNull final Context context)
+    public String login()
             throws IOException, CredentialsException, StorageException {
 
         // Always FIRST check the configuration for having a username/password.
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences prefs = ServiceLocator.getPreferences();
         final String username = prefs.getString(PK_HOST_USER, "");
         final String password = prefs.getString(PK_HOST_PASS, "");
         if (username.isEmpty() || password.isEmpty()) {
