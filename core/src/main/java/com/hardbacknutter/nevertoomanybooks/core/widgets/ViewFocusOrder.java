@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils;
+package com.hardbacknutter.nevertoomanybooks.core.widgets;
 
 import android.annotation.SuppressLint;
 import android.content.res.Resources;
@@ -38,7 +38,7 @@ import androidx.constraintlayout.widget.ConstraintHelper;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.progressindicator.BaseProgressIndicator;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 
 /**
