@@ -33,13 +33,14 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 
 /**
  * For Locales which use ',' as the decimal separator, the input panel only allows '.'.
- * See class docs: {@link com.hardbacknutter.nevertoomanybooks.utils.ParseUtils}.
+ * See class docs: {@link StringCoder}.
  * <p>
  * A {@code null} or {@code 0} value is always displayed as an empty {@code String}.
  */

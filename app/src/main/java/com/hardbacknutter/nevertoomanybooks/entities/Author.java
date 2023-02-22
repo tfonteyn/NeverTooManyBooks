@@ -49,9 +49,9 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.StringList;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
  * Represents an Author.
@@ -416,7 +416,7 @@ public class Author
      */
     @NonNull
     public static Author from(@NonNull final String name) {
-        String uName = ParseUtils.unEscape(name);
+        String uName = StringCoder.unEscape(name);
 
         // First step, check for a trailing bracket section.
         String bracketSection = null;

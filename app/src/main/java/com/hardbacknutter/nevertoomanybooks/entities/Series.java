@@ -37,9 +37,9 @@ import java.util.regex.Pattern;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 /**
@@ -261,8 +261,8 @@ public class Series
         matcher = TITLE_NUMBER_PATTERN.matcher(text);
         if (matcher.find()) {
 
-            final String uTitle = ParseUtils.unEscape(matcher.group(1));
-            String uNumber = ParseUtils.unEscape(matcher.group(2));
+            final String uTitle = StringCoder.unEscape(matcher.group(1));
+            String uNumber = StringCoder.unEscape(matcher.group(2));
 
             final Series newSeries = new Series(uTitle);
             // If it's purely numeric, remove any leading zeros.
@@ -274,7 +274,7 @@ public class Series
 
         } else {
             // no number part found
-            final String uTitle = ParseUtils.unEscape(text.trim());
+            final String uTitle = StringCoder.unEscape(text.trim());
             return new Series(uTitle);
         }
     }
@@ -344,8 +344,8 @@ public class Series
     @NonNull
     public static Series from(@NonNull final String title,
                               @Nullable final String number) {
-        final String uTitle = ParseUtils.unEscape(title);
-        final String uNumber = ParseUtils.unEscape(number);
+        final String uTitle = StringCoder.unEscape(title);
+        final String uNumber = StringCoder.unEscape(number);
 
         final Series newSeries = new Series(uTitle);
         if (!uNumber.isEmpty()) {

@@ -17,16 +17,16 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils;
+package com.hardbacknutter.nevertoomanybooks.core.utils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 
 @SuppressWarnings("WeakerAccess")
-public final class ParseUtils {
+public final class StringCoder {
 
-    private ParseUtils() {
+    private StringCoder() {
     }
 
     /**
@@ -146,6 +146,4 @@ public final class ParseUtils {
         }
         return sb.toString().trim();
     }
-
-
 }

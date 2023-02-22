@@ -36,6 +36,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -51,7 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeAuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 import org.jsoup.nodes.Document;
@@ -135,7 +135,7 @@ public class LastDodoSearchEngine
     @VisibleForTesting
     @NonNull
     public static String[] parseAuthorNames(@NonNull final String name) {
-        String uName = ParseUtils.unEscape(name);
+        String uName = StringCoder.unEscape(name);
         final Matcher brackets = REAL_NAME_BRACKET_ALIAS_BRACKET.matcher(uName);
         if (brackets.find()) {
             String group = brackets.group(1);
