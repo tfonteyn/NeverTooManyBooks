@@ -285,6 +285,7 @@ public final class ServiceLocator {
         }
     }
 
+    @VisibleForTesting
     public void setSystemLocaleSupplier(@NonNull final Supplier<List<Locale>> supplier) {
         this.systemLocaleSupplier = supplier;
     }
