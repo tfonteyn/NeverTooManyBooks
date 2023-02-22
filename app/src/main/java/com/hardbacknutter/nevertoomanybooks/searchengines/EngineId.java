@@ -555,7 +555,7 @@ public enum EngineId
 
     /**
      * The <strong>DEFAULT</strong> url.
-     * Use {@link SearchEngineConfig#getHostUrl()} instead for all normal usage!
+     * Use {@link SearchEngineConfig#getHostUrl(Context)} instead for all normal usage!
      *
      * @return default/hardcoded url for the site.
      */
@@ -671,7 +671,7 @@ public enum EngineId
         }
 
         if (showAlert) {
-            final String siteName = createSearchEngine().getHostUrl();
+            final String siteName = createSearchEngine().getHostUrl(context);
 
             final AlertDialog.Builder dialogBuilder = new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_baseline_warning_24)
