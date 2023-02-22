@@ -26,8 +26,8 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.utils.AsciiNormalizer;
-import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
 
 
 interface Mergeable {
