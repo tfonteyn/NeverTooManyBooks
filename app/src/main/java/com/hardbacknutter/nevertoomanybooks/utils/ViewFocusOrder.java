@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +39,7 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.progressindicator.BaseProgressIndicator;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 
 /**
  * Set/fix the nextFocusX attributes on the visible fields.
@@ -138,7 +138,7 @@ public final class ViewFocusOrder {
             if (BuildConfig.DEBUG /* always */) {
                 // Log, but ignore. This is a non-critical feature that prevents crashes
                 // when the 'next' key is pressed and some views have been hidden.
-                Log.d(TAG, "rootView=" + rootView, e);
+                LoggerFactory.getLogger().d(TAG, "rootView=" + rootView, e);
             }
         }
 
@@ -229,7 +229,7 @@ public final class ViewFocusOrder {
     public static void debugDumpViewTree(@Nullable final View view,
                                          final int depth) {
         if (view == null) {
-            Log.d(TAG, "debugDumpViewTree|view==NULL");
+            LoggerFactory.getLogger().d(TAG, "debugDumpViewTree|view==NULL");
             return;
         }
 
@@ -271,7 +271,7 @@ public final class ViewFocusOrder {
             sb.append(dumpFocus(view));
         }
 
-        Log.d(TAG, "debugDumpViewTree|" + sb);
+        LoggerFactory.getLogger().d(TAG, "debugDumpViewTree|" + sb);
 
         if (view instanceof ViewGroup) {
             final ViewGroup g = (ViewGroup) view;
