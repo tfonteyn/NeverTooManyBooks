@@ -143,7 +143,22 @@ public interface SearchEngine
                    SocketTimeoutException,
                    MalformedURLException {
         ServiceLocator.getInstance().getNetworkChecker()
-                      .ping(getHostUrl(), getEngineId().requireConfig().getConnectTimeoutInMs());
+                      .ping(getHostUrl(ServiceLocator.getAppContext()),
+                            getEngineId().requireConfig().getConnectTimeoutInMs());
+    }
+
+    enum SearchBy {
+        ExternalId(ByExternalId.class),
+        Isbn(ByIsbn.class),
+        Barcode(ByBarcode.class),
+        Text(ByText.class);
+
+        @NonNull
+        final Class<? extends SearchEngine> clazz;
+
+        SearchBy(@NonNull final Class<? extends SearchEngine> clazz) {
+            this.clazz = clazz;
+        }
     }
 
     /** Optional. */
@@ -288,20 +303,6 @@ public interface SearchEngine
                 throws StorageException,
                        SearchException,
                        CredentialsException;
-    }
-
-    enum SearchBy {
-        ExternalId(ByExternalId.class),
-        Isbn(ByIsbn.class),
-        Barcode(ByBarcode.class),
-        Text(ByText.class);
-
-        @NonNull
-        final Class<? extends SearchEngine> clazz;
-
-        SearchBy(@NonNull final Class<? extends SearchEngine> clazz) {
-            this.clazz = clazz;
-        }
     }
 
     /** Optional. */
