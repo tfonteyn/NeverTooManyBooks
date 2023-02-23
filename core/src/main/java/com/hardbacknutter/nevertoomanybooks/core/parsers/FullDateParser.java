@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -108,7 +108,7 @@ public class FullDateParser
     /**
      * Constructor for testing.
      *
-     * @param locales list with at least one element
+     * @param locales to use for parsing
      */
     @VisibleForTesting
     public FullDateParser(@NonNull final List<Locale> locales) {
@@ -212,7 +212,7 @@ public class FullDateParser
      *
      * @param group    collection to add to
      * @param patterns list of patterns to add
-     * @param locales  to use
+     * @param locales  to use for parsing
      */
     private void addPatterns(@NonNull final Collection<DateTimeFormatter> group,
                              @NonNull final String[] patterns,
