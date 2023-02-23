@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,14 +19,15 @@
  */
 package com.hardbacknutter.nevertoomanybooks.datamanager;
 
+import java.math.BigDecimal;
 import java.util.Locale;
-
-import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.MoneyFormatter;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
+
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -42,9 +43,12 @@ class MoneyFormatterTestJDK
         setLocale(Locale.US);
         //noinspection ConstantConditions
         final FieldFormatter<Money> f = new MoneyFormatter(locale0);
-        assertEquals("$1,234.50", f.format(context, new Money(1234.50d, Money.USD)));
-        assertEquals("£1,234.50", f.format(context, new Money(1234.50d, Money.GBP)));
-        assertEquals("€1,234.50", f.format(context, new Money(1234.50d, Money.EUR)));
+        assertEquals("$1,234.50", f.format(context, new Money(BigDecimal.valueOf(1234.50d),
+                                                              Money.USD)));
+        assertEquals("£1,234.50", f.format(context, new Money(BigDecimal.valueOf(1234.50d),
+                                                              Money.GBP)));
+        assertEquals("€1,234.50", f.format(context, new Money(BigDecimal.valueOf(1234.50d),
+                                                              Money.EUR)));
     }
 
     @Test
@@ -52,9 +56,12 @@ class MoneyFormatterTestJDK
         setLocale(Locale.UK);
         //noinspection ConstantConditions
         final FieldFormatter<Money> f = new MoneyFormatter(locale0);
-        assertEquals("US$1,234.50", f.format(context, new Money(1234.50d, Money.USD)));
-        assertEquals("£1,234.50", f.format(context, new Money(1234.50d, Money.GBP)));
-        assertEquals("€1,234.50", f.format(context, new Money(1234.50d, Money.EUR)));
+        assertEquals("US$1,234.50", f.format(context, new Money(BigDecimal.valueOf(1234.50d),
+                                                                Money.USD)));
+        assertEquals("£1,234.50", f.format(context, new Money(BigDecimal.valueOf(1234.50d),
+                                                              Money.GBP)));
+        assertEquals("€1,234.50", f.format(context, new Money(BigDecimal.valueOf(1234.50d),
+                                                              Money.EUR)));
     }
 
     @Test
@@ -62,8 +69,11 @@ class MoneyFormatterTestJDK
         setLocale(Locale.GERMANY);
         //noinspection ConstantConditions
         final FieldFormatter<Money> f = new MoneyFormatter(locale0);
-        assertEquals("1.234,50 $", f.format(context, new Money(1234.50d, Money.USD)));
-        assertEquals("1.234,50 £", f.format(context, new Money(1234.50d, Money.GBP)));
-        assertEquals("1.234,50 €", f.format(context, new Money(1234.50d, Money.EUR)));
+        assertEquals("1.234,50 $", f.format(context, new Money(BigDecimal.valueOf(1234.50d),
+                                                               Money.USD)));
+        assertEquals("1.234,50 £", f.format(context, new Money(BigDecimal.valueOf(1234.50d),
+                                                               Money.GBP)));
+        assertEquals("1.234,50 €", f.format(context, new Money(BigDecimal.valueOf(1234.50d),
+                                                               Money.EUR)));
     }
 }
