@@ -411,11 +411,12 @@ public class EditBookViewModel
         if (args != null) {
             final Book bookFromArguments = args.getParcelable(Book.BKEY_BOOK_DATA);
             if (bookFromArguments != null) {
+                final List<Locale> locales = LocaleListUtils.asList(context);
                 bookFromArguments.keySet()
                                  .stream()
                                  .filter(key -> !book.contains(key))
                                  .forEach(key -> book.put(key, bookFromArguments
-                                         .get(context, key)));
+                                         .get(key, locales)));
             }
         }
     }

@@ -29,6 +29,10 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
@@ -121,6 +125,16 @@ public abstract class SearchEngineBase
     @Override
     public String getHostUrl(@NonNull final Context context) {
         return config.getHostUrl(context);
+    }
+
+    @Override
+    public void ping(@NonNull final Context context)
+            throws UnknownHostException,
+                   IOException,
+                   SocketTimeoutException,
+                   MalformedURLException {
+        ServiceLocator.getInstance().getNetworkChecker().ping(
+                getHostUrl(context), config.getConnectTimeoutInMs(context));
     }
 
     @Override

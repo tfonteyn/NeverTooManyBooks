@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -122,13 +122,15 @@ public class Languages {
      * Each time the user switches language, we generate an additional set.
      * That probably covers a lot if not all.
      *
+     * @param context     Current context
      * @param locale      the locale of the displayName
      * @param displayName the string as normally produced by {@link Locale#getDisplayLanguage}
      *
      * @return the ISO code, or if conversion failed, the input string
      */
     @NonNull
-    public String getISO3FromDisplayName(@NonNull final Locale locale,
+    public String getISO3FromDisplayName(@NonNull final Context context,
+                                         @NonNull final Locale locale,
                                          @NonNull final String displayName) {
 
         final String source = displayName.trim().toLowerCase(locale);
@@ -136,9 +138,9 @@ public class Languages {
             return "";
         }
         // create the mappings for the given locale if they don't exist yet
-        createLanguageMappingCache(locale);
+        createLanguageMappingCache(context, locale);
 
-        return getCacheFile().getString(source, source);
+        return getCacheFile(context).getString(source, source);
     }
 
     /**
@@ -396,7 +398,7 @@ public class Languages {
         final List<Locale> locales = LocaleListUtils.asList(context);
         // Always add English
         locales.add(Locale.ENGLISH);
-        locales.forEach(this::createLanguageMappingCache);
+        locales.forEach(locale -> createLanguageMappingCache(context, locale));
 
         // Locales from SearchEngine's are added automatically as/when needed
     }
@@ -404,10 +406,12 @@ public class Languages {
     /**
      * Generate language mappings for a given Locale.
      *
-     * @param locale the Locale for which to create a mapping
+     * @param context Current context
+     * @param locale  the Locale for which to create a mapping
      */
-    private void createLanguageMappingCache(@NonNull final Locale locale) {
-        final SharedPreferences cacheFile = getCacheFile();
+    private void createLanguageMappingCache(@NonNull final Context context,
+                                            @NonNull final Locale locale) {
+        final SharedPreferences cacheFile = getCacheFile(context);
 
         // just return if already done for this Locale.
         if (cacheFile.getBoolean(LANG_CREATED_PREFIX + locale.getISO3Language(), false)) {
@@ -426,12 +430,13 @@ public class Languages {
     /**
      * Convenience method to get the language SharedPreferences file.
      *
+     * @param context Current context
+     *
      * @return the SharedPreferences representing the language mapper
      */
     @NonNull
-    private SharedPreferences getCacheFile() {
-        return ServiceLocator.getAppContext().getSharedPreferences(LANGUAGE_MAP,
-                                                                   Context.MODE_PRIVATE);
+    private SharedPreferences getCacheFile(@NonNull final Context context) {
+        return context.getSharedPreferences(LANGUAGE_MAP, Context.MODE_PRIVATE);
     }
 
     /**

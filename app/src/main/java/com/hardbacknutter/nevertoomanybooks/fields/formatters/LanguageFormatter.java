@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -75,6 +75,6 @@ public class LanguageFormatter
     public String extract(@NonNull final Context context,
                           @NonNull final String text) {
         return ServiceLocator.getInstance().getLanguages()
-                             .getISO3FromDisplayName(locale, text);
+                             .getISO3FromDisplayName(context, locale, text);
     }
 }

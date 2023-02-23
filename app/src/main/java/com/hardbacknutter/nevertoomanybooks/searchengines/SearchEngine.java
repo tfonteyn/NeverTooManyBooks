@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
@@ -137,16 +136,11 @@ public interface SearchEngine
     void setCaller(@Nullable Cancellable caller);
 
     @WorkerThread
-    default void ping()
+    void ping(@NonNull Context context)
             throws UnknownHostException,
                    IOException,
                    SocketTimeoutException,
-                   MalformedURLException {
-        final Context context = ServiceLocator.getAppContext();
-        ServiceLocator.getInstance().getNetworkChecker()
-                      .ping(getHostUrl(context),
-                            getEngineId().requireConfig().getConnectTimeoutInMs(context));
-    }
+                   MalformedURLException;
 
     enum SearchBy {
         ExternalId(ByExternalId.class),

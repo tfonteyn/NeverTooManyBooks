@@ -29,6 +29,8 @@ import androidx.core.math.MathUtils;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -42,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 import org.jsoup.Jsoup;
@@ -82,6 +85,9 @@ public class CollectionFormUploader {
     @NonNull
     private final String postUrl;
 
+    @NonNull
+    private final List<Locale> locales;
+
     /**
      * Constructor.
      */
@@ -97,6 +103,8 @@ public class CollectionFormUploader {
                       .setThrottler(config.getThrottler())
                       .setRequestProperty(HttpConstants.CONTENT_TYPE,
                                           HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED);
+
+        locales = LocaleListUtils.asList(context);
     }
 
     /**
@@ -163,8 +171,7 @@ public class CollectionFormUploader {
     }
 
     @WorkerThread
-    public void setRating(@NonNull final Context context,
-                          @NonNull final Book book)
+    public void setRating(@NonNull final Book book)
             throws IOException, IllegalArgumentException, StorageException {
 
         final long externalId = book.getLong(DBKey.SID_STRIP_INFO);
@@ -178,7 +185,7 @@ public class CollectionFormUploader {
         }
 
         final String postBody = new Uri.Builder()
-                .appendQueryParameter(FF_SCORE, ratingToSite(context, book))
+                .appendQueryParameter(FF_SCORE, ratingToSite(book))
                 .appendQueryParameter(FF_STRIP_ID, String.valueOf(externalId))
                 .appendQueryParameter(FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
                 .appendQueryParameter(FORM_MODE, MODE_SEND_FORM)
@@ -191,9 +198,9 @@ public class CollectionFormUploader {
 
     @AnyThread
     @NonNull
-    private String ratingToSite(@NonNull final Context context,
-                                @NonNull final Book book) {
-        return String.valueOf(MathUtils.clamp(book.getFloat(context, DBKey.RATING) * 2, 0, 10));
+    private String ratingToSite(@NonNull final Book book) {
+        return String.valueOf(MathUtils.clamp(book.getFloat(DBKey.RATING, locales) * 2,
+                                              0, 10));
     }
 
     /**
@@ -232,7 +239,7 @@ public class CollectionFormUploader {
 
         final Uri.Builder builder = new Uri.Builder();
 
-        builder.appendQueryParameter(FF_SCORE, ratingToSite(context, book));
+        builder.appendQueryParameter(FF_SCORE, ratingToSite(book));
 
         String dateAcquired = book.getString(DBKey.DATE_ACQUIRED);
         if (dateAcquired.length() == 10) {
@@ -244,7 +251,7 @@ public class CollectionFormUploader {
         builder.appendQueryParameter(FF_AANKOOP_DATUM, dateAcquired);
 
         // The site does not store a currency; it's hardcoded/supposed to be EURO.
-        final Money paid = book.getMoney(context, DBKey.PRICE_PAID);
+        final Money paid = book.getMoney(DBKey.PRICE_PAID, locales);
         builder.appendQueryParameter(FF_AANKOOP_PRIJS,
                                      paid != null ? String.valueOf(paid.toEuro()) : "");
 

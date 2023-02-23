@@ -93,7 +93,7 @@ class IsfdbBookHandlerTest
         assertEquals("1986-10-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("0413600106", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("9780413600103", book.getString(IsfdbSearchEngine.SiteField.ISBN_2, null));
-        assertEquals(1.95d, book.getDouble(context, DBKey.PRICE_LISTED));
+        assertEquals(1.95d, book.getDouble(DBKey.PRICE_LISTED, locales));
         assertEquals(Money.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
         assertEquals("159", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("pb", book.getString(DBKey.FORMAT, null));
@@ -164,7 +164,7 @@ class IsfdbBookHandlerTest
         assertEquals("2013-11-07", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("9781473200104", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("1473200105", book.getString(IsfdbSearchEngine.SiteField.ISBN_2, null));
-        assertEquals(9.99d, book.getDouble(context, DBKey.PRICE_LISTED));
+        assertEquals(9.99d, book.getDouble(DBKey.PRICE_LISTED, locales));
         assertEquals(Money.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
         assertEquals("257", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("hc", book.getString(DBKey.FORMAT, null));
@@ -223,7 +223,7 @@ class IsfdbBookHandlerTest
         assertEquals("2015-09-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("9780062429995", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("006242999X", book.getString(IsfdbSearchEngine.SiteField.ISBN_2, null));
-        assertEquals(11.99d, book.getDouble(context, DBKey.PRICE_LISTED));
+        assertEquals(11.99d, book.getDouble(DBKey.PRICE_LISTED, locales));
         assertEquals(Money.USD, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
         assertEquals("ebook", book.getString(DBKey.FORMAT, null));
         assertEquals("NOVEL", book.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE, null));

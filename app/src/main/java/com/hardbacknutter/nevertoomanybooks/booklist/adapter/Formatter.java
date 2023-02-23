@@ -146,11 +146,11 @@ class Formatter
                                                    .getLocale(context, lang);
                     }
 
-                    final List<Locale> localeList = LocaleListUtils.asList(context);
+                    final List<Locale> locales = LocaleListUtils.asList(context);
                     if (bookLocale != null) {
-                        localeList.add(0, bookLocale);
+                        locales.add(0, bookLocale);
                     }
-                    return ReorderHelper.reorder(context, text, localeList);
+                    return ReorderHelper.reorder(context, text, locales);
                 } else {
                     return text;
                 }

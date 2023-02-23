@@ -124,7 +124,7 @@ class UserCollectionTest
             assertEquals(5435, b0.getLong(DBKey.SID_STRIP_INFO));
             assertEquals(5408, b0.getLong(DBKey.STRIP_INFO_COLL_ID));
 
-            assertEquals(45f, b0.getDouble(context, DBKey.PRICE_PAID));
+            assertEquals(45f, b0.getDouble(DBKey.PRICE_PAID, locales));
             assertEquals("EUR", b0.getString(DBKey.PRICE_PAID_CURRENCY, null));
             assertEquals("2021-03-10", b0.getString(DBKey.DATE_ACQUIRED, null));
 

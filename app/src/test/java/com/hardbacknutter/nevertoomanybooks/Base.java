@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryTh
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -81,8 +82,9 @@ public class Base {
     protected Resources resources;
     @Mock
     protected Configuration configuration;
+    protected List<Locale> locales;
     @Mock
-    protected LocaleList localeList;
+    private LocaleList localeList;
 
     protected Book book;
     protected Context context;
@@ -170,6 +172,7 @@ public class Base {
 
         when(localeList.get(0)).thenAnswer((Answer<Locale>) invocation -> locale0);
 
+        locales = LocaleListUtils.asList(context);
 
         // See class docs.
         ImageDownloader.IGNORE_RENAME_FAILURE = true;

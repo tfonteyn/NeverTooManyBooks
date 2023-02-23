@@ -199,7 +199,7 @@ public class SearchTask
         }
 
         // can we reach the site ?
-        searchEngine.ping();
+        searchEngine.ping(context);
 
         final Book book;
         switch (by) {

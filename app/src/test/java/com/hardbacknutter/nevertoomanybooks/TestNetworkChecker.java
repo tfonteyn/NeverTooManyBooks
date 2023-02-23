@@ -52,6 +52,6 @@ public class TestNetworkChecker
                    IOException,
                    SocketTimeoutException,
                    MalformedURLException {
-
+            // do nothing; i.e. success
     }
 }

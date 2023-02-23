@@ -225,13 +225,14 @@ public class BookDaoHelper {
     @VisibleForTesting
     public void processExternalIds(@NonNull final Context context) {
         final List<Domain> domains = SearchEngineConfig.getExternalIdDomains();
+        final List<Locale> locales = LocaleListUtils.asList(context);
 
         domains.stream()
                .filter(domain -> domain.getSqLiteDataType() == SqLiteDataType.Integer)
                .map(Domain::getName)
                .filter(book::contains)
                .forEach(key -> {
-                   final Object o = book.get(context, key);
+                   final Object o = book.get(key, locales);
                    try {
                        if (isNew) {
                            // For new books:
@@ -274,7 +275,7 @@ public class BookDaoHelper {
                .map(Domain::getName)
                .filter(book::contains)
                .forEach(key -> {
-                   final Object o = book.get(context, key);
+                   final Object o = book.get(key, locales);
                    if (isNew) {
                        // for new books,
                        if (o == null) {
@@ -313,12 +314,14 @@ public class BookDaoHelper {
      */
     @VisibleForTesting
     public void processNullsAndBlanks(@NonNull final Context context) {
+        final List<Locale> locales = LocaleListUtils.asList(context);
+
         DBDefinitions.TBL_BOOKS
                 .getDomains()
                 .stream()
                 .filter(domain -> book.contains(domain.getName()) && domain.hasDefault())
                 .forEach(domain -> {
-                    final Object o = book.get(context, domain.getName());
+                    final Object o = book.get(domain.getName(), locales);
                     if (
                         // Fields which are null but not allowed to be null
                             o == null && domain.isNotNull()
@@ -367,6 +370,7 @@ public class BookDaoHelper {
                                @NonNull final TableInfo tableInfo,
                                @NonNull final Book book,
                                @NonNull final List<Locale> localeList) {
+        final List<Locale> locales = LocaleListUtils.asList(context);
         final ContentValues cv = new ContentValues();
         for (final String key : book.keySet()) {
             // We've seen empty keys in old BC imports - this is likely due to a csv column
@@ -377,7 +381,8 @@ public class BookDaoHelper {
                 final ColumnInfo columnInfo = tableInfo.getColumn(key);
                 // Check if we actually have a matching column, and never update a PK.
                 if (columnInfo != null && !columnInfo.isPrimaryKey()) {
-                    final Object entry = book.get(context, key);
+
+                    final Object entry = book.get(key, locales);
                     if (entry == null) {
                         if (columnInfo.isNullable()) {
                             cv.putNull(key);

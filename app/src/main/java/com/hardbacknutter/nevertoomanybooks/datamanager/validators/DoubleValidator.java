@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,6 +24,9 @@ import android.content.Context;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
+
+import java.util.List;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
@@ -58,7 +61,9 @@ public class DoubleValidator
             throws ValidatorException {
 
         final double value;
-        final Object obj = dataManager.get(context, key);
+        final List<Locale> locales = LocaleListUtils.asList(context);
+
+        final Object obj = dataManager.get(key, locales);
         if (obj == null) {
             value = defaultValue;
         } else if (obj instanceof Number) {
@@ -69,7 +74,7 @@ public class DoubleValidator
                 value = defaultValue;
             } else {
                 try {
-                    value = NumberParser.toDouble(LocaleListUtils.asList(context), stringValue);
+                    value = NumberParser.toDouble(locales, stringValue);
 
                 } catch (@NonNull final NumberFormatException e) {
                     throw new ValidatorException(

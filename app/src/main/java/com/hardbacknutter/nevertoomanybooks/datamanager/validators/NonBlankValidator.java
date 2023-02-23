@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,6 +28,7 @@ import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 
 /**
  * Validator to require a non-blank field.
@@ -42,7 +43,7 @@ public class NonBlankValidator
                          @StringRes final int errorLabelResId)
             throws ValidatorException {
 
-        final Object o = dataManager.get(context, key);
+        final Object o = dataManager.get(key, LocaleListUtils.asList(context));
         if (o == null) {
             throw new ValidatorException(context.getString(R.string.vldt_non_blank_required_for_x,
                                                            context.getString(errorLabelResId)));

@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.datamanager;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -27,19 +26,18 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 /**
@@ -76,16 +74,8 @@ public class DataManager
     private final Bundle rawData;
 
     /**
-     * Constructor.
+     * Constructor. Loads the data <strong>without</strong> type checks.
      */
-    protected DataManager() {
-        rawData = ServiceLocator.newBundle();
-    }
-
-    /**
-     * Constructor for Mock tests. Loads the data <strong>without</strong> type checks.
-     */
-    @VisibleForTesting
     protected DataManager(@NonNull final Bundle rawData) {
         this.rawData = rawData;
     }
@@ -149,13 +139,13 @@ public class DataManager
     /**
      * Store all passed values in our collection (with type checking).
      *
-     * @param context Current context
      * @param src     DataManager to copy from
+     * @param locales to use for parsing
      */
-    protected void putAll(@NonNull final Context context,
-                          @NonNull final DataManager src) {
+    protected void putAll(@NonNull final DataManager src,
+                          @NonNull final List<Locale> locales) {
         for (final String key : src.keySet()) {
-            put(key, src.get(context, key));
+            put(key, src.get(key, locales));
         }
     }
 
@@ -249,7 +239,7 @@ public class DataManager
         } else if (value == null) {
             if (BuildConfig.DEBUG /* always */) {
                 LoggerFactory.getLogger()
-                              .w(TAG, "put|key=`" + key + "`|value=<NULL>");
+                             .w(TAG, "put|key=`" + key + "`|value=<NULL>");
             }
             putNull(key);
 
@@ -261,24 +251,24 @@ public class DataManager
     /**
      * Get the data object specified by the passed key.
      *
-     * @param context Current context
      * @param key     Key of data object
+     * @param locales to use for parsing
      *
      * @return Data object, or {@code null} when not present or the value is {@code null}
      */
     @Nullable
-    public Object get(@NonNull final Context context,
-                      @NonNull final String key) {
+    public Object get(@NonNull final String key,
+                      @NonNull final List<Locale> locales) {
         if (DBKey.MONEY_KEYS.contains(key)) {
             try {
-                return getMoney(context, key);
+                return getMoney(key, locales);
             } catch (@NonNull final NumberFormatException ignore) {
                 //TEST: should we really ignore this, next step will return raw value.
                 if (BuildConfig.DEBUG /* always */) {
                     LoggerFactory.getLogger()
-                                  .d(TAG, "get", "NumberFormatException"
-                                                 + "|name=" + key
-                                                 + "|value=`" + rawData.get(key) + '`');
+                                 .d(TAG, "get", "NumberFormatException"
+                                                + "|name=" + key
+                                                + "|value=`" + rawData.get(key) + '`');
                 }
             }
         }
@@ -366,17 +356,18 @@ public class DataManager
     /**
      * Get a double value.
      *
-     * @param context Current context
      * @param key     Key of data object
+     * @param locales to use for parsing
      *
      * @return a double value; {@code null} or empty becomes {@code 0}
      *
      * @throws NumberFormatException if the source was not compatible.
      */
-    public double getDouble(@NonNull final Context context,
-                            @NonNull final String key)
+    @Override
+    public double getDouble(@NonNull final String key,
+                            @NonNull final List<Locale> locales)
             throws NumberFormatException {
-        return NumberParser.toDouble(LocaleListUtils.asList(context), rawData.get(key));
+        return NumberParser.toDouble(locales, rawData.get(key));
     }
 
     /**
@@ -393,17 +384,18 @@ public class DataManager
     /**
      * Get a float value.
      *
-     * @param context Current context
      * @param key     Key of data object
+     * @param locales to use for parsing
      *
      * @return a float value {@code null} or empty becomes {@code 0}
      *
      * @throws NumberFormatException if the source was not compatible.
      */
-    public float getFloat(@NonNull final Context context,
-                          @NonNull final String key)
+    @Override
+    public float getFloat(@NonNull final String key,
+                          @NonNull final List<Locale> locales)
             throws NumberFormatException {
-        return NumberParser.toFloat(LocaleListUtils.asList(context), rawData.get(key));
+        return NumberParser.toFloat(locales, rawData.get(key));
     }
 
     /**
@@ -443,19 +435,20 @@ public class DataManager
     /**
      * Get a {@link Money} value.
      *
-     * @param context Current context
      * @param key     Key of data object
+     * @param locales to use for parsing
      *
      * @return value
      *
      * @throws NumberFormatException if the source was not compatible.
      */
     @Nullable
-    public Money getMoney(@NonNull final Context context,
-                          @NonNull final String key)
+    public Money getMoney(@NonNull final String key,
+                          @NonNull final List<Locale> locales)
             throws NumberFormatException {
         if (rawData.containsKey(key)) {
-            return new Money(getDouble(context, key), getString(key + DBKey.CURRENCY_SUFFIX));
+            return new Money(getDouble(key, locales),
+                             getString(key + DBKey.CURRENCY_SUFFIX));
         } else {
             return null;
         }
@@ -591,9 +584,9 @@ public class DataManager
                                  @NonNull final Serializable value) {
         if (BuildConfig.DEBUG /* always */) {
             LoggerFactory.getLogger()
-                          .e(TAG, new Throwable("putSerializable"),
-                             "putSerializable|key=" + key
-                             + "|type=" + value.getClass().getCanonicalName());
+                         .e(TAG, new Throwable("putSerializable"),
+                            "putSerializable|key=" + key
+                            + "|type=" + value.getClass().getCanonicalName());
         }
         rawData.putSerializable(key, value);
     }

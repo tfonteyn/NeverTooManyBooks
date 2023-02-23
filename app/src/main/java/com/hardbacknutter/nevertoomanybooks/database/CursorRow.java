@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.os.Parcelable;
 
@@ -28,6 +27,8 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.ColumnNotPresentException;
@@ -147,7 +148,7 @@ public class CursorRow
     }
 
     /**
-     * @param context Current context
+     * @param locales to use for parsing
      * @param key     to get
      *
      * @return the double value of the column ({@code null} comes back as 0)
@@ -155,8 +156,8 @@ public class CursorRow
      * @throws ColumnNotPresentException if the column was not present.
      */
     @Override
-    public double getDouble(@NonNull final Context context,
-                            @NonNull final String key)
+    public double getDouble(@NonNull final String key,
+                            @NonNull final List<Locale> locales)
             throws ColumnNotPresentException {
 
         final int col = cursor.getColumnIndex(key);
@@ -170,7 +171,7 @@ public class CursorRow
     }
 
     /**
-     * @param context Current context
+     * @param locales to use for parsing
      * @param key     to get
      *
      * @return the double value of the column ({@code null} comes back as 0)
@@ -178,8 +179,8 @@ public class CursorRow
      * @throws ColumnNotPresentException if the column was not present.
      */
     @Override
-    public float getFloat(@NonNull final Context context,
-                          @NonNull final String key)
+    public float getFloat(@NonNull final String key,
+                          @NonNull final List<Locale> locales)
             throws ColumnNotPresentException {
 
         final int col = cursor.getColumnIndex(key);

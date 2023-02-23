@@ -209,6 +209,7 @@ public class SearchBookUpdatesFragment
             return;
         }
 
+        // Warn the user, AND abort.
         //noinspection ConstantConditions
         if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable(getContext())) {
             Snackbar.make(vb.getRoot(), R.string.error_network_please_connect,

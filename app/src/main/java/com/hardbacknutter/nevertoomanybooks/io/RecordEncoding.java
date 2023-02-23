@@ -36,6 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlRecordReader;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 
 /**
  * Detecting record encoding in {@link #getEncoding} is based purely on filename extension.
@@ -153,7 +154,7 @@ public enum RecordEncoding {
                 return Optional.of(new CsvRecordReader(context));
             case Xml:
                 //noinspection deprecation
-                return Optional.of(new XmlRecordReader(context));
+                return Optional.of(new XmlRecordReader(LocaleListUtils.asList(context)));
             case Cover:
                 // discourage creating a new CoverRecordReader for each cover.
                 throw new IllegalStateException("CoverRecordReader should be re-used");

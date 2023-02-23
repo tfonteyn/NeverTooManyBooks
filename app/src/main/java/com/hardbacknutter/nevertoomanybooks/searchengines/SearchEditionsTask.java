@@ -98,7 +98,7 @@ public class SearchEditionsTask
                     searchEngine.setCaller(this);
                     try {
                         // can we reach the site ?
-                        searchEngine.ping();
+                        searchEngine.ping(context);
 
                         isbnList.addAll(((SearchEngine.AlternativeEditions) searchEngine)
                                                 .searchAlternativeEditions(context, isbn));

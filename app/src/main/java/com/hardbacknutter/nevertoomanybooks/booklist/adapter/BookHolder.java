@@ -37,6 +37,7 @@ import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.FragmentActivity;
 
 import java.io.File;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -47,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.covers.Cover;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
@@ -56,8 +58,8 @@ import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfRowBookB
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
@@ -87,8 +89,6 @@ public class BookHolder
     private final Languages languages;
     private final int coverLongestSide;
     private final boolean imageCachingEnabled;
-    @NonNull
-    private final Locale userLocale;
     /** caching the book condition strings. */
     @NonNull
     private final String[] conditionDescriptions;
@@ -102,6 +102,22 @@ public class BookHolder
     private ImageViewLoader imageLoader;
     @Nullable
     private UseFields use;
+
+    @NonNull
+    private final List<Locale> locales;
+
+    /**
+     * Zoom the given cover.
+     *
+     * @param coverView passed in to allow for future expansion
+     */
+    private void onZoomCover(@NonNull final View coverView) {
+        final String uuid = (String) coverView.getTag(R.id.TAG_THUMBNAIL_UUID);
+        new Cover(uuid, 0).getPersistedFile().ifPresent(file -> {
+            final FragmentActivity activity = (FragmentActivity) coverView.getContext();
+            ZoomedImageDialogFragment.launch(activity.getSupportFragmentManager(), file);
+        });
+    }
 
     /**
      * Constructor.
@@ -122,8 +138,9 @@ public class BookHolder
         imageCachingEnabled = ImageUtils.isImageCachingEnabled();
         this.coverLongestSide = coverLongestSide;
 
+        locales = LocaleListUtils.asList(itemView.getContext());
+
         final Resources res = itemView.getContext().getResources();
-        userLocale = res.getConfiguration().getLocales().get(0);
         conditionDescriptions = res.getStringArray(R.array.conditions_book);
 
         languages = ServiceLocator.getInstance().getLanguages();
@@ -168,19 +185,6 @@ public class BookHolder
 
             set.applyTo(parentLayout);
         }
-    }
-
-    /**
-     * Zoom the given cover.
-     *
-     * @param coverView passed in to allow for future expansion
-     */
-    private void onZoomCover(@NonNull final View coverView) {
-        final String uuid = (String) coverView.getTag(R.id.TAG_THUMBNAIL_UUID);
-        new Cover(uuid, 0).getPersistedFile().ifPresent(file -> {
-            final FragmentActivity activity = (FragmentActivity) coverView.getContext();
-            ZoomedImageDialogFragment.launch(activity.getSupportFragmentManager(), file);
-        });
     }
 
     @Override
@@ -233,7 +237,7 @@ public class BookHolder
         }
 
         if (use.rating) {
-            final float rating = rowData.getFloat(itemView.getContext(), DBKey.RATING);
+            final float rating = rowData.getFloat(DBKey.RATING, locales);
             if (rating > 0) {
                 vb.rating.setRating(rating);
                 vb.rating.setVisibility(View.VISIBLE);
@@ -364,7 +368,7 @@ public class BookHolder
         String date = null;
         if (usePubDate) {
             final String dateStr = rowData.getString(DBKey.BOOK_PUBLICATION__DATE);
-            date = new PartialDate(dateStr).toDisplay(userLocale, dateStr);
+            date = new PartialDate(dateStr).toDisplay(locales.get(0), dateStr);
         }
 
         if (text != null && !text.isBlank() && date != null && !date.isBlank()) {

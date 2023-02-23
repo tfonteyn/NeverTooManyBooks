@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,13 +19,14 @@
  */
 package com.hardbacknutter.nevertoomanybooks.entities;
 
-import android.content.Context;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
@@ -81,24 +82,24 @@ public interface DataHolder {
     /**
      * Returns the value associated with the given key.
      *
-     * @param context Current context
      * @param key     Key of data object
+     * @param locales to use for parsing
      *
      * @return a double value
      */
-    double getDouble(@NonNull Context context,
-                     @NonNull String key);
+    double getDouble(@NonNull String key,
+                     @NonNull List<Locale> locales);
 
     /**
      * Returns the value associated with the given key.
      *
-     * @param context Current context
      * @param key     Key of data object
+     * @param locales to use for parsing
      *
      * @return a float value
      */
-    float getFloat(@NonNull Context context,
-                   @NonNull String key);
+    float getFloat(@NonNull String key,
+                   @NonNull List<Locale> locales);
 
     /**
      * Returns the value associated with the given key.

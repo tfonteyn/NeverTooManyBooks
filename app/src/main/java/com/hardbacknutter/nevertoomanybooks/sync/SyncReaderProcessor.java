@@ -56,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 
 /**
  * Handles importing data with each field controlled by a {@link SyncAction}.
@@ -228,6 +229,7 @@ public final class SyncReaderProcessor
         }
 
         final Locale bookLocale = localBook.getLocaleOrUserLocale(context);
+        final List<Locale> locales = LocaleListUtils.asList(context);
 
         // For each field, process it according the SyncAction set.
         fieldsWanted
@@ -244,7 +246,7 @@ public final class SyncReaderProcessor
                         switch (field.getAction()) {
                             case CopyIfBlank:
                                 // remove unneeded fields from the new data
-                                if (hasField(context, localBook, field.key)) {
+                                if (hasField(localBook, field.key, locales)) {
                                     remoteBook.remove(field.key);
                                 }
                                 break;
@@ -285,15 +287,15 @@ public final class SyncReaderProcessor
     /**
      * Check if we already have this field (with content) in the original data.
      *
-     * @param context   Current context
      * @param localBook to check
      * @param key       to test for
+     * @param locales   to use for parsing
      *
      * @return {@code true} if already present
      */
-    private boolean hasField(@NonNull final Context context,
-                             @NonNull final Book localBook,
-                             @NonNull final String key) {
+    private boolean hasField(@NonNull final Book localBook,
+                             @NonNull final String key,
+                             @NonNull final List<Locale> locales) {
         switch (key) {
             case Book.BKEY_AUTHOR_LIST:
             case Book.BKEY_SERIES_LIST:
@@ -306,7 +308,7 @@ public final class SyncReaderProcessor
                 break;
 
             default:
-                final Object o = localBook.get(context, key);
+                final Object o = localBook.get(key, locales);
                 if (o != null) {
                     final String value = o.toString().trim();
                     return !value.isEmpty() && !"0".equals(value);
@@ -331,9 +333,9 @@ public final class SyncReaderProcessor
                 // We're called in a loop, and the chance of an exception here is very low
                 // so let's log it, and quietly continue.
                 LoggerFactory.getLogger()
-                              .e(TAG, e, "processCoverImage|uuid="
-                                         + localBook.getString(DBKey.BOOK_UUID, null)
-                                         + "|cIdx=" + cIdx);
+                             .e(TAG, e, "processCoverImage|uuid="
+                                        + localBook.getString(DBKey.BOOK_UUID, null)
+                                        + "|cIdx=" + cIdx);
             }
         }
         remoteBook.remove(Book.BKEY_TMP_FILE_SPEC[cIdx]);

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 
 /**
  * Validator to apply a default String value to empty fields.
@@ -62,7 +63,7 @@ public class DefaultFieldValidator
                          @NonNull final String key,
                          @StringRes final int errorLabelResId) {
 
-        final Object value = dataManager.get(context, key);
+        final Object value = dataManager.get(key, LocaleListUtils.asList(context));
         if (value != null && value.toString().trim().isEmpty()) {
             dataManager.putString(key, defaultValue);
         }

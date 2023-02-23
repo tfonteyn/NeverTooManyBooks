@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -99,8 +99,9 @@ public class EditLanguageDialogFragment
 
         final Locale userLocale = getResources().getConfiguration().getLocales().get(0);
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        final String iso = serviceLocator.getLanguages()
-                                         .getISO3FromDisplayName(userLocale, currentText);
+        //noinspection ConstantConditions
+        final String iso = serviceLocator
+                .getLanguages().getISO3FromDisplayName(getContext(), userLocale, currentText);
 
         serviceLocator.getLanguageDao().rename(originalText, iso);
     }

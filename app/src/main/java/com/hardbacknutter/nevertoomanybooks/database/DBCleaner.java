@@ -85,7 +85,7 @@ public class DBCleaner {
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
         // do a mass update of any languages not yet converted to ISO 639-2 codes
-        languages(userLocale);
+        languages(context, userLocale);
 
         // make sure there are no 'T' separators in datetime fields
         datetimeFormat();
@@ -116,7 +116,8 @@ public class DBCleaner {
      * Do a bulk update of any languages not yet converted to ISO codes.
      * Special entries are left untouched; example "Dutch+French" a bilingual edition.
      */
-    public void languages(@NonNull final Locale userLocale) {
+    public void languages(@NonNull final Context context,
+                          @NonNull final Locale userLocale) {
 
         final LanguageDao languageDao = serviceLocator.getLanguageDao();
         final Languages langHelper = serviceLocator.getLanguages();
@@ -127,7 +128,7 @@ public class DBCleaner {
 
                 if (lang.length() > 3) {
                     // It's likely a 'display' name of a language.
-                    iso = langHelper.getISO3FromDisplayName(userLocale, lang);
+                    iso = langHelper.getISO3FromDisplayName(context, userLocale, lang);
                 } else {
                     // It's almost certainly a language code
                     iso = langHelper.getISO3FromCode(lang);

@@ -121,8 +121,7 @@ public abstract class SearchBookBaseFragment
 
         // Warn the user, but don't abort.
         //noinspection ConstantConditions
-        if (!ServiceLocator.getInstance().getNetworkChecker()
-                           .isNetworkAvailable(getContext())) {
+        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable(getContext())) {
             Snackbar.make(view, R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();
         }

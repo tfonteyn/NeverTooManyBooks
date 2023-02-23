@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.fields.endicon.ExtClearTextEndIconDelegate;
 import com.hardbacknutter.nevertoomanybooks.fields.endicon.ExtEndIconDelegate;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 /**
@@ -116,7 +117,7 @@ public abstract class BaseTextField<T, V extends TextView>
     @Override
     public void setInitialValue(@NonNull final Context context,
                                 @NonNull final DataManager source) {
-        final Object obj = source.get(context, fieldKey);
+        final Object obj = source.get(fieldKey, LocaleListUtils.asList(context));
         if (obj != null) {
             //noinspection unchecked
             initialValue = (T) obj;

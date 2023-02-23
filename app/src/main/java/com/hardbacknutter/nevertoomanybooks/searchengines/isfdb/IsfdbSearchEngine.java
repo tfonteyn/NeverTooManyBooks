@@ -781,17 +781,17 @@ public class IsfdbSearchEngine
                       @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
-        final DateParser dateParser = new FullDateParser(
-                ServiceLocator.getInstance().getSystemLocale(),
-                LocaleListUtils.asList(context));
+        final List<Locale> locales = LocaleListUtils.asList(context);
+        final Locale systemLocale = ServiceLocator.getInstance().getSystemLocale();
+        final DateParser dateParser = new FullDateParser(systemLocale, locales);
 
         final Elements allContentBoxes = document.select(CSS_Q_DIV_CONTENTBOX);
         // sanity check
         if (allContentBoxes.isEmpty()) {
             if (BuildConfig.DEBUG /* always */) {
                 LoggerFactory.getLogger()
-                              .d(TAG, "parseDoc|no contentbox found",
-                                 "document.location()=" + document.location());
+                             .d(TAG, "parseDoc|no contentbox found",
+                                "document.location()=" + document.location());
             }
             return;
         }
@@ -931,7 +931,7 @@ public class IsfdbSearchEngine
                                 tmpString = nextElementSibling.ownText();
                                 if (!tmpString.isEmpty()) {
                                     final List<Locale> localeList =
-                                            LocaleListUtils.asList(context);
+                                            locales;
                                     localeList.add(0, getLocale(context));
                                     final Money money = new Money(localeList, tmpString);
                                     if (money.getCurrencyCode() != null) {
@@ -1219,7 +1219,7 @@ public class IsfdbSearchEngine
                         lang = ServiceLocator
                                 .getInstance()
                                 .getLanguages()
-                                .getISO3FromDisplayName(getLocale(context), langStr);
+                                .getISO3FromDisplayName(context, getLocale(context), langStr);
                     }
                 }
             }

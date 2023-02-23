@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 
 /**
  * RatingBar.
@@ -69,7 +70,7 @@ public class RatingBarField
     @Override
     public void setInitialValue(@NonNull final Context context,
                                 @NonNull final DataManager source) {
-        initialValue = source.getFloat(context, fieldKey);
+        initialValue = source.getFloat(fieldKey, LocaleListUtils.asList(context));
         setValue(initialValue);
     }
 
