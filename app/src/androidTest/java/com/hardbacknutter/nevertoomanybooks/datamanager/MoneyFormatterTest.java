@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,14 +21,15 @@ package com.hardbacknutter.nevertoomanybooks.datamanager;
 
 import android.content.Context;
 
+import java.math.BigDecimal;
 import java.util.Locale;
-
-import org.junit.Test;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.MoneyFormatter;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
+
+import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
@@ -38,26 +39,35 @@ public class MoneyFormatterTest {
     public void formatUS() {
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
         final FieldFormatter<Money> f = new MoneyFormatter(Locale.US);
-        assertEquals("$1,234.50", f.format(context, new Money(1234.50d, Money.USD)));
-        assertEquals("£1,234.50", f.format(context, new Money(1234.50d, Money.GBP)));
-        assertEquals("€1,234.50", f.format(context, new Money(1234.50d, Money.EUR)));
+        assertEquals("$1,234.50", f.format(context, new Money(BigDecimal.valueOf(1234.50d),
+                                                              Money.USD)));
+        assertEquals("£1,234.50", f.format(context, new Money(BigDecimal.valueOf(1234.50d),
+                                                              Money.GBP)));
+        assertEquals("€1,234.50", f.format(context, new Money(BigDecimal.valueOf(1234.50d),
+                                                              Money.EUR)));
     }
 
     @Test
     public void formatUK() {
         final FieldFormatter<Money> f = new MoneyFormatter(Locale.UK);
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
-        assertEquals("US$1,234.50", f.format(context, new Money(1234.50d, Money.USD)));
-        assertEquals("£1,234.50", f.format(context, new Money(1234.50d, Money.GBP)));
-        assertEquals("€1,234.50", f.format(context, new Money(1234.50d, Money.EUR)));
+        assertEquals("US$1,234.50", f.format(context, new Money(BigDecimal.valueOf(1234.50d),
+                                                                Money.USD)));
+        assertEquals("£1,234.50", f.format(context, new Money(BigDecimal.valueOf(1234.50d),
+                                                              Money.GBP)));
+        assertEquals("€1,234.50", f.format(context, new Money(BigDecimal.valueOf(1234.50d),
+                                                              Money.EUR)));
     }
 
     @Test
     public void formatGERMANY() {
         final FieldFormatter<Money> f = new MoneyFormatter(Locale.GERMANY);
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
-        assertEquals("1.234,50 $", f.format(context, new Money(1234.50d, Money.USD)));
-        assertEquals("1.234,50 £", f.format(context, new Money(1234.50d, Money.GBP)));
-        assertEquals("1.234,50 €", f.format(context, new Money(1234.50d, Money.EUR)));
+        assertEquals("1.234,50 $", f.format(context, new Money(BigDecimal.valueOf(1234.50d),
+                                                               Money.USD)));
+        assertEquals("1.234,50 £", f.format(context, new Money(BigDecimal.valueOf(1234.50d),
+                                                               Money.GBP)));
+        assertEquals("1.234,50 €", f.format(context, new Money(BigDecimal.valueOf(1234.50d),
+                                                               Money.EUR)));
     }
 }
