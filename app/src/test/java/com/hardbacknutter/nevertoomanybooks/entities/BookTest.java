@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.entities;
 
 import androidx.annotation.NonNull;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
 
@@ -48,7 +49,7 @@ class BookTest
         setLocale(Locale.US);
 
         book.putString(DBKey.LANGUAGE, "eng");
-        book.putMoney(DBKey.PRICE_LISTED, new Money(1.23d, "USD"));
+        book.putMoney(DBKey.PRICE_LISTED, new Money(BigDecimal.valueOf(1.23d), "USD"));
 
         final BookDaoHelper bdh = new BookDaoHelper(context, book, true);
         bdh.processPrice(DBKey.PRICE_LISTED);
@@ -64,7 +65,7 @@ class BookTest
         setLocale(Locale.US);
 
         book.putString(DBKey.LANGUAGE, "eng");
-        book.putMoney(DBKey.PRICE_LISTED, new Money(0d, ""));
+        book.putMoney(DBKey.PRICE_LISTED, new Money(BigDecimal.valueOf(0d), ""));
 
         book.putDouble(DBKey.PRICE_PAID, 456.789d);
         // no PRICE_PAID_CURRENCY
