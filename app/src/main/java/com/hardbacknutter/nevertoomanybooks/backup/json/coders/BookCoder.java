@@ -173,8 +173,9 @@ public class BookCoder
             }
 
         } else if (element instanceof Parcelable) {
-            // skip, 2021-02-13: the only one in use for now is the Calibre Library,
-            // which is already handled - see above.
+            // skip, 2023-02-23: the only ones in use for now are
+            // the Calibre Library, and Money
+            // which are already handled - see above.
 
         } else if (element instanceof Serializable) {
             throw new IllegalArgumentException("Serializable not implemented for: " + element);
