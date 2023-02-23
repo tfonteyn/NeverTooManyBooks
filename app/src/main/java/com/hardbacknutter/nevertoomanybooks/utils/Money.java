@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -86,6 +87,55 @@ public class Money
             return new Money[size];
         }
     };
+
+    private static final Map<String, Double> EUROS = Map.ofEntries(
+            // Austria
+            Map.entry("ATS", 13.7603d),
+            // Belgium
+            Map.entry("BEF", 40.3399d),
+            // Luxembourg
+            Map.entry("LUF", 40.3399d),
+            // Croatia
+            Map.entry("HRK", 7.53450d),
+            // Cyprus
+            Map.entry("CYP", 0.585274d),
+            // Estonia
+            Map.entry("EEK", 15.6466d),
+            // Finland
+            Map.entry("FIM", 5.94573d),
+            // France
+            Map.entry("FRF", 6.55957d),
+            // Monaco
+            Map.entry("MCF", 6.55957d),
+            // Germany
+            Map.entry("DEM", 1.95583d),
+            // Greece
+            Map.entry("GRD", 340.75d),
+            // Ireland
+            Map.entry("IEP", 0.787564d),
+            // Italy
+            Map.entry("ITL", 1936.27d),
+            // San Marino
+            Map.entry("SML", 1936.27d),
+            // Vatican City
+            Map.entry("VAL", 1936.27d),
+            // Latvia
+            Map.entry("LVL", 0.702804d),
+            // Lithuania
+            Map.entry("LTL", 3.45280d),
+            // Malta
+            Map.entry("MTL", 0.429300d),
+            // Netherlands
+            Map.entry("NLD", 2.20371d),
+            // Portugal
+            Map.entry("PTE", 200.482d),
+            // Slovakia
+            Map.entry("SKK", 30.1260d),
+            // Slovenia
+            Map.entry("SIT", 239.640d),
+            // Spain
+            Map.entry("ESP", 166.386d)
+    );
 
     /** For prefixed currencies, split on first digit, but leave it in the second part. */
     private static final Pattern CURRENCY_AS_PREFIX_PATTERN = Pattern.compile("(?=\\d)");
@@ -288,35 +338,9 @@ public class Money
 
         // let's see if this was UK shillings/pence
         matcher = SHILLING_PENCE_PATTERN.matcher(pc);
-        if (matcher.find()) {
-            try {
-                int shillings = 0;
-                int pence = 0;
-                String tmp;
-
-                tmp = matcher.group(1);
-                if (tmp != null && !tmp.isEmpty() && !"-".equals(tmp)) {
-                    shillings = Integer.parseInt(tmp);
-                }
-                tmp = matcher.group(2);
-                if (tmp != null && !tmp.isEmpty() && !"-".equals(tmp)) {
-                    pence = Integer.parseInt(tmp);
-                }
-
-                // the British pound was made up of 20 shillings, each of which was
-                // made up of 12 pence, a total of 240 pence. Madness...
-                final double d = ((shillings * 12) + pence) / 240d;
-                value = BigDecimal.valueOf(d);
-                currency = Currency.getInstance(GBP);
-                return true;
-
-            } catch (@NonNull final NumberFormatException ignore) {
-                // ignore
-            }
-        }
-
-        return false;
+        return matcher.find() && parseBritishPreDecimal(matcher);
     }
+
 
     private boolean parse(@NonNull final List<Locale> localeList,
                           @Nullable final String currencyStr,
@@ -347,6 +371,33 @@ public class Money
             }
         }
 
+        return false;
+    }
+
+    private boolean parseBritishPreDecimal(@NonNull final MatchResult matcher) {
+        try {
+            int shillings = 0;
+            int pence = 0;
+            String tmp;
+
+            tmp = matcher.group(1);
+            if (tmp != null && !tmp.isEmpty() && !"-".equals(tmp)) {
+                shillings = Integer.parseInt(tmp);
+            }
+            tmp = matcher.group(2);
+            if (tmp != null && !tmp.isEmpty() && !"-".equals(tmp)) {
+                pence = Integer.parseInt(tmp);
+            }
+
+            // the British pound was made up of 20 shillings, each of which was
+            // made up of 12 pence, a total of 240 pence. Madness...
+            value = BigDecimal.valueOf(((shillings * 12) + pence) / 240d);
+            currency = Currency.getInstance(GBP);
+            return true;
+
+        } catch (@NonNull final NumberFormatException ignore) {
+            // ignore
+        }
         return false;
     }
 
@@ -460,93 +511,17 @@ public class Money
             return new Money(value, EUR);
         }
 
-        switch (currency.getCurrencyCode()) {
-            case "EUR":
-                return new Money(value, EUR);
-
-            // Austria
-            case "ATS":
-                return new Money(value.divide(BigDecimal.valueOf(13.7603d),
-                                              RoundingMode.HALF_UP), EUR);
-            // Belgium + Luxembourg
-            case "BEF":
-            case "LUF":
-                return new Money(value.divide(BigDecimal.valueOf(40.3399d),
-                                              RoundingMode.HALF_UP), EUR);
-            // Croatia
-            case "HRK":
-                return new Money(value.divide(BigDecimal.valueOf(7.53450d),
-                                              RoundingMode.HALF_UP), EUR);
-            // Cyprus
-            case "CYP":
-                return new Money(value.divide(BigDecimal.valueOf(0.585274d),
-                                              RoundingMode.HALF_UP), EUR);
-            // Estonia
-            case "EEK":
-                return new Money(value.divide(BigDecimal.valueOf(15.6466d),
-                                              RoundingMode.HALF_UP), EUR);
-            // Finland
-            case "FIM":
-                return new Money(value.divide(BigDecimal.valueOf(5.94573d),
-                                              RoundingMode.HALF_UP), EUR);
-            // France + Monaco
-            case "FRF":
-            case "MCF":
-                return new Money(value.divide(BigDecimal.valueOf(6.55957d),
-                                              RoundingMode.HALF_UP), EUR);
-            // Germany
-            case "DEM":
-                return new Money(value.divide(BigDecimal.valueOf(1.95583d),
-                                              RoundingMode.HALF_UP), EUR);
-            // Greece
-            case "GRD":
-                return new Money(value.divide(BigDecimal.valueOf(340.75d),
-                                              RoundingMode.HALF_UP), EUR);
-            // Ireland
-            case "IEP":
-                return new Money(value.divide(BigDecimal.valueOf(0.787564d),
-                                              RoundingMode.HALF_UP), EUR);
-            // Italy + San Marino + Vatican City
-            case "ITL":
-            case "SML":
-            case "VAL":
-                return new Money(value.divide(BigDecimal.valueOf(1936.27d),
-                                              RoundingMode.HALF_UP), EUR);
-            // Latvia
-            case "LVL":
-                return new Money(value.divide(BigDecimal.valueOf(0.702804d),
-                                              RoundingMode.HALF_UP), EUR);
-            // Lithuania
-            case "LTL":
-                return new Money(value.divide(BigDecimal.valueOf(3.45280d),
-                                              RoundingMode.HALF_UP), EUR);
-            // Malta
-            case "MTL":
-                return new Money(value.divide(BigDecimal.valueOf(0.429300d),
-                                              RoundingMode.HALF_UP), EUR);
-            // Netherlands
-            case "NLD":
-                return new Money(value.divide(BigDecimal.valueOf(2.20371d),
-                                              RoundingMode.HALF_UP), EUR);
-            // Portugal
-            case "PTE":
-                return new Money(value.divide(BigDecimal.valueOf(200.482d),
-                                              RoundingMode.HALF_UP), EUR);
-            // Slovakia
-            case "SKK":
-                return new Money(value.divide(BigDecimal.valueOf(30.1260d),
-                                              RoundingMode.HALF_UP), EUR);
-            // Slovenia
-            case "SIT":
-                return new Money(value.divide(BigDecimal.valueOf(239.640d),
-                                              RoundingMode.HALF_UP), EUR);
-            // Spain
-            case "ESP":
-                return new Money(value.divide(BigDecimal.valueOf(166.386d),
-                                              RoundingMode.HALF_UP), EUR);
-            default:
-                return new Money(value, currency);
+        if (EUR.equals(currency.getCurrencyCode())) {
+            return new Money(value, EUR);
         }
+
+        final Double rate = EUROS.get(currency.getCurrencyCode());
+        if (rate == null) {
+            return new Money(value, currency);
+        }
+
+        return new Money(value.divide(BigDecimal.valueOf(rate),
+                                      RoundingMode.HALF_UP), EUR);
     }
 
     @Override
