@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.googlebooks;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -30,13 +31,13 @@ import java.util.regex.Pattern;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -314,7 +315,8 @@ class GoogleBooksEntryHandler
 
                 if (amount >= 0) {
                     // parsing was ok, store it
-                    book.putMoney(DBKey.PRICE_LISTED, new Money(amount, currencyCode));
+                    book.putMoney(DBKey.PRICE_LISTED, new Money(BigDecimal.valueOf(amount),
+                                                                currencyCode));
                 } else {
                     // Parsing the amount failed, store as-is
                     // This should normally never happen... flw
