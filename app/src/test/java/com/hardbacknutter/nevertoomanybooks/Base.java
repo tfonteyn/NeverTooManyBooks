@@ -64,7 +64,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 /**
@@ -85,6 +84,9 @@ public class Base {
     protected List<Locale> locales;
     @Mock
     private LocaleList localeList;
+
+    @Mock
+    private AppLocale appLocale;
 
     protected Book book;
     protected Context context;
@@ -168,7 +170,12 @@ public class Base {
 
         when(resources.getConfiguration()).thenReturn(configuration);
         when(configuration.getLocales()).thenReturn(localeList);
-        doNothing().when(configuration).setLocale(any(Locale.class));
+        // we CANNOT mock the setters - as I understand due to Configuration.class being final
+        // TODO: look into mocking Configuration.class
+//        doNothing().when(configuration).setLocales(any(LocaleList.class));
+//        doNothing().when(configuration).setLocale(any(Locale.class));
+
+        when(appLocale.apply(any(Context.class))).thenReturn(context);
 
         when(localeList.get(0)).thenAnswer((Answer<Locale>) invocation -> locale0);
 
