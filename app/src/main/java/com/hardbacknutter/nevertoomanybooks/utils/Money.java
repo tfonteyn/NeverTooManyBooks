@@ -48,10 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
  * In practice we're often forced to use {@link #doubleValue()} due to limitations
  * in Android classes and/or the need to convert to/from external source.
  * <p>
- * FIXME: 2023-01-01: after recent(?) updates/changes (e.g. use Book throughout
- *  instead of plain Bundle) we should be able to store/get Money directly.
- *
- * <p>
  * Casting involves rounding to int/long by adding 0.5 to positive values.
  * 2.3 + 0.5 -> 2
  * 2.7 + 0.5 -> 3.
@@ -59,12 +55,19 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
  * -2.3 -> -2
  * -2.7 -> -2
  * <p>
- * Casting to a float is with loss of precision.
- * <p>
- * ENHANCE: currency fields should not use float/double.
+ * ENHANCE: currency fields should not use double.
  * <a href="https://javamoney.github.io">JavaMoney</a>
  * - a wonderful library, might have issues on Android though.
  * <a href="https://www.joda.org/joda-money/">Joda Money</a> not tried, but looks small and neat.
+ *
+ * <p>
+ * <strong>Supports UK (GBP), pre-decimal 1971:</strong>
+ * Shilling/Pence as subdivisions of the pound.
+ * UK Shilling was written as "1/-", for example:
+ * three shillings and six pence => 3/6
+ * It's used on the ISFDB web site. We convert it to GBP.
+ * <a href="https://en.wikipedia.org/wiki/Decimal_Day">Decimal_Day</a>
+ * <p>
  */
 public class Money
         extends Number
