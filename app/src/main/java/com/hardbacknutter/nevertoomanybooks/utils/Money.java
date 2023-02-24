@@ -317,26 +317,34 @@ public class Money
         return 0;
     }
 
-    public boolean parse(@NonNull final List<Locale> localeList,
-                         @NonNull final CharSequence priceWithCurrency) {
+    /**
+     * Parse a string containing e.g. "Bf459", "$9.99", "66 EUR".
+     *
+     * @param locales           to use for parsing
+     * @param valueWithCurrency to parse
+     *
+     * @return {@code true} if both value and currency were parsed successfully
+     */
+    public boolean parse(@NonNull final List<Locale> locales,
+                         @NonNull final CharSequence valueWithCurrency) {
 
         // website html cleaning
-        final String pc = NBSP_LITERAL.matcher(priceWithCurrency).replaceAll(" ");
+        final String vwc = NBSP_LITERAL.matcher(valueWithCurrency).replaceAll(" ");
 
-        final String[] data = CURRENCY_AS_PREFIX_PATTERN.split(pc, 2);
-        if (data.length > 1 && parse(localeList, data[0], data[1])) {
+        final String[] data = CURRENCY_AS_PREFIX_PATTERN.split(vwc, 2);
+        if (data.length > 1 && parse(locales, data[0], data[1])) {
             return true;
         }
 
         Matcher matcher;
 
-        matcher = CURRENCY_AS_SUFFIX_PATTERN.matcher(pc);
-        if (matcher.find() && parse(localeList, matcher.group(2), matcher.group(1))) {
+        matcher = CURRENCY_AS_SUFFIX_PATTERN.matcher(vwc);
+        if (matcher.find() && parse(locales, matcher.group(2), matcher.group(1))) {
             return true;
         }
 
         // let's see if this was UK shillings/pence
-        matcher = SHILLING_PENCE_PATTERN.matcher(pc);
+        matcher = SHILLING_PENCE_PATTERN.matcher(vwc);
         return matcher.find() && parseBritishPreDecimal(matcher);
     }
 
