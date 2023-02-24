@@ -216,7 +216,7 @@ public class Book
      * Constructor.
      */
     public Book() {
-        super(ServiceLocator.newBundle());
+        super(ServiceLocator.getInstance().newBundle());
         stage = new EntityStage();
         validatorConfig = new ValidatorConfig();
     }

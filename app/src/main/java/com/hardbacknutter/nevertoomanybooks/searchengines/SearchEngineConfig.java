@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**
  * Configuration data for a {@link SearchEngine}.
@@ -108,11 +109,12 @@ public final class SearchEngineConfig {
      *
      * @param context <strong>Application</strong> or <strong>test</strong> context.
      */
-    public static void createRegistry(@NonNull final Context context) {
+    public static void createRegistry(@NonNull final Context context,
+                                      @NonNull final Languages languages) {
         synchronized (SearchEngineConfig.class) {
-            EngineId.registerSearchEngines();
+            EngineId.createEngineConfigurations();
             Arrays.stream(Site.Type.values())
-                  .forEach(type -> type.createList(context));
+                  .forEach(type -> type.createList(context, languages));
         }
     }
 

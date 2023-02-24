@@ -29,6 +29,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
@@ -48,9 +49,10 @@ public class CalibreLibraryCoder
     @NonNull
     private final JsonCoder<Bookshelf> bookshelfCoder;
 
-    public CalibreLibraryCoder(@NonNull final Context context) {
+    public CalibreLibraryCoder(@NonNull final Context context,
+                               @NonNull final Style defaultStyle) {
         this.context = context;
-        bookshelfCoder = new BookshelfCoder(context);
+        bookshelfCoder = new BookshelfCoder(context, defaultStyle);
     }
 
     @NonNull

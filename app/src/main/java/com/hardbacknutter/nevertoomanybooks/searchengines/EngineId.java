@@ -59,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.lastdodo.LastDodoSearc
 import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryThingSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibrarySearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**
  * Manages the setup of {@link SearchEngine}'s.
@@ -85,7 +86,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSea
  *         It will be used in preferences, database settings,...
  *     </li>
  *
- *     <li>Configure the engine in the method {@link #registerSearchEngines()},
+ *     <li>Configure the engine in the method {@link #createEngineConfigurations()},
  *         using {@link #createConfiguration()}
  *         and {@link SearchEngineConfig.Builder} methods.
  *     </li>
@@ -268,9 +269,9 @@ public enum EngineId
     }
 
     /**
-     * Register all {@link SearchEngine} configurations; called during startup.
+     * Create all {@link SearchEngine} configurations; called during startup.
      */
-    static void registerSearchEngines() {
+    static void createEngineConfigurations() {
         // The engine order here is not important
 
         // ENHANCE: support ASIN and the ViewBookByExternalId interface
@@ -380,14 +381,13 @@ public enum EngineId
      * @param type    the type of Site list
      */
     static void registerSites(@NonNull final Context context,
-                              @NonNull final Site.Type type) {
+                              @NonNull final Site.Type type,
+                              @NonNull final Languages languages) {
 
         // Certain sites should only be enabled by default if the device or user set language
         // matches the site language.
-        final boolean activateIfDutch = ServiceLocator.getInstance().getLanguages()
-                                                      .isUserLanguage(context, "nld");
-        final boolean activateIfFrench = ServiceLocator.getInstance().getLanguages()
-                                                       .isUserLanguage(context, "fra");
+        final boolean activateIfDutch = languages.isUserLanguage(context, "nld");
+        final boolean activateIfFrench = languages.isUserLanguage(context, "fra");
 
         //NEWTHINGS: adding a new search engine: add to the list type as needed.
 

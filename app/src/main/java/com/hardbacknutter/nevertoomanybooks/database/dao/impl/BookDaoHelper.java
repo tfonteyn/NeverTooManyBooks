@@ -74,7 +74,7 @@ public class BookDaoHelper {
     private final boolean isNew;
 
     @NonNull
-    private final List<Locale> localeList;
+    private final List<Locale> locales;
     @NonNull
     private final Locale bookLocale;
 
@@ -88,8 +88,8 @@ public class BookDaoHelper {
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         bookLocale = this.book.getAndUpdateLocale(context, true).orElse(userLocale);
 
-        localeList = LocaleListUtils.asList(context);
-        localeList.add(0, bookLocale);
+        locales = LocaleListUtils.asList(context);
+        locales.add(0, bookLocale);
     }
 
     /**
@@ -145,7 +145,7 @@ public class BookDaoHelper {
             final String currencyKey = key + DBKey.CURRENCY_SUFFIX;
             if (book.contains(key) && !book.contains(currencyKey)) {
                 // Handle a price without a currency.
-                final Money money = new Money(localeList, book.getString(key));
+                final Money money = new Money(locales, book.getString(key));
                 // If the currency could be decoded, store the Money back into the book
                 if (money.isValid()) {
                     book.putMoney(key, money);
@@ -154,7 +154,7 @@ public class BookDaoHelper {
                 // else just leave the original text in the book
             }
 
-            // Either way, make sure currency strings are uppercase
+            // Either way, make sure any currency strings present are uppercase
             if (book.contains(currencyKey)) {
                 book.putString(currencyKey, book.getString(currencyKey)
                                                 .toUpperCase(Locale.ENGLISH));
@@ -344,7 +344,7 @@ public class BookDaoHelper {
     ContentValues filterValues(@NonNull final Context context,
                                @NonNull final TableInfo tableInfo) {
 
-        return filterValues(context, tableInfo, book, localeList);
+        return filterValues(context, tableInfo, book, locales);
     }
 
     /**

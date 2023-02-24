@@ -43,11 +43,13 @@ public class BookshelfCoder
     /**
      * Constructor.
      *
-     * @param context Current context
+     * @param context      Current context
+     * @param defaultStyle
      */
-    public BookshelfCoder(@NonNull final Context context) {
+    public BookshelfCoder(@NonNull final Context context,
+                          @NonNull final Style defaultStyle) {
         this.context = context;
-        defaultStyle = ServiceLocator.getInstance().getStyles().getDefault(context);
+        this.defaultStyle = defaultStyle;
     }
 
     @Override

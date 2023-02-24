@@ -49,12 +49,14 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditSearchOrderBinding;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
@@ -251,9 +253,10 @@ public class SearchOrderFragment
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
             if (menuItem.getItemId() == R.id.MENU_RESET) {
+                final Languages languages = ServiceLocator.getInstance().getLanguages();
                 // Reset the global/original list for the type.
                 //noinspection ConstantConditions
-                type.resetList(getContext());
+                type.resetList(getContext(), languages);
                 // and replace the content of the local list with the (new) defaults.
                 siteList.clear();
                 siteList.addAll(type.getSites());

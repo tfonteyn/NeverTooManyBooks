@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminFragment;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**
  * Encapsulates an {@link EngineId} + the {@link Type} of the site and its active state.
@@ -252,9 +253,10 @@ public final class Site
          *
          * @param context Current context
          */
-        void createList(@NonNull final Context context) {
+        void createList(@NonNull final Context context,
+                        @NonNull final Languages languages) {
             siteList.clear();
-            EngineId.registerSites(context, this);
+            EngineId.registerSites(context, this, languages);
 
             // apply stored user preferences to the list
             loadPrefs(context);
@@ -265,9 +267,10 @@ public final class Site
          *
          * @param context Current context
          */
-        public void resetList(@NonNull final Context context) {
+        public void resetList(@NonNull final Context context,
+                              @NonNull final Languages languages) {
             siteList.clear();
-            EngineId.registerSites(context, this);
+            EngineId.registerSites(context, this, languages);
 
             // overwrite stored user preferences with the defaults from the list
             savePrefs(context);

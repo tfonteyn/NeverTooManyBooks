@@ -46,7 +46,7 @@ public final class SyncReaderHelper
     @NonNull
     private final SyncServer syncServer;
     /** Extra arguments for specific readers. The reader must define them. */
-    private final Bundle extraArgs = ServiceLocator.newBundle();
+    private final Bundle extraArgs = ServiceLocator.getInstance().newBundle();
     /** <strong>How</strong> to handle individual fields. Can be {@code null}. aka unused. */
     @Nullable
     private SyncReaderProcessor syncProcessor;

@@ -50,16 +50,19 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CertificateCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.StyleCoder;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
+import com.hardbacknutter.nevertoomanybooks.core.database.UncheckedDaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreCustomFieldDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
@@ -68,8 +71,6 @@ import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.database.UncheckedDaoWriteException;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -325,7 +326,9 @@ public class JsonRecordReader
         final JSONArray jsonRoot = root.optJSONArray(RecordType.Bookshelves.getName());
         if (jsonRoot != null) {
             final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
-            new BookshelfCoder(context)
+            final Style defaultStyle = ServiceLocator.getInstance().getStyles()
+                                                     .getDefault(context);
+            new BookshelfCoder(context, defaultStyle)
                     .decode(jsonRoot)
                     .forEach(bookshelf -> {
                         bookshelfDao.fixId(bookshelf);
@@ -364,8 +367,10 @@ public class JsonRecordReader
         if (jsonRoot != null) {
             final CalibreLibraryDao libraryDao =
                     ServiceLocator.getInstance().getCalibreLibraryDao();
+            final Style defaultStyle = ServiceLocator.getInstance().getStyles()
+                                                     .getDefault(context);
 
-            new CalibreLibraryCoder(context)
+            new CalibreLibraryCoder(context, defaultStyle)
                     .decode(jsonRoot)
                     .forEach(library -> {
                         libraryDao.fixId(library);
@@ -445,10 +450,12 @@ public class JsonRecordReader
         }
 
         final SynchronizedDb db = ServiceLocator.getInstance().getDb();
+        final Style defaultStyle = ServiceLocator.getInstance().getStyles()
+                                                 .getDefault(context);
 
         Synchronizer.SyncLock txLock = null;
 
-        final JsonCoder<Book> bookCoder = new BookCoder(context);
+        final JsonCoder<Book> bookCoder = new BookCoder(context, defaultStyle);
 
         for (int i = 0; i < books.length() && !progressListener.isCancelled(); i++) {
 

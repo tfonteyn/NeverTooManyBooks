@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -81,7 +81,8 @@ public class ArchiveMetaData
                                          final int version,
                                          @NonNull final ExportResults result) {
 
-        final ArchiveMetaData metaData = new ArchiveMetaData(ServiceLocator.newBundle());
+        final ArchiveMetaData metaData = new ArchiveMetaData(
+                ServiceLocator.getInstance().newBundle());
 
         final Bundle data = metaData.getData();
 

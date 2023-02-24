@@ -362,7 +362,7 @@ public class BookTest {
         final BookDao bookDao = serviceLocator.getBookDao();
         final long bookId = prepareAndInsertBook(context, bookDao);
         final ShowBookDetailsViewModel vm = new ShowBookDetailsViewModel();
-        final Bundle args = ServiceLocator.newBundle();
+        final Bundle args = ServiceLocator.getInstance().newBundle();
         args.putLong(DBKey.FK_BOOK, bookId);
 
         // FIXME: FAILS with Cannot invoke setValue on a background thread

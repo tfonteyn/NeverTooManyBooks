@@ -194,22 +194,15 @@ public final class ServiceLocator {
         synchronized (ServiceLocator.class) {
             if (sInstance == null) {
                 sInstance = new ServiceLocator(context);
-
-                SearchEngineConfig.createRegistry(context);
             }
         }
     }
 
-    /**
-     * Public constructor for testing and recreation when testing.
-     *
-     * @param context        <strong>Application</strong> or <strong>test</strong> context.
-     * @param bundleSupplier to provide new (mock) Bundle instances.
-     */
-    public static void create(@NonNull final Context context,
-                              @NonNull final Supplier<Bundle> bundleSupplier) {
-        create(context);
-        sInstance.bundleSupplier = bundleSupplier;
+    @VisibleForTesting
+    public static void create(@NonNull final ServiceLocator serviceLocator) {
+        synchronized (ServiceLocator.class) {
+            sInstance = serviceLocator;
+        }
     }
 
     @NonNull
@@ -229,16 +222,14 @@ public final class ServiceLocator {
     }
 
     /**
-     * Create a "new Bundle()" using a supplier.
-     * This allows us to inject mock-bundle's when running a JUnit test.
-     * <p>
-     * Note: static as we're using this very frequently.
+     * Create a "new Bundle()" .
+     * This allows us to return mock-bundle's when running a JUnit test.
      *
      * @return bundle
      */
     @NonNull
-    public static Bundle newBundle() {
-        return sInstance.bundleSupplier.get();
+    public Bundle newBundle() {
+        return new Bundle();
     }
 
     /**
@@ -248,37 +239,24 @@ public final class ServiceLocator {
      */
     @NonNull
     public Locale getSystemLocale() {
-        if (systemLocaleSupplier == null) {
-            return Resources.getSystem().getConfiguration().getLocales().get(0);
-        } else {
-            return systemLocaleSupplier.get().get(0);
-        }
+        return Resources.getSystem().getConfiguration().getLocales().get(0);
     }
 
     @NonNull
     public List<Locale> getSystemLocales() {
-        if (systemLocaleSupplier == null) {
-            // Using SYSTEM Locales versus USER Locales, see:
-            // https://medium.com/@hectorricardomendez/how-to-get-the-current-locale-in-android-fc12d8be6242
-            // Key-Takeaway #5: To get the list of preferred locales of the device (as defined in
-            // the Settings), call Resources.getSystem().getConfiguration().getLocales()
-            //
-            // although, at this point, it seems LocaleList.getDefault() DOES return
-            // the correct list, so we could use that. It's not clear if it matters.
-            final LocaleList localeList = Resources.getSystem().getConfiguration().getLocales();
-            final LinkedHashSet<Locale> linkedHashSet = new LinkedHashSet<>();
-            for (int i = 0; i < localeList.size(); i++) {
-                linkedHashSet.add(localeList.get(i));
-            }
-            return new ArrayList<>(linkedHashSet);
-        } else {
-            return new ArrayList<>(systemLocaleSupplier.get());
+        // Using SYSTEM Locales versus USER Locales, see:
+        // https://medium.com/@hectorricardomendez/how-to-get-the-current-locale-in-android-fc12d8be6242
+        // Key-Takeaway #5: To get the list of preferred locales of the device (as defined in
+        // the Settings), call Resources.getSystem().getConfiguration().getLocales()
+        //
+        // although, at this point, it seems LocaleList.getDefault() DOES return
+        // the correct list, so we could use that. It's not clear if it matters.
+        final LocaleList localeList = Resources.getSystem().getConfiguration().getLocales();
+        final LinkedHashSet<Locale> linkedHashSet = new LinkedHashSet<>();
+        for (int i = 0; i < localeList.size(); i++) {
+            linkedHashSet.add(localeList.get(i));
         }
-    }
-
-    @VisibleForTesting
-    public void setSystemLocaleSupplier(@NonNull final Supplier<List<Locale>> supplier) {
-        this.systemLocaleSupplier = supplier;
+        return new ArrayList<>(linkedHashSet);
     }
 
     @NonNull
@@ -288,12 +266,6 @@ public final class ServiceLocator {
         }
         return networkChecker;
     }
-
-    @VisibleForTesting
-    public void setNetworkChecker(@Nullable final NetworkChecker networkChecker) {
-        this.networkChecker = networkChecker;
-    }
-
 
     @NonNull
     public File getUpgradesDir() {
@@ -316,22 +288,16 @@ public final class ServiceLocator {
     }
 
     /**
-     * Called between multiple tests so we get a clean db for each test.
+     * Called between multiple "androidTest"s so we get a clean db for each test.
      */
     @VisibleForTesting
-    void recreate() {
+    void closeDatabases() {
         if (cacheDbHelper != null) {
             cacheDbHelper.close();
         }
         if (dbHelper != null) {
             dbHelper.close();
         }
-
-        final Context tmpAppContext = sInstance.appContext;
-        final Supplier<Bundle> tmpBundleSupplier = sInstance.bundleSupplier;
-        //noinspection ConstantConditions
-        sInstance = null;
-        create(tmpAppContext, tmpBundleSupplier);
     }
 
     /**
@@ -381,13 +347,6 @@ public final class ServiceLocator {
         return cookieManager;
     }
 
-    @VisibleForTesting
-    public void setCookieManager(@Nullable final CookieManager cookieManager) {
-        this.cookieManager = cookieManager;
-        CookieHandler.setDefault(this.cookieManager);
-    }
-
-
     @NonNull
     public AppLocale getAppLocale() {
         synchronized (this) {
@@ -398,12 +357,6 @@ public final class ServiceLocator {
         return appLocale;
     }
 
-    @VisibleForTesting
-    public void setAppLocale(@Nullable final AppLocale locale) {
-        appLocale = locale;
-    }
-
-
     @NonNull
     public Notifier getNotifier() {
         synchronized (this) {
@@ -413,17 +366,6 @@ public final class ServiceLocator {
             }
         }
         return notifier;
-    }
-
-    @VisibleForTesting
-    public void setNotifier(@Nullable final Notifier notifier) {
-        if (this.notifier != null) {
-            getAppLocale().unregisterOnLocaleChangedListener(this.notifier);
-        }
-        this.notifier = notifier;
-        if (this.notifier != null) {
-            getAppLocale().registerOnLocaleChangedListener(this.notifier);
-        }
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -63,7 +63,7 @@ public class BundleCoder
     @Override
     public Bundle decode(@NonNull final JSONObject data)
             throws JSONException {
-        final Bundle bundle = ServiceLocator.newBundle();
+        final Bundle bundle = ServiceLocator.getInstance().newBundle();
         final Iterator<String> keys = data.keys();
         while (keys.hasNext()) {
             final String key = keys.next();

@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -69,10 +70,11 @@ public class BookCoder
      *
      * @param context Current context
      */
-    public BookCoder(@NonNull final Context context) {
+    public BookCoder(@NonNull final Context context,
+                     @NonNull final Style defaultStyle) {
 
-        bookshelfCoder = new BookshelfCoder(context);
-        calibreLibraryCoder = new CalibreLibraryCoder(context);
+        bookshelfCoder = new BookshelfCoder(context, defaultStyle);
+        calibreLibraryCoder = new CalibreLibraryCoder(context, defaultStyle);
         this.context = context;
     }
 

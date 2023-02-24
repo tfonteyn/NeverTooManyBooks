@@ -24,6 +24,7 @@ import androidx.annotation.NonNull;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -228,7 +229,7 @@ class GoogleBooksEntryHandler
     private final StringBuilder builder = new StringBuilder();
 
     @NonNull
-    private final Locale locale;
+    private final Locale siteLocale;
     @NonNull
     private final GoogleBooksSearchEngine searchEngine;
     private boolean inSuggestedRetailPriceTag;
@@ -245,11 +246,12 @@ class GoogleBooksEntryHandler
     GoogleBooksEntryHandler(@NonNull final GoogleBooksSearchEngine searchEngine,
                             @NonNull final boolean[] fetchCovers,
                             @NonNull final Book book,
-                            @NonNull final Locale locale) {
+                            @NonNull final List<Locale> locales,
+                            @NonNull final Locale siteLocale) {
         this.searchEngine = searchEngine;
         this.fetchCovers = fetchCovers;
         this.book = book;
-        this.locale = locale;
+        this.siteLocale = siteLocale;
     }
 
     /**
@@ -341,7 +343,7 @@ class GoogleBooksEntryHandler
                            @NonNull final String localName,
                            @NonNull final String qName) {
 
-        switch (localName.toLowerCase(locale)) {
+        switch (localName.toLowerCase(siteLocale)) {
             case XML_TITLE:
                 // there can be multiple listed, we only take the first one found
                 addIfNotPresent(DBKey.TITLE, builder.toString());

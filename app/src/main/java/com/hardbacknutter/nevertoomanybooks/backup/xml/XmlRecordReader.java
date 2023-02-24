@@ -112,7 +112,7 @@ public class XmlRecordReader
                                                   @NonNull final ArchiveReaderRecord record)
             throws DataReaderException,
                    IOException {
-        final Bundle bundle = ServiceLocator.newBundle();
+        final Bundle bundle = ServiceLocator.getInstance().newBundle();
         final Locale systemLocale = ServiceLocator.getInstance().getSystemLocale();
 
         fromXml(record, new InfoReader(bundle), systemLocale);

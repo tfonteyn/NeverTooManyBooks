@@ -43,7 +43,7 @@ public class SyncWriterHelper
         extends DataWriterHelperBase<SyncWriterResults> {
 
     /** Extra arguments for specific writers. The writer must define them. */
-    private final Bundle extraArgs = ServiceLocator.newBundle();
+    private final Bundle extraArgs = ServiceLocator.getInstance().newBundle();
 
     /** <strong>Where</strong> we write to. */
     @Nullable

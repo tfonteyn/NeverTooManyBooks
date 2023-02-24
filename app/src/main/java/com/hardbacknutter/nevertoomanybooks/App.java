@@ -33,6 +33,8 @@ import java.io.IOException;
 import com.hardbacknutter.nevertoomanybooks.core.Logger;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.debug.LoggerImpl;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 
@@ -116,6 +118,8 @@ public class App
             LoggerFactory.setLogger(new LoggerImpl(logDir));
 
             ServiceLocator.create(getApplicationContext());
+            final Languages languages = ServiceLocator.getInstance().getLanguages();
+            SearchEngineConfig.createRegistry(getApplicationContext(), languages);
 
             NightMode.apply(this);
         }

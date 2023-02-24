@@ -75,7 +75,7 @@ public class CsvArchiveReader
     public Optional<ArchiveMetaData> readMetaData(@NonNull final Context context)
             throws DataReaderException, CredentialsException, StorageException, IOException {
         // return an minimal but valid object
-        final Bundle bundle = ServiceLocator.newBundle();
+        final Bundle bundle = ServiceLocator.getInstance().newBundle();
         bundle.putInt(ArchiveMetaData.INFO_ARCHIVER_VERSION, 0);
         return Optional.of(new ArchiveMetaData(bundle));
     }

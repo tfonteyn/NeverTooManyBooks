@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -158,6 +158,9 @@ public class JsonRecordWriter
             throws DataWriterException,
                    IOException {
 
+        final Style defaultStyle = ServiceLocator.getInstance().getStyles()
+                                                 .getDefault(context);
+
         final ExportResults results = new ExportResults();
         final JSONObject jsonData = new JSONObject();
 
@@ -219,7 +222,7 @@ public class JsonRecordWriter
                         ServiceLocator.getInstance().getBookshelfDao().getAll();
                 if (!bookshelves.isEmpty()) {
                     jsonData.put(RecordType.Bookshelves.getName(),
-                                 new BookshelfCoder(context).encode(bookshelves));
+                                 new BookshelfCoder(context, defaultStyle).encode(bookshelves));
                 }
                 results.bookshelves = bookshelves.size();
             }
@@ -233,7 +236,7 @@ public class JsonRecordWriter
                         ServiceLocator.getInstance().getCalibreLibraryDao().getAllLibraries();
                 if (!libraries.isEmpty()) {
                     jsonData.put(RecordType.CalibreLibraries.getName(),
-                                 new CalibreLibraryCoder(context).encode(libraries));
+                                 new CalibreLibraryCoder(context, defaultStyle).encode(libraries));
                 }
                 results.calibreLibraries = libraries.size();
             }
@@ -257,7 +260,7 @@ public class JsonRecordWriter
 
                 final boolean collectCoverFilenames = recordTypes.contains(RecordType.Cover);
 
-                final JsonCoder<Book> coder = new BookCoder(context);
+                final JsonCoder<Book> coder = new BookCoder(context, defaultStyle);
 
                 int delta = 0;
                 long lastUpdate = 0;
