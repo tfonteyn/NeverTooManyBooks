@@ -365,9 +365,9 @@ public class Money
         if (currencyCode != null && currencyCode.length() == 3) {
             if (valueStr != null && !valueStr.isEmpty()) {
                 try {
-                    // buffer just in case the Currency.getInstance() throws.
+                    // buffer in case the Currency.getInstance() throws.
                     final double tmpValue = NumberParser.parseDouble(localeList, valueStr);
-                    // re-get the code just in case it used a recognised but non-standard string
+                    // re-get the code in case it used a recognised but non-standard string
                     currency = Currency.getInstance(currencyCode);
                     value = BigDecimal.valueOf(tmpValue);
                     return true;
