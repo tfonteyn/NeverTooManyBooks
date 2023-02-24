@@ -476,8 +476,7 @@ public class Money
 
     /**
      * NOT DEBUG!
-     * This implements the same behaviour as
-     * {@link Number#toString()} for a <strong>double</strong>.
+     * This return the {@link BigDecimal#toString()} of the value.
      *
      * @return the value part as a string.
      */
