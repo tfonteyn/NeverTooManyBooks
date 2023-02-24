@@ -41,12 +41,13 @@ public class GoodreadsSearchEngine
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
-     * @param config the search engine configuration
+     * @param appContext The <strong>application</strong> context
+     * @param config     the search engine configuration
      */
     @Keep
-    public GoodreadsSearchEngine(@NonNull final Context context,
+    public GoodreadsSearchEngine(@NonNull final Context appContext,
                                  @NonNull final SearchEngineConfig config) {
-        super(context, config);
+        super(appContext, config);
     }
 
     @NonNull

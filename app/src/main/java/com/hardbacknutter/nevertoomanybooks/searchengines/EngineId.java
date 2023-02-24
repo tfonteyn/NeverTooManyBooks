@@ -72,8 +72,11 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSea
  *     <li>Implement {@link SearchEngine} to create the new engine class
  *         extending {@link SearchEngineBase} or {@link JsoupSearchEngineBase}
  *         or a similar setup.<br>
- *         There MUST be a public constructor which takes a {@link SearchEngineConfig}
- *         as its single argument. This constructor must be annotated with "@Keep"
+ *         There MUST be a public constructor annotated with "@Keep" and with arguments
+ *         ({@link Context},{@link SearchEngineConfig})
+ *         The context received is the <strong>application</strong> context;
+ *         i.e. a NON-localized context which cannot be used to lookup string resources but is
+ *         only meant to be used for preference-value lookups.
  *      </li>
  *
  *     <li>Add an enum identifier in this class and give it a unique string-id,
@@ -600,7 +603,7 @@ public enum EngineId
     @NonNull
     public SearchEngine createSearchEngine() {
         try {
-            final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+            final Context context = ServiceLocator.getAppContext();
             final Constructor<? extends SearchEngine> c =
                     clazz.getConstructor(Context.class, SearchEngineConfig.class);
             return c.newInstance(context, config);

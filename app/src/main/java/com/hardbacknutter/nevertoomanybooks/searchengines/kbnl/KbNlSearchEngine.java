@@ -116,12 +116,13 @@ public class KbNlSearchEngine
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
-     * @param config the search engine configuration
+     * @param appContext The <strong>application</strong> context
+     * @param config     the search engine configuration
      */
     @Keep
-    public KbNlSearchEngine(@NonNull final Context context,
+    public KbNlSearchEngine(@NonNull final Context appContext,
                             @NonNull final SearchEngineConfig config) {
-        super(context, config);
+        super(appContext, config);
 
         ServiceLocator.getInstance().getCookieManager();
     }

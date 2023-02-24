@@ -173,12 +173,13 @@ public class OpenLibrarySearchEngine
     /**
      * Constructor. Called using reflection, so <strong>MUST</strong> be <em>public</em>.
      *
-     * @param config the search engine configuration
+     * @param appContext The <strong>application</strong> context
+     * @param config     the search engine configuration
      */
     @Keep
-    public OpenLibrarySearchEngine(@NonNull final Context context,
+    public OpenLibrarySearchEngine(@NonNull final Context appContext,
                                    @NonNull final SearchEngineConfig config) {
-        super(context, config);
+        super(appContext, config);
     }
 
     @NonNull

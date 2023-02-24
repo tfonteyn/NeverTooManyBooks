@@ -134,12 +134,13 @@ public class AmazonSearchEngine
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
-     * @param config the search engine configuration
+     * @param appContext The <strong>application</strong> context
+     * @param config     the search engine configuration
      */
     @Keep
-    public AmazonSearchEngine(@NonNull final Context context,
+    public AmazonSearchEngine(@NonNull final Context appContext,
                               @NonNull final SearchEngineConfig config) {
-        super(context, config);
+        super(appContext, config);
     }
 
     @NonNull

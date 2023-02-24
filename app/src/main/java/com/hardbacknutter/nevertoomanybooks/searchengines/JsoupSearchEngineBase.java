@@ -45,10 +45,10 @@ public abstract class JsoupSearchEngineBase
      *
      * @param config the search engine configuration
      */
-    protected JsoupSearchEngineBase(@NonNull final Context context,
+    protected JsoupSearchEngineBase(@NonNull final Context appContext,
                                     @NonNull final SearchEngineConfig config) {
-        super(context, config);
-        jsoupLoader = new JsoupLoader(createFutureGetRequest(context));
+        super(appContext, config);
+        jsoupLoader = new JsoupLoader(createFutureGetRequest(appContext));
     }
 
     /**
@@ -57,10 +57,10 @@ public abstract class JsoupSearchEngineBase
      * @param config      the search engine configuration
      * @param charSetName to use
      */
-    protected JsoupSearchEngineBase(@NonNull final Context context,
+    protected JsoupSearchEngineBase(@NonNull final Context appContext,
                                     @NonNull final SearchEngineConfig config,
                                     @NonNull final String charSetName) {
-        this(context, config);
+        this(appContext, config);
         jsoupLoader.setCharSetName(charSetName);
     }
 

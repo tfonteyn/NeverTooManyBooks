@@ -244,12 +244,13 @@ public class IsfdbSearchEngine
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
-     * @param config the search engine configuration
+     * @param appContext The <strong>application</strong> context
+     * @param config     the search engine configuration
      */
     @Keep
-    public IsfdbSearchEngine(@NonNull final Context context,
+    public IsfdbSearchEngine(@NonNull final Context appContext,
                              @NonNull final SearchEngineConfig config) {
-        super(context, config, CHARSET_DECODE_PAGE);
+        super(appContext, config, CHARSET_DECODE_PAGE);
     }
 
     @NonNull

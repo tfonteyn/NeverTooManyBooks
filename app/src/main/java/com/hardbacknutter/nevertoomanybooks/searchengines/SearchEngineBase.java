@@ -70,10 +70,10 @@ public abstract class SearchEngineBase
      *
      * @param config the search engine configuration
      */
-    public SearchEngineBase(@NonNull final Context context,
+    public SearchEngineBase(@NonNull final Context appContext,
                             @NonNull final SearchEngineConfig config) {
         this.config = config;
-        imageDownloader = new ImageDownloader(createFutureGetRequest(context));
+        imageDownloader = new ImageDownloader(createFutureGetRequest(appContext));
     }
 
     /**

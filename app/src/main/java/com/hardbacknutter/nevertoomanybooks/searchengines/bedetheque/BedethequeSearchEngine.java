@@ -91,16 +91,17 @@ public class BedethequeSearchEngine
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
-     * @param config the search engine configuration
+     * @param appContext The <strong>application</strong> context
+     * @param config     the search engine configuration
      */
     @Keep
-    public BedethequeSearchEngine(@NonNull final Context context,
+    public BedethequeSearchEngine(@NonNull final Context appContext,
                                   @NonNull final SearchEngineConfig config) {
-        super(context, config);
+        super(appContext, config);
 
         cookieManager = ServiceLocator.getInstance().getCookieManager();
         extraRequestProperties = Map.of(
-                HttpConstants.REFERER, getHostUrl(context) + "/search");
+                HttpConstants.REFERER, getHostUrl(appContext) + "/search");
     }
 
     @NonNull

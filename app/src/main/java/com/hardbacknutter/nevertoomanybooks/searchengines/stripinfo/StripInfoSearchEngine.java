@@ -132,12 +132,13 @@ public class StripInfoSearchEngine
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
-     * @param config the search engine configuration
+     * @param appContext The <strong>application</strong> context
+     * @param config     the search engine configuration
      */
     @Keep
-    public StripInfoSearchEngine(@NonNull final Context context,
+    public StripInfoSearchEngine(@NonNull final Context appContext,
                                  @NonNull final SearchEngineConfig config) {
-        super(context, config);
+        super(appContext, config);
     }
 
     @Nullable
@@ -469,7 +470,7 @@ public class StripInfoSearchEngine
                                 default:
                                     if (BuildConfig.DEBUG /* always */) {
                                         LoggerFactory.getLogger()
-                                                      .d(TAG, "parseDoc", "unknown label=" + label);
+                                                     .d(TAG, "parseDoc", "unknown label=" + label);
                                     }
                             }
                             i++;
@@ -1027,8 +1028,8 @@ public class StripInfoSearchEngine
             } catch (@NonNull final IOException | StorageException e) {
                 if (BuildConfig.DEBUG  /* always */) {
                     LoggerFactory.getLogger()
-                                  .e(TAG, e, "stripId=" + externalId
-                                             + "|collectieId=" + collectionId);
+                                 .e(TAG, e, "stripId=" + externalId
+                                            + "|collectieId=" + collectionId);
                 }
             }
         }

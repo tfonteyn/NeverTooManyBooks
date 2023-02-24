@@ -75,12 +75,13 @@ public class GoogleBooksSearchEngine
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
-     * @param config the search engine configuration
+     * @param appContext The <strong>application</strong> context
+     * @param config     the search engine configuration
      */
     @Keep
-    public GoogleBooksSearchEngine(@NonNull final Context context,
+    public GoogleBooksSearchEngine(@NonNull final Context appContext,
                                    @NonNull final SearchEngineConfig config) {
-        super(context, config);
+        super(appContext, config);
     }
 
     @NonNull
