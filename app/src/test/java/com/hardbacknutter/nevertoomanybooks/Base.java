@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.LocaleList;
 
@@ -38,9 +39,13 @@ import javax.xml.parsers.ParserConfigurationException;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.ContextMock;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.SharedPreferencesMock;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryThingSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -87,6 +92,15 @@ public class Base {
 
     @Mock
     private AppLocale appLocale;
+
+    @Mock
+    protected Style style;
+    @Mock
+    private ServiceLocator serviceLocator;
+    @Mock
+    private StylesHelper stylesHelper;
+    @Mock
+    private Languages languages;
 
     protected Book book;
     protected Context context;
@@ -135,10 +149,7 @@ public class Base {
         setLocale(Locale.US);
 
         context = ContextMock.create(PACKAGE_NAME);
-
         mockPreferences = SharedPreferencesMock.create();
-
-        book = new Book(BundleMock.create());
 
         when(app.getApplicationContext()).thenReturn(context);
 
@@ -160,7 +171,6 @@ public class Base {
         when(context.getSharedPreferences(eq(PACKAGE_NAME + "_preferences"), anyInt()))
                 .thenReturn(mockPreferences);
 
-        // Styles
         when(context.getSharedPreferences(anyString(), anyInt()))
                 .thenReturn(mockPreferences);
 
@@ -177,23 +187,39 @@ public class Base {
 
         when(appLocale.apply(any(Context.class))).thenReturn(context);
 
+        when(localeList.size()).thenReturn(1);
         when(localeList.get(0)).thenAnswer((Answer<Locale>) invocation -> locale0);
 
-        locales = LocaleListUtils.asList(context);
+        when(style.getUuid()).thenReturn(BuiltinStyle.DEFAULT_UUID);
+        when(stylesHelper.getDefault(any(Context.class))).thenReturn(style);
+
+        when(languages.isUserLanguage(any(Context.class), any(String.class))).thenReturn(true);
 
         // See class docs.
         ImageDownloader.IGNORE_RENAME_FAILURE = true;
 
         LoggerFactory.setLogger(new TestLogger(getTmpDir()));
-        ServiceLocator.create(context, BundleMock::create);
 
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        serviceLocator.setSystemLocaleSupplier(() -> List.of(Locale.US));
-        serviceLocator.setNetworkChecker(new TestNetworkChecker(true));
+        ServiceLocator.create(serviceLocator);
+
+        final Bundle bundle = BundleMock.create();
+        when(serviceLocator.newBundle()).thenReturn(bundle);
+        when(serviceLocator.getSystemLocales()).thenReturn(List.of(Locale.US));
+        when(serviceLocator.getNetworkChecker()).thenReturn(new TestNetworkChecker(true));
+        when(serviceLocator.getStyles()).thenReturn(stylesHelper);
+        when(serviceLocator.getLanguages()).thenReturn(languages);
+        when(serviceLocator.getAppLocale()).thenReturn(appLocale);
 
         setupStringResources(resources);
         setupLanguageMap(context);
         setupSearchEnginePreferences();
+
+
+        SearchEngineConfig.createRegistry(context, languages);
+        // predefined for tests
+        locales = LocaleListUtils.asList(context);
+        // predefined for tests
+        book = new Book(BundleMock.create());
     }
 
     private void setupLanguageMap(@NonNull final Context context) {
