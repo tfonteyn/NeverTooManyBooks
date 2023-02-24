@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,12 +29,12 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class MoneyTest
+class MoneyParsingTest
         extends Base {
 
     private static final BigDecimal twelveDotThreeFour = BigDecimal.valueOf(12.34d);
-    public static final List<Locale> UK = List.of(Locale.UK);
-    public static final List<Locale> FRANCE = List.of(Locale.FRANCE);
+    private static final List<Locale> UK = List.of(Locale.UK);
+    private static final List<Locale> FRANCE = List.of(Locale.FRANCE);
 
     @Test
     void uk00() {
