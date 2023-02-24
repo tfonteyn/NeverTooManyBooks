@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -438,16 +439,18 @@ public class DataManager
      * @param key     Key of data object
      * @param locales to use for parsing
      *
-     * @return value
+     * @return value or {@code null} if parsing did not produce a valid Money object
+     *         In other words, this method ONLY returns valid Money objects (with value+currency)
+     *         or else returns a {@code null}
      *
-     * @throws NumberFormatException if the source was not compatible.
+     * @throws NumberFormatException any serious parsing issue (i.e. if there is a bug).
      */
     @Nullable
     public Money getMoney(@NonNull final String key,
                           @NonNull final List<Locale> locales)
             throws NumberFormatException {
         if (rawData.containsKey(key)) {
-            return new Money(getDouble(key, locales),
+            return new Money(BigDecimal.valueOf(getDouble(key, locales)),
                              getString(key + DBKey.CURRENCY_SUFFIX));
         } else {
             return null;

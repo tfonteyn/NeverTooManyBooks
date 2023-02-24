@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -86,7 +85,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StripInfoDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TocEntryDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkCheckerImpl;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocaleImpl;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
@@ -127,13 +125,6 @@ public final class ServiceLocator {
 
     @Nullable
     private CookieManager cookieManager;
-
-    /** Allows injecting a Mock Bundle supplier for JUnit tests. */
-    @NonNull
-    private Supplier<Bundle> bundleSupplier = Bundle::new;
-
-    @Nullable
-    private Supplier<List<Locale>> systemLocaleSupplier;
 
     @Nullable
     private AppLocale appLocale;
