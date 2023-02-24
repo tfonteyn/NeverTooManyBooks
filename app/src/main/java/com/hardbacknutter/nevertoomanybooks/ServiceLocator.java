@@ -281,7 +281,7 @@ public final class ServiceLocator {
             }
             return new ArrayList<>(linkedHashSet);
         } else {
-            return systemLocaleSupplier.get();
+            return new ArrayList<>(systemLocaleSupplier.get());
         }
     }
 
