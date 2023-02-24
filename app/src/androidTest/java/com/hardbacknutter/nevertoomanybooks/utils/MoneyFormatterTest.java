@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.datamanager;
+package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.content.Context;
 
@@ -27,7 +27,6 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.MoneyFormatter;
-import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 import org.junit.Test;
 
