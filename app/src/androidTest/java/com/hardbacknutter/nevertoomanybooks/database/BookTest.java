@@ -365,6 +365,8 @@ public class BookTest {
         final Bundle args = ServiceLocator.newBundle();
         args.putLong(DBKey.FK_BOOK, bookId);
 
+        // FIXME: FAILS with Cannot invoke setValue on a background thread
+        //  but the code does work in normal usage
         vm.init(context, args, s1.get());
         final Book retrieved = vm.getBook();
         assertEquals(bookId, retrieved.getId());
