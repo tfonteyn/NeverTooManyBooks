@@ -176,11 +176,15 @@ public class Money
         this.currency = currency;
     }
 
-    public Money(final double value,
-                 @NonNull final String currency) {
-        this(BigDecimal.valueOf(value), currency);
-    }
-
+    /**
+     * Constructor parsing the currency from a string.
+     * <p>
+     * <strong>If parsing fails, {@link #isValid()} will return {@code false}</strong>
+     * --- value will be present; currency will be {@code null}
+     *
+     * @param value    to set
+     * @param currency to parse
+     */
     public Money(@NonNull final BigDecimal value,
                  @NonNull final String currency) {
         this.value = value;
@@ -192,8 +196,30 @@ public class Money
     }
 
     /**
-     * Constructor taking a combined price field, e.g. "Bf459", "$9.99", "66 EUR", etc.
+     * Constructor parsing the value and the currency from strings.
+     * <p>
      * <strong>If parsing fails, {@link #isValid()} will return {@code false}</strong>
+     * --- value AND currency will be {@code null}</strong>
+     *
+     * @param locales  to use for parsing
+     * @param value    to set
+     * @param currency to parse
+     */
+    public Money(@NonNull final List<Locale> locales,
+                 @NonNull final String value,
+                 @NonNull final String currency) {
+
+        if (!parse(locales, currency, value)) {
+            this.value = null;
+            this.currency = null;
+        }
+    }
+
+    /**
+     * Constructor taking a combined price field, e.g. "Bf459", "$9.99", "66 EUR", etc.
+     * <p>
+     * <strong>If parsing fails, {@link #isValid()} will return {@code false}
+     * --- value AND currency will be {@code null}</strong>
      *
      * @param locales           to use for parsing
      * @param priceWithCurrency price to decode
