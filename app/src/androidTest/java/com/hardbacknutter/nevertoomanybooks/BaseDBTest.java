@@ -58,6 +58,6 @@ public abstract class BaseDBTest {
     @After
     @CallSuper
     public void closeDb() {
-        serviceLocator.recreate();
+        serviceLocator.closeDatabases();
     }
 }
