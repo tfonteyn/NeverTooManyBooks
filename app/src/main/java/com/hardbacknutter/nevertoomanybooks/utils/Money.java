@@ -164,6 +164,12 @@ public class Money
     @Nullable
     private BigDecimal value;
 
+    /**
+     * Constructor.
+     *
+     * @param value    to set
+     * @param currency to set
+     */
     public Money(@NonNull final BigDecimal value,
                  @NonNull final Currency currency) {
         this.value = value;
