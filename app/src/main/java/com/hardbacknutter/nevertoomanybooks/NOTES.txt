@@ -27,7 +27,15 @@ Known issues:
 
 The node-management, i.e. storing the tree-state of the nodes in the booklist
 is by design not foolproof. The nodes 'expanded' flag WILL get out of sync with
- the display from time to time.
+ the display from time to time. There are no plans to fix this for now as the foolproof solution
+ would take far to much disk space.
+
+Prices: when importing books with a price field containing a value which cannot be parsed,
+ the price field is silently dropped. Details see BookDaoHelper#filterValues.
+ Some code can already deal with string-values in the Book bundle, but it is very likely
+ that IF such a string would end up in the database somehow, we'll
+ get a crash when trying to display it using a MoneyFormatter (FieldFormatter)
+ FIXME: Solution would be to allow Money to have string (instead/aside-of double) values.
 
 ----------------------------------------------------------------------------------------------------
 4.1.0

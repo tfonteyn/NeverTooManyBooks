@@ -426,11 +426,13 @@ public class BookDaoHelper {
                                     // very likely looking at a "list price" field coming
                                     // from an import which cannot be parsed.
                                     // Log, but skip this field.
+                                    // This does mean that sentiments like:
+                                    // list_price="a lot of money" will NOT be preserved!
                                     LoggerFactory.getLogger()
-                                                  .w(TAG, e.getMessage(),
-                                                     "columnName(float)=" + columnName,
-                                                     "entry=" + entry,
-                                                     "book=" + book);
+                                                 .w(TAG, e.getMessage(),
+                                                    "columnName(float)=" + columnName,
+                                                    "entry=" + entry,
+                                                    "book=" + book);
                                 }
                                 break;
                             }
