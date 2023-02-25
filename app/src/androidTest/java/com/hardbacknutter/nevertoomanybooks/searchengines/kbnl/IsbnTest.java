@@ -53,7 +53,7 @@ public class IsbnTest
             throws DaoWriteException, StorageException {
         super.setup();
 
-        searchEngine = EngineId.KbNl.createSearchEngine();
+        searchEngine = EngineId.KbNl.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
     }
 

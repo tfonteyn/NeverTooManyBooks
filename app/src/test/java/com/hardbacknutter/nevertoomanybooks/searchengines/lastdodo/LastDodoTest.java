@@ -58,7 +58,7 @@ class LastDodoTest
     public void setup()
             throws ParserConfigurationException, SAXException {
         super.setup();
-        searchEngine = (LastDodoSearchEngine) EngineId.LastDodoNl.createSearchEngine();
+        searchEngine = (LastDodoSearchEngine) EngineId.LastDodoNl.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
     }
 
@@ -70,7 +70,7 @@ class LastDodoTest
         final String filename = "/lastdodo/7323911-de-37ste-parallel.html";
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
-        searchEngine.parse(context, document, new boolean[]{false, false}, book,
+        searchEngine.parse(document, new boolean[]{false, false}, book,
                            mockAuthorResolver);
         // System.out.println(rawData);
 

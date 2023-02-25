@@ -69,7 +69,7 @@ class StripInfoTest
     public void setup()
             throws ParserConfigurationException, SAXException {
         super.setup();
-        searchEngine = (StripInfoSearchEngine) EngineId.StripInfoBe.createSearchEngine();
+        searchEngine = (StripInfoSearchEngine) EngineId.StripInfoBe.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
     }
 

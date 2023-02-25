@@ -50,7 +50,7 @@ public class SeriesParserTest
             throws ParserConfigurationException, SAXException {
         super.setup();
 
-        searchEngine = (BedethequeSearchEngine) EngineId.Bedetheque.createSearchEngine();
+        searchEngine = (BedethequeSearchEngine) EngineId.Bedetheque.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
     }
 

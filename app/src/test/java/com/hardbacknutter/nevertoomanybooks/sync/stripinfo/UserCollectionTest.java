@@ -92,7 +92,7 @@ class UserCollectionTest
         final String filename = "/stripinfo/collection.html";
 
         final StripInfoSearchEngine searchEngine = (StripInfoSearchEngine)
-                EngineId.StripInfoBe.createSearchEngine();
+                EngineId.StripInfoBe.createSearchEngine(context);
 
         final UserCollection uc = new UserCollection(context, searchEngine, userId,
                                                      bookshelfMapper);
@@ -145,7 +145,7 @@ class UserCollectionTest
         final String filename = "/stripinfo/collection-last-page.html";
 
         final StripInfoSearchEngine searchEngine = (StripInfoSearchEngine)
-                EngineId.StripInfoBe.createSearchEngine();
+                EngineId.StripInfoBe.createSearchEngine(context);
 
         final UserCollection uc = new UserCollection(context, searchEngine, userId,
                                                      bookshelfMapper);

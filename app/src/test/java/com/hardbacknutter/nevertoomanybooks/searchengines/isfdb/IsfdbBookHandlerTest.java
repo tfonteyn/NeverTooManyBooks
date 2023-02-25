@@ -63,7 +63,7 @@ class IsfdbBookHandlerTest
     public void setup()
             throws ParserConfigurationException, SAXException {
         super.setup();
-        searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine();
+        searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 
         // Override the default 'false'

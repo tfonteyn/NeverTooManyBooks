@@ -54,7 +54,7 @@ class OpenLibrarySearchEngineTest
     public void setup()
             throws ParserConfigurationException, SAXException {
         super.setup();
-        searchEngine = (OpenLibrarySearchEngine) EngineId.OpenLibrary.createSearchEngine();
+        searchEngine = (OpenLibrarySearchEngine) EngineId.OpenLibrary.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
     }
 

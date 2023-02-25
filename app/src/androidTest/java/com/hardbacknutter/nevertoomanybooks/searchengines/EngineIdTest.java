@@ -19,9 +19,12 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.util.List;
+
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 import org.junit.Test;
 
@@ -41,6 +44,8 @@ public class EngineIdTest {
 
     @Test
     public void dumpSites() {
+        final Context context = ServiceLocator.getInstance().getAppContext();
+
         for (final Site.Type type : Site.Type.values()) {
             final List<Site> sites = type.getSites();
             Log.d(TAG, "\n------------------------------------------\n\n" + type);
@@ -49,7 +54,7 @@ public class EngineIdTest {
                 final EngineId engineId = site.getEngineId();
                 final SearchEngineConfig config = engineId.getConfig();
                 assertNotNull(config);
-                final SearchEngine searchEngine = engineId.createSearchEngine();
+                final SearchEngine searchEngine = engineId.createSearchEngine(context);
                 assertNotNull(searchEngine);
 
                 Log.d(TAG, "\n" + config + "\n\n" + site + "\n\n" + searchEngine);

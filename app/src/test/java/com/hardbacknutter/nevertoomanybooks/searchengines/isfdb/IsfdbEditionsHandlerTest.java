@@ -59,9 +59,9 @@ class IsfdbEditionsHandlerTest
     public void setup()
             throws ParserConfigurationException, SAXException {
         super.setup();
-        searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine();
+        searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
-        sBaseUrl = searchEngine.getHostUrl(context);
+        sBaseUrl = searchEngine.getHostUrl();
     }
 
     @Test

@@ -55,7 +55,7 @@ class AmazonHtmlHandlerTest
     public void setup()
             throws ParserConfigurationException, SAXException {
         super.setup();
-        searchEngine = (AmazonSearchEngine) EngineId.Amazon.createSearchEngine();
+        searchEngine = (AmazonSearchEngine) EngineId.Amazon.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
     }
 
