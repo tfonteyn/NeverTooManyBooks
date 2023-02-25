@@ -107,7 +107,8 @@ public class GlobalFieldVisibility
      * @return {@code true} if the user wants to use this field.
      */
     public static boolean isUsed(@NonNull final String dbdKey) {
-        return PreferenceManager.getDefaultSharedPreferences(ServiceLocator.getAppContext())
+        return PreferenceManager.getDefaultSharedPreferences(
+                                        ServiceLocator.getInstance().getAppContext())
                                 .getBoolean(PREFS_PREFIX_FIELD_VISIBILITY + dbdKey, true);
     }
 }

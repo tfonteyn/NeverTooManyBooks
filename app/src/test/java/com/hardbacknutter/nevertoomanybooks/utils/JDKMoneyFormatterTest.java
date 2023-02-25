@@ -19,26 +19,29 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
-import android.content.Context;
-
 import java.math.BigDecimal;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.MoneyFormatter;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class MoneyFormatterTest {
+/**
+ * Test the variations of currency location (before/after), currency symbol/code,
+ * decimal separator and thousands separator.
+ */
+class JDKMoneyFormatterTest
+        extends Base {
 
     @Test
-    public void formatUS() {
-        final FieldFormatter<Money> f = new MoneyFormatter(Locale.US);
-        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+    void formatUS() {
+        setLocale(Locale.US);
+        final FieldFormatter<Money> f = new MoneyFormatter(locales.get(0));
         Money money;
         money = Money.parse(BigDecimal.valueOf(1234.50d), Money.USD);
         assertNotNull(money);
@@ -52,9 +55,9 @@ public class MoneyFormatterTest {
     }
 
     @Test
-    public void formatUK() {
-        final FieldFormatter<Money> f = new MoneyFormatter(Locale.UK);
-        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+    void formatUK() {
+        setLocale(Locale.UK);
+        final FieldFormatter<Money> f = new MoneyFormatter(locales.get(0));
         Money money;
         money = Money.parse(BigDecimal.valueOf(1234.50d), Money.USD);
         assertNotNull(money);
@@ -68,9 +71,9 @@ public class MoneyFormatterTest {
     }
 
     @Test
-    public void formatGERMANY() {
-        final FieldFormatter<Money> f = new MoneyFormatter(Locale.GERMANY);
-        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+    void formatGERMANY() {
+        setLocale(Locale.GERMANY);
+        final FieldFormatter<Money> f = new MoneyFormatter(locales.get(0));
         Money money;
         money = Money.parse(BigDecimal.valueOf(1234.50d), Money.USD);
         assertNotNull(money);

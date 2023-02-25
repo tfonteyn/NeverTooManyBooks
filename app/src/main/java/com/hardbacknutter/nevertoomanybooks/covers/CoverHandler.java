@@ -361,8 +361,9 @@ public class CoverHandler {
 
         // the temp file we'll return
         // do NOT set BKEY_TMP_FILE_SPEC on the book in this method.
-        final File coverFile = new File(CoverDir.getTemp(ServiceLocator.getAppContext()),
-                                        System.nanoTime() + ".jpg");
+        final File coverFile = new File(
+                CoverDir.getTemp(ServiceLocator.getInstance().getAppContext()),
+                System.nanoTime() + ".jpg");
 
         // If we have a permanent file, copy it into the temp location
         final Optional<File> uuidFile = book.getCover(cIdx);

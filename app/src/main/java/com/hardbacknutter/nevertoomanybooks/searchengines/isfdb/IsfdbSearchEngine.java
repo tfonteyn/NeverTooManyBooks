@@ -782,8 +782,10 @@ public class IsfdbSearchEngine
                       @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
-        final List<Locale> locales = LocaleListUtils.asList(context);
         final Locale systemLocale = ServiceLocator.getInstance().getSystemLocale();
+        final List<Locale> locales = LocaleListUtils.asList(context);
+        locales.add(0, getLocale(context));
+
         final DateParser dateParser = new FullDateParser(systemLocale, locales);
 
         final Elements allContentBoxes = document.select(CSS_Q_DIV_CONTENTBOX);
@@ -931,15 +933,12 @@ public class IsfdbSearchEngine
                             if (nextElementSibling != null) {
                                 tmpString = nextElementSibling.ownText();
                                 if (!tmpString.isEmpty()) {
-                                    final List<Locale> localeList =
-                                            locales;
-                                    localeList.add(0, getLocale(context));
-                                    final Money money = new Money(localeList, tmpString);
-                                    if (money.getCurrencyCode() != null) {
-                                        book.putDouble(DBKey.PRICE_LISTED, money.doubleValue());
-                                        book.putString(DBKey.PRICE_LISTED_CURRENCY,
-                                                       money.getCurrencyCode());
+                                    final Money money = Money.parse(locales, tmpString);
+                                    if (money != null) {
+                                        book.putMoney(DBKey.PRICE_LISTED, money);
                                     } else {
+                                        // parsing failed, store the string as-is;
+                                        // no separate currency!
                                         book.putString(DBKey.PRICE_LISTED, tmpString);
                                     }
                                 }

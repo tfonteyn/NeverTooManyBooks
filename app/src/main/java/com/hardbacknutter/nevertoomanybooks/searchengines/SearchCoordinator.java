@@ -555,7 +555,7 @@ public class SearchCoordinator
 
         // Developer sanity checks
         if (BuildConfig.DEBUG /* always */) {
-            final Context context = ServiceLocator.getAppContext();
+            final Context context = ServiceLocator.getInstance().getAppContext();
             if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable(context)) {
                 throw new IllegalStateException("network should be checked before starting search");
             }
@@ -706,8 +706,8 @@ public class SearchCoordinator
             activeTasks.put(task.getTaskId(), task);
         }
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            Log.d(TAG, "startSearch|searchEngine="
-                       + config.getEngineId().getName(ServiceLocator.getAppContext()));
+            Log.d(TAG, "startSearch|searchEngine=" + config.getEngineId().getName(
+                    ServiceLocator.getInstance().getAppContext()));
         }
 
         task.startSearch();

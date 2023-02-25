@@ -316,11 +316,11 @@ class GoogleBooksEntryHandler
                 }
 
                 if (amount >= 0) {
-                    // parsing was ok, store it
-                    book.putMoney(DBKey.PRICE_LISTED, new Money(BigDecimal.valueOf(amount),
-                                                                currencyCode));
+                    // parsing the amount was ok, store it
+                    final Money money = Money.parse(BigDecimal.valueOf(amount), currencyCode);
+                    book.putMoney(DBKey.PRICE_LISTED, money);
                 } else {
-                    // Parsing the amount failed, store as-is
+                    // Parsing the amount failed, store as a combined string
                     // This should normally never happen... flw
                     book.putString(DBKey.PRICE_LISTED, amountStr + ' ' + currencyCode);
                 }

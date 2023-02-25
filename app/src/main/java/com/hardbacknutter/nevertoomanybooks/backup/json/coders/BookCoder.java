@@ -42,7 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
@@ -113,16 +112,6 @@ public class BookCoder
             if (!((String) element).isEmpty()) {
                 out.put(key, element);
             }
-
-        } else if (element instanceof Money) {
-            // Only write the value. The currency will be covered as a plain String type key.
-            // We could just treat Money as a Number (which it is) but JSONStringer uses
-            // 'toString' which caused some issues... so keeping this as a reminder.
-            final double d = ((Money) element).doubleValue();
-            if (d != 0) {
-                out.put(key, d);
-            }
-
         } else if (element instanceof Number) {
             if (((Number) element).doubleValue() != 0) {
                 out.put(key, element);
@@ -175,9 +164,8 @@ public class BookCoder
             }
 
         } else if (element instanceof Parcelable) {
-            // skip, 2023-02-23: the only ones in use for now are
-            // the Calibre Library, and Money
-            // which are already handled - see above.
+            // skip, 2023-02-23: the only one in use for now is the Calibre Library
+            // which is already handled above.
 
         } else if (element instanceof Serializable) {
             throw new IllegalArgumentException("Serializable not implemented for: " + element);

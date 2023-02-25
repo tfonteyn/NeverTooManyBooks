@@ -298,11 +298,12 @@ class IsfdbPublicationListHandler
                 }
                 case XML_PRICE: {
                     final String tmpString = builder.toString().trim();
-                    final Money money = new Money(localeList, tmpString);
-                    if (money.getCurrencyCode() != null) {
-                        publicationData.putDouble(DBKey.PRICE_LISTED, money.doubleValue());
-                        addIfNotPresent(DBKey.PRICE_LISTED_CURRENCY, money.getCurrencyCode());
+                    final Money money = Money.parse(localeList, tmpString);
+                    if (money != null) {
+                        publicationData.putMoney(DBKey.PRICE_LISTED, money);
                     } else {
+                        // parsing failed, store the string as-is;
+                        // no separate currency!
                         addIfNotPresent(DBKey.PRICE_LISTED, tmpString);
                     }
                     break;

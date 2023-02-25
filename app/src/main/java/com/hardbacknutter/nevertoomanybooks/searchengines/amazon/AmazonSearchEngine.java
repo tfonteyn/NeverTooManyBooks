@@ -294,12 +294,12 @@ public class AmazonSearchEngine
                             @NonNull final List<Locale> localeList) {
         final Element price = document.selectFirst("span.offer-price");
         if (price != null) {
-            final Money money = new Money(localeList, price.text());
-            if (money.isValid()) {
-                // parsing was ok, store it
+            final Money money = Money.parse(localeList, price.text());
+            if (money != null) {
                 book.putMoney(DBKey.PRICE_LISTED, money);
             } else {
-                // parsing failed, store as-is
+                // parsing failed, store the string as-is;
+                // no separate currency!
                 book.putString(DBKey.PRICE_LISTED, price.text());
             }
         }

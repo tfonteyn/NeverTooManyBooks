@@ -250,10 +250,29 @@ public class CollectionFormUploader {
         }
         builder.appendQueryParameter(FF_AANKOOP_DATUM, dateAcquired);
 
-        // The site does not store a currency; it's hardcoded/supposed to be EURO.
-        final Money paid = book.getMoney(DBKey.PRICE_PAID, locales);
-        builder.appendQueryParameter(FF_AANKOOP_PRIJS,
-                                     paid != null ? String.valueOf(paid.toEuro()) : "");
+
+        if (book.contains(DBKey.PRICE_PAID)) {
+            final Object v = book.get(DBKey.PRICE_PAID, locales);
+            if (v != null) {
+                if (book.contains(DBKey.PRICE_PAID_CURRENCY)) {
+                    final Money money = Money.parse(locales,
+                                                    String.valueOf(v),
+                                                    book.getString(DBKey.PRICE_PAID_CURRENCY));
+                    if (money != null) {
+                        // The site does not store a currency; it's hardcoded/supposed to be EURO.
+                        // So always convert it to EURO and than send it.
+                        builder.appendQueryParameter(FF_AANKOOP_PRIJS,
+                                                     String.valueOf(money.toEuro()));
+                    } else {
+                        // just send the value string as-is
+                        builder.appendQueryParameter(FF_AANKOOP_PRIJS, String.valueOf(v));
+                    }
+                } else {
+                    // just send the value string as-is
+                    builder.appendQueryParameter(FF_AANKOOP_PRIJS, String.valueOf(v));
+                }
+            }
+        }
 
         // The site only supports numbers 1..x (and changes an empty string into a "1")
         // so we either put "1" for first-edition, or "2" for a reprint.

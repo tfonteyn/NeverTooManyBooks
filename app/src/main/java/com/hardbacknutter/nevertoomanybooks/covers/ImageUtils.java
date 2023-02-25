@@ -179,12 +179,14 @@ public final class ImageUtils {
      */
     @AnyThread
     public static boolean isImageCachingEnabled() {
-        return PreferenceManager.getDefaultSharedPreferences(ServiceLocator.getAppContext())
+        return PreferenceManager.getDefaultSharedPreferences(
+                                        ServiceLocator.getInstance().getAppContext())
                                 .getBoolean(Prefs.pk_image_cache_resized, false);
     }
 
     public static void setImageCachingEnabled(final boolean enable) {
-        PreferenceManager.getDefaultSharedPreferences(ServiceLocator.getAppContext())
+        PreferenceManager.getDefaultSharedPreferences(
+                                 ServiceLocator.getInstance().getAppContext())
                          .edit()
                          .putBoolean(Prefs.pk_image_cache_resized, enable)
                          .apply();
@@ -214,8 +216,9 @@ public final class ImageUtils {
             throw new FileNotFoundException("InputStream was NULL");
         }
 
-        final File tmpFile = new File(CoverDir.getTemp(ServiceLocator.getAppContext()),
-                                      System.nanoTime() + ".jpg");
+        final File tmpFile = new File(
+                CoverDir.getTemp(ServiceLocator.getInstance().getAppContext()),
+                System.nanoTime() + ".jpg");
         try (OutputStream os = new FileOutputStream(tmpFile)) {
             FileUtils.copy(is, os);
             // rename to real output file

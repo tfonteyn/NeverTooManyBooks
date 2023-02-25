@@ -217,8 +217,8 @@ public final class ServiceLocator {
      * @return raw Application Context
      */
     @NonNull
-    public static Context getAppContext() {
-        return sInstance.appContext;
+    public Context getAppContext() {
+        return appContext;
     }
 
     /**
@@ -285,19 +285,6 @@ public final class ServiceLocator {
     @NonNull
     public Context getLocalizedAppContext() {
         return getAppLocale().apply(sInstance.appContext);
-    }
-
-    /**
-     * Called between multiple "androidTest"s so we get a clean db for each test.
-     */
-    @VisibleForTesting
-    void closeDatabases() {
-        if (cacheDbHelper != null) {
-            cacheDbHelper.close();
-        }
-        if (dbHelper != null) {
-            dbHelper.close();
-        }
     }
 
     /**

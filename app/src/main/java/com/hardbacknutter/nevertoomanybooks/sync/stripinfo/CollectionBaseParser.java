@@ -26,6 +26,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.math.MathUtils;
 
+import java.math.BigDecimal;
+import java.util.Currency;
+
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -133,8 +136,8 @@ abstract class CollectionBaseParser {
         // '0' is an acceptable value that should be stored.
         final Double tmpDbl = jSoupHelper.getDoubleOrNull(root, idPricePaid);
         if (tmpDbl != null) {
-            book.putDouble(DBKey.PRICE_PAID, tmpDbl);
-            book.putString(DBKey.PRICE_PAID_CURRENCY, Money.EUR);
+            book.putMoney(DBKey.PRICE_PAID, new Money(BigDecimal.valueOf(tmpDbl),
+                                                      Currency.getInstance(Money.EUR)));
         }
 
         tmpInt = jSoupHelper.getInt(root, idRating);

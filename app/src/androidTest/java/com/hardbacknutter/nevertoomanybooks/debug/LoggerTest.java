@@ -47,7 +47,7 @@ public class LoggerTest {
     public void cycleLogs()
             throws StorageException {
 
-        final Context context = ServiceLocator.getAppContext();
+        final Context context = ServiceLocator.getInstance().getAppContext();
         final Logger logger = LoggerFactory.getLogger();
 
         CoverDir.initVolume(context, 0);

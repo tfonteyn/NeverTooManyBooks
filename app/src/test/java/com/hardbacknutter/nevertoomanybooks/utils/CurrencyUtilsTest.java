@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,8 +28,7 @@ import com.hardbacknutter.nevertoomanybooks.Base;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class CurrencyUtilsTest
         extends Base {
@@ -43,29 +42,20 @@ class CurrencyUtilsTest
         final List<Locale> locale = List.of(Locale.UK);
         Money money;
 
-        money = new Money(locale, "$10.50");
+        money = Money.parse(locale, "$10.50");
+        assertNotNull(money);
         assertEquals(Money.USD, money.getCurrencyCode());
         assertEquals(tenDotFive, money.getValue());
 
-        money = new Money(locale, "£10.50");
+        money = Money.parse(locale, "£10.50");
+        assertNotNull(money);
         assertEquals(Money.GBP, money.getCurrencyCode());
         assertEquals(tenDotFive, money.getValue());
 
-        money = new Money(locale, "EUR 10.50");
+        money = Money.parse(locale, "EUR 10.50");
+        assertNotNull(money);
         assertEquals(Money.EUR, money.getCurrencyCode());
         assertEquals(tenDotFive, money.getValue());
-    }
-
-    @Test
-    void parsingMustFail() {
-        final List<Locale> locale = List.of(Locale.UK);
-        final Money money;
-
-        // The Money constructor EXPECTS a price WITH currency;
-        money = new Money(locale, "10.50");
-        assertFalse(money.isValid());
-        assertNull(money.getCurrency());
-        assertNull(money.getValue());
     }
 
     /** Country with '.' as thousands, and ',' as decimal separator. */
@@ -74,11 +64,13 @@ class CurrencyUtilsTest
         final List<Locale> locale = List.of(new Locale("nl", "BE"));
         Money money;
 
-        money = new Money(locale, "fr10,50");
+        money = Money.parse(locale, "fr10,50");
+        assertNotNull(money);
         assertEquals("BEF", money.getCurrencyCode());
         assertEquals(tenDotFive, money.getValue());
 
-        money = new Money(locale, "$10.50");
+        money = Money.parse(locale, "$10.50");
+        assertNotNull(money);
         assertEquals(Money.USD, money.getCurrencyCode());
         assertEquals(tenDotFive, money.getValue());
     }
@@ -89,7 +81,8 @@ class CurrencyUtilsTest
         final List<Locale> locale = List.of(new Locale("nl", "NL"));
         final Money money;
 
-        money = new Money(locale, "£10.50");
+        money = Money.parse(locale, "£10.50");
+        assertNotNull(money);
         assertEquals(Money.GBP, money.getCurrencyCode());
         assertEquals(tenDotFive, money.getValue());
     }
@@ -100,7 +93,8 @@ class CurrencyUtilsTest
         final List<Locale> locale = List.of(new Locale("nl", "NL"));
         final Money money;
 
-        money = new Money(locale, "EUR 10.50");
+        money = Money.parse(locale, "EUR 10.50");
+        assertNotNull(money);
         assertEquals(Money.EUR, money.getCurrencyCode());
         assertEquals(tenDotFive, money.getValue());
     }

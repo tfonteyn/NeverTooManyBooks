@@ -41,6 +41,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.Money;
  * <p>
  * English: "[currency] [value]" with 2 decimal digits.
  * Most other languages: "[value] [currency]" with 2 decimal digits.
+ * <p>
+ * This class can display {@link Money} with or without a {@link Currency}.
  */
 
 public class MoneyFormatter

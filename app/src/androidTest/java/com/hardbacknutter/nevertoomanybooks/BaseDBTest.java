@@ -28,7 +28,6 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 
-import org.junit.After;
 import org.junit.Before;
 
 public abstract class BaseDBTest {
@@ -53,11 +52,5 @@ public abstract class BaseDBTest {
 
         CoverDir.initVolume(context, 0);
         serviceLocator.getDb();
-    }
-
-    @After
-    @CallSuper
-    public void closeDb() {
-        serviceLocator.closeDatabases();
     }
 }

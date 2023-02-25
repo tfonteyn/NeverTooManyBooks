@@ -28,6 +28,7 @@ import com.hardbacknutter.nevertoomanybooks.Base;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class MoneyParsingTest
         extends Base {
@@ -38,65 +39,74 @@ class MoneyParsingTest
 
     @Test
     void uk00() {
-        final Money m = new Money(UK, "GBP&nbsp;12.34");
-        assertEquals(twelveDotThreeFour, m.getValue());
-        assertEquals(Money.GBP, m.getCurrencyCode());
+        final Money money = Money.parse(UK, "GBP&nbsp;12.34");
+        assertNotNull(money);
+        assertEquals(twelveDotThreeFour, money.getValue());
+        assertEquals(Money.GBP, money.getCurrencyCode());
     }
 
     @Test
     void uk01() {
-        final Money m = new Money(UK, "£ 12.34");
-        assertEquals(twelveDotThreeFour, m.getValue());
-        assertEquals(Money.GBP, m.getCurrencyCode());
+        final Money money = Money.parse(UK, "£ 12.34");
+        assertNotNull(money);
+        assertEquals(twelveDotThreeFour, money.getValue());
+        assertEquals(Money.GBP, money.getCurrencyCode());
     }
 
     @Test
     void uk02() {
-        final Money m = new Money(UK, "£12.34");
-        assertEquals(twelveDotThreeFour, m.getValue());
-        assertEquals(Money.GBP, m.getCurrencyCode());
+        final Money money = Money.parse(UK, "£12.34");
+        assertNotNull(money);
+        assertEquals(twelveDotThreeFour, money.getValue());
+        assertEquals(Money.GBP, money.getCurrencyCode());
     }
 
     @Test
     void uk03() {
-        final Money m = new Money(UK, "GBP12.34");
-        assertEquals(twelveDotThreeFour, m.getValue());
-        assertEquals(Money.GBP, m.getCurrencyCode());
+        final Money money = Money.parse(UK, "GBP12.34");
+        assertNotNull(money);
+        assertEquals(twelveDotThreeFour, money.getValue());
+        assertEquals(Money.GBP, money.getCurrencyCode());
     }
 
     @Test
     void uk04() {
-        final Money m = new Money(UK, "£12");
-        assertEquals(BigDecimal.valueOf(12.0d), m.getValue());
-        assertEquals(Money.GBP, m.getCurrencyCode());
+        final Money money = Money.parse(UK, "£12");
+        assertNotNull(money);
+        assertEquals(BigDecimal.valueOf(12.0d), money.getValue());
+        assertEquals(Money.GBP, money.getCurrencyCode());
     }
 
 
     @Test
     void fr01() {
-        final Money m = new Money(FRANCE, "12,34&nbsp;€");
-        assertEquals(twelveDotThreeFour, m.getValue());
-        assertEquals(Money.EUR, m.getCurrencyCode());
+        final Money money = Money.parse(FRANCE, "12,34&nbsp;€");
+        assertNotNull(money);
+        assertEquals(twelveDotThreeFour, money.getValue());
+        assertEquals(Money.EUR, money.getCurrencyCode());
     }
 
     @Test
     void fr02() {
-        final Money m = new Money(FRANCE, "12,34 €");
-        assertEquals(twelveDotThreeFour, m.getValue());
-        assertEquals(Money.EUR, m.getCurrencyCode());
+        final Money money = Money.parse(FRANCE, "12,34 €");
+        assertNotNull(money);
+        assertEquals(twelveDotThreeFour, money.getValue());
+        assertEquals(Money.EUR, money.getCurrencyCode());
     }
 
     @Test
     void fr03() {
-        final Money m = new Money(FRANCE, "12,34€");
-        assertEquals(twelveDotThreeFour, m.getValue());
-        assertEquals(Money.EUR, m.getCurrencyCode());
+        final Money money = Money.parse(FRANCE, "12,34€");
+        assertNotNull(money);
+        assertEquals(twelveDotThreeFour, money.getValue());
+        assertEquals(Money.EUR, money.getCurrencyCode());
     }
 
     @Test
     void fr04() {
-        final Money m = new Money(FRANCE, "12,34 eur");
-        assertEquals(twelveDotThreeFour, m.getValue());
-        assertEquals(Money.EUR, m.getCurrencyCode());
+        final Money money = Money.parse(FRANCE, "12,34 eur");
+        assertNotNull(money);
+        assertEquals(twelveDotThreeFour, money.getValue());
+        assertEquals(Money.EUR, money.getCurrencyCode());
     }
 }

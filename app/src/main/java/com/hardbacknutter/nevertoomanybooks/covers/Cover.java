@@ -72,7 +72,7 @@ public class Cover {
 
         final File coverDir;
         try {
-            coverDir = CoverDir.getDir(ServiceLocator.getAppContext());
+            coverDir = CoverDir.getDir(ServiceLocator.getInstance().getAppContext());
         } catch (@NonNull final StorageException e) {
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "getPersistedCoverFile", e);
@@ -128,7 +128,8 @@ public class Cover {
             name = uuid + ".jpg";
         }
 
-        final File destination = new File(CoverDir.getDir(ServiceLocator.getAppContext()), name);
+        final File destination = new File(
+                CoverDir.getDir(ServiceLocator.getInstance().getAppContext()), name);
         FileUtils.rename(file, destination);
         return destination;
     }

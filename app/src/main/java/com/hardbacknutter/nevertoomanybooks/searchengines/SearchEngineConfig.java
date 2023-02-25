@@ -237,7 +237,7 @@ public final class SearchEngineConfig {
      */
     boolean prefersIsbn10() {
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(
-                ServiceLocator.getAppContext());
+                ServiceLocator.getInstance().getAppContext());
 
         final String key = engineId.getPreferenceKey() + "." + Prefs.pk_search_isbn_prefer_10;
         if (preferences.contains(key)) {

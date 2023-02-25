@@ -1116,7 +1116,8 @@ public class BooklistGroup {
         public String toString() {
             return "GroupKey{"
                    + "id=" + id
-                   + ", label=`" + ServiceLocator.getAppContext().getString(labelResId) + '`'
+                   + ", label=`" + ServiceLocator.getInstance().getAppContext()
+                                                 .getString(labelResId) + '`'
                    + ", keyPrefix=`" + keyPrefix + '`'
                    + ", keyDomain=" + keyDomain
                    + ", groupDomains=" + groupDomains

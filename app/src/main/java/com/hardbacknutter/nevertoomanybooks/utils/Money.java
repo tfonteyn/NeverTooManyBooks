@@ -160,9 +160,9 @@ public class Money
 
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
-    private Currency currency;
-    @Nullable
-    private BigDecimal value;
+    private final Currency currency;
+    @NonNull
+    private final BigDecimal value;
 
     /**
      * Constructor.
@@ -171,78 +171,185 @@ public class Money
      * @param currency to set
      */
     public Money(@NonNull final BigDecimal value,
-                 @NonNull final Currency currency) {
+                 @Nullable final Currency currency) {
         this.value = value;
         this.currency = currency;
     }
 
-    /**
-     * Constructor parsing the currency from a string.
-     * <p>
-     * <strong>If parsing fails, {@link #isValid()} will return {@code false}</strong>
-     * --- value will be present; currency will be {@code null}
-     *
-     * @param value    to set
-     * @param currency to parse
-     */
-    public Money(@NonNull final BigDecimal value,
-                 @NonNull final String currency) {
-        this.value = value;
-        try {
-            this.currency = Currency.getInstance(currency);
-        } catch (@NonNull final IllegalArgumentException e) {
-            // ignore
+    protected Money(@NonNull final Parcel in) {
+        value = (BigDecimal) in.readSerializable();
+        final boolean hasCurrency = in.readByte() != 0;
+        if (hasCurrency) {
+            currency = Currency.getInstance(in.readString());
+        } else {
+            currency = null;
         }
+    }
+
+    /**
+     * Constructor parsing the (optional) currency from a string.
+     * <p>
+     * If the currency is in any form invalid, a Money object is STILL returned,
+     * but with its currency set to {@code null}.
+     *
+     * @param value       to set
+     * @param currencyStr (optional) to parse
+     *
+     * @return a Money object with or without currency; never {@code null}.
+     */
+    @NonNull
+    public static Money parse(@NonNull final BigDecimal value,
+                              @Nullable final String currencyStr) {
+        if (currencyStr != null && !currencyStr.isEmpty()) {
+            try {
+                final Currency currency = Currency.getInstance(currencyStr);
+                return new Money(value, currency);
+            } catch (@NonNull final IllegalArgumentException e) {
+                // covers NumberFormatException
+            }
+        }
+        return new Money(value, null);
+    }
+
+    /**
+     * Parse a string containing a combined value/currency, e.g. "Bf459", "$9.99", "66 EUR".
+     *
+     * @param locales           to use for parsing
+     * @param valueWithCurrency to parse
+     *
+     * @return a Money object with or without currency
+     *         or {@code null} if parsing failed.
+     */
+    @Nullable
+    public static Money parse(@NonNull final List<Locale> locales,
+                              @NonNull final CharSequence valueWithCurrency) {
+        try {
+            // website html cleaning: replace any "&nbsp;" by " "
+            // and trim the whole thing so charAt(0) below is reliable
+            final String vwc = NBSP_LITERAL.matcher(valueWithCurrency)
+                                           .replaceAll(" ")
+                                           .trim();
+            if (vwc.isEmpty()) {
+                return null;
+            }
+
+            if (!Character.isDigit(vwc.charAt(0))) {
+                final String[] data = CURRENCY_AS_PREFIX_PATTERN.split(vwc, 2);
+                if (data.length > 1) {
+                    final Money parse = parse(locales, data[1], data[0]);
+                    if (parse != null) {
+                        return parse;
+                    }
+                }
+            }
+
+            Matcher matcher;
+
+            matcher = CURRENCY_AS_SUFFIX_PATTERN.matcher(vwc);
+            if (matcher.find()) {
+                return parse(locales, matcher.group(1), matcher.group(2));
+            }
+
+            // let's see if this was UK shillings/pence
+            matcher = SHILLING_PENCE_PATTERN.matcher(vwc);
+            if (matcher.find()) {
+                return parseBritishPreDecimal(matcher);
+            }
+
+        } catch (@NonNull final IllegalArgumentException e) {
+            // covers NumberFormatException
+        }
+        return null;
     }
 
     /**
      * Constructor parsing the value and the currency from strings.
-     * <p>
-     * <strong>If parsing fails, {@link #isValid()} will return {@code false}</strong>
-     * --- value AND currency will be {@code null}</strong>
      *
-     * @param locales  to use for parsing
-     * @param value    to set
-     * @param currency to parse
+     * @param locales     to use for parsing
+     * @param valueStr    to set
+     * @param currencyStr to parse
+     *
+     * @return a Money object with or without currency
+     *         or {@code null} if parsing failed.
      */
-    public Money(@NonNull final List<Locale> locales,
-                 @NonNull final String value,
-                 @NonNull final String currency) {
+    @Nullable
+    public static Money parse(@NonNull final List<Locale> locales,
+                              @Nullable final String valueStr,
+                              @Nullable final String currencyStr) {
 
-        if (!parse(locales, currency, value)) {
-            this.value = null;
-            this.currency = null;
+        Currency currency = null;
+        if (currencyStr != null && !currencyStr.isEmpty()) {
+            try {
+                String currencyCode = currencyStr.trim().toUpperCase(locales.get(0));
+                // if we don't have a normalized ISO3 code, see if we can convert it to one.
+                if (currencyCode.length() != 3) {
+                    currencyCode = fromSymbol(currencyStr, locales.get(0));
+                }
+                if (currencyCode != null && !currencyCode.isEmpty()) {
+                    // re-get the code in case it used a recognised but non-standard string
+                    currency = Currency.getInstance(currencyCode);
+                }
+            } catch (@NonNull final IllegalArgumentException ignore) {
+                // ignore
+            }
         }
+
+        if (valueStr != null && !valueStr.isEmpty()) {
+            try {
+                final double value = NumberParser.parseDouble(locales, valueStr);
+                return new Money(BigDecimal.valueOf(value), currency);
+
+            } catch (@NonNull final IllegalArgumentException ignore) {
+                // covers NumberFormatException
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    private static Money parseBritishPreDecimal(@NonNull final MatchResult matcher) {
+        try {
+            int shillings = 0;
+            int pence = 0;
+            String tmp;
+
+            tmp = matcher.group(1);
+            if (tmp != null && !tmp.isEmpty() && !"-".equals(tmp)) {
+                shillings = Integer.parseInt(tmp);
+            }
+            tmp = matcher.group(2);
+            if (tmp != null && !tmp.isEmpty() && !"-".equals(tmp)) {
+                pence = Integer.parseInt(tmp);
+            }
+
+            // the British pound was made up of 20 shillings, each of which was
+            // made up of 12 pence, a total of 240 pence. Madness...
+            final double value = ((shillings * 12) + pence) / 240d;
+            final Currency currency = Currency.getInstance(GBP);
+            return new Money(BigDecimal.valueOf(value), currency);
+
+        } catch (@NonNull final NumberFormatException ignore) {
+            // ignore
+        }
+        return null;
     }
 
     /**
-     * Constructor taking a combined price field, e.g. "Bf459", "$9.99", "66 EUR", etc.
-     * <p>
-     * <strong>If parsing fails, {@link #isValid()} will return {@code false}
-     * --- value AND currency will be {@code null}</strong>
+     * Convert the passed string with a (hopefully valid) currency unit/symbol,
+     * into the ISO code for that currency.
      *
-     * @param locales           to use for parsing
-     * @param priceWithCurrency price to decode
+     * @param symbol to convert
+     *
+     * @return ISO code.
      */
-    public Money(@NonNull final List<Locale> locales,
-                 @NonNull final CharSequence priceWithCurrency) {
-
-        if (!parse(locales, priceWithCurrency)) {
-            this.value = null;
-            this.currency = null;
+    @Nullable
+    private static String fromSymbol(@NonNull final String symbol,
+                                     @NonNull final Locale locale) {
+        if (CURRENCY_MAP.isEmpty()) {
+            createCurrencyMap();
         }
-    }
-
-    protected Money(@NonNull final Parcel in) {
-        boolean present;
-        present = in.readByte() != 0;
-        if (present) {
-            currency = Currency.getInstance(in.readString());
-        }
-        present = in.readByte() != 0;
-        if (present) {
-            value = (BigDecimal) in.readSerializable();
-        }
+        final String key = symbol.trim().toLowerCase(locale);
+        return CURRENCY_MAP.get(key);
     }
 
     /**
@@ -302,37 +409,13 @@ public class Money
         CURRENCY_MAP.put("kn", "HRK");  // Croatian Kuna
     }
 
-    /**
-     * Convert the passed string with a (hopefully valid) currency unit/symbol,
-     * into the ISO code for that currency.
-     *
-     * @param symbol to convert
-     *
-     * @return ISO code.
-     */
-    @Nullable
-    private static String fromSymbol(@NonNull final String symbol,
-                                     @NonNull final Locale locale) {
-        if (CURRENCY_MAP.isEmpty()) {
-            createCurrencyMap();
-        }
-        final String key = symbol.trim().toLowerCase(locale);
-        return CURRENCY_MAP.get(key);
-    }
-
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
+        dest.writeSerializable(value);
         if (currency != null) {
             dest.writeByte((byte) 1);
             dest.writeString(currency.getCurrencyCode());
-        } else {
-            dest.writeByte((byte) 0);
-        }
-
-        if (value != null) {
-            dest.writeByte((byte) 1);
-            dest.writeSerializable(value);
         } else {
             dest.writeByte((byte) 0);
         }
@@ -343,98 +426,7 @@ public class Money
         return 0;
     }
 
-    /**
-     * Parse a string containing e.g. "Bf459", "$9.99", "66 EUR".
-     *
-     * @param locales           to use for parsing
-     * @param valueWithCurrency to parse
-     *
-     * @return {@code true} if both value and currency were parsed successfully
-     */
-    public boolean parse(@NonNull final List<Locale> locales,
-                         @NonNull final CharSequence valueWithCurrency) {
-
-        // website html cleaning
-        final String vwc = NBSP_LITERAL.matcher(valueWithCurrency).replaceAll(" ");
-
-        final String[] data = CURRENCY_AS_PREFIX_PATTERN.split(vwc, 2);
-        if (data.length > 1 && parse(locales, data[0], data[1])) {
-            return true;
-        }
-
-        Matcher matcher;
-
-        matcher = CURRENCY_AS_SUFFIX_PATTERN.matcher(vwc);
-        if (matcher.find() && parse(locales, matcher.group(2), matcher.group(1))) {
-            return true;
-        }
-
-        // let's see if this was UK shillings/pence
-        matcher = SHILLING_PENCE_PATTERN.matcher(vwc);
-        return matcher.find() && parseBritishPreDecimal(matcher);
-    }
-
-
-    private boolean parse(@NonNull final List<Locale> localeList,
-                          @Nullable final String currencyStr,
-                          @Nullable final String valueStr) {
-
-        String currencyCode = null;
-        if (currencyStr != null && !currencyStr.isEmpty()) {
-            currencyCode = currencyStr.trim().toUpperCase(localeList.get(0));
-            // if we don't have a normalized ISO3 code, see if we can convert it to one.
-            if (currencyCode.length() != 3) {
-                currencyCode = fromSymbol(currencyStr, localeList.get(0));
-            }
-        }
-
-        if (currencyCode != null && currencyCode.length() == 3) {
-            if (valueStr != null && !valueStr.isEmpty()) {
-                try {
-                    // buffer in case the Currency.getInstance() throws.
-                    final double tmpValue = NumberParser.parseDouble(localeList, valueStr);
-                    // re-get the code in case it used a recognised but non-standard string
-                    currency = Currency.getInstance(currencyCode);
-                    value = BigDecimal.valueOf(tmpValue);
-                    return true;
-
-                } catch (@NonNull final IllegalArgumentException ignore) {
-                    // covers NumberFormatException
-                }
-            }
-        }
-
-        return false;
-    }
-
-    private boolean parseBritishPreDecimal(@NonNull final MatchResult matcher) {
-        try {
-            int shillings = 0;
-            int pence = 0;
-            String tmp;
-
-            tmp = matcher.group(1);
-            if (tmp != null && !tmp.isEmpty() && !"-".equals(tmp)) {
-                shillings = Integer.parseInt(tmp);
-            }
-            tmp = matcher.group(2);
-            if (tmp != null && !tmp.isEmpty() && !"-".equals(tmp)) {
-                pence = Integer.parseInt(tmp);
-            }
-
-            // the British pound was made up of 20 shillings, each of which was
-            // made up of 12 pence, a total of 240 pence. Madness...
-            value = BigDecimal.valueOf(((shillings * 12) + pence) / 240d);
-            currency = Currency.getInstance(GBP);
-            return true;
-
-        } catch (@NonNull final NumberFormatException ignore) {
-            // ignore
-        }
-        return false;
-    }
-
-    @Nullable
+    @NonNull
     public BigDecimal getValue() {
         return value;
     }
@@ -453,18 +445,7 @@ public class Money
      */
     @Nullable
     public String getCurrencyCode() {
-        return currency != null ? currency.getCurrencyCode() : null;
-    }
-
-    /**
-     * Check if this object contains valid data.
-     * <p>
-     * This should be called using the constructor which parses a "price with currency".
-     *
-     * @return {@code true} if it is
-     */
-    public boolean isValid() {
-        return currency != null && value != null;
+        return currency == null ? null : currency.getCurrencyCode();
     }
 
     /**
@@ -540,20 +521,22 @@ public class Money
         Objects.requireNonNull(value);
 
         if (currency == null) {
-            return new Money(value, EUR);
+            return new Money(value, Currency.getInstance(EUR));
         }
 
         if (EUR.equals(currency.getCurrencyCode())) {
-            return new Money(value, EUR);
+            // The Euro itself
+            return new Money(value, currency);
         }
 
         final Double rate = EUROS.get(currency.getCurrencyCode());
         if (rate == null) {
+            // Not a Euro currency, return as is.
             return new Money(value, currency);
         }
 
-        return new Money(value.divide(BigDecimal.valueOf(rate),
-                                      RoundingMode.HALF_UP), EUR);
+        return new Money(value.divide(BigDecimal.valueOf(rate), RoundingMode.HALF_UP),
+                         Currency.getInstance(EUR));
     }
 
     @Override

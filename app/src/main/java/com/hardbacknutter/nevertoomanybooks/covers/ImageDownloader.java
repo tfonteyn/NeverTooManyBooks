@@ -101,7 +101,8 @@ public class ImageDownloader {
                                 + "_" + (size != null ? size : "")
                                 + ".jpg";
 
-        return new File(CoverDir.getTemp(ServiceLocator.getAppContext()), filename);
+        return new File(
+                CoverDir.getTemp(ServiceLocator.getInstance().getAppContext()), filename);
     }
 
     /**

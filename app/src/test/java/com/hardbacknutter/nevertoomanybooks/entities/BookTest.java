@@ -36,6 +36,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class BookTest
@@ -49,7 +50,9 @@ class BookTest
         setLocale(Locale.US);
 
         book.putString(DBKey.LANGUAGE, "eng");
-        book.putMoney(DBKey.PRICE_LISTED, new Money(BigDecimal.valueOf(1.23d), "USD"));
+        final Money money = Money.parse(BigDecimal.valueOf(1.23d), Money.USD);
+        assertNotNull(money);
+        book.putMoney(DBKey.PRICE_LISTED, money);
 
         final BookDaoHelper bdh = new BookDaoHelper(context, book, true);
         bdh.processPrice(DBKey.PRICE_LISTED);
@@ -65,7 +68,9 @@ class BookTest
         setLocale(Locale.US);
 
         book.putString(DBKey.LANGUAGE, "eng");
-        book.putMoney(DBKey.PRICE_LISTED, new Money(BigDecimal.valueOf(0d), ""));
+        final Money money = Money.parse(BigDecimal.valueOf(0d), "");
+        assertNotNull(money);
+        book.putMoney(DBKey.PRICE_LISTED, money);
 
         book.putDouble(DBKey.PRICE_PAID, 456.789d);
         // no PRICE_PAID_CURRENCY
@@ -112,8 +117,9 @@ class BookTest
         setLocale(Locale.FRANCE);
 
         book.putString(DBKey.LANGUAGE, "eng");
-        book.putMoney(DBKey.PRICE_LISTED, new Money(List.of(Locale.ENGLISH),
-                                                    "EUR 45"));
+        final Money money = Money.parse(List.of(Locale.ENGLISH), "EUR 45");
+        assertNotNull(money);
+        book.putMoney(DBKey.PRICE_LISTED, money);
 
         final BookDaoHelper bdh = new BookDaoHelper(context, book, true);
         bdh.processPrice(DBKey.PRICE_LISTED);

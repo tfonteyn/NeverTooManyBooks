@@ -85,7 +85,8 @@ public class SearchTask
     SearchTask(final int taskId,
                @NonNull final SearchEngine searchEngine,
                @NonNull final TaskListener<Book> taskListener) {
-        super(taskId, TAG + ' ' + searchEngine.getName(ServiceLocator.getAppContext()),
+        super(taskId, TAG + ' ' + searchEngine.getName(
+                      ServiceLocator.getInstance().getAppContext()),
               taskListener);
 
         this.searchEngine = searchEngine;

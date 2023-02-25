@@ -603,7 +603,7 @@ public enum EngineId
     @NonNull
     public SearchEngine createSearchEngine() {
         try {
-            final Context context = ServiceLocator.getAppContext();
+            final Context context = ServiceLocator.getInstance().getAppContext();
             final Constructor<? extends SearchEngine> c =
                     clazz.getConstructor(Context.class, SearchEngineConfig.class);
             return c.newInstance(context, config);
@@ -739,7 +739,8 @@ public enum EngineId
     public String toString() {
         return "EngineId{"
                + "key='" + key + '\''
-               + ", labelResId=" + ServiceLocator.getAppContext().getString(labelResId)
+               + ", labelResId=" + ServiceLocator.getInstance().getAppContext()
+                                                 .getString(labelResId)
                + ", defaultUrl='" + defaultUrl + '\''
                + ", locale=" + defaultLocale
                + ", clazz=" + clazz.getName()

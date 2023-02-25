@@ -26,6 +26,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -249,6 +250,12 @@ public class DataManager
         }
     }
 
+    @VisibleForTesting
+    @NonNull
+    public Bundle getRawData() {
+        return rawData;
+    }
+
     /**
      * Get the data object specified by the passed key.
      *
@@ -261,17 +268,16 @@ public class DataManager
     public Object get(@NonNull final String key,
                       @NonNull final List<Locale> locales) {
         if (DBKey.MONEY_KEYS.contains(key)) {
+            // try to combine the keys
             try {
-                return getMoney(key, locales);
-            } catch (@NonNull final NumberFormatException ignore) {
-                //TEST: should we really ignore this, next step will return raw value.
-                if (BuildConfig.DEBUG /* always */) {
-                    LoggerFactory.getLogger()
-                                 .d(TAG, "get", "NumberFormatException"
-                                                + "|name=" + key
-                                                + "|value=`" + rawData.get(key) + '`');
+                final Money money = getMoney(key, locales);
+                if (money != null) {
+                    return money;
                 }
+            } catch (@NonNull final NumberFormatException ignore) {
+                // ignore
             }
+            // fall through and return the raw value
         }
         return rawData.get(key);
     }
@@ -435,23 +441,29 @@ public class DataManager
 
     /**
      * Get a {@link Money} value.
+     * <p>
+     * <strong>NOT for normal use; it's to easy to get this wrong.
+     * Should only used by {@link #get(String, List)} or in tests.</strong>
+     * <p>
+     * This method should really return an "Either". i.e.
+     * Either return the Money object, or return a String with the raw value.
+     * This is exactly what is done in {@link #get(String, List)} where we return an Object.
      *
      * @param key     Key of data object
      * @param locales to use for parsing
      *
-     * @return value or {@code null} if parsing did not produce a valid Money object
-     *         In other words, this method ONLY returns valid Money objects (with value+currency)
-     *         or else returns a {@code null}
+     * @return value or {@code null} if parsing did not produce a Money object
      *
-     * @throws NumberFormatException any serious parsing issue (i.e. if there is a bug).
+     * @throws NumberFormatException if parsing the value itself failed.
      */
+    @VisibleForTesting
     @Nullable
     public Money getMoney(@NonNull final String key,
                           @NonNull final List<Locale> locales)
             throws NumberFormatException {
         if (rawData.containsKey(key)) {
-            return new Money(BigDecimal.valueOf(getDouble(key, locales)),
-                             getString(key + DBKey.CURRENCY_SUFFIX));
+            return Money.parse(BigDecimal.valueOf(getDouble(key, locales)),
+                               getString(key + DBKey.CURRENCY_SUFFIX));
         } else {
             return null;
         }
@@ -466,7 +478,6 @@ public class DataManager
     public void putMoney(@NonNull final String key,
                          @NonNull final Money money) {
         rawData.putDouble(key, money.doubleValue());
-        // Sanity check; when we get here the currency should always be valid
         if (money.getCurrency() != null) {
             rawData.putString(key + DBKey.CURRENCY_SUFFIX, money.getCurrencyCode());
         }

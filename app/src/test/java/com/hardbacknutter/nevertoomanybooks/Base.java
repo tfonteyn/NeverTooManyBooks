@@ -29,9 +29,9 @@ import android.os.LocaleList;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import javax.xml.parsers.ParserConfigurationException;
@@ -51,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryTh
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -79,38 +78,36 @@ import static org.mockito.Mockito.when;
 public class Base {
 
     private static final String PACKAGE_NAME = "com.hardbacknutter.nevertoomanybooks";
-
+    protected final List<Locale> locales = new ArrayList<>(List.of(Locale.US));
     @Mock
     protected App app;
     @Mock
     protected Resources resources;
     @Mock
     protected Configuration configuration;
-    protected List<Locale> locales;
-    @Mock
-    private LocaleList localeList;
-
-    @Mock
-    private AppLocale appLocale;
-
     @Mock
     protected Style style;
+    protected Book book;
+    protected Context context;
+    protected SharedPreferences mockPreferences;
+    @Mock
+    private LocaleList localeList;
+    @Mock
+    private AppLocale appLocale;
     @Mock
     private ServiceLocator serviceLocator;
     @Mock
     private StylesHelper stylesHelper;
     @Mock
     private Languages languages;
-
-    protected Book book;
-    protected Context context;
-    protected SharedPreferences mockPreferences;
-
-    /** set during setup() call. */
-    @Nullable
-    protected Locale locale0;
-
     private Locale jdkLocale;
+
+    @NonNull
+    protected static File getTmpDir() {
+        final String tmpDir = System.getProperty("java.io.tmpdir");
+        //noinspection ConstantConditions
+        return new File(tmpDir);
+    }
 
     /**
      * @param locale0 to use for
@@ -118,21 +115,14 @@ public class Base {
      *                context.getResources().getConfiguration().getLocales().get(0)
      */
     public void setLocale(@NonNull final Locale locale0) {
-        this.locale0 = locale0;
-        Locale.setDefault(this.locale0);
+        locales.clear();
+        locales.add(locale0);
+        Locale.setDefault(locales.get(0));
     }
 
     @AfterEach
     void tearDown() {
-        locale0 = null;
         Locale.setDefault(jdkLocale);
-    }
-
-    @NonNull
-    protected static File getTmpDir() {
-        final String tmpDir = System.getProperty("java.io.tmpdir");
-        //noinspection ConstantConditions
-        return new File(tmpDir);
     }
 
     /**
@@ -145,8 +135,6 @@ public class Base {
             throws ParserConfigurationException, SAXException {
         // save the JDK locale first
         jdkLocale = Locale.getDefault();
-        // set as default
-        setLocale(Locale.US);
 
         context = ContextMock.create(PACKAGE_NAME);
         mockPreferences = SharedPreferencesMock.create();
@@ -187,13 +175,18 @@ public class Base {
 
         when(appLocale.apply(any(Context.class))).thenReturn(context);
 
-        when(localeList.size()).thenReturn(1);
-        when(localeList.get(0)).thenAnswer((Answer<Locale>) invocation -> locale0);
+        when(localeList.size()).thenReturn(locales.size());
+        doAnswer(invocation -> locales.get(invocation.getArgument(0)))
+                .when(localeList).get(anyInt());
 
         when(style.getUuid()).thenReturn(BuiltinStyle.DEFAULT_UUID);
         when(stylesHelper.getDefault(any(Context.class))).thenReturn(style);
 
         when(languages.isUserLanguage(any(Context.class), any(String.class))).thenReturn(true);
+        when(languages.getISO3FromDisplayName(any(Context.class), any(Locale.class),
+                                              eq("Dutch"))).thenReturn("nld");
+        when(languages.getISO3FromDisplayName(any(Context.class), any(Locale.class),
+                                              eq("English"))).thenReturn("eng");
 
         // See class docs.
         ImageDownloader.IGNORE_RENAME_FAILURE = true;
@@ -201,14 +194,22 @@ public class Base {
         LoggerFactory.setLogger(new TestLogger(getTmpDir()));
 
         ServiceLocator.create(serviceLocator);
+        // reminder: don't use thenReturn(BundleMock.create())
+        // nor b= BundleMock.create();  and ...thenReturn(b)
+        // -> that will cause:
+        //  you are stubbing the behaviour of another mock inside before
+        //  'thenReturn' instruction if completed
+        //
+        when(serviceLocator.newBundle()).thenAnswer(
+                (Answer<Bundle>) invocation -> BundleMock.create());
 
-        final Bundle bundle = BundleMock.create();
-        when(serviceLocator.newBundle()).thenReturn(bundle);
-        when(serviceLocator.getSystemLocales()).thenReturn(List.of(Locale.US));
+        when(serviceLocator.getSystemLocales()).thenReturn(locales);
+        when(serviceLocator.getSystemLocale()).thenReturn(locales.get(0));
         when(serviceLocator.getNetworkChecker()).thenReturn(new TestNetworkChecker(true));
         when(serviceLocator.getStyles()).thenReturn(stylesHelper);
         when(serviceLocator.getLanguages()).thenReturn(languages);
         when(serviceLocator.getAppLocale()).thenReturn(appLocale);
+        when(serviceLocator.getAppContext()).thenReturn(context);
 
         setupStringResources(resources);
         setupLanguageMap(context);
@@ -216,8 +217,6 @@ public class Base {
 
 
         SearchEngineConfig.createRegistry(context, languages);
-        // predefined for tests
-        locales = LocaleListUtils.asList(context);
         // predefined for tests
         book = new Book(BundleMock.create());
     }
@@ -238,17 +237,17 @@ public class Base {
                    .putString("französisch", "fra")
                    .putString("frans", "fra")
 
-                    .putString("german", "ger")
-                    .putString("allemand", "ger")
-                    .putString("deutsch", "ger")
-                    .putString("duits", "ger")
+                   .putString("german", "ger")
+                   .putString("allemand", "ger")
+                   .putString("deutsch", "ger")
+                   .putString("duits", "ger")
 
-                    .putString("dutch", "nld")
-                    .putString("néerlandais", "nld")
-                    .putString("niederländisch", "nld")
-                    .putString("nederlands", "nld")
+                   .putString("dutch", "nld")
+                   .putString("néerlandais", "nld")
+                   .putString("niederländisch", "nld")
+                   .putString("nederlands", "nld")
 
-                    .apply();
+                   .apply();
 
         when(context.getSharedPreferences(eq(Languages.LANGUAGE_MAP), anyInt()))
                 .thenReturn(languageMap);
@@ -288,21 +287,20 @@ public class Base {
     @NonNull
     private String getLocalizedSiteUrl(@NonNull final String site,
                                        final boolean hasUkSite) {
-        if (locale0 != null) {
-            final String iso3 = locale0.getISO3Language();
-            if (Locale.US.getISO3Language().equals(iso3)) {
-                return "https://www." + site + ".com";
-            } else if (Locale.FRANCE.getISO3Language().equals(iso3)) {
-                return "https://www." + site + ".fr";
-            } else if (Locale.GERMANY.getISO3Language().equals(iso3)) {
-                return "https://www." + site + ".de";
-            } else if (new Locale("nl").getISO3Language().equals(iso3)) {
-                return "https://www." + site + ".nl";
+        final String iso3 = locales.get(0).getISO3Language();
+        if (Locale.US.getISO3Language().equals(iso3)) {
+            return "https://www." + site + ".com";
+        } else if (Locale.FRANCE.getISO3Language().equals(iso3)) {
+            return "https://www." + site + ".fr";
+        } else if (Locale.GERMANY.getISO3Language().equals(iso3)) {
+            return "https://www." + site + ".de";
+        } else if (new Locale("nl").getISO3Language().equals(iso3)) {
+            return "https://www." + site + ".nl";
 
-            } else if (hasUkSite && Locale.UK.getISO3Language().equals(iso3)) {
-                return "https://www." + site + ".co.uk";
-            }
+        } else if (hasUkSite && Locale.UK.getISO3Language().equals(iso3)) {
+            return "https://www." + site + ".co.uk";
         }
+
         return "https://www." + site + ".com";
     }
 
