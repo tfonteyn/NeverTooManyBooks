@@ -43,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 
 import org.xml.sax.SAXException;
 
@@ -173,9 +172,7 @@ public class GoogleBooksSearchEngine
             if (!urlList.isEmpty()) {
                 // The entry handler takes care of an individual book ('entry')
                 final GoogleBooksEntryHandler handler = new GoogleBooksEntryHandler(
-                        this, fetchCovers, book,
-                        LocaleListUtils.asList(context),
-                        getLocale(context));
+                        this, fetchCovers, book, getLocale(context));
 
                 // only using the first one found, maybe future enhancement?
                 futureHttpGet.get(urlList.get(0), request -> {

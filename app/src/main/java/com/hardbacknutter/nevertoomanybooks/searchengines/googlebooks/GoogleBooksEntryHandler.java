@@ -24,7 +24,6 @@ import androidx.annotation.NonNull;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -246,7 +245,6 @@ class GoogleBooksEntryHandler
     GoogleBooksEntryHandler(@NonNull final GoogleBooksSearchEngine searchEngine,
                             @NonNull final boolean[] fetchCovers,
                             @NonNull final Book book,
-                            @NonNull final List<Locale> locales,
                             @NonNull final Locale siteLocale) {
         this.searchEngine = searchEngine;
         this.fetchCovers = fetchCovers;

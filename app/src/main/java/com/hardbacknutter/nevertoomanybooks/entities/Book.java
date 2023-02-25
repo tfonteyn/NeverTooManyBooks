@@ -414,8 +414,7 @@ public class Book
         duplicate.putString(DBKey.READ_END__DATE, getString(DBKey.READ_END__DATE));
 
         duplicate.putString(DBKey.DATE_ACQUIRED, getString(DBKey.DATE_ACQUIRED));
-        duplicate.putDouble(DBKey.PRICE_PAID, getDouble(DBKey.PRICE_PAID,
-                                                        locales));
+        duplicate.putDouble(DBKey.PRICE_PAID, getDouble(DBKey.PRICE_PAID, locales));
         duplicate.putString(DBKey.PRICE_PAID_CURRENCY, getString(DBKey.PRICE_PAID_CURRENCY));
 
         duplicate.putInt(DBKey.BOOK_CONDITION, getInt(DBKey.BOOK_CONDITION));
@@ -464,9 +463,9 @@ public class Book
                            @Nullable final Details details,
                            @Nullable final Style style) {
         if (ReorderHelper.forDisplay(context)) {
-            final List<Locale> localeList = LocaleListUtils.asList(context);
-            localeList.add(0, getLocaleOrUserLocale(context));
-            return ReorderHelper.reorder(context, getTitle(), localeList);
+            final List<Locale> locales =
+                    LocaleListUtils.asList(context, getLocaleOrUserLocale(context));
+            return ReorderHelper.reorder(context, getTitle(), locales);
         } else {
             return getTitle();
         }

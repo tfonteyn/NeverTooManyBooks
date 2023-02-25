@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -395,7 +396,7 @@ public class Languages {
      * @param context Current context
      */
     public void createLanguageMappingCache(@NonNull final Context context) {
-        final List<Locale> locales = LocaleListUtils.asList(context);
+        final List<Locale> locales = new ArrayList<>(LocaleListUtils.asList(context));
         // Always add English
         locales.add(Locale.ENGLISH);
         locales.forEach(locale -> createLanguageMappingCache(context, locale));

@@ -260,10 +260,9 @@ public class AmazonSearchEngine
 
         final Locale siteLocale = getLocale(context, document.location().split("/")[2]);
 
-        final List<Locale> localeList = LocaleListUtils.asList(context);
-        localeList.add(0, siteLocale);
-        parsePrice(document, book, localeList);
+        final List<Locale> localeList = LocaleListUtils.asList(context, siteLocale);
 
+        parsePrice(document, book, localeList);
         parseAuthors(document, book, siteLocale);
 
         if (isCancelled()) {
@@ -271,7 +270,6 @@ public class AmazonSearchEngine
         }
 
         parseDetails(context, document, book, siteLocale);
-
         parseASIN(document, book);
 
         checkForSeriesNameInTitle(book);

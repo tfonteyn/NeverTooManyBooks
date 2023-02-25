@@ -30,6 +30,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -63,6 +64,7 @@ public class BookCoder
     private final JsonCoder<Publisher> publisherCoder = new PublisherCoder();
     private final JsonCoder<Series> seriesCoder = new SeriesCoder();
     private final JsonCoder<TocEntry> tocEntryCoder = new TocEntryCoder();
+    private final List<Locale> locales;
 
     /**
      * Constructor.
@@ -72,9 +74,10 @@ public class BookCoder
     public BookCoder(@NonNull final Context context,
                      @NonNull final Style defaultStyle) {
 
-        bookshelfCoder = new BookshelfCoder(context, defaultStyle);
-        calibreLibraryCoder = new CalibreLibraryCoder(context, defaultStyle);
         this.context = context;
+        bookshelfCoder = new BookshelfCoder(this.context, defaultStyle);
+        calibreLibraryCoder = new CalibreLibraryCoder(this.context, defaultStyle);
+        locales = LocaleListUtils.asList(this.context);
     }
 
     @Override
@@ -93,7 +96,7 @@ public class BookCoder
                         @NonNull final String key)
             throws JSONException {
 
-        final Object element = book.get(key, LocaleListUtils.asList(context));
+        final Object element = book.get(key, locales);
 
         // Special keys first.
 

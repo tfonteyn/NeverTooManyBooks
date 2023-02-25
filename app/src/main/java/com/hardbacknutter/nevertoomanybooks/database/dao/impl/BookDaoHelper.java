@@ -88,8 +88,7 @@ public class BookDaoHelper {
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         bookLocale = this.book.getAndUpdateLocale(context, true).orElse(userLocale);
 
-        locales = LocaleListUtils.asList(context);
-        locales.add(0, bookLocale);
+        locales = LocaleListUtils.asList(context, bookLocale);
     }
 
     /**
@@ -227,7 +226,6 @@ public class BookDaoHelper {
     @VisibleForTesting
     public void processExternalIds(@NonNull final Context context) {
         final List<Domain> domains = SearchEngineConfig.getExternalIdDomains();
-        final List<Locale> locales = LocaleListUtils.asList(context);
 
         domains.stream()
                .filter(domain -> domain.getSqLiteDataType() == SqLiteDataType.Integer)
@@ -316,7 +314,6 @@ public class BookDaoHelper {
      */
     @VisibleForTesting
     public void processNullsAndBlanks(@NonNull final Context context) {
-        final List<Locale> locales = LocaleListUtils.asList(context);
 
         DBDefinitions.TBL_BOOKS
                 .getDomains()
@@ -372,7 +369,6 @@ public class BookDaoHelper {
                                @NonNull final TableInfo tableInfo,
                                @NonNull final Book book,
                                @NonNull final List<Locale> localeList) {
-        final List<Locale> locales = LocaleListUtils.asList(context);
         final ContentValues cv = new ContentValues();
         for (final String key : book.keySet()) {
             // We've seen empty keys in old BC imports - this is likely due to a csv column

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,24 +24,42 @@ import android.content.Context;
 import android.os.LocaleList;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 public final class LocaleListUtils {
 
     private LocaleListUtils() {
     }
 
+    /**
+     * Get an <strong>unmodifiable</strong> List of the user Locales.
+     *
+     * @param context Current context
+     *
+     * @return unmodifiable list
+     */
     @NonNull
     public static List<Locale> asList(@NonNull final Context context) {
+        return asList(context, null);
+    }
+
+    @NonNull
+    public static List<Locale> asList(@NonNull final Context context,
+                                      @Nullable final Locale prefix) {
+        final Set<Locale> locales = new LinkedHashSet<>();
+        if (prefix != null) {
+            locales.add(prefix);
+        }
+
         final LocaleList localeList = context.getResources().getConfiguration().getLocales();
-        final LinkedHashSet<Locale> locales = new LinkedHashSet<>();
         for (int i = 0; i < localeList.size(); i++) {
             locales.add(localeList.get(i));
         }
-        return new ArrayList<>(locales);
+        return List.copyOf(locales);
     }
 }

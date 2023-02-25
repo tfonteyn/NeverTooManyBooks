@@ -56,7 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 
 /**
  * Handles importing data with each field controlled by a {@link SyncAction}.
@@ -214,7 +213,8 @@ public final class SyncReaderProcessor
                         final long bookId,
                         @NonNull final Book localBook,
                         @NonNull final Map<String, SyncField> fieldsWanted,
-                        @NonNull final Book remoteBook) {
+                        @NonNull final Book remoteBook,
+                        @NonNull final List<Locale> locales) {
 
         // Filter the data to remove keys we don't care about
         final Collection<String> toRemove = new ArrayList<>();
@@ -227,9 +227,6 @@ public final class SyncReaderProcessor
         for (final String key : toRemove) {
             remoteBook.remove(key);
         }
-
-        final Locale bookLocale = localBook.getLocaleOrUserLocale(context);
-        final List<Locale> locales = LocaleListUtils.asList(context);
 
         // For each field, process it according the SyncAction set.
         fieldsWanted
@@ -252,7 +249,7 @@ public final class SyncReaderProcessor
                                 break;
 
                             case Append:
-                                processList(context, localBook, bookLocale, remoteBook, field.key);
+                                processList(context, localBook, remoteBook, field.key);
                                 break;
 
                             case Overwrite:
@@ -347,7 +344,6 @@ public final class SyncReaderProcessor
      *
      * @param context    Current context
      * @param localeBook to check; will NOT be modified.
-     * @param bookLocale to use
      * @param remoteBook the data to merge with the book;
      *                   after returning, this will contain the new data AND the data we merged
      *                   from the #book
@@ -355,7 +351,6 @@ public final class SyncReaderProcessor
      */
     private void processList(@NonNull final Context context,
                              @NonNull final Book localeBook,
-                             @NonNull final Locale bookLocale,
                              @NonNull final Book remoteBook,
                              @NonNull final String key) {
         final ServiceLocator sl = ServiceLocator.getInstance();

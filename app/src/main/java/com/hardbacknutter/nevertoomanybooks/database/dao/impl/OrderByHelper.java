@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -93,8 +93,7 @@ public final class OrderByHelper {
 
         final String result;
         if (forSorting(context)) {
-            final List<Locale> localeList = LocaleListUtils.asList(context);
-            localeList.add(0, locale);
+            final List<Locale> localeList = LocaleListUtils.asList(context, locale);
             result = ReorderHelper.reorder(context, title, localeList);
         } else {
             result = title;

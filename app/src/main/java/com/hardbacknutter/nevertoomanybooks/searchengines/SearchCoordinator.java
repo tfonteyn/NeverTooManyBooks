@@ -882,11 +882,13 @@ public class SearchCoordinator
         private final Map<EngineId, SearchEngine> engineCache;
         /** Mappers to apply. */
         private final Collection<Mapper> mappers = new ArrayList<>();
+        private final List<Locale> locales;
 
         ResultsAccumulator(@NonNull final Context context,
                            @NonNull final Map<EngineId, SearchEngine> engineCache) {
+            locales = LocaleListUtils.asList(context);
             dateParser = new FullDateParser(ServiceLocator.getInstance().getSystemLocale(),
-                                            LocaleListUtils.asList(context));
+                                            locales);
             this.engineCache = engineCache;
 
             if (FormatMapper.isMappingAllowed(context)) {
@@ -1091,7 +1093,7 @@ public class SearchCoordinator
                                    @NonNull final Book siteData,
                                    @NonNull final Book book) {
             // Fetch as Object, as engines MAY store typed data
-            final Object dataToAdd = siteData.get(key, LocaleListUtils.asList(context));
+            final Object dataToAdd = siteData.get(key, locales);
             if (dataToAdd == null || dataToAdd.toString().isEmpty()) {
                 return;
             }

@@ -21,13 +21,13 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.adapter;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import java.time.Month;
 import java.time.format.TextStyle;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -68,8 +68,6 @@ class Formatter
     @NonNull
     private final Style style;
 
-    @NonNull
-    private final Locale userLocale;
     /**
      * We don't have full Objects here for Series/Publisher so we can't use
      * their methods for auto-reordering.
@@ -79,16 +77,17 @@ class Formatter
     /** caching the book condition strings. */
     @NonNull
     private final String[] conditionDescriptions;
+    @NonNull
+    private final List<Locale> locales;
 
     Formatter(@NonNull final Context context,
               @NonNull final Style style) {
         this.context = context;
         this.style = style;
-        reorderTitleForDisplaying = ReorderHelper.forDisplay(context);
+        this.locales = LocaleListUtils.asList(context);
 
-        final Resources res = context.getResources();
-        conditionDescriptions = res.getStringArray(R.array.conditions_book);
-        userLocale = res.getConfiguration().getLocales().get(0);
+        reorderTitleForDisplaying = ReorderHelper.forDisplay(context);
+        conditionDescriptions = context.getResources().getStringArray(R.array.conditions_book);
     }
 
     /**
@@ -146,11 +145,14 @@ class Formatter
                                                    .getLocale(context, lang);
                     }
 
-                    final List<Locale> locales = LocaleListUtils.asList(context);
+                    final List<Locale> allLocales;
                     if (bookLocale != null) {
-                        locales.add(0, bookLocale);
+                        allLocales = new ArrayList<>(locales);
+                        allLocales.add(0, bookLocale);
+                    } else {
+                        allLocales = locales;
                     }
-                    return ReorderHelper.reorder(context, text, locales);
+                    return ReorderHelper.reorder(context, text, allLocales);
                 } else {
                     return text;
                 }
@@ -254,7 +256,7 @@ class Formatter
                         // If valid, get the short name
                         if (m > 0 && m <= 12) {
                             return Month.of(m).getDisplayName(TextStyle.FULL_STANDALONE,
-                                                              userLocale);
+                                                              locales.get(0));
                         }
                     } catch (@NonNull final NumberFormatException e) {
                         if (BuildConfig.DEBUG /* always */) {

@@ -33,6 +33,8 @@ import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -92,6 +94,7 @@ public class CalibreContentServerWriter
     private final DateParser dateParser;
 
     private SyncWriterResults results;
+    private List<Locale> locales;
 
     /**
      * Constructor.
@@ -110,6 +113,7 @@ public class CalibreContentServerWriter
         doCovers = this.helper.getRecordTypes().contains(RecordType.Cover);
         deleteLocalBook = this.helper.isDeleteLocalBooks();
 
+        locales = LocaleListUtils.asList(context);
         dateParser = new ISODateParser(ServiceLocator.getInstance().getSystemLocale());
     }
 
@@ -303,8 +307,7 @@ public class CalibreContentServerWriter
                                                     .map(Publisher::getName)
                                                     .orElse(""));
 
-        changes.put(CalibreBook.RATING, (int) localBook.getFloat(DBKey.RATING,
-                                                                 LocaleListUtils.asList(context)));
+        changes.put(CalibreBook.RATING, (int) localBook.getFloat(DBKey.RATING, locales));
 
         final JSONArray languages = new JSONArray();
         final String language = localBook.getString(DBKey.LANGUAGE, null);

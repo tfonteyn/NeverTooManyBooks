@@ -33,6 +33,7 @@ import androidx.lifecycle.MutableLiveData;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.SortedMap;
@@ -59,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderProcessor;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 
 public class SearchBookUpdatesViewModel
         extends SearchCoordinator {
@@ -446,9 +448,10 @@ public class SearchBookUpdatesViewModel
                        @Nullable final Book remoteBook) {
 
         if (!isCancelled() && remoteBook != null && !remoteBook.isEmpty()) {
+            final List<Locale> locales = LocaleListUtils.asList(context);
             //noinspection ConstantConditions
             final Book delta = syncProcessor.process(context, currentBookId, currentBook,
-                                                     currentFieldsWanted, remoteBook);
+                                                     currentFieldsWanted, remoteBook, locales);
             if (delta != null) {
                 try {
                     bookDao.update(context, delta);

@@ -783,9 +783,7 @@ public class IsfdbSearchEngine
             throws StorageException, SearchException, CredentialsException {
 
         final Locale systemLocale = ServiceLocator.getInstance().getSystemLocale();
-        final List<Locale> locales = LocaleListUtils.asList(context);
-        locales.add(0, getLocale(context));
-
+        final List<Locale> locales = LocaleListUtils.asList(context, getLocale(context));
         final DateParser dateParser = new FullDateParser(systemLocale, locales);
 
         final Elements allContentBoxes = document.select(CSS_Q_DIV_CONTENTBOX);
@@ -1527,10 +1525,9 @@ public class IsfdbSearchEngine
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
 
-        final List<Locale> localeList = LocaleListUtils.asList(context);
-        localeList.add(0, getLocale(context));
+        final List<Locale> locales = LocaleListUtils.asList(context, getLocale(context));
         final IsfdbPublicationListHandler listHandler =
-                new IsfdbPublicationListHandler(this, fetchCovers, maxRecords, localeList);
+                new IsfdbPublicationListHandler(this, fetchCovers, maxRecords, locales);
 
         try {
             final SAXParser parser = factory.newSAXParser();

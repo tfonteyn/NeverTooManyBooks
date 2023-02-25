@@ -216,8 +216,7 @@ public class MaintenanceDaoImpl
 
         final String rebuildObTitle;
         if (reorder) {
-            final List<Locale> localeList = LocaleListUtils.asList(context);
-            localeList.add(0, locale);
+            final List<Locale> localeList = LocaleListUtils.asList(context, locale);
             rebuildObTitle = ReorderHelper.reorder(context, title, localeList);
         } else {
             // Use the actual/original title
