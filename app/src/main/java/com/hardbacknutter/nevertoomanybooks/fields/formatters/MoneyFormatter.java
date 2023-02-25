@@ -74,8 +74,7 @@ public class MoneyFormatter
         final Currency currency = rawValue.getCurrency();
         // no currency ? just display the source value as-is
         if (currency == null) {
-            //noinspection CallToNumericToString
-            return rawValue.toString();
+            return String.valueOf(rawValue.doubleValue());
         }
 
         try {
