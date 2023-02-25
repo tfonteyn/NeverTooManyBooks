@@ -32,10 +32,10 @@ import java.io.File;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -242,6 +242,14 @@ public final class ServiceLocator {
         return Resources.getSystem().getConfiguration().getLocales().get(0);
     }
 
+    /**
+     * Get an <strong>unmodifiable</strong> List of the system Locales.
+     * <p>
+     * Dev. note: this is a separate method so we can mock it.
+     *
+     * @return unmodifiable list
+     */
+    @VisibleForTesting
     @NonNull
     public List<Locale> getSystemLocales() {
         // Using SYSTEM Locales versus USER Locales, see:
@@ -252,11 +260,11 @@ public final class ServiceLocator {
         // although, at this point, it seems LocaleList.getDefault() DOES return
         // the correct list, so we could use that. It's not clear if it matters.
         final LocaleList localeList = Resources.getSystem().getConfiguration().getLocales();
-        final LinkedHashSet<Locale> linkedHashSet = new LinkedHashSet<>();
+        final Set<Locale> linkedHashSet = new LinkedHashSet<>();
         for (int i = 0; i < localeList.size(); i++) {
             linkedHashSet.add(localeList.get(i));
         }
-        return new ArrayList<>(linkedHashSet);
+        return List.copyOf(linkedHashSet);
     }
 
     @NonNull
@@ -338,7 +346,9 @@ public final class ServiceLocator {
     public AppLocale getAppLocale() {
         synchronized (this) {
             if (appLocale == null) {
-                appLocale = new AppLocaleImpl();
+                appLocale = new AppLocaleImpl(getSystemLocales(),
+                                              getSystemLocale(),
+                                              getLanguages());
             }
         }
         return appLocale;

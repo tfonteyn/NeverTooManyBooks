@@ -40,7 +40,6 @@ import java.util.Map;
 import java.util.MissingResourceException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
@@ -59,6 +58,12 @@ public final class AppLocaleImpl
             localeChangedListeners = new ArrayList<>();
     /** Cache for Locales; key: the BOOK language (ISO3). */
     private final Map<String, Locale> cache = new HashMap<>();
+    @NonNull
+    private final List<Locale> locales;
+    @NonNull
+    private final Locale systemLocale;
+    @NonNull
+    private final Languages languages;
     /**
      * The currently active/preferred user Locale.
      * See {@link #apply} for why we store it.
@@ -71,6 +76,14 @@ public final class AppLocaleImpl
      */
     @NonNull
     private String preferredLocaleSpec = SYSTEM_LANGUAGE;
+
+    public AppLocaleImpl(@NonNull final List<Locale> locales,
+                         @NonNull final Locale systemLocale,
+                         @NonNull final Languages languages) {
+        this.locales = locales;
+        this.systemLocale = systemLocale;
+        this.languages = languages;
+    }
 
     @Override
     @NonNull
@@ -95,9 +108,9 @@ public final class AppLocaleImpl
         }
 
         // Recreate the user-locale list adding the preferred one at the start.
-        final List<Locale> locales = ServiceLocator.getInstance().getSystemLocales();
-        locales.add(0, preferredLocale);
-        final LocaleList updatedLocaleList = new LocaleList(locales.toArray(Z_ARRAY));
+        final ArrayList<Locale> list = new ArrayList<>(locales);
+        list.add(0, preferredLocale);
+        final LocaleList updatedLocaleList = new LocaleList(list.toArray(Z_ARRAY));
 
         // Update the JDK usage of Locale.
         // This MUST be done each and every time when an Activity starts!
@@ -128,9 +141,8 @@ public final class AppLocaleImpl
     @Override
     @NonNull
     public Locale create(@Nullable final String localeSpec) {
-
         if (localeSpec == null || localeSpec.isEmpty() || SYSTEM_LANGUAGE.equals(localeSpec)) {
-            return ServiceLocator.getInstance().getSystemLocale();
+            return systemLocale;
         } else {
             // Create a Locale from a concatenated Locale string (e.g. 'de', 'en_AU')
             final String[] parts;
@@ -158,8 +170,6 @@ public final class AppLocaleImpl
         if (inputLang.isEmpty()) {
             return null;
         }
-
-        final Languages languages = ServiceLocator.getInstance().getLanguages();
 
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         String lang = inputLang.trim().toLowerCase(userLocale);
@@ -246,8 +256,7 @@ public final class AppLocaleImpl
         } else {
             final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
             // any 3-char code might need to be converted to 2-char be able to find the resource.
-            final String iso = ServiceLocator.getInstance().getLanguages()
-                                             .getLocaleIsoFromISO3(userLocale, lang);
+            final String iso = languages.getLocaleIsoFromISO3(userLocale, lang);
             deltaConfig.setLocale(new Locale(iso));
         }
 
