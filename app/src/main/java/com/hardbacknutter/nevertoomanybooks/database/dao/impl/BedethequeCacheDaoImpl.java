@@ -29,7 +29,6 @@ import androidx.annotation.Nullable;
 import java.util.Locale;
 import java.util.function.Supplier;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -76,15 +75,14 @@ public class BedethequeCacheDaoImpl
 
         BdtAuthor bdtAuthor = null;
 
-        final SynchronizedDb cacheDb = ServiceLocator.getInstance().getCacheDb();
         Synchronizer.SyncLock txLock = null;
         try {
-            if (!cacheDb.inTransaction()) {
-                txLock = cacheDb.beginTransaction(true);
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
             }
 
             long id = 0;
-            try (SynchronizedStatement stmt = cacheDb.compileStatement(Sql.INSERT)) {
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
                 while ((bdtAuthor = recordSupplier.get()) != null) {
                     stmt.bindString(1, bdtAuthor.getName());
                     stmt.bindString(2, SqlEncode.orderByColumn(bdtAuthor.getName(), locale));
@@ -98,7 +96,7 @@ public class BedethequeCacheDaoImpl
                 }
             }
             if (txLock != null) {
-                cacheDb.setTransactionSuccessful();
+                db.setTransactionSuccessful();
             }
             return id > 0;
 
@@ -106,7 +104,7 @@ public class BedethequeCacheDaoImpl
             throw new DaoWriteException(ERROR_INSERT_FROM + bdtAuthor, e);
         } finally {
             if (txLock != null) {
-                cacheDb.endTransaction(txLock);
+                db.endTransaction(txLock);
             }
         }
     }
