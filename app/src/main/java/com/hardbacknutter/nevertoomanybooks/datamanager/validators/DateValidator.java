@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,12 +27,12 @@ import androidx.annotation.StringRes;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 
 /**
  * Validator to apply a default value and validate as a Date.
@@ -44,13 +44,19 @@ public class DateValidator
     @NonNull
     private final String defaultValue;
 
+    @NonNull
+    private final FullDateParser fullDateParser;
+
     /**
      * Constructor with default value.
      *
      * @param defaultValue Default to apply if the field is empty
      */
-    public DateValidator(@NonNull final String defaultValue) {
+    public DateValidator(@NonNull final List<Locale> locales,
+                         @NonNull final Locale systemLocale,
+                         @NonNull final String defaultValue) {
         this.defaultValue = defaultValue;
+        fullDateParser = new FullDateParser(systemLocale, locales);
     }
 
     @Override
@@ -65,11 +71,7 @@ public class DateValidator
         if (value == null || value.isEmpty()) {
             value = defaultValue;
         } else {
-            final LocalDateTime date = new FullDateParser(
-                    ServiceLocator.getInstance().getSystemLocale(),
-                    LocaleListUtils.asList(context))
-                    .parse(value);
-
+            final LocalDateTime date = fullDateParser.parse(value);
             if (date != null) {
                 value = date.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
             } else {
