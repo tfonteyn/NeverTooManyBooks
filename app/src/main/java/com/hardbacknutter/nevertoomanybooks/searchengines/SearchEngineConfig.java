@@ -176,10 +176,10 @@ public final class SearchEngineConfig {
                      .collect(Collectors.toList());
     }
 
-    public static int getTimeoutValueInMs(@NonNull final Context context,
+    public static int getTimeoutValueInMs(@NonNull final Context appContext,
                                           @NonNull final String key,
                                           final int defValueInMs) {
-        final int seconds = PreferenceManager.getDefaultSharedPreferences(context)
+        final int seconds = PreferenceManager.getDefaultSharedPreferences(appContext)
                                              .getInt(key, 0);
         // <1000 as sanity check for roque preference file imports
         if (seconds > 0 && seconds < 1000) {
@@ -200,8 +200,8 @@ public final class SearchEngineConfig {
     }
 
     @NonNull
-    public String getHostUrl(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context).getString(
+    public String getHostUrl(@NonNull final Context appContext) {
+        return PreferenceManager.getDefaultSharedPreferences(appContext).getString(
                 engineId.getPreferenceKey() + Prefs.pk_suffix_host_url,
                 engineId.getDefaultUrl());
     }
@@ -235,9 +235,9 @@ public final class SearchEngineConfig {
      *
      * @return {@code true} if ISBN10 should be preferred.
      */
-    boolean prefersIsbn10() {
-        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(
-                ServiceLocator.getInstance().getAppContext());
+    boolean prefersIsbn10(@NonNull final Context appContext) {
+        final SharedPreferences preferences =
+                PreferenceManager.getDefaultSharedPreferences(appContext);
 
         final String key = engineId.getPreferenceKey() + "." + Prefs.pk_search_isbn_prefer_10;
         if (preferences.contains(key)) {
@@ -285,9 +285,9 @@ public final class SearchEngineConfig {
      *
      * @return milli seconds
      */
-    public int getConnectTimeoutInMs(@NonNull final Context context) {
-        return getTimeoutValueInMs(context, engineId.getPreferenceKey() + "."
-                                            + Prefs.pk_timeout_connect_in_seconds,
+    public int getConnectTimeoutInMs(@NonNull final Context appContext) {
+        return getTimeoutValueInMs(appContext, engineId.getPreferenceKey() + "."
+                                               + Prefs.pk_timeout_connect_in_seconds,
                                    connectTimeoutMs);
     }
 
@@ -296,9 +296,9 @@ public final class SearchEngineConfig {
      *
      * @return milli seconds
      */
-    public int getReadTimeoutInMs(@NonNull final Context context) {
-        return getTimeoutValueInMs(context, engineId.getPreferenceKey() + "."
-                                            + Prefs.pk_timeout_read_in_seconds,
+    public int getReadTimeoutInMs(@NonNull final Context appContext) {
+        return getTimeoutValueInMs(appContext, engineId.getPreferenceKey() + "."
+                                               + Prefs.pk_timeout_read_in_seconds,
                                    readTimeoutMs);
     }
 

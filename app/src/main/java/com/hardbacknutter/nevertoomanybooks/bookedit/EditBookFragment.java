@@ -309,7 +309,8 @@ public class EditBookFragment
                                         R.string.lbl_personal_notes));
             }
 
-            if (GlobalFieldVisibility.isUsed(DBKey.FK_TOC_ENTRY)) {
+            if (GlobalFieldVisibility.isUsed(container.getApplicationContext(),
+                                             DBKey.FK_TOC_ENTRY)) {
                 tabList.add(new TabInfo(EditBookTocFragment.class,
                                         R.string.lbl_tab_table_of_content,
                                         R.string.lbl_table_of_content));

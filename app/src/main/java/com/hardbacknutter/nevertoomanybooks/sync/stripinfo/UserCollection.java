@@ -36,7 +36,6 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
@@ -146,7 +145,7 @@ public class UserCollection {
                    @NonNull final BookshelfMapper bookshelfMapper) {
         this.userId = userId;
         this.searchEngine = searchEngine;
-        jsoupLoader = new JsoupLoader(this.searchEngine.createFutureGetRequest(context));
+        jsoupLoader = new JsoupLoader(this.searchEngine.createFutureGetRequest());
         rowParser = new RowParser(context, bookshelfMapper);
     }
 
@@ -163,7 +162,6 @@ public class UserCollection {
      *
      * @return list with book-data Bundles
      *
-     * @throws StorageException on storage related failures
      * @throws IOException      on generic/other IO failures
      */
     @SuppressLint("DefaultLocale")
@@ -172,7 +170,7 @@ public class UserCollection {
     Optional<List<Book>> fetchPage(@NonNull final Context context,
                                    final int pageNr,
                                    @NonNull final ProgressListener progressListener)
-            throws SearchException, StorageException, IOException {
+            throws SearchException, IOException {
 
         if (!(pageNr == 0 || maxPages > pageNr)) {
             throw new SearchException(searchEngine.getName(context), "Can't fetch more pages");
@@ -181,7 +179,7 @@ public class UserCollection {
         progressListener.publishProgress(1, context.getString(
                 R.string.progress_msg_loading_page, pageNr));
 
-        final String url = searchEngine.getHostUrl(context)
+        final String url = searchEngine.getHostUrl()
                            + String.format(URL_MY_BOOKS, userId, pageNr, FLAGS);
 
         final Document document = jsoupLoader.loadDocument(context, url, null);

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -161,7 +161,7 @@ public class EditBookFieldsFragment
         vb.lblAuthor.setEndIconOnClickListener(v -> editAuthor());
         vb.author.setOnClickListener(v -> editAuthor());
 
-        if (GlobalFieldVisibility.isUsed(DBKey.FK_SERIES)) {
+        if (GlobalFieldVisibility.isUsed(context, DBKey.FK_SERIES)) {
             // Series editor (screen)
             // no listener/callback. We share the book view model in the Activity scope
             vb.lblSeries.setEndIconOnClickListener(v -> editSeries());
@@ -184,13 +184,15 @@ public class EditBookFieldsFragment
     }
 
     private void createCoverDelegates() {
+        final Context context = getContext();
         final Resources res = getResources();
         final TypedArray width = res.obtainTypedArray(R.array.cover_edit_width);
         final TypedArray height = res.obtainTypedArray(R.array.cover_edit_height);
         try {
             for (int cIdx = 0; cIdx < width.length(); cIdx++) {
                 // in edit mode, always show both covers unless globally disabled
-                if (GlobalFieldVisibility.isUsed(FieldVisibility.COVER[cIdx])) {
+                //noinspection ConstantConditions
+                if (GlobalFieldVisibility.isUsed(context, FieldVisibility.COVER[cIdx])) {
                     final int maxWidth = width.getDimensionPixelSize(cIdx, 0);
                     final int maxHeight = height.getDimensionPixelSize(cIdx, 0);
 

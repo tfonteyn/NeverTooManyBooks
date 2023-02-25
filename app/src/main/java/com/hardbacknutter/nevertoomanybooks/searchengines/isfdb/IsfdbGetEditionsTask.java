@@ -82,7 +82,7 @@ public class IsfdbGetEditionsTask
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
         // create a new instance just for our own use
-        searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine();
+        searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine(context);
         searchEngine.setCaller(this);
 
         return searchEngine.fetchEditionsByIsbn(context, isbn);

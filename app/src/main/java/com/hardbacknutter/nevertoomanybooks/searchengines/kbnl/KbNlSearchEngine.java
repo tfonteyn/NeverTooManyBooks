@@ -145,16 +145,16 @@ public class KbNlSearchEngine
                    SearchException,
                    CredentialsException {
 
-        futureHttpGet = createFutureHeadRequest(context);
+        futureHttpGet = createFutureHeadRequest();
         try {
-            futureHttpGet.get(getHostUrl(context) + "/cbs/", request -> true);
+            futureHttpGet.get(getHostUrl() + "/cbs/", request -> true);
         } catch (@NonNull final IOException e) {
             throw new SearchException(getName(context), e);
         }
 
         final Book book = new Book();
 
-        futureHttpGet = createFutureGetRequest(context);
+        futureHttpGet = createFutureGetRequest();
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final DefaultHandler handler = new KbNlBookHandler(context, book);
@@ -163,8 +163,8 @@ public class KbNlSearchEngine
             final SAXParser parser = factory.newSAXParser();
 
             // Do the search... we'll either get a parsed list-page back, or the parsed book page.
-            String url = getHostUrl(context) + String.format(SEARCH_URL, dbVersion, setNr,
-                                                             validIsbn);
+            String url = getHostUrl() + String.format(SEARCH_URL, dbVersion, setNr,
+                                                      validIsbn);
             futureHttpGet.get(url, request -> processRequest(request, handler, parser, book));
 
             // If it was a list page, fetch and parse the 1st book found;
@@ -172,7 +172,7 @@ public class KbNlSearchEngine
             final String show = book.getString(KbNlHandlerBase.BKEY_SHOW_URL, null);
             if (show != null && !show.isEmpty()) {
                 book.clearData();
-                url = getHostUrl(context) + String.format(BOOK_URL, dbVersion, setNr, show);
+                url = getHostUrl() + String.format(BOOK_URL, dbVersion, setNr, show);
                 futureHttpGet.get(url, request -> processRequest(request, handler, parser, book));
             }
         } catch (@NonNull final SAXException e) {

@@ -311,7 +311,7 @@ public final class ServiceLocator {
     public Languages getLanguages() {
         synchronized (this) {
             if (languages == null) {
-                languages = new Languages();
+                languages = new Languages(getAppLocale());
             }
         }
         return languages;
@@ -417,7 +417,7 @@ public final class ServiceLocator {
     public BookDao getBookDao() {
         synchronized (this) {
             if (bookDao == null) {
-                bookDao = new BookDaoImpl(getDb());
+                bookDao = new BookDaoImpl(getDb(), getSystemLocale());
             }
         }
         return bookDao;

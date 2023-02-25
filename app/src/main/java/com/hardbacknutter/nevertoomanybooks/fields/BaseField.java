@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.fields;
 
+import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -70,7 +71,7 @@ public abstract class BaseField<T, V extends View>
 
     /**
      * The preference key (field-name) to check if this Field is used or not.
-     * i.e. the key to be used for {@link #isUsed()}.
+     * i.e. the key to be used for {@link Field#isUsed(Context)}.
      */
     @NonNull
     private final String usedKey;
@@ -279,7 +280,7 @@ public abstract class BaseField<T, V extends View>
                 view.setVisibility(View.GONE);
                 setRelatedViewsVisibility(parent, View.GONE);
 
-            } else if (isUsed()) {
+            } else if (isUsed(parent.getContext())) {
                 // Anything else (in use) should be visible if it's not yet.
                 view.setVisibility(View.VISIBLE);
                 setRelatedViewsVisibility(parent, View.VISIBLE);
@@ -310,7 +311,7 @@ public abstract class BaseField<T, V extends View>
 
         viewReference = new WeakReference<>(parent.findViewById(fieldViewId));
         // Unused fields are hidden here BEFORE they are displayed at all.
-        if (!isUsed()) {
+        if (!isUsed(parent.getContext())) {
             requireView().setVisibility(View.GONE);
             setRelatedViewsVisibility(parent, View.GONE);
             return;
@@ -394,8 +395,8 @@ public abstract class BaseField<T, V extends View>
     }
 
     @Override
-    public boolean isUsed() {
-        return GlobalFieldVisibility.isUsed(usedKey);
+    public boolean isUsed(@NonNull final Context context) {
+        return GlobalFieldVisibility.isUsed(context, usedKey);
     }
 
     @Override

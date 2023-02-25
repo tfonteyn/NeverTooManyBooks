@@ -39,7 +39,6 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.storage.DiskFullException;
@@ -75,23 +74,22 @@ public class ImageDownloader {
     /**
      * Get a temporary file.
      *
-     * @param source of the image (normally a SearchEngine specific code)
-     * @param bookId (optional) either the native id, or the isbn
-     * @param cIdx   0..n image index
-     * @param size   (optional) size of the image
-     *               Omitted if not set
+     * @param directory where to create
+     * @param source    of the image (normally a SearchEngine specific code)
+     * @param bookId    (optional) either the native id, or the isbn
+     * @param cIdx      0..n image index
+     * @param size      (optional) size of the image
+     *                  Omitted if not set
      *
      * @return file
-     *
-     * @throws StorageException The covers directory is not available
      */
     @AnyThread
     @NonNull
-    public File getTempFile(@NonNull final String source,
+    public File getTempFile(@NonNull final File directory,
+                            @NonNull final String source,
                             @Nullable final String bookId,
                             @IntRange(from = 0, to = 1) final int cIdx,
-                            @Nullable final Size size)
-            throws StorageException {
+                            @Nullable final Size size) {
 
         // keep all "_" even for empty parts. Easier to parse the name if needed.
         final String filename = System.currentTimeMillis()
@@ -101,8 +99,7 @@ public class ImageDownloader {
                                 + "_" + (size != null ? size : "")
                                 + ".jpg";
 
-        return new File(
-                CoverDir.getTemp(ServiceLocator.getInstance().getAppContext()), filename);
+        return new File(directory, filename);
     }
 
     /**

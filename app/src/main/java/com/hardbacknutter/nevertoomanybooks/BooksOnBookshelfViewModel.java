@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
@@ -455,12 +456,12 @@ public class BooksOnBookshelfViewModel
     void onStyleChanged(@NonNull final Context context,
                         @NonNull final String styleUuid) {
         // Always validate first
-        final Style style = ServiceLocator.getInstance().getStyles()
-                                          .getStyleOrDefault(context, styleUuid);
+        final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
+        final Style style = stylesHelper.getStyleOrDefault(context, styleUuid);
         Objects.requireNonNull(bookshelf, Bookshelf.TAG);
 
         // set as the global default.
-        ServiceLocator.getInstance().getStyles().setDefault(context, style.getUuid());
+        stylesHelper.setDefault(context, style.getUuid());
         // save the new bookshelf/style combination
         bookshelf.setAsPreferred(context);
         bookshelf.setStyle(context, style);

@@ -255,9 +255,8 @@ public class IsfdbSearchEngine
 
     @NonNull
     @Override
-    public String createBrowserUrl(@NonNull final Context context,
-                                   @NonNull final String externalId) {
-        return getHostUrl(context) + CGI_BROWSER + externalId;
+    public String createBrowserUrl(@NonNull final String externalId) {
+        return getHostUrl() + CGI_BROWSER + externalId;
     }
 
     @NonNull
@@ -269,12 +268,13 @@ public class IsfdbSearchEngine
 
         final Book book = new Book();
 
-        final String url = getHostUrl(context) + String.format(CGI_BY_EXTERNAL_ID, externalId);
+        final String url = getHostUrl() + String.format(CGI_BY_EXTERNAL_ID, externalId);
 
         // added due to https://github.com/square/okhttp/issues/1517
         // it's a server issue, this is a workaround.
-        final Document document = loadDocument(context, url, Map.of(HttpConstants.CONNECTION,
-                                                                    HttpConstants.CONNECTION_CLOSE));
+        final Document document = loadDocument(context, url,
+                                               Map.of(HttpConstants.CONNECTION,
+                                                      HttpConstants.CONNECTION_CLOSE));
         if (!isCancelled()) {
             parse(context, document, fetchCovers, book);
             // ISFDB only shows the books language on the publications page.
@@ -315,7 +315,7 @@ public class IsfdbSearchEngine
                        @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final String url = getHostUrl(context) + CGI_ADV_SEARCH_PREFIX;
+        final String url = getHostUrl() + CGI_ADV_SEARCH_PREFIX;
 
         int index = 0;
         String args = "";
@@ -1013,7 +1013,7 @@ public class IsfdbSearchEngine
                 // does not happen now, but could happen if we come about non-standard entries,
                 // or if ISFDB website changes
                 LoggerFactory.getLogger()
-                              .e(TAG, e, "path: " + document.location() + "\n\nLI: " + li);
+                             .e(TAG, e, "path: " + document.location() + "\n\nLI: " + li);
             }
         }
 
@@ -1172,7 +1172,7 @@ public class IsfdbSearchEngine
             throws SearchException, CredentialsException {
         searchForIsbn = validIsbn;
 
-        final String url = getHostUrl(context) + String.format(CGI_EDITIONS, validIsbn);
+        final String url = getHostUrl() + String.format(CGI_EDITIONS, validIsbn);
         return fetchEditions(context, url);
     }
 
@@ -1309,8 +1309,8 @@ public class IsfdbSearchEngine
         }
 
         // go get it.
-        final String url = getHostUrl(context) + String.format(CGI_BY_EXTERNAL_ID,
-                                                               edition.getIsfdbId());
+        final String url = getHostUrl() + String.format(CGI_BY_EXTERNAL_ID,
+                                                        edition.getIsfdbId());
         // added due to https://github.com/square/okhttp/issues/1517
         // it's a server issue, this is a workaround.
         return loadDocument(context, url, Map.of(HttpConstants.CONNECTION,
@@ -1444,7 +1444,7 @@ public class IsfdbSearchEngine
         //    return pub[0]
         //  else:
         //    return 0
-        final String url = getHostUrl(context) + String.format(REST_BY_EXTERNAL_ID, externalId);
+        final String url = getHostUrl() + String.format(REST_BY_EXTERNAL_ID, externalId);
         final List<Book> publicationsList = fetchPublications(context, url, fetchCovers, 1);
         if (publicationsList.isEmpty()) {
             return new Book();
@@ -1521,7 +1521,7 @@ public class IsfdbSearchEngine
                                          @SuppressWarnings("SameParameterValue") final int maxRecords)
             throws StorageException, SearchException {
 
-        futureHttpGet = createFutureGetRequest(context);
+        futureHttpGet = createFutureGetRequest();
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
 

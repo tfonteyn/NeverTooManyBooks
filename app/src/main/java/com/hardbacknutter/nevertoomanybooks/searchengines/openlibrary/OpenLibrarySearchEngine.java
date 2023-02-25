@@ -184,9 +184,8 @@ public class OpenLibrarySearchEngine
 
     @NonNull
     @Override
-    public String createBrowserUrl(@NonNull final Context context,
-                                   @NonNull final String externalId) {
-        return getHostUrl(context) + "/books/" + externalId;
+    public String createBrowserUrl(@NonNull final String externalId) {
+        return getHostUrl() + "/books/" + externalId;
     }
 
     @NonNull
@@ -198,7 +197,7 @@ public class OpenLibrarySearchEngine
 
         final Book book = new Book();
 
-        final String url = getHostUrl(context) + String.format(BASE_BOOK_URL, "OLID", externalId);
+        final String url = getHostUrl() + String.format(BASE_BOOK_URL, "OLID", externalId);
 
         fetchBook(context, url, fetchCovers, book);
         return book;
@@ -218,7 +217,7 @@ public class OpenLibrarySearchEngine
 
         final Book book = new Book();
 
-        final String url = getHostUrl(context) + String.format(BASE_BOOK_URL, "ISBN", validIsbn);
+        final String url = getHostUrl() + String.format(BASE_BOOK_URL, "ISBN", validIsbn);
 
         fetchBook(context, url, fetchCovers, book);
         return book;
@@ -292,7 +291,7 @@ public class OpenLibrarySearchEngine
                            @NonNull final Book book)
             throws StorageException, SearchException {
 
-        futureHttpGet = createFutureGetRequest(context);
+        futureHttpGet = createFutureGetRequest();
 
         try {
             // get and store the result into a string.

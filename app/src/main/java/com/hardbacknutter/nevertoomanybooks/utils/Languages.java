@@ -33,7 +33,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.tasks.BuildLanguageMappingsTask;
 
 /**
@@ -58,11 +57,15 @@ public class Languages {
 
     @NonNull
     private final Map<String, String> lang3ToLang2Map;
+    @NonNull
+    private final AppLocale appLocale;
 
     /**
      * Constructor.
      */
-    public Languages() {
+    public Languages(@NonNull final AppLocale appLocale) {
+        this.appLocale = appLocale;
+
         final String[] languages = Locale.getISOLanguages();
         lang3ToLang2Map = new HashMap<>(languages.length);
         for (final String language : languages) {
@@ -82,12 +85,11 @@ public class Languages {
      * @see AppLocale#getLocale(Context, String)
      */
     @NonNull
-    public static Locale toLocale(@NonNull final Context context,
-                                  @Nullable final String language) {
+    public Locale toLocale(@NonNull final Context context,
+                           @Nullable final String language) {
 
         if (language != null && !language.isBlank()) {
-            final Locale locale = ServiceLocator.getInstance().getAppLocale()
-                                                .getLocale(context, language);
+            final Locale locale = appLocale.getLocale(context, language);
             if (locale != null) {
                 return locale;
             }
@@ -108,8 +110,7 @@ public class Languages {
     @NonNull
     public String getDisplayNameFromISO3(@NonNull final Context context,
                                          @NonNull final String iso3) {
-        final Locale langLocale = ServiceLocator.getInstance().getAppLocale()
-                                                .getLocale(context, iso3);
+        final Locale langLocale = appLocale.getLocale(context, iso3);
         if (langLocale == null) {
             return iso3;
         }
@@ -158,7 +159,7 @@ public class Languages {
             return "eng";
         } else {
             try {
-                return ServiceLocator.getInstance().getAppLocale().create(code).getISO3Language();
+                return appLocale.create(code).getISO3Language();
             } catch (@NonNull final MissingResourceException ignore) {
                 return code;
             }

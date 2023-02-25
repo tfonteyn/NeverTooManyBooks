@@ -39,7 +39,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.adapter.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
@@ -967,6 +966,7 @@ public class BooklistGroup {
         @Id
         private final int id;
         /** User displayable label resource id. */
+        @SuppressWarnings("FieldNotUsedInToString")
         @StringRes
         private final int labelResId;
         /** Unique keyPrefix used to represent a key in the hierarchy. */
@@ -1116,8 +1116,6 @@ public class BooklistGroup {
         public String toString() {
             return "GroupKey{"
                    + "id=" + id
-                   + ", label=`" + ServiceLocator.getInstance().getAppContext()
-                                                 .getString(labelResId) + '`'
                    + ", keyPrefix=`" + keyPrefix + '`'
                    + ", keyDomain=" + keyDomain
                    + ", groupDomains=" + groupDomains

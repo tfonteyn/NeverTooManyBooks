@@ -94,7 +94,7 @@ public class GoogleBooksSearchEngine
         final Book book = new Book();
 
         // %3A  :
-        final String url = getHostUrl(context) + "/books/feeds/volumes?q=ISBN%3A" + validIsbn;
+        final String url = getHostUrl() + "/books/feeds/volumes?q=ISBN%3A" + validIsbn;
         fetchBook(context, url, fetchCovers, book);
         return book;
     }
@@ -116,7 +116,7 @@ public class GoogleBooksSearchEngine
         // %3A  :
         if (author != null && !author.isEmpty()
             && title != null && !title.isEmpty()) {
-            final String url = getHostUrl(context) + "/books/feeds/volumes?q="
+            final String url = getHostUrl() + "/books/feeds/volumes?q="
                                + "intitle%3A" + encodeSpaces(title)
                                + "%2B"
                                + "inauthor%3A" + encodeSpaces(author);
@@ -143,7 +143,7 @@ public class GoogleBooksSearchEngine
             throws StorageException,
                    SearchException {
 
-        futureHttpGet = createFutureGetRequest(context);
+        futureHttpGet = createFutureGetRequest();
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         // get the booklist, can return multiple books ('entry' elements)

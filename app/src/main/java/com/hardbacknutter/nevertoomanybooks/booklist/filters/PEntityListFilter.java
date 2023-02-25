@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -88,7 +88,7 @@ public class PEntityListFilter<T extends Entity>
 
     @Override
     public boolean isActive(@NonNull final Context context) {
-        if (!GlobalFieldVisibility.isUsed(domain.getName())) {
+        if (!GlobalFieldVisibility.isUsed(context, domain.getName())) {
             return false;
         }
         return !value.isEmpty();

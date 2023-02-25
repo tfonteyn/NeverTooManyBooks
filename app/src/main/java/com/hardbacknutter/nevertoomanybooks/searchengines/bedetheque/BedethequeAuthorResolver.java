@@ -86,7 +86,7 @@ public class BedethequeAuthorResolver
     public BedethequeAuthorResolver(@NonNull final Context context,
                                     @Nullable final Cancellable caller) {
         this.context = context;
-        searchEngine = (BedethequeSearchEngine) EngineId.Bedetheque.createSearchEngine();
+        searchEngine = (BedethequeSearchEngine) EngineId.Bedetheque.createSearchEngine(context);
         searchEngine.setCaller(caller);
         locale = searchEngine.getLocale(context);
     }

@@ -152,7 +152,7 @@ public class FileManager {
 
                         SearchEngine searchEngine = engineCache.get(engineId);
                         if (searchEngine == null) {
-                            searchEngine = engineId.createSearchEngine();
+                            searchEngine = engineId.createSearchEngine(context);
                             // caller is the FetchImageTask
                             searchEngine.setCaller(progressListener);
                             engineCache.put(engineId, searchEngine);

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,13 +35,13 @@ import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorViewModel;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
 
 /**
@@ -130,7 +130,8 @@ public class EditBookAuthorDialogFragment
 
         vb.cbxIsComplete.setChecked(currentEdit.isComplete());
 
-        final boolean useAuthorType = GlobalFieldVisibility.isUsed(DBKey.AUTHOR_TYPE__BITMASK);
+        final boolean useAuthorType = GlobalFieldVisibility
+                .isUsed(context, DBKey.AUTHOR_TYPE__BITMASK);
         if (useAuthorType) {
             vb.btnUseAuthorType.setVisibility(View.VISIBLE);
             vb.btnUseAuthorType.setOnCheckedChangeListener((v, isChecked) -> {
@@ -222,8 +223,9 @@ public class EditBookAuthorDialogFragment
 
         final Context context = getContext();
         //noinspection ConstantConditions
-        final Locale bookLocale =
-                Languages.toLocale(context, vm.getBook().getString(DBKey.LANGUAGE));
+        final Locale bookLocale = ServiceLocator
+                .getInstance().getLanguages()
+                .toLocale(context, vm.getBook().getString(DBKey.LANGUAGE));
 
         if (!authorVm.validateAndSetRealAuthor(context, bookLocale, createRealAuthorIfNeeded)) {
             new MaterialAlertDialogBuilder(context)

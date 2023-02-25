@@ -147,7 +147,7 @@ public class AmazonSearchEngine
     @Override
     public Locale getLocale(@NonNull final Context context) {
         // Derive the Locale from the user configured url.
-        return getLocale(context, getHostUrl(context));
+        return getLocale(context, getHostUrl());
     }
 
     @NonNull
@@ -176,8 +176,7 @@ public class AmazonSearchEngine
         final ISBN tmp = new ISBN(validIsbn, true);
         final String asin = tmp.isIsbn10Compat() ? tmp.asText(ISBN.Type.Isbn10) : validIsbn;
 
-        return genericSearch(context,
-                             getHostUrl(context) + String.format(BY_EXTERNAL_ID, asin),
+        return genericSearch(context, getHostUrl() + String.format(BY_EXTERNAL_ID, asin),
                              fetchCovers);
     }
 
@@ -189,8 +188,7 @@ public class AmazonSearchEngine
             throws StorageException, SearchException, CredentialsException {
 
         if (ASIN.isValidAsin(barcode)) {
-            return genericSearch(context,
-                                 getHostUrl(context) + String.format(BY_EXTERNAL_ID, barcode),
+            return genericSearch(context, getHostUrl() + String.format(BY_EXTERNAL_ID, barcode),
                                  fetchCovers);
         } else {
             // not supported
@@ -206,7 +204,7 @@ public class AmazonSearchEngine
                                     @Nullable final Size size)
             throws StorageException, SearchException, CredentialsException {
 
-        final String url = getHostUrl(context) + String.format(BY_EXTERNAL_ID, validIsbn);
+        final String url = getHostUrl() + String.format(BY_EXTERNAL_ID, validIsbn);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             final ArrayList<String> imageList = parseCovers(document, validIsbn, 0);
@@ -269,7 +267,7 @@ public class AmazonSearchEngine
             return;
         }
 
-        parseDetails(context, document, book, siteLocale);
+        parseDetails(document, book, siteLocale);
         parseASIN(document, book);
 
         checkForSeriesNameInTitle(book);
@@ -320,13 +318,11 @@ public class AmazonSearchEngine
     }
 
     /**
-     * @param context    Current context
      * @param document   to parse
      * @param book       to update
      * @param siteLocale to use for case manipulation
      */
-    private void parseDetails(@NonNull final Context context,
-                              @NonNull final Document document,
+    private void parseDetails(@NonNull final Document document,
                               @NonNull final Book book,
                               @NonNull final Locale siteLocale) {
         final Elements lis = document
@@ -360,7 +356,7 @@ public class AmazonSearchEngine
                 case "taschenbuch":
                 case "gebundene ausgabe":
                     book.putString(DBKey.FORMAT, label);
-                    book.putString(DBKey.PAGE_COUNT, extractPages(context, data));
+                    book.putString(DBKey.PAGE_COUNT, extractPages(data));
                     break;
 
                 case "language":
@@ -533,10 +529,9 @@ public class AmazonSearchEngine
     }
 
     @NonNull
-    private String extractPages(@NonNull final Context context,
-                                @NonNull final CharSequence data) {
+    private String extractPages(@NonNull final CharSequence data) {
         if (pagesPattern == null) {
-            final String baseUrl = getHostUrl(context);
+            final String baseUrl = getHostUrl();
             // check the domain name to determine the language of the site
             final String root = baseUrl.substring(baseUrl.lastIndexOf('.') + 1);
             final String pagesStr;

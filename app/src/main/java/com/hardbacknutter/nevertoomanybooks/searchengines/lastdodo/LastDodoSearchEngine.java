@@ -178,9 +178,8 @@ public class LastDodoSearchEngine
 
     @NonNull
     @Override
-    public String createBrowserUrl(@NonNull final Context context,
-                                   @NonNull final String externalId) {
-        return getHostUrl(context) + String.format(BY_EXTERNAL_ID, externalId);
+    public String createBrowserUrl(@NonNull final String externalId) {
+        return getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
     }
 
     @NonNull
@@ -191,10 +190,10 @@ public class LastDodoSearchEngine
 
         final Book book = new Book();
 
-        final String url = getHostUrl(context) + String.format(BY_EXTERNAL_ID, externalId);
+        final String url = getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
-            parse(context, document, fetchCovers, book, getAuthorResolver(context));
+            parse(document, fetchCovers, book, getAuthorResolver(context));
         }
         return book;
     }
@@ -211,7 +210,7 @@ public class LastDodoSearchEngine
         // This is silly...
         // 2022-05-31: searching the site with the ISBN now REQUIRES the dashes between
         // the digits.
-        final String url = getHostUrl(context) + String.format(BY_ISBN, ISBN.formatIsbn(validIsbn));
+        final String url = getHostUrl() + String.format(BY_ISBN, ISBN.formatIsbn(validIsbn));
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
@@ -249,11 +248,11 @@ public class LastDodoSearchEngine
                 String url = urlElement.attr("href");
                 // sanity check - it normally does NOT have the protocol/site part
                 if (url.startsWith("/")) {
-                    url = getHostUrl(context) + url;
+                    url = getHostUrl() + url;
                 }
                 final Document redirected = loadDocument(context, url, null);
                 if (!isCancelled()) {
-                    parse(context, redirected, fetchCovers, book, getAuthorResolver(context));
+                    parse(redirected, fetchCovers, book, getAuthorResolver(context));
                 }
             }
         }
@@ -344,7 +343,6 @@ public class LastDodoSearchEngine
      * Parses the downloaded {@link org.jsoup.nodes.Document}.
      * We only parse the <strong>first book</strong> found.
      *
-     * @param context        Current context
      * @param document       to parse
      * @param fetchCovers    Set to {@code true} if we want to get covers
      *                       The array is guaranteed to have at least one element.
@@ -358,8 +356,7 @@ public class LastDodoSearchEngine
      */
     @VisibleForTesting
     @WorkerThread
-    public void parse(@NonNull final Context context,
-                      @NonNull final Document document,
+    public void parse(@NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Book book,
                       @Nullable final AuthorResolver authorResolver)

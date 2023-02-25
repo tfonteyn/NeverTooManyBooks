@@ -78,15 +78,16 @@ public class SearchTask
      *      <li>text</li>
      * </ol>
      *
+     * @param context      Current context
      * @param taskId       a unique task identifier, returned with each message
      * @param searchEngine the search site engine
      * @param taskListener for the results
      */
-    SearchTask(final int taskId,
+    SearchTask(@NonNull final Context context,
+               final int taskId,
                @NonNull final SearchEngine searchEngine,
                @NonNull final TaskListener<Book> taskListener) {
-        super(taskId, TAG + ' ' + searchEngine.getName(
-                      ServiceLocator.getInstance().getAppContext()),
+        super(taskId, TAG + ' ' + searchEngine.getName(context),
               taskListener);
 
         this.searchEngine = searchEngine;
@@ -200,7 +201,7 @@ public class SearchTask
         }
 
         // can we reach the site ?
-        searchEngine.ping(context);
+        searchEngine.ping();
 
         final Book book;
         switch (by) {

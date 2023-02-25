@@ -709,7 +709,7 @@ public class Author
             case Full: {
                 label = getFormattedName(context, style);
 
-                if (GlobalFieldVisibility.isUsed(DBKey.AUTHOR_TYPE__BITMASK)) {
+                if (GlobalFieldVisibility.isUsed(context, DBKey.AUTHOR_TYPE__BITMASK)) {
                     final String typeLabels = getTypeLabels(context);
                     if (!typeLabels.isEmpty()) {
                         label += " <small><i>" + typeLabels + "</i></small>";

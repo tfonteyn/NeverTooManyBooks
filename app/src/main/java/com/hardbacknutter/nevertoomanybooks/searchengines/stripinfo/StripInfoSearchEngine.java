@@ -153,9 +153,8 @@ public class StripInfoSearchEngine
 
     @NonNull
     @Override
-    public String createBrowserUrl(@NonNull final Context context,
-                                   @NonNull final String externalId) {
-        return getHostUrl(context) + String.format(BY_EXTERNAL_ID, externalId);
+    public String createBrowserUrl(@NonNull final String externalId) {
+        return getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
     }
 
     public void setLoginHelper(@NonNull final StripInfoAuth loginHelper) {
@@ -212,7 +211,7 @@ public class StripInfoSearchEngine
 
         final Book book = new Book();
 
-        final String url = getHostUrl(context) + String.format(BY_EXTERNAL_ID, externalId);
+        final String url = getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             parse(context, document, fetchCovers, book, getAuthorResolver(context));
@@ -234,7 +233,7 @@ public class StripInfoSearchEngine
 
         final Book book = new Book();
 
-        final String url = getHostUrl(context) + String.format(BY_ISBN, validIsbn);
+        final String url = getHostUrl() + String.format(BY_ISBN, validIsbn);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             processDocument(context, validIsbn, document, fetchCovers, book);

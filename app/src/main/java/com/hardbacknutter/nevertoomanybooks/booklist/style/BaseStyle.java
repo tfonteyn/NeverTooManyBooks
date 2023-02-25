@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,6 +36,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
@@ -264,15 +265,17 @@ public abstract class BaseStyle
     @Override
     public boolean isShowField(@NonNull final Screen screen,
                                @NonNull final String dbKey) {
+        final Context context = ServiceLocator.getInstance().getAppContext();
+
         switch (screen) {
             case List:
                 return listFieldVisibility
                         .isShowField(dbKey)
-                        .orElseGet(() -> GlobalFieldVisibility.isUsed(dbKey));
+                        .orElseGet(() -> GlobalFieldVisibility.isUsed(context, dbKey));
             case Detail:
                 return detailsFieldVisibility
                         .isShowField(dbKey)
-                        .orElseGet(() -> GlobalFieldVisibility.isUsed(dbKey));
+                        .orElseGet(() -> GlobalFieldVisibility.isUsed(context, dbKey));
         }
         throw new IllegalArgumentException();
     }

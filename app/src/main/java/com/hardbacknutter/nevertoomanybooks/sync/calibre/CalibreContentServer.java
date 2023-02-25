@@ -78,6 +78,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpPost;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
@@ -1125,7 +1126,8 @@ public class CalibreContentServer
 
     @WorkerThread
     @NonNull
-    Optional<File> getCover(final int calibreId,
+    Optional<File> getCover(@NonNull final Context context,
+                            final int calibreId,
                             @NonNull final String coverUrl)
             throws StorageException {
 
@@ -1135,7 +1137,8 @@ public class CalibreContentServer
             }
         }
         final File tmpFile = imageDownloader
-                .getTempFile(FILENAME_SUFFIX, String.valueOf(calibreId), 0, null);
+                .getTempFile(CoverDir.getTemp(context),
+                             FILENAME_SUFFIX, String.valueOf(calibreId), 0, null);
 
         return imageDownloader.fetch(serverUri + coverUrl, tmpFile);
     }

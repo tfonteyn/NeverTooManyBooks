@@ -58,7 +58,6 @@ import java.util.function.Supplier;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditPictureContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PickVisualMediaContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.TakePictureContract;
@@ -361,9 +360,8 @@ public class CoverHandler {
 
         // the temp file we'll return
         // do NOT set BKEY_TMP_FILE_SPEC on the book in this method.
-        final File coverFile = new File(
-                CoverDir.getTemp(ServiceLocator.getInstance().getAppContext()),
-                System.nanoTime() + ".jpg");
+        final File coverFile = new File(CoverDir.getTemp(fragmentView.getContext()),
+                                        System.nanoTime() + ".jpg");
 
         // If we have a permanent file, copy it into the temp location
         final Optional<File> uuidFile = book.getCover(cIdx);
@@ -373,12 +371,12 @@ public class CoverHandler {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
             LoggerFactory.getLogger()
-                          .e("TAG", new Throwable("createTempCoverFile"),
-                             "bookId=" + book.getId()
-                             + "|cIdx=" + cIdx
-                             + "|exists=" + coverFile.exists()
-                             + "|file=" + coverFile.getAbsolutePath()
-                          );
+                         .e("TAG", new Throwable("createTempCoverFile"),
+                            "bookId=" + book.getId()
+                            + "|cIdx=" + cIdx
+                            + "|exists=" + coverFile.exists()
+                            + "|file=" + coverFile.getAbsolutePath()
+                         );
         }
         return coverFile;
     }
@@ -500,7 +498,7 @@ public class CoverHandler {
             showProgress();
             vm.execute(new Transformation(file).setScale(true), file);
 
-        } catch (@NonNull final StorageException |IOException e) {
+        } catch (@NonNull final StorageException | IOException e) {
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "Unable to copy content to file", e);
             }

@@ -93,12 +93,12 @@ public class SearchEditionsTask
                 .getSites()
                 .stream()
                 .filter(Site::isActive)
-                .map(site -> site.getEngineId().createSearchEngine())
+                .map(site -> site.getEngineId().createSearchEngine(context))
                 .forEach(searchEngine -> {
                     searchEngine.setCaller(this);
                     try {
                         // can we reach the site ?
-                        searchEngine.ping(context);
+                        searchEngine.ping();
 
                         isbnList.addAll(((SearchEngine.AlternativeEditions) searchEngine)
                                                 .searchAlternativeEditions(context, isbn));

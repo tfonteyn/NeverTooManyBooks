@@ -19,12 +19,13 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
 //TODO: remove the isUsed method, and use this class properly + migrate the dozen prefs to just one
@@ -106,9 +107,9 @@ public class GlobalFieldVisibility
      *
      * @return {@code true} if the user wants to use this field.
      */
-    public static boolean isUsed(@NonNull final String dbdKey) {
-        return PreferenceManager.getDefaultSharedPreferences(
-                                        ServiceLocator.getInstance().getAppContext())
+    public static boolean isUsed(@NonNull final Context context,
+                                 @NonNull final String dbdKey) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(PREFS_PREFIX_FIELD_VISIBILITY + dbdKey, true);
     }
 }

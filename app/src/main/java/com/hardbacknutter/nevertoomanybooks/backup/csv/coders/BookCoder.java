@@ -32,6 +32,7 @@ import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -92,7 +93,8 @@ public class BookCoder {
     public BookCoder(@NonNull final Context context) {
         serviceLocator = ServiceLocator.getInstance();
 
-        bookshelfCoder = new StringList<>(new BookshelfCoder(context));
+        final Style defaultStyle = serviceLocator.getStyles().getDefault(context);
+        bookshelfCoder = new StringList<>(new BookshelfCoder(defaultStyle));
 
         unknownAuthor = Author.createUnknownAuthor(context);
     }

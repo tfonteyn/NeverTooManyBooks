@@ -123,9 +123,10 @@ public class BookDaoImpl
     /**
      * Constructor.
      */
-    public BookDaoImpl(@NonNull final SynchronizedDb db) {
+    public BookDaoImpl(@NonNull final SynchronizedDb db,
+                       @NonNull final Locale systemLocale) {
         super(db, TAG);
-        dateParser = new ISODateParser(ServiceLocator.getInstance().getSystemLocale());
+        dateParser = new ISODateParser(systemLocale);
     }
 
     /**

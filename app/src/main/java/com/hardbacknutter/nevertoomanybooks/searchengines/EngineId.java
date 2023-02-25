@@ -47,7 +47,6 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeSearchEngine;
@@ -222,6 +221,7 @@ public enum EngineId
     private final String key;
 
     /** The user displayable name for this engine. */
+    @SuppressWarnings("FieldNotUsedInToString")
     @StringRes
     private final int labelResId;
 
@@ -598,15 +598,16 @@ public enum EngineId
     /**
      * Create a SearchEngine instance based on the registered configuration for the given id.
      *
+     * @param context Current context
+     *
      * @return a new instance
      */
     @NonNull
-    public SearchEngine createSearchEngine() {
+    public SearchEngine createSearchEngine(@NonNull final Context context) {
         try {
-            final Context context = ServiceLocator.getInstance().getAppContext();
             final Constructor<? extends SearchEngine> c =
                     clazz.getConstructor(Context.class, SearchEngineConfig.class);
-            return c.newInstance(context, config);
+            return c.newInstance(context.getApplicationContext(), config);
 
         } catch (@NonNull final NoSuchMethodException | IllegalAccessException
                                 | InstantiationException | InvocationTargetException e) {
@@ -675,7 +676,7 @@ public enum EngineId
         }
 
         if (showAlert) {
-            final String siteName = createSearchEngine().getHostUrl(context);
+            final String siteName = createSearchEngine(context).getHostUrl();
 
             final AlertDialog.Builder dialogBuilder = new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_baseline_warning_24)
@@ -739,8 +740,6 @@ public enum EngineId
     public String toString() {
         return "EngineId{"
                + "key='" + key + '\''
-               + ", labelResId=" + ServiceLocator.getInstance().getAppContext()
-                                                 .getString(labelResId)
                + ", defaultUrl='" + defaultUrl + '\''
                + ", locale=" + defaultLocale
                + ", clazz=" + clazz.getName()

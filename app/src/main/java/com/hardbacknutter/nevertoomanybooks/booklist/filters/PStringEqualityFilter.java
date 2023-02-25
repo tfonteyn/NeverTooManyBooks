@@ -78,7 +78,7 @@ public class PStringEqualityFilter
 
     @Override
     public boolean isActive(@NonNull final Context context) {
-        if (!GlobalFieldVisibility.isUsed(domain.getName())) {
+        if (!GlobalFieldVisibility.isUsed(context, domain.getName())) {
             return false;
         }
         return value != null;

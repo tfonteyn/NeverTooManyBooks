@@ -123,10 +123,10 @@ public class ViewBookOnWebsiteHandler
             if (domain != null) {
                 final SearchEngine.ViewBookByExternalId searchEngine =
                         (SearchEngine.ViewBookByExternalId)
-                                config.getEngineId().createSearchEngine();
+                                config.getEngineId().createSearchEngine(context);
 
                 final String externalId = rowData.getString(domain.getName());
-                final String url = searchEngine.createBrowserUrl(context, externalId);
+                final String url = searchEngine.createBrowserUrl(externalId);
                 context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                 return true;
             }

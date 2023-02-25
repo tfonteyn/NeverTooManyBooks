@@ -167,9 +167,9 @@ public class SearchBookUpdatesViewModel
                 new SyncReaderProcessor.Builder(context, SYNC_PROCESSOR_PREFIX);
 
         // Cover fields will be at the top of the list.
-        builder.add(context.getString(R.string.lbl_cover_front),
+        builder.add(context, context.getString(R.string.lbl_cover_front),
                     new String[]{FieldVisibility.COVER[0]});
-        builder.add(context.getString(R.string.lbl_cover_back),
+        builder.add(context, context.getString(R.string.lbl_cover_back),
                     new String[]{FieldVisibility.COVER[1]});
 
         // These fields will be locally sorted and come next on the list
@@ -207,7 +207,7 @@ public class SearchBookUpdatesViewModel
         map.put(context.getString(R.string.lbl_publishers),
                 new String[]{DBKey.FK_PUBLISHER, Book.BKEY_PUBLISHER_LIST});
 
-        map.forEach(builder::add);
+        map.forEach((label, keys) -> builder.add(context, label, keys));
 
         builder.addRelatedField(FieldVisibility.COVER[0], Book.BKEY_TMP_FILE_SPEC[0])
                .addRelatedField(FieldVisibility.COVER[1], Book.BKEY_TMP_FILE_SPEC[1])
@@ -223,7 +223,7 @@ public class SearchBookUpdatesViewModel
                 sidMap.put(seConfig.getEngineId().getName(context), domain.getName());
             }
         });
-        sidMap.forEach((label, key) -> builder.add(label, key, SyncAction.Overwrite));
+        sidMap.forEach((label, key) -> builder.add(context, label, key, SyncAction.Overwrite));
 
         return builder;
     }

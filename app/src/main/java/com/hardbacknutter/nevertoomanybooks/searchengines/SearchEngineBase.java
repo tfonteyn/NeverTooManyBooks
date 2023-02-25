@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -52,6 +53,8 @@ import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
 public abstract class SearchEngineBase
         implements SearchEngine {
 
+    @NonNull
+    private final Context appContext;
     @NonNull
     private final SearchEngineConfig config;
 
@@ -72,8 +75,10 @@ public abstract class SearchEngineBase
      */
     public SearchEngineBase(@NonNull final Context appContext,
                             @NonNull final SearchEngineConfig config) {
+        // only stored to use for preference etc lookups.
+        this.appContext = appContext;
         this.config = config;
-        imageDownloader = new ImageDownloader(createFutureGetRequest(appContext));
+        imageDownloader = new ImageDownloader(createFutureGetRequest());
     }
 
     /**
@@ -123,18 +128,18 @@ public abstract class SearchEngineBase
 
     @NonNull
     @Override
-    public String getHostUrl(@NonNull final Context context) {
-        return config.getHostUrl(context);
+    public String getHostUrl() {
+        return config.getHostUrl(appContext);
     }
 
     @Override
-    public void ping(@NonNull final Context context)
+    public void ping()
             throws UnknownHostException,
                    IOException,
                    SocketTimeoutException,
                    MalformedURLException {
         ServiceLocator.getInstance().getNetworkChecker().ping(
-                getHostUrl(context), config.getConnectTimeoutInMs(context));
+                getHostUrl(), config.getConnectTimeoutInMs(appContext));
     }
 
     @Override
@@ -187,7 +192,7 @@ public abstract class SearchEngineBase
                                                     .getLocale(context, root);
                 if (BuildConfig.DEBUG /* always */) {
                     LoggerFactory.getLogger()
-                                  .d(TAG, "getLocale", "locale=" + locale);
+                                 .d(TAG, "getLocale", "locale=" + locale);
                 }
                 return locale != null ? locale : Locale.US;
         }
@@ -230,24 +235,24 @@ public abstract class SearchEngineBase
      * @return new {@link FutureHttpGet} instance
      */
     @NonNull
-    public <T> FutureHttpGet<T> createFutureGetRequest(@NonNull final Context context) {
+    public <T> FutureHttpGet<T> createFutureGetRequest() {
         final FutureHttpGet<T> httpGet = FutureHttpGet
                 .createGet(config.getEngineId().getLabelResId());
 
-        httpGet.setConnectTimeout(config.getConnectTimeoutInMs(context))
-               .setReadTimeout(config.getReadTimeoutInMs(context))
+        httpGet.setConnectTimeout(config.getConnectTimeoutInMs(appContext))
+               .setReadTimeout(config.getReadTimeoutInMs(appContext))
                .setThrottler(config.getThrottler());
         return httpGet;
     }
 
     @SuppressWarnings("WeakerAccess")
     @NonNull
-    public <T> FutureHttpGet<T> createFutureHeadRequest(@NonNull final Context context) {
+    public <T> FutureHttpGet<T> createFutureHeadRequest() {
         final FutureHttpGet<T> httpGet = FutureHttpGet
                 .createHead(config.getEngineId().getLabelResId());
 
-        httpGet.setConnectTimeout(config.getConnectTimeoutInMs(context))
-               .setReadTimeout(config.getReadTimeoutInMs(context))
+        httpGet.setConnectTimeout(config.getConnectTimeoutInMs(appContext))
+               .setReadTimeout(config.getReadTimeoutInMs(appContext))
                .setThrottler(config.getThrottler());
         return httpGet;
     }
@@ -272,7 +277,8 @@ public abstract class SearchEngineBase
                             @Nullable final Size size)
             throws StorageException {
 
-        final File tmpFile = imageDownloader.getTempFile(getEngineId().getPreferenceKey(),
+        final File tmpFile = imageDownloader.getTempFile(CoverDir.getTemp(appContext),
+                                                         getEngineId().getPreferenceKey(),
                                                          bookId, cIdx, size);
         return imageDownloader.fetch(url, tmpFile)
                               .map(File::getAbsolutePath)

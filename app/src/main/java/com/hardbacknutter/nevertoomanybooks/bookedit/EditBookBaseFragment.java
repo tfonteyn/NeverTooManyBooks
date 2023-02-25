@@ -289,10 +289,12 @@ public abstract class EditBookBaseFragment
                                     final int endTitleId,
                                     @IdRes final int endFieldId) {
 
+        final Context context = getContext();
         final Field<String, TextView> startField = vm.requireField(startFieldId);
-        final boolean startFieldIsUsed = startField.isUsed();
+        //noinspection ConstantConditions
+        final boolean startFieldIsUsed = startField.isUsed(context);
         final Field<String, TextView> endField = vm.requireField(endFieldId);
-        final boolean endFieldIsUsed = endField.isUsed();
+        final boolean endFieldIsUsed = endField.isUsed(context);
 
         if (startFieldIsUsed) {
             // Always a single date picker for the start-date
@@ -326,7 +328,8 @@ public abstract class EditBookBaseFragment
                                @IdRes final int fieldId) {
 
         final Field<String, TextView> field = vm.requireField(fieldId);
-        if (field.isUsed()) {
+        //noinspection ConstantConditions
+        if (field.isUsed(getContext())) {
             final SingleDatePicker dp = new SingleDatePicker(getChildFragmentManager(),
                                                              pickerTitleId, fieldId);
             dp.setDateParser(dateParser, true);
@@ -346,7 +349,8 @@ public abstract class EditBookBaseFragment
     private void addPartialDatePicker(@StringRes final int pickerTitleId,
                                       @IdRes final int fieldId) {
         final Field<String, TextView> field = vm.requireField(fieldId);
-        if (field.isUsed()) {
+        //noinspection ConstantConditions
+        if (field.isUsed(getContext())) {
             field.requireView().setOnClickListener(v -> partialDatePickerLauncher
                     .launch(pickerTitleId, field.getFieldViewId(), field.getValue(), false));
         }

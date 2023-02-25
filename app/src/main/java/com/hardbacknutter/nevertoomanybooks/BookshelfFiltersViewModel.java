@@ -36,8 +36,8 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.FilterFactory;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 public class BookshelfFiltersViewModel
@@ -100,7 +100,7 @@ public class BookshelfFiltersViewModel
         FilterFactory.SUPPORTED
                 .entrySet()
                 .stream()
-                .filter(entry -> GlobalFieldVisibility.isUsed(entry.getKey()))
+                .filter(entry -> GlobalFieldVisibility.isUsed(context, entry.getKey()))
                 .forEach(entry -> map.put(context.getString(entry.getValue()), entry.getKey()));
 
         return new Pair<>(map.keySet().toArray(Z_ARRAY_STRING),

@@ -841,7 +841,7 @@ public class BooksOnBookshelf
                 menu.findItem(R.id.MENU_BOOK_SET_UNREAD).setVisible(isRead);
 
                 // specifically check LOANEE_NAME independent from the style in use.
-                final boolean useLending = GlobalFieldVisibility.isUsed(DBKey.LOANEE_NAME);
+                final boolean useLending = GlobalFieldVisibility.isUsed(this, DBKey.LOANEE_NAME);
                 final boolean isAvailable = vm.isAvailable(rowData);
                 menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isAvailable);
                 menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && !isAvailable);

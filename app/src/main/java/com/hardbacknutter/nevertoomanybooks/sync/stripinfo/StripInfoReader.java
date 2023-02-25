@@ -125,7 +125,7 @@ public class StripInfoReader
         bookDao = ServiceLocator.getInstance().getBookDao();
 
         // create a new instance just for our own use
-        searchEngine = (StripInfoSearchEngine) EngineId.StripInfoBe.createSearchEngine();
+        searchEngine = (StripInfoSearchEngine) EngineId.StripInfoBe.createSearchEngine(context);
 
         locales = LocaleListUtils.asList(context);
 
@@ -182,7 +182,7 @@ public class StripInfoReader
                 new SyncReaderProcessor.Builder(context, SYNC_PROCESSOR_PREFIX);
 
         // add the sorted fields
-        map.forEach(builder::add);
+        map.forEach((label, keys) -> builder.add(context, label, keys));
 
         builder.addRelatedField(FieldVisibility.COVER[0], Book.BKEY_TMP_FILE_SPEC[0])
                .addRelatedField(FieldVisibility.COVER[1], Book.BKEY_TMP_FILE_SPEC[1])
@@ -205,7 +205,7 @@ public class StripInfoReader
         }
 
         // can we reach the site ?
-        searchEngine.ping(context);
+        searchEngine.ping();
 
         progressListener.setIndeterminate(true);
         progressListener.publishProgress(0, context.getString(R.string.progress_msg_connecting));

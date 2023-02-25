@@ -100,8 +100,7 @@ public class BedethequeSearchEngine
         super(appContext, config);
 
         cookieManager = ServiceLocator.getInstance().getCookieManager();
-        extraRequestProperties = Map.of(
-                HttpConstants.REFERER, getHostUrl(appContext) + "/search");
+        extraRequestProperties = Map.of(HttpConstants.REFERER, getHostUrl() + "/search");
     }
 
     @NonNull
@@ -114,10 +113,10 @@ public class BedethequeSearchEngine
             throws SearchException {
         if (csrfCookie == null || csrfCookie.hasExpired()) {
             try {
-                final FutureHttpGet<HttpCookie> head = createFutureHeadRequest(context);
+                final FutureHttpGet<HttpCookie> head = createFutureHeadRequest();
                 // Reminder: the "request" will be connected and the response code will be OK,
                 // so just extract the cookie we need for the next request
-                csrfCookie = head.get(getHostUrl(context) + "/search", request -> cookieManager
+                csrfCookie = head.get(getHostUrl() + "/search", request -> cookieManager
                         .getCookieStore()
                         .getCookies()
                         .stream()
@@ -146,7 +145,7 @@ public class BedethequeSearchEngine
         final Book book = new Book();
 
         //The site is very "defensive". We must specify the full url and set the "Referer".
-        final String url = getHostUrl(context) + "/search/albums?RechIdSerie=&RechIdAuteur="
+        final String url = getHostUrl() + "/search/albums?RechIdSerie=&RechIdAuteur="
                            + '&' + requireCookieNameValueString(context)
                            + "&RechSerie=&RechTitre=&RechEditeur=&RechCollection="
                            + "&RechStyle=&RechAuteur="

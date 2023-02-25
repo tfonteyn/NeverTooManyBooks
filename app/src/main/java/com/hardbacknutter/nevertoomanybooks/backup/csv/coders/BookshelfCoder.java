@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,13 +19,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.csv.coders;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -47,10 +44,10 @@ public class BookshelfCoder
     /**
      * Constructor.
      *
-     * @param context Current context
+     * @param defaultStyle the default style to use
      */
-    BookshelfCoder(@NonNull final Context context) {
-        defaultStyle = ServiceLocator.getInstance().getStyles().getDefault(context);
+    BookshelfCoder(@NonNull final Style defaultStyle) {
+        this.defaultStyle = defaultStyle;
     }
 
     /**

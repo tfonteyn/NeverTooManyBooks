@@ -493,21 +493,23 @@ public final class SyncReaderProcessor
         }
 
         /**
-         * Convenience method wrapper for {@link #add(String, String, SyncAction)}.
+         * Convenience method wrapper for {@link #add(Context, String, String, SyncAction)}.
          * The default SyncAction is always {@link SyncAction#CopyIfBlank}.
          *
-         * @param label Field label
-         * @param keys  {Field key} OR {Preference key, Field key}
+         * @param context Current context
+         * @param label   Field label
+         * @param keys    {Field key} OR {Preference key, Field key}
          */
-        public void add(@NonNull final String label,
+        public void add(@NonNull final Context context,
+                        @NonNull final String label,
                         @NonNull final String[] keys) {
             switch (keys.length) {
                 case 1:
-                    add(label, keys[0], SyncAction.CopyIfBlank);
+                    add(context, label, keys[0], SyncAction.CopyIfBlank);
                     return;
 
                 case 2:
-                    addList(label, keys[0], keys[1]);
+                    addList(context, label, keys[0], keys[1]);
                     return;
                 default:
                     throw new IllegalArgumentException("To many keys: " + Arrays.toString(keys));
@@ -518,15 +520,17 @@ public final class SyncReaderProcessor
          * Add a {@link SyncField} for a <strong>simple</strong> field
          * if it has not been hidden by the user.
          *
+         * @param context       Current context
          * @param label         Field label
          * @param key           Field key
          * @param defaultAction default Usage for this field
          */
-        public void add(@NonNull final String label,
+        public void add(@NonNull final Context context,
+                        @NonNull final String label,
                         @NonNull final String key,
                         @NonNull final SyncAction defaultAction) {
 
-            if (GlobalFieldVisibility.isUsed(key)) {
+            if (GlobalFieldVisibility.isUsed(context, key)) {
                 final SyncAction action = SyncAction
                         .read(prefs, preferencePrefix + key, defaultAction);
                 fields.put(key, new SyncField(key, label, false,
@@ -540,15 +544,17 @@ public final class SyncReaderProcessor
          * <p>
          * The default SyncAction is always {@link SyncAction#Append}.
          *
+         * @param context Current context
          * @param label   Field label
          * @param prefKey Field name to use for preferences.
          * @param key     Field key
          */
-        private void addList(@NonNull final String label,
+        private void addList(@NonNull final Context context,
+                             @NonNull final String label,
                              @NonNull final String prefKey,
                              @NonNull final String key) {
 
-            if (GlobalFieldVisibility.isUsed(prefKey)) {
+            if (GlobalFieldVisibility.isUsed(context, prefKey)) {
                 final SyncAction action = SyncAction
                         .read(prefs, preferencePrefix + key, SyncAction.Append);
                 fields.put(key, new SyncField(key, label, true,

@@ -159,7 +159,10 @@ public class SearchCoordinator
     private String isbnSearchText = "";
     /** {@code true} for strict ISBN checking, {@code false} for allowing generic codes. */
     private boolean strictIsbn = true;
-    /** Created by {@link #prepareSearch()} from {@link #isbnSearchText}. NonNull afterwards. */
+    /**
+     * Created by {@link #prepareSearch(Context)} from {@link #isbnSearchText}.
+     * NonNull afterwards.
+     */
     private ISBN isbn;
     /** Site external id for search. */
     @Nullable
@@ -251,10 +254,10 @@ public class SearchCoordinator
 
                     // Start the remaining searches, even if they have run before.
                     // They will redo the search WITH the ISBN/code.
-                    searchStarted = startSearch();
+                    searchStarted = startSearch(context);
                 } else {
                     // sequentially start the next search which has not run yet.
-                    searchStarted = startNextSearch();
+                    searchStarted = startNextSearch(context);
                 }
             }
         }
@@ -357,8 +360,8 @@ public class SearchCoordinator
 
             if (args != null) {
                 fetchCover = new boolean[]{
-                        GlobalFieldVisibility.isUsed(FieldVisibility.COVER[0]),
-                        GlobalFieldVisibility.isUsed(FieldVisibility.COVER[1])
+                        GlobalFieldVisibility.isUsed(context, FieldVisibility.COVER[0]),
+                        GlobalFieldVisibility.isUsed(context, FieldVisibility.COVER[1])
                 };
 
                 isbnSearchText = args.getString(DBKey.BOOK_ISBN, "");
@@ -501,9 +504,10 @@ public class SearchCoordinator
 
         this.externalIdSearchText = new EnumMap<>(EngineId.class);
         this.externalIdSearchText.put(engineId, externalIdSearchText);
-        prepareSearch();
 
-        return startSearch(engineId);
+        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+        prepareSearch(context);
+        return startSearch(context, engineId);
     }
 
     /**
@@ -548,14 +552,13 @@ public class SearchCoordinator
      * Called after the search criteria are ready, and before starting the actual search.
      * Clears a number of parameters so we can start the search with a clean slate.
      */
-    private void prepareSearch() {
+    private void prepareSearch(final Context context) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
             searchStartTime = System.nanoTime();
         }
 
         // Developer sanity checks
         if (BuildConfig.DEBUG /* always */) {
-            final Context context = ServiceLocator.getInstance().getAppContext();
             if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable(context)) {
                 throw new IllegalStateException("network should be checked before starting search");
             }
@@ -628,11 +631,13 @@ public class SearchCoordinator
     /**
      * Start specified site search.
      *
+     * @param context  Current context
      * @param engineId to search
      *
      * @return {@code true} if the search was started.
      */
-    private boolean startSearch(@NonNull final EngineId engineId) {
+    private boolean startSearch(@NonNull final Context context,
+                                @NonNull final EngineId engineId) {
         // refuse new searches if we're shutting down.
         if (cancelRequested.get()) {
             return false;
@@ -646,13 +651,13 @@ public class SearchCoordinator
 
         SearchEngine searchEngine = engineCache.get(engineId);
         if (searchEngine == null) {
-            searchEngine = engineId.createSearchEngine();
+            searchEngine = engineId.createSearchEngine(context);
             engineCache.put(engineId, searchEngine);
         } else {
             searchEngine.reset();
         }
 
-        final SearchTask task = new SearchTask(TASK_ID.getAndIncrement(),
+        final SearchTask task = new SearchTask(context, TASK_ID.getAndIncrement(),
                                                searchEngine, searchTaskListener);
         task.setExecutor(ASyncExecutor.MAIN);
 
@@ -675,7 +680,7 @@ public class SearchCoordinator
         } else if (isbn.isValid(true)
                    && engineId.supports(SearchEngine.SearchBy.Isbn)) {
             task.setSearchBy(SearchEngine.SearchBy.Isbn);
-            if (config.prefersIsbn10() && isbn.isIsbn10Compat()) {
+            if (config.prefersIsbn10(context) && isbn.isIsbn10Compat()) {
                 task.setIsbn(isbn.asText(ISBN.Type.Isbn10));
             } else {
                 task.setIsbn(isbn.asText());
@@ -706,8 +711,7 @@ public class SearchCoordinator
             activeTasks.put(task.getTaskId(), task);
         }
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            Log.d(TAG, "startSearch|searchEngine=" + config.getEngineId().getName(
-                    ServiceLocator.getInstance().getAppContext()));
+            Log.d(TAG, "startSearch|searchEngine=" + config.getEngineId().getName(context));
         }
 
         task.startSearch();
@@ -750,7 +754,7 @@ public class SearchCoordinator
      *
      * @return {@code true} if at least one search was started, {@code false} if none
      */
-    private boolean startSearch() {
+    private boolean startSearch(@NonNull final Context context) {
         // refuse new searches if we're shutting down.
         if (cancelRequested.get()) {
             return false;
@@ -765,7 +769,7 @@ public class SearchCoordinator
             // If the site has not been searched yet, search it
             synchronized (searchResultsBySite) {
                 if (!searchResultsBySite.containsKey(engineId)) {
-                    if (startSearch(engineId)) {
+                    if (startSearch(context, engineId)) {
                         atLeastOneStarted = true;
                     }
                 }
@@ -779,7 +783,7 @@ public class SearchCoordinator
      *
      * @return {@code true} if a search was started, {@code false} if not
      */
-    private boolean startNextSearch() {
+    private boolean startNextSearch(@NonNull final Context context) {
         // refuse new searches if we're shutting down.
         if (cancelRequested.get()) {
             return false;
@@ -793,7 +797,7 @@ public class SearchCoordinator
             // If the site has not been searched yet, search it
             synchronized (searchResultsBySite) {
                 if (!searchResultsBySite.containsKey(engineId)) {
-                    return startSearch(engineId);
+                    return startSearch(context, engineId);
                 }
             }
         }
@@ -814,7 +818,9 @@ public class SearchCoordinator
      * @return {@code true} if at least one search was started.
      */
     public boolean search() {
-        prepareSearch();
+        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+
+        prepareSearch(context);
 
         // If we have one or more ID's
         if (externalIdSearchText != null && !externalIdSearchText.isEmpty()
@@ -823,14 +829,14 @@ public class SearchCoordinator
 
             // then start a concurrent search
             waitingForIsbnOrCode = false;
-            return startSearch();
+            return startSearch(context);
 
         } else {
             // We really want to ensure we get the same book from each,
             // so if the ISBN/code is NOT PRESENT, search the sites
             // one at a time until we get a ISBN/code.
             waitingForIsbnOrCode = true;
-            return startNextSearch();
+            return startNextSearch(context);
         }
     }
 
@@ -864,6 +870,193 @@ public class SearchCoordinator
                 }
             }
         }
+    }
+
+    public boolean isStrictIsbn() {
+        return strictIsbn;
+    }
+
+    /**
+     * Search criteria.
+     *
+     * @param strictIsbn Flag: set to {@code false} to allow invalid isbn numbers
+     *                   to be passed to the searches
+     */
+    public void setStrictIsbn(final boolean strictIsbn) {
+        this.strictIsbn = strictIsbn;
+    }
+
+    @NonNull
+    public String getAuthorSearchText() {
+        return authorSearchText;
+    }
+
+    /**
+     * Search criteria.
+     *
+     * @param authorSearchText to search for
+     */
+    public void setAuthorSearchText(@NonNull final String authorSearchText) {
+        this.authorSearchText = authorSearchText;
+    }
+
+    /** Listener for <strong>individual</strong> search tasks. */
+    private final TaskListener<Book> searchTaskListener = new TaskListener<>() {
+
+        @Override
+        public void onProgress(@NonNull final TaskProgress message) {
+            synchronized (searchProgressBySite) {
+                final EngineId engineId;
+                synchronized (activeTasks) {
+                    engineId = Objects.requireNonNull(activeTasks.get(message.taskId),
+                                                      () -> ERROR_UNKNOWN_TASK + message.taskId)
+                                      .getSearchEngine().getEngineId();
+                }
+                searchProgressBySite.put(engineId, message);
+            }
+            // forward the accumulated progress
+            searchCoordinatorProgress.setValue(new LiveDataEvent<>(accumulateProgress()));
+        }
+
+        @Override
+        public void onFinished(final int taskId,
+                               @Nullable final Book result) {
+            // The result MUST NOT be null
+            onSearchTaskFinished(taskId, Objects.requireNonNull(result, "result"));
+        }
+
+        @Override
+        public void onCancelled(final int taskId,
+                                @Nullable final Book result) {
+            // we'll deliver what we have found up to now (includes previous searches)
+            // The result MAY be null
+            onSearchTaskFinished(taskId, result);
+        }
+
+        @Override
+        public void onFailure(final int taskId,
+                              @Nullable final Throwable e) {
+            synchronized (searchErrorsBySite) {
+                final EngineId engineId;
+                synchronized (activeTasks) {
+                    engineId = Objects.requireNonNull(activeTasks.get(taskId),
+                                                      () -> ERROR_UNKNOWN_TASK + taskId)
+                                      .getSearchEngine().getEngineId();
+                }
+                // Always store, even if the Exception is null
+                searchErrorsBySite.put(engineId, e);
+            }
+            onSearchTaskFinished(taskId, null);
+        }
+    };
+
+    @NonNull
+    public String getTitleSearchText() {
+        return titleSearchText;
+    }
+
+    /**
+     * Search criteria.
+     *
+     * @param titleSearchText to search for
+     */
+    public void setTitleSearchText(@NonNull final String titleSearchText) {
+        this.titleSearchText = titleSearchText;
+    }
+
+    @NonNull
+    public String getPublisherSearchText() {
+        return publisherSearchText;
+    }
+
+    /**
+     * Search criteria.
+     *
+     * @param publisherSearchText to search for
+     */
+    public void setPublisherSearchText(@NonNull final String publisherSearchText) {
+        this.publisherSearchText = publisherSearchText;
+    }
+
+    /**
+     * Called when all is said and done. Collects all individual website errors (if any)
+     * into a single user-formatted message.
+     *
+     * @param context Current context
+     *
+     * @return the error message
+     */
+    @Nullable
+    private String accumulateErrors(@NonNull final Context context) {
+        // no synchronized needed, at this point all other threads have finished.
+        if (!searchErrorsBySite.isEmpty()) {
+            final String msg = searchErrorsBySite
+                    .values()
+                    .stream()
+                    .map(exception -> ExMsg
+                            .map(context, exception)
+                            .orElseGet(() -> {
+                                // generic network related IOException message
+                                if (exception instanceof IOException) {
+                                    return context.getString(R.string.error_search_failed_network);
+                                }
+                                // generic unknown message
+                                return context.getString(R.string.error_unknown);
+                            }))
+                    .collect(Collectors.joining("\n"));
+
+            searchErrorsBySite.clear();
+            return msg;
+        }
+        return null;
+    }
+
+    private void debugExitOnSearchTaskFinished(@NonNull final Context context,
+                                               final long processTime,
+                                               @Nullable final String searchErrors) {
+        if (DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            Log.d(TAG, "onSearchTaskFinished"
+                       + "|cancelled=" + cancelRequested.get()
+                       + "|searchErrors=" + searchErrors);
+        }
+
+        if (DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
+            for (final Map.Entry<EngineId, Long> entry : searchTasksStartTime.entrySet()) {
+                final EngineId engineId = entry.getKey();
+                final String engineName = engineId.getName(context);
+
+                final long start = entry.getValue();
+                final Long end = searchTasksEndTime.get(engineId);
+
+                if (end != null) {
+                    Log.d(TAG, String.format(
+                            Locale.ENGLISH,
+                            "onSearchTaskFinished|engine=%20s:%10d ms",
+                            engineName,
+                            (end - start) / NANO_TO_MILLIS));
+                } else {
+                    Log.d(TAG, String.format(
+                            Locale.ENGLISH,
+                            "onSearchTaskFinished|engine=%20s|never finished",
+                            engineName));
+                }
+            }
+
+            Log.d(TAG, String.format(
+                    Locale.ENGLISH,
+                    "onSearchTaskFinished|total search time: %10d ms",
+                    (processTime - searchStartTime)
+                    / NANO_TO_MILLIS));
+            Log.d(TAG, String.format(
+                    Locale.ENGLISH,
+                    "onSearchTaskFinished|processing time: %10d ms",
+                    (System.nanoTime() - processTime)
+                    / NANO_TO_MILLIS));
+        }
+    }
+
+    protected void setBaseMessage(@Nullable final String baseMessage) {
+        this.baseMessage = baseMessage;
     }
 
     private static class ResultsAccumulator {
@@ -954,7 +1147,7 @@ public class SearchCoordinator
                 //FIXME: doing this will for example put a LONG id in the bundle as a String.
                 // This is as-designed, but you do get an Exception in the log when the data
                 // gets to the EditBook formatters. Harmless, but not clean.
-                processString(context, key, siteData, book);
+                processString(key, siteData, book);
             }
         }
 
@@ -1083,13 +1276,11 @@ public class SearchCoordinator
          * Accumulate String data.
          * Handles other types via a .toString()
          *
-         * @param context  Current context
          * @param key      Key of data
          * @param siteData Source Bundle
          * @param book     Destination bundle
          */
-        private void processString(@NonNull final Context context,
-                                   @NonNull final String key,
+        private void processString(@NonNull final String key,
                                    @NonNull final Book siteData,
                                    @NonNull final Book book) {
             // Fetch as Object, as engines MAY store typed data
@@ -1114,192 +1305,7 @@ public class SearchCoordinator
         }
     }
 
-    /** Listener for <strong>individual</strong> search tasks. */
-    private final TaskListener<Book> searchTaskListener = new TaskListener<>() {
 
-        @Override
-        public void onProgress(@NonNull final TaskProgress message) {
-            synchronized (searchProgressBySite) {
-                final EngineId engineId;
-                synchronized (activeTasks) {
-                    engineId = Objects.requireNonNull(activeTasks.get(message.taskId),
-                                                      () -> ERROR_UNKNOWN_TASK + message.taskId)
-                                      .getSearchEngine().getEngineId();
-                }
-                searchProgressBySite.put(engineId, message);
-            }
-            // forward the accumulated progress
-            searchCoordinatorProgress.setValue(new LiveDataEvent<>(accumulateProgress()));
-        }
-
-        @Override
-        public void onFinished(final int taskId,
-                               @Nullable final Book result) {
-            // The result MUST NOT be null
-            onSearchTaskFinished(taskId, Objects.requireNonNull(result, "result"));
-        }
-
-        @Override
-        public void onCancelled(final int taskId,
-                                @Nullable final Book result) {
-            // we'll deliver what we have found up to now (includes previous searches)
-            // The result MAY be null
-            onSearchTaskFinished(taskId, result);
-        }
-
-        @Override
-        public void onFailure(final int taskId,
-                              @Nullable final Throwable e) {
-            synchronized (searchErrorsBySite) {
-                final EngineId engineId;
-                synchronized (activeTasks) {
-                    engineId = Objects.requireNonNull(activeTasks.get(taskId),
-                                                      () -> ERROR_UNKNOWN_TASK + taskId)
-                                      .getSearchEngine().getEngineId();
-                }
-                // Always store, even if the Exception is null
-                searchErrorsBySite.put(engineId, e);
-            }
-            onSearchTaskFinished(taskId, null);
-        }
-    };
-
-    public boolean isStrictIsbn() {
-        return strictIsbn;
-    }
-
-    /**
-     * Search criteria.
-     *
-     * @param strictIsbn Flag: set to {@code false} to allow invalid isbn numbers
-     *                   to be passed to the searches
-     */
-    public void setStrictIsbn(final boolean strictIsbn) {
-        this.strictIsbn = strictIsbn;
-    }
-
-    @NonNull
-    public String getAuthorSearchText() {
-        return authorSearchText;
-    }
-
-    /**
-     * Search criteria.
-     *
-     * @param authorSearchText to search for
-     */
-    public void setAuthorSearchText(@NonNull final String authorSearchText) {
-        this.authorSearchText = authorSearchText;
-    }
-
-    @NonNull
-    public String getTitleSearchText() {
-        return titleSearchText;
-    }
-
-    /**
-     * Search criteria.
-     *
-     * @param titleSearchText to search for
-     */
-    public void setTitleSearchText(@NonNull final String titleSearchText) {
-        this.titleSearchText = titleSearchText;
-    }
-
-    @NonNull
-    public String getPublisherSearchText() {
-        return publisherSearchText;
-    }
-
-    /**
-     * Search criteria.
-     *
-     * @param publisherSearchText to search for
-     */
-    public void setPublisherSearchText(@NonNull final String publisherSearchText) {
-        this.publisherSearchText = publisherSearchText;
-    }
-
-    /**
-     * Called when all is said and done. Collects all individual website errors (if any)
-     * into a single user-formatted message.
-     *
-     * @param context Current context
-     *
-     * @return the error message
-     */
-    @Nullable
-    private String accumulateErrors(@NonNull final Context context) {
-        // no synchronized needed, at this point all other threads have finished.
-        if (!searchErrorsBySite.isEmpty()) {
-            final String msg = searchErrorsBySite
-                    .values()
-                    .stream()
-                    .map(exception -> ExMsg
-                            .map(context, exception)
-                            .orElseGet(() -> {
-                                // generic network related IOException message
-                                if (exception instanceof IOException) {
-                                    return context.getString(R.string.error_search_failed_network);
-                                }
-                                // generic unknown message
-                                return context.getString(R.string.error_unknown);
-                            }))
-                    .collect(Collectors.joining("\n"));
-
-            searchErrorsBySite.clear();
-            return msg;
-        }
-        return null;
-    }
-
-    private void debugExitOnSearchTaskFinished(@NonNull final Context context,
-                                               final long processTime,
-                                               @Nullable final String searchErrors) {
-        if (DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            Log.d(TAG, "onSearchTaskFinished"
-                       + "|cancelled=" + cancelRequested.get()
-                       + "|searchErrors=" + searchErrors);
-        }
-
-        if (DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
-            for (final Map.Entry<EngineId, Long> entry : searchTasksStartTime.entrySet()) {
-                final EngineId engineId = entry.getKey();
-                final String engineName = engineId.getName(context);
-
-                final long start = entry.getValue();
-                final Long end = searchTasksEndTime.get(engineId);
-
-                if (end != null) {
-                    Log.d(TAG, String.format(
-                            Locale.ENGLISH,
-                            "onSearchTaskFinished|engine=%20s:%10d ms",
-                            engineName,
-                            (end - start) / NANO_TO_MILLIS));
-                } else {
-                    Log.d(TAG, String.format(
-                            Locale.ENGLISH,
-                            "onSearchTaskFinished|engine=%20s|never finished",
-                            engineName));
-                }
-            }
-
-            Log.d(TAG, String.format(
-                    Locale.ENGLISH,
-                    "onSearchTaskFinished|total search time: %10d ms",
-                    (processTime - searchStartTime)
-                    / NANO_TO_MILLIS));
-            Log.d(TAG, String.format(
-                    Locale.ENGLISH,
-                    "onSearchTaskFinished|processing time: %10d ms",
-                    (System.nanoTime() - processTime)
-                    / NANO_TO_MILLIS));
-        }
-    }
-
-    protected void setBaseMessage(@Nullable final String baseMessage) {
-        this.baseMessage = baseMessage;
-    }
 
     public static class WrappedTaskResult {
 
@@ -1314,7 +1320,6 @@ public class SearchCoordinator
             this.result = result;
         }
     }
-
 
     private static class CoverFilter {
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -140,9 +140,11 @@ public interface Field<T, V extends View> {
     /**
      * Is the field in use; i.e. is it enabled in the user-preferences.
      *
+     * @param context Current context
+     *
      * @return {@code true} if the field *can* be visible
      */
-    boolean isUsed();
+    boolean isUsed(@NonNull Context context);
 
     /**
      * Check if this field can be automatically populated.

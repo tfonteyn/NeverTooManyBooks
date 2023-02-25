@@ -31,14 +31,14 @@ import java.io.InputStream;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.core.storage.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.io.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.storage.DiskFullException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 /**
  * FIXME: currently we import covers without checking if we actually have the book.
@@ -53,6 +53,13 @@ public class CoverRecordReader
 
     /** The amount of bits we'll shift the last-modified time. (== divide by 65536) */
     private static final int FILE_LM_PRECISION = 16;
+    @NonNull
+    private final File coverDirectory;
+
+    public CoverRecordReader(@NonNull final Context context)
+            throws StorageException {
+        coverDirectory = CoverDir.getDir(context);
+    }
 
     @NonNull
     @Override
@@ -72,7 +79,7 @@ public class CoverRecordReader
 
                 try {
                     // see if we have this file already
-                    File dstFile = new File(CoverDir.getDir(context), record.getName());
+                    File dstFile = new File(coverDirectory, record.getName());
                     final boolean exists = dstFile.exists();
 
                     if (exists) {
