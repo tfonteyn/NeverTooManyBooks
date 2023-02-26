@@ -49,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.Cover;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
@@ -132,17 +131,17 @@ public class BookHolder
     BookHolder(@NonNull final View itemView,
                @NonNull final Style style,
                @NonNull final Languages languages,
+               @NonNull final List<Locale> locales,
                @Dimension final int coverLongestSide) {
         super(itemView);
         this.style = style;
         this.languages = languages;
+        this.locales = locales;
+        this.coverLongestSide = coverLongestSide;
 
         final Context context = itemView.getContext();
 
-        locales = LocaleListUtils.asList(context);
-
         imageCachingEnabled = ImageUtils.isImageCachingEnabled();
-        this.coverLongestSide = coverLongestSide;
 
         final Resources res = context.getResources();
         conditionDescriptions = res.getStringArray(R.array.conditions_book);

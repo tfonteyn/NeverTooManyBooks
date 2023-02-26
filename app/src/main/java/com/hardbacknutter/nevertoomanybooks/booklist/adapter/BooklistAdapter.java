@@ -88,6 +88,8 @@ public class BooklistAdapter
     @NonNull
     private final Formatter formatter;
     private final Languages languages;
+    @NonNull
+    private final List<Locale> locales;
 
 
     /** The cursor is the equivalent of the 'list of items'. */
@@ -118,6 +120,7 @@ public class BooklistAdapter
         this.inflater = LayoutInflater.from(context);
         this.style = style;
         this.languages = languages;
+        this.locales = locales;
 
         final Resources res = context.getResources();
         levelIndent = res.getDimensionPixelSize(R.dimen.bob_group_level_padding_start);
@@ -311,7 +314,7 @@ public class BooklistAdapter
         // NEWTHINGS: BooklistGroup - add a new holder type if needed
         switch (groupId) {
             case BooklistGroup.BOOK:
-                holder = new BookHolder(itemView, style, languages, coverLongestSide);
+                holder = new BookHolder(itemView, style, languages, locales, coverLongestSide);
                 break;
 
             case BooklistGroup.AUTHOR:
