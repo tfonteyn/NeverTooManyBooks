@@ -25,6 +25,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -36,7 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlRecordReader;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 
 /**
  * Detecting record encoding in {@link #getEncoding} is based purely on filename extension.
@@ -110,17 +111,20 @@ public enum RecordEncoding {
     /**
      * Create a {@link RecordWriter} for this encoding.
      *
+     * @param locales
      * @param utcSinceDateTime (optional) UTC based date to select only items
      *                         modified or added since.
      *
      * @return {@link RecordWriter}
      */
     @NonNull
-    public RecordWriter createWriter(@Nullable final LocalDateTime utcSinceDateTime) {
+    public RecordWriter createWriter(@NonNull final Context context,
+                                     @NonNull final List<Locale> locales,
+                                     @Nullable final LocalDateTime utcSinceDateTime) {
         switch (this) {
             case Json:
-                return new JsonRecordWriter(utcSinceDateTime);
-                case Cover:
+                return new JsonRecordWriter(context, locales, utcSinceDateTime);
+            case Cover:
                 // Not useful, won't implement. It's just a File copy operation
             case Xml:
             case Csv:
@@ -145,16 +149,16 @@ public enum RecordEncoding {
      */
     @NonNull
     public Optional<RecordReader> createReader(@NonNull final Context context,
-                                               @NonNull
-                                               final Set<RecordType> importEntriesAllowed) {
+                                               @NonNull final List<Locale> locales,
+                                               @NonNull final Set<RecordType> importEntriesAllowed) {
         switch (this) {
             case Json:
-                return Optional.of(new JsonRecordReader(context, importEntriesAllowed));
+                return Optional.of(new JsonRecordReader(context, locales, importEntriesAllowed));
             case Csv:
                 return Optional.of(new CsvRecordReader(context));
             case Xml:
                 //noinspection deprecation
-                return Optional.of(new XmlRecordReader(LocaleListUtils.asList(context)));
+                return Optional.of(new XmlRecordReader(locales));
             case Cover:
                 // discourage creating a new CoverRecordReader for each cover.
                 throw new IllegalStateException("CoverRecordReader should be re-used");

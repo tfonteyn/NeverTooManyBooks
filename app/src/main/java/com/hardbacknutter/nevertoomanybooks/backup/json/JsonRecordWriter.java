@@ -34,6 +34,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -85,6 +86,8 @@ public class JsonRecordWriter
 
     @Nullable
     private final LocalDateTime utcSinceDateTime;
+    @NonNull
+    private final List<Locale> locales;
 
     /**
      * Constructor.
@@ -93,7 +96,10 @@ public class JsonRecordWriter
      *                         modified or added since.
      */
     @AnyThread
-    public JsonRecordWriter(@Nullable final LocalDateTime utcSinceDateTime) {
+    public JsonRecordWriter(@NonNull final Context context,
+                            @NonNull final List<Locale> locales,
+                            @Nullable final LocalDateTime utcSinceDateTime) {
+        this.locales = locales;
         this.utcSinceDateTime = utcSinceDateTime;
     }
 
@@ -260,7 +266,7 @@ public class JsonRecordWriter
 
                 final boolean collectCoverFilenames = recordTypes.contains(RecordType.Cover);
 
-                final JsonCoder<Book> coder = new BookCoder(context, defaultStyle);
+                final JsonCoder<Book> coder = new BookCoder(context, defaultStyle, locales);
 
                 int delta = 0;
                 long lastUpdate = 0;

@@ -31,6 +31,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.EnumSet;
+import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
@@ -38,6 +40,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
@@ -46,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordEncoding;
 import com.hardbacknutter.nevertoomanybooks.io.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 /**
  * <strong>WARNING - EXPERIMENTAL:</strong> format can/will change, splitting of authors etc...
@@ -54,6 +57,8 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 public class JsonArchiveReader
         implements DataReader<ArchiveMetaData, ImportResults> {
 
+    @NonNull
+    private final List<Locale> locales;
     /** Import configuration. */
     @NonNull
     private final ImportHelper importHelper;
@@ -66,7 +71,9 @@ public class JsonArchiveReader
      *
      * @param helper import configuration
      */
-    public JsonArchiveReader(@NonNull final ImportHelper helper) {
+    public JsonArchiveReader(@NonNull final Context context,
+                             @NonNull final ImportHelper helper) {
+        this.locales = LocaleListUtils.asList(context);
         importHelper = helper;
     }
 
@@ -99,7 +106,7 @@ public class JsonArchiveReader
             }
 
             try (is; RecordReader recordReader =
-                    new JsonRecordReader(context, EnumSet.of(RecordType.MetaData))) {
+                    new JsonRecordReader(context, locales, EnumSet.of(RecordType.MetaData))) {
                 // wrap the entire input into a single record.
                 final ArchiveReaderRecord record = new JsonArchiveRecord(
                         importHelper.getUriInfo().getDisplayName(context), is);
@@ -134,7 +141,7 @@ public class JsonArchiveReader
         final Set<RecordType> recordTypes = importHelper.getRecordTypes();
         RecordType.addRelatedTypes(recordTypes);
 
-        try (RecordReader recordReader = new JsonRecordReader(context, recordTypes)) {
+        try (RecordReader recordReader = new JsonRecordReader(context, locales, recordTypes)) {
             // wrap the entire input into a single record.
             final ArchiveReaderRecord record = new JsonArchiveRecord(
                     importHelper.getUriInfo().getDisplayName(context), is);

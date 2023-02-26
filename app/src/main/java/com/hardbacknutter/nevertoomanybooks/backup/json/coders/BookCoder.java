@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -73,11 +72,12 @@ public class BookCoder
      * @param defaultStyle the default style to use for {@link Bookshelf}s
      */
     public BookCoder(@NonNull final Context context,
-                     @NonNull final Style defaultStyle) {
+                     @NonNull final Style defaultStyle,
+                     @NonNull final List<Locale> locales) {
 
         bookshelfCoder = new BookshelfCoder(context, defaultStyle);
         calibreLibraryCoder = new CalibreLibraryCoder(context, defaultStyle);
-        locales = LocaleListUtils.asList(context);
+        this.locales = locales;
     }
 
     @Override

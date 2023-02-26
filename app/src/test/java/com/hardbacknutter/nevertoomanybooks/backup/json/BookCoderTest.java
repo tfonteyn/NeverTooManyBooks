@@ -48,7 +48,7 @@ public class BookCoderTest
     public void setup()
             throws ParserConfigurationException, SAXException {
         super.setup();
-        bookCoder = new BookCoder(context, style);
+        bookCoder = new BookCoder(context, style, locales);
     }
 
     @Test

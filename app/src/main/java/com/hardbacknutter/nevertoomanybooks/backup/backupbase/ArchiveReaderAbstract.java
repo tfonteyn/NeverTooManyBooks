@@ -32,6 +32,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.EnumSet;
+import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -42,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.bin.CoverRecordReader;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
@@ -95,7 +98,13 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
  *             <li>Multiple {@link RecordType#Cover}</li>
  *         </ul>
  *     </li>
- *     <li>v1: obsolete</li>
+ *     <li>v1: the original BookCatalogue format; prefs and styles cannot be imported.
+ *         <ul>
+ *             <li>{@link RecordType#MetaData} :     {@link RecordEncoding#Xml}</li>
+ *             <li>{@link RecordType#Books} :        {@link RecordEncoding#Csv}</li>
+ *  *          <li>Multiple {@link RecordType#Cover}</li>
+ *         </ul>
+ *     </li>
  * </ul>
  */
 public abstract class ArchiveReaderAbstract
@@ -116,6 +125,7 @@ public abstract class ArchiveReaderAbstract
     /** The accumulated results. */
     @NonNull
     private final ImportResults results = new ImportResults();
+    private final List<Locale> locales;
 
     /** Re-usable cover reader. */
     @Nullable
@@ -133,6 +143,7 @@ public abstract class ArchiveReaderAbstract
     protected ArchiveReaderAbstract(@NonNull final Context context,
                                     @NonNull final ImportHelper helper) {
         importHelper = helper;
+        locales = LocaleListUtils.asList(context);
         contentResolver = context.getContentResolver();
 
         coversText = context.getString(R.string.lbl_covers);
@@ -189,7 +200,7 @@ public abstract class ArchiveReaderAbstract
                                 context.getString(R.string.error_file_not_recognized)));
 
                 reader = encoding
-                        .createReader(context, EnumSet.of(RecordType.MetaData))
+                        .createReader(context, locales, EnumSet.of(RecordType.MetaData))
                         .orElseThrow(() -> new DataReaderException(
                                 context.getString(R.string.error_file_not_recognized)));
 
@@ -230,7 +241,7 @@ public abstract class ArchiveReaderAbstract
      *
      * @return results summary
      *
-     * @throws IOException on generic/other IO failures
+     * @throws IOException         on generic/other IO failures
      * @throws DataReaderException on record format failures
      */
     @NonNull
@@ -381,7 +392,7 @@ public abstract class ArchiveReaderAbstract
                 RecordReader reader = null;
                 try {
                     final Optional<RecordReader> optReader = encoding
-                            .createReader(context, importEntriesAllowed);
+                            .createReader(context, locales, importEntriesAllowed);
                     if (optReader.isPresent()) {
                         reader = optReader.get();
                         results.add(reader.read(context, record, importHelper, progressListener));

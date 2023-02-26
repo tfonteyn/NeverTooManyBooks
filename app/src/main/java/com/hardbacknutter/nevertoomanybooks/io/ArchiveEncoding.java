@@ -259,7 +259,7 @@ public enum ArchiveEncoding
                 return new DbArchiveWriter(context, helper);
 
             case Json:
-                return new JsonArchiveWriter(helper);
+                return new JsonArchiveWriter(context, helper);
 
             case Csv:
                 // writing to csv is no longer supported
@@ -307,7 +307,7 @@ public enum ArchiveEncoding
                 break;
 
             case Json:
-                reader = new JsonArchiveReader(helper);
+                reader = new JsonArchiveReader(context, helper);
                 break;
 
             default:

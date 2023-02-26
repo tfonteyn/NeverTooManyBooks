@@ -38,6 +38,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -46,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
@@ -106,14 +108,18 @@ public abstract class ArchiveWriterAbstract
     /** The accumulated results. */
     @NonNull
     private final ExportResults results = new ExportResults();
+    private final List<Locale> locales;
 
     /**
      * Constructor.
      *
-     * @param helper export configuration
+     * @param context Current context
+     * @param helper  export configuration
      */
-    protected ArchiveWriterAbstract(@NonNull final ExportHelper helper) {
+    protected ArchiveWriterAbstract(@NonNull final Context context,
+                                    @NonNull final ExportHelper helper) {
         exportHelper = helper;
+        locales = LocaleListUtils.asList(context);
     }
 
     /**
@@ -263,7 +269,7 @@ public abstract class ArchiveWriterAbstract
         try (OutputStream os = new FileOutputStream(file);
              Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
              Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
-             RecordWriter recordWriter = encoding.createWriter(dateSince)) {
+             RecordWriter recordWriter = encoding.createWriter(context, locales, dateSince)) {
             results.add(recordWriter.write(context, bw, recordTypes, progressListener));
         }
 
@@ -289,7 +295,7 @@ public abstract class ArchiveWriterAbstract
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
         try (Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
              Writer bw = new BufferedWriter(osw, META_WRITER_BUFFER);
-             RecordWriter recordWriter = encoding.createWriter(null)) {
+             RecordWriter recordWriter = encoding.createWriter(context, locales, null)) {
             recordWriter.writeMetaData(bw, ArchiveMetaData.create(context, VERSION, data));
         }
 
@@ -333,7 +339,7 @@ public abstract class ArchiveWriterAbstract
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
         try (Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
              Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
-             RecordWriter recordWriter = encoding.createWriter(null)) {
+             RecordWriter recordWriter = encoding.createWriter(context, locales, null)) {
             writeResults = recordWriter.write(context, bw, EnumSet.of(recordType),
                                               progressListener);
         }

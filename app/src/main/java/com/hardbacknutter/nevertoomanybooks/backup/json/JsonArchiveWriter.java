@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,12 +30,15 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
@@ -63,6 +66,8 @@ public class JsonArchiveWriter
 
     private static final int VERSION = 1;
 
+    @NonNull
+    private final List<Locale> locales;
     /** Export configuration. */
     @NonNull
     private final ExportHelper exportHelper;
@@ -72,7 +77,9 @@ public class JsonArchiveWriter
      *
      * @param helper export configuration
      */
-    public JsonArchiveWriter(@NonNull final ExportHelper helper) {
+    public JsonArchiveWriter(@NonNull final Context context,
+                             @NonNull final ExportHelper helper) {
+        this.locales = LocaleListUtils.asList(context);
         exportHelper = helper;
     }
 
@@ -99,7 +106,7 @@ public class JsonArchiveWriter
             try (OutputStream os = exportHelper.createOutputStream(context);
                  Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
                  Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
-                 RecordWriter recordWriter = new JsonRecordWriter(dateSince)) {
+                 RecordWriter recordWriter = new JsonRecordWriter(context, locales, dateSince)) {
 
                 // manually concat
                 // 1. archive envelope

@@ -33,6 +33,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateEncodingException;
+import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
@@ -118,6 +120,8 @@ public class JsonRecordReader
     private static final String TAG = "JsonRecordReader";
 
     @NonNull
+    private final List<Locale> locales;
+    @NonNull
     private final Set<RecordType> importEntriesAllowed;
 
     /**
@@ -128,8 +132,10 @@ public class JsonRecordReader
      */
     @AnyThread
     public JsonRecordReader(@NonNull final Context context,
+                            @NonNull final List<Locale> locales,
                             @NonNull final Set<RecordType> importEntriesAllowed) {
         super(context);
+        this.locales = locales;
         this.importEntriesAllowed = importEntriesAllowed;
     }
 
@@ -455,7 +461,7 @@ public class JsonRecordReader
 
         Synchronizer.SyncLock txLock = null;
 
-        final JsonCoder<Book> bookCoder = new BookCoder(context, defaultStyle);
+        final JsonCoder<Book> bookCoder = new BookCoder(context, defaultStyle, locales);
 
         for (int i = 0; i < books.length() && !progressListener.isCancelled(); i++) {
 
