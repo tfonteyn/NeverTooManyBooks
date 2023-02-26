@@ -193,24 +193,16 @@ public class Book
             TAG + ":fileSpec:0",
             TAG + ":fileSpec:1"};
 
-    /** re-usable validator. */
-    private static final DataValidator PRICE_VALIDATOR = new OrValidator(
-            new BlankValidator(),
-            new DoubleValidator());
-    /** re-usable validator. */
-    private static final DataValidator LONG_VALIDATOR = new LongValidator();
-    /** re-usable validator. */
-    private static final DataValidator NON_BLANK_VALIDATOR = new NonBlankValidator();
     /** the stage of the book entity. */
     private final EntityStage stage;
 
     /**
      * Validator and validator results.
      * <p>
-     * Not parcelled.
+     * Not parcelled and only created when editing a book.
      */
-    @NonNull
-    private final ValidatorConfig validatorConfig;
+    @Nullable
+    private ValidatorConfig validatorConfig;
 
     /**
      * Constructor.
@@ -218,7 +210,6 @@ public class Book
     public Book() {
         super(ServiceLocator.getInstance().newBundle());
         stage = new EntityStage();
-        validatorConfig = new ValidatorConfig();
     }
 
     /**
@@ -230,13 +221,11 @@ public class Book
     public Book(@NonNull final Bundle data) {
         super(data);
         stage = new EntityStage();
-        validatorConfig = new ValidatorConfig();
     }
 
     public Book(@NonNull final Parcel in) {
         super(in);
         stage = in.readParcelable(getClass().getClassLoader());
-        validatorConfig = new ValidatorConfig();
     }
 
     /**
@@ -1110,28 +1099,40 @@ public class Book
 
     /**
      * Add validators.
+     *
+     * @param context Current context
      */
-    public void addValidators() {
+    public void addValidators(@NonNull final Context context) {
+
+        validatorConfig = new ValidatorConfig();
+
+        final List<Locale> locales = LocaleListUtils.asList(context);
+
+        final DataValidator priceValidator = new OrValidator(
+                new BlankValidator(),
+                new DoubleValidator(locales));
+        final DataValidator longValidator = new LongValidator(locales);
+        final DataValidator nonBlankValidator = new NonBlankValidator(locales);
 
         validatorConfig.addValidator(DBKey.TITLE,
-                                     NON_BLANK_VALIDATOR, R.string.lbl_title);
+                                     nonBlankValidator, R.string.lbl_title);
         validatorConfig.addValidator(BKEY_AUTHOR_LIST,
-                                     NON_BLANK_VALIDATOR, R.string.lbl_author);
+                                     nonBlankValidator, R.string.lbl_author);
 
         validatorConfig.addValidator(DBKey.LANGUAGE,
-                                     NON_BLANK_VALIDATOR, R.string.lbl_language);
+                                     nonBlankValidator, R.string.lbl_language);
 
         validatorConfig.addValidator(DBKey.EDITION__BITMASK,
-                                     LONG_VALIDATOR, R.string.lbl_edition);
+                                     longValidator, R.string.lbl_edition);
         validatorConfig.addValidator(DBKey.TOC_TYPE__BITMASK,
-                                     LONG_VALIDATOR, R.string.lbl_table_of_content);
+                                     longValidator, R.string.lbl_table_of_content);
 
         validatorConfig.addValidator(DBKey.PRICE_LISTED,
-                                     PRICE_VALIDATOR, R.string.lbl_price_listed);
+                                     priceValidator, R.string.lbl_price_listed);
         validatorConfig.addValidator(DBKey.PRICE_PAID,
-                                     PRICE_VALIDATOR, R.string.lbl_price_paid);
+                                     priceValidator, R.string.lbl_price_paid);
 
-        validatorConfig.addCrossValidator((context, book) -> {
+        validatorConfig.addCrossValidator((c, book) -> {
             final String start = book.getString(DBKey.READ_START__DATE);
             if (start.isEmpty()) {
                 return;
@@ -1141,17 +1142,19 @@ public class Book
                 return;
             }
             if (start.compareToIgnoreCase(end) > 0) {
-                throw new ValidatorException(context.getString(R.string.vldt_read_start_after_end));
+                throw new ValidatorException(c.getString(R.string.vldt_read_start_after_end));
             }
         });
     }
 
     public boolean validate(@NonNull final Context context) {
+        //noinspection ConstantConditions
         return validatorConfig.validate(context, this);
     }
 
     @Nullable
     public String getValidationExceptionMessage(@NonNull final Context context) {
+        //noinspection ConstantConditions
         return validatorConfig.getValidationExceptionMessage(context);
     }
 

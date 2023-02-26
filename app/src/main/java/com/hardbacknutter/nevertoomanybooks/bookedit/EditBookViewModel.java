@@ -242,7 +242,7 @@ public class EditBookViewModel
                 book.setStage(EntityStage.Stage.WriteAble);
             }
 
-            book.addValidators();
+            book.addValidators(context);
             book.ensureBookshelf(context);
             book.ensureLanguage(context);
         }
