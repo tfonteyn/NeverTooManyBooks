@@ -59,25 +59,25 @@ public class BookCoder
     private final JsonCoder<Bookshelf> bookshelfCoder;
     @NonNull
     private final JsonCoder<CalibreLibrary> calibreLibraryCoder;
-    @NonNull
-    private final Context context;
     private final JsonCoder<Publisher> publisherCoder = new PublisherCoder();
     private final JsonCoder<Series> seriesCoder = new SeriesCoder();
     private final JsonCoder<TocEntry> tocEntryCoder = new TocEntryCoder();
+    /** Immutable. */
+    @NonNull
     private final List<Locale> locales;
 
     /**
      * Constructor.
      *
-     * @param context Current context
+     * @param context      Current context
+     * @param defaultStyle the default style to use for {@link Bookshelf}s
      */
     public BookCoder(@NonNull final Context context,
                      @NonNull final Style defaultStyle) {
 
-        this.context = context;
-        bookshelfCoder = new BookshelfCoder(this.context, defaultStyle);
-        calibreLibraryCoder = new CalibreLibraryCoder(this.context, defaultStyle);
-        locales = LocaleListUtils.asList(this.context);
+        bookshelfCoder = new BookshelfCoder(context, defaultStyle);
+        calibreLibraryCoder = new CalibreLibraryCoder(context, defaultStyle);
+        locales = LocaleListUtils.asList(context);
     }
 
     @Override
@@ -200,8 +200,7 @@ public class BookCoder
 
                 case Book.BKEY_CALIBRE_LIBRARY:
                     // Full object
-                    book.setCalibreLibrary(
-                            calibreLibraryCoder.decode(data.getJSONObject(key)));
+                    book.setCalibreLibrary(calibreLibraryCoder.decode(data.getJSONObject(key)));
                     break;
 
                 case DBKey.FK_CALIBRE_LIBRARY:
