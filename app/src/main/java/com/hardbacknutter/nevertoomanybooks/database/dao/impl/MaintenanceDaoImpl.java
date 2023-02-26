@@ -188,7 +188,7 @@ public class MaintenanceDaoImpl
      * Process a <strong>single row</strong> from the cursor.
      *
      * @param context    Current context
-     * @param locale     to use for optionally to reorder this title
+     * @param locale     to use for reordering this title
      * @param reorder    flag whether to reorder or not
      * @param cursor     positioned on the row to handle
      * @param table      to update
@@ -216,8 +216,8 @@ public class MaintenanceDaoImpl
 
         final String rebuildObTitle;
         if (reorder) {
-            final List<Locale> localeList = LocaleListUtils.asList(context, locale);
-            rebuildObTitle = ReorderHelper.reorder(context, title, localeList);
+            final List<Locale> locales = LocaleListUtils.asList(context, locale);
+            rebuildObTitle = ReorderHelper.reorder(context, title, locales);
         } else {
             // Use the actual/original title
             rebuildObTitle = title;
