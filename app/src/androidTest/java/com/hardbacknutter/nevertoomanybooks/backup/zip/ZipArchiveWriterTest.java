@@ -90,7 +90,8 @@ public class ZipArchiveWriterTest
                 EnumSet.of(RecordType.Books,
                            RecordType.Preferences,
                            RecordType.Certificates,
-                           RecordType.Styles));
+                           RecordType.Styles),
+                systemLocale);
         exportHelper.setEncoding(ArchiveEncoding.Zip);
         exportHelper.setUri(uri);
 
@@ -112,7 +113,7 @@ public class ZipArchiveWriterTest
             throws DataReaderException, IOException,
                    StorageException, CredentialsException, CertificateException {
 
-        final ImportHelper importHelper = new ImportHelper(context, uri);
+        final ImportHelper importHelper = new ImportHelper(context, systemLocale, uri);
         // The default, fail if the default was changed without changing this test!
         assertEquals(DataReader.Updates.OnlyNewer, importHelper.getUpdateOption());
 

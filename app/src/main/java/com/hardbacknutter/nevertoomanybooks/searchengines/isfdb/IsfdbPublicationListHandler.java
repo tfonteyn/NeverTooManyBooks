@@ -26,7 +26,6 @@ import androidx.annotation.Nullable;
 import java.io.EOFException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -38,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.utils.MoneyParser;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -120,8 +120,6 @@ class IsfdbPublicationListHandler
     private final IsfdbSearchEngine searchEngine;
     @NonNull
     private final boolean[] fetchCovers;
-    @NonNull
-    private final List<Locale> localeList;
     /** XML content. */
     @SuppressWarnings("StringBufferField")
     private final StringBuilder builder = new StringBuilder();
@@ -140,15 +138,17 @@ class IsfdbPublicationListHandler
     @Nullable
     private String externalId;
 
+    private final MoneyParser moneyParser;
+
     IsfdbPublicationListHandler(@NonNull final IsfdbSearchEngine isfdbApiSearchEngine,
                                 @NonNull final boolean[] fetchCovers,
                                 final int maxBooks,
-                                @NonNull final List<Locale> localeList) {
+                                @NonNull final MoneyParser moneyParser) {
         searchEngine = isfdbApiSearchEngine;
 
         this.fetchCovers = fetchCovers;
         this.maxBooks = maxBooks;
-        this.localeList = localeList;
+        this.moneyParser = moneyParser;
     }
 
     @NonNull
@@ -298,7 +298,7 @@ class IsfdbPublicationListHandler
                 }
                 case XML_PRICE: {
                     final String tmpString = builder.toString().trim();
-                    final Money money = Money.parse(localeList, tmpString);
+                    final Money money = moneyParser.parse(tmpString);
                     if (money != null) {
                         publicationData.putMoney(DBKey.PRICE_LISTED, money);
                     } else {

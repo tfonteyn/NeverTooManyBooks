@@ -32,7 +32,9 @@ import javax.xml.parsers.SAXParserFactory;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.utils.MoneyParser;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -71,11 +73,13 @@ class IsfdbXmlPublicationTest
         final String filename = "/isfdb/425189.xml";
 
         final List<Locale> localeList = List.of(searchEngine.getLocale(context));
+        final RealNumberParser realNumberParser = new RealNumberParser(localeList);
+        final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
 
         final IsfdbPublicationListHandler listHandler =
                 new IsfdbPublicationListHandler(searchEngine,
                                                 new boolean[]{false, false},
-                                                1, localeList);
+                                                1, moneyParser);
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final SAXParser parser = factory.newSAXParser();

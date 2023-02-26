@@ -27,13 +27,14 @@ import javax.xml.parsers.ParserConfigurationException;
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.utils.MoneyParser;
 
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,6 +64,7 @@ class AmazonHtmlHandlerTest
     void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
         setLocale(Locale.UK);
+        final RealNumberParser realNumberParser = new RealNumberParser(context);
 
         final String locationHeader = "https://www.amazon.co.uk/gp/product/0575090677";
         final String filename = "/amazon/0575090677.html";
@@ -77,8 +79,8 @@ class AmazonHtmlHandlerTest
         assertEquals("608", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("English", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(14.49d, book.getDouble(DBKey.PRICE_LISTED, locales));
-        assertEquals(Money.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertEquals(14.49d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(MoneyParser.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final ArrayList<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -98,6 +100,8 @@ class AmazonHtmlHandlerTest
     void parse02()
             throws SearchException, IOException, CredentialsException, StorageException {
         setLocale(Locale.UK);
+        final RealNumberParser realNumberParser = new RealNumberParser(context);
+
         final String locationHeader = "https://www.amazon.co.uk/gp/product/1473210208";
         final String filename = "/amazon/1473210208.html";
 
@@ -111,8 +115,8 @@ class AmazonHtmlHandlerTest
         assertEquals("336", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("English", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(5.84d, book.getDouble(DBKey.PRICE_LISTED, locales));
-        assertEquals(Money.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertEquals(5.84d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(MoneyParser.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final ArrayList<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -134,6 +138,8 @@ class AmazonHtmlHandlerTest
     void parse10()
             throws SearchException, IOException, CredentialsException, StorageException {
         setLocale(Locale.FRANCE);
+        final RealNumberParser realNumberParser = new RealNumberParser(context);
+
         final String locationHeader = "https://www.amazon.fr/gp/product/2205057332";
         final String filename = "/amazon/2205057332.html";
 
@@ -144,8 +150,8 @@ class AmazonHtmlHandlerTest
         assertEquals("Le retour à la terre, 1 : La vraie vie",
                      book.getString(DBKey.TITLE, null));
         assertEquals("978-2205057331", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals(12d, book.getDouble(DBKey.PRICE_LISTED, locales));
-        assertEquals(Money.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertEquals(12d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final ArrayList<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);

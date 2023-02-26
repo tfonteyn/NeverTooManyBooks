@@ -28,6 +28,7 @@ import androidx.annotation.VisibleForTesting;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.EnumSet;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -55,22 +56,29 @@ public final class ImportHelper
 
     @NonNull
     private final UriInfo uriInfo;
+    @NonNull
+    private final Locale systemLocale;
 
     /**
      * Constructor. The encoding will be determined from the Uri.
      *
-     * @param context Current context
-     * @param uri     to read from
+     * @param context      Current context
+     * @param systemLocale
+     * @param uri          to read from
      *
      * @throws DataReaderException on failure to recognise a supported archive
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public ImportHelper(@NonNull final Context context,
+                        @NonNull final Locale systemLocale,
                         @NonNull final Uri uri)
             throws FileNotFoundException, DataReaderException {
 
         this.uri = uri;
         uriInfo = new UriInfo(this.uri);
+
+        this.systemLocale = systemLocale;
+
         encoding = ArchiveEncoding.getEncoding(context, uri).orElseThrow(
                 () -> new DataReaderException(context.getString(
                         R.string.error_import_file_not_supported)));
@@ -146,7 +154,7 @@ public final class ImportHelper
                    CredentialsException,
                    StorageException,
                    IOException {
-        return encoding.createReader(context, this);
+        return encoding.createReader(context, systemLocale, this);
     }
 
     @Override
@@ -157,6 +165,7 @@ public final class ImportHelper
                + ", uri=" + uri
                + ", encoding=" + encoding
                + ", uriInfo=" + uriInfo
+               + ", systemLocale=" + systemLocale
                + '}';
     }
 }

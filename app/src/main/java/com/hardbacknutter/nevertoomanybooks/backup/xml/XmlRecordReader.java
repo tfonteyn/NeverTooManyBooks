@@ -37,8 +37,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
-import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
@@ -51,7 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.backupbase.ArchiveReaderAbstract;
 import com.hardbacknutter.nevertoomanybooks.backup.backupbase.ArchiveWriterAbstract;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
@@ -83,27 +81,22 @@ public class XmlRecordReader
 
     private static final String ERROR_UNABLE_TO_PROCESS_XML_RECORD = "Unable to process XML ";
 
-    private static final String TAG = "XmlRecordReader";
-    @NonNull
-    private final List<Locale> locales;
-
     /**
      * Stack for popping tags on if we go into one.
      * This is of course overkill, just to handle the list/set set,
      * but it's clean and future proof
      */
     private final Deque<TagInfo> tagStack = new ArrayDeque<>();
+    private final RealNumberParser realNumberParser;
 
     /** a simple Holder for the current tag name and attributes. Pushed/pulled on the stack. */
     private TagInfo currentTag;
 
     /**
      * Constructor.
-     *
-     * @param locales to use for parsing
      */
-    public XmlRecordReader(@NonNull final List<Locale> locales) {
-        this.locales = locales;
+    public XmlRecordReader(@NonNull final RealNumberParser realNumberParser) {
+        this.realNumberParser = realNumberParser;
     }
 
     @Override
@@ -113,9 +106,8 @@ public class XmlRecordReader
             throws DataReaderException,
                    IOException {
         final Bundle bundle = ServiceLocator.getInstance().newBundle();
-        final Locale systemLocale = ServiceLocator.getInstance().getSystemLocale();
 
-        fromXml(record, new InfoReader(bundle), systemLocale);
+        fromXml(record, new InfoReader(bundle));
         if (bundle.isEmpty()) {
             return Optional.empty();
         } else {
@@ -140,19 +132,17 @@ public class XmlRecordReader
      *
      * @param record   source to read from
      * @param accessor the EntityReader to convert XML to the object
-     * @param locale   to use
      *
      * @throws DataReaderException on a decoding/parsing of data issue
      * @throws IOException         on generic/other IO failures
      */
     private void fromXml(@NonNull final ArchiveReaderRecord record,
-                         @NonNull final EntityReader<String> accessor,
-                         @NonNull final Locale locale)
+                         @NonNull final EntityReader<String> accessor)
             throws DataReaderException,
                    IOException {
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
-        final XmlFilter rootFilter = new XmlFilter(locale);
+        final XmlFilter rootFilter = new XmlFilter();
         // Allow reading BookCatalogue archive data.
         buildLegacyFilters(rootFilter, accessor);
         // Current version filters
@@ -233,13 +223,13 @@ public class XmlRecordReader
                         break;
 
                     case XmlUtils.TAG_FLOAT:
-                        accessor.putFloat(currentTag.name, NumberParser.parseFloat(
-                                locales, currentTag.value));
+                        accessor.putFloat(currentTag.name, realNumberParser.parseFloat(
+                                currentTag.value));
                         break;
 
                     case XmlUtils.TAG_DOUBLE:
-                        accessor.putDouble(currentTag.name, NumberParser.parseDouble(
-                                locales, currentTag.value));
+                        accessor.putDouble(currentTag.name, realNumberParser.parseDouble(
+                                currentTag.value));
                         break;
 
                     default:

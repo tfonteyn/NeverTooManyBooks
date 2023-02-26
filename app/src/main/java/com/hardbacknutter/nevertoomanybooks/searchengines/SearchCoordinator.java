@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
@@ -1075,11 +1076,12 @@ public class SearchCoordinator
         private final Map<EngineId, SearchEngine> engineCache;
         /** Mappers to apply. */
         private final Collection<Mapper> mappers = new ArrayList<>();
-        private final List<Locale> locales;
+        private final RealNumberParser realNumberParser;
 
         ResultsAccumulator(@NonNull final Context context,
                            @NonNull final Map<EngineId, SearchEngine> engineCache) {
-            locales = LocaleListUtils.asList(context);
+            final List<Locale> locales = LocaleListUtils.asList(context);
+            realNumberParser = new RealNumberParser(locales);
             dateParser = new FullDateParser(ServiceLocator.getInstance().getSystemLocale(),
                                             locales);
             this.engineCache = engineCache;
@@ -1284,7 +1286,7 @@ public class SearchCoordinator
                                    @NonNull final Book siteData,
                                    @NonNull final Book book) {
             // Fetch as Object, as engines MAY store typed data
-            final Object dataToAdd = siteData.get(key, locales);
+            final Object dataToAdd = siteData.get(key, realNumberParser);
             if (dataToAdd == null || dataToAdd.toString().isEmpty()) {
                 return;
             }

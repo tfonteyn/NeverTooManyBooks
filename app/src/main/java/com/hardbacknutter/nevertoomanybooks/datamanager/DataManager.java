@@ -31,16 +31,16 @@ import androidx.annotation.VisibleForTesting;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.utils.MoneyParser;
 
 /**
  * Class to manage a set of related data.
@@ -141,13 +141,12 @@ public class DataManager
     /**
      * Store all passed values in our collection (with type checking).
      *
-     * @param src     DataManager to copy from
-     * @param locales to use for parsing
+     * @param src DataManager to copy from
      */
     protected void putAll(@NonNull final DataManager src,
-                          @NonNull final List<Locale> locales) {
+                          @NonNull final RealNumberParser realNumberParser) {
         for (final String key : src.keySet()) {
-            put(key, src.get(key, locales));
+            put(key, src.get(key, realNumberParser));
         }
     }
 
@@ -259,18 +258,19 @@ public class DataManager
     /**
      * Get the data object specified by the passed key.
      *
-     * @param key     Key of data object
-     * @param locales to use for parsing
+     * @param key Key of data object
      *
      * @return Data object, or {@code null} when not present or the value is {@code null}
      */
     @Nullable
     public Object get(@NonNull final String key,
-                      @NonNull final List<Locale> locales) {
+                      @NonNull final RealNumberParser parser) {
         if (DBKey.MONEY_KEYS.contains(key)) {
             // try to combine the keys
             try {
-                final Money money = getMoney(key, locales);
+                // TODO: instead of having the parser passed in above, we should use
+                //  a Supplier<RealNumberParser>
+                final Money money = getMoney(key, parser);
                 if (money != null) {
                     return money;
                 }
@@ -281,7 +281,6 @@ public class DataManager
         }
         return rawData.get(key);
     }
-
 
     /**
      * Get a boolean value.
@@ -364,7 +363,6 @@ public class DataManager
      * Get a double value.
      *
      * @param key     Key of data object
-     * @param locales to use for parsing
      *
      * @return a double value; {@code null} or empty becomes {@code 0}
      *
@@ -372,9 +370,9 @@ public class DataManager
      */
     @Override
     public double getDouble(@NonNull final String key,
-                            @NonNull final List<Locale> locales)
+                            @NonNull final RealNumberParser parser)
             throws NumberFormatException {
-        return NumberParser.toDouble(locales, rawData.get(key));
+        return parser.toDouble(rawData.get(key));
     }
 
     /**
@@ -391,8 +389,8 @@ public class DataManager
     /**
      * Get a float value.
      *
-     * @param key     Key of data object
-     * @param locales to use for parsing
+     * @param key    Key of data object
+     * @param parser to use for number parsing
      *
      * @return a float value {@code null} or empty becomes {@code 0}
      *
@@ -400,9 +398,9 @@ public class DataManager
      */
     @Override
     public float getFloat(@NonNull final String key,
-                          @NonNull final List<Locale> locales)
+                          @NonNull final RealNumberParser parser)
             throws NumberFormatException {
-        return NumberParser.toFloat(locales, rawData.get(key));
+        return parser.toFloat(rawData.get(key));
     }
 
     /**
@@ -443,14 +441,14 @@ public class DataManager
      * Get a {@link Money} value.
      * <p>
      * <strong>NOT for normal use; it's to easy to get this wrong.
-     * Should only used by {@link #get(String, List)} or in tests.</strong>
+     * Should only used by {@link #get(String, RealNumberParser)} or in tests.</strong>
      * <p>
      * This method should really return an "Either". i.e.
      * Either return the Money object, or return a String with the raw value.
-     * This is exactly what is done in {@link #get(String, List)} where we return an Object.
+     * This is exactly what is done in {@link #get(String, RealNumberParser)}
+     * where we return an Object.
      *
-     * @param key     Key of data object
-     * @param locales to use for parsing
+     * @param key Key of data object
      *
      * @return value or {@code null} if parsing did not produce a Money object
      *
@@ -459,11 +457,11 @@ public class DataManager
     @VisibleForTesting
     @Nullable
     public Money getMoney(@NonNull final String key,
-                          @NonNull final List<Locale> locales)
+                          @NonNull final RealNumberParser parser)
             throws NumberFormatException {
         if (rawData.containsKey(key)) {
-            return Money.parse(BigDecimal.valueOf(getDouble(key, locales)),
-                               getString(key + DBKey.CURRENCY_SUFFIX));
+            return MoneyParser.parse(BigDecimal.valueOf(getDouble(key, parser)),
+                                     getString(key + DBKey.CURRENCY_SUFFIX));
         } else {
             return null;
         }

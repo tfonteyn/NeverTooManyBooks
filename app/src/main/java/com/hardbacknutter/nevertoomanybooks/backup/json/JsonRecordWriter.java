@@ -34,7 +34,6 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -51,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.StyleCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.covers.Cover;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -86,8 +86,7 @@ public class JsonRecordWriter
 
     @Nullable
     private final LocalDateTime utcSinceDateTime;
-    @NonNull
-    private final List<Locale> locales;
+    private final RealNumberParser realNumberParser;
 
     /**
      * Constructor.
@@ -96,10 +95,9 @@ public class JsonRecordWriter
      *                         modified or added since.
      */
     @AnyThread
-    public JsonRecordWriter(@NonNull final Context context,
-                            @NonNull final List<Locale> locales,
+    public JsonRecordWriter(@NonNull final RealNumberParser realNumberParser,
                             @Nullable final LocalDateTime utcSinceDateTime) {
-        this.locales = locales;
+        this.realNumberParser = realNumberParser;
         this.utcSinceDateTime = utcSinceDateTime;
     }
 
@@ -266,7 +264,8 @@ public class JsonRecordWriter
 
                 final boolean collectCoverFilenames = recordTypes.contains(RecordType.Cover);
 
-                final JsonCoder<Book> coder = new BookCoder(context, defaultStyle, locales);
+                final JsonCoder<Book> coder =
+                        new BookCoder(context, defaultStyle, realNumberParser);
 
                 int delta = 0;
                 long lastUpdate = 0;

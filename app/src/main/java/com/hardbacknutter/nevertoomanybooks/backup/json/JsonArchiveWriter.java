@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
@@ -68,9 +69,11 @@ public class JsonArchiveWriter
 
     @NonNull
     private final List<Locale> locales;
+
     /** Export configuration. */
     @NonNull
     private final ExportHelper exportHelper;
+    private final RealNumberParser realNumberParser;
 
     /**
      * Constructor.
@@ -80,6 +83,7 @@ public class JsonArchiveWriter
     public JsonArchiveWriter(@NonNull final Context context,
                              @NonNull final ExportHelper helper) {
         this.locales = LocaleListUtils.asList(context);
+        realNumberParser = new RealNumberParser(context);
         exportHelper = helper;
     }
 
@@ -106,7 +110,7 @@ public class JsonArchiveWriter
             try (OutputStream os = exportHelper.createOutputStream(context);
                  Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
                  Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
-                 RecordWriter recordWriter = new JsonRecordWriter(context, locales, dateSince)) {
+                 RecordWriter recordWriter = new JsonRecordWriter(realNumberParser, dateSince)) {
 
                 // manually concat
                 // 1. archive envelope

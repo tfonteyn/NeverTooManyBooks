@@ -33,8 +33,6 @@ import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -43,8 +41,8 @@ import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreDao;
@@ -92,9 +90,9 @@ public class CalibreContentServerWriter
 
     @NonNull
     private final DateParser dateParser;
+    private final RealNumberParser realNumberParser;
 
     private SyncWriterResults results;
-    private List<Locale> locales;
 
     /**
      * Constructor.
@@ -113,7 +111,7 @@ public class CalibreContentServerWriter
         doCovers = this.helper.getRecordTypes().contains(RecordType.Cover);
         deleteLocalBook = this.helper.isDeleteLocalBooks();
 
-        locales = LocaleListUtils.asList(context);
+        realNumberParser = new RealNumberParser(context);
         dateParser = new ISODateParser(ServiceLocator.getInstance().getSystemLocale());
     }
 
@@ -307,7 +305,7 @@ public class CalibreContentServerWriter
                                                     .map(Publisher::getName)
                                                     .orElse(""));
 
-        changes.put(CalibreBook.RATING, (int) localBook.getFloat(DBKey.RATING, locales));
+        changes.put(CalibreBook.RATING, (int) localBook.getFloat(DBKey.RATING, realNumberParser));
 
         final JSONArray languages = new JSONArray();
         final String language = localBook.getString(DBKey.LANGUAGE, null);

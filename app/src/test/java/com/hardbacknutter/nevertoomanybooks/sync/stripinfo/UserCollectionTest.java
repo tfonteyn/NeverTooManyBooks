@@ -29,6 +29,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -87,6 +88,7 @@ class UserCollectionTest
     void parseCollectionPage()
             throws IOException, SearchException {
         setLocale(Locale.FRANCE);
+        final RealNumberParser realNumberParser = new RealNumberParser(context);
 
         final String locationHeader = "https://www.stripinfo.be/userCollection/index/666/0/0/0000";
         final String filename = "/stripinfo/collection.html";
@@ -124,7 +126,7 @@ class UserCollectionTest
             assertEquals(5435, b0.getLong(DBKey.SID_STRIP_INFO));
             assertEquals(5408, b0.getLong(DBKey.STRIP_INFO_COLL_ID));
 
-            assertEquals(45f, b0.getDouble(DBKey.PRICE_PAID, locales));
+            assertEquals(45f, b0.getDouble(DBKey.PRICE_PAID, realNumberParser));
             assertEquals("EUR", b0.getString(DBKey.PRICE_PAID_CURRENCY, null));
             assertEquals("2021-03-10", b0.getString(DBKey.DATE_ACQUIRED, null));
 

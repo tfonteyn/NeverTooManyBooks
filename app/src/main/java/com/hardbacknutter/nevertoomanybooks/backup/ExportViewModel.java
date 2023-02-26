@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,9 +23,12 @@ import android.content.Context;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
 import java.util.ArrayList;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
@@ -48,11 +51,17 @@ public class ExportViewModel
             ArchiveEncoding.Json,
             ArchiveEncoding.SqLiteDb};
 
-    @NonNull
-    private final ExportHelper exportHelper = new ExportHelper();
+    @Nullable
+    private ExportHelper exportHelper;
 
     /** UI helper. */
     private boolean quickOptionsAlreadyShown;
+
+    public void init(@NonNull final Locale systemLocale) {
+        if (exportHelper == null) {
+            exportHelper = new ExportHelper(systemLocale);
+        }
+    }
 
     boolean isQuickOptionsAlreadyShown() {
         return quickOptionsAlreadyShown;
@@ -64,7 +73,7 @@ public class ExportViewModel
 
     @NonNull
     ExportHelper getExportHelper() {
-        return exportHelper;
+        return Objects.requireNonNull(exportHelper);
     }
 
     /**
@@ -89,6 +98,8 @@ public class ExportViewModel
      */
     @NonNull
     Pair<Integer, ArrayList<String>> getFormatOptions(@NonNull final Context context) {
+        Objects.requireNonNull(exportHelper);
+
         final ArchiveEncoding currentEncoding = exportHelper.getEncoding();
         int initialPos = 0;
         final ArrayList<String> list = new ArrayList<>();
@@ -105,12 +116,16 @@ public class ExportViewModel
 
     @Override
     public boolean isReadyToGo() {
+        Objects.requireNonNull(exportHelper);
+
         // Prefs/Styles are always included, so we need to specifically check for books/covers
         final Set<RecordType> recordTypes = exportHelper.getRecordTypes();
         return recordTypes.contains(RecordType.Books) || recordTypes.contains(RecordType.Cover);
     }
 
     void startExport(@NonNull final Uri uri) {
+        Objects.requireNonNull(exportHelper);
+
         exportHelper.setUri(uri);
         startWritingData(exportHelper);
     }

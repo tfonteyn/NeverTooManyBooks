@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
@@ -40,8 +39,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
@@ -58,10 +57,11 @@ public class JsonArchiveReader
         implements DataReader<ArchiveMetaData, ImportResults> {
 
     @NonNull
-    private final List<Locale> locales;
+    private final Locale systemLocale;
     /** Import configuration. */
     @NonNull
     private final ImportHelper importHelper;
+    private final RealNumberParser realNumberParser;
 
     @Nullable
     private ArchiveMetaData metaData;
@@ -69,11 +69,14 @@ public class JsonArchiveReader
     /**
      * Constructor.
      *
-     * @param helper import configuration
+     * @param systemLocale to use for ISO date parsing
+     * @param helper       import configuration
      */
     public JsonArchiveReader(@NonNull final Context context,
+                             @NonNull final Locale systemLocale,
                              @NonNull final ImportHelper helper) {
-        this.locales = LocaleListUtils.asList(context);
+        realNumberParser = new RealNumberParser(context);
+        this.systemLocale = systemLocale;
         importHelper = helper;
     }
 
@@ -106,7 +109,8 @@ public class JsonArchiveReader
             }
 
             try (is; RecordReader recordReader =
-                    new JsonRecordReader(context, locales, EnumSet.of(RecordType.MetaData))) {
+                    new JsonRecordReader(context, systemLocale, realNumberParser,
+                                         EnumSet.of(RecordType.MetaData))) {
                 // wrap the entire input into a single record.
                 final ArchiveReaderRecord record = new JsonArchiveRecord(
                         importHelper.getUriInfo().getDisplayName(context), is);
@@ -141,7 +145,9 @@ public class JsonArchiveReader
         final Set<RecordType> recordTypes = importHelper.getRecordTypes();
         RecordType.addRelatedTypes(recordTypes);
 
-        try (RecordReader recordReader = new JsonRecordReader(context, locales, recordTypes)) {
+        try (RecordReader recordReader = new JsonRecordReader(context, systemLocale,
+                                                              realNumberParser,
+                                                              recordTypes)) {
             // wrap the entire input into a single record.
             final ArchiveReaderRecord record = new JsonArchiveRecord(
                     importHelper.getUriInfo().getDisplayName(context), is);

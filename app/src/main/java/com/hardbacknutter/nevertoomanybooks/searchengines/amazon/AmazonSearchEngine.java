@@ -38,6 +38,7 @@ import java.util.regex.Pattern;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
@@ -56,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.sync.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.utils.MoneyParser;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
@@ -258,9 +260,11 @@ public class AmazonSearchEngine
 
         final Locale siteLocale = getLocale(context, document.location().split("/")[2]);
 
-        final List<Locale> localeList = LocaleListUtils.asList(context, siteLocale);
+        final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
+        final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
 
-        parsePrice(document, book, localeList);
+        parsePrice(document, book, moneyParser);
         parseAuthors(document, book, siteLocale);
 
         if (isCancelled()) {
@@ -287,10 +291,10 @@ public class AmazonSearchEngine
 
     private void parsePrice(@NonNull final Document document,
                             @NonNull final Book book,
-                            @NonNull final List<Locale> localeList) {
+                            @NonNull final MoneyParser moneyParser) {
         final Element price = document.selectFirst("span.offer-price");
         if (price != null) {
-            final Money money = Money.parse(localeList, price.text());
+            final Money money = moneyParser.parse(price.text());
             if (money != null) {
                 book.putMoney(DBKey.PRICE_LISTED, money);
             } else {

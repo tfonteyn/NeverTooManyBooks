@@ -49,6 +49,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForWritingContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
@@ -94,7 +95,7 @@ public class ExportFragment
 
         //noinspection ConstantConditions
         vm = new ViewModelProvider(getActivity()).get(ExportViewModel.class);
-        // no init
+        vm.init(ServiceLocator.getInstance().getSystemLocale());
     }
 
     @Override

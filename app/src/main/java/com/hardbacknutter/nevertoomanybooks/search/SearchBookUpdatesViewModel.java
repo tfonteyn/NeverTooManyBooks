@@ -33,7 +33,6 @@ import androidx.lifecycle.MutableLiveData;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.SortedMap;
@@ -45,10 +44,10 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -448,10 +447,11 @@ public class SearchBookUpdatesViewModel
                        @Nullable final Book remoteBook) {
 
         if (!isCancelled() && remoteBook != null && !remoteBook.isEmpty()) {
-            final List<Locale> locales = LocaleListUtils.asList(context);
+            final RealNumberParser realNumberParser = new RealNumberParser(context);
             //noinspection ConstantConditions
             final Book delta = syncProcessor.process(context, currentBookId, currentBook,
-                                                     currentFieldsWanted, remoteBook, locales);
+                                                     currentFieldsWanted, remoteBook,
+                                                     realNumberParser);
             if (delta != null) {
                 try {
                     bookDao.update(context, delta);

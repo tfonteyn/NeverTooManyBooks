@@ -37,13 +37,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.Cover;
@@ -214,7 +214,7 @@ public final class SyncReaderProcessor
                         @NonNull final Book localBook,
                         @NonNull final Map<String, SyncField> fieldsWanted,
                         @NonNull final Book remoteBook,
-                        @NonNull final List<Locale> locales) {
+                        @NonNull final RealNumberParser realNumberParser) {
 
         // Filter the data to remove keys we don't care about
         final Collection<String> toRemove = new ArrayList<>();
@@ -243,7 +243,7 @@ public final class SyncReaderProcessor
                         switch (field.getAction()) {
                             case CopyIfBlank:
                                 // remove unneeded fields from the new data
-                                if (hasField(localBook, field.key, locales)) {
+                                if (hasField(localBook, field.key, realNumberParser)) {
                                     remoteBook.remove(field.key);
                                 }
                                 break;
@@ -284,15 +284,15 @@ public final class SyncReaderProcessor
     /**
      * Check if we already have this field (with content) in the original data.
      *
-     * @param localBook to check
-     * @param key       to test for
-     * @param locales   to use for parsing
+     * @param localBook        to check
+     * @param key              to test for
+     * @param realNumberParser to use for number parsing
      *
      * @return {@code true} if already present
      */
     private boolean hasField(@NonNull final Book localBook,
                              @NonNull final String key,
-                             @NonNull final List<Locale> locales) {
+                             @NonNull final RealNumberParser realNumberParser) {
         switch (key) {
             case Book.BKEY_AUTHOR_LIST:
             case Book.BKEY_SERIES_LIST:
@@ -305,7 +305,7 @@ public final class SyncReaderProcessor
                 break;
 
             default:
-                final Object o = localBook.get(key, locales);
+                final Object o = localBook.get(key, realNumberParser);
                 if (o != null) {
                     final String value = o.toString().trim();
                     return !value.isEmpty() && !"0".equals(value);

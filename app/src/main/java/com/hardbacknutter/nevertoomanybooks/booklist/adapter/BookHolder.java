@@ -37,8 +37,6 @@ import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.FragmentActivity;
 
 import java.io.File;
-import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -48,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.covers.Cover;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
@@ -93,6 +92,7 @@ public class BookHolder
     private final String[] conditionDescriptions;
     @NonNull
     private final Style style;
+    private final RealNumberParser realNumberParser;
     /** Only active when running in debug mode; displays the "position/rowId" for a book. */
     @Nullable
     private TextView dbgRowIdView;
@@ -101,22 +101,6 @@ public class BookHolder
     private ImageViewLoader imageLoader;
     @Nullable
     private UseFields use;
-
-    @NonNull
-    private final List<Locale> locales;
-
-    /**
-     * Zoom the given cover.
-     *
-     * @param coverView passed in to allow for future expansion
-     */
-    private void onZoomCover(@NonNull final View coverView) {
-        final String uuid = (String) coverView.getTag(R.id.TAG_THUMBNAIL_UUID);
-        new Cover(uuid, 0).getPersistedFile().ifPresent(file -> {
-            final FragmentActivity activity = (FragmentActivity) coverView.getContext();
-            ZoomedImageDialogFragment.launch(activity.getSupportFragmentManager(), file);
-        });
-    }
 
     /**
      * Constructor.
@@ -131,12 +115,12 @@ public class BookHolder
     BookHolder(@NonNull final View itemView,
                @NonNull final Style style,
                @NonNull final Languages languages,
-               @NonNull final List<Locale> locales,
+               @NonNull final RealNumberParser realNumberParser,
                @Dimension final int coverLongestSide) {
         super(itemView);
         this.style = style;
         this.languages = languages;
-        this.locales = locales;
+        this.realNumberParser = realNumberParser;
         this.coverLongestSide = coverLongestSide;
 
         final Context context = itemView.getContext();
@@ -184,6 +168,19 @@ public class BookHolder
 
             set.applyTo(parentLayout);
         }
+    }
+
+    /**
+     * Zoom the given cover.
+     *
+     * @param coverView passed in to allow for future expansion
+     */
+    private void onZoomCover(@NonNull final View coverView) {
+        final String uuid = (String) coverView.getTag(R.id.TAG_THUMBNAIL_UUID);
+        new Cover(uuid, 0).getPersistedFile().ifPresent(file -> {
+            final FragmentActivity activity = (FragmentActivity) coverView.getContext();
+            ZoomedImageDialogFragment.launch(activity.getSupportFragmentManager(), file);
+        });
     }
 
     @Override
@@ -236,7 +233,7 @@ public class BookHolder
         }
 
         if (use.rating) {
-            final float rating = rowData.getFloat(DBKey.RATING, locales);
+            final float rating = rowData.getFloat(DBKey.RATING, realNumberParser);
             if (rating > 0) {
                 vb.rating.setRating(rating);
                 vb.rating.setVisibility(View.VISIBLE);
@@ -367,7 +364,10 @@ public class BookHolder
         String date = null;
         if (usePubDate) {
             final String dateStr = rowData.getString(DBKey.BOOK_PUBLICATION__DATE);
-            date = new PartialDate(dateStr).toDisplay(locales.get(0), dateStr);
+            date = new PartialDate(dateStr).toDisplay(itemView.getContext().getResources()
+                                                              .getConfiguration().getLocales()
+                                                              .get(0),
+                                                      dateStr);
         }
 
         if (text != null && !text.isBlank() && date != null && !date.isBlank()) {

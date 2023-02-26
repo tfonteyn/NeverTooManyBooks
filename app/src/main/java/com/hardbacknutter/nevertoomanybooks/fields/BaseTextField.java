@@ -34,7 +34,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.util.Collection;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.fields.endicon.ExtClearTextEndIconDelegate;
 import com.hardbacknutter.nevertoomanybooks.fields.endicon.ExtEndIconDelegate;
@@ -117,7 +117,7 @@ public abstract class BaseTextField<T, V extends TextView>
     @Override
     public void setInitialValue(@NonNull final Context context,
                                 @NonNull final DataManager source) {
-        final Object obj = source.get(fieldKey, LocaleListUtils.asList(context));
+        final Object obj = source.get(fieldKey, new RealNumberParser(context));
         if (obj != null) {
             //noinspection unchecked
             initialValue = (T) obj;

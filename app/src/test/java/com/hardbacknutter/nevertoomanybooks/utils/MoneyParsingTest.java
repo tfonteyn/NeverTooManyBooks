@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 
 import org.junit.jupiter.api.Test;
 
@@ -39,74 +40,101 @@ class MoneyParsingTest
 
     @Test
     void uk00() {
-        final Money money = Money.parse(UK, "GBP&nbsp;12.34");
+        setLocale(Locale.UK);
+        final RealNumberParser realNumberParser = new RealNumberParser(context);
+        final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
+        final Money money = moneyParser.parse("GBP&nbsp;12.34");
         assertNotNull(money);
         assertEquals(twelveDotThreeFour, money.getValue());
-        assertEquals(Money.GBP, money.getCurrencyCode());
+        assertEquals(MoneyParser.GBP, money.getCurrencyCode());
     }
 
     @Test
     void uk01() {
-        final Money money = Money.parse(UK, "£ 12.34");
+        setLocale(Locale.UK);
+        final RealNumberParser realNumberParser = new RealNumberParser(context);
+        final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
+        final Money money = moneyParser.parse("£ 12.34");
         assertNotNull(money);
         assertEquals(twelveDotThreeFour, money.getValue());
-        assertEquals(Money.GBP, money.getCurrencyCode());
+        assertEquals(MoneyParser.GBP, money.getCurrencyCode());
     }
 
     @Test
     void uk02() {
-        final Money money = Money.parse(UK, "£12.34");
+        setLocale(Locale.UK);
+        final RealNumberParser realNumberParser = new RealNumberParser(context);
+        final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
+        final Money money = moneyParser.parse("£12.34");
         assertNotNull(money);
         assertEquals(twelveDotThreeFour, money.getValue());
-        assertEquals(Money.GBP, money.getCurrencyCode());
+        assertEquals(MoneyParser.GBP, money.getCurrencyCode());
     }
 
     @Test
     void uk03() {
-        final Money money = Money.parse(UK, "GBP12.34");
+        setLocale(Locale.UK);
+        final RealNumberParser realNumberParser = new RealNumberParser(context);
+        final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
+        final Money money = moneyParser.parse("GBP12.34");
         assertNotNull(money);
         assertEquals(twelveDotThreeFour, money.getValue());
-        assertEquals(Money.GBP, money.getCurrencyCode());
+        assertEquals(MoneyParser.GBP, money.getCurrencyCode());
     }
 
     @Test
     void uk04() {
-        final Money money = Money.parse(UK, "£12");
+        setLocale(Locale.UK);
+        final RealNumberParser realNumberParser = new RealNumberParser(context);
+        final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
+        final Money money = moneyParser.parse("£12");
         assertNotNull(money);
         assertEquals(BigDecimal.valueOf(12.0d), money.getValue());
-        assertEquals(Money.GBP, money.getCurrencyCode());
+        assertEquals(MoneyParser.GBP, money.getCurrencyCode());
     }
 
 
     @Test
     void fr01() {
-        final Money money = Money.parse(FRANCE, "12,34&nbsp;€");
+        setLocale(Locale.FRANCE);
+        final RealNumberParser realNumberParser = new RealNumberParser(context);
+        final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
+        final Money money = moneyParser.parse("12,34&nbsp;€");
         assertNotNull(money);
         assertEquals(twelveDotThreeFour, money.getValue());
-        assertEquals(Money.EUR, money.getCurrencyCode());
+        assertEquals(MoneyParser.EUR, money.getCurrencyCode());
     }
 
     @Test
     void fr02() {
-        final Money money = Money.parse(FRANCE, "12,34 €");
+        setLocale(Locale.FRANCE);
+        final RealNumberParser realNumberParser = new RealNumberParser(context);
+        final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
+        final Money money = moneyParser.parse("12,34 €");
         assertNotNull(money);
         assertEquals(twelveDotThreeFour, money.getValue());
-        assertEquals(Money.EUR, money.getCurrencyCode());
+        assertEquals(MoneyParser.EUR, money.getCurrencyCode());
     }
 
     @Test
     void fr03() {
-        final Money money = Money.parse(FRANCE, "12,34€");
+        setLocale(Locale.FRANCE);
+        final RealNumberParser realNumberParser = new RealNumberParser(context);
+        final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
+        final Money money = moneyParser.parse("12,34€");
         assertNotNull(money);
         assertEquals(twelveDotThreeFour, money.getValue());
-        assertEquals(Money.EUR, money.getCurrencyCode());
+        assertEquals(MoneyParser.EUR, money.getCurrencyCode());
     }
 
     @Test
     void fr04() {
-        final Money money = Money.parse(FRANCE, "12,34 eur");
+        setLocale(Locale.FRANCE);
+        final RealNumberParser realNumberParser = new RealNumberParser(context);
+        final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
+        final Money money = moneyParser.parse("12,34 eur");
         assertNotNull(money);
         assertEquals(twelveDotThreeFour, money.getValue());
-        assertEquals(Money.EUR, money.getCurrencyCode());
+        assertEquals(MoneyParser.EUR, money.getCurrencyCode());
     }
 }

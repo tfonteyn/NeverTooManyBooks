@@ -51,11 +51,12 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.backupbase.BaseRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookCoder;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
@@ -63,7 +64,6 @@ import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 /**
  * Implementation of {@link RecordReader} that reads a CSV file.
@@ -116,8 +116,6 @@ public class CsvRecordReader
     private static final String TAG = "CsvRecordReader";
 
     @NonNull
-    private final Locale userLocale;
-    @NonNull
     private final BookCoder bookCoder;
 
     /**
@@ -125,14 +123,15 @@ public class CsvRecordReader
      * <p>
      * Only supports {@link RecordType#Books}.
      *
-     * @param context Current context
+     * @param context      Current context
+     * @param systemLocale to use for ISO date parsing
      */
     @AnyThread
-    public CsvRecordReader(@NonNull final Context context) {
-        super(context);
+    public CsvRecordReader(@NonNull final Context context,
+                           @NonNull final Locale systemLocale) {
+        super(context, systemLocale);
 
         bookCoder = new BookCoder(context);
-        userLocale = context.getResources().getConfiguration().getLocales().get(0);
     }
 
     @Override
@@ -189,7 +188,7 @@ public class CsvRecordReader
         final String[] csvColumnNames = parse(context, 0, books.get(0));
         // sanity check: make sure they are lower case
         for (int i = 0; i < csvColumnNames.length; i++) {
-            csvColumnNames[i] = csvColumnNames[i].toLowerCase(userLocale);
+            csvColumnNames[i] = csvColumnNames[i].toLowerCase(Locale.ENGLISH);
         }
         // check for required columns
         final List<String> csvColumnNamesList = Arrays.asList(csvColumnNames);
@@ -250,7 +249,7 @@ public class CsvRecordReader
                     db.setTransactionSuccessful();
                 }
             } catch (@NonNull final DaoWriteException | DataReaderException
-                    | SQLiteDoneException e) {
+                                    | SQLiteDoneException e) {
                 results.handleRowException(context, row, e, null);
 
             } finally {

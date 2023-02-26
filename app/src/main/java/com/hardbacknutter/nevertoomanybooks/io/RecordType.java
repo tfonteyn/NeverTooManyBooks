@@ -21,11 +21,11 @@ package com.hardbacknutter.nevertoomanybooks.io;
 
 import androidx.annotation.NonNull;
 
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -155,7 +155,7 @@ public enum RecordType {
      */
     @NonNull
     public static Optional<RecordType> getType(@NonNull final String entryName) {
-        final String name = entryName.toLowerCase(ServiceLocator.getInstance().getSystemLocale());
+        final String name = entryName.toLowerCase(Locale.ENGLISH);
 
         for (final RecordType type : values()) {
             if (name.startsWith(type.prefix)) {

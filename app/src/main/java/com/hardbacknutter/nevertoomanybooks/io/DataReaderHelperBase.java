@@ -75,7 +75,10 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
     @NonNull
     private DataReader.Updates updateOption = DataReader.Updates.Skip;
 
-    public void addRecordType(@NonNull final Set<RecordType> recordTypes) {
+    protected DataReaderHelperBase() {
+    }
+
+    protected void addRecordType(@NonNull final Set<RecordType> recordTypes) {
         this.recordTypes.addAll(recordTypes);
     }
 

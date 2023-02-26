@@ -21,13 +21,14 @@
 package com.hardbacknutter.nevertoomanybooks.backup.json;
 
 import java.math.BigDecimal;
-import java.util.Currency;
 import javax.xml.parsers.ParserConfigurationException;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookCoder;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.utils.MoneyParser;
 import com.hardbacknutter.org.json.JSONObject;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -48,12 +49,12 @@ public class BookCoderTest
     public void setup()
             throws ParserConfigurationException, SAXException {
         super.setup();
-        bookCoder = new BookCoder(context, style, locales);
+        bookCoder = new BookCoder(context, style, new RealNumberParser(locales));
     }
 
     @Test
     void putMoney() {
-        final Money money = new Money(BigDecimal.valueOf(12.34d), Currency.getInstance(Money.EUR));
+        final Money money = new Money(BigDecimal.valueOf(12.34d), Money.EURO);
         book.putMoney(DBKey.PRICE_LISTED, money);
 
         final JSONObject encode = bookCoder.encode(book);
@@ -65,7 +66,7 @@ public class BookCoderTest
     @Test
     void putMoneyComponents() {
         book.putDouble(DBKey.PRICE_LISTED, 12.34d);
-        book.putString(DBKey.PRICE_LISTED_CURRENCY, Money.EUR);
+        book.putString(DBKey.PRICE_LISTED_CURRENCY, MoneyParser.EUR);
 
         final JSONObject encode = bookCoder.encode(book);
 

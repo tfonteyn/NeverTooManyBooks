@@ -25,10 +25,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
@@ -82,24 +81,23 @@ public interface DataHolder {
     /**
      * Returns the value associated with the given key.
      *
-     * @param key     Key of data object
-     * @param locales to use for parsing
+     * @param key Key of data object
      *
      * @return a double value
      */
     double getDouble(@NonNull String key,
-                     @NonNull List<Locale> locales);
+                     @NonNull RealNumberParser parser);
 
     /**
      * Returns the value associated with the given key.
      *
-     * @param key     Key of data object
-     * @param locales to use for parsing
+     * @param key    Key of data object
+     * @param parser to use for number parsing
      *
      * @return a float value
      */
     float getFloat(@NonNull String key,
-                   @NonNull List<Locale> locales);
+                   @NonNull RealNumberParser parser);
 
     /**
      * Returns the value associated with the given key.

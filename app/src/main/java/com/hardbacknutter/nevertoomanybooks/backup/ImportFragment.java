@@ -214,7 +214,8 @@ public class ImportFragment
         final ImportHelper helper;
         try {
             //noinspection ConstantConditions
-            helper = vm.createDataReaderHelper(getContext(), uri);
+            helper = vm.createDataReaderHelper(
+                    getContext(), ServiceLocator.getInstance().getSystemLocale(), uri);
 
         } catch (@NonNull final DataReaderException e) {
             onImportNotSupported(e.getUserMessage(getContext()));
@@ -359,8 +360,9 @@ public class ImportFragment
             final StringJoiner stats = new StringJoiner("\n");
 
             //noinspection ConstantConditions
-            metaData.getCreatedLocalDate().ifPresent(date -> stats
-                    .add(DateUtils.displayDateTime(getContext(), date)));
+            metaData.getCreatedLocalDate(ServiceLocator.getInstance().getSystemLocale())
+                    .ifPresent(date -> stats
+                            .add(DateUtils.displayDateTime(getContext(), date)));
 
             metaData.getBookCount().ifPresent(count -> stats
                     .add(getString(R.string.name_colon_value,

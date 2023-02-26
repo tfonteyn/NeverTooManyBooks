@@ -25,19 +25,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlRecordReader;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 
 /**
  * Detecting record encoding in {@link #getEncoding} is based purely on filename extension.
@@ -78,7 +77,7 @@ public enum RecordEncoding {
      */
     @NonNull
     public static Optional<RecordEncoding> getEncoding(@NonNull final String entryName) {
-        final String name = entryName.toLowerCase(ServiceLocator.getInstance().getSystemLocale());
+        final String name = entryName.toLowerCase(Locale.ENGLISH);
 
         // (faster?) shortcut check for covers
         if (name.endsWith(".jpg")) {
@@ -93,7 +92,7 @@ public enum RecordEncoding {
 
         if (BuildConfig.DEBUG /* always */) {
             LoggerFactory.getLogger()
-                          .w(TAG, "getEncoding|Unknown entry=" + entryName);
+                         .w(TAG, "getEncoding|Unknown entry=" + entryName);
         }
         return Optional.empty();
     }
@@ -111,7 +110,6 @@ public enum RecordEncoding {
     /**
      * Create a {@link RecordWriter} for this encoding.
      *
-     * @param locales
      * @param utcSinceDateTime (optional) UTC based date to select only items
      *                         modified or added since.
      *
@@ -119,11 +117,11 @@ public enum RecordEncoding {
      */
     @NonNull
     public RecordWriter createWriter(@NonNull final Context context,
-                                     @NonNull final List<Locale> locales,
+                                     @NonNull final RealNumberParser realNumberParser,
                                      @Nullable final LocalDateTime utcSinceDateTime) {
         switch (this) {
             case Json:
-                return new JsonRecordWriter(context, locales, utcSinceDateTime);
+                return new JsonRecordWriter(realNumberParser, utcSinceDateTime);
             case Cover:
                 // Not useful, won't implement. It's just a File copy operation
             case Xml:
@@ -138,9 +136,10 @@ public enum RecordEncoding {
     /**
      * Create a {@link RecordReader} for this encoding.
      *
-     * @param context              Current context
-     * @param importEntriesAllowed the record types which the reader
-     *                             will be <strong>allowed</strong> to read
+     * @param context      Current context
+     * @param systemLocale to use for ISO date parsing
+     * @param allowedTypes the record types which the reader
+     *                     will be <strong>allowed</strong> to read
      *
      * @return Optional reader
      *
@@ -149,16 +148,18 @@ public enum RecordEncoding {
      */
     @NonNull
     public Optional<RecordReader> createReader(@NonNull final Context context,
-                                               @NonNull final List<Locale> locales,
-                                               @NonNull final Set<RecordType> importEntriesAllowed) {
+                                               @NonNull final Locale systemLocale,
+                                               @NonNull final RealNumberParser realNumberParser,
+                                               @NonNull final Set<RecordType> allowedTypes) {
         switch (this) {
             case Json:
-                return Optional.of(new JsonRecordReader(context, locales, importEntriesAllowed));
+                return Optional.of(new JsonRecordReader(context, systemLocale, realNumberParser,
+                                                        allowedTypes));
             case Csv:
-                return Optional.of(new CsvRecordReader(context));
+                return Optional.of(new CsvRecordReader(context, systemLocale));
             case Xml:
                 //noinspection deprecation
-                return Optional.of(new XmlRecordReader(locales));
+                return Optional.of(new XmlRecordReader(realNumberParser));
             case Cover:
                 // discourage creating a new CoverRecordReader for each cover.
                 throw new IllegalStateException("CoverRecordReader should be re-used");

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,6 +29,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
@@ -61,8 +62,9 @@ public class ZipArchiveReader
      * @param helper  import configuration
      */
     public ZipArchiveReader(@NonNull final Context context,
+                            @NonNull final Locale systemLocale,
                             @NonNull final ImportHelper helper) {
-        super(context, helper);
+        super(context, systemLocale, helper);
     }
 
     @Override

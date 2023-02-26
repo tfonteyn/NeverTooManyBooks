@@ -29,15 +29,13 @@ import androidx.core.math.MathUtils;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpPost;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
@@ -46,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.utils.MoneyParser;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -85,8 +84,9 @@ public class CollectionFormUploader {
     @NonNull
     private final String postUrl;
 
+    private final RealNumberParser realNumberParser;
     @NonNull
-    private final List<Locale> locales;
+    private final MoneyParser moneyParser;
 
     /**
      * Constructor.
@@ -104,7 +104,8 @@ public class CollectionFormUploader {
                       .setRequestProperty(HttpConstants.CONTENT_TYPE,
                                           HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED);
 
-        locales = LocaleListUtils.asList(context);
+        realNumberParser = new RealNumberParser(context);
+        moneyParser = new MoneyParser(context, realNumberParser);
     }
 
     /**
@@ -136,9 +137,9 @@ public class CollectionFormUploader {
      *
      * @param book to use
      *
-     * @throws IOException on generic/other IO failures
+     * @throws IOException              on generic/other IO failures
      * @throws IllegalArgumentException if the external id was not present
-     * @throws StorageException on storage related failures
+     * @throws StorageException         on storage related failures
      */
     @WorkerThread
     public void setRead(@NonNull final Book book)
@@ -157,9 +158,9 @@ public class CollectionFormUploader {
      *
      * @param book to use
      *
-     * @throws IOException on generic/other IO failures
+     * @throws IOException              on generic/other IO failures
      * @throws IllegalArgumentException if the external id was not present
-     * @throws StorageException on storage related failures
+     * @throws StorageException         on storage related failures
      */
     @WorkerThread
     public void setWanted(@NonNull final Book book)
@@ -199,7 +200,7 @@ public class CollectionFormUploader {
     @AnyThread
     @NonNull
     private String ratingToSite(@NonNull final Book book) {
-        return String.valueOf(MathUtils.clamp(book.getFloat(DBKey.RATING, locales) * 2,
+        return String.valueOf(MathUtils.clamp(book.getFloat(DBKey.RATING, realNumberParser) * 2,
                                               0, 10));
     }
 
@@ -209,7 +210,6 @@ public class CollectionFormUploader {
      * will be updated with the new collection-id, and set to {@link EntityStage.Stage#Dirty}.
      * It's up to the caller to update the book in the local database.
      *
-     * @param context Current context
      * @param book    to send
      *
      * @throws IOException              on generic/other IO failures
@@ -217,8 +217,7 @@ public class CollectionFormUploader {
      * @throws StorageException         on storage related failures
      */
     @WorkerThread
-    public void send(@NonNull final Context context,
-                     @NonNull final Book book)
+    public void send(@NonNull final Book book)
             throws IOException, IllegalArgumentException, StorageException {
 
         final long externalId = book.getLong(DBKey.SID_STRIP_INFO);
@@ -252,12 +251,11 @@ public class CollectionFormUploader {
 
 
         if (book.contains(DBKey.PRICE_PAID)) {
-            final Object v = book.get(DBKey.PRICE_PAID, locales);
+            final Object v = book.get(DBKey.PRICE_PAID, realNumberParser);
             if (v != null) {
                 if (book.contains(DBKey.PRICE_PAID_CURRENCY)) {
-                    final Money money = Money.parse(locales,
-                                                    String.valueOf(v),
-                                                    book.getString(DBKey.PRICE_PAID_CURRENCY));
+                    final Money money = moneyParser
+                            .parse(String.valueOf(v), book.getString(DBKey.PRICE_PAID_CURRENCY));
                     if (money != null) {
                         // The site does not store a currency; it's hardcoded/supposed to be EURO.
                         // So always convert it to EURO and than send it.
@@ -361,9 +359,9 @@ public class CollectionFormUploader {
      * @param book to use
      * @param mode one of the 3 flags, in either 'on'  or 'off' format.
      *
-     * @throws IOException on generic/other IO failures
+     * @throws IOException              on generic/other IO failures
      * @throws IllegalArgumentException if the external id was not present
-     * @throws StorageException on storage related failures
+     * @throws StorageException         on storage related failures
      */
     @WorkerThread
     private void setBooleanByMode(@NonNull final Book book,
@@ -410,7 +408,7 @@ public class CollectionFormUploader {
      *
      * @return the JSoup parsed Document
      *
-     * @throws IOException on generic/other IO failures
+     * @throws IOException      on generic/other IO failures
      * @throws StorageException on storage related failures
      */
     @WorkerThread

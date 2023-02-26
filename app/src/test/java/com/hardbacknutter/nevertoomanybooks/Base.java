@@ -32,6 +32,7 @@ import androidx.annotation.NonNull;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import javax.xml.parsers.ParserConfigurationException;
@@ -78,7 +79,7 @@ import static org.mockito.Mockito.when;
 public class Base {
 
     private static final String PACKAGE_NAME = "com.hardbacknutter.nevertoomanybooks";
-    protected final List<Locale> locales = new ArrayList<>(List.of(Locale.US));
+    protected List<Locale> locales;
     @Mock
     protected App app;
     @Mock
@@ -114,9 +115,9 @@ public class Base {
      *                JDK
      *                context.getResources().getConfiguration().getLocales().get(0)
      */
-    public void setLocale(@NonNull final Locale locale0) {
+    public void setLocale(@NonNull final Locale... locale0) {
         locales.clear();
-        locales.add(locale0);
+        locales.addAll(Arrays.asList(locale0));
         Locale.setDefault(locales.get(0));
     }
 
@@ -126,7 +127,7 @@ public class Base {
     }
 
     /**
-     * Each test <strong>should</strong> call {@link #setLocale(Locale)} as needed.
+     * Each test <strong>should</strong> call {@link #setLocale(Locale...)} as needed.
      * The default is Locale.US.
      */
     @BeforeEach
@@ -135,6 +136,8 @@ public class Base {
             throws ParserConfigurationException, SAXException {
         // save the JDK locale first
         jdkLocale = Locale.getDefault();
+
+        locales = new ArrayList<>(List.of(Locale.US));
 
         context = ContextMock.create(PACKAGE_NAME);
         mockPreferences = SharedPreferencesMock.create();

@@ -33,7 +33,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateEncodingException;
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
@@ -59,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.UncheckedDaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -120,23 +120,24 @@ public class JsonRecordReader
     private static final String TAG = "JsonRecordReader";
 
     @NonNull
-    private final List<Locale> locales;
-    @NonNull
-    private final Set<RecordType> importEntriesAllowed;
+    private final Set<RecordType> allowedTypes;
+    private final RealNumberParser realNumberParser;
 
     /**
      * Constructor.
      *
-     * @param context              Current context
-     * @param importEntriesAllowed the record types we're allowed to read
+     * @param context      Current context
+     * @param systemLocale to use for ISO date parsing
+     * @param allowedTypes the record types we're allowed to read
      */
     @AnyThread
     public JsonRecordReader(@NonNull final Context context,
-                            @NonNull final List<Locale> locales,
-                            @NonNull final Set<RecordType> importEntriesAllowed) {
-        super(context);
-        this.locales = locales;
-        this.importEntriesAllowed = importEntriesAllowed;
+                            @NonNull final Locale systemLocale,
+                            @NonNull final RealNumberParser realNumberParser,
+                            @NonNull final Set<RecordType> allowedTypes) {
+        super(context, systemLocale);
+        this.realNumberParser = realNumberParser;
+        this.allowedTypes = allowedTypes;
     }
 
     @Override
@@ -212,7 +213,7 @@ public class JsonRecordReader
                                .getJSONObject(RecordType.AutoDetect.getName());
                 }
 
-                if (importEntriesAllowed.contains(recordType)
+                if (allowedTypes.contains(recordType)
                     || recordType == RecordType.AutoDetect) {
 
                     if (recordType == RecordType.Styles
@@ -461,7 +462,7 @@ public class JsonRecordReader
 
         Synchronizer.SyncLock txLock = null;
 
-        final JsonCoder<Book> bookCoder = new BookCoder(context, defaultStyle, locales);
+        final JsonCoder<Book> bookCoder = new BookCoder(context, defaultStyle, realNumberParser);
 
         for (int i = 0; i < books.length() && !progressListener.isCancelled(); i++) {
 

@@ -31,6 +31,7 @@ import androidx.annotation.WorkerThread;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -286,8 +287,9 @@ public enum ArchiveEncoding
     @NonNull
     public DataReader<ArchiveMetaData, ImportResults> createReader(
             @NonNull final Context context,
+            @NonNull final Locale systemLocale,
             @NonNull final ImportHelper helper)
-            throws DataReaderException,
+    throws DataReaderException,
                    CredentialsException,
                    StorageException,
                    IOException {
@@ -295,11 +297,11 @@ public enum ArchiveEncoding
         final DataReader<ArchiveMetaData, ImportResults> reader;
         switch (this) {
             case Zip:
-                reader = new ZipArchiveReader(context, helper);
+                reader = new ZipArchiveReader(context, systemLocale, helper);
                 break;
 
             case Csv:
-                reader = new CsvArchiveReader(helper);
+                reader = new CsvArchiveReader(systemLocale, helper);
                 break;
 
             case SqLiteDb:
@@ -307,7 +309,7 @@ public enum ArchiveEncoding
                 break;
 
             case Json:
-                reader = new JsonArchiveReader(context, helper);
+                reader = new JsonArchiveReader(context, systemLocale, helper);
                 break;
 
             default:

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,11 +20,10 @@
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import java.text.DecimalFormat;
-import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 
 import org.junit.jupiter.api.Test;
 
@@ -53,102 +52,119 @@ class ParseUtilsParseFloatTest
 
     @Test
     void parseFloat10() {
-        final List<Locale> LOCALE = List.of(Locale.ENGLISH);
-        assertEquals(1234.56f, NumberParser.parseFloat(LOCALE, DEC_SEP_IS_DOT));
-        assertEquals(1234.56f, NumberParser.parseFloat(LOCALE, DEC_SEP_IS_DOT_THOUSANDS_IS_COMMA));
+        setLocale(Locale.ENGLISH);
+        final RealNumberParser parser = new RealNumberParser(locales);
 
-        assertNotEquals(1234.56f, NumberParser.parseFloat(LOCALE, DEC_SEP_IS_COMMA));
-        assertNotEquals(1234.56f,
-                        NumberParser.parseFloat(LOCALE, DEC_SEP_IS_COMMA_THOUSANDS_IS_DOT));
+        assertEquals(1234.56f, parser.parseFloat(DEC_SEP_IS_DOT));
+        assertEquals(1234.56f, parser.parseFloat(DEC_SEP_IS_DOT_THOUSANDS_IS_COMMA));
+
+        assertNotEquals(1234.56f, parser.parseFloat(DEC_SEP_IS_COMMA));
+        assertNotEquals(1234.56f, parser.parseFloat(DEC_SEP_IS_COMMA_THOUSANDS_IS_DOT));
     }
 
     @Test
     void parseFloat11() {
-        final List<Locale> LOCALE = List.of(Locale.US);
-        assertEquals(1234.56f, NumberParser.parseFloat(LOCALE, DEC_SEP_IS_DOT));
-        assertEquals(1234.56f, NumberParser.parseFloat(LOCALE, DEC_SEP_IS_DOT_THOUSANDS_IS_COMMA));
+        setLocale(Locale.US);
+        final RealNumberParser parser = new RealNumberParser(locales);
 
-        assertNotEquals(1234.56f, NumberParser.parseFloat(LOCALE, DEC_SEP_IS_COMMA));
+        assertEquals(1234.56f, parser.parseFloat(DEC_SEP_IS_DOT));
+        assertEquals(1234.56f, parser.parseFloat(DEC_SEP_IS_DOT_THOUSANDS_IS_COMMA));
+
+        assertNotEquals(1234.56f, parser.parseFloat(DEC_SEP_IS_COMMA));
         assertNotEquals(1234.56f,
-                        NumberParser.parseFloat(LOCALE, DEC_SEP_IS_COMMA_THOUSANDS_IS_DOT));
+                        parser.parseFloat(DEC_SEP_IS_COMMA_THOUSANDS_IS_DOT));
     }
 
     @Test
     void parseFloat12() {
-        final List<Locale> LOCALE = List.of(Locale.UK);
-        assertEquals(1234.56f, NumberParser.parseFloat(LOCALE, DEC_SEP_IS_DOT));
-        assertEquals(1234.56f, NumberParser.parseFloat(LOCALE, DEC_SEP_IS_DOT_THOUSANDS_IS_COMMA));
+        setLocale(Locale.UK);
+        final RealNumberParser parser = new RealNumberParser(locales);
 
-        assertNotEquals(1234.56f, NumberParser.parseFloat(LOCALE, DEC_SEP_IS_COMMA));
+        assertEquals(1234.56f, parser.parseFloat(DEC_SEP_IS_DOT));
+        assertEquals(1234.56f, parser.parseFloat(DEC_SEP_IS_DOT_THOUSANDS_IS_COMMA));
+
+        assertNotEquals(1234.56f, parser.parseFloat(DEC_SEP_IS_COMMA));
         assertNotEquals(1234.56f,
-                        NumberParser.parseFloat(LOCALE, DEC_SEP_IS_COMMA_THOUSANDS_IS_DOT));
+                        parser.parseFloat(DEC_SEP_IS_COMMA_THOUSANDS_IS_DOT));
     }
 
     @Test
     void parseFloat20() {
-        final List<Locale> LOCALE = List.of(new Locale("fr"));
-        assertEquals(1234.56f, NumberParser.parseFloat(LOCALE, DEC_SEP_IS_COMMA));
-        assertNotEquals(1234.56f,
-                        NumberParser.parseFloat(LOCALE, DEC_SEP_IS_COMMA_THOUSANDS_IS_DOT));
+        setLocale(new Locale("fr"));
+        final RealNumberParser parser = new RealNumberParser(locales);
 
-        assertNotEquals(1234.56f, NumberParser.parseFloat(LOCALE, DEC_SEP_IS_DOT));
+        assertEquals(1234.56f, parser.parseFloat(DEC_SEP_IS_COMMA));
         assertNotEquals(1234.56f,
-                        NumberParser.parseFloat(LOCALE, DEC_SEP_IS_DOT_THOUSANDS_IS_COMMA));
+                        parser.parseFloat(DEC_SEP_IS_COMMA_THOUSANDS_IS_DOT));
+
+        assertNotEquals(1234.56f, parser.parseFloat(DEC_SEP_IS_DOT));
+        assertNotEquals(1234.56f,
+                        parser.parseFloat(DEC_SEP_IS_DOT_THOUSANDS_IS_COMMA));
     }
 
     @Test
     void parseFloat21() {
-        final List<Locale> LOCALE = List.of(new Locale("fr", "FR"));
-        assertEquals(1234.56f, NumberParser.parseFloat(LOCALE, DEC_SEP_IS_COMMA));
-        assertNotEquals(1234.56f,
-                        NumberParser.parseFloat(LOCALE, DEC_SEP_IS_COMMA_THOUSANDS_IS_DOT));
+        setLocale(new Locale("fr", "FR"));
+        final RealNumberParser parser = new RealNumberParser(locales);
 
-        assertNotEquals(1234.56f, NumberParser.parseFloat(LOCALE, DEC_SEP_IS_DOT));
+        assertEquals(1234.56f, parser.parseFloat(DEC_SEP_IS_COMMA));
         assertNotEquals(1234.56f,
-                        NumberParser.parseFloat(LOCALE, DEC_SEP_IS_DOT_THOUSANDS_IS_COMMA));
+                        parser.parseFloat(DEC_SEP_IS_COMMA_THOUSANDS_IS_DOT));
+
+        assertNotEquals(1234.56f, parser.parseFloat(DEC_SEP_IS_DOT));
+        assertNotEquals(1234.56f,
+                        parser.parseFloat(DEC_SEP_IS_DOT_THOUSANDS_IS_COMMA));
     }
 
     @Test
     void parseFloat30() {
-        final List<Locale> LOCALE = List.of(new Locale("de"));
-        assertEquals(1234.56f, NumberParser.parseFloat(LOCALE, DEC_SEP_IS_COMMA));
-        assertEquals(1234.56f, NumberParser.parseFloat(LOCALE, DEC_SEP_IS_COMMA_THOUSANDS_IS_DOT));
+        setLocale(new Locale("de"));
+        final RealNumberParser parser = new RealNumberParser(locales);
 
-        assertNotEquals(1234.56f, NumberParser.parseFloat(LOCALE, DEC_SEP_IS_DOT));
+        assertEquals(1234.56f, parser.parseFloat(DEC_SEP_IS_COMMA));
+        assertEquals(1234.56f, parser.parseFloat(DEC_SEP_IS_COMMA_THOUSANDS_IS_DOT));
+
+        assertNotEquals(1234.56f, parser.parseFloat(DEC_SEP_IS_DOT));
         assertNotEquals(1234.56f,
-                        NumberParser.parseFloat(LOCALE, DEC_SEP_IS_DOT_THOUSANDS_IS_COMMA));
+                        parser.parseFloat(DEC_SEP_IS_DOT_THOUSANDS_IS_COMMA));
     }
 
     @Test
     void parseFloat31() {
-        final List<Locale> LOCALE = List.of(new Locale("de", "DE"));
-        assertEquals(1234.56f, NumberParser.parseFloat(LOCALE, DEC_SEP_IS_COMMA));
-        assertEquals(1234.56f, NumberParser.parseFloat(LOCALE, DEC_SEP_IS_COMMA_THOUSANDS_IS_DOT));
+        setLocale(new Locale("de", "DE"));
+        final RealNumberParser parser = new RealNumberParser(locales);
 
-        assertNotEquals(1234.56f, NumberParser.parseFloat(LOCALE, DEC_SEP_IS_DOT));
+        assertEquals(1234.56f, parser.parseFloat(DEC_SEP_IS_COMMA));
+        assertEquals(1234.56f, parser.parseFloat(DEC_SEP_IS_COMMA_THOUSANDS_IS_DOT));
+
+        assertNotEquals(1234.56f, parser.parseFloat(DEC_SEP_IS_DOT));
         assertNotEquals(1234.56f,
-                        NumberParser.parseFloat(LOCALE, DEC_SEP_IS_DOT_THOUSANDS_IS_COMMA));
+                        parser.parseFloat(DEC_SEP_IS_DOT_THOUSANDS_IS_COMMA));
     }
 
     @Test
     void parseFloat40() {
-        final List<Locale> LOCALE = List.of(new Locale("nl"));
-        assertEquals(1234.56f, NumberParser.parseFloat(LOCALE, DEC_SEP_IS_COMMA));
-        assertEquals(1234.56f, NumberParser.parseFloat(LOCALE, DEC_SEP_IS_COMMA_THOUSANDS_IS_DOT));
+        setLocale(new Locale("nl"));
+        final RealNumberParser parser = new RealNumberParser(locales);
 
-        assertNotEquals(1234.56f, NumberParser.parseFloat(LOCALE, DEC_SEP_IS_DOT));
+        assertEquals(1234.56f, parser.parseFloat(DEC_SEP_IS_COMMA));
+        assertEquals(1234.56f, parser.parseFloat(DEC_SEP_IS_COMMA_THOUSANDS_IS_DOT));
+
+        assertNotEquals(1234.56f, parser.parseFloat(DEC_SEP_IS_DOT));
         assertNotEquals(1234.56f,
-                        NumberParser.parseFloat(LOCALE, DEC_SEP_IS_DOT_THOUSANDS_IS_COMMA));
+                        parser.parseFloat(DEC_SEP_IS_DOT_THOUSANDS_IS_COMMA));
     }
 
     @Test
     void parseFloat41() {
-        final List<Locale> LOCALE = List.of(new Locale("nl", "NL"));
-        assertEquals(1234.56f, NumberParser.parseFloat(LOCALE, DEC_SEP_IS_COMMA));
-        assertEquals(1234.56f, NumberParser.parseFloat(LOCALE, DEC_SEP_IS_COMMA_THOUSANDS_IS_DOT));
+        setLocale(new Locale("nl", "NL"));
+        final RealNumberParser parser = new RealNumberParser(locales);
 
-        assertNotEquals(1234.56f, NumberParser.parseFloat(LOCALE, DEC_SEP_IS_DOT));
+        assertEquals(1234.56f, parser.parseFloat(DEC_SEP_IS_COMMA));
+        assertEquals(1234.56f, parser.parseFloat(DEC_SEP_IS_COMMA_THOUSANDS_IS_DOT));
+
+        assertNotEquals(1234.56f, parser.parseFloat(DEC_SEP_IS_DOT));
         assertNotEquals(1234.56f,
-                        NumberParser.parseFloat(LOCALE, DEC_SEP_IS_DOT_THOUSANDS_IS_COMMA));
+                        parser.parseFloat(DEC_SEP_IS_DOT_THOUSANDS_IS_COMMA));
     }
 }

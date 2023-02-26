@@ -20,10 +20,10 @@
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 
 import org.junit.jupiter.api.Test;
 
@@ -38,64 +38,69 @@ class CurrencyUtilsTest
     /** Country with ',' as thousands, and '.' as decimal separator. */
     @Test
     void splitPrice10() {
+        setLocale(Locale.UK);
 
-        final List<Locale> locale = List.of(Locale.UK);
+        final RealNumberParser realNumberParser = new RealNumberParser(context);
+        final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
         Money money;
-
-        money = Money.parse(locale, "$10.50");
+        money = moneyParser.parse("$10.50");
         assertNotNull(money);
-        assertEquals(Money.USD, money.getCurrencyCode());
+        assertEquals(MoneyParser.USD, money.getCurrencyCode());
         assertEquals(tenDotFive, money.getValue());
 
-        money = Money.parse(locale, "£10.50");
+        money = moneyParser.parse("£10.50");
         assertNotNull(money);
-        assertEquals(Money.GBP, money.getCurrencyCode());
+        assertEquals(MoneyParser.GBP, money.getCurrencyCode());
         assertEquals(tenDotFive, money.getValue());
 
-        money = Money.parse(locale, "EUR 10.50");
+        money = moneyParser.parse("EUR 10.50");
         assertNotNull(money);
-        assertEquals(Money.EUR, money.getCurrencyCode());
+        assertEquals(MoneyParser.EUR, money.getCurrencyCode());
         assertEquals(tenDotFive, money.getValue());
     }
 
     /** Country with '.' as thousands, and ',' as decimal separator. */
     @Test
     void splitPrice20() {
-        final List<Locale> locale = List.of(new Locale("nl", "BE"));
-        Money money;
+        setLocale(new Locale("nl", "BE"));
 
-        money = Money.parse(locale, "fr10,50");
+        final RealNumberParser realNumberParser = new RealNumberParser(context);
+        final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
+        Money money;
+        money = moneyParser.parse("fr10,50");
         assertNotNull(money);
         assertEquals("BEF", money.getCurrencyCode());
         assertEquals(tenDotFive, money.getValue());
 
-        money = Money.parse(locale, "$10.50");
+        money = moneyParser.parse("$10.50");
         assertNotNull(money);
-        assertEquals(Money.USD, money.getCurrencyCode());
+        assertEquals(MoneyParser.USD, money.getCurrencyCode());
         assertEquals(tenDotFive, money.getValue());
     }
 
     /** Country with '.' as thousands, and ',' as decimal separator. */
     @Test
     void splitPrice21() {
-        final List<Locale> locale = List.of(new Locale("nl", "NL"));
-        final Money money;
+        setLocale(new Locale("nl", "NL"));
 
-        money = Money.parse(locale, "£10.50");
+        final RealNumberParser realNumberParser = new RealNumberParser(context);
+        final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
+        final Money money = moneyParser.parse("£10.50");
         assertNotNull(money);
-        assertEquals(Money.GBP, money.getCurrencyCode());
+        assertEquals(MoneyParser.GBP, money.getCurrencyCode());
         assertEquals(tenDotFive, money.getValue());
     }
 
     /** Country with '.' as thousands, and ',' as decimal separator. */
     @Test
     void splitPrice22() {
-        final List<Locale> locale = List.of(new Locale("nl", "NL"));
-        final Money money;
+        setLocale(new Locale("nl", "NL"));
 
-        money = Money.parse(locale, "EUR 10.50");
+        final RealNumberParser realNumberParser = new RealNumberParser(context);
+        final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
+        final Money money = moneyParser.parse("EUR 10.50");
         assertNotNull(money);
-        assertEquals(Money.EUR, money.getCurrencyCode());
+        assertEquals(MoneyParser.EUR, money.getCurrencyCode());
         assertEquals(tenDotFive, money.getValue());
     }
 }

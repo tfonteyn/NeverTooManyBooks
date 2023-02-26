@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,7 +35,6 @@ import java.util.function.Consumer;
  * The XmlFilter objects build a tree of filters and XmlHandler objects
  * that make this process more manageable.
  */
-@SuppressWarnings("WeakerAccess")
 final class XmlFilter {
 
     /** The tag for this specific filter. */
@@ -53,14 +52,12 @@ final class XmlFilter {
     /** Action to perform, if any, when the associated tag is finished. */
     @Nullable
     private Consumer<ElementContext> endAction;
-    @NonNull
-    private final Locale systemLocale;
 
     /**
      * Constructor for the root tag.
      */
-    XmlFilter(@NonNull final Locale locale) {
-        this(locale, "");
+    XmlFilter() {
+        this("");
 
     }
 
@@ -69,9 +66,7 @@ final class XmlFilter {
      *
      * @param pattern The tag that this filter handles
      */
-    private XmlFilter(@NonNull final Locale locale,
-                      @NonNull final String pattern) {
-        systemLocale = locale;
+    private XmlFilter(@NonNull final String pattern) {
         tagName = pattern;
     }
 
@@ -83,7 +78,7 @@ final class XmlFilter {
      * @return The filter matching the final tag name passed.
      */
     @NonNull
-    public XmlFilter addFilter(@NonNull final String... filters) {
+    XmlFilter addFilter(@NonNull final String... filters) {
         if (filters.length == 0) {
             throw new IllegalArgumentException();
         }
@@ -104,7 +99,7 @@ final class XmlFilter {
         final String curr = iterator.next();
         XmlFilter sub = getSubFilter(curr);
         if (sub == null) {
-            sub = new XmlFilter(systemLocale, curr);
+            sub = new XmlFilter(curr);
             addFilter(sub);
         }
         if (iterator.hasNext()) {
@@ -134,7 +129,7 @@ final class XmlFilter {
      * @return Matching filter, or {@code null} if none found
      */
     @Nullable
-    public XmlFilter getSubFilter(@NonNull final ElementContext context) {
+    XmlFilter getSubFilter(@NonNull final ElementContext context) {
         return getSubFilter(context.getLocalName());
     }
 
@@ -160,7 +155,7 @@ final class XmlFilter {
      *
      * @param context Current ElementContext
      */
-    public void processStart(@NonNull final ElementContext context) {
+    void processStart(@NonNull final ElementContext context) {
         if (startAction != null) {
             startAction.accept(context);
         }
@@ -171,7 +166,7 @@ final class XmlFilter {
      *
      * @param context Current ElementContext
      */
-    public void processEnd(@NonNull final ElementContext context) {
+    void processEnd(@NonNull final ElementContext context) {
         if (endAction != null) {
             endAction.accept(context);
         }
@@ -195,7 +190,7 @@ final class XmlFilter {
      * @return {@code this} (for chaining)
      */
     @NonNull
-    public XmlFilter setStartAction(@NonNull final Consumer<ElementContext> startAction) {
+    XmlFilter setStartAction(@NonNull final Consumer<ElementContext> startAction) {
         this.startAction = startAction;
         return this;
     }
@@ -209,7 +204,7 @@ final class XmlFilter {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public XmlFilter setEndAction(@NonNull final Consumer<ElementContext> endAction) {
+    XmlFilter setEndAction(@NonNull final Consumer<ElementContext> endAction) {
         this.endAction = endAction;
         return this;
     }
@@ -222,7 +217,7 @@ final class XmlFilter {
      * @throws IllegalStateException if the filter already exists
      */
     private void addFilter(@NonNull final XmlFilter filter) {
-        final String lcPat = filter.getTagName().toLowerCase(systemLocale);
+        final String lcPat = filter.getTagName().toLowerCase(Locale.ENGLISH);
         if (subFilterHash.containsKey(lcPat)) {
             throw new IllegalStateException("Filter " + filter.getTagName() + " already exists");
         }

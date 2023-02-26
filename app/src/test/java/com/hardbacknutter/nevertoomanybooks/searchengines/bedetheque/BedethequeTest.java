@@ -70,6 +70,7 @@ public class BedethequeTest
     void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
         setLocale(searchEngine.getLocale(context));
+
         final String locationHeader = "https://www.bedetheque.com"
                                       + "/BD-Fond-du-monde-Tome-6-La-grande-terre-19401.html";
         final String filename = "/bedetheque/BD-Fond-du-monde-Tome-6-La-grande-terre-19401.html";

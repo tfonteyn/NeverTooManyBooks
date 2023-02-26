@@ -31,6 +31,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
+import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -57,6 +58,8 @@ public class CsvArchiveReader
     private static final String DB_BACKUP_NAME = "DbCsvBackup.db";
     private static final int DB_BACKUP_COPIES = 3;
 
+    @NonNull
+    private final Locale systemLocale;
     /** Import configuration. */
     @NonNull
     private final ImportHelper importHelper;
@@ -64,9 +67,12 @@ public class CsvArchiveReader
     /**
      * Constructor.
      *
-     * @param helper import configuration
+     * @param systemLocale to use for ISO date parsing
+     * @param helper       import configuration
      */
-    public CsvArchiveReader(@NonNull final ImportHelper helper) {
+    public CsvArchiveReader(@NonNull final Locale systemLocale,
+                            @NonNull final ImportHelper helper) {
+        this.systemLocale = systemLocale;
         importHelper = helper;
     }
 
@@ -97,7 +103,7 @@ public class CsvArchiveReader
                                  DB_BACKUP_COPIES);
 
         try (InputStream is = context.getContentResolver().openInputStream(importHelper.getUri());
-             RecordReader recordReader = new CsvRecordReader(context)) {
+             RecordReader recordReader = new CsvRecordReader(context, systemLocale)) {
             if (is == null) {
                 throw new FileNotFoundException(importHelper.getUri().toString());
             }

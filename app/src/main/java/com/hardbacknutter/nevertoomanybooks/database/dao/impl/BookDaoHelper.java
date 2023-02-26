@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableInfo;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.Cover;
@@ -49,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.utils.MoneyParser;
 
 /**
  * Preprocess a Book for storage. This class does not access to database.
@@ -57,7 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Money;
  * <ol>
  *     <li>Create this object</li>
  *     <li>{@link #process(Context)}</li>
- *     <li>{@link #filterValues(Context, TableInfo)}</li>
+ *     <li>{@link #filterValues(TableInfo)}</li>
  *     <li>insert or update the book to the database</li>
  *     <li>{@link #persistCovers()}</li>
  * </ol>
@@ -74,9 +76,9 @@ public class BookDaoHelper {
     private final boolean isNew;
 
     @NonNull
-    private final List<Locale> locales;
-    @NonNull
     private final Locale bookLocale;
+    private final RealNumberParser realNumberParser;
+    private final MoneyParser moneyParser;
 
     public BookDaoHelper(@NonNull final Context context,
                          @NonNull final Book book,
@@ -88,7 +90,9 @@ public class BookDaoHelper {
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         bookLocale = this.book.getAndUpdateLocale(context, true).orElse(userLocale);
 
-        locales = LocaleListUtils.asList(context, bookLocale);
+        final List<Locale> locales = LocaleListUtils.asList(context, bookLocale);
+        realNumberParser = new RealNumberParser(locales);
+        moneyParser = new MoneyParser(context, realNumberParser);
     }
 
     /**
@@ -119,16 +123,16 @@ public class BookDaoHelper {
         }
 
         // cleanup/build all price related fields
-        DBKey.MONEY_KEYS.forEach(this::processPrice);
+        DBKey.MONEY_KEYS.forEach(key -> processPrice(context, key));
 
         // replace 'T' by ' ' and truncate pure date fields if needed
         processDates();
 
         // make sure there are only valid external id's present
-        processExternalIds(context);
+        processExternalIds();
 
         // lastly, cleanup null and blank fields as needed.
-        processNullsAndBlanks(context);
+        processNullsAndBlanks();
 
         return this;
     }
@@ -139,14 +143,15 @@ public class BookDaoHelper {
      * @param key key for the money (value) field
      */
     @VisibleForTesting
-    public void processPrice(@NonNull final String key) {
+    public void processPrice(@NonNull final Context context,
+                             @NonNull final String key) {
         try {
             final String currencyKey = key + DBKey.CURRENCY_SUFFIX;
             if (book.contains(key) && !book.contains(currencyKey)) {
                 // Verify a price without a currency.
                 // This check should not be needed as it SHOULD have been done before.
                 // ... but paranoia...
-                final Money money = Money.parse(locales, book.getString(key));
+                final Money money = moneyParser.parse(book.getString(key));
                 // If the currency could be decoded, store the Money back into the book
                 if (money != null) {
                     book.putMoney(key, money);
@@ -221,10 +226,10 @@ public class BookDaoHelper {
      * <p>
      * Invalid values are always removed.
      * <p>
-     * Further processing should be done in {@link #processNullsAndBlanks(Context)}.
+     * Further processing should be done in {@link #processNullsAndBlanks()}.
      */
     @VisibleForTesting
-    public void processExternalIds(@NonNull final Context context) {
+    public void processExternalIds() {
         final List<Domain> domains = SearchEngineConfig.getExternalIdDomains();
 
         domains.stream()
@@ -232,7 +237,7 @@ public class BookDaoHelper {
                .map(Domain::getName)
                .filter(book::contains)
                .forEach(key -> {
-                   final Object o = book.get(key, locales);
+                   final Object o = book.get(key, realNumberParser);
                    try {
                        if (isNew) {
                            // For new books:
@@ -275,7 +280,7 @@ public class BookDaoHelper {
                .map(Domain::getName)
                .filter(book::contains)
                .forEach(key -> {
-                   final Object o = book.get(key, locales);
+                   final Object o = book.get(key, realNumberParser);
                    if (isNew) {
                        // for new books,
                        if (o == null) {
@@ -313,14 +318,14 @@ public class BookDaoHelper {
      * Existing books, REPLACE those keys with the default value for the column.
      */
     @VisibleForTesting
-    public void processNullsAndBlanks(@NonNull final Context context) {
+    public void processNullsAndBlanks() {
 
         DBDefinitions.TBL_BOOKS
                 .getDomains()
                 .stream()
                 .filter(domain -> book.contains(domain.getName()) && domain.hasDefault())
                 .forEach(domain -> {
-                    final Object o = book.get(domain.getName(), locales);
+                    final Object o = book.get(domain.getName(), realNumberParser);
                     if (
                         // Fields which are null but not allowed to be null
                             o == null && domain.isNotNull()
@@ -340,10 +345,9 @@ public class BookDaoHelper {
     }
 
     @NonNull
-    ContentValues filterValues(@NonNull final Context context,
-                               @NonNull final TableInfo tableInfo) {
+    ContentValues filterValues(@NonNull final TableInfo tableInfo) {
 
-        return filterValues(context, tableInfo, book, locales);
+        return filterValues(tableInfo, book);
     }
 
     /**
@@ -356,19 +360,14 @@ public class BookDaoHelper {
      *          be transformed to 0/1</li>
      * </ul>
      *
-     * @param context    Current context
      * @param tableInfo  destination table
      * @param book       A collection with the columns to be set. May contain extra data.
-     * @param localeList the Locale to use for character case manipulation
-     *
      * @return New and filtered ContentValues
      */
     @SuppressWarnings("WeakerAccess")
     @NonNull
-    ContentValues filterValues(@NonNull final Context context,
-                               @NonNull final TableInfo tableInfo,
-                               @NonNull final Book book,
-                               @NonNull final List<Locale> localeList) {
+    ContentValues filterValues(@NonNull final TableInfo tableInfo,
+                               @NonNull final Book book) {
         final ContentValues cv = new ContentValues();
         for (final String key : book.keySet()) {
             // We've seen empty keys in old BC imports - this is likely due to a csv column
@@ -380,7 +379,7 @@ public class BookDaoHelper {
                 // Check if we actually have a matching column, and never update a PK.
                 if (columnInfo != null && !columnInfo.isPrimaryKey()) {
 
-                    final Object entry = book.get(key, locales);
+                    final Object entry = book.get(key, realNumberParser);
                     if (entry == null) {
                         if (columnInfo.isNullable()) {
                             cv.putNull(key);
@@ -419,7 +418,7 @@ public class BookDaoHelper {
                             }
                             case Cursor.FIELD_TYPE_FLOAT: {
                                 try {
-                                    cv.put(columnName, NumberParser.toDouble(localeList, entry));
+                                    cv.put(columnName, realNumberParser.toDouble(entry));
                                 } catch (@NonNull final NumberFormatException e) {
                                     // We do NOT want to fail at this point.
                                     // Although the conclusion cannot be 100%, we're

@@ -24,10 +24,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.List;
-import java.util.Locale;
-
-import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 /**
@@ -42,10 +39,10 @@ public class DoubleNumberFormatter
         implements EditFieldFormatter<Number> {
 
     @NonNull
-    private final List<Locale> locales;
+    private final RealNumberParser realNumberParser;
 
-    public DoubleNumberFormatter(@NonNull final List<Locale> locales) {
-        this.locales = locales;
+    public DoubleNumberFormatter(@NonNull final RealNumberParser realNumberParser) {
+        this.realNumberParser = realNumberParser;
     }
 
     @Override
@@ -81,7 +78,7 @@ public class DoubleNumberFormatter
         }
 
         try {
-            return NumberParser.toDouble(locales, text);
+            return realNumberParser.toDouble(text);
 
         } catch (@NonNull final NumberFormatException e) {
             // this should never happen... flw

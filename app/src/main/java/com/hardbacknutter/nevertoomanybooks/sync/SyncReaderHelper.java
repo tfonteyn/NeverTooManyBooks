@@ -29,10 +29,10 @@ import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 import java.util.EnumSet;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderHelperBase;
@@ -47,6 +47,8 @@ public final class SyncReaderHelper
     private final SyncServer syncServer;
     /** Extra arguments for specific readers. The reader must define them. */
     private final Bundle extraArgs = ServiceLocator.getInstance().newBundle();
+    @NonNull
+    private final Locale systemLocale;
     /** <strong>How</strong> to handle individual fields. Can be {@code null}. aka unused. */
     @Nullable
     private SyncReaderProcessor syncProcessor;
@@ -58,6 +60,8 @@ public final class SyncReaderHelper
      */
     SyncReaderHelper(@NonNull final SyncServer syncServer) {
         this.syncServer = syncServer;
+
+        systemLocale = ServiceLocator.getInstance().getSystemLocale();
 
         // set the defaults
         addRecordType(EnumSet.of(RecordType.Books,
@@ -115,9 +119,8 @@ public final class SyncReaderHelper
             throws DataReaderException,
                    CredentialsException,
                    CertificateException,
-                   StorageException,
                    IOException {
-        return syncServer.createReader(context, this);
+        return syncServer.createReader(context, systemLocale, this);
     }
 
     @Override

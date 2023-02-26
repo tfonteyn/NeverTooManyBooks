@@ -27,11 +27,10 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.ColumnNotPresentException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
 /**
@@ -148,8 +147,7 @@ public class CursorRow
     }
 
     /**
-     * @param locales to use for parsing
-     * @param key     to get
+     * @param key to get
      *
      * @return the double value of the column ({@code null} comes back as 0)
      *
@@ -157,8 +155,8 @@ public class CursorRow
      */
     @Override
     public double getDouble(@NonNull final String key,
-                            @NonNull final List<Locale> locales)
-            throws ColumnNotPresentException {
+                            @NonNull final RealNumberParser parser)
+            throws NumberFormatException {
 
         final int col = cursor.getColumnIndex(key);
         if (col == -1) {
@@ -171,7 +169,7 @@ public class CursorRow
     }
 
     /**
-     * @param locales to use for parsing
+     * @param parser to use for number parsing
      * @param key     to get
      *
      * @return the double value of the column ({@code null} comes back as 0)
@@ -180,8 +178,8 @@ public class CursorRow
      */
     @Override
     public float getFloat(@NonNull final String key,
-                          @NonNull final List<Locale> locales)
-            throws ColumnNotPresentException {
+                          @NonNull final RealNumberParser parser)
+            throws NumberFormatException {
 
         final int col = cursor.getColumnIndex(key);
         if (col == -1) {

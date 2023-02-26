@@ -25,6 +25,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import java.time.LocalDateTime;
+import java.util.Locale;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -33,15 +34,15 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.RecordReader;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 public abstract class BaseRecordReader
         implements RecordReader {
@@ -63,9 +64,16 @@ public abstract class BaseRecordReader
 
     protected ImportResults results;
 
-    protected BaseRecordReader(@NonNull final Context context) {
+    /**
+     * Constructor.
+     *
+     * @param context      Current context
+     * @param systemLocale to use for ISO date parsing
+     */
+    protected BaseRecordReader(@NonNull final Context context,
+                               @NonNull final Locale systemLocale) {
         bookDao = ServiceLocator.getInstance().getBookDao();
-        dateParser = new ISODateParser(ServiceLocator.getInstance().getSystemLocale());
+        dateParser = new ISODateParser(systemLocale);
 
         booksString = context.getString(R.string.lbl_books);
         progressMessage = context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);

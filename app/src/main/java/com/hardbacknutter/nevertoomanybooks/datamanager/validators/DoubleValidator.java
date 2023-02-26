@@ -25,11 +25,8 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
-import java.util.List;
-import java.util.Locale;
-
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
@@ -44,13 +41,13 @@ public class DoubleValidator
     /** Default to apply if the field is {@code null} or empty. */
     private final double defaultValue;
     @NonNull
-    private final List<Locale> locales;
+    private final RealNumberParser realNumberParser;
 
     /**
      * Constructor; default value is 0d.
      */
-    public DoubleValidator(@NonNull final List<Locale> locales) {
-        this.locales = locales;
+    public DoubleValidator(@NonNull final RealNumberParser realNumberParser) {
+        this.realNumberParser = realNumberParser;
         defaultValue = 0d;
     }
 
@@ -64,7 +61,7 @@ public class DoubleValidator
 
         final double value;
 
-        final Object obj = dataManager.get(key, locales);
+        final Object obj = dataManager.get(key, realNumberParser);
         if (obj == null) {
             value = defaultValue;
         } else if (obj instanceof Number) {
@@ -75,7 +72,7 @@ public class DoubleValidator
                 value = defaultValue;
             } else {
                 try {
-                    value = NumberParser.toDouble(locales, stringValue);
+                    value = realNumberParser.toDouble(stringValue);
 
                 } catch (@NonNull final NumberFormatException e) {
                     throw new ValidatorException(

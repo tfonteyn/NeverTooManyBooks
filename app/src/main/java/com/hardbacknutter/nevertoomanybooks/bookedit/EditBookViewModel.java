@@ -51,9 +51,8 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -174,6 +173,7 @@ public class EditBookViewModel
 
     private String errStrNonBlankRequired;
     private String errStrReadStartAfterEnd;
+    private RealNumberParser realNumberParser;
 
     int getCurrentTab() {
         return currentTab;
@@ -198,11 +198,12 @@ public class EditBookViewModel
 
             final Languages languages = ServiceLocator.getInstance().getLanguages();
             final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-            final List<Locale> locales = LocaleListUtils.asList(context);
+
+            realNumberParser = new RealNumberParser(context);
 
             dateFormatter = new DateFieldFormatter(userLocale);
             languageFormatter = new LanguageFormatter(userLocale, languages);
-            doubleNumberFormatter = new DoubleNumberFormatter(locales);
+            doubleNumberFormatter = new DoubleNumberFormatter(realNumberParser);
             listFormatterAutoDetails = new ListFormatter<>(Details.AutoSelect, null);
             listFormatterNormalDetails = new ListFormatter<>(Details.Normal, null);
 
@@ -415,12 +416,11 @@ public class EditBookViewModel
         if (args != null) {
             final Book bookFromArguments = args.getParcelable(Book.BKEY_BOOK_DATA);
             if (bookFromArguments != null) {
-                final List<Locale> locales = LocaleListUtils.asList(context);
                 bookFromArguments.keySet()
                                  .stream()
                                  .filter(key -> !book.contains(key))
                                  .forEach(key -> book.put(key, bookFromArguments
-                                         .get(key, locales)));
+                                         .get(key, realNumberParser)));
             }
         }
     }
@@ -692,7 +692,7 @@ public class EditBookViewModel
 
         } catch (@NonNull final DaoWriteException e) {
             LoggerFactory.getLogger()
-                          .e(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
+                         .e(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
         }
         return false;
     }
@@ -712,7 +712,7 @@ public class EditBookViewModel
 
         } catch (@NonNull final DaoWriteException e) {
             LoggerFactory.getLogger()
-                          .e(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
+                         .e(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
         }
         return false;
     }
@@ -735,7 +735,7 @@ public class EditBookViewModel
 
         } catch (@NonNull final DaoWriteException e) {
             LoggerFactory.getLogger()
-                          .e(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
+                         .e(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
         }
         return false;
     }
@@ -755,7 +755,7 @@ public class EditBookViewModel
 
         } catch (@NonNull final DaoWriteException e) {
             LoggerFactory.getLogger()
-                          .e(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
+                         .e(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
         }
 
         return false;
@@ -780,7 +780,7 @@ public class EditBookViewModel
 
         } catch (@NonNull final DaoWriteException e) {
             LoggerFactory.getLogger()
-                          .e(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
+                         .e(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
         }
         return false;
     }
@@ -800,7 +800,7 @@ public class EditBookViewModel
 
         } catch (@NonNull final DaoWriteException e) {
             LoggerFactory.getLogger()
-                          .e(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
+                         .e(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
         }
 
         return false;
@@ -981,8 +981,7 @@ public class EditBookViewModel
                                    getField(R.id.price_paid).ifPresent(destField -> {
                                        if (destField.isEmpty()) {
                                            // Paranoia... parse it to a double.
-                                           final double value = NumberParser.toDouble(
-                                                   LocaleListUtils.asList(context),
+                                           final double value = realNumberParser.toDouble(
                                                    requireField(R.id.price_listed).getValue());
                                            getBook().putDouble(DBKey.PRICE_PAID, value);
                                            destField.setValue(value);

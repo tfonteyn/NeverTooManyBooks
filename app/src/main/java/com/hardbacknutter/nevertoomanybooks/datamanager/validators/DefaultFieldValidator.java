@@ -25,9 +25,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
-import java.util.List;
-import java.util.Locale;
-
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
@@ -37,7 +35,7 @@ public class DefaultFieldValidator
         implements DataValidator {
 
     @NonNull
-    private final List<Locale> locales;
+    private final RealNumberParser realNumberParser;
     /** Default to apply if the field is empty. */
     @NonNull
     private final String defaultValue;
@@ -45,12 +43,11 @@ public class DefaultFieldValidator
     /**
      * Constructor with default value.
      *
-     * @param locales      to use for parsing
      * @param defaultValue Default to apply if the field is empty
      */
-    DefaultFieldValidator(@NonNull final List<Locale> locales,
+    DefaultFieldValidator(@NonNull final RealNumberParser realNumberParser,
                           @NonNull final String defaultValue) {
-        this.locales = locales;
+        this.realNumberParser = realNumberParser;
         this.defaultValue = defaultValue;
     }
 
@@ -70,7 +67,7 @@ public class DefaultFieldValidator
                          @NonNull final String key,
                          @StringRes final int errorLabelResId) {
 
-        final Object value = dataManager.get(key, locales);
+        final Object value = dataManager.get(key, realNumberParser);
         if (value != null && value.toString().trim().isEmpty()) {
             dataManager.putString(key, defaultValue);
         }

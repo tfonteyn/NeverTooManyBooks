@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -151,8 +152,8 @@ public class ArchiveMetaData
      * @return Optional LocalDateTime(user local at time of creation)
      */
     @NonNull
-    public Optional<LocalDateTime> getCreatedLocalDate() {
-        final LocalDateTime date = new ISODateParser(ServiceLocator.getInstance().getSystemLocale())
+    public Optional<LocalDateTime> getCreatedLocalDate(@NonNull final Locale systemLocale) {
+        final LocalDateTime date = new ISODateParser(systemLocale)
                 .parse(getData().getString(INFO_CREATED_DATE));
         if (date != null) {
             return Optional.of(date);

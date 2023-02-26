@@ -76,7 +76,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.utils.MoneyParser;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
@@ -185,7 +185,7 @@ public class BookDaoImpl
             final BookDaoHelper bookDaoHelper = new BookDaoHelper(context, book, true);
             final ContentValues cv = bookDaoHelper
                     .process(context)
-                    .filterValues(context, db.getTableInfo(TBL_BOOKS));
+                    .filterValues(db.getTableInfo(TBL_BOOKS));
 
             // Make sure we have at least one author
             final List<Author> authors = book.getAuthors();
@@ -286,7 +286,7 @@ public class BookDaoImpl
             final BookDaoHelper bookDaoHelper = new BookDaoHelper(context, book, false);
             final ContentValues cv = bookDaoHelper
                     .process(context)
-                    .filterValues(context, db.getTableInfo(TBL_BOOKS));
+                    .filterValues(db.getTableInfo(TBL_BOOKS));
 
             // Disallow UUID updates
             if (cv.containsKey(DBKey.BOOK_UUID)) {
@@ -1168,9 +1168,9 @@ public class BookDaoImpl
         if (list.isEmpty()) {
             // sure, this is very crude and discriminating.
             // But it will only ever be used *once* per currency column
-            list.add(Money.EUR);
-            list.add(Money.GBP);
-            list.add(Money.USD);
+            list.add(MoneyParser.EUR);
+            list.add(MoneyParser.GBP);
+            list.add(MoneyParser.USD);
         }
         return list;
     }

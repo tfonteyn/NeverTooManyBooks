@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
@@ -276,7 +277,7 @@ public class Book
     public static Book from(@NonNull final Context context,
                             @NonNull final Book data) {
         final Book book = new Book();
-        book.putAll(data, LocaleListUtils.asList(context));
+        book.putAll(data, new RealNumberParser(context));
         // has unsaved data, hence 'Dirty'
         book.setStage(EntityStage.Stage.Dirty);
         return book;
@@ -329,7 +330,7 @@ public class Book
     @NonNull
     public Book duplicate(@NonNull final Context context) {
         final Book duplicate = new Book();
-        final List<Locale> locales = LocaleListUtils.asList(context);
+        final RealNumberParser realNumberParser = new RealNumberParser(context);
 
         // Q: Why don't we get the DataManager#mRawData, remove the identifiers/dates and use that?
         // A: because we would need to clone mRawData before we can start removing fields,
@@ -373,7 +374,7 @@ public class Book
         duplicate.putString(DBKey.PRINT_RUN, getString(DBKey.PRINT_RUN));
         duplicate.putLong(DBKey.TOC_TYPE__BITMASK, getLong(DBKey.TOC_TYPE__BITMASK));
         duplicate.putString(DBKey.BOOK_PUBLICATION__DATE, getString(DBKey.BOOK_PUBLICATION__DATE));
-        duplicate.putDouble(DBKey.PRICE_LISTED, getDouble(DBKey.PRICE_LISTED, locales));
+        duplicate.putDouble(DBKey.PRICE_LISTED, getDouble(DBKey.PRICE_LISTED, realNumberParser));
         duplicate.putString(DBKey.PRICE_LISTED_CURRENCY, getString(DBKey.PRICE_LISTED_CURRENCY));
         duplicate.putString(DBKey.FIRST_PUBLICATION__DATE,
                             getString(DBKey.FIRST_PUBLICATION__DATE));
@@ -394,7 +395,7 @@ public class Book
         // put/getBoolean is 'right', but as a copy, might as well just use long
         duplicate.putLong(DBKey.SIGNED__BOOL, getLong(DBKey.SIGNED__BOOL));
 
-        duplicate.putFloat(DBKey.RATING, getFloat(DBKey.RATING, locales));
+        duplicate.putFloat(DBKey.RATING, getFloat(DBKey.RATING, realNumberParser));
         duplicate.putString(DBKey.PERSONAL_NOTES, getString(DBKey.PERSONAL_NOTES));
 
         // put/getBoolean is 'right', but as a copy, might as well just use long
@@ -403,7 +404,7 @@ public class Book
         duplicate.putString(DBKey.READ_END__DATE, getString(DBKey.READ_END__DATE));
 
         duplicate.putString(DBKey.DATE_ACQUIRED, getString(DBKey.DATE_ACQUIRED));
-        duplicate.putDouble(DBKey.PRICE_PAID, getDouble(DBKey.PRICE_PAID, locales));
+        duplicate.putDouble(DBKey.PRICE_PAID, getDouble(DBKey.PRICE_PAID, realNumberParser));
         duplicate.putString(DBKey.PRICE_PAID_CURRENCY, getString(DBKey.PRICE_PAID_CURRENCY));
 
         duplicate.putInt(DBKey.BOOK_CONDITION, getInt(DBKey.BOOK_CONDITION));
@@ -1106,13 +1107,13 @@ public class Book
 
         validatorConfig = new ValidatorConfig();
 
-        final List<Locale> locales = LocaleListUtils.asList(context);
+        final RealNumberParser realNumberParser = new RealNumberParser(context);
 
         final DataValidator priceValidator = new OrValidator(
                 new BlankValidator(),
-                new DoubleValidator(locales));
-        final DataValidator longValidator = new LongValidator(locales);
-        final DataValidator nonBlankValidator = new NonBlankValidator(locales);
+                new DoubleValidator(realNumberParser));
+        final DataValidator longValidator = new LongValidator(realNumberParser);
+        final DataValidator nonBlankValidator = new NonBlankValidator(realNumberParser);
 
         validatorConfig.addValidator(DBKey.TITLE,
                                      nonBlankValidator, R.string.lbl_title);
@@ -1201,8 +1202,10 @@ public class Book
                                                 value.getLabel(context, Details.AutoSelect, style)))
                 .orElse("");
 
+        final RealNumberParser realNumberParser = new RealNumberParser(context);
+
         //remove trailing 0's
-        final float rating = getFloat(DBKey.RATING, LocaleListUtils.asList(context));
+        final float rating = getFloat(DBKey.RATING, realNumberParser);
         String ratingStr;
         if (rating > 0) {
             // force rounding down and check the fraction

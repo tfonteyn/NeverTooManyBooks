@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -38,7 +38,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.HtmlFormatter;
 
 /**
@@ -128,11 +127,10 @@ public final class TipManager {
      */
     public void reset(@NonNull final Context context,
                       @NonNull final String prefix) {
-        final Locale systemLocale = ServiceLocator.getInstance().getSystemLocale();
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         final SharedPreferences.Editor ed = prefs.edit();
         for (final String key : prefs.getAll().keySet()) {
-            if (key.toLowerCase(systemLocale).startsWith(prefix.toLowerCase(systemLocale))) {
+            if (key.toLowerCase(Locale.ENGLISH).startsWith(prefix.toLowerCase(Locale.ENGLISH))) {
                 ed.remove(key);
             }
         }

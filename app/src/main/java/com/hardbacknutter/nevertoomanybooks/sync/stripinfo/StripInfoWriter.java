@@ -118,7 +118,7 @@ public class StripInfoWriter
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
                 final Book book = Book.from(cursor);
                 try {
-                    collectionForm.send(context, book);
+                    collectionForm.send(book);
                     results.addBook(book.getId());
 
                 } catch (@NonNull final HttpNotFoundException e404) {

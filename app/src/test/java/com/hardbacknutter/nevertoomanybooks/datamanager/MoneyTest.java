@@ -28,8 +28,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks.MoneyVerifier;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.utils.MoneyParser;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,6 +48,7 @@ public class MoneyTest
     private static final List<Locale> UK = List.of(Locale.UK);
 
     private DataManager dataManager;
+    private RealNumberParser realNumberParser;
 
     @BeforeEach
     @Override
@@ -53,6 +56,8 @@ public class MoneyTest
             throws ParserConfigurationException, SAXException {
         super.setup();
         dataManager = new DataManager(BundleMock.create());
+
+        realNumberParser = new RealNumberParser(locales);
     }
 
     /**
@@ -63,11 +68,11 @@ public class MoneyTest
      */
     @Test
     void putMoneyAndGetMoney() {
-        final Money money = Money.parse(BigDecimal.valueOf(12.34d), Money.GBP);
+        final Money money = MoneyParser.parse(BigDecimal.valueOf(12.34d), MoneyParser.GBP);
         assertNotNull(money);
         dataManager.putMoney(DBKey.PRICE_LISTED, money);
 
-        final Money out = dataManager.getMoney(DBKey.PRICE_LISTED, UK);
+        final Money out = dataManager.getMoney(DBKey.PRICE_LISTED, realNumberParser);
         assertNotNull(out);
         assertEquals(12.34d, out.doubleValue());
         assertEquals("GBP", out.getCurrencyCode());
@@ -83,11 +88,11 @@ public class MoneyTest
      */
     @Test
     void putMoneyAndGetObject() {
-        final Money money = Money.parse(BigDecimal.valueOf(12.34d), Money.GBP);
+        final Money money = MoneyParser.parse(BigDecimal.valueOf(12.34d), MoneyParser.GBP);
         assertNotNull(money);
         dataManager.putMoney(DBKey.PRICE_LISTED, money);
 
-        final Object out = dataManager.get(DBKey.PRICE_LISTED, UK);
+        final Object out = dataManager.get(DBKey.PRICE_LISTED, realNumberParser);
         assertNotNull(out);
         assertTrue(out instanceof Money);
         final Money mOut = (Money) out;
@@ -105,11 +110,11 @@ public class MoneyTest
      */
     @Test
     void putObjectAndGetMoney() {
-        final Money money = Money.parse(BigDecimal.valueOf(12.34d), Money.GBP);
+        final Money money = MoneyParser.parse(BigDecimal.valueOf(12.34d), MoneyParser.GBP);
         assertNotNull(money);
         dataManager.put(DBKey.PRICE_LISTED, money);
 
-        final Money out = dataManager.getMoney(DBKey.PRICE_LISTED, UK);
+        final Money out = dataManager.getMoney(DBKey.PRICE_LISTED, realNumberParser);
         assertNotNull(out);
         assertEquals(12.34d, out.doubleValue());
         assertEquals("GBP", out.getCurrencyCode());
@@ -125,11 +130,11 @@ public class MoneyTest
      */
     @Test
     void putObjectAndGetObject() {
-        final Money money = Money.parse(BigDecimal.valueOf(12.34d), Money.GBP);
+        final Money money = MoneyParser.parse(BigDecimal.valueOf(12.34d), MoneyParser.GBP);
         assertNotNull(money);
         dataManager.put(DBKey.PRICE_LISTED, money);
 
-        final Object out = dataManager.get(DBKey.PRICE_LISTED, UK);
+        final Object out = dataManager.get(DBKey.PRICE_LISTED, realNumberParser);
         assertNotNull(out);
 
         assertTrue(out instanceof Money);
@@ -152,7 +157,7 @@ public class MoneyTest
         dataManager.putDouble(DBKey.PRICE_LISTED, 12.34d);
         dataManager.putString(DBKey.PRICE_LISTED_CURRENCY, "GBP");
 
-        final Money out = dataManager.getMoney(DBKey.PRICE_LISTED, UK);
+        final Money out = dataManager.getMoney(DBKey.PRICE_LISTED, realNumberParser);
         assertNotNull(out);
 
         assertEquals(12.34d, out.doubleValue());
@@ -172,7 +177,7 @@ public class MoneyTest
         dataManager.putDouble(DBKey.PRICE_LISTED, 12.34d);
         dataManager.putString(DBKey.PRICE_LISTED_CURRENCY, "GBP");
 
-        final Object out = dataManager.get(DBKey.PRICE_LISTED, UK);
+        final Object out = dataManager.get(DBKey.PRICE_LISTED, realNumberParser);
         assertNotNull(out);
 
         assertTrue(out instanceof Money);
@@ -194,7 +199,7 @@ public class MoneyTest
         dataManager.putDouble(DBKey.PRICE_LISTED, 12.34d);
         dataManager.putString(DBKey.PRICE_LISTED_CURRENCY, "GBP");
 
-        final double outValue = dataManager.getDouble(DBKey.PRICE_LISTED, UK);
+        final double outValue = dataManager.getDouble(DBKey.PRICE_LISTED, realNumberParser);
         final String outCurrency = dataManager.getString(DBKey.PRICE_LISTED_CURRENCY);
 
         assertEquals(12.34d, outValue);
@@ -214,7 +219,7 @@ public class MoneyTest
     void putValueAndGetMoney() {
         dataManager.putDouble(DBKey.PRICE_LISTED, 12.34d);
 
-        final Money out = dataManager.getMoney(DBKey.PRICE_LISTED, UK);
+        final Money out = dataManager.getMoney(DBKey.PRICE_LISTED, realNumberParser);
         assertNotNull(out);
         assertEquals(12.34d, out.doubleValue());
         assertNull(out.getCurrency());
@@ -232,7 +237,7 @@ public class MoneyTest
     void putValueAndGetObject() {
         dataManager.putDouble(DBKey.PRICE_LISTED, 12.34d);
 
-        final Object out = dataManager.get(DBKey.PRICE_LISTED, UK);
+        final Object out = dataManager.get(DBKey.PRICE_LISTED, realNumberParser);
         assertNotNull(out);
         assertTrue(out instanceof Money);
         final Money mOut = (Money) out;
@@ -242,7 +247,7 @@ public class MoneyTest
     void putSentiment() {
         dataManager.putString(DBKey.PRICE_LISTED, "Far to much dosh");
 
-        final Object out = dataManager.get(DBKey.PRICE_LISTED, UK);
+        final Object out = dataManager.get(DBKey.PRICE_LISTED, realNumberParser);
         assertNotNull(out);
         assertTrue(out instanceof String);
         assertEquals("Far to much dosh", (String) out);

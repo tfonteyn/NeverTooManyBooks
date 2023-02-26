@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.UncheckedSAXException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
@@ -81,6 +82,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.utils.MoneyParser;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -782,8 +784,11 @@ public class IsfdbSearchEngine
                       @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
-        final Locale systemLocale = ServiceLocator.getInstance().getSystemLocale();
         final List<Locale> locales = LocaleListUtils.asList(context, getLocale(context));
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
+        final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
+
+        final Locale systemLocale = ServiceLocator.getInstance().getSystemLocale();
         final DateParser dateParser = new FullDateParser(systemLocale, locales);
 
         final Elements allContentBoxes = document.select(CSS_Q_DIV_CONTENTBOX);
@@ -931,7 +936,7 @@ public class IsfdbSearchEngine
                             if (nextElementSibling != null) {
                                 tmpString = nextElementSibling.ownText();
                                 if (!tmpString.isEmpty()) {
-                                    final Money money = Money.parse(locales, tmpString);
+                                    final Money money = moneyParser.parse(tmpString);
                                     if (money != null) {
                                         book.putMoney(DBKey.PRICE_LISTED, money);
                                     } else {
@@ -1445,7 +1450,13 @@ public class IsfdbSearchEngine
         //  else:
         //    return 0
         final String url = getHostUrl() + String.format(REST_BY_EXTERNAL_ID, externalId);
-        final List<Book> publicationsList = fetchPublications(context, url, fetchCovers, 1);
+
+        final List<Locale> locales = LocaleListUtils.asList(context, getLocale(context));
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
+        final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
+
+        final List<Book> publicationsList = fetchPublications(context, url, fetchCovers, 1,
+                                                              moneyParser);
         if (publicationsList.isEmpty()) {
             return new Book();
         } else {
@@ -1518,16 +1529,17 @@ public class IsfdbSearchEngine
     private List<Book> fetchPublications(@NonNull final Context context,
                                          @NonNull final String url,
                                          @NonNull final boolean[] fetchCovers,
-                                         @SuppressWarnings("SameParameterValue") final int maxRecords)
+                                         @SuppressWarnings("SameParameterValue") final int maxRecords,
+                                         @NonNull final MoneyParser moneyParser)
             throws StorageException, SearchException {
 
         futureHttpGet = createFutureGetRequest();
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
 
-        final List<Locale> locales = LocaleListUtils.asList(context, getLocale(context));
         final IsfdbPublicationListHandler listHandler =
-                new IsfdbPublicationListHandler(this, fetchCovers, maxRecords, locales);
+                new IsfdbPublicationListHandler(this, fetchCovers, maxRecords,
+                                                moneyParser);
 
         try {
             final SAXParser parser = factory.newSAXParser();

@@ -40,13 +40,13 @@ public class MoneyFormatterTest {
         final FieldFormatter<Money> f = new MoneyFormatter(Locale.US);
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
         Money money;
-        money = Money.parse(BigDecimal.valueOf(1234.50d), Money.USD);
+        money = MoneyParser.parse(BigDecimal.valueOf(1234.50d), MoneyParser.USD);
         assertNotNull(money);
         assertEquals("$1,234.50", f.format(context, money));
-        money = Money.parse(BigDecimal.valueOf(1234.50d), Money.GBP);
+        money = MoneyParser.parse(BigDecimal.valueOf(1234.50d), MoneyParser.GBP);
         assertNotNull(money);
         assertEquals("£1,234.50", f.format(context, money));
-        money = Money.parse(BigDecimal.valueOf(1234.50d), Money.EUR);
+        money = MoneyParser.parse(BigDecimal.valueOf(1234.50d), MoneyParser.EUR);
         assertNotNull(money);
         assertEquals("€1,234.50", f.format(context, money));
     }
@@ -56,13 +56,13 @@ public class MoneyFormatterTest {
         final FieldFormatter<Money> f = new MoneyFormatter(Locale.UK);
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
         Money money;
-        money = Money.parse(BigDecimal.valueOf(1234.50d), Money.USD);
+        money = MoneyParser.parse(BigDecimal.valueOf(1234.50d), MoneyParser.USD);
         assertNotNull(money);
         assertEquals("US$1,234.50", f.format(context, money));
-        money = Money.parse(BigDecimal.valueOf(1234.50d), Money.GBP);
+        money = MoneyParser.parse(BigDecimal.valueOf(1234.50d), MoneyParser.GBP);
         assertNotNull(money);
         assertEquals("£1,234.50", f.format(context, money));
-        money = Money.parse(BigDecimal.valueOf(1234.50d), Money.EUR);
+        money = MoneyParser.parse(BigDecimal.valueOf(1234.50d), MoneyParser.EUR);
         assertNotNull(money);
         assertEquals("€1,234.50", f.format(context, money));
     }
@@ -72,13 +72,13 @@ public class MoneyFormatterTest {
         final FieldFormatter<Money> f = new MoneyFormatter(Locale.GERMANY);
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
         Money money;
-        money = Money.parse(BigDecimal.valueOf(1234.50d), Money.USD);
+        money = MoneyParser.parse(BigDecimal.valueOf(1234.50d), MoneyParser.USD);
         assertNotNull(money);
         assertEquals("1.234,50 $", f.format(context, money));
-        money = Money.parse(BigDecimal.valueOf(1234.50d), Money.GBP);
+        money = MoneyParser.parse(BigDecimal.valueOf(1234.50d), MoneyParser.GBP);
         assertNotNull(money);
         assertEquals("1.234,50 £", f.format(context, money));
-        money = Money.parse(BigDecimal.valueOf(1234.50d), Money.EUR);
+        money = MoneyParser.parse(BigDecimal.valueOf(1234.50d), MoneyParser.EUR);
         assertNotNull(money);
         assertEquals("1.234,50 €", f.format(context, money));
     }

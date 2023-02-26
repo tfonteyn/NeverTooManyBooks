@@ -29,11 +29,11 @@ import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.security.cert.CertificateException;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
@@ -73,7 +73,7 @@ public enum SyncServer
         }
     };
 
-    public static final String ERROR_NO_READER_AVAILABLE = "No reader available";
+    private static final String ERROR_NO_READER_AVAILABLE = "No reader available";
     /* Log tag. */
     private static final String TAG = "SyncServer";
     /** The (optional) preset encoding to pass to export/import. */
@@ -120,7 +120,7 @@ public enum SyncServer
         }
     }
 
-    public boolean isSyncDateUserEditable() {
+    boolean isSyncDateUserEditable() {
         return syncDateIsUserEditable;
     }
 
@@ -130,7 +130,7 @@ public enum SyncServer
      *
      * @return {@code true} if a last-update date is available
      */
-    public boolean hasLastUpdateDateField() {
+    boolean hasLastUpdateDateField() {
         return hasLastUpdateDateField;
     }
 
@@ -145,8 +145,8 @@ public enum SyncServer
      * @throws CertificateException on failures related to a user installed CA.
      */
     @NonNull
-    public DataWriter<SyncWriterResults> createWriter(@NonNull final Context context,
-                                                      @NonNull final SyncWriterHelper helper)
+    DataWriter<SyncWriterResults> createWriter(@NonNull final Context context,
+                                               @NonNull final SyncWriterHelper helper)
             throws CertificateException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -174,19 +174,18 @@ public enum SyncServer
      * @return a new reader
      *
      * @throws CredentialsException on authentication/login failures
-     * @throws StorageException     on storage related failures
      * @throws IOException          on generic/other IO failures
      * @see DataReader
      */
     @NonNull
     @WorkerThread
-    public DataReader<SyncReaderMetaData, ReaderResults> createReader(
+    DataReader<SyncReaderMetaData, ReaderResults> createReader(
             @NonNull final Context context,
+            @NonNull final Locale systemLocale,
             @NonNull final SyncReaderHelper helper)
             throws DataReaderException,
                    CertificateException,
                    CredentialsException,
-                   StorageException,
                    IOException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -196,7 +195,7 @@ public enum SyncServer
         final DataReader<SyncReaderMetaData, ReaderResults> reader;
         switch (this) {
             case CalibreCS:
-                reader = new CalibreContentServerReader(context, helper);
+                reader = new CalibreContentServerReader(context, systemLocale, helper);
                 break;
 
             case StripInfo:

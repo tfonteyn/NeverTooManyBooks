@@ -29,6 +29,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -38,7 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.utils.MoneyParser;
 
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -79,6 +80,8 @@ class IsfdbBookHandlerTest
     void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
         setLocale(Locale.UK);
+        final RealNumberParser realNumberParser = new RealNumberParser(context);
+
         final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?112781";
         final String filename = "/isfdb/112781.html";
 
@@ -93,8 +96,8 @@ class IsfdbBookHandlerTest
         assertEquals("1986-10-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("0413600106", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("9780413600103", book.getString(IsfdbSearchEngine.SiteField.ISBN_2, null));
-        assertEquals(1.95d, book.getDouble(DBKey.PRICE_LISTED, locales));
-        assertEquals(Money.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertEquals(1.95d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(MoneyParser.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
         assertEquals("159", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("pb", book.getString(DBKey.FORMAT, null));
         assertEquals("COLLECTION", book.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE, null));
@@ -151,6 +154,8 @@ class IsfdbBookHandlerTest
     void parse02()
             throws SearchException, IOException, CredentialsException, StorageException {
         setLocale(Locale.UK);
+        final RealNumberParser realNumberParser = new RealNumberParser(context);
+
         final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?431964";
         final String filename = "/isfdb/431964.html";
 
@@ -164,8 +169,8 @@ class IsfdbBookHandlerTest
         assertEquals("2013-11-07", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("9781473200104", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("1473200105", book.getString(IsfdbSearchEngine.SiteField.ISBN_2, null));
-        assertEquals(9.99d, book.getDouble(DBKey.PRICE_LISTED, locales));
-        assertEquals(Money.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertEquals(9.99d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(MoneyParser.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
         assertEquals("257", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("hc", book.getString(DBKey.FORMAT, null));
         assertEquals("NOVEL", book.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE, null));
@@ -210,6 +215,8 @@ class IsfdbBookHandlerTest
     void parse03()
             throws SearchException, IOException, CredentialsException, StorageException {
         setLocale(Locale.UK);
+        final RealNumberParser realNumberParser = new RealNumberParser(context);
+
         final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?542125";
         final String filename = "/isfdb/542125.html";
 
@@ -223,8 +230,8 @@ class IsfdbBookHandlerTest
         assertEquals("2015-09-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("9780062429995", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("006242999X", book.getString(IsfdbSearchEngine.SiteField.ISBN_2, null));
-        assertEquals(11.99d, book.getDouble(DBKey.PRICE_LISTED, locales));
-        assertEquals(Money.USD, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertEquals(11.99d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(MoneyParser.USD, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
         assertEquals("ebook", book.getString(DBKey.FORMAT, null));
         assertEquals("NOVEL", book.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE, null));
 

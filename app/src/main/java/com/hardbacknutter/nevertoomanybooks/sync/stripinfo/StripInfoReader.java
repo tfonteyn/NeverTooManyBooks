@@ -34,7 +34,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -52,8 +51,8 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.NetworkUnavailableException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -105,8 +104,7 @@ public class StripInfoReader
     private final String booksString;
     @NonNull
     private final BookDao bookDao;
-    @NonNull
-    private final List<Locale> locales;
+    private final RealNumberParser realNumberParser;
 
     private ReaderResults results;
 
@@ -127,7 +125,7 @@ public class StripInfoReader
         // create a new instance just for our own use
         searchEngine = (StripInfoSearchEngine) EngineId.StripInfoBe.createSearchEngine(context);
 
-        locales = LocaleListUtils.asList(context);
+        realNumberParser = new RealNumberParser(context);
 
         booksString = context.getString(R.string.lbl_books);
     }
@@ -294,7 +292,7 @@ public class StripInfoReader
                         switch (updateOption) {
                             case Overwrite: {
                                 final Book book = Book.from(cursor);
-                                updateBook(context, externalId, colBook, book, locales);
+                                updateBook(context, externalId, colBook, book);
                                 break;
                             }
                             case OnlyNewer: {
@@ -336,8 +334,7 @@ public class StripInfoReader
     private void updateBook(@NonNull final Context context,
                             final long externalId,
                             @NonNull final Book colBook,
-                            @NonNull final Book book,
-                            @NonNull final List<Locale> locales)
+                            @NonNull final Book book)
             throws StorageException,
                    SearchException,
                    CredentialsException,
@@ -368,7 +365,7 @@ public class StripInfoReader
         // Extract the delta from the dataToMerge
         delta = syncProcessor.process(context, book.getId(), book,
                                       fieldsWanted, dataToMerge,
-                                      locales);
+                                      realNumberParser);
 
         if (delta != null) {
             bookDao.update(context, delta, Set.of(BookDao.BookFlag.RunInBatch,

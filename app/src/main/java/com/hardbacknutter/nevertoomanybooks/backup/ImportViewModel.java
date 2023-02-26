@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.FileNotFoundException;
+import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
@@ -42,10 +43,11 @@ public class ImportViewModel
     // not an 'init' as the helper can only be created after the user selected a uri
     @NonNull
     ImportHelper createDataReaderHelper(@NonNull final Context context,
+                                        @NonNull final Locale systemLocale,
                                         @NonNull final Uri uri)
             throws DataReaderException, FileNotFoundException {
 
-        importHelper = new ImportHelper(context, uri);
+        importHelper = new ImportHelper(context, systemLocale, uri);
         return importHelper;
     }
 

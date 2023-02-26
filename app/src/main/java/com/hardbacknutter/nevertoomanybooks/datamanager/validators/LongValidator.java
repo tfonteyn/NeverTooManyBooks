@@ -25,10 +25,8 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
-import java.util.List;
-import java.util.Locale;
-
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
@@ -38,26 +36,25 @@ public class LongValidator
         implements DataValidator {
 
     @NonNull
-    private final List<Locale> locales;
+    private final RealNumberParser realNumberParser;
     /** Default to apply if the field is {@code null} or empty. */
     private final long defaultValue;
 
     /**
      * Constructor; default value is 0.
      */
-    public LongValidator(@NonNull final List<Locale> locales) {
-        this(locales, 0);
+    public LongValidator(@NonNull RealNumberParser realNumberParser) {
+        this(realNumberParser, 0);
     }
 
     /**
      * Constructor with default value.
      *
-     * @param locales      to use for parsing
      * @param defaultValue Default to apply if the field is empty
      */
-    public LongValidator(@NonNull final List<Locale> locales,
+    public LongValidator(@NonNull final RealNumberParser realNumberParser,
                          final long defaultValue) {
-        this.locales = locales;
+        this.realNumberParser = realNumberParser;
         this.defaultValue = defaultValue;
     }
 
@@ -70,7 +67,7 @@ public class LongValidator
             throws ValidatorException {
 
         final long value;
-        final Object obj = dataManager.get(key, locales);
+        final Object obj = dataManager.get(key, realNumberParser);
         if (obj == null) {
             value = defaultValue;
         } else if (obj instanceof Long) {

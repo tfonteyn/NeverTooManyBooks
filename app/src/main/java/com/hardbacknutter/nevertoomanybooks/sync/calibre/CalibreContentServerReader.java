@@ -37,6 +37,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
@@ -161,8 +162,9 @@ public class CalibreContentServerReader
      * @throws CertificateException on failures related to a user installed CA.
      */
     public CalibreContentServerReader(@NonNull final Context context,
+                                      @NonNull final Locale systemLocale,
                                       @NonNull final SyncReaderHelper helper)
-            throws CertificateException {
+    throws CertificateException {
 
         updateOption = helper.getUpdateOption();
         syncDate = helper.getSyncDate();
@@ -178,7 +180,7 @@ public class CalibreContentServerReader
 
         bookDao = serviceLocator.getBookDao();
         calibreLibraryDao = serviceLocator.getCalibreLibraryDao();
-        dateParser = new ISODateParser(serviceLocator.getSystemLocale());
+        dateParser = new ISODateParser(systemLocale);
 
         eBookString = context.getString(R.string.book_format_ebook);
         booksString = context.getString(R.string.lbl_books);

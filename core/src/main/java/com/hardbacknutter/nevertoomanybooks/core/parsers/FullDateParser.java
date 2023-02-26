@@ -100,7 +100,7 @@ public class FullDateParser
      * Constructor.
      *
      * @param systemLocale to use for ISO date parsing
-     * @param locales      to use for other parsing
+     * @param locales      to use for number parsing
      */
     public FullDateParser(@NonNull final Locale systemLocale,
                           @NonNull final List<Locale> locales) {
@@ -204,7 +204,7 @@ public class FullDateParser
      *
      * @param group    collection to add to
      * @param patterns list of patterns to add
-     * @param locales  to use for parsing
+     * @param locales  to use for number parsing
      */
     private void addPatterns(@NonNull final Collection<DateTimeFormatter> group,
                              @NonNull final String[] patterns,

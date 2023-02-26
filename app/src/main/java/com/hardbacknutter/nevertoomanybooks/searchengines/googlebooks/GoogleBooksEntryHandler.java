@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.utils.MoneyParser;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -315,7 +316,7 @@ class GoogleBooksEntryHandler
 
                 if (amount >= 0) {
                     // parsing the amount was ok, store it
-                    final Money money = Money.parse(BigDecimal.valueOf(amount), currencyCode);
+                    final Money money = MoneyParser.parse(BigDecimal.valueOf(amount), currencyCode);
                     book.putMoney(DBKey.PRICE_LISTED, money);
                 } else {
                     // Parsing the amount failed, store as a combined string

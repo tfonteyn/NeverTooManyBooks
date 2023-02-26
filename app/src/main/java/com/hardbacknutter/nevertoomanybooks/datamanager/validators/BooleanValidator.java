@@ -25,11 +25,9 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
-import java.util.List;
-import java.util.Locale;
-
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
@@ -39,19 +37,18 @@ public class BooleanValidator
         implements DataValidator {
 
     @NonNull
-    private final List<Locale> locales;
+    private final RealNumberParser realNumberParser;
     /** Default to apply if the field is empty. */
     private final boolean defaultValue;
 
     /**
      * Constructor with default value.
      *
-     * @param locales      to use for parsing
      * @param defaultValue Default to apply
      */
-    public BooleanValidator(@NonNull final List<Locale> locales,
+    public BooleanValidator(@NonNull final RealNumberParser realNumberParser,
                             final boolean defaultValue) {
-        this.locales = locales;
+        this.realNumberParser = realNumberParser;
         this.defaultValue = defaultValue;
     }
 
@@ -63,7 +60,7 @@ public class BooleanValidator
                          @StringRes final int errorLabelResId)
             throws ValidatorException {
 
-        final Object o = dataManager.get(key, locales);
+        final Object o = dataManager.get(key, realNumberParser);
         if (o == null || o.toString().trim().isEmpty()) {
             dataManager.putBoolean(key, defaultValue);
             return;

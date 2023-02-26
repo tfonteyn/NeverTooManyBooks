@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
@@ -88,8 +89,7 @@ public class BooklistAdapter
     @NonNull
     private final Formatter formatter;
     private final Languages languages;
-    @NonNull
-    private final List<Locale> locales;
+    private final RealNumberParser realNumberParser;
 
 
     /** The cursor is the equivalent of the 'list of items'. */
@@ -120,13 +120,13 @@ public class BooklistAdapter
         this.inflater = LayoutInflater.from(context);
         this.style = style;
         this.languages = languages;
-        this.locales = locales;
+
+        realNumberParser = new RealNumberParser(locales);
+        formatter = new Formatter(context, style, locales);
 
         final Resources res = context.getResources();
         levelIndent = res.getDimensionPixelSize(R.dimen.bob_group_level_padding_start);
         level1topMargin = res.getDimensionPixelSize(R.dimen.bob_group_level_1_margin_top);
-
-        formatter = new Formatter(context, style, locales);
 
         groupRowHeight = this.style.getGroupRowHeight(context);
 
@@ -314,7 +314,8 @@ public class BooklistAdapter
         // NEWTHINGS: BooklistGroup - add a new holder type if needed
         switch (groupId) {
             case BooklistGroup.BOOK:
-                holder = new BookHolder(itemView, style, languages, locales, coverLongestSide);
+                holder = new BookHolder(itemView, style, languages, realNumberParser,
+                                        coverLongestSide);
                 break;
 
             case BooklistGroup.AUTHOR:

@@ -30,9 +30,9 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -61,9 +61,7 @@ public class BookCoder
     private final JsonCoder<Publisher> publisherCoder = new PublisherCoder();
     private final JsonCoder<Series> seriesCoder = new SeriesCoder();
     private final JsonCoder<TocEntry> tocEntryCoder = new TocEntryCoder();
-    /** Immutable. */
-    @NonNull
-    private final List<Locale> locales;
+    private final RealNumberParser realNumberParser;
 
     /**
      * Constructor.
@@ -73,11 +71,11 @@ public class BookCoder
      */
     public BookCoder(@NonNull final Context context,
                      @NonNull final Style defaultStyle,
-                     @NonNull final List<Locale> locales) {
+                     @NonNull final RealNumberParser realNumberParser) {
 
         bookshelfCoder = new BookshelfCoder(context, defaultStyle);
         calibreLibraryCoder = new CalibreLibraryCoder(context, defaultStyle);
-        this.locales = locales;
+        this.realNumberParser = realNumberParser;
     }
 
     @Override
@@ -96,7 +94,7 @@ public class BookCoder
                         @NonNull final String key)
             throws JSONException {
 
-        final Object element = book.get(key, locales);
+        final Object element = book.get(key, realNumberParser);
 
         // Special keys first.
 
