@@ -101,6 +101,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.SpinnerInteractionListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfBinding;
@@ -1580,7 +1581,9 @@ public class BooksOnBookshelf
                   new Throwable());
         }
 
-        adapter = new BooklistAdapter(this, vm.getStyle(this));
+        adapter = new BooklistAdapter(this, vm.getStyle(this),
+                                      ServiceLocator.getInstance().getLanguages(),
+                                      LocaleListUtils.asList(this));
         adapter.setOnRowClickListener(this::onRowClicked);
         ShowContextMenu preferredMode = ShowContextMenu.getPreferredMode(this);
         if (preferredMode == ShowContextMenu.ButtonIfSpace && hasEmbeddedDetailsFrame()) {

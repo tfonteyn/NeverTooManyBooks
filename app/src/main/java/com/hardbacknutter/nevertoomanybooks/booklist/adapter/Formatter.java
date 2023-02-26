@@ -38,7 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -81,10 +80,11 @@ class Formatter
     private final List<Locale> locales;
 
     Formatter(@NonNull final Context context,
-              @NonNull final Style style) {
+              @NonNull final Style style,
+              @NonNull final List<Locale> locales) {
         this.context = context;
         this.style = style;
-        this.locales = LocaleListUtils.asList(context);
+        this.locales = locales;
 
         reorderTitleForDisplaying = ReorderHelper.forDisplay(context);
         conditionDescriptions = context.getResources().getStringArray(R.array.conditions_book);

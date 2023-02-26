@@ -41,12 +41,13 @@ import androidx.annotation.Nullable;
 import androidx.core.math.MathUtils;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
@@ -111,17 +112,18 @@ public class BooklistAdapter
      * @param style   to use
      */
     public BooklistAdapter(@NonNull final Context context,
-                           @NonNull final Style style) {
+                           @NonNull final Style style,
+                           @NonNull final Languages languages,
+                           @NonNull final List<Locale> locales) {
         this.inflater = LayoutInflater.from(context);
         this.style = style;
-
-        languages = ServiceLocator.getInstance().getLanguages();
+        this.languages = languages;
 
         final Resources res = context.getResources();
         levelIndent = res.getDimensionPixelSize(R.dimen.bob_group_level_padding_start);
         level1topMargin = res.getDimensionPixelSize(R.dimen.bob_group_level_1_margin_top);
 
-        formatter = new Formatter(context, style);
+        formatter = new Formatter(context, style, locales);
 
         groupRowHeight = this.style.getGroupRowHeight(context);
 
