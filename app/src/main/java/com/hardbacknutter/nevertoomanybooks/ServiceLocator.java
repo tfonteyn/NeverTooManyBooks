@@ -222,10 +222,11 @@ public final class ServiceLocator {
     }
 
     /**
-     * Create a "new Bundle()" .
-     * This allows us to return mock-bundle's when running a JUnit test.
+     * Create a "new Bundle()".
+     * <p>
+     * Dev. note: the only reason for this method is so we can mock creating a new Bundle.
      *
-     * @return bundle
+     * @return new Bundle instance
      */
     @NonNull
     public Bundle newBundle() {
@@ -233,38 +234,15 @@ public final class ServiceLocator {
     }
 
     /**
-     * Return the device Locale.
-     *
-     * @return Locale
-     */
-    @NonNull
-    public Locale getSystemLocale() {
-        return Resources.getSystem().getConfiguration().getLocales().get(0);
-    }
-
-    /**
-     * Get an <strong>unmodifiable</strong> List of the system Locales.
+     * Return the device {@link LocaleList}.
      * <p>
-     * Dev. note: this is a separate method so we can mock it.
+     * Dev. note: the only reason for this method is so we can mock getting the LocaleList.
      *
-     * @return unmodifiable list
+     * @return LocaleList
      */
-    @VisibleForTesting
     @NonNull
-    public List<Locale> getSystemLocales() {
-        // Using SYSTEM Locales versus USER Locales, see:
-        // https://medium.com/@hectorricardomendez/how-to-get-the-current-locale-in-android-fc12d8be6242
-        // Key-Takeaway #5: To get the list of preferred locales of the device (as defined in
-        // the Settings), call Resources.getSystem().getConfiguration().getLocales()
-        //
-        // although, at this point, it seems LocaleList.getDefault() DOES return
-        // the correct list, so we could use that. It's not clear if it matters.
-        final LocaleList localeList = Resources.getSystem().getConfiguration().getLocales();
-        final Set<Locale> linkedHashSet = new LinkedHashSet<>();
-        for (int i = 0; i < localeList.size(); i++) {
-            linkedHashSet.add(localeList.get(i));
-        }
-        return List.copyOf(linkedHashSet);
+    public LocaleList getSystemLocaleList() {
+        return Resources.getSystem().getConfiguration().getLocales();
     }
 
     @NonNull
@@ -325,7 +303,6 @@ public final class ServiceLocator {
         return languages;
     }
 
-
     /**
      * Client must call this <strong>before</strong> doing its first request (lazy init).
      *
@@ -346,8 +323,20 @@ public final class ServiceLocator {
     public AppLocale getAppLocale() {
         synchronized (this) {
             if (appLocale == null) {
-                appLocale = new AppLocaleImpl(getSystemLocales(),
-                                              getSystemLocale(),
+                // Using SYSTEM Locales versus USER Locales, see:
+                // https://medium.com/@hectorricardomendez/how-to-get-the-current-locale-in-android-fc12d8be6242
+                // Key-Takeaway #5: To get the list of preferred locales of the device (as defined in
+                // the Settings), call Resources.getSystem().getConfiguration().getLocales()
+                //
+                // although, at this point, it seems LocaleList.getDefault() DOES return
+                // the correct list, so we could use that. It's not clear if it matters.
+                final LocaleList localeList = getSystemLocaleList();
+                final Set<Locale> locales = new LinkedHashSet<>();
+                for (int i = 0; i < localeList.size(); i++) {
+                    locales.add(localeList.get(i));
+                }
+                appLocale = new AppLocaleImpl(List.copyOf(locales),
+                                              getSystemLocaleList().get(0),
                                               getLanguages());
             }
         }
@@ -427,7 +416,7 @@ public final class ServiceLocator {
     public BookDao getBookDao() {
         synchronized (this) {
             if (bookDao == null) {
-                bookDao = new BookDaoImpl(getDb(), getSystemLocale());
+                bookDao = new BookDaoImpl(getDb(), getSystemLocaleList().get(0));
             }
         }
         return bookDao;

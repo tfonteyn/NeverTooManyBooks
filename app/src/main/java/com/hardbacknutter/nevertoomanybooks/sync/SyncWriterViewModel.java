@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,14 +25,18 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import java.util.Locale;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterViewModel;
 
 public class SyncWriterViewModel
         extends DataWriterViewModel<SyncWriterResults> {
 
-    private SyncWriterHelper helper;
+    private SyncWriterHelper syncWriterHelper;
 
     /** UI helper. */
     private boolean quickOptionsAlreadyShown;
@@ -51,28 +55,30 @@ public class SyncWriterViewModel
      * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
     public void init(@NonNull final Bundle args) {
-        if (helper == null) {
+        if (syncWriterHelper == null) {
             final SyncServer syncServer = Objects.requireNonNull(
                     args.getParcelable(SyncServer.BKEY_SITE), SyncServer.BKEY_SITE);
 
-            helper = new SyncWriterHelper(syncServer);
+            final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
+            final DateParser dateParser = new ISODateParser(systemLocale);
+            syncWriterHelper = new SyncWriterHelper(syncServer, dateParser);
         }
     }
 
     @NonNull
     SyncWriterHelper getSyncWriterHelper() {
-        return helper;
+        return syncWriterHelper;
     }
 
     @Override
     public boolean isReadyToGo() {
         // slightly bogus test... right now Prefs/Styles are always included,
         // but we're keeping all variations of DataReader/DataWriter classes the same
-        return helper.getRecordTypes().size() > 1;
+        return syncWriterHelper.getRecordTypes().size() > 1;
     }
 
     void startExport() {
-        Objects.requireNonNull(helper, "helper");
-        startWritingData(helper);
+        Objects.requireNonNull(syncWriterHelper, "helper");
+        startWritingData(syncWriterHelper);
     }
 }

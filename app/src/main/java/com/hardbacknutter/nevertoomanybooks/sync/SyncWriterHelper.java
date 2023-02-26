@@ -33,6 +33,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterHelperBase;
@@ -52,11 +53,17 @@ public class SyncWriterHelper
     /** If a book no longer exists on the server, should we delete the local book. */
     private boolean deleteLocalBooks;
 
+    @SuppressWarnings("FieldNotUsedInToString")
+    @NonNull
+    private final DateParser dateParser;
+
     /**
      * Constructor.
      */
-    SyncWriterHelper(@NonNull final SyncServer syncServer) {
+    SyncWriterHelper(@NonNull final SyncServer syncServer,
+                     @NonNull final DateParser dateParser) {
         this.syncServer = syncServer;
+        this.dateParser = dateParser;
 
         // set the default
         addRecordType(EnumSet.of(RecordType.Books,
@@ -98,7 +105,7 @@ public class SyncWriterHelper
         Objects.requireNonNull(syncServer, "syncServer");
 
         try {
-            dataWriter = syncServer.createWriter(context, this);
+            dataWriter = syncServer.createWriter(context, this, dateParser);
             return dataWriter.write(context, progressListener);
         } finally {
             synchronized (this) {

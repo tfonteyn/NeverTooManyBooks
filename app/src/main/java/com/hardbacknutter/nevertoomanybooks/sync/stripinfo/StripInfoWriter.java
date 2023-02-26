@@ -35,7 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpNotFoundException;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StripInfoDao;
@@ -64,6 +64,9 @@ public class StripInfoWriter
     @SuppressWarnings("FieldCanBeLocal")
     private SyncWriterResults results;
 
+    @NonNull
+    private final DateParser dateParser;
+
     /**
      * Constructor.
      *
@@ -71,8 +74,10 @@ public class StripInfoWriter
      * @param syncWriterHelper export configuration
      */
     public StripInfoWriter(@NonNull final Context context,
-                           @NonNull final SyncWriterHelper syncWriterHelper) {
+                           @NonNull final SyncWriterHelper syncWriterHelper,
+                           @NonNull final DateParser dateParser) {
         this.syncWriterHelper = syncWriterHelper;
+        this.dateParser = dateParser;
         collectionForm = new CollectionFormUploader(context);
         deleteLocalBook = this.syncWriterHelper.isDeleteLocalBooks();
     }
@@ -96,20 +101,19 @@ public class StripInfoWriter
         // reset; won't take effect until the next publish call.
         progressListener.setIndeterminate(null);
 
-        final ServiceLocator sl = ServiceLocator.getInstance();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         final LocalDateTime dateSince;
         if (syncWriterHelper.isIncremental()) {
-            dateSince = new ISODateParser(ServiceLocator.getInstance().getSystemLocale())
-                    .parse(global.getString(StripInfoAuth.PK_LAST_SYNC, null));
+            dateSince = dateParser.parse(global.getString(StripInfoAuth.PK_LAST_SYNC, null));
         } else {
             dateSince = null;
         }
 
 
-        final BookDao bookDao = sl.getBookDao();
-        final StripInfoDao stripInfoDao = sl.getStripInfoDao();
+        final BookDao bookDao = serviceLocator.getBookDao();
+        final StripInfoDao stripInfoDao = serviceLocator.getStripInfoDao();
         try (Cursor cursor = bookDao.fetchBooksForExportToStripInfo(dateSince)) {
             int delta = 0;
             long lastUpdate = 0;

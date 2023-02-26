@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.UncheckedSAXException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -786,10 +787,9 @@ public class IsfdbSearchEngine
 
         final List<Locale> locales = LocaleListUtils.asList(context, getLocale(context));
         final RealNumberParser realNumberParser = new RealNumberParser(locales);
+        final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
+        final DateParser dateParser = new FullDateParser(new ISODateParser(systemLocale), locales);
         final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
-
-        final Locale systemLocale = ServiceLocator.getInstance().getSystemLocale();
-        final DateParser dateParser = new FullDateParser(systemLocale, locales);
 
         final Elements allContentBoxes = document.select(CSS_Q_DIV_CONTENTBOX);
         // sanity check

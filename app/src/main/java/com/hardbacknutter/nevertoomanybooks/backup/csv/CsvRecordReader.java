@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -123,14 +124,12 @@ public class CsvRecordReader
      * <p>
      * Only supports {@link RecordType#Books}.
      *
-     * @param context      Current context
-     * @param systemLocale to use for ISO date parsing
+     * @param context Current context
      */
     @AnyThread
     public CsvRecordReader(@NonNull final Context context,
-                           @NonNull final Locale systemLocale) {
-        super(context, systemLocale);
-
+                           @NonNull final DateParser dateParser) {
+        super(context, dateParser);
         bookCoder = new BookCoder(context);
     }
 

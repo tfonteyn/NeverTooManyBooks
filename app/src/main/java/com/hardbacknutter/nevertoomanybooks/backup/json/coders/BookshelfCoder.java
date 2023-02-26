@@ -44,7 +44,7 @@ public class BookshelfCoder
      * Constructor.
      *
      * @param context      Current context
-     * @param defaultStyle
+     * @param defaultStyle for {@link Bookshelf}s
      */
     public BookshelfCoder(@NonNull final Context context,
                           @NonNull final Style defaultStyle) {

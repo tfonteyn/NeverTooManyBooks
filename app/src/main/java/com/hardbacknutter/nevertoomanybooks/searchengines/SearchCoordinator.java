@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
@@ -355,7 +356,9 @@ public class SearchCoordinator
 
             allSites = Site.Type.Data.getSites();
 
-            resultsAccumulator = new ResultsAccumulator(context, engineCache);
+            final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
+            final ISODateParser dateParser = new ISODateParser(systemLocale);
+            resultsAccumulator = new ResultsAccumulator(context, engineCache, dateParser);
 
             listElementPrefixString = context.getString(R.string.list_element);
 
@@ -901,163 +904,9 @@ public class SearchCoordinator
         this.authorSearchText = authorSearchText;
     }
 
-    /** Listener for <strong>individual</strong> search tasks. */
-    private final TaskListener<Book> searchTaskListener = new TaskListener<>() {
-
-        @Override
-        public void onProgress(@NonNull final TaskProgress message) {
-            synchronized (searchProgressBySite) {
-                final EngineId engineId;
-                synchronized (activeTasks) {
-                    engineId = Objects.requireNonNull(activeTasks.get(message.taskId),
-                                                      () -> ERROR_UNKNOWN_TASK + message.taskId)
-                                      .getSearchEngine().getEngineId();
-                }
-                searchProgressBySite.put(engineId, message);
-            }
-            // forward the accumulated progress
-            searchCoordinatorProgress.setValue(new LiveDataEvent<>(accumulateProgress()));
-        }
-
-        @Override
-        public void onFinished(final int taskId,
-                               @Nullable final Book result) {
-            // The result MUST NOT be null
-            onSearchTaskFinished(taskId, Objects.requireNonNull(result, "result"));
-        }
-
-        @Override
-        public void onCancelled(final int taskId,
-                                @Nullable final Book result) {
-            // we'll deliver what we have found up to now (includes previous searches)
-            // The result MAY be null
-            onSearchTaskFinished(taskId, result);
-        }
-
-        @Override
-        public void onFailure(final int taskId,
-                              @Nullable final Throwable e) {
-            synchronized (searchErrorsBySite) {
-                final EngineId engineId;
-                synchronized (activeTasks) {
-                    engineId = Objects.requireNonNull(activeTasks.get(taskId),
-                                                      () -> ERROR_UNKNOWN_TASK + taskId)
-                                      .getSearchEngine().getEngineId();
-                }
-                // Always store, even if the Exception is null
-                searchErrorsBySite.put(engineId, e);
-            }
-            onSearchTaskFinished(taskId, null);
-        }
-    };
-
     @NonNull
     public String getTitleSearchText() {
         return titleSearchText;
-    }
-
-    /**
-     * Search criteria.
-     *
-     * @param titleSearchText to search for
-     */
-    public void setTitleSearchText(@NonNull final String titleSearchText) {
-        this.titleSearchText = titleSearchText;
-    }
-
-    @NonNull
-    public String getPublisherSearchText() {
-        return publisherSearchText;
-    }
-
-    /**
-     * Search criteria.
-     *
-     * @param publisherSearchText to search for
-     */
-    public void setPublisherSearchText(@NonNull final String publisherSearchText) {
-        this.publisherSearchText = publisherSearchText;
-    }
-
-    /**
-     * Called when all is said and done. Collects all individual website errors (if any)
-     * into a single user-formatted message.
-     *
-     * @param context Current context
-     *
-     * @return the error message
-     */
-    @Nullable
-    private String accumulateErrors(@NonNull final Context context) {
-        // no synchronized needed, at this point all other threads have finished.
-        if (!searchErrorsBySite.isEmpty()) {
-            final String msg = searchErrorsBySite
-                    .values()
-                    .stream()
-                    .map(exception -> ExMsg
-                            .map(context, exception)
-                            .orElseGet(() -> {
-                                // generic network related IOException message
-                                if (exception instanceof IOException) {
-                                    return context.getString(R.string.error_search_failed_network);
-                                }
-                                // generic unknown message
-                                return context.getString(R.string.error_unknown);
-                            }))
-                    .collect(Collectors.joining("\n"));
-
-            searchErrorsBySite.clear();
-            return msg;
-        }
-        return null;
-    }
-
-    private void debugExitOnSearchTaskFinished(@NonNull final Context context,
-                                               final long processTime,
-                                               @Nullable final String searchErrors) {
-        if (DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            Log.d(TAG, "onSearchTaskFinished"
-                       + "|cancelled=" + cancelRequested.get()
-                       + "|searchErrors=" + searchErrors);
-        }
-
-        if (DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
-            for (final Map.Entry<EngineId, Long> entry : searchTasksStartTime.entrySet()) {
-                final EngineId engineId = entry.getKey();
-                final String engineName = engineId.getName(context);
-
-                final long start = entry.getValue();
-                final Long end = searchTasksEndTime.get(engineId);
-
-                if (end != null) {
-                    Log.d(TAG, String.format(
-                            Locale.ENGLISH,
-                            "onSearchTaskFinished|engine=%20s:%10d ms",
-                            engineName,
-                            (end - start) / NANO_TO_MILLIS));
-                } else {
-                    Log.d(TAG, String.format(
-                            Locale.ENGLISH,
-                            "onSearchTaskFinished|engine=%20s|never finished",
-                            engineName));
-                }
-            }
-
-            Log.d(TAG, String.format(
-                    Locale.ENGLISH,
-                    "onSearchTaskFinished|total search time: %10d ms",
-                    (processTime - searchStartTime)
-                    / NANO_TO_MILLIS));
-            Log.d(TAG, String.format(
-                    Locale.ENGLISH,
-                    "onSearchTaskFinished|processing time: %10d ms",
-                    (System.nanoTime() - processTime)
-                    / NANO_TO_MILLIS));
-        }
-    }
-
-    protected void setBaseMessage(@Nullable final String baseMessage) {
-        this.baseMessage = baseMessage;
     }
 
     private static class ResultsAccumulator {
@@ -1079,11 +928,12 @@ public class SearchCoordinator
         private final RealNumberParser realNumberParser;
 
         ResultsAccumulator(@NonNull final Context context,
-                           @NonNull final Map<EngineId, SearchEngine> engineCache) {
+                           @NonNull final Map<EngineId, SearchEngine> engineCache,
+                           @NonNull final DateParser dateParser) {
+
             final List<Locale> locales = LocaleListUtils.asList(context);
             realNumberParser = new RealNumberParser(locales);
-            dateParser = new FullDateParser(ServiceLocator.getInstance().getSystemLocale(),
-                                            locales);
+            this.dateParser = new FullDateParser(dateParser, locales);
             this.engineCache = engineCache;
 
             if (FormatMapper.isMappingAllowed(context)) {
@@ -1307,6 +1157,159 @@ public class SearchCoordinator
         }
     }
 
+    /** Listener for <strong>individual</strong> search tasks. */
+    private final TaskListener<Book> searchTaskListener = new TaskListener<>() {
+
+        @Override
+        public void onProgress(@NonNull final TaskProgress message) {
+            synchronized (searchProgressBySite) {
+                final EngineId engineId;
+                synchronized (activeTasks) {
+                    engineId = Objects.requireNonNull(activeTasks.get(message.taskId),
+                                                      () -> ERROR_UNKNOWN_TASK + message.taskId)
+                                      .getSearchEngine().getEngineId();
+                }
+                searchProgressBySite.put(engineId, message);
+            }
+            // forward the accumulated progress
+            searchCoordinatorProgress.setValue(new LiveDataEvent<>(accumulateProgress()));
+        }
+
+        @Override
+        public void onFinished(final int taskId,
+                               @Nullable final Book result) {
+            // The result MUST NOT be null
+            onSearchTaskFinished(taskId, Objects.requireNonNull(result, "result"));
+        }
+
+        @Override
+        public void onCancelled(final int taskId,
+                                @Nullable final Book result) {
+            // we'll deliver what we have found up to now (includes previous searches)
+            // The result MAY be null
+            onSearchTaskFinished(taskId, result);
+        }
+
+        @Override
+        public void onFailure(final int taskId,
+                              @Nullable final Throwable e) {
+            synchronized (searchErrorsBySite) {
+                final EngineId engineId;
+                synchronized (activeTasks) {
+                    engineId = Objects.requireNonNull(activeTasks.get(taskId),
+                                                      () -> ERROR_UNKNOWN_TASK + taskId)
+                                      .getSearchEngine().getEngineId();
+                }
+                // Always store, even if the Exception is null
+                searchErrorsBySite.put(engineId, e);
+            }
+            onSearchTaskFinished(taskId, null);
+        }
+    };
+
+    /**
+     * Search criteria.
+     *
+     * @param titleSearchText to search for
+     */
+    public void setTitleSearchText(@NonNull final String titleSearchText) {
+        this.titleSearchText = titleSearchText;
+    }
+
+    @NonNull
+    public String getPublisherSearchText() {
+        return publisherSearchText;
+    }
+
+    /**
+     * Search criteria.
+     *
+     * @param publisherSearchText to search for
+     */
+    public void setPublisherSearchText(@NonNull final String publisherSearchText) {
+        this.publisherSearchText = publisherSearchText;
+    }
+
+    /**
+     * Called when all is said and done. Collects all individual website errors (if any)
+     * into a single user-formatted message.
+     *
+     * @param context Current context
+     *
+     * @return the error message
+     */
+    @Nullable
+    private String accumulateErrors(@NonNull final Context context) {
+        // no synchronized needed, at this point all other threads have finished.
+        if (!searchErrorsBySite.isEmpty()) {
+            final String msg = searchErrorsBySite
+                    .values()
+                    .stream()
+                    .map(exception -> ExMsg
+                            .map(context, exception)
+                            .orElseGet(() -> {
+                                // generic network related IOException message
+                                if (exception instanceof IOException) {
+                                    return context.getString(R.string.error_search_failed_network);
+                                }
+                                // generic unknown message
+                                return context.getString(R.string.error_unknown);
+                            }))
+                    .collect(Collectors.joining("\n"));
+
+            searchErrorsBySite.clear();
+            return msg;
+        }
+        return null;
+    }
+
+    private void debugExitOnSearchTaskFinished(@NonNull final Context context,
+                                               final long processTime,
+                                               @Nullable final String searchErrors) {
+        if (DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            Log.d(TAG, "onSearchTaskFinished"
+                       + "|cancelled=" + cancelRequested.get()
+                       + "|searchErrors=" + searchErrors);
+        }
+
+        if (DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
+            for (final Map.Entry<EngineId, Long> entry : searchTasksStartTime.entrySet()) {
+                final EngineId engineId = entry.getKey();
+                final String engineName = engineId.getName(context);
+
+                final long start = entry.getValue();
+                final Long end = searchTasksEndTime.get(engineId);
+
+                if (end != null) {
+                    Log.d(TAG, String.format(
+                            Locale.ENGLISH,
+                            "onSearchTaskFinished|engine=%20s:%10d ms",
+                            engineName,
+                            (end - start) / NANO_TO_MILLIS));
+                } else {
+                    Log.d(TAG, String.format(
+                            Locale.ENGLISH,
+                            "onSearchTaskFinished|engine=%20s|never finished",
+                            engineName));
+                }
+            }
+
+            Log.d(TAG, String.format(
+                    Locale.ENGLISH,
+                    "onSearchTaskFinished|total search time: %10d ms",
+                    (processTime - searchStartTime)
+                    / NANO_TO_MILLIS));
+            Log.d(TAG, String.format(
+                    Locale.ENGLISH,
+                    "onSearchTaskFinished|processing time: %10d ms",
+                    (System.nanoTime() - processTime)
+                    / NANO_TO_MILLIS));
+        }
+    }
+
+    protected void setBaseMessage(@Nullable final String baseMessage) {
+        this.baseMessage = baseMessage;
+    }
 
 
     public static class WrappedTaskResult {

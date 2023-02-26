@@ -31,6 +31,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 
+import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterViewModel;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
@@ -59,7 +60,7 @@ public class ExportViewModel
 
     public void init(@NonNull final Locale systemLocale) {
         if (exportHelper == null) {
-            exportHelper = new ExportHelper(systemLocale);
+            exportHelper = new ExportHelper(new ISODateParser(systemLocale));
         }
     }
 

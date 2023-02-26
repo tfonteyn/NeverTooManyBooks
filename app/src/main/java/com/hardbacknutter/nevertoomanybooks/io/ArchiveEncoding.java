@@ -31,7 +31,6 @@ import androidx.annotation.WorkerThread;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -50,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.UriInfo;
 
@@ -287,7 +287,7 @@ public enum ArchiveEncoding
     @NonNull
     public DataReader<ArchiveMetaData, ImportResults> createReader(
             @NonNull final Context context,
-            @NonNull final Locale systemLocale,
+            @NonNull final DateParser dateParser,
             @NonNull final ImportHelper helper)
     throws DataReaderException,
                    CredentialsException,
@@ -297,11 +297,11 @@ public enum ArchiveEncoding
         final DataReader<ArchiveMetaData, ImportResults> reader;
         switch (this) {
             case Zip:
-                reader = new ZipArchiveReader(context, systemLocale, helper);
+                reader = new ZipArchiveReader(context, dateParser, helper);
                 break;
 
             case Csv:
-                reader = new CsvArchiveReader(systemLocale, helper);
+                reader = new CsvArchiveReader(dateParser, helper);
                 break;
 
             case SqLiteDb:
@@ -309,7 +309,7 @@ public enum ArchiveEncoding
                 break;
 
             case Json:
-                reader = new JsonArchiveReader(context, systemLocale, helper);
+                reader = new JsonArchiveReader(context, dateParser, helper);
                 break;
 
             default:

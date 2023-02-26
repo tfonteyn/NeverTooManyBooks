@@ -42,6 +42,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -124,7 +125,7 @@ public class ImportFragment
 
         //noinspection ConstantConditions
         vm = new ViewModelProvider(getActivity()).get(ImportViewModel.class);
-        // no init
+        vm.init(ServiceLocator.getInstance().getSystemLocaleList().get(0));
     }
 
     @Override
@@ -211,11 +212,10 @@ public class ImportFragment
      * @param uri file to read from
      */
     private void onOpenUri(@NonNull final Uri uri) {
-        final ImportHelper helper;
+        final ImportHelper importHelper;
         try {
             //noinspection ConstantConditions
-            helper = vm.createDataReaderHelper(
-                    getContext(), ServiceLocator.getInstance().getSystemLocale(), uri);
+            importHelper = vm.createDataReaderHelper(getContext(), uri);
 
         } catch (@NonNull final DataReaderException e) {
             onImportNotSupported(e.getUserMessage(getContext()));
@@ -225,7 +225,7 @@ public class ImportFragment
             return;
         }
 
-        switch (helper.getEncoding()) {
+        switch (importHelper.getEncoding()) {
             case Csv:
                 // CsvArchiveReader will make a database backup before importing.
                 //noinspection ConstantConditions
@@ -359,10 +359,10 @@ public class ImportFragment
             // some stats of what's inside the archive
             final StringJoiner stats = new StringJoiner("\n");
 
+            final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
             //noinspection ConstantConditions
-            metaData.getCreatedLocalDate(ServiceLocator.getInstance().getSystemLocale())
-                    .ifPresent(date -> stats
-                            .add(DateUtils.displayDateTime(getContext(), date)));
+            metaData.getCreatedLocalDate(systemLocale).ifPresent(date -> stats
+                    .add(DateUtils.displayDateTime(getContext(), date)));
 
             metaData.getBookCount().ifPresent(count -> stats
                     .add(getString(R.string.name_colon_value,

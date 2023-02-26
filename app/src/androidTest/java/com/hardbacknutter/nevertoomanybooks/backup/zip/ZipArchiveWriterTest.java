@@ -85,13 +85,12 @@ public class ZipArchiveWriterTest
         final ExportResults exportResults;
 
         // Full backup except covers.
-        final ExportHelper exportHelper = new ExportHelper(
-                ArchiveEncoding.Zip,
-                EnumSet.of(RecordType.Books,
-                           RecordType.Preferences,
-                           RecordType.Certificates,
-                           RecordType.Styles),
-                systemLocale);
+        final ExportHelper exportHelper = new ExportHelper(ArchiveEncoding.Zip,
+                                                           EnumSet.of(RecordType.Books,
+                                                                      RecordType.Preferences,
+                                                                      RecordType.Certificates,
+                                                                      RecordType.Styles),
+                                                           dateParser);
         exportHelper.setEncoding(ArchiveEncoding.Zip);
         exportHelper.setUri(uri);
 
@@ -113,7 +112,7 @@ public class ZipArchiveWriterTest
             throws DataReaderException, IOException,
                    StorageException, CredentialsException, CertificateException {
 
-        final ImportHelper importHelper = new ImportHelper(context, systemLocale, uri);
+        final ImportHelper importHelper = new ImportHelper(context, dateParser, uri);
         // The default, fail if the default was changed without changing this test!
         assertEquals(DataReader.Updates.OnlyNewer, importHelper.getUpdateOption());
 

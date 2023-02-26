@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,8 +24,12 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Locale;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderViewModel;
 import com.hardbacknutter.nevertoomanybooks.io.ReaderResults;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
@@ -44,7 +48,10 @@ public class SyncReaderViewModel
         if (syncReaderHelper == null) {
             final SyncServer syncServer = Objects.requireNonNull(
                     args.getParcelable(SyncServer.BKEY_SITE), SyncServer.BKEY_SITE);
-            syncReaderHelper = new SyncReaderHelper(syncServer);
+
+            final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
+            final DateParser dateParser = new ISODateParser(systemLocale);
+            syncReaderHelper = new SyncReaderHelper(syncServer, dateParser);
         }
     }
 

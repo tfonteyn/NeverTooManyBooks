@@ -43,6 +43,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -50,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker.DatePickerListener;
@@ -105,8 +107,9 @@ public abstract class EditBookBaseFragment
         getToolbar().addMenuProvider(new MenuHandlersMenuProvider(), getViewLifecycleOwner(),
                                      Lifecycle.State.RESUMED);
 
+        final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
         //noinspection ConstantConditions
-        dateParser = new FullDateParser(ServiceLocator.getInstance().getSystemLocale(),
+        dateParser = new FullDateParser(new ISODateParser(systemLocale),
                                         LocaleListUtils.asList(getContext()));
 
         partialDatePickerLauncher.registerForFragmentResult(getChildFragmentManager(),

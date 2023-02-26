@@ -42,6 +42,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -49,7 +50,9 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SyncContractBase;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker.DatePickerListener;
@@ -333,7 +336,9 @@ public class SyncReaderFragment
     private void onCalibreLibrarySelected(@NonNull final CalibreLibrary library) {
         vb.calibreLibrary.setText(library.getName(), false);
 
-        updateSyncDate(library.getLastSyncDate());
+        final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
+        final ISODateParser isoDateParser = new ISODateParser(systemLocale);
+        updateSyncDate(isoDateParser.parse(library.getLastSyncDateAsString()));
 
         vb.archiveContent.setText(getString(R.string.name_colon_value,
                                             getString(R.string.lbl_books),

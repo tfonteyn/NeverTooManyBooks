@@ -95,7 +95,7 @@ public class ExportFragment
 
         //noinspection ConstantConditions
         vm = new ViewModelProvider(getActivity()).get(ExportViewModel.class);
-        vm.init(ServiceLocator.getInstance().getSystemLocale());
+        vm.init(ServiceLocator.getInstance().getSystemLocaleList().get(0));
     }
 
     @Override

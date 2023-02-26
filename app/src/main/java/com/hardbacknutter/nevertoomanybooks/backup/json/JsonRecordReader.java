@@ -33,7 +33,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateEncodingException;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
@@ -58,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.UncheckedDaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
@@ -127,15 +127,14 @@ public class JsonRecordReader
      * Constructor.
      *
      * @param context      Current context
-     * @param systemLocale to use for ISO date parsing
      * @param allowedTypes the record types we're allowed to read
      */
     @AnyThread
     public JsonRecordReader(@NonNull final Context context,
-                            @NonNull final Locale systemLocale,
+                            @NonNull final DateParser dateParser,
                             @NonNull final RealNumberParser realNumberParser,
                             @NonNull final Set<RecordType> allowedTypes) {
-        super(context, systemLocale);
+        super(context, dateParser);
         this.realNumberParser = realNumberParser;
         this.allowedTypes = allowedTypes;
     }

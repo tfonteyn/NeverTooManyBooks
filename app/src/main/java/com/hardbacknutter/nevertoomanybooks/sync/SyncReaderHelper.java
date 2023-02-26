@@ -29,10 +29,10 @@ import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 import java.util.EnumSet;
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderHelperBase;
@@ -47,8 +47,7 @@ public final class SyncReaderHelper
     private final SyncServer syncServer;
     /** Extra arguments for specific readers. The reader must define them. */
     private final Bundle extraArgs = ServiceLocator.getInstance().newBundle();
-    @NonNull
-    private final Locale systemLocale;
+    private final DateParser dateParser;
     /** <strong>How</strong> to handle individual fields. Can be {@code null}. aka unused. */
     @Nullable
     private SyncReaderProcessor syncProcessor;
@@ -58,10 +57,10 @@ public final class SyncReaderHelper
     /**
      * Constructor.
      */
-    SyncReaderHelper(@NonNull final SyncServer syncServer) {
+    SyncReaderHelper(@NonNull final SyncServer syncServer,
+                     @NonNull final DateParser dateParser) {
         this.syncServer = syncServer;
-
-        systemLocale = ServiceLocator.getInstance().getSystemLocale();
+        this.dateParser = dateParser;
 
         // set the defaults
         addRecordType(EnumSet.of(RecordType.Books,
@@ -120,7 +119,7 @@ public final class SyncReaderHelper
                    CredentialsException,
                    CertificateException,
                    IOException {
-        return syncServer.createReader(context, systemLocale, this);
+        return syncServer.createReader(context, dateParser, this);
     }
 
     @Override
@@ -132,6 +131,7 @@ public final class SyncReaderHelper
                + ", extraArgs=" + extraArgs
                + ", syncProcessor=" + syncProcessor
                + ", syncServer=" + syncServer
+               + ", dateParser=" + dateParser
                + '}';
     }
 }

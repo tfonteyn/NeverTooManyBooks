@@ -37,7 +37,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
@@ -48,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -162,7 +160,7 @@ public class CalibreContentServerReader
      * @throws CertificateException on failures related to a user installed CA.
      */
     public CalibreContentServerReader(@NonNull final Context context,
-                                      @NonNull final Locale systemLocale,
+                                      @NonNull final DateParser dateParser,
                                       @NonNull final SyncReaderHelper helper)
     throws CertificateException {
 
@@ -180,7 +178,7 @@ public class CalibreContentServerReader
 
         bookDao = serviceLocator.getBookDao();
         calibreLibraryDao = serviceLocator.getCalibreLibraryDao();
-        dateParser = new ISODateParser(systemLocale);
+        this.dateParser = dateParser;
 
         eBookString = context.getString(R.string.book_format_ebook);
         booksString = context.getString(R.string.lbl_books);

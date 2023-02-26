@@ -43,7 +43,7 @@ public class LongValidator
     /**
      * Constructor; default value is 0.
      */
-    public LongValidator(@NonNull RealNumberParser realNumberParser) {
+    public LongValidator(@NonNull final RealNumberParser realNumberParser) {
         this(realNumberParser, 0);
     }
 

@@ -20,12 +20,12 @@
 package com.hardbacknutter.nevertoomanybooks.utils.dates;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 
 import org.junit.jupiter.api.Test;
 
@@ -48,8 +48,9 @@ class FullDateParserTest
 
     @Test
     void numeric() {
-        final List<Locale> locales = List.of(Locale.ENGLISH);
-        final DateParser parser = new FullDateParser(locales.get(0), locales);
+        setLocale(Locale.ENGLISH);
+        final ISODateParser isoDateParser = new ISODateParser(locales.get(0));
+        final DateParser parser = new FullDateParser(isoDateParser, locales);
 
         // Matches due to MM-dd pattern being before dd-MM
         assertEquals(LocalDateTime.of(2017, 1, 12,
@@ -100,8 +101,9 @@ class FullDateParserTest
 
     @Test
     void englishOnly() {
-        final List<Locale> locales = List.of(Locale.ENGLISH);
-        final DateParser parser = new FullDateParser(locales.get(0), locales);
+        setLocale(Locale.ENGLISH);
+        final ISODateParser isoDateParser = new ISODateParser(locales.get(0));
+        final DateParser parser = new FullDateParser(isoDateParser, locales);
 
         assertEquals(s_1987_06_25, parser.parse("25-Jun-1987"));
         assertEquals(s_1987_06_25, parser.parse("25 Jun 1987"));
@@ -118,8 +120,9 @@ class FullDateParserTest
 
     @Test
     void multiLocale() {
-        final List<Locale> locales = List.of(Locale.FRENCH, Locale.GERMAN);
-        final DateParser parser = new FullDateParser(locales.get(0), locales);
+        setLocale(Locale.FRENCH, Locale.GERMAN);
+        final ISODateParser isoDateParser = new ISODateParser(locales.get(0));
+        final DateParser parser = new FullDateParser(isoDateParser, locales);
 
         // English is always added (at the end of the parser list)
         assertEquals(s_1987_06_25, parser.parse("25-Jun-1987"));

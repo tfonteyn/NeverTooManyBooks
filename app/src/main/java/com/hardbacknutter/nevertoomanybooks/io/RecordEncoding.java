@@ -36,6 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlRecordReader;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 
 /**
@@ -137,7 +138,7 @@ public enum RecordEncoding {
      * Create a {@link RecordReader} for this encoding.
      *
      * @param context      Current context
-     * @param systemLocale to use for ISO date parsing
+     * @param dateParser   to use for ISO date parsing
      * @param allowedTypes the record types which the reader
      *                     will be <strong>allowed</strong> to read
      *
@@ -148,15 +149,15 @@ public enum RecordEncoding {
      */
     @NonNull
     public Optional<RecordReader> createReader(@NonNull final Context context,
-                                               @NonNull final Locale systemLocale,
+                                               @NonNull final DateParser dateParser,
                                                @NonNull final RealNumberParser realNumberParser,
                                                @NonNull final Set<RecordType> allowedTypes) {
         switch (this) {
             case Json:
-                return Optional.of(new JsonRecordReader(context, systemLocale, realNumberParser,
+                return Optional.of(new JsonRecordReader(context, dateParser, realNumberParser,
                                                         allowedTypes));
             case Csv:
-                return Optional.of(new CsvRecordReader(context, systemLocale));
+                return Optional.of(new CsvRecordReader(context, dateParser));
             case Xml:
                 //noinspection deprecation
                 return Optional.of(new XmlRecordReader(realNumberParser));

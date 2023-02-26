@@ -28,10 +28,10 @@ import androidx.annotation.VisibleForTesting;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.EnumSet;
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
@@ -57,27 +57,26 @@ public final class ImportHelper
     @NonNull
     private final UriInfo uriInfo;
     @NonNull
-    private final Locale systemLocale;
+    private final DateParser dateParser;
 
     /**
      * Constructor. The encoding will be determined from the Uri.
      *
      * @param context      Current context
-     * @param systemLocale
      * @param uri          to read from
      *
      * @throws DataReaderException on failure to recognise a supported archive
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public ImportHelper(@NonNull final Context context,
-                        @NonNull final Locale systemLocale,
+                        @NonNull final DateParser dateParser,
                         @NonNull final Uri uri)
             throws FileNotFoundException, DataReaderException {
 
         this.uri = uri;
         uriInfo = new UriInfo(this.uri);
 
-        this.systemLocale = systemLocale;
+        this.dateParser = dateParser;
 
         encoding = ArchiveEncoding.getEncoding(context, uri).orElseThrow(
                 () -> new DataReaderException(context.getString(
@@ -154,7 +153,7 @@ public final class ImportHelper
                    CredentialsException,
                    StorageException,
                    IOException {
-        return encoding.createReader(context, systemLocale, this);
+        return encoding.createReader(context, dateParser, this);
     }
 
     @Override
@@ -165,7 +164,7 @@ public final class ImportHelper
                + ", uri=" + uri
                + ", encoding=" + encoding
                + ", uriInfo=" + uriInfo
-               + ", systemLocale=" + systemLocale
+               + ", dateParser=" + dateParser
                + '}';
     }
 }

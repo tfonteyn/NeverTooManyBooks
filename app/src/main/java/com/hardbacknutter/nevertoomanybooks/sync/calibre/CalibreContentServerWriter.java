@@ -40,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -103,16 +102,18 @@ public class CalibreContentServerWriter
      * @throws CertificateException on failures related to a user installed CA.
      */
     public CalibreContentServerWriter(@NonNull final Context context,
-                                      @NonNull final SyncWriterHelper helper)
-            throws CertificateException {
+                                      @NonNull final SyncWriterHelper helper,
+                                      @NonNull final DateParser dateParser)
+    throws CertificateException {
 
         this.helper = helper;
+        this.dateParser = dateParser;
+
         server = new CalibreContentServer(context);
         doCovers = this.helper.getRecordTypes().contains(RecordType.Cover);
         deleteLocalBook = this.helper.isDeleteLocalBooks();
 
         realNumberParser = new RealNumberParser(context);
-        dateParser = new ISODateParser(ServiceLocator.getInstance().getSystemLocale());
     }
 
     @Override
@@ -144,7 +145,7 @@ public class CalibreContentServerWriter
 
                 final LocalDateTime dateSince;
                 if (helper.isIncremental()) {
-                    dateSince = library.getLastSyncDate();
+                    dateSince = dateParser.parse(library.getLastSyncDateAsString());
                 } else {
                     dateSince = null;
                 }

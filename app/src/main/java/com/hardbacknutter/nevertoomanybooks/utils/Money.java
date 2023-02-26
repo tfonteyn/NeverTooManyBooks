@@ -62,7 +62,7 @@ import java.util.Objects;
  * <p>
  */
 public class Money
-        extends Number
+//        extends Number
         implements Parcelable {
 
     public static final Creator<Money> CREATOR = new Creator<>() {
@@ -128,7 +128,7 @@ public class Money
             Map.entry("ESP", 166.386d)
     );
 
-    private static final long serialVersionUID = -2882175581162071769L;
+    //    private static final long serialVersionUID = -2882175581162071769L;
     public static final Currency EURO = Currency.getInstance(MoneyParser.EUR);
 
     @SuppressWarnings("FieldNotUsedInToString")
@@ -208,25 +208,25 @@ public class Money
     }
 
     /** Use {@link #getValue()} when possible. */
-    @Override
+//    @Override
     public double doubleValue() {
         return Objects.requireNonNull(value).doubleValue();
     }
 
     /** <strong>DO NOT USE</strong>. */
-    @Override
+//    @Override
     public int intValue() {
         return Objects.requireNonNull(value).round(MathContext.UNLIMITED).intValue();
     }
 
     /** <strong>DO NOT USE</strong>. */
-    @Override
+//    @Override
     public long longValue() {
         return Objects.requireNonNull(value).round(MathContext.UNLIMITED).longValue();
     }
 
     /** <strong>DO NOT USE</strong>. */
-    @Override
+//    @Override
     public float floatValue() {
         return Objects.requireNonNull(value).floatValue();
     }

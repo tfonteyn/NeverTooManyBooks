@@ -32,7 +32,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.EnumSet;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -42,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.bin.CoverRecordReader;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
@@ -124,7 +124,9 @@ public abstract class ArchiveReaderAbstract
     /** The accumulated results. */
     @NonNull
     private final ImportResults results = new ImportResults();
-    private final Locale systemLocale;
+    @NonNull
+    private final DateParser dateParser;
+    @NonNull
     private final RealNumberParser realNumberParser;
 
     /** Re-usable cover reader. */
@@ -141,11 +143,11 @@ public abstract class ArchiveReaderAbstract
      * @param helper  import configuration
      */
     protected ArchiveReaderAbstract(@NonNull final Context context,
-                                    @NonNull final Locale systemLocale,
+                                    @NonNull final DateParser dateParser,
                                     @NonNull final ImportHelper helper) {
+        this.dateParser = dateParser;
         importHelper = helper;
         realNumberParser = new RealNumberParser(context);
-        this.systemLocale = systemLocale;
         contentResolver = context.getContentResolver();
 
         coversText = context.getString(R.string.lbl_covers);
@@ -202,7 +204,7 @@ public abstract class ArchiveReaderAbstract
                                 context.getString(R.string.error_file_not_recognized)));
 
                 reader = encoding
-                        .createReader(context, systemLocale, realNumberParser,
+                        .createReader(context, dateParser, realNumberParser,
                                       EnumSet.of(RecordType.MetaData))
                         .orElseThrow(() -> new DataReaderException(
                                 context.getString(R.string.error_file_not_recognized)));
@@ -395,7 +397,7 @@ public abstract class ArchiveReaderAbstract
                 RecordReader reader = null;
                 try {
                     final Optional<RecordReader> optReader = encoding
-                            .createReader(context, systemLocale, realNumberParser,
+                            .createReader(context, dateParser, realNumberParser,
                                           importEntriesAllowed);
                     if (optReader.isPresent()) {
                         reader = optReader.get();

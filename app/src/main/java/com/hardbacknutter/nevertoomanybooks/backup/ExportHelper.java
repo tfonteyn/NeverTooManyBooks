@@ -40,12 +40,11 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.EnumSet;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
@@ -68,19 +67,22 @@ public class ExportHelper
     private static final String PK_LAST_FULL_BACKUP_DATE = "backup.last.date";
     /** Log tag. */
     private static final String TAG = "ExportHelper";
-    @NonNull
-    private final Locale systemLocale;
+
     /** <strong>Where</strong> we write to. */
     @Nullable
     private Uri uri;
+
     /** <strong>How</strong> to write to the Uri. */
     @NonNull
     private ArchiveEncoding encoding;
 
+    @NonNull
+    private final DateParser dateParser;
+
     /**
      * Constructor.
      */
-    public ExportHelper(@NonNull final Locale systemLocale) {
+    public ExportHelper(@NonNull final DateParser dateParser) {
         // set the default
         this(ArchiveEncoding.Zip,
              EnumSet.of(RecordType.Styles,
@@ -88,7 +90,7 @@ public class ExportHelper
                         RecordType.Certificates,
                         RecordType.Books,
                         RecordType.Cover),
-             systemLocale);
+             dateParser);
     }
 
     /**
@@ -100,9 +102,9 @@ public class ExportHelper
     @VisibleForTesting
     public ExportHelper(@NonNull final ArchiveEncoding encoding,
                         @NonNull final Set<RecordType> recordTypes,
-                        @NonNull final Locale systemLocale) {
+                        @NonNull final DateParser dateParser) {
         this.encoding = encoding;
-        this.systemLocale = systemLocale;
+        this.dateParser = dateParser;
         addRecordType(recordTypes);
     }
 
@@ -160,7 +162,7 @@ public class ExportHelper
             final String lastDone = PreferenceManager.getDefaultSharedPreferences(context)
                                                      .getString(key, null);
             if (lastDone != null && !lastDone.isEmpty()) {
-                return new ISODateParser(systemLocale).parse(lastDone);
+                return dateParser.parse(lastDone);
             }
         }
         return null;
@@ -268,7 +270,7 @@ public class ExportHelper
                + super.toString()
                + ", uri=" + uri
                + ", encoding=" + encoding
-               + ", systemLocale=" + systemLocale
+               + ", dateParser=" + dateParser
                + '}';
     }
 }
