@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.BiFunction;
 
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 public final class OrderByHelper {

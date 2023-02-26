@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.utils;
+package com.hardbacknutter.nevertoomanybooks.core.utils;
 
 import android.content.Context;
 import android.os.LocaleList;

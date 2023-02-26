@@ -36,7 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlRecordReader;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 
 /**
  * Detecting record encoding in {@link #getEncoding} is based purely on filename extension.

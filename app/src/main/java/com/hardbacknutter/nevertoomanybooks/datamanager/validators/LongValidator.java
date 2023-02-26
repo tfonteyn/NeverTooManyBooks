@@ -26,8 +26,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 
 /**
  * Validator to apply a default value and validate as Long.

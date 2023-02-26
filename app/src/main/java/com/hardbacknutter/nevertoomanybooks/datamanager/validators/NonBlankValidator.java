@@ -27,8 +27,8 @@ import androidx.annotation.StringRes;
 import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 
 /**
  * Validator to require a non-blank field.

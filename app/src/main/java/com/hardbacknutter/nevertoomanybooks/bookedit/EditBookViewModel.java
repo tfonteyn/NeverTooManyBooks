@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -84,7 +85,6 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.ListFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.LongNumberFormatter;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
 @SuppressWarnings("WeakerAccess")
