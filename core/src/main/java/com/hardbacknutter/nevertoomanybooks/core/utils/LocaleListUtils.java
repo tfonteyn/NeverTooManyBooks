@@ -31,6 +31,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+/**
+ * Simple helper which transforms a {@link LocaleList} (which is NOT a List) to
+ * an actual List.
+ */
 public final class LocaleListUtils {
 
     private LocaleListUtils() {
@@ -48,9 +52,18 @@ public final class LocaleListUtils {
         return asList(context, null);
     }
 
+    /**
+     * Get an <strong>unmodifiable</strong> List of the user Locales.
+     *
+     * @param context Current context
+     * @param prefix  (optional) Locale to add to the top of the list
+     *
+     * @return unmodifiable list
+     */
     @NonNull
     public static List<Locale> asList(@NonNull final Context context,
                                       @Nullable final Locale prefix) {
+        // A linked set to eliminate any duplicates caused by the prefixed Locale
         final Set<Locale> locales = new LinkedHashSet<>();
         if (prefix != null) {
             locales.add(prefix);
