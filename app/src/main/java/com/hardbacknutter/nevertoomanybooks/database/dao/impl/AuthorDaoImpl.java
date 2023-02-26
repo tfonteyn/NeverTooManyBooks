@@ -50,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
@@ -189,7 +188,7 @@ public class AuthorDaoImpl
         final ArrayList<Author> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(Sql.AUTHORS_BY_BOOK_ID,
                                          new String[]{String.valueOf(bookId)})) {
-            final DataHolder rowData = new CursorRow(cursor);
+            final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Author(rowData.getLong(DBKey.PK_ID), rowData));
             }
@@ -291,7 +290,7 @@ public class AuthorDaoImpl
 
         final ArrayList<AuthorWork> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(sql, paramList.toArray(Z_ARRAY_STRING))) {
-            final DataHolder rowData = new CursorRow(cursor);
+            final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 final AuthorWork.Type type = AuthorWork.Type.getType(
                         rowData.getString(DBKey.AUTHOR_WORK_TYPE).charAt(0));

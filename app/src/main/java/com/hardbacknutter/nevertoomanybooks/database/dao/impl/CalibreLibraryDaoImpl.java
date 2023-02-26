@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,7 +34,6 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreVirtualLibrary;
 
@@ -174,7 +173,7 @@ public class CalibreLibraryDaoImpl
     @Nullable
     private CalibreLibrary loadLibrary(@NonNull final Cursor cursor) {
         if (cursor.moveToFirst()) {
-            final DataHolder rowData = new CursorRow(cursor);
+            final CursorRow rowData = new CursorRow(cursor);
             final CalibreLibrary library = new CalibreLibrary(rowData.getLong(DBKey.PK_ID),
                                                               rowData);
             library.setVirtualLibraries(getVirtualLibraries(library.getId()));
@@ -197,7 +196,7 @@ public class CalibreLibraryDaoImpl
 
         final ArrayList<CalibreLibrary> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(SELECT_LIBRARIES, null)) {
-            final DataHolder rowData = new CursorRow(cursor);
+            final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 final CalibreLibrary library = new CalibreLibrary(rowData.getLong(DBKey.PK_ID),
                                                                   rowData);
@@ -284,7 +283,7 @@ public class CalibreLibraryDaoImpl
         final ArrayList<CalibreVirtualLibrary> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(SELECT_VLIBS_BY_LIBRARY_ID,
                                          new String[]{String.valueOf(libraryId)})) {
-            final DataHolder rowData = new CursorRow(cursor);
+            final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new CalibreVirtualLibrary(rowData.getLong(DBKey.PK_ID), rowData));
             }
@@ -300,7 +299,7 @@ public class CalibreLibraryDaoImpl
         try (Cursor cursor = db.rawQuery(SELECT_VLIB_BY_LIBRARY_ID_AND_NAME,
                                          new String[]{String.valueOf(libraryId), name})) {
 
-            final DataHolder rowData = new CursorRow(cursor);
+            final CursorRow rowData = new CursorRow(cursor);
             if (cursor.moveToFirst()) {
                 return new CalibreVirtualLibrary(rowData.getLong(DBKey.PK_ID), rowData);
             }

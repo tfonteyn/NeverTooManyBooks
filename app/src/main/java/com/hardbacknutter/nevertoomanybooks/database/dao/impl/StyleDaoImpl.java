@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StyleDao;
-import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
 public class StyleDaoImpl
         extends BaseDaoImpl
@@ -176,7 +175,7 @@ public class StyleDaoImpl
 
         try (Cursor cursor = db.rawQuery(SELECT_STYLES_BY_TYPE,
                                          new String[]{String.valueOf(0)})) {
-            final DataHolder rowData = new CursorRow(cursor);
+            final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 final UserStyle style = UserStyle.createFromDatabase(rowData);
                 map.put(style.getUuid(), style);
@@ -193,7 +192,7 @@ public class StyleDaoImpl
 
         try (Cursor cursor = db.rawQuery(SELECT_STYLES_BY_TYPE,
                                          new String[]{String.valueOf(1)})) {
-            final DataHolder rowData = new CursorRow(cursor);
+            final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 BuiltinStyle.createFromDatabase(rowData).ifPresent(
                         style -> map.put(style.getUuid(), style));

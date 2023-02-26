@@ -42,7 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
-import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -344,7 +343,7 @@ public class FtsDaoImpl
         int colPublisherName = -2;
         int colTOCEntryTitle = -2;
 
-        final DataHolder rowData = new CursorRow(cursor);
+        final CursorRow rowData = new CursorRow(cursor);
         // Process each book
         while (cursor.moveToNext()) {
             authorText.setLength(0);

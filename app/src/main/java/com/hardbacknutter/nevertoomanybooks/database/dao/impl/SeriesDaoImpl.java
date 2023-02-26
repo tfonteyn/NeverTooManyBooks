@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.SeriesMergeHelper;
 
@@ -123,7 +122,7 @@ public class SeriesDaoImpl
         final ArrayList<Series> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(Sql.SERIES_BY_BOOK_ID,
                                          new String[]{String.valueOf(bookId)})) {
-            final DataHolder rowData = new CursorRow(cursor);
+            final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Series(rowData.getLong(DBKey.PK_ID), rowData));
             }

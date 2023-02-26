@@ -43,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
-import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntryMergeHelper;
 
@@ -144,7 +143,7 @@ public class TocEntryDaoImpl
         final List<BookLight> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(Sql.SELECT_BOOK_TITLES_BY_TOC_ENTRY_ID,
                                          new String[]{String.valueOf(id)})) {
-            final DataHolder rowData = new CursorRow(cursor);
+            final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new BookLight(rowData.getLong(DBKey.PK_ID), author, rowData));
             }
@@ -159,7 +158,7 @@ public class TocEntryDaoImpl
         final ArrayList<TocEntry> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(Sql.TOC_ENTRIES_BY_BOOK_ID,
                                          new String[]{String.valueOf(bookId)})) {
-            final DataHolder rowData = new CursorRow(cursor);
+            final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new TocEntry(rowData.getLong(DBKey.PK_ID), rowData));
             }

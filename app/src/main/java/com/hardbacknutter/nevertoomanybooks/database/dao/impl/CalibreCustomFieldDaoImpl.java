@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,7 +32,6 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreCustomFieldDao;
-import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreCustomField;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_CUSTOM_FIELDS;
@@ -159,7 +158,7 @@ public class CalibreCustomFieldDaoImpl
     public ArrayList<CalibreCustomField> getCustomFields() {
         final ArrayList<CalibreCustomField> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(SELECT_ALL, null)) {
-            final DataHolder rowData = new CursorRow(cursor);
+            final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 final CalibreCustomField field = new CalibreCustomField(
                         rowData.getLong(DBKey.PK_ID),

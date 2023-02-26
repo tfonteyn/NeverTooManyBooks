@@ -37,7 +37,6 @@ import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.CacheDbHelper;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BedethequeCacheDao;
-import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BdtAuthor;
 
 public class BedethequeCacheDaoImpl
@@ -60,7 +59,7 @@ public class BedethequeCacheDaoImpl
 
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{nameOb, nameOb})) {
             if (cursor.moveToFirst()) {
-                final DataHolder rowData = new CursorRow(cursor);
+                final CursorRow rowData = new CursorRow(cursor);
                 return new BdtAuthor(rowData.getLong(CacheDbHelper.PK_ID), rowData);
             } else {
                 return null;

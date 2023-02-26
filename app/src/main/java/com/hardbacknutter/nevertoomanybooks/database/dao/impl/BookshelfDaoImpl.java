@@ -48,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.BookshelfMergeHelper;
-import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
@@ -121,7 +120,7 @@ public class BookshelfDaoImpl
 
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{name})) {
             if (cursor.moveToFirst()) {
-                final DataHolder rowData = new CursorRow(cursor);
+                final CursorRow rowData = new CursorRow(cursor);
                 return Optional.of(new Bookshelf(rowData.getLong(DBKey.PK_ID), rowData));
             } else {
                 return Optional.empty();
@@ -140,7 +139,7 @@ public class BookshelfDaoImpl
     public List<Bookshelf> getAll() {
         final List<Bookshelf> list = new ArrayList<>();
         try (Cursor cursor = fetchAllUserShelves()) {
-            final DataHolder rowData = new CursorRow(cursor);
+            final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Bookshelf(rowData.getLong(DBKey.PK_ID), rowData));
             }
@@ -160,7 +159,7 @@ public class BookshelfDaoImpl
         final List<PFilter<?>> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(Sql.SELECT_FILTERS,
                                          new String[]{String.valueOf(bookshelfId)})) {
-            final DataHolder rowData = new CursorRow(cursor);
+            final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 final String dbKey = rowData.getString(DBKey.FILTER_DBKEY);
                 final String value = rowData.getString(DBKey.FILTER_VALUE, null);
@@ -407,7 +406,7 @@ public class BookshelfDaoImpl
         final ArrayList<Bookshelf> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(Sql.BOOKSHELVES_BY_BOOK_ID,
                                          new String[]{String.valueOf(bookId)})) {
-            final DataHolder rowData = new CursorRow(cursor);
+            final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Bookshelf(rowData.getLong(DBKey.PK_ID), rowData));
             }

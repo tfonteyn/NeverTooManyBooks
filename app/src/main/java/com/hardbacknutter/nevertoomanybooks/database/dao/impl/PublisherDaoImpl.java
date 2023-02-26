@@ -43,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.PublisherMergeHelper;
 
@@ -122,7 +121,7 @@ public class PublisherDaoImpl
         final ArrayList<Publisher> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(Sql.PUBLISHER_BY_BOOK_ID,
                                          new String[]{String.valueOf(bookId)})) {
-            final DataHolder rowData = new CursorRow(cursor);
+            final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Publisher(rowData.getLong(DBKey.PK_ID), rowData));
             }
