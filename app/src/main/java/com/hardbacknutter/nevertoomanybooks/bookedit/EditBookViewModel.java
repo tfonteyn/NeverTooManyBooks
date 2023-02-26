@@ -198,10 +198,11 @@ public class EditBookViewModel
 
             final Languages languages = ServiceLocator.getInstance().getLanguages();
             final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+            final List<Locale> locales = LocaleListUtils.asList(context);
 
             dateFormatter = new DateFieldFormatter(userLocale);
             languageFormatter = new LanguageFormatter(userLocale, languages);
-            doubleNumberFormatter = new DoubleNumberFormatter();
+            doubleNumberFormatter = new DoubleNumberFormatter(locales);
             listFormatterAutoDetails = new ListFormatter<>(Details.AutoSelect, null);
             listFormatterNormalDetails = new ListFormatter<>(Details.Normal, null);
 

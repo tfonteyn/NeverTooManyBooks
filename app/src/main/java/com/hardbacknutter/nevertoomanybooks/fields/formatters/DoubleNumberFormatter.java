@@ -24,8 +24,10 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.List;
+import java.util.Locale;
+
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 /**
@@ -33,11 +35,18 @@ import com.hardbacknutter.nevertoomanybooks.utils.Money;
  * This includes the {@link Money} class when editing.
  *
  * <ul>
- *      <li>Multiple fields: <strong>yes</strong></li>
+ *      <li>Multiple fields: <strong>yes</strong> but sharing the same Locale.</li>
  * </ul>
  */
 public class DoubleNumberFormatter
         implements EditFieldFormatter<Number> {
+
+    @NonNull
+    private final List<Locale> locales;
+
+    public DoubleNumberFormatter(@NonNull final List<Locale> locales) {
+        this.locales = locales;
+    }
 
     @Override
     @NonNull
@@ -72,7 +81,7 @@ public class DoubleNumberFormatter
         }
 
         try {
-            return NumberParser.toDouble(LocaleListUtils.asList(context), text);
+            return NumberParser.toDouble(locales, text);
 
         } catch (@NonNull final NumberFormatException e) {
             // this should never happen... flw
