@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -49,7 +49,7 @@ class FullDateParserTest
     @Test
     void numeric() {
         final List<Locale> locales = List.of(Locale.ENGLISH);
-        final DateParser parser = new FullDateParser(locales);
+        final DateParser parser = new FullDateParser(locales.get(0), locales);
 
         // Matches due to MM-dd pattern being before dd-MM
         assertEquals(LocalDateTime.of(2017, 1, 12,
@@ -101,7 +101,7 @@ class FullDateParserTest
     @Test
     void englishOnly() {
         final List<Locale> locales = List.of(Locale.ENGLISH);
-        final DateParser parser = new FullDateParser(locales);
+        final DateParser parser = new FullDateParser(locales.get(0), locales);
 
         assertEquals(s_1987_06_25, parser.parse("25-Jun-1987"));
         assertEquals(s_1987_06_25, parser.parse("25 Jun 1987"));
@@ -119,7 +119,7 @@ class FullDateParserTest
     @Test
     void multiLocale() {
         final List<Locale> locales = List.of(Locale.FRENCH, Locale.GERMAN);
-        final DateParser parser = new FullDateParser(locales);
+        final DateParser parser = new FullDateParser(locales.get(0), locales);
 
         // English is always added (at the end of the parser list)
         assertEquals(s_1987_06_25, parser.parse("25-Jun-1987"));

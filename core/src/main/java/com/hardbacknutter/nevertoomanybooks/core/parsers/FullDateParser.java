@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.core.parsers;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -86,6 +85,7 @@ public class FullDateParser
             "MMMM yyyy",
     };
 
+    /** Immutable. */
     @NonNull
     private final List<Locale> locales;
     @NonNull
@@ -98,22 +98,14 @@ public class FullDateParser
 
     /**
      * Constructor.
+     *
+     * @param systemLocale to use for ISO date parsing
+     * @param locales      to use for building the parsers
      */
     public FullDateParser(@NonNull final Locale systemLocale,
-                          @NonNull final List<Locale> userLocales) {
-        this.locales = userLocales;
+                          @NonNull final List<Locale> locales) {
         isoDateParser = new ISODateParser(systemLocale);
-    }
-
-    /**
-     * Constructor for testing.
-     *
-     * @param locales to use for parsing
-     */
-    @VisibleForTesting
-    public FullDateParser(@NonNull final List<Locale> locales) {
         this.locales = locales;
-        isoDateParser = new ISODateParser(locales.get(0));
     }
 
     /**
@@ -174,21 +166,21 @@ public class FullDateParser
      * Any missing parts of the pattern will get set to default: 1-Jan, 00:00:00
      * If the year is missing, {@code null} is returned.
      *
-     * @param dateStr String to parse
-     * @param locale  (optional) Locale to apply/try before the default list.
+     * @param dateStr     String to parse
+     * @param firstLocale (optional) Locale to apply/try before the default list.
      *
      * @return Resulting date if parsed, otherwise {@code null}
      */
     @Nullable
     private LocalDateTime parse(@NonNull final Iterable<DateTimeFormatter> parsers,
                                 @NonNull final CharSequence dateStr,
-                                @Nullable final Locale locale) {
+                                @Nullable final Locale firstLocale) {
 
         // Try the specified Locale first
-        if (locale != null) {
+        if (firstLocale != null) {
             for (final DateTimeFormatter dtf : parsers) {
                 try {
-                    return LocalDateTime.parse(dateStr, dtf.withLocale(locale));
+                    return LocalDateTime.parse(dateStr, dtf.withLocale(firstLocale));
                 } catch (@NonNull final DateTimeParseException ignore) {
                     // ignore and try the next one
                 }
