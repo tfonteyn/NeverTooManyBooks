@@ -30,7 +30,6 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
@@ -44,11 +43,14 @@ public class DoubleValidator
 
     /** Default to apply if the field is {@code null} or empty. */
     private final double defaultValue;
+    @NonNull
+    private final List<Locale> locales;
 
     /**
      * Constructor; default value is 0d.
      */
-    public DoubleValidator() {
+    public DoubleValidator(@NonNull final List<Locale> locales) {
+        this.locales = locales;
         defaultValue = 0d;
     }
 
@@ -61,7 +63,6 @@ public class DoubleValidator
             throws ValidatorException {
 
         final double value;
-        final List<Locale> locales = LocaleListUtils.asList(context);
 
         final Object obj = dataManager.get(key, locales);
         if (obj == null) {

@@ -25,9 +25,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
@@ -36,6 +37,13 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 public class NonBlankValidator
         implements DataValidator {
 
+    @NonNull
+    private final List<Locale> locales;
+
+    public NonBlankValidator(@NonNull final List<Locale> locales) {
+        this.locales = locales;
+    }
+
     @Override
     public void validate(@NonNull final Context context,
                          @NonNull final DataManager dataManager,
@@ -43,7 +51,7 @@ public class NonBlankValidator
                          @StringRes final int errorLabelResId)
             throws ValidatorException {
 
-        final Object o = dataManager.get(key, LocaleListUtils.asList(context));
+        final Object o = dataManager.get(key, locales);
         if (o == null) {
             throw new ValidatorException(context.getString(R.string.vldt_non_blank_required_for_x,
                                                            context.getString(errorLabelResId)));

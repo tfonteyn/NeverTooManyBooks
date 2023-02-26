@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,6 +34,9 @@ public interface DataValidator {
 
     /**
      * Validation method. Must throw a ValidatorException if validation fails.
+     * <p>
+     * Dev. note: passing in the #errorLabelResId here instead of in a constructor
+     * allows us to reuse a single validator for multiple fields.
      *
      * @param context         Current context
      * @param dataManager     The DataManager object

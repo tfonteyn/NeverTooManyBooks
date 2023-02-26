@@ -25,7 +25,9 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
+import java.util.List;
+import java.util.Locale;
+
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
@@ -34,6 +36,8 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 public class DefaultFieldValidator
         implements DataValidator {
 
+    @NonNull
+    private final List<Locale> locales;
     /** Default to apply if the field is empty. */
     @NonNull
     private final String defaultValue;
@@ -41,9 +45,12 @@ public class DefaultFieldValidator
     /**
      * Constructor with default value.
      *
+     * @param locales      to use for parsing
      * @param defaultValue Default to apply if the field is empty
      */
-    DefaultFieldValidator(@NonNull final String defaultValue) {
+    DefaultFieldValidator(@NonNull final List<Locale> locales,
+                          @NonNull final String defaultValue) {
+        this.locales = locales;
         this.defaultValue = defaultValue;
     }
 
@@ -63,7 +70,7 @@ public class DefaultFieldValidator
                          @NonNull final String key,
                          @StringRes final int errorLabelResId) {
 
-        final Object value = dataManager.get(key, LocaleListUtils.asList(context));
+        final Object value = dataManager.get(key, locales);
         if (value != null && value.toString().trim().isEmpty()) {
             dataManager.putString(key, defaultValue);
         }

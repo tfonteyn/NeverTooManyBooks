@@ -50,13 +50,15 @@ public class DateValidator
     /**
      * Constructor with default value.
      *
+     * @param systemLocale to use for ISO date parsing
+     * @param locales      to use for other parsing
      * @param defaultValue Default to apply if the field is empty
      */
-    public DateValidator(@NonNull final List<Locale> locales,
-                         @NonNull final Locale systemLocale,
+    public DateValidator(@NonNull final Locale systemLocale,
+                         @NonNull final List<Locale> locales,
                          @NonNull final String defaultValue) {
-        this.defaultValue = defaultValue;
         fullDateParser = new FullDateParser(systemLocale, locales);
+        this.defaultValue = defaultValue;
     }
 
     @Override
