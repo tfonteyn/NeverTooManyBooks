@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,6 +24,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Locale;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -114,7 +115,9 @@ public final class FilterFactory {
                         dbKey, R.string.lbl_language,
                         TBL_BOOKS, DOM_BOOK_LANGUAGE);
 
-                filter.setFormatter(LanguageFormatter::new);
+                filter.setFormatter(context -> new LanguageFormatter(
+                        context.getResources().getConfiguration().getLocales().get(0),
+                        ServiceLocator.getInstance().getLanguages()));
                 return filter;
             }
 
@@ -157,19 +160,24 @@ public final class FilterFactory {
     @Nullable
     public static ExtArrayAdapter<String> createAdapter(@NonNull final Context context,
                                                         @NonNull final String dbKey) {
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+
         switch (dbKey) {
             case DBKey.COLOR: {
                 return FieldArrayAdapter.createStringDropDown(
-                        context, ServiceLocator.getInstance().getColorDao().getList(), null);
+                        context, serviceLocator.getColorDao().getList(), null);
             }
             case DBKey.FORMAT: {
                 return FieldArrayAdapter.createStringDropDown(
-                        context, ServiceLocator.getInstance().getFormatDao().getList(), null);
+                        context, serviceLocator.getFormatDao().getList(), null);
             }
             case DBKey.LANGUAGE: {
+                final Locale userLocale = context.getResources().getConfiguration()
+                                                 .getLocales().get(0);
                 return FieldArrayAdapter.createStringDropDown(
-                        context, ServiceLocator.getInstance().getLanguageDao().getList(),
-                        new LanguageFormatter(context));
+                        context,
+                        serviceLocator.getLanguageDao().getList(),
+                        new LanguageFormatter(userLocale, serviceLocator.getLanguages()));
             }
             case DBKey.FK_TOC_ENTRY: {
                 return FieldArrayAdapter.createEntityDropDown(

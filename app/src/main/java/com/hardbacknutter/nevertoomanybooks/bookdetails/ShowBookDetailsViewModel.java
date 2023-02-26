@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.ListFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.MoneyFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.PagesFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.StringArrayResFormatter;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 /**
@@ -90,7 +91,7 @@ public class ShowBookDetailsViewModel
 
             book = Book.from(args.getLong(DBKey.FK_BOOK, 0));
 
-            initFields(context, style);
+            initFields(context, style, ServiceLocator.getInstance().getLanguages());
         }
         onBookLoaded.setValue(book);
     }
@@ -193,13 +194,17 @@ public class ShowBookDetailsViewModel
     }
 
     private void initFields(@NonNull final Context context,
-                            @NonNull final Style style) {
-
+                            @NonNull final Style style,
+                            @NonNull final Languages languages) {
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+
         // These FieldFormatters are shared between multiple fields.
         final FieldFormatter<String> dateFormatter = new DateFieldFormatter(userLocale);
         final FieldFormatter<Money> moneyFormatter = new MoneyFormatter(userLocale);
-        final FieldFormatter<String> notesFormatter = new HtmlFormatter<>(true, true);
+        final FieldFormatter<String> notesFormatter =
+                new HtmlFormatter<>(true, true);
+        final FieldFormatter<String> languageFormatter =
+                new LanguageFormatter(userLocale, languages);
         final ListFormatter<Entity> normalDetailListFormatter =
                 new ListFormatter<>(Details.Normal, style);
         final ListFormatter<Entity> fullDetailListFormatter =
@@ -231,8 +236,9 @@ public class ShowBookDetailsViewModel
         fields.add(new TextViewField<>(FragmentId.Main, R.id.genre, DBKey.GENRE)
                            .addRelatedViews(R.id.lbl_genre));
 
+
         fields.add(new TextViewField<>(FragmentId.Main, R.id.language, DBKey.LANGUAGE,
-                                       new LanguageFormatter(userLocale))
+                                       languageFormatter)
                            .addRelatedViews(R.id.lbl_language));
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.pages, DBKey.PAGE_COUNT,

@@ -46,6 +46,7 @@ import java.util.Objects;
 import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
@@ -56,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.OnRowClickListener;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
@@ -84,6 +86,7 @@ public class BooklistAdapter
     private final int coverLongestSide;
     @NonNull
     private final Formatter formatter;
+    private final Languages languages;
 
 
     /** The cursor is the equivalent of the 'list of items'. */
@@ -111,6 +114,8 @@ public class BooklistAdapter
                            @NonNull final Style style) {
         this.inflater = LayoutInflater.from(context);
         this.style = style;
+
+        languages = ServiceLocator.getInstance().getLanguages();
 
         final Resources res = context.getResources();
         levelIndent = res.getDimensionPixelSize(R.dimen.bob_group_level_padding_start);
@@ -304,7 +309,7 @@ public class BooklistAdapter
         // NEWTHINGS: BooklistGroup - add a new holder type if needed
         switch (groupId) {
             case BooklistGroup.BOOK:
-                holder = new BookHolder(itemView, style, coverLongestSide);
+                holder = new BookHolder(itemView, style, languages, coverLongestSide);
                 break;
 
             case BooklistGroup.AUTHOR:

@@ -83,6 +83,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.LanguageFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.ListFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.LongNumberFormatter;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
@@ -195,9 +196,11 @@ public class EditBookViewModel
             errStrNonBlankRequired = context.getString(R.string.vldt_non_blank_required);
             errStrReadStartAfterEnd = context.getString(R.string.vldt_read_start_after_end);
 
+            final Languages languages = ServiceLocator.getInstance().getLanguages();
             final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+
             dateFormatter = new DateFieldFormatter(userLocale);
-            languageFormatter = new LanguageFormatter(userLocale);
+            languageFormatter = new LanguageFormatter(userLocale, languages);
             doubleNumberFormatter = new DoubleNumberFormatter();
             listFormatterAutoDetails = new ListFormatter<>(Details.AutoSelect, null);
             listFormatterNormalDetails = new ListFormatter<>(Details.Normal, null);

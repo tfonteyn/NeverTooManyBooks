@@ -131,23 +131,23 @@ public class BookHolder
      */
     BookHolder(@NonNull final View itemView,
                @NonNull final Style style,
+               @NonNull final Languages languages,
                @Dimension final int coverLongestSide) {
         super(itemView);
         this.style = style;
+        this.languages = languages;
+
+        final Context context = itemView.getContext();
+
+        locales = LocaleListUtils.asList(context);
 
         imageCachingEnabled = ImageUtils.isImageCachingEnabled();
         this.coverLongestSide = coverLongestSide;
 
-        locales = LocaleListUtils.asList(itemView.getContext());
-
-        final Resources res = itemView.getContext().getResources();
+        final Resources res = context.getResources();
         conditionDescriptions = res.getStringArray(R.array.conditions_book);
 
-        languages = ServiceLocator.getInstance().getLanguages();
-
         vb = BooksonbookshelfRowBookBinding.bind(itemView);
-
-        final Context context = itemView.getContext();
 
         a_bracket_b_bracket = context.getString(R.string.a_bracket_b_bracket);
 

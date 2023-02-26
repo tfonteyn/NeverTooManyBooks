@@ -26,7 +26,7 @@ import androidx.annotation.Nullable;
 
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**
  * FieldFormatter for language fields.
@@ -39,18 +39,13 @@ public class LanguageFormatter
 
     @NonNull
     private final Locale locale;
+    @NonNull
+    private final Languages languages;
 
-    /**
-     * Constructor.
-     *
-     * @param locale to use
-     */
-    public LanguageFormatter(@NonNull final Locale locale) {
+    public LanguageFormatter(@NonNull final Locale locale,
+                             @NonNull final Languages languages) {
         this.locale = locale;
-    }
-
-    public LanguageFormatter(@NonNull final Context context) {
-        this.locale = context.getResources().getConfiguration().getLocales().get(0);
+        this.languages = languages;
     }
 
     @Override
@@ -60,8 +55,7 @@ public class LanguageFormatter
         if (rawValue == null || rawValue.isEmpty()) {
             return "";
         } else {
-            return ServiceLocator.getInstance().getLanguages()
-                                 .getDisplayNameFromISO3(context, rawValue);
+            return languages.getDisplayNameFromISO3(context, rawValue);
         }
     }
 
@@ -74,7 +68,6 @@ public class LanguageFormatter
     @NonNull
     public String extract(@NonNull final Context context,
                           @NonNull final String text) {
-        return ServiceLocator.getInstance().getLanguages()
-                             .getISO3FromDisplayName(context, locale, text);
+        return languages.getISO3FromDisplayName(context, locale, text);
     }
 }
