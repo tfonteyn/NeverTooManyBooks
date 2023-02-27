@@ -95,8 +95,8 @@ public class XmlRecordReader
     /**
      * Constructor.
      */
-    public XmlRecordReader(@NonNull final RealNumberParser realNumberParser) {
-        this.realNumberParser = realNumberParser;
+    public XmlRecordReader(@NonNull final Context context) {
+        this.realNumberParser = new RealNumberParser(context);
     }
 
     @Override

@@ -50,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.StyleCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.covers.Cover;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -86,7 +85,6 @@ public class JsonRecordWriter
 
     @Nullable
     private final LocalDateTime utcSinceDateTime;
-    private final RealNumberParser realNumberParser;
 
     /**
      * Constructor.
@@ -95,9 +93,7 @@ public class JsonRecordWriter
      *                         modified or added since.
      */
     @AnyThread
-    public JsonRecordWriter(@NonNull final RealNumberParser realNumberParser,
-                            @Nullable final LocalDateTime utcSinceDateTime) {
-        this.realNumberParser = realNumberParser;
+    public JsonRecordWriter(@Nullable final LocalDateTime utcSinceDateTime) {
         this.utcSinceDateTime = utcSinceDateTime;
     }
 
@@ -264,8 +260,7 @@ public class JsonRecordWriter
 
                 final boolean collectCoverFilenames = recordTypes.contains(RecordType.Cover);
 
-                final JsonCoder<Book> coder =
-                        new BookCoder(context, defaultStyle, realNumberParser);
+                final JsonCoder<Book> coder = new BookCoder(context, defaultStyle);
 
                 int delta = 0;
                 long lastUpdate = 0;

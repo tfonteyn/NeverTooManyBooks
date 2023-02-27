@@ -28,8 +28,6 @@ import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderViewModel;
 import com.hardbacknutter.nevertoomanybooks.io.ReaderResults;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
@@ -50,8 +48,7 @@ public class SyncReaderViewModel
                     args.getParcelable(SyncServer.BKEY_SITE), SyncServer.BKEY_SITE);
 
             final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
-            final DateParser dateParser = new ISODateParser(systemLocale);
-            syncReaderHelper = new SyncReaderHelper(syncServer, dateParser);
+            syncReaderHelper = new SyncReaderHelper(syncServer, systemLocale);
         }
     }
 

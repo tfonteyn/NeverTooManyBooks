@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,12 +20,14 @@
 package com.hardbacknutter.nevertoomanybooks._mocks.os;
 
 import android.content.Context;
+import android.os.Environment;
 
 import androidx.annotation.NonNull;
 
 import java.io.File;
 
 import org.mockito.Mockito;
+import org.mockito.stubbing.Answer;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -46,10 +48,18 @@ public final class ContextMock {
         when(context.getApplicationContext()).thenReturn(context);
         when(context.createConfigurationContext(any())).thenReturn(context);
 
+        when(context.getFilesDir()).thenReturn(getTmpDir());
         when(context.getExternalCacheDir()).thenReturn(getTmpDir());
+
         when(context.getExternalFilesDir(isNull())).thenReturn(getTmpDir());
-        when(context.getExternalFilesDir(eq("Pictures")))
-                .thenReturn(getTmpDir("MockPictures"));
+        when(context.getExternalFilesDirs(eq(Environment.DIRECTORY_PICTURES))).thenAnswer(
+                (Answer<File[]>) invocation -> {
+                    final File[] dirs = new File[1];
+                    dirs[0] = new File(getTmpDir(), "Pictures");
+                    //noinspection ResultOfMethodCallIgnored
+                    dirs[0].mkdir();
+                    return dirs;
+                });
 
         return context;
     }
@@ -57,13 +67,5 @@ public final class ContextMock {
     private static File getTmpDir() {
         //noinspection ConstantConditions
         return new File(System.getProperty("java.io.tmpdir"));
-    }
-
-    private static File getTmpDir(@SuppressWarnings("SameParameterValue")
-                                  @NonNull final String path) {
-        final File tmp = new File(System.getProperty("java.io.tmpdir") + path);
-        //noinspection ResultOfMethodCallIgnored
-        tmp.mkdir();
-        return tmp;
     }
 }

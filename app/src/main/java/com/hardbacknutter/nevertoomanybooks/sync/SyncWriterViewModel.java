@@ -29,8 +29,6 @@ import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterViewModel;
 
 public class SyncWriterViewModel
@@ -60,8 +58,7 @@ public class SyncWriterViewModel
                     args.getParcelable(SyncServer.BKEY_SITE), SyncServer.BKEY_SITE);
 
             final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
-            final DateParser dateParser = new ISODateParser(systemLocale);
-            syncWriterHelper = new SyncWriterHelper(syncServer, dateParser);
+            syncWriterHelper = new SyncWriterHelper(syncServer, systemLocale);
         }
     }
 

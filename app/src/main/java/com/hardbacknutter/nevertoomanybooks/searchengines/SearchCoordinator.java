@@ -62,7 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
@@ -205,7 +204,6 @@ public class SearchCoordinator
     private synchronized void onSearchTaskFinished(final int taskId,
                                                    @Nullable final Book result) {
 
-        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
         final SearchTask searchTask;
 
         // Remove the finished task from our list
@@ -218,7 +216,7 @@ public class SearchCoordinator
 
         if (BuildConfig.DEBUG && (DEBUG_SWITCHES.SEARCH_COORDINATOR
                                   || DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS)) {
-            debugEnteredOnSearchTaskFinished(context, engineId);
+            debugEnteredOnSearchTaskFinished(engineId);
         }
 
 
@@ -234,6 +232,7 @@ public class SearchCoordinator
             searchProgressBySite.remove(engineId);
         }
 
+        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
         // Start new search(es) as needed/allowed.
         boolean searchStarted = false;
@@ -357,8 +356,7 @@ public class SearchCoordinator
             allSites = Site.Type.Data.getSites();
 
             final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
-            final ISODateParser dateParser = new ISODateParser(systemLocale);
-            resultsAccumulator = new ResultsAccumulator(context, engineCache, dateParser);
+            resultsAccumulator = new ResultsAccumulator(context, engineCache, systemLocale);
 
             listElementPrefixString = context.getString(R.string.list_element);
 
@@ -858,19 +856,19 @@ public class SearchCoordinator
         this.isbnSearchText = isbnSearchText;
     }
 
-    private void debugEnteredOnSearchTaskFinished(@NonNull final Context context,
-                                                  @NonNull final EngineId engineId) {
+    private void debugEnteredOnSearchTaskFinished(@NonNull final EngineId engineId) {
         if (DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
             searchTasksEndTime.put(engineId, System.nanoTime());
         }
 
         if (DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            Log.d(TAG, "onSearchTaskFinished|finished=" + engineId.getName(context));
+            final Context appContext = ServiceLocator.getInstance().getAppContext();
+            Log.d(TAG, "onSearchTaskFinished|finished=" + engineId.getName(appContext));
 
             synchronized (activeTasks) {
                 for (final SearchTask task : activeTasks.values()) {
                     Log.d(TAG, "onSearchTaskFinished|running="
-                               + task.getSearchEngine().getName(context));
+                               + task.getSearchEngine().getName(appContext));
                 }
             }
         }
@@ -929,11 +927,11 @@ public class SearchCoordinator
 
         ResultsAccumulator(@NonNull final Context context,
                            @NonNull final Map<EngineId, SearchEngine> engineCache,
-                           @NonNull final DateParser dateParser) {
+                           @NonNull final Locale systemLocale) {
 
             final List<Locale> locales = LocaleListUtils.asList(context);
             realNumberParser = new RealNumberParser(locales);
-            this.dateParser = new FullDateParser(dateParser, locales);
+            this.dateParser = new FullDateParser(systemLocale, locales);
             this.engineCache = engineCache;
 
             if (FormatMapper.isMappingAllowed(context)) {

@@ -51,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker.DatePickerListener;
@@ -109,8 +108,7 @@ public abstract class EditBookBaseFragment
 
         final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
         //noinspection ConstantConditions
-        dateParser = new FullDateParser(new ISODateParser(systemLocale),
-                                        LocaleListUtils.asList(getContext()));
+        dateParser = new FullDateParser(systemLocale, LocaleListUtils.asList(getContext()));
 
         partialDatePickerLauncher.registerForFragmentResult(getChildFragmentManager(),
                                                             RK_DATE_PICKER_PARTIAL, this);

@@ -33,6 +33,7 @@ import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -40,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -103,16 +105,16 @@ public class CalibreContentServerWriter
      */
     public CalibreContentServerWriter(@NonNull final Context context,
                                       @NonNull final SyncWriterHelper helper,
-                                      @NonNull final DateParser dateParser)
+                                      @NonNull final Locale systemLocale)
     throws CertificateException {
 
         this.helper = helper;
-        this.dateParser = dateParser;
 
         server = new CalibreContentServer(context);
         doCovers = this.helper.getRecordTypes().contains(RecordType.Cover);
         deleteLocalBook = this.helper.isDeleteLocalBooks();
 
+        dateParser = new ISODateParser(systemLocale);
         realNumberParser = new RealNumberParser(context);
     }
 

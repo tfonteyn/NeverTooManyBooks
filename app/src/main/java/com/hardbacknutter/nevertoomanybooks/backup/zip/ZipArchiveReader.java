@@ -29,6 +29,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
@@ -36,7 +37,6 @@ import java.util.zip.ZipInputStream;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.backupbase.ArchiveReaderAbstract;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordEncoding;
@@ -62,9 +62,9 @@ public class ZipArchiveReader
      * @param helper  import configuration
      */
     public ZipArchiveReader(@NonNull final Context context,
-                            @NonNull final DateParser dateParser,
+                            @NonNull final Locale systemLocale,
                             @NonNull final ImportHelper helper) {
-        super(context, dateParser, helper);
+        super(context, systemLocale, helper);
     }
 
     @Override

@@ -29,11 +29,11 @@ import androidx.annotation.WorkerThread;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.util.EnumSet;
+import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterHelperBase;
@@ -55,15 +55,15 @@ public class SyncWriterHelper
 
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
-    private final DateParser dateParser;
+    private final Locale systemLocale;
 
     /**
      * Constructor.
      */
     SyncWriterHelper(@NonNull final SyncServer syncServer,
-                     @NonNull final DateParser dateParser) {
+                     @NonNull final Locale systemLocale) {
         this.syncServer = syncServer;
-        this.dateParser = dateParser;
+        this.systemLocale = systemLocale;
 
         // set the default
         addRecordType(EnumSet.of(RecordType.Books,
@@ -105,7 +105,7 @@ public class SyncWriterHelper
         Objects.requireNonNull(syncServer, "syncServer");
 
         try {
-            dataWriter = syncServer.createWriter(context, this, dateParser);
+            dataWriter = syncServer.createWriter(context, this, systemLocale);
             return dataWriter.write(context, progressListener);
         } finally {
             synchronized (this) {

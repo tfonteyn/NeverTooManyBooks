@@ -30,12 +30,14 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StripInfoDao;
@@ -75,9 +77,9 @@ public class StripInfoWriter
      */
     public StripInfoWriter(@NonNull final Context context,
                            @NonNull final SyncWriterHelper syncWriterHelper,
-                           @NonNull final DateParser dateParser) {
+                           @NonNull final Locale systemLocale) {
         this.syncWriterHelper = syncWriterHelper;
-        this.dateParser = dateParser;
+        this.dateParser = new ISODateParser(systemLocale);
         collectionForm = new CollectionFormUploader(context);
         deleteLocalBook = this.syncWriterHelper.isDeleteLocalBooks();
     }

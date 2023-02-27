@@ -28,7 +28,6 @@ import androidx.core.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Locale;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -41,9 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
-import com.hardbacknutter.nevertoomanybooks.database.dao.LanguageDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**
  * Cleanup routines for some columns/tables which can be run at upgrades, import, startup
@@ -82,10 +79,9 @@ public class DBCleaner {
     }
 
     public int clean(@NonNull final Context context) {
-        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
         // do a mass update of any languages not yet converted to ISO 639-2 codes
-        languages(context, userLocale);
+        serviceLocator.getLanguageDao().bulkUpdate(context);
 
         // make sure there are no 'T' separators in datetime fields
         datetimeFormat();
@@ -112,39 +108,6 @@ public class DBCleaner {
         return modified;
     }
 
-    /**
-     * Do a bulk update of any languages not yet converted to ISO codes.
-     * Special entries are left untouched; example "Dutch+French" a bilingual edition.
-     */
-    public void languages(@NonNull final Context context,
-                          @NonNull final Locale userLocale) {
-
-        final LanguageDao languageDao = serviceLocator.getLanguageDao();
-        final Languages langHelper = serviceLocator.getLanguages();
-
-        for (final String lang : languageDao.getList()) {
-            if (lang != null && !lang.isEmpty()) {
-                final String iso;
-
-                if (lang.length() > 3) {
-                    // It's likely a 'display' name of a language.
-                    iso = langHelper.getISO3FromDisplayName(context, userLocale, lang);
-                } else {
-                    // It's almost certainly a language code
-                    iso = langHelper.getISO3FromCode(lang);
-                }
-
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "languages|Global language update"
-                               + "|from=" + lang
-                               + "|to=" + iso);
-                }
-                if (!iso.equals(lang)) {
-                    languageDao.rename(lang, iso);
-                }
-            }
-        }
-    }
 
     /**
      * Replace 'T' occurrences with ' '.

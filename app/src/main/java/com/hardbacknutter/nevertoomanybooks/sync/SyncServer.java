@@ -29,11 +29,11 @@ import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.security.cert.CertificateException;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
@@ -147,7 +147,7 @@ public enum SyncServer
     @NonNull
     DataWriter<SyncWriterResults> createWriter(@NonNull final Context context,
                                                @NonNull final SyncWriterHelper helper,
-                                               @NonNull final DateParser dateParser)
+                                               @NonNull final Locale systemLocale)
             throws CertificateException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -156,10 +156,10 @@ public enum SyncServer
 
         switch (this) {
             case CalibreCS:
-                return new CalibreContentServerWriter(context, helper, dateParser);
+                return new CalibreContentServerWriter(context, helper, systemLocale);
 
             case StripInfo:
-                return new StripInfoWriter(context, helper, dateParser);
+                return new StripInfoWriter(context, helper, systemLocale);
 
             default:
                 throw new IllegalStateException(DataWriter.ERROR_NO_WRITER_AVAILABLE);
@@ -182,7 +182,7 @@ public enum SyncServer
     @WorkerThread
     DataReader<SyncReaderMetaData, ReaderResults> createReader(
             @NonNull final Context context,
-            @NonNull final DateParser dateParser,
+            @NonNull final Locale systemLocale,
             @NonNull final SyncReaderHelper helper)
             throws DataReaderException,
                    CertificateException,
@@ -196,7 +196,7 @@ public enum SyncServer
         final DataReader<SyncReaderMetaData, ReaderResults> reader;
         switch (this) {
             case CalibreCS:
-                reader = new CalibreContentServerReader(context, dateParser, helper);
+                reader = new CalibreContentServerReader(context, systemLocale, helper);
                 break;
 
             case StripInfo:

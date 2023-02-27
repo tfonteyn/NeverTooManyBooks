@@ -104,6 +104,7 @@ public class StripInfoReader
     private final String booksString;
     @NonNull
     private final BookDao bookDao;
+    /** Reused for each call to the {@link SyncReaderProcessor#process}. */
     private final RealNumberParser realNumberParser;
 
     private ReaderResults results;

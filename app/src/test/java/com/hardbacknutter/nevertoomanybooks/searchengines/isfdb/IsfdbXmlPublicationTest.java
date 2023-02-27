@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
+import android.content.SharedPreferences;
+
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
@@ -57,12 +59,11 @@ class IsfdbXmlPublicationTest
         searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 
+        final SharedPreferences preferences = PreferenceManager
+                .getDefaultSharedPreferences(context);
         // Override the default 'false'
-        mockPreferences.edit().putBoolean(IsfdbSearchEngine.PK_SERIES_FROM_TOC, true).apply();
-
-        final boolean b = PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .getBoolean(IsfdbSearchEngine.PK_SERIES_FROM_TOC, false);
+        preferences.edit().putBoolean(IsfdbSearchEngine.PK_SERIES_FROM_TOC, true).apply();
+        final boolean b = preferences.getBoolean(IsfdbSearchEngine.PK_SERIES_FROM_TOC, false);
         assertTrue(b);
     }
 

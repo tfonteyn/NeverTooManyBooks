@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,17 +20,32 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import java.util.Locale;
+import javax.xml.parsers.ParserConfigurationException;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
+import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.sync.FormatMapper;
 import com.hardbacknutter.nevertoomanybooks.sync.Mapper;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.xml.sax.SAXException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class FormatMapperTest
         extends Base {
+
+    private Book book;
+
+    @Override
+    @BeforeEach
+    public void setup()
+            throws ParserConfigurationException, SAXException {
+        super.setup();
+        book = new Book(BundleMock.create());
+    }
 
     @Test
     void basic() {

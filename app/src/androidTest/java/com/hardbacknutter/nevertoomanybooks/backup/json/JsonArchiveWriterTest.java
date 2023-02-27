@@ -91,7 +91,7 @@ public class JsonArchiveWriterTest
 
         final ExportHelper exportHelper = new ExportHelper(ArchiveEncoding.Json,
                                                            EnumSet.of(RecordType.Styles),
-                                                           dateParser);
+                                                           systemLocale);
 
         exportHelper.setUri(Uri.fromFile(file));
 
@@ -103,7 +103,8 @@ public class JsonArchiveWriterTest
         assertEquals(nrOfStyles, exportResults.styles);
         assertFalse(exportResults.database);
 
-        final ImportHelper importHelper = new ImportHelper(context, dateParser, Uri.fromFile(file));
+        final ImportHelper importHelper = new ImportHelper(context, systemLocale,
+                                                           Uri.fromFile(file));
         // The default, fail if the default was changed without changing this test!
         assertEquals(DataReader.Updates.OnlyNewer, importHelper.getUpdateOption());
 
@@ -132,7 +133,7 @@ public class JsonArchiveWriterTest
                                                            EnumSet.of(RecordType.Preferences,
                                                                       RecordType.Styles,
                                                                       RecordType.Books),
-                                                           dateParser);
+                                                           systemLocale);
 
         exportHelper.setUri(Uri.fromFile(file));
 
@@ -158,7 +159,8 @@ public class JsonArchiveWriterTest
                        "MODIFIED " + book.getString(DBKey.PERSONAL_NOTES, null));
         bookDao.update(context, book);
 
-        final ImportHelper importHelper = new ImportHelper(context, dateParser, Uri.fromFile(file));
+        final ImportHelper importHelper = new ImportHelper(context, systemLocale,
+                                                           Uri.fromFile(file));
         // The default, fail if the default was changed without changing this test!
         assertEquals(DataReader.Updates.OnlyNewer, importHelper.getUpdateOption());
 

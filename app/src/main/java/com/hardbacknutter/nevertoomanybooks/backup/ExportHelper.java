@@ -40,11 +40,13 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.EnumSet;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
@@ -82,7 +84,7 @@ public class ExportHelper
     /**
      * Constructor.
      */
-    public ExportHelper(@NonNull final DateParser dateParser) {
+    public ExportHelper(@NonNull final Locale systemLocale) {
         // set the default
         this(ArchiveEncoding.Zip,
              EnumSet.of(RecordType.Styles,
@@ -90,7 +92,7 @@ public class ExportHelper
                         RecordType.Certificates,
                         RecordType.Books,
                         RecordType.Cover),
-             dateParser);
+             systemLocale);
     }
 
     /**
@@ -102,9 +104,9 @@ public class ExportHelper
     @VisibleForTesting
     public ExportHelper(@NonNull final ArchiveEncoding encoding,
                         @NonNull final Set<RecordType> recordTypes,
-                        @NonNull final DateParser dateParser) {
+                        @NonNull final Locale systemLocale) {
         this.encoding = encoding;
-        this.dateParser = dateParser;
+        this.dateParser = new ISODateParser(systemLocale);
         addRecordType(recordTypes);
     }
 

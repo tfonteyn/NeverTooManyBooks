@@ -89,6 +89,7 @@ public class BooklistAdapter
     @NonNull
     private final Formatter formatter;
     private final Languages languages;
+    /** Shared across all {@link BookHolder}s */
     private final RealNumberParser realNumberParser;
 
 

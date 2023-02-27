@@ -506,7 +506,7 @@ public final class ServiceLocator {
     public LanguageDao getLanguageDao() {
         synchronized (this) {
             if (languageDao == null) {
-                languageDao = new LanguageDaoImpl(getDb());
+                languageDao = new LanguageDaoImpl(getDb(), getLanguages());
             }
         }
         return languageDao;

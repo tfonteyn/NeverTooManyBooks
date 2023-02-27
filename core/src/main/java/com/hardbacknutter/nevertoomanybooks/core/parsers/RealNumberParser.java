@@ -36,8 +36,28 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 
+/**
+ * Tested with Device running in US Locale, app in Dutch.
+ * A price field with content "10.45".
+ * The inputType field on the screen was set to "numberDecimal"
+ * the keypad does NOT allow the use of ',' as used in Dutch for the decimal separator.
+ * Using the Dutch Locale, parsing returns "1045" as the '.' is seen as the thousands separator.
+ * <p>
+ * 2nd test with the device running in Dutch, and the app set to system Locale.
+ * Again the keypad only allowed the '.' to be used.
+ * <p>
+ * Known issue. Stated to be fixed in Android O == 8.0
+ * <a href="https://issuetracker.google.com/issues/36907764">36907764</a>
+ * <a href="https://issuetracker.google.com/issues/37015783">37015783</a>
+ * <p>
+ * <a href="https://stackoverflow.com/questions/3821539#28466764">
+ * decimal-separator-comma-with-numberdecimal-inputtype-in-edittext</a>
+ * <p>
+ * But I test with Android 8.0 ... Americans just can't see beyond their border...
+ * To be clear: parsing works fine; it's just the user not able to input the
+ * right decimal/thousand separators for their Locale.
+ */
 public class RealNumberParser
-        extends NumberParser
         implements Parcelable {
 
     public static final Creator<RealNumberParser> CREATOR = new Creator<>() {
@@ -53,6 +73,7 @@ public class RealNumberParser
             return new RealNumberParser[size];
         }
     };
+
     private static final String ERROR_NOT_A_FLOAT = "Not a float: ";
     private static final String ERROR_NOT_A_DOUBLE = "Not a double: ";
     @NonNull
@@ -64,7 +85,7 @@ public class RealNumberParser
      * @param context Current context
      */
     public RealNumberParser(@NonNull final Context context) {
-        this.locales = LocaleListUtils.asList(context);
+        this(LocaleListUtils.asList(context));
     }
 
     /**
@@ -73,7 +94,10 @@ public class RealNumberParser
      * @param locales to use for the formatter/parser.
      */
     public RealNumberParser(@NonNull final List<Locale> locales) {
-        this.locales = locales;
+        // Create a NEW list, and add Locale.US to use for
+        // '.' as decimal and ',' as thousands separator.
+        this.locales = new ArrayList<>(locales);
+        this.locales.add(Locale.US);
     }
 
     private RealNumberParser(@NonNull final Parcel in) {
@@ -81,7 +105,6 @@ public class RealNumberParser
         in.readStringList(list);
 
         this.locales = list.stream().map(Locale::forLanguageTag).collect(Collectors.toList());
-
     }
 
     @Override
@@ -115,34 +138,31 @@ public class RealNumberParser
 
         } else if (source instanceof Number) {
             return ((Number) source).floatValue();
+        }
 
-        } else {
-            final String stringValue = source.toString().trim();
-            if (isZero(stringValue)) {
-                return 0f;
-            }
-            try {
-                return parseFloat(stringValue);
-            } catch (@NonNull final NumberFormatException e) {
-                // as a last resort try boolean
-                return toBoolean(source) ? 1 : 0;
-            }
+        final String stringValue = source.toString().trim();
+        try {
+            return parseFloat(stringValue);
+        } catch (@NonNull final NumberFormatException e) {
+            // as a last resort try boolean
+            // This is a safeguard for importing BC backups
+            return BooleanParser.toBoolean(source) ? 1 : 0;
         }
     }
 
     /**
-     * Replacement for {@code Float.parseFloat(String)} using Locales.
+     * Replacement for {@code Float.parseFloat(String)} using {@code List<Locales>}.
      *
      * @param source String to parse
      *
-     * @return Resulting value ({@code null} or empty becomes 0)
+     * @return Resulting value ({@code null} or empty String becomes 0)
      *
      * @throws NumberFormatException if the source was not compatible.
      */
     public float parseFloat(@Nullable final String source)
             throws NumberFormatException {
 
-        if (isZero(source)) {
+        if (NumberParser.isZero(source)) {
             return 0f;
         }
 
@@ -151,17 +171,23 @@ public class RealNumberParser
             return Float.parseFloat(source);
         }
 
-        // Create a NEW list, and add Locale.US to use for
-        // '.' as decimal and ',' as thousands separator.
-        final List<Locale> allLocales = new ArrayList<>(locales);
-        allLocales.add(Locale.US);
+        // no decimal part and no thousands sep ?
+        if (source.indexOf('.') == -1 && source.indexOf(',') == -1) {
+            return Float.parseFloat(source);
+        }
 
         // we check in order - first match returns.
-        for (final Locale locale : allLocales) {
+        for (final Locale locale : locales) {
             try {
-                final Number number = DecimalFormat.getInstance(locale).parse(source);
-                if (number != null) {
-                    return number.floatValue();
+                final DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(locale);
+                // if the dec sep for this format is present in the source,
+                // decode with this Locale; otherwise skip to the next one
+                final char decSep = nf.getDecimalFormatSymbols().getDecimalSeparator();
+                if (source.indexOf(decSep) != -1) {
+                    final Number number = nf.parse(source);
+                    if (number != null) {
+                        return number.floatValue();
+                    }
                 }
             } catch (@NonNull final ParseException | IndexOutOfBoundsException ignore) {
                 // ignore
@@ -176,7 +202,7 @@ public class RealNumberParser
      *
      * @param source Object to convert
      *
-     * @return Resulting value ({@code null} or empty string becomes 0)
+     * @return Resulting value ({@code null} or empty string becomes {@code 0})
      *
      * @throws NumberFormatException if the source was not compatible.
      */
@@ -188,35 +214,31 @@ public class RealNumberParser
 
         } else if (source instanceof Number) {
             return ((Number) source).doubleValue();
+        }
 
-        } else {
-            final String stringValue = source.toString().trim();
-            if (isZero(stringValue)) {
-                return 0;
-            } else {
-                try {
-                    return parseDouble(stringValue);
-                } catch (@NonNull final NumberFormatException e) {
-                    // as a last resort try boolean
-                    return toBoolean(source) ? 1 : 0;
-                }
-            }
+        final String stringValue = source.toString().trim();
+        try {
+            return parseDouble(stringValue);
+        } catch (@NonNull final NumberFormatException e) {
+            // as a last resort try boolean
+            // This is a safeguard for importing BC backups
+            return BooleanParser.toBoolean(source) ? 1 : 0;
         }
     }
 
     /**
-     * Replacement for {@code Double.parseDouble(String)} using Locales.
+     * Replacement for {@code Double.parseDouble(String)} using a {@code List<Locales>}.
      *
      * @param source String to parse
      *
-     * @return Resulting value ({@code null} or empty becomes 0)
+     * @return Resulting value ({@code null} or empty String becomes {@code 0})
      *
      * @throws NumberFormatException if the source was not compatible.
      */
     public double parseDouble(@Nullable final String source)
             throws NumberFormatException {
 
-        if (isZero(source)) {
+        if (NumberParser.isZero(source)) {
             return 0d;
         }
 
@@ -230,25 +252,19 @@ public class RealNumberParser
             return Double.parseDouble(source);
         }
 
-        // Create a NEW list, and add Locale.US to use for
-        // '.' as decimal and ',' as thousands separator.
-        final List<Locale> allLocales = new ArrayList<>(locales);
-        allLocales.add(Locale.US);
-
         // we check in order - first match returns.
-        for (final Locale locale : allLocales) {
+        for (final Locale locale : locales) {
             try {
                 final DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(locale);
+                // if the dec sep for this format is present in the source,
+                // decode with this Locale; otherwise skip to the next one
                 final char decSep = nf.getDecimalFormatSymbols().getDecimalSeparator();
-
-                // if the dec sep is present, decode with Locale; otherwise try next Locale
                 if (source.indexOf(decSep) != -1) {
                     final Number number = nf.parse(source);
                     if (number != null) {
                         return number.doubleValue();
                     }
                 }
-
             } catch (@NonNull final ParseException | IndexOutOfBoundsException ignore) {
                 // ignore
             }

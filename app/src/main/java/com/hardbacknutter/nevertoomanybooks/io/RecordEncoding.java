@@ -36,8 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlRecordReader;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 
 /**
  * Detecting record encoding in {@link #getEncoding} is based purely on filename extension.
@@ -117,12 +115,10 @@ public enum RecordEncoding {
      * @return {@link RecordWriter}
      */
     @NonNull
-    public RecordWriter createWriter(@NonNull final Context context,
-                                     @NonNull final RealNumberParser realNumberParser,
-                                     @Nullable final LocalDateTime utcSinceDateTime) {
+    public RecordWriter createWriter(@Nullable final LocalDateTime utcSinceDateTime) {
         switch (this) {
             case Json:
-                return new JsonRecordWriter(realNumberParser, utcSinceDateTime);
+                return new JsonRecordWriter(utcSinceDateTime);
             case Cover:
                 // Not useful, won't implement. It's just a File copy operation
             case Xml:
@@ -138,7 +134,6 @@ public enum RecordEncoding {
      * Create a {@link RecordReader} for this encoding.
      *
      * @param context      Current context
-     * @param dateParser   to use for ISO date parsing
      * @param allowedTypes the record types which the reader
      *                     will be <strong>allowed</strong> to read
      *
@@ -149,18 +144,17 @@ public enum RecordEncoding {
      */
     @NonNull
     public Optional<RecordReader> createReader(@NonNull final Context context,
-                                               @NonNull final DateParser dateParser,
-                                               @NonNull final RealNumberParser realNumberParser,
+                                               @NonNull final Locale systemLocale,
                                                @NonNull final Set<RecordType> allowedTypes) {
         switch (this) {
             case Json:
-                return Optional.of(new JsonRecordReader(context, dateParser, realNumberParser,
+                return Optional.of(new JsonRecordReader(context, systemLocale,
                                                         allowedTypes));
             case Csv:
-                return Optional.of(new CsvRecordReader(context, dateParser));
+                return Optional.of(new CsvRecordReader(context, systemLocale));
             case Xml:
                 //noinspection deprecation
-                return Optional.of(new XmlRecordReader(realNumberParser));
+                return Optional.of(new XmlRecordReader(context));
             case Cover:
                 // discourage creating a new CoverRecordReader for each cover.
                 throw new IllegalStateException("CoverRecordReader should be re-used");

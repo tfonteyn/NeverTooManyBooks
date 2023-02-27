@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
@@ -523,8 +522,9 @@ public class OpenLibrarySearchEngine
             throws StorageException {
 
         final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
-        final DateParser dateParser = new FullDateParser(new ISODateParser(systemLocale),
-                                                         LocaleListUtils.asList(context));
+        final List<Locale> locales = LocaleListUtils.asList(context, getLocale(context));
+
+        final DateParser dateParser = new FullDateParser(systemLocale, locales);
 
         // store the isbn; we might override it later on though (e.g. isbn 13v10)
         // not sure if this is needed though. Need more data.

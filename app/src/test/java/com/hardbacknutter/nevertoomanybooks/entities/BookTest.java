@@ -23,8 +23,10 @@ import androidx.annotation.NonNull;
 
 import java.math.BigDecimal;
 import java.util.Locale;
+import javax.xml.parsers.ParserConfigurationException;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
+import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -33,7 +35,9 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.MoneyParser;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.xml.sax.SAXException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -44,6 +48,16 @@ class BookTest
         extends Base {
 
     private static final String INVALID_DEFAULT = "Invalid default";
+
+    private Book book;
+
+    @Override
+    @BeforeEach
+    public void setup()
+            throws ParserConfigurationException, SAXException {
+        super.setup();
+        book = new Book(BundleMock.create());
+    }
 
     /** US english book, price in $. */
     @Test

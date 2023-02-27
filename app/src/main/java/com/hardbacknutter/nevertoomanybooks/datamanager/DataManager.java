@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.datamanager;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -35,6 +36,7 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.BooleanParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -141,10 +143,12 @@ public class DataManager
     /**
      * Store all passed values in our collection (with type checking).
      *
-     * @param src DataManager to copy from
+     * @param context Current context
+     * @param src     DataManager to copy from
      */
-    protected void putAll(@NonNull final DataManager src,
-                          @NonNull final RealNumberParser realNumberParser) {
+    protected void putAll(final Context context,
+                          @NonNull final DataManager src) {
+        final RealNumberParser realNumberParser = new RealNumberParser(context);
         for (final String key : src.keySet()) {
             put(key, src.get(key, realNumberParser));
         }
@@ -293,7 +297,7 @@ public class DataManager
      */
     public boolean getBoolean(@NonNull final String key)
             throws NumberFormatException {
-        return NumberParser.toBoolean(rawData.get(key));
+        return BooleanParser.toBoolean(rawData.get(key));
     }
 
     /**
@@ -362,7 +366,7 @@ public class DataManager
     /**
      * Get a double value.
      *
-     * @param key     Key of data object
+     * @param key Key of data object
      *
      * @return a double value; {@code null} or empty becomes {@code 0}
      *

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,8 +27,10 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
+import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
@@ -50,11 +52,12 @@ class KbNlBookHandlerTest
 
     private KbNlBookHandler bookHandler;
     private SAXParser saxParser;
-
+    private Book book;
     @BeforeEach
     public void setup()
             throws ParserConfigurationException, SAXException {
         super.setup();
+        book = new Book(BundleMock.create());
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         bookHandler = new KbNlBookHandler(context, book);

@@ -99,13 +99,12 @@ public class FullDateParser
     /**
      * Constructor.
      *
-     * @param firstParser the first parser to be used.
-     *                    Typically an {@link ISODateParser}.
-     * @param locales     the locales to creates further parsers as needed.
+     * @param systemLocale to be used for the first (ISO) parser to try.
+     * @param locales      the locales to creates further parsers as needed.
      */
-    public FullDateParser(@NonNull final DateParser firstParser,
+    public FullDateParser(@NonNull final Locale systemLocale,
                           @NonNull final List<Locale> locales) {
-        this.isoDateParser = firstParser;
+        this.isoDateParser = new ISODateParser(systemLocale);
         this.locales = locales;
     }
 

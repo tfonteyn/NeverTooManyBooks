@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,14 +21,16 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.Locale;
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -48,12 +50,16 @@ public class LanguageDaoImpl
             + _FROM_ + DBDefinitions.TBL_BOOKS.getName()
             + _WHERE_ + DBKey.LANGUAGE + "<> ''"
             + _ORDER_BY_ + DBKey.DATE_LAST_UPDATED__UTC;
+    @NonNull
+    private final Languages languages;
 
     /**
      * Constructor.
      */
-    public LanguageDaoImpl(@NonNull final SynchronizedDb db) {
+    public LanguageDaoImpl(@NonNull final SynchronizedDb db,
+                           @NonNull final Languages languages) {
         super(db, TAG, DBKey.LANGUAGE);
+        this.languages = languages;
     }
 
     /**
@@ -76,8 +82,6 @@ public class LanguageDaoImpl
             // The cursor is distinct, but we need to make sure code->name does not create
             // duplicates (very unlikely, but not impossible)
             final Set<String> set = new LinkedHashSet<>();
-            final Languages languages = ServiceLocator.getInstance().getLanguages();
-
             while (cursor.moveToNext()) {
                 final String name = cursor.getString(0);
                 if (name != null && !name.isEmpty()) {
@@ -85,6 +89,34 @@ public class LanguageDaoImpl
                 }
             }
             return new ArrayList<>(set);
+        }
+    }
+
+    @Override
+    public void bulkUpdate(@NonNull final Context context) {
+        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
+
+        for (final String lang : getList()) {
+            if (lang != null && !lang.isEmpty()) {
+                final String iso;
+
+                if (lang.length() > 3) {
+                    // It's likely a 'display' name of a language.
+                    iso = languages.getISO3FromDisplayName(context, locale, lang);
+                } else {
+                    // It's almost certainly a language code
+                    iso = languages.getISO3FromCode(lang);
+                }
+
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "languages|Global language update"
+                               + "|from=" + lang
+                               + "|to=" + iso);
+                }
+                if (!iso.equals(lang)) {
+                    rename(lang, iso);
+                }
+            }
         }
     }
 }

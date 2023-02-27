@@ -32,7 +32,6 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
@@ -53,10 +52,10 @@ public class DateValidator
      *
      * @param defaultValue Default to apply if the field is empty
      */
-    public DateValidator(@NonNull final ISODateParser isoDateParser,
+    public DateValidator(@NonNull final Locale systemLocale,
                          @NonNull final List<Locale> locales,
                          @NonNull final String defaultValue) {
-        fullDateParser = new FullDateParser(isoDateParser, locales);
+        fullDateParser = new FullDateParser(systemLocale, locales);
         this.defaultValue = defaultValue;
     }
 

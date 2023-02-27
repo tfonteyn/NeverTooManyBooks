@@ -277,7 +277,7 @@ public class Book
     public static Book from(@NonNull final Context context,
                             @NonNull final Book data) {
         final Book book = new Book();
-        book.putAll(data, new RealNumberParser(context));
+        book.putAll(context, data);
         // has unsaved data, hence 'Dirty'
         book.setStage(EntityStage.Stage.Dirty);
         return book;

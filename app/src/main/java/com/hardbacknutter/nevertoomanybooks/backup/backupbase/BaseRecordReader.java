@@ -25,6 +25,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import java.time.LocalDateTime;
+import java.util.Locale;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -35,6 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -68,9 +70,9 @@ public abstract class BaseRecordReader
      * @param context Current context
      */
     protected BaseRecordReader(@NonNull final Context context,
-                               @NonNull final DateParser dateParser) {
+                               @NonNull final Locale systemLocale) {
         bookDao = ServiceLocator.getInstance().getBookDao();
-        this.dateParser = dateParser;
+        this.dateParser = new ISODateParser(systemLocale);
 
         booksString = context.getString(R.string.lbl_books);
         progressMessage = context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);

@@ -24,8 +24,9 @@ import android.os.StrictMode;
 
 import androidx.annotation.CallSuper;
 
+import java.util.Locale;
+
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 
@@ -35,7 +36,7 @@ public abstract class BaseDBTest {
 
     protected ServiceLocator serviceLocator;
     protected Context context;
-    protected ISODateParser dateParser;
+    protected Locale systemLocale;
 
     @Before
     @CallSuper
@@ -51,7 +52,7 @@ public abstract class BaseDBTest {
 
         serviceLocator = ServiceLocator.getInstance();
         context = serviceLocator.getLocalizedAppContext();
-        dateParser = new ISODateParser(serviceLocator.getSystemLocaleList().get(0));
+        systemLocale = serviceLocator.getSystemLocaleList().get(0);
 
         CoverDir.initVolume(context, 0);
         serviceLocator.getDb();

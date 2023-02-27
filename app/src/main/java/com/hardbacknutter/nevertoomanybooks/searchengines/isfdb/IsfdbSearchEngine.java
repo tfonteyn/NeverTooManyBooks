@@ -61,7 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.UncheckedSAXException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -82,6 +81,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.MoneyParser;
 
@@ -365,7 +365,8 @@ public class IsfdbSearchEngine
 
             // sanity check: any data to search for?
             if (!args.isEmpty()) {
-                final List<Edition> editions = fetchEditions(context, url + args);
+                final Languages languages = ServiceLocator.getInstance().getLanguages();
+                final List<Edition> editions = fetchEditions(context, languages, url + args);
                 if (!editions.isEmpty()) {
                     fetchByEdition(context, editions.get(0), fetchCovers, book);
                 }
@@ -785,10 +786,12 @@ public class IsfdbSearchEngine
                       @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
-        final List<Locale> locales = LocaleListUtils.asList(context, getLocale(context));
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
         final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
-        final DateParser dateParser = new FullDateParser(new ISODateParser(systemLocale), locales);
+        final List<Locale> locales = LocaleListUtils.asList(context, getLocale(context));
+
+        final DateParser dateParser = new FullDateParser(systemLocale, locales);
+
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
         final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
 
         final Elements allContentBoxes = document.select(CSS_Q_DIV_CONTENTBOX);
@@ -1178,7 +1181,8 @@ public class IsfdbSearchEngine
         searchForIsbn = validIsbn;
 
         final String url = getHostUrl() + String.format(CGI_EDITIONS, validIsbn);
-        return fetchEditions(context, url);
+        final Languages languages = ServiceLocator.getInstance().getLanguages();
+        return fetchEditions(context, languages, url);
     }
 
     /**
@@ -1192,7 +1196,8 @@ public class IsfdbSearchEngine
     @NonNull
     @VisibleForTesting
     List<Edition> parseEditions(@NonNull final Context context,
-                                @NonNull final Document document) {
+                                @NonNull final Document document,
+                                @NonNull final Languages languages) {
 
         final List<Edition> editions = new ArrayList<>();
 
@@ -1219,10 +1224,8 @@ public class IsfdbSearchEngine
                     final Node node = langHeader.nextSibling();
                     if (node != null) {
                         final String langStr = node.toString().trim();
-                        lang = ServiceLocator
-                                .getInstance()
-                                .getLanguages()
-                                .getISO3FromDisplayName(context, getLocale(context), langStr);
+                        lang = languages.getISO3FromDisplayName(context, getLocale(context),
+                                                                langStr);
                     }
                 }
             }
@@ -1281,8 +1284,9 @@ public class IsfdbSearchEngine
     /**
      * Get the list with {@link Edition} information for the given url.
      *
-     * @param context Current context
-     * @param url     A fully qualified ISFDB search url
+     * @param context   Current context
+     * @param languages
+     * @param url       A fully qualified ISFDB search url
      *
      * @return list of editions found, can be empty, but never {@code null}
      *
@@ -1291,13 +1295,14 @@ public class IsfdbSearchEngine
     @WorkerThread
     @NonNull
     private List<Edition> fetchEditions(@NonNull final Context context,
+                                        @NonNull final Languages languages,
                                         @NonNull final String url)
-            throws SearchException, CredentialsException {
+    throws SearchException, CredentialsException {
 
         final Document document = loadDocument(context, url, null);
 
         if (!isCancelled()) {
-            return parseEditions(context, document);
+            return parseEditions(context, document, languages);
         }
         return new ArrayList<>();
     }

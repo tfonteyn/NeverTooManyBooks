@@ -30,16 +30,12 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
@@ -67,23 +63,16 @@ public class JsonArchiveWriter
 
     private static final int VERSION = 1;
 
-    @NonNull
-    private final List<Locale> locales;
-
     /** Export configuration. */
     @NonNull
     private final ExportHelper exportHelper;
-    private final RealNumberParser realNumberParser;
 
     /**
      * Constructor.
      *
      * @param helper export configuration
      */
-    public JsonArchiveWriter(@NonNull final Context context,
-                             @NonNull final ExportHelper helper) {
-        this.locales = LocaleListUtils.asList(context);
-        realNumberParser = new RealNumberParser(context);
+    public JsonArchiveWriter(@NonNull final ExportHelper helper) {
         exportHelper = helper;
     }
 
@@ -110,7 +99,7 @@ public class JsonArchiveWriter
             try (OutputStream os = exportHelper.createOutputStream(context);
                  Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
                  Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
-                 RecordWriter recordWriter = new JsonRecordWriter(realNumberParser, dateSince)) {
+                 RecordWriter recordWriter = new JsonRecordWriter(dateSince)) {
 
                 // manually concat
                 // 1. archive envelope

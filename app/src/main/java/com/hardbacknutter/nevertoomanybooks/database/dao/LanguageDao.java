@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,4 +41,12 @@ public interface LanguageDao
      */
     @NonNull
     ArrayList<String> getNameList(@NonNull Context context);
+
+    /**
+     * Do a bulk update of any languages not yet converted to ISO codes.
+     * Special entries are left untouched; example "Dutch+French" a bilingual edition.
+     *
+     * @param context Current context
+     */
+    void bulkUpdate(@NonNull Context context);
 }

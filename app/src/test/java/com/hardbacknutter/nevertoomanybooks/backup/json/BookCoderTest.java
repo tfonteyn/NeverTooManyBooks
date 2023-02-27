@@ -24,9 +24,10 @@ import java.math.BigDecimal;
 import javax.xml.parsers.ParserConfigurationException;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
+import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookCoder;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.MoneyParser;
 import com.hardbacknutter.org.json.JSONObject;
@@ -42,6 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class BookCoderTest
         extends Base {
 
+    private Book book;
     private BookCoder bookCoder;
 
     @BeforeEach
@@ -49,7 +51,8 @@ public class BookCoderTest
     public void setup()
             throws ParserConfigurationException, SAXException {
         super.setup();
-        bookCoder = new BookCoder(context, style, new RealNumberParser(locales));
+        book = new Book(BundleMock.create());
+        bookCoder = new BookCoder(context, style);
     }
 
     @Test

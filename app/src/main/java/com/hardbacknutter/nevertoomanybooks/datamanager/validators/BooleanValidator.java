@@ -26,7 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.BooleanParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
@@ -66,7 +66,7 @@ public class BooleanValidator
             return;
         }
         try {
-            NumberParser.toBoolean(o);
+            BooleanParser.toBoolean(o);
         } catch (@NonNull final NumberFormatException e) {
             throw new ValidatorException(context.getString(R.string.vldt_boolean_expected_for_x,
                                                            context.getString(errorLabelResId)));

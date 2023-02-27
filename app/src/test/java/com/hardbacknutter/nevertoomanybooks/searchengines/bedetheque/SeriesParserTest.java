@@ -27,7 +27,9 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
+import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 
@@ -44,11 +46,12 @@ public class SeriesParserTest
     private static final String TAG = "SeriesParserTest";
 
     private BedethequeSearchEngine searchEngine;
-
+    private Book book;
     @BeforeEach
     public void setup()
             throws ParserConfigurationException, SAXException {
         super.setup();
+        book = new Book(BundleMock.create());
 
         searchEngine = (BedethequeSearchEngine) EngineId.Bedetheque.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));

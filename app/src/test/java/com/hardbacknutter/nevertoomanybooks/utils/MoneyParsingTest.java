@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
@@ -35,8 +34,6 @@ class MoneyParsingTest
         extends Base {
 
     private static final BigDecimal twelveDotThreeFour = BigDecimal.valueOf(12.34d);
-    private static final List<Locale> UK = List.of(Locale.UK);
-    private static final List<Locale> FRANCE = List.of(Locale.FRANCE);
 
     @Test
     void uk00() {

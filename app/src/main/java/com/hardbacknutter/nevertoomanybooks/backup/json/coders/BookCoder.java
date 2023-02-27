@@ -70,12 +70,11 @@ public class BookCoder
      * @param defaultStyle the default style to use for {@link Bookshelf}s
      */
     public BookCoder(@NonNull final Context context,
-                     @NonNull final Style defaultStyle,
-                     @NonNull final RealNumberParser realNumberParser) {
+                     @NonNull final Style defaultStyle) {
 
         bookshelfCoder = new BookshelfCoder(context, defaultStyle);
         calibreLibraryCoder = new CalibreLibraryCoder(context, defaultStyle);
-        this.realNumberParser = realNumberParser;
+        this.realNumberParser = new RealNumberParser(context);
     }
 
     @Override

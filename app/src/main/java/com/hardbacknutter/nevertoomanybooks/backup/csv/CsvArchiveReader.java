@@ -31,13 +31,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
+import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
@@ -59,7 +59,7 @@ public class CsvArchiveReader
     private static final int DB_BACKUP_COPIES = 3;
 
     @NonNull
-    private final DateParser dateParser;
+    private final Locale systemLocale;
     /** Import configuration. */
     @NonNull
     private final ImportHelper importHelper;
@@ -69,9 +69,9 @@ public class CsvArchiveReader
      *
      * @param helper import configuration
      */
-    public CsvArchiveReader(@NonNull final DateParser dateParser,
+    public CsvArchiveReader(@NonNull final Locale systemLocale,
                             @NonNull final ImportHelper helper) {
-        this.dateParser = dateParser;
+        this.systemLocale = systemLocale;
         importHelper = helper;
     }
 
@@ -102,7 +102,7 @@ public class CsvArchiveReader
                                  DB_BACKUP_COPIES);
 
         try (InputStream is = context.getContentResolver().openInputStream(importHelper.getUri());
-             RecordReader recordReader = new CsvRecordReader(context, dateParser)) {
+             RecordReader recordReader = new CsvRecordReader(context, systemLocale)) {
             if (is == null) {
                 throw new FileNotFoundException(importHelper.getUri().toString());
             }

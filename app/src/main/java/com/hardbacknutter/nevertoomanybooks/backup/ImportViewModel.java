@@ -29,7 +29,6 @@ import java.io.FileNotFoundException;
 import java.util.Locale;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderViewModel;
@@ -40,20 +39,14 @@ public class ImportViewModel
 
     @Nullable
     private ImportHelper importHelper;
-    private ISODateParser dateParser;
-
-    public void init(@NonNull final Locale systemLocale) {
-        if (dateParser == null) {
-            dateParser = new ISODateParser(systemLocale);
-        }
-    }
 
     @NonNull
     ImportHelper createDataReaderHelper(@NonNull final Context context,
-                                        @NonNull final Uri uri)
+                                        @NonNull final Uri uri,
+                                        final Locale systemLocale)
             throws DataReaderException, FileNotFoundException {
 
-        importHelper = new ImportHelper(context, dateParser, uri);
+        importHelper = new ImportHelper(context, systemLocale, uri);
         return importHelper;
     }
 

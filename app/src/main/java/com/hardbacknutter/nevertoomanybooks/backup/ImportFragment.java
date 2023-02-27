@@ -125,7 +125,7 @@ public class ImportFragment
 
         //noinspection ConstantConditions
         vm = new ViewModelProvider(getActivity()).get(ImportViewModel.class);
-        vm.init(ServiceLocator.getInstance().getSystemLocaleList().get(0));
+        // no init
     }
 
     @Override
@@ -215,7 +215,9 @@ public class ImportFragment
         final ImportHelper importHelper;
         try {
             //noinspection ConstantConditions
-            importHelper = vm.createDataReaderHelper(getContext(), uri);
+            importHelper = vm.createDataReaderHelper(getContext(), uri,
+                                                     ServiceLocator.getInstance()
+                                                                   .getSystemLocaleList().get(0));
 
         } catch (@NonNull final DataReaderException e) {
             onImportNotSupported(e.getUserMessage(getContext()));

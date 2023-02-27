@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
+import android.content.SharedPreferences;
+
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
@@ -28,6 +30,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
+import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -59,20 +62,22 @@ class IsfdbBookHandlerTest
     private static final String TAG = "IsfdbBookHandlerTest";
 
     private IsfdbSearchEngine searchEngine;
-
+    private Book book;
     @BeforeEach
     public void setup()
             throws ParserConfigurationException, SAXException {
         super.setup();
+        book = new Book(BundleMock.create());
+
         searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 
+        final SharedPreferences preferences = PreferenceManager
+                .getDefaultSharedPreferences(context);
         // Override the default 'false'
-        mockPreferences.edit().putBoolean(IsfdbSearchEngine.PK_SERIES_FROM_TOC, true).apply();
+        preferences.edit().putBoolean(IsfdbSearchEngine.PK_SERIES_FROM_TOC, true).apply();
 
-        final boolean b = PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .getBoolean(IsfdbSearchEngine.PK_SERIES_FROM_TOC, false);
+        final boolean b = preferences.getBoolean(IsfdbSearchEngine.PK_SERIES_FROM_TOC, false);
         assertTrue(b);
     }
 

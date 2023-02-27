@@ -24,7 +24,6 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.LocaleList;
 
 import androidx.annotation.CallSuper;
@@ -45,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryThingSearchEngine;
@@ -65,7 +63,6 @@ import org.xml.sax.SAXException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doAnswer;
@@ -79,7 +76,8 @@ import static org.mockito.Mockito.when;
 public class Base {
 
     private static final String PACKAGE_NAME = "com.hardbacknutter.nevertoomanybooks";
-    protected List<Locale> locales;
+    // create a default Locale list; override with calls to setLocale(...)
+    protected final List<Locale> locales = new ArrayList<>(List.of(Locale.US));
     @Mock
     protected App app;
     @Mock
@@ -88,37 +86,35 @@ public class Base {
     protected Configuration configuration;
     @Mock
     protected Style style;
-    protected Book book;
     protected Context context;
-    protected SharedPreferences mockPreferences;
     @Mock
-    private LocaleList localeList;
+    protected ServiceLocator serviceLocator;
+    @Mock
+    protected Languages languages;
+    @Mock
+    private StylesHelper stylesHelper;
+    private SharedPreferences mockPreferences;
     @Mock
     private AppLocale appLocale;
     @Mock
-    private ServiceLocator serviceLocator;
-    @Mock
-    private StylesHelper stylesHelper;
-    @Mock
-    private Languages languages;
+    private LocaleList localeList;
     private Locale jdkLocale;
 
     @NonNull
     protected static File getTmpDir() {
-        final String tmpDir = System.getProperty("java.io.tmpdir");
         //noinspection ConstantConditions
-        return new File(tmpDir);
+        return new File(System.getProperty("java.io.tmpdir"));
     }
 
     /**
-     * @param locale0 to use for
+     * @param locales to use for
      *                JDK
-     *                context.getResources().getConfiguration().getLocales().get(0)
+     *                context.getResources().getConfiguration().getLocales()
      */
-    public void setLocale(@NonNull final Locale... locale0) {
-        locales.clear();
-        locales.addAll(Arrays.asList(locale0));
-        Locale.setDefault(locales.get(0));
+    public void setLocale(@NonNull final Locale... locales) {
+        this.locales.clear();
+        this.locales.addAll(Arrays.asList(locales));
+        Locale.setDefault(this.locales.get(0));
     }
 
     @AfterEach
@@ -137,37 +133,25 @@ public class Base {
         // save the JDK locale first
         jdkLocale = Locale.getDefault();
 
-        locales = new ArrayList<>(List.of(Locale.US));
-
         context = ContextMock.create(PACKAGE_NAME);
-        mockPreferences = SharedPreferencesMock.create();
 
         when(app.getApplicationContext()).thenReturn(context);
-
         when(context.getResources()).thenReturn(resources);
 
-        when(context.getFilesDir()).thenAnswer((Answer<File>) invocation -> getTmpDir());
 
-        when(context.getExternalFilesDirs(eq(Environment.DIRECTORY_PICTURES))).thenAnswer(
-                (Answer<File[]>) invocation -> {
-                    final String tmpDir = System.getProperty("java.io.tmpdir");
-                    final File[] dirs = new File[1];
-                    dirs[0] = new File(tmpDir, "Pictures");
-                    //noinspection ResultOfMethodCallIgnored
-                    dirs[0].mkdir();
-                    return dirs;
-                });
-
-        // Global prefs
+        mockPreferences = SharedPreferencesMock.create();
+        setupSearchEnginePreferences();
         when(context.getSharedPreferences(eq(PACKAGE_NAME + "_preferences"), anyInt()))
                 .thenReturn(mockPreferences);
+        final SharedPreferences languageMap = createLanguageMap();
+        when(context.getSharedPreferences(eq(Languages.LANGUAGE_MAP), anyInt()))
+                .thenReturn(languageMap);
 
-        when(context.getSharedPreferences(anyString(), anyInt()))
-                .thenReturn(mockPreferences);
-
-
+        // String resource
+        setupStringResources(resources);
         doAnswer(invocation -> resources.getString(invocation.getArgument(0)))
                 .when(context).getString(anyInt());
+
 
         when(resources.getConfiguration()).thenReturn(configuration);
         when(configuration.getLocales()).thenReturn(localeList);
@@ -191,12 +175,6 @@ public class Base {
         when(languages.getISO3FromDisplayName(any(Context.class), any(Locale.class),
                                               eq("English"))).thenReturn("eng");
 
-        // See class docs.
-        ImageDownloader.IGNORE_RENAME_FAILURE = true;
-
-        LoggerFactory.setLogger(new TestLogger(getTmpDir()));
-
-        ServiceLocator.create(serviceLocator);
         // reminder: don't use thenReturn(BundleMock.create())
         // nor b= BundleMock.create();  and ...thenReturn(b)
         // -> that will cause:
@@ -213,17 +191,15 @@ public class Base {
         when(serviceLocator.getAppLocale()).thenReturn(appLocale);
         when(serviceLocator.getAppContext()).thenReturn(context);
 
-        setupStringResources(resources);
-        setupLanguageMap(context);
-        setupSearchEnginePreferences();
+        // See class docs.
+        ImageDownloader.IGNORE_RENAME_FAILURE = true;
 
-
+        LoggerFactory.setLogger(new TestLogger(getTmpDir()));
+        ServiceLocator.create(serviceLocator);
         SearchEngineConfig.createRegistry(context, languages);
-        // predefined for tests
-        book = new Book(BundleMock.create());
     }
 
-    private void setupLanguageMap(@NonNull final Context context) {
+    private SharedPreferences createLanguageMap() {
         /*
          * SharedPreferences for the language map.
          */
@@ -250,9 +226,7 @@ public class Base {
                    .putString("nederlands", "nld")
 
                    .apply();
-
-        when(context.getSharedPreferences(eq(Languages.LANGUAGE_MAP), anyInt()))
-                .thenReturn(languageMap);
+        return languageMap;
     }
 
     private void setupSearchEnginePreferences() {
@@ -268,10 +242,12 @@ public class Base {
                        .putBoolean("search.site.openlibrary.data.enabled", true)
                        .putBoolean("search.site.stripinfo.data.enabled", false)
 
-                       // deliberate added 4 (LibraryThing) and omitted 128/256
-                       .putString("search.siteOrder.data", "64,32,16,8,4,2,1")
-                       .putString("search.siteOrder.covers", "16,2,8,64,32")
-                       .putString("search.siteOrder.alted", "16,4")
+                       .putString("search.siteOrder.data",
+                                  "kbnl,openlibrary,isfdb,librarything,amazon,googlebooks")
+                       .putString("search.siteOrder.covers",
+                                  "isfdb,amazon,kbnl,openlibrary")
+                       .putString("search.siteOrder.alted",
+                                  "isfdb,librarything")
 
                        .apply();
 
