@@ -39,7 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
@@ -59,7 +58,6 @@ public class JsonArchiveReader
     /** Import configuration. */
     @NonNull
     private final ImportHelper importHelper;
-    private final RealNumberParser realNumberParser;
     private final Locale systemLocale;
 
     @Nullable
@@ -68,12 +66,11 @@ public class JsonArchiveReader
     /**
      * Constructor.
      *
-     * @param helper       import configuration
+     * @param helper import configuration
      */
     public JsonArchiveReader(@NonNull final Context context,
                              @NonNull final Locale systemLocale,
                              @NonNull final ImportHelper helper) {
-        realNumberParser = new RealNumberParser(context);
         this.systemLocale = systemLocale;
         importHelper = helper;
     }
