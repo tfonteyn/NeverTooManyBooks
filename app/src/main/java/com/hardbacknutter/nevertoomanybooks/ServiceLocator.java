@@ -297,7 +297,7 @@ public final class ServiceLocator {
     public Languages getLanguages() {
         synchronized (this) {
             if (languages == null) {
-                languages = new Languages(getAppLocale());
+                languages = new Languages(this::getAppLocale);
             }
         }
         return languages;
@@ -335,9 +335,8 @@ public final class ServiceLocator {
                 for (int i = 0; i < localeList.size(); i++) {
                     locales.add(localeList.get(i));
                 }
-                appLocale = new AppLocaleImpl(List.copyOf(locales),
-                                              getSystemLocaleList().get(0),
-                                              getLanguages());
+                appLocale = new AppLocaleImpl(List.copyOf(locales), localeList.get(0),
+                                              this::getLanguages);
             }
         }
         return appLocale;
@@ -506,7 +505,7 @@ public final class ServiceLocator {
     public LanguageDao getLanguageDao() {
         synchronized (this) {
             if (languageDao == null) {
-                languageDao = new LanguageDaoImpl(getDb(), getLanguages());
+                languageDao = new LanguageDaoImpl(getDb(), this::getLanguages);
             }
         }
         return languageDao;

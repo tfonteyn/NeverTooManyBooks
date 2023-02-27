@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Locale;
 import javax.xml.parsers.ParserConfigurationException;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
@@ -65,7 +64,7 @@ class OpenLibrarySearchEngineTest
     @Test
     void parse()
             throws IOException, SearchException, StorageException {
-        setLocale(Locale.UK);
+        setLocale(searchEngine.getLocale(context));
 
         // https://openlibrary.org/api/books?jscmd=data&format=json&bibkeys=ISBN:9780980200447
 

@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import java.math.BigDecimal;
+import java.util.Currency;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
@@ -43,13 +44,13 @@ class JDKMoneyFormatterTest
         setLocale(Locale.US);
         final FieldFormatter<Money> f = new MoneyFormatter(locales.get(0));
         Money money;
-        money = MoneyParser.parse(BigDecimal.valueOf(1234.50d), MoneyParser.USD);
+        money = new Money(BigDecimal.valueOf(1234.50d), Currency.getInstance(MoneyParser.USD));
         assertNotNull(money);
         assertEquals("$1,234.50", f.format(context, money));
-        money = MoneyParser.parse(BigDecimal.valueOf(1234.50d), MoneyParser.GBP);
+        money = new Money(BigDecimal.valueOf(1234.50d), Currency.getInstance(MoneyParser.GBP));
         assertNotNull(money);
         assertEquals("£1,234.50", f.format(context, money));
-        money = MoneyParser.parse(BigDecimal.valueOf(1234.50d), MoneyParser.EUR);
+        money = new Money(BigDecimal.valueOf(1234.50d), Currency.getInstance(MoneyParser.EUR));
         assertNotNull(money);
         assertEquals("€1,234.50", f.format(context, money));
     }
@@ -59,13 +60,13 @@ class JDKMoneyFormatterTest
         setLocale(Locale.UK);
         final FieldFormatter<Money> f = new MoneyFormatter(locales.get(0));
         Money money;
-        money = MoneyParser.parse(BigDecimal.valueOf(1234.50d), MoneyParser.USD);
+        money = new Money(BigDecimal.valueOf(1234.50d), Currency.getInstance(MoneyParser.USD));
         assertNotNull(money);
         assertEquals("US$1,234.50", f.format(context, money));
-        money = MoneyParser.parse(BigDecimal.valueOf(1234.50d), MoneyParser.GBP);
+        money = new Money(BigDecimal.valueOf(1234.50d), Currency.getInstance(MoneyParser.GBP));
         assertNotNull(money);
         assertEquals("£1,234.50", f.format(context, money));
-        money = MoneyParser.parse(BigDecimal.valueOf(1234.50d), MoneyParser.EUR);
+        money = new Money(BigDecimal.valueOf(1234.50d), Currency.getInstance(MoneyParser.EUR));
         assertNotNull(money);
         assertEquals("€1,234.50", f.format(context, money));
     }
@@ -75,13 +76,13 @@ class JDKMoneyFormatterTest
         setLocale(Locale.GERMANY);
         final FieldFormatter<Money> f = new MoneyFormatter(locales.get(0));
         Money money;
-        money = MoneyParser.parse(BigDecimal.valueOf(1234.50d), MoneyParser.USD);
+        money = new Money(BigDecimal.valueOf(1234.50d), Currency.getInstance(MoneyParser.USD));
         assertNotNull(money);
         assertEquals("1.234,50 $", f.format(context, money));
-        money = MoneyParser.parse(BigDecimal.valueOf(1234.50d), MoneyParser.GBP);
+        money = new Money(BigDecimal.valueOf(1234.50d), Currency.getInstance(MoneyParser.GBP));
         assertNotNull(money);
         assertEquals("1.234,50 £", f.format(context, money));
-        money = MoneyParser.parse(BigDecimal.valueOf(1234.50d), MoneyParser.EUR);
+        money = new Money(BigDecimal.valueOf(1234.50d), Currency.getInstance(MoneyParser.EUR));
         assertNotNull(money);
         assertEquals("1.234,50 €", f.format(context, money));
     }

@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.lastdodo;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Locale;
 import javax.xml.parsers.ParserConfigurationException;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
@@ -68,13 +67,12 @@ class LastDodoTest
     @Test
     void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
-        setLocale(Locale.FRANCE);
+        setLocale(searchEngine.getLocale(context));
         final String locationHeader = "https://www.lastdodo.nl/nl/items/7323911-de-37ste-parallel";
         final String filename = "/lastdodo/7323911-de-37ste-parallel.html";
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
-        searchEngine.parse(document, new boolean[]{false, false}, book,
-                           mockAuthorResolver);
+        searchEngine.parse(document, new boolean[]{false, false}, book, mockAuthorResolver);
         // System.out.println(rawData);
 
         assertEquals("De 37ste parallel", book.getString(DBKey.TITLE, null));

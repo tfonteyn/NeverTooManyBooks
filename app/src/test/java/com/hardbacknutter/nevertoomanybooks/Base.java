@@ -184,7 +184,7 @@ public class Base {
         when(serviceLocator.newBundle()).thenAnswer(
                 (Answer<Bundle>) invocation -> BundleMock.create());
 
-        when(serviceLocator.getSystemLocaleList().get(0)).thenReturn(locales.get(0));
+        when(serviceLocator.getSystemLocaleList()).thenReturn(localeList);
         when(serviceLocator.getNetworkChecker()).thenReturn(new TestNetworkChecker(true));
         when(serviceLocator.getStyles()).thenReturn(stylesHelper);
         when(serviceLocator.getLanguages()).thenReturn(languages);

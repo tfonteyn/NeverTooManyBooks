@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,6 +22,8 @@ package com.hardbacknutter.nevertoomanybooks.database.dao;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 public interface MaintenanceDao {
 
@@ -46,6 +48,7 @@ public interface MaintenanceDao {
      *
      * @param context Current context
      */
-    void rebuildOrderByTitleColumns(@NonNull Context context);
+    void rebuildOrderByTitleColumns(@NonNull Context context,
+                                    @NonNull AppLocale appLocale);
 
 }

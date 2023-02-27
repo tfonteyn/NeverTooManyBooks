@@ -30,6 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * Rebuild all OrderBy columns. Can take several seconds.
@@ -62,13 +63,14 @@ public class RebuildTitleOrderByColumnTask
     @WorkerThread
     protected Boolean doWork() {
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+        final AppLocale appLocale = ServiceLocator.getInstance().getAppLocale();
 
         // incorrect progress message, but it's half-true.
         publishProgress(1, context.getString(R.string.progress_msg_rebuilding_search_index));
 
         try {
             ServiceLocator.getInstance().getMaintenanceDao()
-                          .rebuildOrderByTitleColumns(context);
+                          .rebuildOrderByTitleColumns(context, appLocale);
             return true;
 
         } finally {

@@ -25,7 +25,6 @@ import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Locale;
 import javax.xml.parsers.ParserConfigurationException;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
@@ -84,8 +83,8 @@ class IsfdbBookHandlerTest
     @Test
     void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
-        setLocale(Locale.UK);
-        final RealNumberParser realNumberParser = new RealNumberParser(context);
+        setLocale(searchEngine.getLocale(context));
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
 
         final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?112781";
         final String filename = "/isfdb/112781.html";
@@ -158,8 +157,8 @@ class IsfdbBookHandlerTest
     @Test
     void parse02()
             throws SearchException, IOException, CredentialsException, StorageException {
-        setLocale(Locale.UK);
-        final RealNumberParser realNumberParser = new RealNumberParser(context);
+        setLocale(searchEngine.getLocale(context));
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
 
         final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?431964";
         final String filename = "/isfdb/431964.html";
@@ -219,8 +218,8 @@ class IsfdbBookHandlerTest
     @Test
     void parse03()
             throws SearchException, IOException, CredentialsException, StorageException {
-        setLocale(Locale.UK);
-        final RealNumberParser realNumberParser = new RealNumberParser(context);
+        setLocale(searchEngine.getLocale(context));
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
 
         final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?542125";
         final String filename = "/isfdb/542125.html";

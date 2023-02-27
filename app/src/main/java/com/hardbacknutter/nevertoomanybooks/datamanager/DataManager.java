@@ -272,8 +272,6 @@ public class DataManager
         if (DBKey.MONEY_KEYS.contains(key)) {
             // try to combine the keys
             try {
-                // TODO: instead of having the parser passed in above, we should use
-                //  a Supplier<RealNumberParser>
                 final Money money = getMoney(key, parser);
                 if (money != null) {
                     return money;

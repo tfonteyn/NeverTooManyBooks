@@ -20,14 +20,19 @@
 package com.hardbacknutter.nevertoomanybooks.database;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -67,8 +72,6 @@ import static org.junit.Assert.assertTrue;
 @MediumTest
 public class BookTest {
 
-    private static final String NEED_TWO_FILE =
-            "pictures directory must contain at least two file to use for testing";
     private static final String NEED_A_PICTURES_DIRECTORY = "Need a pictures directory";
     private static final String NEED_A_TEMP_DIRECTORY = "Need a temp directory";
     private static final String EXT_JPG = ".jpg";
@@ -151,11 +154,8 @@ public class BookTest {
         publisherList.add(publisher[0]);
 
 
-        final List<File> files = FileUtils.collectFiles(coverDir, jpgFilter, 10);
-        assertTrue(NEED_TWO_FILE, files.size() > 1);
-
-        prepareTempCover(context, files, 0);
-        prepareTempCover(context, files, 1);
+        prepareTempCover(context, com.hardbacknutter.nevertoomanybooks.test.R.raw.cover1, 0);
+        prepareTempCover(context, com.hardbacknutter.nevertoomanybooks.test.R.raw.cover2, 1);
 
         assertTrue(bookshelf[0].getId() > 0);
         assertTrue(author[0].getId() > 0);
@@ -163,23 +163,29 @@ public class BookTest {
     }
 
     /**
-     * Copy a file from the Pictures directory to the temp with a new/temp name.
+     * Copy a file from the res/raw directory to the temp with a new/temp name.
      *
-     * @param files from the Pictures directory
-     * @param cIdx  cover index to create
+     * @param cIdx cover index to create
      *
      * @throws IOException on generic/other IO failures
      */
     private void prepareTempCover(@NonNull final Context context,
-                                  @NonNull final List<File> files,
+                                  final int coverResId,
                                   final int cIdx)
             throws IOException, StorageException {
 
-        originalImageFileName[cIdx] = files.get(cIdx).getAbsolutePath();
-        final File srcFile = new File(originalImageFileName[cIdx]);
-        originalImageSize[cIdx] = srcFile.length();
 
-        FileUtils.copy(srcFile, new File(CoverDir.getTemp(context), TestConstants.COVER[cIdx]));
+        final Resources testRes = InstrumentationRegistry.getInstrumentation().getContext()
+                                                         .getResources();
+
+        final File coverFile = new File(CoverDir.getTemp(context), TestConstants.COVER[cIdx]);
+        try (final InputStream inputStream = testRes.openRawResource(coverResId);
+             final OutputStream os = new FileOutputStream(coverFile)) {
+            FileUtils.copy(inputStream, os);
+        }
+
+        originalImageFileName[cIdx] = coverFile.getAbsolutePath();
+        originalImageSize[cIdx] = coverFile.length();
     }
 
     /**
@@ -296,11 +302,8 @@ public class BookTest {
         // the front cover should still be there
         mustHavePersistedCover(book, 0);
 
-        /*
-         * Add a new second cover of the read-only book
-         */
-        final List<File> files = FileUtils.collectFiles(coverDir, jpgFilter, 10);
-        prepareTempCover(context, files, 1);
+        // Add a new second cover of the read-only book
+        prepareTempCover(context, com.hardbacknutter.nevertoomanybooks.test.R.raw.cover2, 1);
 
         // will/must store the cover immediately
         book.setCover(1, new File(tempDir, TestConstants.COVER[1]));

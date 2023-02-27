@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -63,7 +64,7 @@ public final class AppLocaleImpl
     @NonNull
     private final Locale systemLocale;
     @NonNull
-    private final Languages languages;
+    private final Supplier<Languages> languagesSupplier;
     /**
      * The currently active/preferred user Locale.
      * See {@link #apply} for why we store it.
@@ -79,10 +80,10 @@ public final class AppLocaleImpl
 
     public AppLocaleImpl(@NonNull final List<Locale> locales,
                          @NonNull final Locale systemLocale,
-                         @NonNull final Languages languages) {
+                         @NonNull final Supplier<Languages> languagesSupplier) {
         this.locales = locales;
         this.systemLocale = systemLocale;
-        this.languages = languages;
+        this.languagesSupplier = languagesSupplier;
     }
 
     @Override
@@ -175,11 +176,11 @@ public final class AppLocaleImpl
         String lang = inputLang.trim().toLowerCase(userLocale);
         final int len = lang.length();
         if (len > 3) {
-            lang = languages.getISO3FromDisplayName(context, userLocale, lang);
+            lang = languagesSupplier.get().getISO3FromDisplayName(context, userLocale, lang);
         }
 
         // THIS IS A MUST
-        lang = languages.getLocaleIsoFromISO3(userLocale, lang);
+        lang = languagesSupplier.get().getLocaleIsoFromISO3(userLocale, lang);
 
         // lang should now be an ISO (2 or 3 characters) code (or an invalid string)
         Locale locale = cache.get(lang);
@@ -256,7 +257,7 @@ public final class AppLocaleImpl
         } else {
             final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
             // any 3-char code might need to be converted to 2-char be able to find the resource.
-            final String iso = languages.getLocaleIsoFromISO3(userLocale, lang);
+            final String iso = languagesSupplier.get().getLocaleIsoFromISO3(userLocale, lang);
             deltaConfig.setLocale(new Locale(iso));
         }
 

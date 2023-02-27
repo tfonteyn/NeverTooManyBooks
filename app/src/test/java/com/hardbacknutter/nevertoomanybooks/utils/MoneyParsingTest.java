@@ -19,13 +19,18 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
+import androidx.annotation.NonNull;
+
 import java.math.BigDecimal;
 import java.util.Locale;
+import java.util.stream.Stream;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -34,104 +39,72 @@ class MoneyParsingTest
         extends Base {
 
     private static final BigDecimal twelveDotThreeFour = BigDecimal.valueOf(12.34d);
+    private static final BigDecimal tenDotFive = BigDecimal.valueOf(10.50d);
 
-    @Test
-    void uk00() {
-        setLocale(Locale.UK);
-        final RealNumberParser realNumberParser = new RealNumberParser(context);
-        final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
-        final Money money = moneyParser.parse("GBP&nbsp;12.34");
-        assertNotNull(money);
-        assertEquals(twelveDotThreeFour, money.getValue());
-        assertEquals(MoneyParser.GBP, money.getCurrencyCode());
+    @NonNull
+    static Stream<Arguments> readArgs() {
+        return Stream.of(
+                // Variations of GBP and Locale.UK
+                Arguments.of((Object) new Locale[]{Locale.UK},
+                             "GBP&nbsp;12.34", twelveDotThreeFour, MoneyParser.GBP),
+                Arguments.of((Object) new Locale[]{Locale.UK},
+                             "GBP12.34", twelveDotThreeFour, MoneyParser.GBP),
+                Arguments.of((Object) new Locale[]{Locale.UK},
+                             "£ 12.34", twelveDotThreeFour, MoneyParser.GBP),
+                Arguments.of((Object) new Locale[]{Locale.UK},
+                             "£12.34", twelveDotThreeFour, MoneyParser.GBP),
+                Arguments.of((Object) new Locale[]{Locale.UK},
+                             "£12", BigDecimal.valueOf(12.0d), MoneyParser.GBP),
+
+                // Variations of EUR and Locale.{eu}
+                Arguments.of((Object) new Locale[]{new Locale("de", "DE")},
+                             "12,34&nbsp;€", twelveDotThreeFour, MoneyParser.EUR),
+                Arguments.of((Object) new Locale[]{new Locale("fr", "FR")},
+                             "12,34 €", twelveDotThreeFour, MoneyParser.EUR),
+                Arguments.of((Object) new Locale[]{new Locale("nl", "NL")},
+                             "12,34€", twelveDotThreeFour, MoneyParser.EUR),
+                Arguments.of((Object) new Locale[]{new Locale("es", "ES")},
+                             "12,34 eur", twelveDotThreeFour, MoneyParser.EUR),
+                Arguments.of((Object) new Locale[]{new Locale("nl", "BE")},
+                             "EUR 12,34", twelveDotThreeFour, MoneyParser.EUR),
+
+                // Multiple Locales
+                Arguments.of((Object) new Locale[]{Locale.CANADA_FRENCH, Locale.UK},
+                             "GBP&nbsp;12.34", twelveDotThreeFour, MoneyParser.GBP),
+                Arguments.of((Object) new Locale[]{Locale.CANADA_FRENCH, Locale.UK},
+                             "GBP12.34", twelveDotThreeFour, MoneyParser.GBP),
+                Arguments.of((Object) new Locale[]{Locale.CANADA_FRENCH, Locale.UK},
+                             "£ 12.34", twelveDotThreeFour, MoneyParser.GBP),
+                Arguments.of((Object) new Locale[]{Locale.CANADA_FRENCH, Locale.UK},
+                             "£12.34", twelveDotThreeFour, MoneyParser.GBP),
+                Arguments.of((Object) new Locale[]{Locale.CANADA_FRENCH, Locale.UK},
+                             "£12", BigDecimal.valueOf(12.0d), MoneyParser.GBP),
+
+                Arguments.of((Object) new Locale[]{new Locale("de", "DE"), Locale.UK},
+                             "12,34&nbsp;€", twelveDotThreeFour, MoneyParser.EUR),
+                Arguments.of((Object) new Locale[]{new Locale("fr", "FR"), Locale.UK},
+                             "12,34 €", twelveDotThreeFour, MoneyParser.EUR),
+                Arguments.of((Object) new Locale[]{new Locale("nl", "NL"), Locale.UK},
+                             "12,34€", twelveDotThreeFour, MoneyParser.EUR),
+                Arguments.of((Object) new Locale[]{new Locale("es", "ES"), Locale.UK},
+                             "12,34 eur", twelveDotThreeFour, MoneyParser.EUR),
+                Arguments.of((Object) new Locale[]{new Locale("nl", "BE"), Locale.UK},
+                             "EUR 12,34", twelveDotThreeFour, MoneyParser.EUR)
+        );
     }
 
-    @Test
-    void uk01() {
-        setLocale(Locale.UK);
-        final RealNumberParser realNumberParser = new RealNumberParser(context);
+    @ParameterizedTest
+    @MethodSource("readArgs")
+    void simple(@NonNull final Locale[] testLocales,
+                @NonNull final CharSequence source,
+                @NonNull final BigDecimal value,
+                @NonNull final String code) {
+        setLocale(testLocales);
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
         final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
-        final Money money = moneyParser.parse("£ 12.34");
+        final Money money = moneyParser.parse(source);
         assertNotNull(money);
-        assertEquals(twelveDotThreeFour, money.getValue());
-        assertEquals(MoneyParser.GBP, money.getCurrencyCode());
-    }
-
-    @Test
-    void uk02() {
-        setLocale(Locale.UK);
-        final RealNumberParser realNumberParser = new RealNumberParser(context);
-        final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
-        final Money money = moneyParser.parse("£12.34");
-        assertNotNull(money);
-        assertEquals(twelveDotThreeFour, money.getValue());
-        assertEquals(MoneyParser.GBP, money.getCurrencyCode());
-    }
-
-    @Test
-    void uk03() {
-        setLocale(Locale.UK);
-        final RealNumberParser realNumberParser = new RealNumberParser(context);
-        final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
-        final Money money = moneyParser.parse("GBP12.34");
-        assertNotNull(money);
-        assertEquals(twelveDotThreeFour, money.getValue());
-        assertEquals(MoneyParser.GBP, money.getCurrencyCode());
-    }
-
-    @Test
-    void uk04() {
-        setLocale(Locale.UK);
-        final RealNumberParser realNumberParser = new RealNumberParser(context);
-        final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
-        final Money money = moneyParser.parse("£12");
-        assertNotNull(money);
-        assertEquals(BigDecimal.valueOf(12.0d), money.getValue());
-        assertEquals(MoneyParser.GBP, money.getCurrencyCode());
-    }
-
-
-    @Test
-    void fr01() {
-        setLocale(Locale.FRANCE);
-        final RealNumberParser realNumberParser = new RealNumberParser(context);
-        final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
-        final Money money = moneyParser.parse("12,34&nbsp;€");
-        assertNotNull(money);
-        assertEquals(twelveDotThreeFour, money.getValue());
-        assertEquals(MoneyParser.EUR, money.getCurrencyCode());
-    }
-
-    @Test
-    void fr02() {
-        setLocale(Locale.FRANCE);
-        final RealNumberParser realNumberParser = new RealNumberParser(context);
-        final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
-        final Money money = moneyParser.parse("12,34 €");
-        assertNotNull(money);
-        assertEquals(twelveDotThreeFour, money.getValue());
-        assertEquals(MoneyParser.EUR, money.getCurrencyCode());
-    }
-
-    @Test
-    void fr03() {
-        setLocale(Locale.FRANCE);
-        final RealNumberParser realNumberParser = new RealNumberParser(context);
-        final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
-        final Money money = moneyParser.parse("12,34€");
-        assertNotNull(money);
-        assertEquals(twelveDotThreeFour, money.getValue());
-        assertEquals(MoneyParser.EUR, money.getCurrencyCode());
-    }
-
-    @Test
-    void fr04() {
-        setLocale(Locale.FRANCE);
-        final RealNumberParser realNumberParser = new RealNumberParser(context);
-        final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
-        final Money money = moneyParser.parse("12,34 eur");
-        assertNotNull(money);
-        assertEquals(twelveDotThreeFour, money.getValue());
-        assertEquals(MoneyParser.EUR, money.getCurrencyCode());
+        assertEquals(value, money.getValue());
+        assertEquals(code, money.getCurrencyCode());
     }
 }

@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,8 +75,8 @@ public class RealNumberParser
         }
     };
 
-    private static final String ERROR_NOT_A_FLOAT = "Not a float: ";
-    private static final String ERROR_NOT_A_DOUBLE = "Not a double: ";
+    private static final String ERROR_NOT_A_FLOAT = "Not a float or no suitable Locale: ";
+    private static final String ERROR_NOT_A_DOUBLE = "Not a double or no suitable Locale: ";
     @NonNull
     private final List<Locale> locales;
 
@@ -94,10 +95,7 @@ public class RealNumberParser
      * @param locales to use for the formatter/parser.
      */
     public RealNumberParser(@NonNull final List<Locale> locales) {
-        // Create a NEW list, and add Locale.US to use for
-        // '.' as decimal and ',' as thousands separator.
-        this.locales = new ArrayList<>(locales);
-        this.locales.add(Locale.US);
+        this.locales = locales;
     }
 
     private RealNumberParser(@NonNull final Parcel in) {
@@ -111,7 +109,8 @@ public class RealNumberParser
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
 
-        final ArrayList<String> list = locales.stream().map(Locale::toLanguageTag)
+        final ArrayList<String> list = locales.stream()
+                                              .map(Locale::toLanguageTag)
                                               .collect(Collectors.toCollection(ArrayList::new));
         dest.writeStringList(list);
     }
@@ -176,25 +175,11 @@ public class RealNumberParser
             return Float.parseFloat(source);
         }
 
-        // we check in order - first match returns.
-        for (final Locale locale : locales) {
-            try {
-                final DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(locale);
-                // if the dec sep for this format is present in the source,
-                // decode with this Locale; otherwise skip to the next one
-                final char decSep = nf.getDecimalFormatSymbols().getDecimalSeparator();
-                if (source.indexOf(decSep) != -1) {
-                    final Number number = nf.parse(source);
-                    if (number != null) {
-                        return number.floatValue();
-                    }
-                }
-            } catch (@NonNull final ParseException | IndexOutOfBoundsException ignore) {
-                // ignore
-            }
+        final Number number = getNumber(source);
+        if (number != null) {
+            return number.floatValue();
         }
-
-        throw new NumberFormatException(ERROR_NOT_A_FLOAT + source);
+        throw new NumberFormatException(ERROR_NOT_A_FLOAT + source + ", locales=" + locales);
     }
 
     /**
@@ -252,23 +237,74 @@ public class RealNumberParser
             return Double.parseDouble(source);
         }
 
+        final Number number = getNumber(source);
+        if (number != null) {
+            return number.doubleValue();
+        }
+        throw new NumberFormatException(ERROR_NOT_A_DOUBLE + source + ", locales=" + locales);
+    }
+
+
+    @Nullable
+    private Number getNumber(@NonNull final String source) {
         // we check in order - first match returns.
         for (final Locale locale : locales) {
             try {
                 final DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(locale);
                 // if the dec sep for this format is present in the source,
                 // decode with this Locale; otherwise skip to the next one
-                final char decSep = nf.getDecimalFormatSymbols().getDecimalSeparator();
-                if (source.indexOf(decSep) != -1) {
-                    final Number number = nf.parse(source);
+                final DecimalFormatSymbols decimalFormatSymbols = nf.getDecimalFormatSymbols();
+                final char decSep = decimalFormatSymbols.getDecimalSeparator();
+                final char grpSep = decimalFormatSymbols.getGroupingSeparator();
+
+                final String tmp;
+                if (grpSep != '.' && grpSep != ',') {
+                    // replace the opposite of the decimal separator with the real group separator
+                    // to make the parser work
+                    final char remove = decSep == '.' ? ',' : '.';
+                    tmp = source.replace(remove, grpSep);
+                } else {
+                    tmp = source;
+                }
+
+                final int lastGrpSep = tmp.lastIndexOf(grpSep);
+                final int lastDecSep = tmp.lastIndexOf(decSep);
+
+                if (lastGrpSep == -1 && lastDecSep == -1) {
+                    final Number number = nf.parse(tmp);
                     if (number != null) {
-                        return number.doubleValue();
+                        return number;
+                    }
+
+                } else if (lastGrpSep == -1) {
+                    // no group separator, but has a decimal separator
+                    // We're going to ASSUME this is a match (or else it's an int > 1000)
+                    final Number number = nf.parse(tmp);
+                    if (number != null) {
+                        return number;
+                    }
+
+                } else if (lastDecSep == -1) {
+                    // no decimal separator, but with group separator.
+                    // We're going to ASSUME this is NOT a match and skip to the next Locale
+
+                } else {
+                    // both
+                    if (lastDecSep > lastGrpSep) {
+                        // it's a match
+                        final Number number = nf.parse(tmp);
+                        if (number != null) {
+                            return number;
+                        }
+                    } else {
+                        // the opposite of what we expect
+                        // We're going to ASSUME this is NOT a match and skip to the next Locale
                     }
                 }
             } catch (@NonNull final ParseException | IndexOutOfBoundsException ignore) {
                 // ignore
             }
         }
-        throw new NumberFormatException(ERROR_NOT_A_DOUBLE + source);
+        return null;
     }
 }

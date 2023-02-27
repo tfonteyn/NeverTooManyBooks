@@ -119,9 +119,9 @@ public class MaintenanceDaoImpl
     }
 
     @Override
-    public void rebuildOrderByTitleColumns(@NonNull final Context context) {
+    public void rebuildOrderByTitleColumns(@NonNull final Context context,
+                                           @NonNull final AppLocale appLocale) {
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-        final AppLocale appLocale = ServiceLocator.getInstance().getAppLocale();
 
         final boolean reorder = OrderByHelper.forSorting(context);
 

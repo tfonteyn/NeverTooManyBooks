@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Locale;
 import javax.xml.parsers.ParserConfigurationException;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
@@ -67,7 +66,7 @@ class IsfdbEditionsHandlerTest
     @Test
     void parseMultiEdition()
             throws IOException {
-        setLocale(Locale.UK);
+        setLocale(searchEngine.getLocale(context));
         final String locationHeader = "https://www.isfdb.org/cgi-bin/title.cgi?11169";
         final String filename = "/isfdb/11169-multi-edition.html";
 
@@ -91,7 +90,7 @@ class IsfdbEditionsHandlerTest
     @Test
     void parseMultiEdition2()
             throws IOException {
-        setLocale(Locale.UK);
+        setLocale(searchEngine.getLocale(context));
         final String locationHeader = "https://www.isfdb.org/cgi-bin/title.cgi?1360173";
         final String filename = "/isfdb/1360173-multi-edition.html";
 

@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import javax.xml.parsers.ParserConfigurationException;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
@@ -79,7 +78,7 @@ class StripInfoTest
     @Test
     void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
-        setLocale(Locale.FRANCE);
+        setLocale(searchEngine.getLocale(context));
         final String locationHeader = "https://www.stripinfo.be/reeks/strip"
                                       + "/336348_Hauteville_House_14_De_37ste_parallel";
         final String filename = "/stripinfo/336348_Hauteville_House_14_De_37ste_parallel.html";
@@ -147,7 +146,7 @@ class StripInfoTest
     @Test
     void parse02()
             throws SearchException, IOException, CredentialsException, StorageException {
-        setLocale(Locale.FRANCE);
+        setLocale(searchEngine.getLocale(context));
         final String locationHeader = "https://www.stripinfo.be/reeks/strip"
                                       + "/2060_De_boom_van_de_twee_lentes_1"
                                       + "_De_boom_van_de_twee_lentes";
@@ -216,7 +215,7 @@ class StripInfoTest
     @Test
     void parse03()
             throws SearchException, IOException, CredentialsException, StorageException {
-        setLocale(Locale.FRANCE);
+        setLocale(searchEngine.getLocale(context));
         final String locationHeader = "https://www.stripinfo.be/reeks/strip"
                                       + "/181604_Okiya_het_huis_van_verboden_geneugten"
                                       + "_1_Het_huis_van_verboden_geneugten";
@@ -280,7 +279,7 @@ class StripInfoTest
     @Test
     void parseIntegrale()
             throws SearchException, IOException, CredentialsException, StorageException {
-        setLocale(Locale.FRANCE);
+        setLocale(searchEngine.getLocale(context));
         final String locationHeader = "https://www.stripinfo.be/reeks/strip/"
                                       + "316016_Johan_en_Pirrewiet_INT_5_De_integrale_5";
         final String filename = "/stripinfo/316016_Johan_en_Pirrewiet_INT_5_De_integrale_5.html";
@@ -341,7 +340,7 @@ class StripInfoTest
     @Test
     void parseIntegrale2()
             throws SearchException, IOException, CredentialsException, StorageException {
-        setLocale(Locale.FRANCE);
+        setLocale(searchEngine.getLocale(context));
         final String locationHeader = "https://www.stripinfo.be/reeks/strip/"
                                       + "17030_Comanche_1_Red_Dust";
         final String filename = "/stripinfo/17030_Comanche_1_Red_Dust.html";
@@ -399,7 +398,7 @@ class StripInfoTest
     @Test
     void parseFavReeks2()
             throws SearchException, IOException, CredentialsException, StorageException {
-        setLocale(Locale.FRANCE);
+        setLocale(searchEngine.getLocale(context));
         final String locationHeader = "https://www.stripinfo.be/reeks/strip/"
                                       + "8155_De_avonturen_van_de_3L_7_Spoken_in_de_grot";
         final String filename = "/stripinfo/8155_De_avonturen_van_de_3L_7_Spoken_in_de_grot.html";
@@ -455,7 +454,7 @@ class StripInfoTest
     @Test
     void parseMultiResult()
             throws SearchException, CredentialsException, StorageException, IOException {
-        setLocale(Locale.FRANCE);
+        setLocale(searchEngine.getLocale(context));
         final String locationHeader = "https://stripinfo.be/zoek/zoek?zoekstring=pluvi";
         final String filename = "/stripinfo/multi-result-pluvi.html";
 

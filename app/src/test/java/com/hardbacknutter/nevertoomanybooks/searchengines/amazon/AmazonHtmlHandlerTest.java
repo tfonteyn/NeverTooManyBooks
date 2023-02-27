@@ -69,7 +69,7 @@ class AmazonHtmlHandlerTest
     void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
         setLocale(Locale.UK);
-        final RealNumberParser realNumberParser = new RealNumberParser(context);
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
 
         final String locationHeader = "https://www.amazon.co.uk/gp/product/0575090677";
         final String filename = "/amazon/0575090677.html";
@@ -105,7 +105,7 @@ class AmazonHtmlHandlerTest
     void parse02()
             throws SearchException, IOException, CredentialsException, StorageException {
         setLocale(Locale.UK);
-        final RealNumberParser realNumberParser = new RealNumberParser(context);
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
 
         final String locationHeader = "https://www.amazon.co.uk/gp/product/1473210208";
         final String filename = "/amazon/1473210208.html";
@@ -143,7 +143,7 @@ class AmazonHtmlHandlerTest
     void parse10()
             throws SearchException, IOException, CredentialsException, StorageException {
         setLocale(Locale.FRANCE);
-        final RealNumberParser realNumberParser = new RealNumberParser(context);
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
 
         final String locationHeader = "https://www.amazon.fr/gp/product/2205057332";
         final String filename = "/amazon/2205057332.html";

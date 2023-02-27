@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -51,15 +52,16 @@ public class LanguageDaoImpl
             + _WHERE_ + DBKey.LANGUAGE + "<> ''"
             + _ORDER_BY_ + DBKey.DATE_LAST_UPDATED__UTC;
     @NonNull
-    private final Languages languages;
+    private final Supplier<Languages> languagesSupplier;
+
 
     /**
      * Constructor.
      */
     public LanguageDaoImpl(@NonNull final SynchronizedDb db,
-                           @NonNull final Languages languages) {
+                           @NonNull final Supplier<Languages> languagesSupplier) {
         super(db, TAG, DBKey.LANGUAGE);
-        this.languages = languages;
+        this.languagesSupplier = languagesSupplier;
     }
 
     /**
@@ -85,7 +87,7 @@ public class LanguageDaoImpl
             while (cursor.moveToNext()) {
                 final String name = cursor.getString(0);
                 if (name != null && !name.isEmpty()) {
-                    set.add(languages.getDisplayNameFromISO3(context, name));
+                    set.add(languagesSupplier.get().getDisplayNameFromISO3(context, name));
                 }
             }
             return new ArrayList<>(set);
@@ -102,10 +104,10 @@ public class LanguageDaoImpl
 
                 if (lang.length() > 3) {
                     // It's likely a 'display' name of a language.
-                    iso = languages.getISO3FromDisplayName(context, locale, lang);
+                    iso = languagesSupplier.get().getISO3FromDisplayName(context, locale, lang);
                 } else {
                     // It's almost certainly a language code
-                    iso = languages.getISO3FromCode(lang);
+                    iso = languagesSupplier.get().getISO3FromCode(lang);
                 }
 
                 if (BuildConfig.DEBUG /* always */) {

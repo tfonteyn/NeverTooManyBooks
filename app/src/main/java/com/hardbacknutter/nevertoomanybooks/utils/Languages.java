@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.BuildLanguageMappingsTask;
@@ -59,13 +60,14 @@ public class Languages {
     @NonNull
     private final Map<String, String> lang3ToLang2Map;
     @NonNull
-    private final AppLocale appLocale;
+    private final Supplier<AppLocale> appLocaleSupplier;
+
 
     /**
      * Constructor.
      */
-    public Languages(@NonNull final AppLocale appLocale) {
-        this.appLocale = appLocale;
+    public Languages(@NonNull final Supplier<AppLocale> appLocaleSupplier) {
+        this.appLocaleSupplier = appLocaleSupplier;
 
         final String[] languages = Locale.getISOLanguages();
         lang3ToLang2Map = new HashMap<>(languages.length);
@@ -90,7 +92,7 @@ public class Languages {
                            @Nullable final String language) {
 
         if (language != null && !language.isBlank()) {
-            final Locale locale = appLocale.getLocale(context, language);
+            final Locale locale = appLocaleSupplier.get().getLocale(context, language);
             if (locale != null) {
                 return locale;
             }
@@ -111,7 +113,7 @@ public class Languages {
     @NonNull
     public String getDisplayNameFromISO3(@NonNull final Context context,
                                          @NonNull final String iso3) {
-        final Locale langLocale = appLocale.getLocale(context, iso3);
+        final Locale langLocale = appLocaleSupplier.get().getLocale(context, iso3);
         if (langLocale == null) {
             return iso3;
         }
@@ -160,7 +162,7 @@ public class Languages {
             return "eng";
         } else {
             try {
-                return appLocale.create(code).getISO3Language();
+                return appLocaleSupplier.get().create(code).getISO3Language();
             } catch (@NonNull final MissingResourceException ignore) {
                 return code;
             }

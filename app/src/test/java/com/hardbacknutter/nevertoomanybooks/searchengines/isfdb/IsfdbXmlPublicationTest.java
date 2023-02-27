@@ -26,8 +26,6 @@ import androidx.preference.PreferenceManager;
 
 import java.io.EOFException;
 import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -70,11 +68,10 @@ class IsfdbXmlPublicationTest
     @Test
     void singleByExtId()
             throws ParserConfigurationException, IOException, SAXException {
-        setLocale(Locale.UK);
+        setLocale(searchEngine.getLocale(context));
         final String filename = "/isfdb/425189.xml";
 
-        final List<Locale> localeList = List.of(searchEngine.getLocale(context));
-        final RealNumberParser realNumberParser = new RealNumberParser(localeList);
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
         final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
 
         final IsfdbPublicationListHandler listHandler =

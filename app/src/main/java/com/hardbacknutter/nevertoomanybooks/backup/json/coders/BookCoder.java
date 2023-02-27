@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
+import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
@@ -111,6 +112,13 @@ public class BookCoder
         } else if (element instanceof String) {
             if (!((String) element).isEmpty()) {
                 out.put(key, element);
+            }
+
+        } else if (element instanceof Money) {
+            // Only write the value. The currency will be handled as a plain String type key.
+            final Money money = (Money) element;
+            if (!money.isZero()) {
+                out.put(key, money.getValue());
             }
         } else if (element instanceof Number) {
             if (((Number) element).doubleValue() != 0) {
