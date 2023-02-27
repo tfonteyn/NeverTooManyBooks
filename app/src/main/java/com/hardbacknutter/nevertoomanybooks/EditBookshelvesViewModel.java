@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 @SuppressWarnings("WeakerAccess")
@@ -46,6 +45,12 @@ public class EditBookshelvesViewModel
     private List<Bookshelf> list;
 
     /**
+     * Stores the bookshelf id we received when the fragment/vm got started.
+     * We'll return it if there is no selected Bookshelf when the user taps 'back'
+     */
+    private long weCameFromBookshelfId;
+
+    /**
      * Pseudo constructor.
      *
      * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
@@ -54,9 +59,10 @@ public class EditBookshelvesViewModel
         if (list == null) {
             list = ServiceLocator.getInstance().getBookshelfDao().getAll();
             if (args != null) {
-                final long id = args.getLong(DBKey.FK_BOOKSHELF);
-                SanityCheck.requirePositiveValue(id, DBKey.FK_BOOKSHELF);
-                selectedPosition = findSelectedPosition(id);
+                weCameFromBookshelfId = args.getLong(DBKey.FK_BOOKSHELF);
+                if (weCameFromBookshelfId > 0) {
+                    selectedPosition = findSelectedPosition(weCameFromBookshelfId);
+                }
             }
         }
     }
@@ -85,16 +91,15 @@ public class EditBookshelvesViewModel
     }
 
     /**
-     * Get the currently selected Bookshelf.
+     * Get the currently selected Bookshelf id, or the id we originally got when started.
      *
-     * @return Bookshelf, or {@code null} if none selected (which should never happen... flw)
+     * @return Bookshelf id
      */
-    @Nullable
-    Bookshelf getSelectedBookshelf() {
+    long getSelectedBookshelfId() {
         if (selectedPosition != RecyclerView.NO_POSITION) {
-            return list.get(selectedPosition);
+            return list.get(selectedPosition).getId();
         }
-        return null;
+        return weCameFromBookshelfId;
     }
 
     @NonNull

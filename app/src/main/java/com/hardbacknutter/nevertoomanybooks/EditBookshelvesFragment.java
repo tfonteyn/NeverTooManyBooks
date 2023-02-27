@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -87,7 +87,7 @@ public class EditBookshelvesFragment
                 @Override
                 public void handleOnBackPressed() {
                     final Intent resultIntent = EditBookshelvesContract
-                            .createResult(vm.getSelectedBookshelf());
+                            .createResult(vm.getSelectedBookshelfId());
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();

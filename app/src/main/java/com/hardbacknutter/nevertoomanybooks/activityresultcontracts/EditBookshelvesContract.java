@@ -43,30 +43,22 @@ public class EditBookshelvesContract
     /**
      * Create the result which {@link #parseResult(int, Intent)} will receive.
      *
-     * @param selectedBookshelf the Bookshelf which is currently selected,
-     *                          or {@code null} for none.
+     * @param id of the Bookshelf which is currently selected
      *
      * @return Intent
      */
     @NonNull
-    public static Intent createResult(@Nullable final Bookshelf selectedBookshelf) {
-        final Intent resultIntent = new Intent();
-        if (selectedBookshelf != null) {
-            resultIntent.putExtra(DBKey.FK_BOOKSHELF, selectedBookshelf.getId());
-        }
-        return resultIntent;
+    public static Intent createResult(final long id) {
+        return new Intent().putExtra(DBKey.FK_BOOKSHELF, id);
     }
 
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @NonNull final Long bookshelfId) {
-        final Intent intent = FragmentHostActivity
-                .createIntent(context, EditBookshelvesFragment.class);
-        if (bookshelfId != 0) {
-            intent.putExtra(DBKey.FK_BOOKSHELF, (long) bookshelfId);
-        }
-        return intent;
+                               @NonNull final Long id) {
+        return FragmentHostActivity
+                .createIntent(context, EditBookshelvesFragment.class)
+                .putExtra(DBKey.FK_BOOKSHELF, (long) id);
     }
 
     @NonNull
@@ -75,7 +67,7 @@ public class EditBookshelvesContract
                             @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             LoggerFactory.getLogger()
-                          .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
+                         .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
