@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.entities;
 
-import android.content.Context;
-
 import androidx.test.filters.MediumTest;
 
 import java.util.ArrayList;
@@ -28,8 +26,8 @@ import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 
 import org.junit.Test;
@@ -47,7 +45,6 @@ public class TocEntryTest
     @Test
     public void pruneTocEntries01()
             throws DaoWriteException {
-        final Context context = serviceLocator.getLocalizedAppContext();
         final Locale bookLocale = Locale.getDefault();
         final AuthorDao authorDao = serviceLocator.getAuthorDao();
         final TocEntryDao tocEntryDao = serviceLocator.getTocEntryDao();
@@ -102,7 +99,6 @@ public class TocEntryTest
     @Test
     public void pruneTocEntries02()
             throws DaoWriteException {
-        final Context context = serviceLocator.getLocalizedAppContext();
         final Locale bookLocale = Locale.getDefault();
         final AuthorDao authorDao = serviceLocator.getAuthorDao();
         final TocEntryDao tocEntryDao = serviceLocator.getTocEntryDao();
@@ -155,7 +151,6 @@ public class TocEntryTest
     @Test
     public void pruneTocEntries03()
             throws DaoWriteException {
-        final Context context = serviceLocator.getLocalizedAppContext();
         final Locale bookLocale = Locale.getDefault();
         final AuthorDao authorDao = serviceLocator.getAuthorDao();
         final TocEntryDao tocEntryDao = serviceLocator.getTocEntryDao();

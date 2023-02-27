@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.util.EnumSet;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
@@ -61,10 +62,14 @@ public class ZipArchiveWriterTest
     private long bookInDb;
     private int nrOfStyles;
 
+    private Locale systemLocale;
+
     @Before
     public void setup()
             throws DaoWriteException, StorageException {
         super.setup();
+        systemLocale = serviceLocator.getSystemLocaleList().get(0);
+
         bookInDb = serviceLocator.getBookDao().count();
         if (bookInDb < 10) {
             throw new IllegalStateException("need at least 10 books for testing");

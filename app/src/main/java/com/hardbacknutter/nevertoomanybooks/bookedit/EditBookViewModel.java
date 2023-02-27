@@ -118,9 +118,8 @@ public class EditBookViewModel
      * Lists in database so far, we cache them for performance but only load
      * them when really needed.
      * <p>
-     * FIXME: sometimes the user will have added a new item;
-     * then accesses the list again... and it will not show.
-     * => we don't refresh these lists!
+     * FIXME: sometimes the user will have added a new item; and then accesses
+     *  the list again... and it will not show. => we don't refresh these lists!
      */
     @Nullable
     private List<String> genres;

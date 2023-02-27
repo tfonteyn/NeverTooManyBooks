@@ -510,7 +510,7 @@ public class SearchBookUpdatesViewModel
 
         // a single book
         if (bookIdList != null && bookIdList.size() == 1) {
-            //URGENT: we should only return this if we actually modified the book
+            //FIXME: we should only return this if we actually modified the book
             book.putLong(BKEY_BOOK_MODIFIED, bookIdList.get(0));
         }
 
