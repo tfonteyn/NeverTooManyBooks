@@ -216,8 +216,7 @@ public class StripInfoReader
 
         searchEngine.setLoginHelper(loginHelper);
 
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        final SynchronizedDb db = serviceLocator.getDb();
+        final SynchronizedDb db = ServiceLocator.getInstance().getDb();
 
         final UserCollection uc = new UserCollection(context, searchEngine, userId,
                                                      new BookshelfMapper());

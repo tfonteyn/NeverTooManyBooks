@@ -193,6 +193,9 @@ public class JsonRecordReader
         if (record.getType().isPresent()) {
             final RecordType recordType = record.getType().get();
 
+            final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
+            final Style defaultStyle = stylesHelper.getDefault(context);
+
             try {
                 // Don't close this stream
                 final InputStream is = record.getInputStream();
@@ -213,7 +216,7 @@ public class JsonRecordReader
 
                     if (recordType == RecordType.Styles
                         || recordType == RecordType.AutoDetect) {
-                        readStyles(context, root);
+                        readStyles(context, root, stylesHelper);
                     }
 
                     if (recordType == RecordType.Preferences
@@ -228,12 +231,12 @@ public class JsonRecordReader
 
                     if (recordType == RecordType.Bookshelves
                         || recordType == RecordType.AutoDetect) {
-                        readBookshelves(context, root, helper);
+                        readBookshelves(context, root, helper, defaultStyle);
                     }
 
                     if (recordType == RecordType.CalibreLibraries
                         || recordType == RecordType.AutoDetect) {
-                        readCalibreLibraries(context, root, helper);
+                        readCalibreLibraries(context, root, helper, defaultStyle);
                     }
 
                     if (recordType == RecordType.CalibreCustomFields
@@ -243,7 +246,8 @@ public class JsonRecordReader
 
                     if (recordType == RecordType.Books
                         || recordType == RecordType.AutoDetect) {
-                        readBooks(context, root, helper, progressListener);
+                        readBooks(context, root, helper, defaultStyle,
+                                  progressListener);
                     }
                 }
             } catch (@NonNull final JSONException e) {
@@ -273,11 +277,11 @@ public class JsonRecordReader
     }
 
     private void readStyles(@NonNull final Context context,
-                            @NonNull final JSONObject root)
+                            @NonNull final JSONObject root,
+                            @NonNull final StylesHelper stylesHelper)
             throws JSONException {
         final JSONArray jsonRoot = root.optJSONArray(RecordType.Styles.getName());
         if (jsonRoot != null) {
-            final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
             new StyleCoder(context)
                     .decode(jsonRoot)
                     .forEach(stylesHelper::updateOrInsert);
@@ -322,14 +326,14 @@ public class JsonRecordReader
 
     private void readBookshelves(@NonNull final Context context,
                                  @NonNull final JSONObject root,
-                                 @NonNull final ImportHelper helper)
+                                 @NonNull final ImportHelper helper,
+                                 @NonNull final Style defaultStyle)
             throws JSONException,
                    UncheckedDaoWriteException {
         final JSONArray jsonRoot = root.optJSONArray(RecordType.Bookshelves.getName());
         if (jsonRoot != null) {
             final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
-            final Style defaultStyle = ServiceLocator.getInstance().getStyles()
-                                                     .getDefault(context);
+
             new BookshelfCoder(context, defaultStyle)
                     .decode(jsonRoot)
                     .forEach(bookshelf -> {
@@ -363,14 +367,13 @@ public class JsonRecordReader
 
     private void readCalibreLibraries(@NonNull final Context context,
                                       @NonNull final JSONObject root,
-                                      @NonNull final ImportHelper helper)
+                                      @NonNull final ImportHelper helper,
+                                      @NonNull final Style defaultStyle)
             throws JSONException {
         final JSONArray jsonRoot = root.optJSONArray(RecordType.CalibreLibraries.getName());
         if (jsonRoot != null) {
-            final CalibreLibraryDao libraryDao =
-                    ServiceLocator.getInstance().getCalibreLibraryDao();
-            final Style defaultStyle = ServiceLocator.getInstance().getStyles()
-                                                     .getDefault(context);
+            final CalibreLibraryDao libraryDao = ServiceLocator.getInstance()
+                                                               .getCalibreLibraryDao();
 
             new CalibreLibraryCoder(context, defaultStyle)
                     .decode(jsonRoot)
@@ -429,6 +432,7 @@ public class JsonRecordReader
     private void readBooks(@NonNull final Context context,
                            @NonNull final JSONObject root,
                            @NonNull final ImportHelper helper,
+                           @NonNull final Style defaultStyle,
                            @NonNull final ProgressListener progressListener)
             throws StorageException,
                    JSONException {
@@ -452,8 +456,6 @@ public class JsonRecordReader
         }
 
         final SynchronizedDb db = ServiceLocator.getInstance().getDb();
-        final Style defaultStyle = ServiceLocator.getInstance().getStyles()
-                                                 .getDefault(context);
 
         Synchronizer.SyncLock txLock = null;
 

@@ -49,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.Cover;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -353,7 +352,6 @@ public final class SyncReaderProcessor
                              @NonNull final Book localeBook,
                              @NonNull final Book remoteBook,
                              @NonNull final String key) {
-        final ServiceLocator sl = ServiceLocator.getInstance();
         switch (key) {
             case Book.BKEY_AUTHOR_LIST: {
                 final ArrayList<Author> list = remoteBook.getAuthors();
@@ -389,8 +387,7 @@ public final class SyncReaderProcessor
                 final ArrayList<Bookshelf> list = remoteBook.getBookshelves();
                 if (!list.isEmpty()) {
                     list.addAll(localeBook.getBookshelves());
-                    final BookshelfDao bookshelfDao = sl.getBookshelfDao();
-                    bookshelfDao.pruneList(context, list);
+                    ServiceLocator.getInstance().getBookshelfDao().pruneList(context, list);
                 }
                 break;
             }

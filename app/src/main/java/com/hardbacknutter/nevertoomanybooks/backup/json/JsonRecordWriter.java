@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.StyleCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.covers.Cover;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -158,8 +159,8 @@ public class JsonRecordWriter
             throws DataWriterException,
                    IOException {
 
-        final Style defaultStyle = ServiceLocator.getInstance().getStyles()
-                                                 .getDefault(context);
+        final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
+        final Style defaultStyle = stylesHelper.getDefault(context);
 
         final ExportResults results = new ExportResults();
         final JSONObject jsonData = new JSONObject();
@@ -172,8 +173,7 @@ public class JsonRecordWriter
                 && !progressListener.isCancelled()) {
                 progressListener.publishProgress(1, context.getString(R.string.lbl_styles));
 
-                final List<Style> styles =
-                        ServiceLocator.getInstance().getStyles().getStyles(context, true);
+                final List<Style> styles = stylesHelper.getStyles(context, true);
                 if (!styles.isEmpty()) {
                     final JsonCoder<Style> coder = new StyleCoder(context);
                     jsonData.put(RecordType.Styles.getName(), coder.encode(styles));
