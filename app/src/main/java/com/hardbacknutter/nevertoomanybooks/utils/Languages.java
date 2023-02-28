@@ -65,6 +65,8 @@ public class Languages {
 
     /**
      * Constructor.
+     *
+     * @param appLocaleSupplier deferred supplier for the {@link AppLocale}.
      */
     public Languages(@NonNull final Supplier<AppLocale> appLocaleSupplier) {
         this.appLocaleSupplier = appLocaleSupplier;
