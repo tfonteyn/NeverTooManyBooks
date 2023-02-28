@@ -282,7 +282,7 @@ public final class ServiceLocator {
     public StylesHelper getStyles() {
         synchronized (this) {
             if (stylesHelper == null) {
-                stylesHelper = new StylesHelper();
+                stylesHelper = new StylesHelper(this::getStyleDao);
             }
         }
         return stylesHelper;

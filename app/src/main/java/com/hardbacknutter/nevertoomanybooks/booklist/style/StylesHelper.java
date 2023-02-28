@@ -32,12 +32,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StyleDao;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 
 /**
  * Helper class encapsulating {@link StyleDao} access and internal in-memory caches.
@@ -57,6 +56,17 @@ public class StylesHelper {
      * Key: uuid of style.
      */
     private final Map<String, Style> cache = new LinkedHashMap<>();
+    @NonNull
+    private final Supplier<StyleDao> styleDaoSupplier;
+
+    /**
+     * Constructor.
+     *
+     * @param styleDaoSupplier deferred supplier for the {@link StyleDao}.
+     */
+    public StylesHelper(@NonNull final Supplier<StyleDao> styleDaoSupplier) {
+        this.styleDaoSupplier = styleDaoSupplier;
+    }
 
     /**
      * Get the specified style; {@code null} if not found.
@@ -183,10 +193,9 @@ public class StylesHelper {
     private Map<String, Style> getAllStyles(@NonNull final Context context) {
 
         if (cache.isEmpty()) {
-            cache.putAll(ServiceLocator.getInstance().getStyleDao()
-                                       .getBuiltinStyles(context));
-            cache.putAll(ServiceLocator.getInstance().getStyleDao()
-                                       .getUserStyles(context));
+            final StyleDao dao = styleDaoSupplier.get();
+            cache.putAll(dao.getBuiltinStyles(context));
+            cache.putAll(dao.getUserStyles(context));
         }
         return cache;
     }
@@ -213,13 +222,13 @@ public class StylesHelper {
     public void updateMenuOrder(@NonNull final Collection<Style> styles) {
         int order = 0;
 
-        final StyleDao styleDao = ServiceLocator.getInstance().getStyleDao();
+        final StyleDao dao = styleDaoSupplier.get();
 
         // sort the preferred styles at the top
         for (final Style style : styles) {
             if (style.isPreferred()) {
                 style.setMenuPosition(order);
-                styleDao.update(style);
+                dao.update(style);
                 order++;
             }
         }
@@ -227,7 +236,7 @@ public class StylesHelper {
         for (final Style style : styles) {
             if (!style.isPreferred()) {
                 style.setMenuPosition(order);
-                styleDao.update(style);
+                dao.update(style);
                 order++;
             }
         }
@@ -249,18 +258,20 @@ public class StylesHelper {
     @SuppressWarnings("UnusedReturnValue")
     public boolean updateOrInsert(@NonNull final Style style) {
         if (BuildConfig.DEBUG /* always */) {
-            SanityCheck.requireValue(style.getUuid(), ERROR_MISSING_UUID);
+            if (style.getUuid().isEmpty()) {
+                throw new IllegalStateException(ERROR_MISSING_UUID);
+            }
         }
 
-        final StyleDao styleDao = ServiceLocator.getInstance().getStyleDao();
+        final StyleDao dao = styleDaoSupplier.get();
 
         // resolve the id based on the UUID
         // e.g. we might be importing a style with a known UUID
-        style.setId(styleDao.getStyleIdByUuid(style.getUuid()));
+        style.setId(dao.getStyleIdByUuid(style.getUuid()));
 
         if (style.getId() == 0) {
             // When we get here, we know it's a UserStyle.
-            if (styleDao.insert((UserStyle) style) > 0) {
+            if (dao.insert((UserStyle) style) > 0) {
                 cache.put(style.getUuid(), style);
                 return true;
             }
@@ -281,14 +292,18 @@ public class StylesHelper {
      */
     public boolean update(@NonNull final Style style) {
         if (BuildConfig.DEBUG /* always */) {
-            SanityCheck.requireValue(style.getUuid(), ERROR_MISSING_UUID);
-            // Reminder: do NOT use requirePositiveValue here!
-            // It's perfectly fine to update builtin styles here;
+            if (style.getUuid().isEmpty()) {
+                throw new IllegalStateException(ERROR_MISSING_UUID);
+            }
+            // Reminder: do NOT require a positive value here!
+            // It's perfectly fine to update builtin styles;
             // ONLY new styles must be rejected
-            SanityCheck.requireNonZero(style.getId(), "A new Style cannot be updated");
+            if (style.getId() == 0) {
+                throw new IllegalStateException("A new Style cannot be updated");
+            }
         }
 
-        if (ServiceLocator.getInstance().getStyleDao().update(style)) {
+        if (styleDaoSupplier.get().update(style)) {
             cache.put(style.getUuid(), style);
             return true;
         }
@@ -304,12 +319,15 @@ public class StylesHelper {
      */
     public boolean delete(@NonNull final Style style) {
         if (BuildConfig.DEBUG /* always */) {
-            SanityCheck.requireValue(style.getUuid(), ERROR_MISSING_UUID);
-            SanityCheck.requirePositiveValue(style.getId(),
-                                             "A new or builtin Style cannot be deleted");
+            if (style.getUuid().isEmpty()) {
+                throw new IllegalStateException(ERROR_MISSING_UUID);
+            }
+            if (style.getId() <= 0) {
+                throw new IllegalStateException("A new or builtin Style cannot be deleted");
+            }
         }
 
-        if (ServiceLocator.getInstance().getStyleDao().delete(style)) {
+        if (styleDaoSupplier.get().delete(style)) {
             if (style.isUserDefined()) {
                 cache.remove(style.getUuid());
             }
@@ -320,6 +338,6 @@ public class StylesHelper {
 
 
     public void purgeNodeStatesByStyle(final long styleId) {
-        ServiceLocator.getInstance().getStyleDao().purgeNodeStatesByStyle(styleId);
+        styleDaoSupplier.get().purgeNodeStatesByStyle(styleId);
     }
 }
