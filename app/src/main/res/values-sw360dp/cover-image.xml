@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -52,7 +52,7 @@
     <dimen name="cover_browser_gallery_height">100dp</dimen>
     <dimen name="cover_browser_gallery_width">64dp</dimen>
 
-    <!-- multiplier: 1.0 -->
+    <!-- multiplier: 2.5 -->
     <dimen name="cover_browser_preview_height">250dp</dimen>
     <dimen name="cover_browser_preview_width">160dp</dimen>
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -96,11 +96,13 @@
     <dimen name="cover_browser_gallery_text_size">11sp</dimen>
     <integer name="cover_browser_gallery_span_count">1</integer>
 
-    <dimen name="cover_browser_gallery_height">100dp</dimen>
-    <dimen name="cover_browser_gallery_width">64dp</dimen>
+    <!-- multiplier: 0.9 -->
+    <dimen name="cover_browser_gallery_height">90dp</dimen>
+    <dimen name="cover_browser_gallery_width">57dp</dimen>
 
-    <dimen name="cover_browser_preview_height">250dp</dimen>
-    <dimen name="cover_browser_preview_width">160dp</dimen>
+    <!-- multiplier: 1.5 -->
+    <dimen name="cover_browser_preview_height">150dp</dimen>
+    <dimen name="cover_browser_preview_width">96dp</dimen>
 
     <!-- BoB layout. We use a square space for the image so both
          portrait/landscape cover images work out.

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -81,5 +81,6 @@
         <item name="android:scaleType">fitCenter</item>
         <item name="android:layout_width">@dimen/cover_browser_gallery_width</item>
         <item name="android:layout_height">@dimen/cover_browser_gallery_height</item>
+        <item name="android:padding">@dimen/cover_list_padding</item>
     </style>
 </resources>

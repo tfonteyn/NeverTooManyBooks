@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -188,16 +188,36 @@ public class CoverBrowserDialogFragment
 
         // When the preview image is clicked, send the fileSpec back to the caller and terminate.
         vb.preview.setOnClickListener(v -> {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                Log.d(TAG, "preview.onClick|filePath=" + vm.getSelectedFileAbsPath());
+            if (saveChanges()) {
+                dismiss();
             }
-
-            if (vm.getSelectedFileAbsPath() != null) {
-                Launcher.setResult(this, vm.getRequestKey(), vm.getSelectedFileAbsPath());
-            }
-            // close the CoverBrowserDialogFragment
-            dismiss();
         });
+    }
+
+    @Override
+    protected boolean onToolbarButtonClick(@Nullable final View button) {
+        if (button != null) {
+            final int id = button.getId();
+            if (id == R.id.btn_save || id == R.id.btn_positive) {
+                if (saveChanges()) {
+                    dismiss();
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean saveChanges() {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+            Log.d(TAG, "preview.onClick|filePath=" + vm.getSelectedFileAbsPath());
+        }
+
+        if (vm.getSelectedFileAbsPath() != null) {
+            Launcher.setResult(this, vm.getRequestKey(), vm.getSelectedFileAbsPath());
+            return true;
+        }
+        return false;
     }
 
     @Override
