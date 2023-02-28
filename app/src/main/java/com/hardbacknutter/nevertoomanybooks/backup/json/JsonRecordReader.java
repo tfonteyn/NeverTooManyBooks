@@ -58,7 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.UncheckedDaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -121,7 +120,6 @@ public class JsonRecordReader
 
     @NonNull
     private final Set<RecordType> allowedTypes;
-    private final RealNumberParser realNumberParser;
 
     /**
      * Constructor.
@@ -134,7 +132,6 @@ public class JsonRecordReader
                             @NonNull final Locale systemLocale,
                             @NonNull final Set<RecordType> allowedTypes) {
         super(context, systemLocale);
-        this.realNumberParser = new RealNumberParser(context);
         this.allowedTypes = allowedTypes;
     }
 
