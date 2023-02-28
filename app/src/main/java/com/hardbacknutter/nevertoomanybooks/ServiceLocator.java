@@ -32,10 +32,6 @@ import java.io.File;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -186,9 +182,9 @@ public final class ServiceLocator {
     }
 
     /**
-     * Public constructor.
+     * Constructor.
      *
-     * @param context <strong>Application</strong> or <strong>test</strong> context.
+     * @param context Current context
      */
     public static void create(@NonNull final Context context) {
         synchronized (ServiceLocator.class) {
@@ -330,13 +326,7 @@ public final class ServiceLocator {
                 //
                 // although, at this point, it seems LocaleList.getDefault() DOES return
                 // the correct list, so we could use that. It's not clear if it matters.
-                final LocaleList localeList = getSystemLocaleList();
-                final Set<Locale> locales = new LinkedHashSet<>();
-                for (int i = 0; i < localeList.size(); i++) {
-                    locales.add(localeList.get(i));
-                }
-                appLocale = new AppLocaleImpl(List.copyOf(locales), localeList.get(0),
-                                              this::getLanguages);
+                appLocale = new AppLocaleImpl(getSystemLocaleList(), this::getLanguages);
             }
         }
         return appLocale;
@@ -577,7 +567,7 @@ public final class ServiceLocator {
      * @return singleton
      */
     @NonNull
-    public StyleDao getStyleDao() {
+    private StyleDao getStyleDao() {
         synchronized (this) {
             if (styleDao == null) {
                 styleDao = new StyleDaoImpl(getDb());

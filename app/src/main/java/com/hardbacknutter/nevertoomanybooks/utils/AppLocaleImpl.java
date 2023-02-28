@@ -34,10 +34,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -60,9 +62,7 @@ public final class AppLocaleImpl
     /** Cache for Locales; key: the BOOK language (ISO3). */
     private final Map<String, Locale> cache = new HashMap<>();
     @NonNull
-    private final List<Locale> locales;
-    @NonNull
-    private final Locale systemLocale;
+    private final List<Locale> systemLocales;
     @NonNull
     private final Supplier<Languages> languagesSupplier;
     /**
@@ -78,11 +78,19 @@ public final class AppLocaleImpl
     @NonNull
     private String preferredLocaleSpec = SYSTEM_LANGUAGE;
 
-    public AppLocaleImpl(@NonNull final List<Locale> locales,
-                         @NonNull final Locale systemLocale,
+    /**
+     * Constructor.
+     *
+     * @param localeList        the system {@link LocaleList}
+     * @param languagesSupplier deferred supplier for the {@link Languages}
+     */
+    public AppLocaleImpl(@NonNull final LocaleList localeList,
                          @NonNull final Supplier<Languages> languagesSupplier) {
-        this.locales = locales;
-        this.systemLocale = systemLocale;
+        final Set<Locale> tmp = new LinkedHashSet<>();
+        for (int i = 0; i < localeList.size(); i++) {
+            tmp.add(localeList.get(i));
+        }
+        this.systemLocales = List.copyOf(tmp);
         this.languagesSupplier = languagesSupplier;
     }
 
@@ -109,7 +117,7 @@ public final class AppLocaleImpl
         }
 
         // Recreate the user-locale list adding the preferred one at the start.
-        final ArrayList<Locale> list = new ArrayList<>(locales);
+        final ArrayList<Locale> list = new ArrayList<>(systemLocales);
         list.add(0, preferredLocale);
         final LocaleList updatedLocaleList = new LocaleList(list.toArray(Z_ARRAY));
 
@@ -143,7 +151,7 @@ public final class AppLocaleImpl
     @NonNull
     public Locale create(@Nullable final String localeSpec) {
         if (localeSpec == null || localeSpec.isEmpty() || SYSTEM_LANGUAGE.equals(localeSpec)) {
-            return systemLocale;
+            return systemLocales.get(0);
         } else {
             // Create a Locale from a concatenated Locale string (e.g. 'de', 'en_AU')
             final String[] parts;
