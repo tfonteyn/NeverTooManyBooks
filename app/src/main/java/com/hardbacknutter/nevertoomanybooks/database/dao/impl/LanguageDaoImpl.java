@@ -57,6 +57,9 @@ public class LanguageDaoImpl
 
     /**
      * Constructor.
+     *
+     * @param db                underlying database
+     * @param languagesSupplier deferred supplier for the {@link Languages}
      */
     public LanguageDaoImpl(@NonNull final SynchronizedDb db,
                            @NonNull final Supplier<Languages> languagesSupplier) {
