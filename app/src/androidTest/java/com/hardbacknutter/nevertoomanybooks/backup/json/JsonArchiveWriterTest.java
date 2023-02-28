@@ -32,6 +32,7 @@ import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.DbPrep;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
@@ -76,10 +77,7 @@ public class JsonArchiveWriterTest
         super.setup();
         systemLocale = serviceLocator.getSystemLocaleList().get(0);
 
-        bookInDb = serviceLocator.getBookDao().count();
-        if (bookInDb < 10) {
-            throw new IllegalStateException("need at least 10 books for testing");
-        }
+        bookInDb = new DbPrep().maybeInstallTestData(context);
         nrOfStyles = serviceLocator.getStyles().getStyles(context, true).size();
     }
 

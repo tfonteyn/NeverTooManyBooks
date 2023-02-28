@@ -20,24 +20,20 @@
 package com.hardbacknutter.nevertoomanybooks.database;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.test.filters.MediumTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
+import com.hardbacknutter.nevertoomanybooks.DbPrep;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsViewModel;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
@@ -153,39 +149,17 @@ public class BookTest {
         publisherList.clear();
         publisherList.add(publisher[0]);
 
+        final DbPrep dbPrep = new DbPrep();
+        for (int i = 0; i < 2; i++) {
+            final File coverFile = dbPrep.getFile(context, i);
+            originalImageFileName[i] = coverFile.getAbsolutePath();
+            originalImageSize[i] = coverFile.length();
+        }
 
-        prepareTempCover(context, com.hardbacknutter.nevertoomanybooks.test.R.raw.cover1, 0);
-        prepareTempCover(context, com.hardbacknutter.nevertoomanybooks.test.R.raw.cover2, 1);
 
         assertTrue(bookshelf[0].getId() > 0);
         assertTrue(author[0].getId() > 0);
         assertTrue(publisher[0].getId() > 0);
-    }
-
-    /**
-     * Copy a file from the res/raw directory to the temp with a new/temp name.
-     *
-     * @param cIdx cover index to create
-     *
-     * @throws IOException on generic/other IO failures
-     */
-    private void prepareTempCover(@NonNull final Context context,
-                                  final int coverResId,
-                                  final int cIdx)
-            throws IOException, StorageException {
-
-
-        final Resources testRes = InstrumentationRegistry.getInstrumentation().getContext()
-                                                         .getResources();
-
-        final File coverFile = new File(CoverDir.getTemp(context), TestConstants.COVER[cIdx]);
-        try (final InputStream inputStream = testRes.openRawResource(coverResId);
-             final OutputStream os = new FileOutputStream(coverFile)) {
-            FileUtils.copy(inputStream, os);
-        }
-
-        originalImageFileName[cIdx] = coverFile.getAbsolutePath();
-        originalImageSize[cIdx] = coverFile.length();
     }
 
     /**
@@ -236,7 +210,7 @@ public class BookTest {
         authors.add(author[1]);
 
         // the book already has a front cover, now add a back cover
-        book.setCover(1, new File(tempDir, TestConstants.COVER[1]));
+        book.setCover(1, new File(tempDir, DbPrep.COVER[1]));
         // we're in 'Dirty' mode, so must be a temp file
         mustHaveTempCover(context, book, 1);
 
@@ -303,10 +277,12 @@ public class BookTest {
         mustHavePersistedCover(book, 0);
 
         // Add a new second cover of the read-only book
-        prepareTempCover(context, com.hardbacknutter.nevertoomanybooks.test.R.raw.cover2, 1);
+        final File coverFile = new DbPrep().getFile(context, 1);
+        originalImageFileName[1] = coverFile.getAbsolutePath();
+        originalImageSize[1] = coverFile.length();
 
         // will/must store the cover immediately
-        book.setCover(1, new File(tempDir, TestConstants.COVER[1]));
+        book.setCover(1, new File(tempDir, DbPrep.COVER[1]));
 
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
@@ -321,7 +297,7 @@ public class BookTest {
 
         assertTrue(book.contains(Book.BKEY_TMP_FILE_SPEC[cIdx]));
         assertEquals(CoverDir.getTemp(context).getAbsolutePath()
-                     + File.separatorChar + TestConstants.COVER[cIdx],
+                     + File.separatorChar + DbPrep.COVER[cIdx],
                      book.getString(Book.BKEY_TMP_FILE_SPEC[cIdx], null));
     }
 
@@ -395,7 +371,7 @@ public class BookTest {
         book.setAuthors(authorList);
         book.setPublishers(publisherList);
 
-        book.setCover(0, new File(CoverDir.getTemp(context), TestConstants.COVER[0]));
+        book.setCover(0, new File(CoverDir.getTemp(context), DbPrep.COVER[0]));
         // we're in 'Dirty' mode, so must be a temp file
         mustHaveTempCover(context, book, 0);
 
@@ -445,6 +421,6 @@ public class BookTest {
                 FileUtils.collectFiles(CoverDir.getTemp(context), jpgFilter, 10);
         // expected: 1: because "0.jpg" should be gone, but "1.jpg" will still be there
         assertEquals(1, tempFiles.size());
-        assertEquals(TestConstants.COVER[1], tempFiles.get(0).getName());
+        assertEquals(DbPrep.COVER[1], tempFiles.get(0).getName());
     }
 }

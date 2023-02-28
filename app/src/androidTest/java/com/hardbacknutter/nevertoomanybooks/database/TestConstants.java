@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,7 +39,6 @@ public final class TestConstants {
     static final String PUBLISHER = PREFIX + "PublisherName";
     static final String BOOK_TITLE = PREFIX + "Title";
     static final String TOC_TITLE = PREFIX + "TocTitle";
-    static final String[] COVER = {"0.jpg", "1.jpg"};
     // sample external id values
     static final int BOOK_ISFDB_123 = 123;
     static final String BOOK_LCCN_0 = "unused0";

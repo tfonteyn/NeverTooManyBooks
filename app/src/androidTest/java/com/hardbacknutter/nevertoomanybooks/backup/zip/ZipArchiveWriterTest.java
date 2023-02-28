@@ -31,6 +31,7 @@ import java.util.EnumSet;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.DbPrep;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
@@ -70,10 +71,7 @@ public class ZipArchiveWriterTest
         super.setup();
         systemLocale = serviceLocator.getSystemLocaleList().get(0);
 
-        bookInDb = serviceLocator.getBookDao().count();
-        if (bookInDb < 10) {
-            throw new IllegalStateException("need at least 10 books for testing");
-        }
+        bookInDb = new DbPrep().maybeInstallTestData(context);
         nrOfStyles = serviceLocator.getStyles().getStyles(context, true).size();
     }
 
