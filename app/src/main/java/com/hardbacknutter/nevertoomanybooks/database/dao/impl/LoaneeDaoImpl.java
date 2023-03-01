@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,12 +26,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.function.Supplier;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
@@ -66,12 +67,16 @@ public class LoaneeDaoImpl
     private static final String DELETE_BY_BOOK_ID =
             DELETE_FROM_ + DBDefinitions.TBL_BOOK_LOANEE.getName()
             + _WHERE_ + DBKey.FK_BOOK + "=?";
+    @NonNull
+    private final Supplier<BookDao> bookDaoSupplier;
 
     /**
      * Constructor.
      */
-    public LoaneeDaoImpl(@NonNull final SynchronizedDb db) {
+    public LoaneeDaoImpl(@NonNull final SynchronizedDb db,
+                         @NonNull final Supplier<BookDao> bookDaoSupplier) {
         super(db, TAG);
+        this.bookDaoSupplier = bookDaoSupplier;
     }
 
     @Override
@@ -79,7 +84,7 @@ public class LoaneeDaoImpl
                              @Nullable final String loanee) {
         final boolean success = setLoaneeInternal(bookId, loanee);
         if (success) {
-            ServiceLocator.getInstance().getBookDao().touch(bookId);
+            bookDaoSupplier.get().touch(bookId);
         }
         return success;
     }
@@ -89,7 +94,7 @@ public class LoaneeDaoImpl
                              @Nullable final String loanee) {
         final boolean success = setLoaneeInternal(book.getId(), loanee);
         if (success) {
-            ServiceLocator.getInstance().getBookDao().touch(book);
+            bookDaoSupplier.get().touch(book);
         }
         return success;
     }

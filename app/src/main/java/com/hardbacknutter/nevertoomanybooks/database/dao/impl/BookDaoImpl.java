@@ -45,7 +45,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
@@ -65,8 +64,13 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.CoverCacheDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.StripInfoDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -123,6 +127,26 @@ public class BookDaoImpl
     @NonNull
     private final DateParser dateParser;
     @NonNull
+    private final Supplier<AuthorDao> authorDaoSupplier;
+    @NonNull
+    private final Supplier<SeriesDao> seriesDaoSupplier;
+    @NonNull
+    private final Supplier<PublisherDao> publisherDaoSupplier;
+    @NonNull
+    private final Supplier<BookshelfDao> bookshelfDaoSupplier;
+    @NonNull
+    private final Supplier<TocEntryDao> tocEntryDaoSupplier;
+    @NonNull
+    private final Supplier<LoaneeDao> loaneeDaoDaoSupplier;
+    @NonNull
+    private final Supplier<CalibreDao> calibreDaoSupplier;
+    @NonNull
+    private final Supplier<StripInfoDao> stripInfoDaoSupplier;
+    @NonNull
+    private final Supplier<FtsDao> ftsDaoSupplier;
+    @NonNull
+    private final Supplier<CoverCacheDao> coverCacheDaoSupplier;
+    @NonNull
     private final Supplier<AppLocale> appLocaleSupplier;
 
     /**
@@ -133,9 +157,29 @@ public class BookDaoImpl
      */
     public BookDaoImpl(@NonNull final SynchronizedDb db,
                        @NonNull final Locale systemLocale,
+                       @NonNull final Supplier<AuthorDao> authorDaoSupplier,
+                       @NonNull final Supplier<SeriesDao> seriesDaoSupplier,
+                       @NonNull final Supplier<PublisherDao> publisherDaoSupplier,
+                       @NonNull final Supplier<BookshelfDao> bookshelfDaoSupplier,
+                       @NonNull final Supplier<TocEntryDao> tocEntryDaoSupplier,
+                       @NonNull final Supplier<LoaneeDao> loaneeDaoDaoSupplier,
+                       @NonNull final Supplier<CalibreDao> calibreDaoSupplier,
+                       @NonNull final Supplier<StripInfoDao> stripInfoDaoSupplier,
+                       @NonNull final Supplier<FtsDao> ftsDaoSupplier,
+                       @NonNull final Supplier<CoverCacheDao> coverCacheDaoSupplier,
                        @NonNull final Supplier<AppLocale> appLocaleSupplier) {
         super(db, TAG);
         dateParser = new ISODateParser(systemLocale);
+        this.authorDaoSupplier = authorDaoSupplier;
+        this.seriesDaoSupplier = seriesDaoSupplier;
+        this.publisherDaoSupplier = publisherDaoSupplier;
+        this.bookshelfDaoSupplier = bookshelfDaoSupplier;
+        this.tocEntryDaoSupplier = tocEntryDaoSupplier;
+        this.loaneeDaoDaoSupplier = loaneeDaoDaoSupplier;
+        this.calibreDaoSupplier = calibreDaoSupplier;
+        this.stripInfoDaoSupplier = stripInfoDaoSupplier;
+        this.ftsDaoSupplier = ftsDaoSupplier;
+        this.coverCacheDaoSupplier = coverCacheDaoSupplier;
         this.appLocaleSupplier = appLocaleSupplier;
     }
 
@@ -249,7 +293,7 @@ public class BookDaoImpl
             insertBookLinks(context, book, flags);
 
             // and populate the search suggestions table
-            ServiceLocator.getInstance().getFtsDao().insert(newBookId);
+            ftsDaoSupplier.get().insert(newBookId);
 
             // lastly we move the covers from the cache dir to their permanent dir/name
             try {
@@ -328,7 +372,7 @@ public class BookDaoImpl
 
                 insertBookLinks(context, book, flags);
 
-                ServiceLocator.getInstance().getFtsDao().update(book.getId());
+                ftsDaoSupplier.get().update(book.getId());
 
                 try {
                     bookDaoHelper.persistCovers();
@@ -403,7 +447,7 @@ public class BookDaoImpl
                     // and from the cache. If the user flipped the cache on/off we'll
                     // not always be cleaning up correctly. It's not that important though.
                     if (ImageUtils.isImageCachingEnabled()) {
-                        ServiceLocator.getInstance().getCoverCacheDao().delete(uuid);
+                        coverCacheDaoSupplier.get().delete(uuid);
                     }
                 }
             }
@@ -484,17 +528,16 @@ public class BookDaoImpl
         }
 
         if (book.contains(DBKey.LOANEE_NAME)) {
-            ServiceLocator.getInstance().getLoaneeDao()
-                          .setLoanee(book, book.getString(DBKey.LOANEE_NAME));
+            loaneeDaoDaoSupplier.get().setLoanee(book, book.getString(DBKey.LOANEE_NAME));
         }
 
         if (book.contains(DBKey.CALIBRE_BOOK_UUID)) {
             // Calibre libraries will be inserted if new, but not updated
-            ServiceLocator.getInstance().getCalibreDao().updateOrInsert(book);
+            calibreDaoSupplier.get().updateOrInsert(book);
         }
 
         if (book.contains(DBKey.SID_STRIP_INFO)) {
-            ServiceLocator.getInstance().getStripInfoDao().updateOrInsert(book);
+            stripInfoDaoSupplier.get().updateOrInsert(book);
         }
     }
 
@@ -525,7 +568,7 @@ public class BookDaoImpl
             }
         }
 
-        final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
+        final BookshelfDao bookshelfDao = bookshelfDaoSupplier.get();
 
         // fix id's and remove duplicates; shelves don't use a Locale, hence no lookup done.
         bookshelfDao.pruneList(context, list);
@@ -584,7 +627,7 @@ public class BookDaoImpl
             }
         }
 
-        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
+        final AuthorDao authorDao = authorDaoSupplier.get();
 
         final Function<Author, Locale> listLocaleSupplier = item -> {
             if (lookupLocale) {
@@ -657,7 +700,7 @@ public class BookDaoImpl
             }
         }
 
-        final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
+        final SeriesDao seriesDao = seriesDaoSupplier.get();
 
         final Function<Series, Locale> listLocaleSupplier = item -> {
             if (lookupLocale) {
@@ -730,7 +773,7 @@ public class BookDaoImpl
             }
         }
 
-        final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
+        final PublisherDao publisherDao = publisherDaoSupplier.get();
 
         final Function<Publisher, Locale> listLocaleSupplier = item -> {
             if (lookupLocale) {
@@ -802,7 +845,7 @@ public class BookDaoImpl
             }
         }
 
-        final TocEntryDao tocEntryDao = ServiceLocator.getInstance().getTocEntryDao();
+        final TocEntryDao tocEntryDao = tocEntryDaoSupplier.get();
 
         final Function<TocEntry, Locale> listLocaleSupplier = item -> {
             if (lookupLocale) {
@@ -822,7 +865,7 @@ public class BookDaoImpl
             return;
         }
 
-        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
+        final AuthorDao authorDao = authorDaoSupplier.get();
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.Insert.BOOK_TOC_ENTRY);
              SynchronizedStatement stmtInsToc = db.compileStatement(TocEntryDaoImpl.Sql.INSERT);

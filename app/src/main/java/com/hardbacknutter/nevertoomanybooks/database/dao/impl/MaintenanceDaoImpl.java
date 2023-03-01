@@ -30,7 +30,6 @@ import java.util.Locale;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -39,7 +38,10 @@ import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.MaintenanceDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
@@ -91,6 +93,12 @@ public class MaintenanceDaoImpl
             + _FROM_ + TBL_TOC_ENTRIES.getName();
 
     @NonNull
+    private final Supplier<AuthorDao> authorDaoSupplier;
+    @NonNull
+    private final Supplier<SeriesDao> seriesDaoSupplier;
+    @NonNull
+    private final Supplier<PublisherDao> publisherDaoSupplier;
+    @NonNull
     private final Supplier<AppLocale> appLocaleSupplier;
 
     /**
@@ -100,8 +108,14 @@ public class MaintenanceDaoImpl
      * @param appLocaleSupplier deferred supplier for the {@link AppLocale}.
      */
     public MaintenanceDaoImpl(@NonNull final SynchronizedDb db,
+                              @NonNull final Supplier<AuthorDao> authorDaoSupplier,
+                              @NonNull final Supplier<SeriesDao> seriesDaoSupplier,
+                              @NonNull final Supplier<PublisherDao> publisherDaoSupplier,
                               @NonNull final Supplier<AppLocale> appLocaleSupplier) {
         super(db, TAG);
+        this.authorDaoSupplier = authorDaoSupplier;
+        this.seriesDaoSupplier = seriesDaoSupplier;
+        this.publisherDaoSupplier = publisherDaoSupplier;
         this.appLocaleSupplier = appLocaleSupplier;
     }
 
@@ -113,10 +127,9 @@ public class MaintenanceDaoImpl
         // and linked with books via a link table.
 
         try {
-            final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-            serviceLocator.getSeriesDao().purge();
-            serviceLocator.getAuthorDao().purge();
-            serviceLocator.getPublisherDao().purge();
+            seriesDaoSupplier.get().purge();
+            authorDaoSupplier.get().purge();
+            publisherDaoSupplier.get().purge();
 
             db.analyze();
 

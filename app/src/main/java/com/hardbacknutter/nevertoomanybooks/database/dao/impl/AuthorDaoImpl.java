@@ -35,7 +35,6 @@ import java.util.Locale;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
@@ -74,12 +73,16 @@ public class AuthorDaoImpl
     private static final String ERROR_UPDATE_FROM = "Update from\n";
 
     private static final String[] Z_ARRAY_STRING = new String[0];
+    @NonNull
+    private final Supplier<BookDao> bookDaoSupplier;
 
     /**
      * Constructor.
      */
-    public AuthorDaoImpl(@NonNull final SynchronizedDb db) {
+    public AuthorDaoImpl(@NonNull final SynchronizedDb db,
+                         @NonNull final Supplier<BookDao> bookDaoSupplier) {
         super(db, TAG);
+        this.bookDaoSupplier = bookDaoSupplier;
     }
 
     /**
@@ -616,7 +619,7 @@ public class AuthorDaoImpl
 
             // Relink books with the target Author,
             // respecting the position of the Author in the list for each book.
-            final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
+            final BookDao bookDao = bookDaoSupplier.get();
             for (final long bookId : getBookIds(source.getId())) {
                 final Book book = Book.from(bookId);
 
@@ -673,7 +676,7 @@ public class AuthorDaoImpl
         if (!bookIds.isEmpty()) {
             // ENHANCE: we really should fetch each book individually
             final Locale bookLocale = context.getResources().getConfiguration().getLocales().get(0);
-            final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
+            final BookDao bookDao = bookDaoSupplier.get();
 
             Synchronizer.SyncLock txLock = null;
             try {

@@ -21,17 +21,18 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import androidx.annotation.NonNull;
 
+import java.util.function.Supplier;
+
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 
@@ -51,12 +52,16 @@ public class CalibreDaoImpl
             + ',' + DBKey.CALIBRE_BOOK_MAIN_FORMAT
             + ',' + DBKey.FK_CALIBRE_LIBRARY
             + ") VALUES (?,?,?,?,?)";
+    @NonNull
+    private final Supplier<CalibreLibraryDao> calibreLibraryDaoSupplier;
 
     /**
      * Constructor.
      */
-    public CalibreDaoImpl(@NonNull final SynchronizedDb db) {
+    public CalibreDaoImpl(@NonNull final SynchronizedDb db,
+                          @NonNull final Supplier<CalibreLibraryDao> calibreLibraryDaoSupplier) {
         super(db, TAG);
+        this.calibreLibraryDaoSupplier = calibreLibraryDaoSupplier;
     }
 
     @Override
@@ -84,7 +89,7 @@ public class CalibreDaoImpl
             }
         }
 
-        final CalibreLibraryDao libraryDao = ServiceLocator.getInstance().getCalibreLibraryDao();
+        final CalibreLibraryDao libraryDao = calibreLibraryDaoSupplier.get();
         final CalibreLibrary library;
 
         if (book.contains(Book.BKEY_CALIBRE_LIBRARY)) {

@@ -32,7 +32,6 @@ import java.util.Locale;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
@@ -41,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -67,6 +67,10 @@ public class TocEntryDaoImpl
     private static final String ERROR_INSERT_FROM = "Insert from\n";
     private static final String ERROR_UPDATE_FROM = "Update from\n";
     @NonNull
+    private final Supplier<BookDao> bookDaoSupplier;
+    @NonNull
+    private final Supplier<AuthorDao> authorDaoSupplier;
+    @NonNull
     private final Supplier<AppLocale> appLocaleSupplier;
 
     /**
@@ -76,8 +80,12 @@ public class TocEntryDaoImpl
      * @param appLocaleSupplier deferred supplier for the {@link AppLocale}.
      */
     public TocEntryDaoImpl(@NonNull final SynchronizedDb db,
+                           @NonNull final Supplier<BookDao> bookDaoSupplier,
+                           @NonNull final Supplier<AuthorDao> authorDaoSupplier,
                            @NonNull final Supplier<AppLocale> appLocaleSupplier) {
         super(db, TAG);
+        this.bookDaoSupplier = bookDaoSupplier;
+        this.authorDaoSupplier = authorDaoSupplier;
         this.appLocaleSupplier = appLocaleSupplier;
     }
 
@@ -101,8 +109,7 @@ public class TocEntryDaoImpl
                       @NonNull final Supplier<Locale> localeSupplier) {
 
         final Author primaryAuthor = tocEntry.getPrimaryAuthor();
-        ServiceLocator.getInstance().getAuthorDao()
-                      .fixId(context, primaryAuthor, localeSupplier);
+        authorDaoSupplier.get().fixId(context, primaryAuthor, localeSupplier);
 
         final long id = find(context, tocEntry, localeSupplier);
         tocEntry.setId(id);
@@ -198,7 +205,7 @@ public class TocEntryDaoImpl
         if (!bookIds.isEmpty()) {
             // ENHANCE: we really should fetch each book individually
             final Locale bookLocale = context.getResources().getConfiguration().getLocales().get(0);
-            final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
+            final BookDao bookDao = bookDaoSupplier.get();
 
             Synchronizer.SyncLock txLock = null;
             try {

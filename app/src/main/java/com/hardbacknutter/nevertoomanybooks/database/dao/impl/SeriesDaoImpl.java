@@ -34,7 +34,6 @@ import java.util.Locale;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
@@ -65,6 +64,8 @@ public class SeriesDaoImpl
     private static final String ERROR_INSERT_FROM = "Insert from\n";
     private static final String ERROR_UPDATE_FROM = "Update from\n";
     @NonNull
+    private final Supplier<BookDao> bookDaoSupplier;
+    @NonNull
     private final Supplier<AppLocale> appLocaleSupplier;
 
     /**
@@ -74,8 +75,10 @@ public class SeriesDaoImpl
      * @param appLocaleSupplier deferred supplier for the {@link AppLocale}.
      */
     public SeriesDaoImpl(@NonNull final SynchronizedDb db,
+                         @NonNull final Supplier<BookDao> bookDaoSupplier,
                          @NonNull final Supplier<AppLocale> appLocaleSupplier) {
         super(db, TAG);
+        this.bookDaoSupplier = bookDaoSupplier;
         this.appLocaleSupplier = appLocaleSupplier;
     }
 
@@ -366,7 +369,7 @@ public class SeriesDaoImpl
 
             // Relink books with the target Series,
             // respecting the position of the Series in the list for each book.
-            final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
+            final BookDao bookDao = bookDaoSupplier.get();
             for (final long bookId : getBookIds(source.getId())) {
                 final Book book = Book.from(bookId);
 
@@ -417,7 +420,7 @@ public class SeriesDaoImpl
         if (!bookIds.isEmpty()) {
             // ENHANCE: we really should fetch each book individually
             final Locale bookLocale = context.getResources().getConfiguration().getLocales().get(0);
-            final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
+            final BookDao bookDao = bookDaoSupplier.get();
 
             Synchronizer.SyncLock txLock = null;
             try {
