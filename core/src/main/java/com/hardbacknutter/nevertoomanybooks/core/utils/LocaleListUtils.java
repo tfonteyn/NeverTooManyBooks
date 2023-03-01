@@ -55,18 +55,18 @@ public final class LocaleListUtils {
     /**
      * Get an <strong>unmodifiable</strong> List of the user Locales.
      *
-     * @param context Current context
-     * @param prefix  (optional) Locale to add to the top of the list
+     * @param context     Current context
+     * @param firstLocale (optional) Locale to add to the top of the list
      *
      * @return unmodifiable list
      */
     @NonNull
     public static List<Locale> asList(@NonNull final Context context,
-                                      @Nullable final Locale prefix) {
+                                      @Nullable final Locale firstLocale) {
         // A linked set to eliminate any duplicates caused by the prefixed Locale
         final Set<Locale> locales = new LinkedHashSet<>();
-        if (prefix != null) {
-            locales.add(prefix);
+        if (firstLocale != null) {
+            locales.add(firstLocale);
         }
 
         final LocaleList localeList = context.getResources().getConfiguration().getLocales();
