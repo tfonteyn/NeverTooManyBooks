@@ -95,7 +95,7 @@ public class Base {
     private StylesHelper stylesHelper;
     private SharedPreferences mockPreferences;
     @Mock
-    private AppLocale appLocale;
+    protected AppLocale appLocale;
     @Mock
     private LocaleList localeList;
     private Locale jdkLocale;
