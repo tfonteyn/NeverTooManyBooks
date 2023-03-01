@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -49,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.MoneyParser;
 
@@ -72,6 +74,8 @@ public class BookDaoHelper {
     private static final Pattern T = Pattern.compile("T");
 
     @NonNull
+    private final Supplier<AppLocale> appLocaleSupplier;
+    @NonNull
     private final Book book;
     private final boolean isNew;
 
@@ -80,9 +84,17 @@ public class BookDaoHelper {
     private final RealNumberParser realNumberParser;
     private final MoneyParser moneyParser;
 
+    /**
+     * Constructor.
+     *
+     * @param context           Current context
+     * @param appLocaleSupplier deferred supplier for the {@link AppLocale}.
+     */
     public BookDaoHelper(@NonNull final Context context,
+                         @NonNull final Supplier<AppLocale> appLocaleSupplier,
                          @NonNull final Book book,
                          final boolean isNew) {
+        this.appLocaleSupplier = appLocaleSupplier;
         this.book = book;
         this.isNew = isNew;
 

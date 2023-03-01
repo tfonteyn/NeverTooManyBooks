@@ -27,7 +27,6 @@ import androidx.annotation.NonNull;
 
 import java.time.Month;
 import java.time.format.TextStyle;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -43,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 
@@ -65,6 +65,8 @@ class Formatter
     @NonNull
     private final Context context;
     @NonNull
+    private final AppLocale appLocale;
+    @NonNull
     private final Style style;
 
     /**
@@ -80,9 +82,11 @@ class Formatter
     private final List<Locale> locales;
 
     Formatter(@NonNull final Context context,
+              @NonNull final AppLocale appLocale,
               @NonNull final Style style,
               @NonNull final List<Locale> locales) {
         this.context = context;
+        this.appLocale = appLocale;
         this.style = style;
         this.locales = locales;
 
@@ -144,15 +148,7 @@ class Formatter
                         bookLocale = ServiceLocator.getInstance().getAppLocale()
                                                    .getLocale(context, lang);
                     }
-
-                    final List<Locale> allLocales;
-                    if (bookLocale != null) {
-                        allLocales = new ArrayList<>(locales);
-                        allLocales.add(0, bookLocale);
-                    } else {
-                        allLocales = locales;
-                    }
-                    return ReorderHelper.reorder(context, text, allLocales);
+                    return ReorderHelper.reorder(context, appLocale, text, bookLocale, locales);
                 } else {
                     return text;
                 }
@@ -162,7 +158,7 @@ class Formatter
                     return context.getString(R.string.bob_empty_publisher);
 
                 } else if (reorderTitleForDisplaying) {
-                    return ReorderHelper.reorder(context, text);
+                    return ReorderHelper.reorder(context, appLocale, text, null, locales);
                 } else {
                     return text;
                 }

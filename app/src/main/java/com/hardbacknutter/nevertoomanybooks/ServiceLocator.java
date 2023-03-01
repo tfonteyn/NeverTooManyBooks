@@ -405,7 +405,8 @@ public final class ServiceLocator {
     public BookDao getBookDao() {
         synchronized (this) {
             if (bookDao == null) {
-                bookDao = new BookDaoImpl(getDb(), getSystemLocaleList().get(0));
+                bookDao = new BookDaoImpl(getDb(), getSystemLocaleList().get(0),
+                                          this::getAppLocale);
             }
         }
         return bookDao;
@@ -525,7 +526,7 @@ public final class ServiceLocator {
     public MaintenanceDao getMaintenanceDao() {
         synchronized (this) {
             if (maintenanceDao == null) {
-                maintenanceDao = new MaintenanceDaoImpl(getDb());
+                maintenanceDao = new MaintenanceDaoImpl(getDb(), this::getAppLocale);
             }
         }
         return maintenanceDao;
@@ -535,7 +536,7 @@ public final class ServiceLocator {
     public PublisherDao getPublisherDao() {
         synchronized (this) {
             if (publisherDao == null) {
-                publisherDao = new PublisherDaoImpl(getDb());
+                publisherDao = new PublisherDaoImpl(getDb(), this::getAppLocale);
             }
         }
         return publisherDao;
@@ -545,7 +546,7 @@ public final class ServiceLocator {
     public SeriesDao getSeriesDao() {
         synchronized (this) {
             if (seriesDao == null) {
-                seriesDao = new SeriesDaoImpl(getDb());
+                seriesDao = new SeriesDaoImpl(getDb(), this::getAppLocale);
             }
         }
         return seriesDao;
@@ -580,7 +581,7 @@ public final class ServiceLocator {
     public TocEntryDao getTocEntryDao() {
         synchronized (this) {
             if (tocEntryDao == null) {
-                tocEntryDao = new TocEntryDaoImpl(getDb());
+                tocEntryDao = new TocEntryDaoImpl(getDb(), this::getAppLocale);
             }
         }
         return tocEntryDao;

@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -89,12 +90,19 @@ public class MaintenanceDaoImpl
             + ',' + DBKey.TITLE_OB
             + _FROM_ + TBL_TOC_ENTRIES.getName();
 
+    @NonNull
+    private final Supplier<AppLocale> appLocaleSupplier;
 
     /**
      * Constructor.
+     *
+     * @param db                Underlying database
+     * @param appLocaleSupplier deferred supplier for the {@link AppLocale}.
      */
-    public MaintenanceDaoImpl(@NonNull final SynchronizedDb db) {
+    public MaintenanceDaoImpl(@NonNull final SynchronizedDb db,
+                              @NonNull final Supplier<AppLocale> appLocaleSupplier) {
         super(db, TAG);
+        this.appLocaleSupplier = appLocaleSupplier;
     }
 
     @Override

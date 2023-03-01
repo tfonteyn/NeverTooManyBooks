@@ -40,6 +40,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -75,6 +76,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.MoneyParser;
 
@@ -119,14 +121,21 @@ public class BookDaoImpl
 
     @NonNull
     private final DateParser dateParser;
+    @NonNull
+    private final Supplier<AppLocale> appLocaleSupplier;
 
     /**
      * Constructor.
+     *
+     * @param db                Underlying database
+     * @param appLocaleSupplier deferred supplier for the {@link AppLocale}.
      */
     public BookDaoImpl(@NonNull final SynchronizedDb db,
-                       @NonNull final Locale systemLocale) {
+                       @NonNull final Locale systemLocale,
+                       @NonNull final Supplier<AppLocale> appLocaleSupplier) {
         super(db, TAG);
         dateParser = new ISODateParser(systemLocale);
+        this.appLocaleSupplier = appLocaleSupplier;
     }
 
     /**

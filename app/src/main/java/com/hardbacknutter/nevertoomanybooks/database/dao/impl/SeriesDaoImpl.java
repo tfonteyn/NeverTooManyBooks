@@ -31,6 +31,7 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
@@ -46,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.SeriesMergeHelper;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
@@ -61,12 +63,19 @@ public class SeriesDaoImpl
 
     private static final String ERROR_INSERT_FROM = "Insert from\n";
     private static final String ERROR_UPDATE_FROM = "Update from\n";
+    @NonNull
+    private final Supplier<AppLocale> appLocaleSupplier;
 
     /**
      * Constructor.
+     *
+     * @param db                Underlying database
+     * @param appLocaleSupplier deferred supplier for the {@link AppLocale}.
      */
-    public SeriesDaoImpl(@NonNull final SynchronizedDb db) {
+    public SeriesDaoImpl(@NonNull final SynchronizedDb db,
+                         @NonNull final Supplier<AppLocale> appLocaleSupplier) {
         super(db, TAG);
+        this.appLocaleSupplier = appLocaleSupplier;
     }
 
     @Override

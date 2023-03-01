@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
@@ -45,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntryMergeHelper;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -63,12 +65,19 @@ public class TocEntryDaoImpl
     private static final String TAG = "TocEntryDaoImpl";
     private static final String ERROR_INSERT_FROM = "Insert from\n";
     private static final String ERROR_UPDATE_FROM = "Update from\n";
+    @NonNull
+    private final Supplier<AppLocale> appLocaleSupplier;
 
     /**
      * Constructor.
+     *
+     * @param db                Underlying database
+     * @param appLocaleSupplier deferred supplier for the {@link AppLocale}.
      */
-    public TocEntryDaoImpl(@NonNull final SynchronizedDb db) {
+    public TocEntryDaoImpl(@NonNull final SynchronizedDb db,
+                           @NonNull final Supplier<AppLocale> appLocaleSupplier) {
         super(db, TAG);
+        this.appLocaleSupplier = appLocaleSupplier;
     }
 
     @Override

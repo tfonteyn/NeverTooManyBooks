@@ -23,8 +23,6 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
-
 public interface MaintenanceDao {
 
     /**
@@ -48,7 +46,6 @@ public interface MaintenanceDao {
      *
      * @param context Current context
      */
-    void rebuildOrderByTitleColumns(@NonNull Context context,
-                                    @NonNull AppLocale appLocale);
+    void rebuildOrderByTitleColumns(@NonNull Context context);
 
 }

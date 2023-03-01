@@ -55,10 +55,12 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.OnRowClickListener;
@@ -115,15 +117,16 @@ public class BooklistAdapter
      * @param style   to use
      */
     public BooklistAdapter(@NonNull final Context context,
+                           @NonNull final AppLocale appLocale,
                            @NonNull final Style style,
-                           @NonNull final Languages languages,
-                           @NonNull final List<Locale> locales) {
+                           @NonNull final Languages languages) {
         this.inflater = LayoutInflater.from(context);
         this.style = style;
         this.languages = languages;
 
+        final List<Locale> locales = LocaleListUtils.asList(context);
         realNumberParser = new RealNumberParser(locales);
-        formatter = new Formatter(context, style, locales);
+        formatter = new Formatter(context, appLocale, style, locales);
 
         final Resources res = context.getResources();
         levelIndent = res.getDimensionPixelSize(R.dimen.bob_group_level_padding_start);
