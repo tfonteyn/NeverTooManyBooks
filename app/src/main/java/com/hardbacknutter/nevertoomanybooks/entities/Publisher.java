@@ -29,8 +29,10 @@ import androidx.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 /**
@@ -133,8 +135,9 @@ public class Publisher
                            @Nullable final Details details,
                            @Nullable final Style style) {
         if (ReorderHelper.forDisplay(context)) {
+            final AppLocale appLocale = ServiceLocator.getInstance().getAppLocale();
             // Using the locale here is overkill;  see #getLocale(..)
-            return ReorderHelper.reorder(context, name);
+            return ReorderHelper.reorder(context, appLocale, name);
         } else {
             return name;
         }

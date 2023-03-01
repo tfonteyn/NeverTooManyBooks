@@ -121,14 +121,14 @@ public class TocEntryDaoImpl
                      final boolean lookupLocale,
                      @NonNull final Locale bookLocale) {
 
-        final OrderByHelper.OrderByData obd;
+        final OrderByData obd;
         if (lookupLocale) {
-            obd = OrderByHelper.createOrderByData(
-                    context, tocEntry.getTitle(), bookLocale,
-                    (c, defLocale) -> tocEntry.getLocale(c).orElse(defLocale));
+            final Locale locale = tocEntry.getLocale(context).orElse(bookLocale);
+            obd = OrderByData.create(context, appLocaleSupplier.get(),
+                                     tocEntry.getTitle(), locale);
         } else {
-            obd = OrderByHelper.createOrderByData(context, tocEntry.getTitle(),
-                                                  bookLocale, null);
+            obd = OrderByData.create(context, appLocaleSupplier.get(),
+                                     tocEntry.getTitle(), bookLocale);
         }
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.FIND_ID)) {

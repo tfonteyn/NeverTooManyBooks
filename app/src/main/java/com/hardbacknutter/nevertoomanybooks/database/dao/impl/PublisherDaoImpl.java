@@ -96,14 +96,14 @@ public class PublisherDaoImpl
                                 final boolean lookupLocale,
                                 @NonNull final Locale bookLocale) {
 
-        final OrderByHelper.OrderByData obd;
+        final OrderByData obd;
         if (lookupLocale) {
-            obd = OrderByHelper.createOrderByData(
-                    context, publisher.getName(), bookLocale,
-                    (c, defLocale) -> publisher.getLocale(c).orElse(defLocale));
+            final Locale locale = publisher.getLocale(context).orElse(bookLocale);
+            obd = OrderByData.create(context, appLocaleSupplier.get(),
+                                     publisher.getName(), locale);
         } else {
-            obd = OrderByHelper.createOrderByData(context, publisher.getName(),
-                                                  bookLocale, null);
+            obd = OrderByData.create(context, appLocaleSupplier.get(),
+                                     publisher.getName(), bookLocale);
         }
 
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{
@@ -259,9 +259,10 @@ public class PublisherDaoImpl
                        @NonNull final Locale bookLocale)
             throws DaoWriteException {
 
-        final OrderByHelper.OrderByData obd = OrderByHelper.createOrderByData(
-                context, publisher.getName(), bookLocale,
-                (c, defLocale) -> publisher.getLocale(c).orElse(defLocale));
+        final Locale locale = publisher.getLocale(context).orElse(bookLocale);
+        final OrderByData obd =
+                OrderByData.create(context, appLocaleSupplier.get(),
+                                   publisher.getName(), locale);
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             stmt.bindString(1, publisher.getName());
@@ -284,9 +285,10 @@ public class PublisherDaoImpl
                        @NonNull final Locale bookLocale)
             throws DaoWriteException {
 
-        final OrderByHelper.OrderByData obd = OrderByHelper.createOrderByData(
-                context, publisher.getName(), bookLocale,
-                (c, defLocale) -> publisher.getLocale(c).orElse(defLocale));
+        final Locale locale = publisher.getLocale(context).orElse(bookLocale);
+        final OrderByData obd =
+                OrderByData.create(context, appLocaleSupplier.get(),
+                                   publisher.getName(), locale);
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
             stmt.bindString(1, publisher.getName());

@@ -51,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.Cover;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -70,6 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.validators.OrValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
@@ -453,9 +453,9 @@ public class Book
                            @Nullable final Details details,
                            @Nullable final Style style) {
         if (ReorderHelper.forDisplay(context)) {
-            final List<Locale> locales =
-                    LocaleListUtils.asList(context, getLocaleOrUserLocale(context));
-            return ReorderHelper.reorder(context, getTitle(), locales);
+            final AppLocale appLocale = ServiceLocator.getInstance().getAppLocale();
+            return ReorderHelper.reorder(context, appLocale, getTitle(),
+                                         getLocaleOrUserLocale(context));
         } else {
             return getTitle();
         }

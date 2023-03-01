@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.MoneyParser;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 /**
  * Preprocess a Book for storage. This class does not access to database.
@@ -119,9 +120,16 @@ public class BookDaoHelper {
     BookDaoHelper process(@NonNull final Context context) {
         // Handle TITLE
         if (book.contains(DBKey.TITLE)) {
-            final OrderByHelper.OrderByData obd = OrderByHelper
-                    .createOrderByData(context, book.getTitle(), bookLocale, null);
-            book.putString(DBKey.TITLE_OB, SqlEncode.orderByColumn(obd.title, obd.locale));
+            final String title = book.getTitle();
+            final String reorderedTitle;
+            if (ReorderHelper.forSorting(context)) {
+                reorderedTitle = ReorderHelper.reorder(context, appLocaleSupplier.get(),
+                                                       title, bookLocale);
+            } else {
+                reorderedTitle = title;
+            }
+
+            book.putString(DBKey.TITLE_OB, SqlEncode.orderByColumn(reorderedTitle, bookLocale));
         }
 
         // store only valid bits. The 'get' will normalise any incorrect 'long' value
@@ -279,10 +287,10 @@ public class BookDaoHelper {
 
                        if (BuildConfig.DEBUG /* always */) {
                            LoggerFactory.getLogger()
-                                         .d(TAG, "preprocessExternalIds",
-                                            "NumberFormatException"
-                                            + "|name=" + key
-                                            + "|value=`" + o + '`');
+                                        .d(TAG, "preprocessExternalIds",
+                                           "NumberFormatException"
+                                           + "|name=" + key
+                                           + "|value=`" + o + '`');
                        }
                    }
                });
@@ -372,8 +380,9 @@ public class BookDaoHelper {
      *          be transformed to 0/1</li>
      * </ul>
      *
-     * @param tableInfo  destination table
-     * @param book       A collection with the columns to be set. May contain extra data.
+     * @param tableInfo destination table
+     * @param book      A collection with the columns to be set. May contain extra data.
+     *
      * @return New and filtered ContentValues
      */
     @SuppressWarnings("WeakerAccess")
@@ -420,10 +429,10 @@ public class BookDaoHelper {
                                         // We do NOT want to fail at this point.
                                         // Log, but skip this field.
                                         LoggerFactory.getLogger()
-                                                      .w(TAG, e.getMessage(),
-                                                         "columnName(int)=" + columnName,
-                                                         "entry=" + entry,
-                                                         "book=" + book);
+                                                     .w(TAG, e.getMessage(),
+                                                        "columnName(int)=" + columnName,
+                                                        "entry=" + entry,
+                                                        "book=" + book);
                                     }
                                 }
                                 break;
@@ -487,8 +496,8 @@ public class BookDaoHelper {
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                     LoggerFactory.getLogger()
-                                  .d(TAG, "storeCovers",
-                                     "BKEY_TMP_FILE_SPEC[" + cIdx + "]=`" + fileSpec + '`');
+                                 .d(TAG, "storeCovers",
+                                    "BKEY_TMP_FILE_SPEC[" + cIdx + "]=`" + fileSpec + '`');
                 }
 
                 final Cover cover = new Cover(uuid, cIdx);

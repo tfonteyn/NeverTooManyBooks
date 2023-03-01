@@ -73,7 +73,7 @@ abstract class BaseDaoImpl {
     /**
      * Constructor.
      *
-     * @param db     underlying database
+     * @param db     Underlying database
      * @param logTag of this DAO for logging.
      */
     BaseDaoImpl(@NonNull final SynchronizedDb db,

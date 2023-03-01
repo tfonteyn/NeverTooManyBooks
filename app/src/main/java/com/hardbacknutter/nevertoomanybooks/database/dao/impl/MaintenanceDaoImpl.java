@@ -127,11 +127,9 @@ public class MaintenanceDaoImpl
     }
 
     @Override
-    public void rebuildOrderByTitleColumns(@NonNull final Context context,
-                                           @NonNull final AppLocale appLocale) {
+    public void rebuildOrderByTitleColumns(@NonNull final Context context) {
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-
-        final boolean reorder = OrderByHelper.forSorting(context);
+        final List<Locale> locales = LocaleListUtils.asList(context, null);
 
         // Books
         String language;
@@ -147,12 +145,12 @@ public class MaintenanceDaoImpl
                 final int langIdx = cursor.getColumnIndex(DBKey.LANGUAGE);
                 while (cursor.moveToNext()) {
                     language = cursor.getString(langIdx);
-                    bookLocale = appLocale.getLocale(context, language);
+                    bookLocale = appLocaleSupplier.get().getLocale(context, language);
                     if (bookLocale == null) {
                         bookLocale = userLocale;
                     }
-                    rebuildOrderByTitleColumns(context, bookLocale, reorder, cursor,
-                                               TBL_BOOKS, DBKey.TITLE_OB);
+                    rebuildOrderByTitleColumns(context, bookLocale, locales,
+                                               cursor, TBL_BOOKS, DBKey.TITLE_OB);
                 }
             }
 
@@ -162,23 +160,23 @@ public class MaintenanceDaoImpl
             // but that is a huge overhead.
             try (Cursor cursor = db.rawQuery(SELECT_SERIES_FOR_ORDER_BY_REBUILD, null)) {
                 while (cursor.moveToNext()) {
-                    rebuildOrderByTitleColumns(context, userLocale, reorder, cursor,
-                                               TBL_SERIES, DBKey.SERIES_TITLE_OB);
+                    rebuildOrderByTitleColumns(context, userLocale, locales,
+                                               cursor, TBL_SERIES, DBKey.SERIES_TITLE_OB);
                 }
             }
 
             try (Cursor cursor = db.rawQuery(SELECT_PUBLISHERS_FOR_ORDER_BY_REBUILD, null)) {
                 while (cursor.moveToNext()) {
-                    rebuildOrderByTitleColumns(context, userLocale, reorder, cursor,
-                                               TBL_PUBLISHERS, DBKey.PUBLISHER_NAME_OB);
+                    rebuildOrderByTitleColumns(context, userLocale, locales,
+                                               cursor, TBL_PUBLISHERS, DBKey.PUBLISHER_NAME_OB);
                 }
             }
 
             // We should use primary book or Author Locale... but that is a huge overhead.
             try (Cursor cursor = db.rawQuery(TOC_ENTRY_TITLES, null)) {
                 while (cursor.moveToNext()) {
-                    rebuildOrderByTitleColumns(context, userLocale, reorder, cursor,
-                                               TBL_TOC_ENTRIES, DBKey.TITLE_OB);
+                    rebuildOrderByTitleColumns(context, userLocale, locales,
+                                               cursor, TBL_TOC_ENTRIES, DBKey.TITLE_OB);
                 }
             }
 
@@ -197,7 +195,7 @@ public class MaintenanceDaoImpl
      *
      * @param context    Current context
      * @param locale     to use for reordering this title
-     * @param reorder    flag whether to reorder or not
+     * @param locales
      * @param cursor     positioned on the row to handle
      * @param table      to update
      * @param domainName to update
@@ -207,7 +205,7 @@ public class MaintenanceDaoImpl
     @SuppressWarnings("UnusedReturnValue")
     private boolean rebuildOrderByTitleColumns(@NonNull final Context context,
                                                @NonNull final Locale locale,
-                                               final boolean reorder,
+                                               @NonNull final List<Locale> locales,
                                                @NonNull final Cursor cursor,
                                                @NonNull final TableDefinition table,
                                                @NonNull final String domainName) {
@@ -223,9 +221,9 @@ public class MaintenanceDaoImpl
         final String currentObTitle = cursor.getString(2);
 
         final String rebuildObTitle;
-        if (reorder) {
-            final List<Locale> locales = LocaleListUtils.asList(context, locale);
-            rebuildObTitle = ReorderHelper.reorder(context, title, locales);
+        if (ReorderHelper.forSorting(context)) {
+            rebuildObTitle = ReorderHelper.reorder(context, appLocaleSupplier.get(), title,
+                                                   locale, locales);
         } else {
             // Use the actual/original title
             rebuildObTitle = title;

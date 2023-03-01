@@ -56,7 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
-import com.hardbacknutter.nevertoomanybooks.database.dao.impl.OrderByHelper;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
@@ -184,7 +183,7 @@ public class SettingsFragment
         });
 
         //noinspection ConstantConditions
-        titleOrderByPref = findPreference(OrderByHelper.PK_SORT_TITLE_REORDERED);
+        titleOrderByPref = findPreference(ReorderHelper.PK_SORT_TITLE_REORDERED);
         //noinspection ConstantConditions
         setVisualIndicator(titleOrderByPref, StartupViewModel.PK_REBUILD_TITLE_OB);
         titleOrderByPref.setOnPreferenceChangeListener(this::onTitleOrderByChange);
@@ -384,7 +383,7 @@ public class SettingsFragment
                                           @NonNull final String key) {
         //TODO: once these are on the style level, the below can be removed as well.
         switch (key) {
-            case OrderByHelper.PK_SORT_TITLE_REORDERED:
+            case ReorderHelper.PK_SORT_TITLE_REORDERED:
             case ReorderHelper.PK_SHOW_TITLE_REORDERED: {
                 // Set the activity result so our caller will recreate itself
                 vm.setOnBackRequiresActivityRecreation();

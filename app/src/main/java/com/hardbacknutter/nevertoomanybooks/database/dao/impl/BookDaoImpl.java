@@ -191,7 +191,8 @@ public class BookDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            final BookDaoHelper bookDaoHelper = new BookDaoHelper(context, book, true);
+            final BookDaoHelper bookDaoHelper =
+                    new BookDaoHelper(context, appLocaleSupplier, book, true);
             final ContentValues cv = bookDaoHelper
                     .process(context)
                     .filterValues(db.getTableInfo(TBL_BOOKS));
@@ -292,7 +293,8 @@ public class BookDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            final BookDaoHelper bookDaoHelper = new BookDaoHelper(context, book, false);
+            final BookDaoHelper bookDaoHelper =
+                    new BookDaoHelper(context, appLocaleSupplier, book, false);
             final ContentValues cv = bookDaoHelper
                     .process(context)
                     .filterValues(db.getTableInfo(TBL_BOOKS));
@@ -803,14 +805,14 @@ public class BookDaoImpl
                     authorDao.insert(context, author, bookLocale);
                 }
 
-                final OrderByHelper.OrderByData obd;
+                final OrderByData obd;
                 if (lookupLocale) {
-                    obd = OrderByHelper.createOrderByData(
-                            context, tocEntry.getTitle(), bookLocale,
-                            (c, defLocale) -> tocEntry.getLocale(c).orElse(defLocale));
+                    final Locale locale = tocEntry.getLocale(context).orElse(bookLocale);
+                    obd = OrderByData.create(context, appLocaleSupplier.get(),
+                                             tocEntry.getTitle(), locale);
                 } else {
-                    obd = OrderByHelper.createOrderByData(context, tocEntry.getTitle(),
-                                                          bookLocale, null);
+                    obd = OrderByData.create(context, appLocaleSupplier.get(),
+                                             tocEntry.getTitle(), bookLocale);
                 }
 
                 if (tocEntry.getId() == 0) {

@@ -32,6 +32,7 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
@@ -137,7 +138,8 @@ public class BookLight
                            @Nullable final Details details,
                            @Nullable final Style style) {
         if (ReorderHelper.forDisplay(context)) {
-            return ReorderHelper.reorder(context, title);
+            final AppLocale appLocale = ServiceLocator.getInstance().getAppLocale();
+            return ReorderHelper.reorder(context, appLocale, title);
         } else {
             return title;
         }

@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
@@ -32,7 +33,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 
 /**
@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 public final class ReorderHelper {
 
     public static final String PK_SHOW_TITLE_REORDERED = "show.title.reordered";
+    public static final String PK_SORT_TITLE_REORDERED = "sort.title.reordered";
 
     /**
      * Static cache for the pv_reformat_titles_prefixes strings.
@@ -69,11 +70,19 @@ public final class ReorderHelper {
                                 .getBoolean(PK_SHOW_TITLE_REORDERED, false);
     }
 
+    @NonNull
+    public static String reorder(@NonNull final Context context,
+                                 @NonNull final AppLocale appLocale,
+                                 @NonNull final String title) {
+        return reorder(context, appLocale, title, null, LocaleListUtils.asList(context, null));
+    }
 
     @NonNull
     public static String reorder(@NonNull final Context context,
-                                 @NonNull final String title) {
-        return reorder(context, title, LocaleListUtils.asList(context));
+                                 @NonNull final AppLocale appLocale,
+                                 @NonNull final String title,
+                                 @NonNull final Locale locale) {
+        return reorder(context, appLocale, title, locale, LocaleListUtils.asList(context, null));
     }
 
     /**
@@ -83,15 +92,18 @@ public final class ReorderHelper {
      * It move "The, A, An" etc... to the end of the title. e.g. "The title" -> "title, The".
      * This is case sensitive on purpose.
      *
-     * @param context    Current context
-     * @param title      to reorder
-     * @param localeList to try find prefixes for
+     * @param context     Current context
+     * @param title       to reorder
+     * @param firstLocale to try first
+     * @param localeList  to try after
      *
      * @return reordered title, or the original if the pattern was not found
      */
     @NonNull
     public static String reorder(@NonNull final Context context,
+                                 @NonNull final AppLocale appLocale,
                                  @NonNull final String title,
+                                 @Nullable final Locale firstLocale,
                                  @NonNull final List<Locale> localeList) {
 
         final String[] titleWords = title.split(" ");
@@ -100,11 +112,12 @@ public final class ReorderHelper {
             return title;
         }
 
-        // Create a NEW list, and always add Locale.ENGLISH
+        // Create a NEW list, and add optional prefix at the start, and Locale.ENGLISH at the end
         final List<Locale> locales = new ArrayList<>(localeList);
+        if (firstLocale != null) {
+            locales.add(0, firstLocale);
+        }
         locales.add(Locale.ENGLISH);
-
-        final AppLocale appLocale = ServiceLocator.getInstance().getAppLocale();
 
         for (final Locale locale : locales) {
             // Creating the pattern is slow, so we cache it for every Locale.
@@ -131,5 +144,17 @@ public final class ReorderHelper {
             }
         }
         return title;
+    }
+
+    /**
+     * Get the global default for this preference.
+     *
+     * @param context Current context
+     *
+     * @return {@code true} if titles should be reordered. e.g. "The title" -> "title, The"
+     */
+    public static boolean forSorting(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(PK_SORT_TITLE_REORDERED, true);
     }
 }
