@@ -40,6 +40,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -585,7 +586,15 @@ public class BookDaoImpl
 
         final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
 
-        authorDao.pruneList(context, list, lookupLocale, bookLocale);
+        final Function<Author, Locale> listLocaleSupplier = item -> {
+            if (lookupLocale) {
+                return item.getLocale(context).orElse(bookLocale);
+            } else {
+                return bookLocale;
+            }
+        };
+
+        authorDao.pruneList(context, list, listLocaleSupplier);
 
         // Just delete all current links; we'll re-insert them for easier positioning
         deleteBookAuthorByBookId(bookId);
@@ -598,7 +607,7 @@ public class BookDaoImpl
         int position = 0;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.Insert.BOOK_AUTHOR)) {
             for (final Author author : list) {
-                authorDao.fixId(context, author, lookupLocale, bookLocale);
+                authorDao.fixId(context, author, () -> listLocaleSupplier.apply(author));
 
                 // create if needed - do NOT do updates unless explicitly allowed
                 if (author.getId() == 0) {
@@ -650,7 +659,15 @@ public class BookDaoImpl
 
         final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
 
-        seriesDao.pruneList(context, list, lookupLocale, bookLocale);
+        final Function<Series, Locale> listLocaleSupplier = item -> {
+            if (lookupLocale) {
+                return item.getLocale(context).orElse(bookLocale);
+            } else {
+                return bookLocale;
+            }
+        };
+
+        seriesDao.pruneList(context, list, listLocaleSupplier);
 
         // Just delete all current links; we'll re-insert them for easier positioning
         deleteBookSeriesByBookId(bookId);
@@ -663,7 +680,7 @@ public class BookDaoImpl
         int position = 0;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.Insert.BOOK_SERIES)) {
             for (final Series series : list) {
-                seriesDao.fixId(context, series, lookupLocale, bookLocale);
+                seriesDao.fixId(context, series, () -> listLocaleSupplier.apply(series));
 
                 // create if needed - do NOT do updates unless explicitly allowed
                 if (series.getId() == 0) {
@@ -715,7 +732,15 @@ public class BookDaoImpl
 
         final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
 
-        publisherDao.pruneList(context, list, lookupLocale, bookLocale);
+        final Function<Publisher, Locale> listLocaleSupplier = item -> {
+            if (lookupLocale) {
+                return item.getLocale(context).orElse(bookLocale);
+            } else {
+                return bookLocale;
+            }
+        };
+
+        publisherDao.pruneList(context, list, listLocaleSupplier);
 
         // Just delete all current links; we'll re-insert them for easier positioning
         deleteBookPublishersByBookId(bookId);
@@ -728,7 +753,7 @@ public class BookDaoImpl
         int position = 0;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.Insert.BOOK_PUBLISHER)) {
             for (final Publisher publisher : list) {
-                publisherDao.fixId(context, publisher, lookupLocale, bookLocale);
+                publisherDao.fixId(context, publisher, () -> listLocaleSupplier.apply(publisher));
 
                 // create if needed - do NOT do updates unless explicitly allowed
                 if (publisher.getId() == 0) {
@@ -779,7 +804,15 @@ public class BookDaoImpl
 
         final TocEntryDao tocEntryDao = ServiceLocator.getInstance().getTocEntryDao();
 
-        tocEntryDao.pruneList(context, list, lookupLocale, bookLocale);
+        final Function<TocEntry, Locale> listLocaleSupplier = item -> {
+            if (lookupLocale) {
+                return item.getLocale(context).orElse(bookLocale);
+            } else {
+                return bookLocale;
+            }
+        };
+
+        tocEntryDao.pruneList(context, list, listLocaleSupplier);
 
         // Just delete all current links; we'll re-insert them for easier positioning
         deleteBookTocEntryByBookId(bookId);
@@ -798,22 +831,22 @@ public class BookDaoImpl
             long position = 0;
             for (final TocEntry tocEntry : list) {
                 // Author must be handled separately;
-                // Create if needed - NEVER do updates here
                 final Author author = tocEntry.getPrimaryAuthor();
-                authorDao.fixId(context, author, lookupLocale, bookLocale);
+                authorDao.fixId(context, author, () -> {
+                    if (lookupLocale) {
+                        return author.getLocale(context).orElse(bookLocale);
+                    } else {
+                        return bookLocale;
+                    }
+                });
+                // Create if needed - NEVER do updates here
                 if (author.getId() == 0) {
                     authorDao.insert(context, author, bookLocale);
                 }
 
-                final OrderByData obd;
-                if (lookupLocale) {
-                    final Locale locale = tocEntry.getLocale(context).orElse(bookLocale);
-                    obd = OrderByData.create(context, appLocaleSupplier.get(),
-                                             tocEntry.getTitle(), locale);
-                } else {
-                    obd = OrderByData.create(context, appLocaleSupplier.get(),
-                                             tocEntry.getTitle(), bookLocale);
-                }
+                final OrderByData obd = OrderByData.create(context, appLocaleSupplier.get(),
+                                                           tocEntry.getTitle(),
+                                                           listLocaleSupplier.apply(tocEntry));
 
                 if (tocEntry.getId() == 0) {
                     stmtInsToc.bindLong(1, author.getId());

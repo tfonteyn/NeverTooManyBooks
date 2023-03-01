@@ -32,9 +32,9 @@ import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
 public class EditAuthorViewModel
@@ -123,7 +123,7 @@ public class EditAuthorViewModel
         final Author tmpRealAuthor = Author.from(currentRealAuthorName);
 
         final AuthorDao dao = ServiceLocator.getInstance().getAuthorDao();
-        final Author exiting = dao.findByName(context, tmpRealAuthor, false, bookLocale);
+        final Author exiting = dao.findByName(context, tmpRealAuthor, () -> bookLocale);
 
         if (exiting != null) {
             currentEdit.setRealAuthor(exiting);

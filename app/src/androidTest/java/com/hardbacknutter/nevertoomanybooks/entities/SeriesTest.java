@@ -69,7 +69,7 @@ public class SeriesTest
 
         // keep, position 0
         series = Series.from("The series (5)");
-        seriesDao.fixId(context, series, false, bookLocale);
+        seriesDao.fixId(context, series, () -> bookLocale);
         long id0 = series.getId();
         if (id0 == 0) {
             id0 = seriesDao.insert(context, series, bookLocale);
@@ -95,7 +95,7 @@ public class SeriesTest
 
         // keep, position 1
         series = Series.from("De reeks (1)");
-        seriesDao.fixId(context, series, false, bookLocale);
+        seriesDao.fixId(context, series, () -> bookLocale);
         long id1 = series.getId();
         if (id1 == 0) {
             id1 = seriesDao.insert(context, series, bookLocale);
@@ -112,7 +112,7 @@ public class SeriesTest
 
         // keep, position 2. Note duplicate id, but different nr as compared to position 0
         series = Series.from("The series (6)");
-        seriesDao.fixId(context, series, false, bookLocale);
+        seriesDao.fixId(context, series, () -> bookLocale);
         long id2 = series.getId();
         if (id2 == 0) {
             id2 = seriesDao.insert(context, series, bookLocale);
@@ -120,8 +120,7 @@ public class SeriesTest
         series.setId(100);
         list.add(series);
 
-        final boolean modified = seriesDao.pruneList(context, list, false,
-                                                     bookLocale);
+        final boolean modified = seriesDao.pruneList(context, list, item -> bookLocale);
 
         assertTrue(list.toString(), modified);
         assertEquals(list.toString(), 3, list.size());

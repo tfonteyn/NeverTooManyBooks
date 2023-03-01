@@ -30,7 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.utils.AsciiNormalizer;
 
 
-interface Mergeable {
+public interface Mergeable {
 
     /**
      * Create a hash on the {@link #getNameFields()} of the given Mergeable.

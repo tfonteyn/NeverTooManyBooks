@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
@@ -50,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.EntityMergeHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
@@ -62,7 +65,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TO
 
 public class AuthorDaoImpl
         extends BaseDaoImpl
-        implements AuthorDao {
+        implements AuthorDao, Blah {
 
     /** Log tag. */
     private static final String TAG = "AuthorDaoImpl";
@@ -139,15 +142,9 @@ public class AuthorDaoImpl
     @Nullable
     public Author findByName(@NonNull final Context context,
                              @NonNull final Author author,
-                             final boolean lookupLocale,
-                             @NonNull final Locale bookLocale) {
+                             @NonNull final Supplier<Locale> localeSupplier) {
 
-        final Locale authorLocale;
-        if (lookupLocale) {
-            authorLocale = author.getLocale(context).orElse(bookLocale);
-        } else {
-            authorLocale = bookLocale;
-        }
+        final Locale authorLocale = localeSupplier.get();
 
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{
                 SqlEncode.orderByColumn(author.getFamilyName(), authorLocale),
@@ -331,7 +328,7 @@ public class AuthorDaoImpl
                            @NonNull final Author author,
                            @NonNull final Locale bookLocale) {
         if (author.getId() == 0) {
-            fixId(context, author, true, bookLocale);
+            fixId(context, author, () -> author.getLocale(context).orElse(bookLocale));
             if (author.getId() == 0) {
                 return 0;
             }
@@ -348,7 +345,7 @@ public class AuthorDaoImpl
                                 @NonNull final Author author,
                                 @NonNull final Locale bookLocale) {
         if (author.getId() == 0) {
-            fixId(context, author, true, bookLocale);
+            fixId(context, author, () -> author.getLocale(context).orElse(bookLocale));
             if (author.getId() == 0) {
                 return 0;
             }
@@ -379,48 +376,43 @@ public class AuthorDaoImpl
     @Override
     public boolean pruneList(@NonNull final Context context,
                              @NonNull final Collection<Author> list,
-                             final boolean lookupLocale,
-                             @NonNull final Locale bookLocale) {
+                             @NonNull final Function<Author, Locale> localeSupplier) {
         if (list.isEmpty()) {
             return false;
         }
 
-        final AuthorMergeHelper mergeHelper = new AuthorMergeHelper();
-        return mergeHelper.merge(context, list,
-                                 current -> {
-                                     if (lookupLocale) {
-                                         return current.getLocale(context).orElse(bookLocale);
-                                     } else {
-                                         return bookLocale;
-                                     }
-                                 },
+        final EntityMergeHelper<Author> mergeHelper = new AuthorMergeHelper();
+        return mergeHelper.merge(context, list, localeSupplier,
                                  // Don't lookup the locale a 2nd time.
-                                 (current, locale) -> fixId(context, current, false, locale));
+                                 (current, locale) -> fixId(context, current, () -> locale));
+    }
+
+    @Override
+    public EntityMergeHelper<Author> getMergeHelper() {
+        return new AuthorMergeHelper();
     }
 
     @Override
     public void fixId(@NonNull final Context context,
                       @NonNull final Author author,
-                      final boolean lookupLocale,
-                      @NonNull final Locale bookLocale) {
-        final Author found = findByName(context, author, lookupLocale, bookLocale);
+                      @NonNull final Supplier<Locale> localeSupplier) {
+        final Author found = findByName(context, author, localeSupplier);
         author.setId(found == null ? 0 : found.getId());
 
         final Author realAuthor = author.getRealAuthor();
         if (realAuthor != null) {
-            fixId(context, realAuthor, lookupLocale, bookLocale);
+            fixId(context, realAuthor, localeSupplier);
         }
     }
 
     @Override
     public void refresh(@NonNull final Context context,
                         @NonNull final Author author,
-                        final boolean lookupLocale,
-                        @NonNull final Locale bookLocale) {
+                        @NonNull final Supplier<Locale> localeSupplier) {
 
         // If needed, check if we already have it in the database.
         if (author.getId() == 0) {
-            fixId(context, author, lookupLocale, bookLocale);
+            fixId(context, author, localeSupplier);
         }
 
         // If we do already have it, update the object
@@ -560,7 +552,7 @@ public class AuthorDaoImpl
             return;
         }
 
-        fixId(context, realAuthor, false, bookLocale);
+        fixId(context, realAuthor, () -> bookLocale);
         if (realAuthor.getId() == 0) {
             insert(context, realAuthor, bookLocale);
         } else {

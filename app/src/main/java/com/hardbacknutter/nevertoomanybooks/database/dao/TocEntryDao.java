@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
@@ -39,20 +41,14 @@ public interface TocEntryDao {
     /**
      * Passed a list of Objects, remove duplicates.
      *
-     * @param context      Current context
-     * @param list         List to clean up
-     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
-     *                     This can be (relatively) slow, and hence should be {@code false}
-     *                     during for example an import.
-     * @param bookLocale   Locale to use if the item has none set,
-     *                     or if lookupLocale was {@code false}
+     * @param context Current context
+     * @param list    List to clean up
      *
      * @return {@code true} if the list was modified.
      */
     boolean pruneList(@NonNull Context context,
                       @NonNull Collection<TocEntry> list,
-                      boolean lookupLocale,
-                      @NonNull Locale bookLocale);
+                      @NonNull Function<TocEntry, Locale> localeSupplier);
 
     /**
      * Tries to find the item in the database using all or some of its fields (except the id).
@@ -60,37 +56,26 @@ public interface TocEntryDao {
      * <p>
      * If the item has 'sub' items, then it should call those as well.
      *
-     * @param context      Current context
-     * @param tocEntry     to update
-     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
-     *                     This can be (relatively) slow, and hence should be {@code false}
-     *                     during for example an import.
-     * @param bookLocale   Locale to use if the item has none set,
-     *                     or if lookupLocale was {@code false}
+     * @param context  Current context
+     * @param tocEntry to update
      */
     void fixId(@NonNull Context context,
                @NonNull TocEntry tocEntry,
-               boolean lookupLocale,
-               @NonNull Locale bookLocale);
+               @NonNull Supplier<Locale> localeSupplier);
 
     /**
      * Return the {@link TocEntry} id. The incoming object is not modified.
      * Note that the publication year is NOT used for comparing, under the assumption that
      * two search-sources can give different dates by mistake.
      *
-     * @param context      Current context
-     * @param tocEntry     to search for
-     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
-     *                     This can be (relatively) slow, and hence should be {@code false}
-     *                     during for example an import.
-     * @param bookLocale   Locale to use if the item has none set
+     * @param context  Current context
+     * @param tocEntry to search for
      *
      * @return the id, or 0 (i.e. 'new') when not found
      */
     long find(@NonNull Context context,
               @NonNull TocEntry tocEntry,
-              boolean lookupLocale,
-              @NonNull Locale bookLocale);
+              @NonNull Supplier<Locale> localeSupplier);
 
     /**
      * Get all TOC entries; mainly for the purpose of backups.

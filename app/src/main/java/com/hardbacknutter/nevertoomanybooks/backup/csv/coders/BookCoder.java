@@ -333,7 +333,7 @@ public class BookCoder {
             final ArrayList<TocEntry> list = tocCoder.decodeList(encodedList);
             if (!list.isEmpty()) {
                 // Force using the Book Locale, otherwise the import is far to slow.
-                serviceLocator.getTocEntryDao().pruneList(context, list, false, bookLocale);
+                serviceLocator.getTocEntryDao().pruneList(context, list, item -> bookLocale);
                 book.setToc(list);
             }
         }

@@ -92,7 +92,7 @@ public class AuthorTest
 
         // Keep, position 0
         author = Author.from(ISAAC_ASIMOV);
-        authorDao.fixId(context, author, false, bookLocale);
+        authorDao.fixId(context, author, () -> bookLocale);
         long id0 = author.getId();
         if (id0 == 0) {
             id0 = authorDao.insert(context, author, bookLocale);
@@ -116,7 +116,7 @@ public class AuthorTest
         final Author author2 = Author.from(PAUL_FRENCH);
         author2.setId(FAKE_ID_3);
         author2.setRealAuthor(author);
-        authorDao.fixId(context, author2, false, bookLocale);
+        authorDao.fixId(context, author2, () -> bookLocale);
         long id1 = author2.getId();
         if (id1 == 0) {
             id1 = authorDao.insert(context, author2, bookLocale);
@@ -125,7 +125,7 @@ public class AuthorTest
 
         // keep, position 2
         author = Author.from(PHILIP_JOSE_FARMER);
-        authorDao.fixId(context, author, false, bookLocale);
+        authorDao.fixId(context, author, () -> bookLocale);
         long id2 = author.getId();
         if (id2 == 0) {
             id2 = authorDao.insert(context, author, bookLocale);
@@ -145,7 +145,7 @@ public class AuthorTest
 
         // keep, position 3
         author = Author.from(PHILIP_DICK);
-        authorDao.fixId(context, author, false, bookLocale);
+        authorDao.fixId(context, author, () -> bookLocale);
         long id3 = author.getId();
         if (id3 == 0) {
             id3 = authorDao.insert(context, author, bookLocale);
@@ -166,7 +166,7 @@ public class AuthorTest
         author.setType(Author.TYPE_CONTRIBUTOR);
         list.add(author);
 
-        final boolean modified = authorDao.pruneList(context, list, false, bookLocale);
+        final boolean modified = authorDao.pruneList(context, list, item -> bookLocale);
 
         assertTrue(list.toString(), modified);
         assertEquals(list.toString(), 4, list.size());
@@ -215,7 +215,7 @@ public class AuthorTest
 
         // keep, position 0
         author = Author.from(PHILIP_JOSE_FARMER_VARIANT);
-        authorDao.fixId(context, author, false, bookLocale);
+        authorDao.fixId(context, author, () -> bookLocale);
         final long id0 = author.getId();
         author.setId(FAKE_ID_1);
         author.setType(Author.TYPE_UNKNOWN);
@@ -233,7 +233,7 @@ public class AuthorTest
         author.setType(Author.TYPE_AFTERWORD);
         authorList.add(author);
 
-        final boolean modified = authorDao.pruneList(context, authorList, false, bookLocale);
+        final boolean modified = authorDao.pruneList(context, authorList, item -> bookLocale);
 
         assertTrue(modified);
         assertEquals(1, authorList.size());

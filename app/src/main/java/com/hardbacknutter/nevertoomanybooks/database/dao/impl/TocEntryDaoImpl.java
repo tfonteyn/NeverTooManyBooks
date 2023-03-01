@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -83,53 +84,37 @@ public class TocEntryDaoImpl
     @Override
     public boolean pruneList(@NonNull final Context context,
                              @NonNull final Collection<TocEntry> list,
-                             final boolean lookupLocale,
-                             @NonNull final Locale bookLocale) {
+                             @NonNull final Function<TocEntry, Locale> localeSupplier) {
         if (list.isEmpty()) {
             return false;
         }
 
         final TocEntryMergeHelper mergeHelper = new TocEntryMergeHelper();
-        return mergeHelper.merge(context, list,
-                                 current -> {
-                                     if (lookupLocale) {
-                                         return current.getLocale(context).orElse(bookLocale);
-                                     } else {
-                                         return bookLocale;
-                                     }
-                                 },
+        return mergeHelper.merge(context, list, localeSupplier,
                                  // Don't lookup the locale a 2nd time.
-                                 (current, locale) -> fixId(context, current, false, locale));
+                                 (current, locale) -> fixId(context, current, () -> locale));
     }
 
     @Override
     public void fixId(@NonNull final Context context,
                       @NonNull final TocEntry tocEntry,
-                      final boolean lookupLocale,
-                      @NonNull final Locale bookLocale) {
+                      @NonNull final Supplier<Locale> localeSupplier) {
 
+        final Author primaryAuthor = tocEntry.getPrimaryAuthor();
         ServiceLocator.getInstance().getAuthorDao()
-                      .fixId(context, tocEntry.getPrimaryAuthor(), lookupLocale, bookLocale);
+                      .fixId(context, primaryAuthor, localeSupplier);
 
-        final long id = find(context, tocEntry, lookupLocale, bookLocale);
+        final long id = find(context, tocEntry, localeSupplier);
         tocEntry.setId(id);
     }
 
     @Override
     public long find(@NonNull final Context context,
                      @NonNull final TocEntry tocEntry,
-                     final boolean lookupLocale,
-                     @NonNull final Locale bookLocale) {
+                     @NonNull final Supplier<Locale> localeSupplier) {
 
-        final OrderByData obd;
-        if (lookupLocale) {
-            final Locale locale = tocEntry.getLocale(context).orElse(bookLocale);
-            obd = OrderByData.create(context, appLocaleSupplier.get(),
-                                     tocEntry.getTitle(), locale);
-        } else {
-            obd = OrderByData.create(context, appLocaleSupplier.get(),
-                                     tocEntry.getTitle(), bookLocale);
-        }
+        final OrderByData obd = OrderByData.create(context, appLocaleSupplier.get(),
+                                                   tocEntry.getTitle(), localeSupplier.get());
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.FIND_ID)) {
             stmt.bindLong(1, tocEntry.getPrimaryAuthor().getId());

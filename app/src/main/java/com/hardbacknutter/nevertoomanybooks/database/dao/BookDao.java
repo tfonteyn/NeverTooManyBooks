@@ -33,9 +33,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.core.database.TypedCursor;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
@@ -46,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 public interface BookDao {
 
@@ -151,11 +151,6 @@ public interface BookDao {
      *                     <strong>ONLY</strong> set this when actually needed.
      *                     Do not set this during for example an import.
      * @param list         the list of authors
-     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
-     *                     This can be (relatively) slow, and hence should be {@code false}
-     *                     during for example an import.
-     * @param bookLocale   Locale to use if the item has none set,
-     *                     or if lookupLocale was {@code false}
      *
      * @throws DaoWriteException    on failure
      * @throws TransactionException a transaction must be started before calling this method
@@ -199,7 +194,6 @@ public interface BookDao {
                       boolean lookupLocale,
                       @NonNull Locale bookLocale)
             throws DaoWriteException;
-
     /**
      * Create the link between {@link Book} and {@link Publisher}.
      * {@link DBDefinitions#TBL_BOOK_PUBLISHER}

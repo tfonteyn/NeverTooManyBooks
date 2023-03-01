@@ -29,6 +29,8 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -50,39 +52,26 @@ public interface EntityBookLinksDao<T extends Entity>
      * given-name of the author is empty. e.g. "Asimov" and "Asimov"+"Isaac"
      * We only return the <strong>first entity found</strong>.
      *
-     * @param context      Current context
-     * @param item         to find the id of
-     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
-     *                     This can be (relatively) slow, and hence should be {@code false}
-     *                     during for example an import.
-     * @param bookLocale   Locale to use if the item has none set
+     * @param context Current context
+     * @param item    to find the id of
      *
      * @return the {@link T}, or {@code null} if not found
      */
     @Nullable
     T findByName(@NonNull Context context,
                  @NonNull T item,
-                 boolean lookupLocale,
-                 @NonNull Locale bookLocale);
+                 @NonNull Supplier<Locale> localeSupplier);
 
     /**
      * Find a {@link T} by using the <strong>name</strong> fields.
      * If found, updates <strong>ONLY</strong> the id with the one found in the database.
      *
-     * @param context      Current context
-     * @param item         to update
-     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
-     *                     This can be (relatively) slow, and hence should be {@code false}
-     *                     during for example an import.
-     * @param bookLocale   Locale to use if the item has none set,
-     *                     or if lookupLocale was {@code false}
-     *
-     * @see #refresh(Context, Entity, boolean, Locale)
+     * @param context Current context
+     * @param item    to update
      */
     void fixId(@NonNull Context context,
                @NonNull T item,
-               boolean lookupLocale,
-               @NonNull Locale bookLocale);
+               @NonNull Supplier<Locale> localeSupplier);
 
     /**
      * Check for books which do not have a {@link T} at position 1.
@@ -131,7 +120,7 @@ public interface EntityBookLinksDao<T extends Entity>
      * @param bookshelfId id of the {@link Bookshelf}
      *
      * @return list with book ID's linked to this item
-     * which are present on the given {@link Bookshelf}
+     *         which are present on the given {@link Bookshelf}
      */
     @NonNull
     ArrayList<Long> getBookIds(long itemId,
@@ -197,36 +186,24 @@ public interface EntityBookLinksDao<T extends Entity>
      * Will <strong>NOT</strong> insert a new {@link T} if not found;
      * instead the id of the item will be set to {@code 0}, i.e. 'new'.
      *
-     * @param context      Current context
-     * @param item         to refresh
-     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
-     *                     This can be (relatively) slow, and hence should be {@code false}
-     *                     during for example an import.
-     * @param bookLocale   Locale to use if the item has none set
-     *
-     * @see #fixId(Context, Entity, boolean, Locale)
+     * @param context Current context
+     * @param item    to refresh
      */
     void refresh(@NonNull Context context,
                  @NonNull T item,
-                 boolean lookupLocale,
-                 @NonNull Locale bookLocale);
+                 @NonNull Supplier<Locale> localeSupplier);
 
     /**
      * Remove duplicates. We keep the first occurrence.
      *
-     * @param context      Current context
-     * @param list         List to clean up
-     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
-     *                     This can be (relatively) slow, and hence should be {@code false}
-     *                     during for example an import.
-     * @param bookLocale   Locale to use if the item has none set
+     * @param context Current context
+     * @param list    List to clean up
      *
      * @return {@code true} if the list was modified.
      */
     boolean pruneList(@NonNull Context context,
                       @NonNull Collection<T> list,
-                      boolean lookupLocale,
-                      @NonNull Locale bookLocale);
+                      @NonNull Function<T, Locale> localeSupplier);
 
     /**
      * Delete orphaned records.

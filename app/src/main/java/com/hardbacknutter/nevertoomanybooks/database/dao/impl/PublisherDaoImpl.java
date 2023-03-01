@@ -30,6 +30,7 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -93,18 +94,11 @@ public class PublisherDaoImpl
     @Nullable
     public Publisher findByName(@NonNull final Context context,
                                 @NonNull final Publisher publisher,
-                                final boolean lookupLocale,
-                                @NonNull final Locale bookLocale) {
+                                @NonNull final Supplier<Locale> localeSupplier) {
 
-        final OrderByData obd;
-        if (lookupLocale) {
-            final Locale locale = publisher.getLocale(context).orElse(bookLocale);
-            obd = OrderByData.create(context, appLocaleSupplier.get(),
-                                     publisher.getName(), locale);
-        } else {
-            obd = OrderByData.create(context, appLocaleSupplier.get(),
-                                     publisher.getName(), bookLocale);
-        }
+        final OrderByData obd = OrderByData.create(context, appLocaleSupplier.get(),
+                                                   publisher.getName(),
+                                                   localeSupplier.get());
 
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{
                 SqlEncode.orderByColumn(publisher.getName(), obd.locale),
@@ -184,7 +178,7 @@ public class PublisherDaoImpl
                            @NonNull final Publisher publisher,
                            @NonNull final Locale bookLocale) {
         if (publisher.getId() == 0) {
-            fixId(context, publisher, true, bookLocale);
+            fixId(context, publisher, () -> publisher.getLocale(context).orElse(bookLocale));
             if (publisher.getId() == 0) {
                 return 0;
             }
@@ -200,43 +194,33 @@ public class PublisherDaoImpl
     @Override
     public boolean pruneList(@NonNull final Context context,
                              @NonNull final Collection<Publisher> list,
-                             final boolean lookupLocale,
-                             @NonNull final Locale bookLocale) {
+                             @NonNull final Function<Publisher, Locale> localeSupplier) {
         if (list.isEmpty()) {
             return false;
         }
 
         final PublisherMergeHelper mergeHelper = new PublisherMergeHelper();
-        return mergeHelper.merge(context, list,
-                                 current -> {
-                                     if (lookupLocale) {
-                                         return current.getLocale(context).orElse(bookLocale);
-                                     } else {
-                                         return bookLocale;
-                                     }
-                                 },
+        return mergeHelper.merge(context, list, localeSupplier,
                                  // Don't lookup the locale a 2nd time.
-                                 (current, locale) -> fixId(context, current, false, locale));
+                                 (current, locale) -> fixId(context, current, () -> locale));
     }
 
     @Override
     public void fixId(@NonNull final Context context,
                       @NonNull final Publisher publisher,
-                      final boolean lookupLocale,
-                      @NonNull final Locale bookLocale) {
-        final Publisher found = findByName(context, publisher, lookupLocale, bookLocale);
+                      @NonNull final Supplier<Locale> localeSupplier) {
+        final Publisher found = findByName(context, publisher, localeSupplier);
         publisher.setId(found == null ? 0 : found.getId());
     }
 
     @Override
     public void refresh(@NonNull final Context context,
                         @NonNull final Publisher publisher,
-                        final boolean lookupLocale,
-                        @NonNull final Locale bookLocale) {
+                        @NonNull final Supplier<Locale> localeSupplier) {
 
         // If needed, check if we already have it in the database.
         if (publisher.getId() == 0) {
-            fixId(context, publisher, lookupLocale, bookLocale);
+            fixId(context, publisher, localeSupplier);
         }
 
         // If we do already have it, update the object

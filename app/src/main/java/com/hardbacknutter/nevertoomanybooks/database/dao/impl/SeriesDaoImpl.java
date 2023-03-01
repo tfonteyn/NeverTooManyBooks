@@ -31,6 +31,7 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -94,18 +95,11 @@ public class SeriesDaoImpl
     @Nullable
     public Series findByName(@NonNull final Context context,
                              @NonNull final Series series,
-                             final boolean lookupLocale,
-                             @NonNull final Locale bookLocale) {
+                             @NonNull final Supplier<Locale> localeSupplier) {
 
-        final OrderByData obd;
-        if (lookupLocale) {
-            final Locale locale = series.getLocale(context).orElse(bookLocale);
-            obd = OrderByData.create(context, appLocaleSupplier.get(),
-                                     series.getTitle(), locale);
-        } else {
-            obd = OrderByData.create(context, appLocaleSupplier.get(),
-                                     series.getTitle(), bookLocale);
-        }
+        final OrderByData obd = OrderByData.create(context, appLocaleSupplier.get(),
+                                                   series.getTitle(),
+                                                   localeSupplier.get());
 
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{
                 SqlEncode.orderByColumn(series.getTitle(), obd.locale),
@@ -195,7 +189,7 @@ public class SeriesDaoImpl
                            @NonNull final Series series,
                            @NonNull final Locale bookLocale) {
         if (series.getId() == 0) {
-            fixId(context, series, true, bookLocale);
+            fixId(context, series, () -> series.getLocale(context).orElse(bookLocale));
             if (series.getId() == 0) {
                 return 0;
             }
@@ -243,43 +237,33 @@ public class SeriesDaoImpl
     @Override
     public boolean pruneList(@NonNull final Context context,
                              @NonNull final Collection<Series> list,
-                             final boolean lookupLocale,
-                             @NonNull final Locale bookLocale) {
+                             @NonNull final Function<Series, Locale> localeSupplier) {
         if (list.isEmpty()) {
             return false;
         }
 
         final SeriesMergeHelper mergeHelper = new SeriesMergeHelper();
-        return mergeHelper.merge(context, list,
-                                 current -> {
-                                     if (lookupLocale) {
-                                         return current.getLocale(context).orElse(bookLocale);
-                                     } else {
-                                         return bookLocale;
-                                     }
-                                 },
+        return mergeHelper.merge(context, list, localeSupplier,
                                  // Don't lookup the locale a 2nd time.
-                                 (current, locale) -> fixId(context, current, false, locale));
+                                 (current, locale) -> fixId(context, current, () -> locale));
     }
 
     @Override
     public void fixId(@NonNull final Context context,
                       @NonNull final Series series,
-                      final boolean lookupLocale,
-                      @NonNull final Locale bookLocale) {
-        final Series found = findByName(context, series, lookupLocale, bookLocale);
+                      @NonNull final Supplier<Locale> localeSupplier) {
+        final Series found = findByName(context, series, localeSupplier);
         series.setId(found == null ? 0 : found.getId());
     }
 
     @Override
     public void refresh(@NonNull final Context context,
                         @NonNull final Series series,
-                        final boolean lookupLocale,
-                        @NonNull final Locale bookLocale) {
+                        @NonNull final Supplier<Locale> localeSupplier) {
 
         // If needed, check if we already have it in the database.
         if (series.getId() == 0) {
-            fixId(context, series, lookupLocale, bookLocale);
+            fixId(context, series, localeSupplier);
         }
 
         // If we do already have it, update the object
@@ -295,7 +279,6 @@ public class SeriesDaoImpl
             }
         }
     }
-
     @Override
     public long insert(@NonNull final Context context,
                        @NonNull final Series series,

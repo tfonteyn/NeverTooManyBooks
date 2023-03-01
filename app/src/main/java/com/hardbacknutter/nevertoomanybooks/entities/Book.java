@@ -581,7 +581,8 @@ public class Book
             final Locale bookLocale = getLocaleOrUserLocale(context);
             final ArrayList<Author> list = getAuthors();
             for (final Author author : list) {
-                authorDao.refresh(context, author, true, bookLocale);
+                authorDao.refresh(context, author,
+                                  () -> author.getLocale(context).orElse(bookLocale));
             }
         }
     }
@@ -591,8 +592,15 @@ public class Book
         final ArrayList<Author> authors = getAuthors();
         if (!authors.isEmpty()) {
             final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
-            if (authorDao.pruneList(context, authors, lookupLocale,
-                                    getLocaleOrUserLocale(context))) {
+
+            if (authorDao.pruneList(context, authors, item -> {
+                if (lookupLocale) {
+                    return item.getLocale(context)
+                               .orElseGet(() -> getLocaleOrUserLocale(context));
+                } else {
+                    return getLocaleOrUserLocale(context);
+                }
+            })) {
                 stage.setStage(EntityStage.Stage.Dirty);
             }
         }
@@ -669,7 +677,8 @@ public class Book
             final Locale bookLocale = getLocaleOrUserLocale(context);
             final ArrayList<Series> list = getSeries();
             for (final Series series : list) {
-                seriesDao.refresh(context, series, true, bookLocale);
+                seriesDao.refresh(context, series,
+                                  () -> series.getLocale(context).orElse(bookLocale));
             }
         }
     }
@@ -680,8 +689,15 @@ public class Book
             final ArrayList<Series> series = getSeries();
             if (!series.isEmpty()) {
                 final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
-                if (seriesDao.pruneList(context, series, lookupLocale,
-                                        getLocaleOrUserLocale(context))) {
+
+                if (seriesDao.pruneList(context, series, item -> {
+                    if (lookupLocale) {
+                        return item.getLocale(context)
+                                   .orElseGet(() -> getLocaleOrUserLocale(context));
+                    } else {
+                        return getLocaleOrUserLocale(context);
+                    }
+                })) {
                     stage.setStage(EntityStage.Stage.Dirty);
                 }
             }
@@ -738,7 +754,8 @@ public class Book
             final Locale bookLocale = getLocaleOrUserLocale(context);
             final ArrayList<Publisher> list = getPublishers();
             for (final Publisher publisher : list) {
-                publisherDao.refresh(context, publisher, true, bookLocale);
+                publisherDao.refresh(context, publisher,
+                                     () -> publisher.getLocale(context).orElse(bookLocale));
             }
         }
     }
@@ -749,8 +766,14 @@ public class Book
             final ArrayList<Publisher> publishers = getPublishers();
             if (!publishers.isEmpty()) {
                 final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
-                if (publisherDao.pruneList(context, publishers, lookupLocale,
-                                           getLocaleOrUserLocale(context))) {
+                if (publisherDao.pruneList(context, publishers, item -> {
+                    if (lookupLocale) {
+                        return item.getLocale(context)
+                                   .orElseGet(() -> getLocaleOrUserLocale(context));
+                    } else {
+                        return getLocaleOrUserLocale(context);
+                    }
+                })) {
                     stage.setStage(EntityStage.Stage.Dirty);
                 }
             }
