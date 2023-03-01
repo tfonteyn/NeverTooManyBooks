@@ -65,7 +65,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TO
 
 public class AuthorDaoImpl
         extends BaseDaoImpl
-        implements AuthorDao, Blah {
+        implements AuthorDao {
 
     /** Log tag. */
     private static final String TAG = "AuthorDaoImpl";
@@ -385,11 +385,6 @@ public class AuthorDaoImpl
         return mergeHelper.merge(context, list, localeSupplier,
                                  // Don't lookup the locale a 2nd time.
                                  (current, locale) -> fixId(context, current, () -> locale));
-    }
-
-    @Override
-    public EntityMergeHelper<Author> getMergeHelper() {
-        return new AuthorMergeHelper();
     }
 
     @Override
