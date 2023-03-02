@@ -26,7 +26,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.Currency;
 import java.util.Map;
@@ -35,19 +34,18 @@ import java.util.Objects;
 /**
  * Value class to represent a value + currency.
  * <p>
- * Normally {@link #getValue()} should be used for displaying the value
- * with {@link #getCurrency()} or {@link #getCurrencyCode()}.
- * In practice we're often forced to use {@link #doubleValue()} due to limitations
- * in Android classes and/or the need to convert to/from external source.
- * <p>
  * Casting involves rounding to int/long by adding 0.5 to positive values.
- * 2.3 + 0.5 -> 2
- * 2.7 + 0.5 -> 3.
+ * <ul>
+ *     <li>2.3 + 0.5 -> 2</li>
+ *     <li>2.7 + 0.5 -> 3</li>
+ * </ul>
  * Negative numbers are always rounded down.
- * -2.3 -> -2
- * -2.7 -> -2
+ * <ul>
+ *     <li>-2.3 -> -2</li>
+ *     <li>-2.7 -> -2</li>
+ * </ul>
  * <p>
- * ENHANCE: currency fields should not use double.
+ * ENHANCE: currency fields should not use double:
  * <a href="https://javamoney.github.io">JavaMoney</a>
  * - a wonderful library, might have issues on Android though.
  * <a href="https://www.joda.org/joda-money/">Joda Money</a> not tried, but looks small and neat.
@@ -57,12 +55,11 @@ import java.util.Objects;
  * Shilling/Pence as subdivisions of the pound.
  * UK Shilling was written as "1/-", for example:
  * three shillings and six pence => 3/6
- * It's used on the ISFDB web site. We convert it to GBP.
+ * It's used on the ISFDB web site. We convert it to GBP. See
  * <a href="https://en.wikipedia.org/wiki/Decimal_Day">Decimal_Day</a>
  * <p>
  */
 public class Money
-//        extends Number
         implements Parcelable {
 
     public static final Creator<Money> CREATOR = new Creator<>() {
@@ -78,7 +75,7 @@ public class Money
             return new Money[size];
         }
     };
-
+    public static final Currency EURO = Currency.getInstance(MoneyParser.EUR);
     private static final Map<String, Double> EUROS = Map.ofEntries(
             // Austria
             Map.entry("ATS", 13.7603d),
@@ -127,10 +124,6 @@ public class Money
             // Spain
             Map.entry("ESP", 166.386d)
     );
-
-    //    private static final long serialVersionUID = -2882175581162071769L;
-    public static final Currency EURO = Currency.getInstance(MoneyParser.EUR);
-
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
     private final Currency currency;
@@ -204,31 +197,7 @@ public class Money
      * @return {@code true} if it is
      */
     public boolean isZero() {
-        return Objects.requireNonNull(value).compareTo(BigDecimal.ZERO) == 0;
-    }
-
-    /** Use {@link #getValue()} when possible. */
-//    @Override
-    public double doubleValue() {
-        return Objects.requireNonNull(value).doubleValue();
-    }
-
-    /** <strong>DO NOT USE</strong>. */
-//    @Override
-    public int intValue() {
-        return Objects.requireNonNull(value).round(MathContext.UNLIMITED).intValue();
-    }
-
-    /** <strong>DO NOT USE</strong>. */
-//    @Override
-    public long longValue() {
-        return Objects.requireNonNull(value).round(MathContext.UNLIMITED).longValue();
-    }
-
-    /** <strong>DO NOT USE</strong>. */
-//    @Override
-    public float floatValue() {
-        return Objects.requireNonNull(value).floatValue();
+        return value.compareTo(BigDecimal.ZERO) == 0;
     }
 
     /**
@@ -241,7 +210,7 @@ public class Money
     @NonNull
     public String toString() {
         //noinspection CallToNumericToString
-        return Objects.requireNonNull(value).toString();
+        return value.toString();
     }
 
     /**
@@ -257,7 +226,7 @@ public class Money
 
     /**
      * Convert from a pre-euro currencies (List complete 2023-01-01)
-     * <a href="https://en.wikipedia.org/wiki/Eurozone">Eurozone</a>
+     * <a href="https://en.wikipedia.org/wiki/Eurozone">Euro zone</a>
      * <p>
      * Values in euro, or without currency are returned as-is in euro.
      * <p>
@@ -285,8 +254,7 @@ public class Money
             return new Money(value, currency);
         }
 
-        return new Money(value.divide(BigDecimal.valueOf(rate), RoundingMode.HALF_UP),
-                         EURO);
+        return new Money(value.divide(BigDecimal.valueOf(rate), RoundingMode.HALF_UP), EURO);
     }
 
     @Override
