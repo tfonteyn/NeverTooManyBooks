@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -45,6 +45,7 @@ public abstract class InlineStringDaoImpl
     /**
      * Constructor.
      *
+     * @param db     Underlying database
      * @param logTag of this DAO for logging.
      */
     InlineStringDaoImpl(@NonNull final SynchronizedDb db,

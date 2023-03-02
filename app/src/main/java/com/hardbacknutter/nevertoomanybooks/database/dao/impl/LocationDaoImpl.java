@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,6 +34,8 @@ public class LocationDaoImpl
 
     /**
      * Constructor.
+     *
+     * @param db Underlying database
      */
     public LocationDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG, DBKey.LOCATION);
