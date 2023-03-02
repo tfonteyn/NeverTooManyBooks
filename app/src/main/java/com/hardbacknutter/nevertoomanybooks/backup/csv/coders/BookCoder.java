@@ -84,17 +84,19 @@ public class BookCoder {
     private final StringList<Bookshelf> bookshelfCoder;
 
     @NonNull
-    private final ServiceLocator serviceLocator;
-    @NonNull
     private final Author unknownAuthor;
     @Nullable
     private Map<String, Long> calibreLibraryStr2IdMap;
 
-    public BookCoder(@NonNull final Context context) {
-        serviceLocator = ServiceLocator.getInstance();
-
-        final Style defaultStyle = serviceLocator.getStyles().getDefault(context);
-        bookshelfCoder = new StringList<>(new BookshelfCoder(defaultStyle));
+    /**
+     * Constructor.
+     *
+     * @param context      Current context
+     * @param defaultStyle the default style to use for {@link Bookshelf}s
+     */
+    public BookCoder(@NonNull final Context context,
+                     @NonNull final Style defaultStyle) {
+        this.bookshelfCoder = new StringList<>(new BookshelfCoder(defaultStyle));
 
         unknownAuthor = Author.createUnknownAuthor(context);
     }
@@ -193,7 +195,7 @@ public class BookCoder {
         if (encodedList != null && !encodedList.isEmpty()) {
             final ArrayList<Bookshelf> bookshelves = bookshelfCoder.decodeList(encodedList);
             if (!bookshelves.isEmpty()) {
-                serviceLocator.getBookshelfDao().pruneList(context, bookshelves);
+                ServiceLocator.getInstance().getBookshelfDao().pruneList(context, bookshelves);
                 book.setBookshelves(bookshelves);
             }
         }
@@ -333,7 +335,8 @@ public class BookCoder {
             final ArrayList<TocEntry> list = tocCoder.decodeList(encodedList);
             if (!list.isEmpty()) {
                 // Force using the Book Locale, otherwise the import is far to slow.
-                serviceLocator.getTocEntryDao().pruneList(context, list, item -> bookLocale);
+                ServiceLocator.getInstance().getTocEntryDao()
+                              .pruneList(context, list, item -> bookLocale);
                 book.setToc(list);
             }
         }
