@@ -713,7 +713,7 @@ public class SearchCoordinator
             activeTasks.put(task.getTaskId(), task);
         }
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            Log.d(TAG, "startSearch|searchEngine=" + config.getEngineId().getName(context));
+            Log.d(TAG, "startSearch|searchEngine=" + config.getEngineId().getPreferenceKey());
         }
 
         task.startSearch();
@@ -862,13 +862,12 @@ public class SearchCoordinator
         }
 
         if (DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            final Context appContext = ServiceLocator.getInstance().getAppContext();
-            Log.d(TAG, "onSearchTaskFinished|finished=" + engineId.getName(appContext));
+            Log.d(TAG, "onSearchTaskFinished|finished=" + engineId.getPreferenceKey());
 
             synchronized (activeTasks) {
                 for (final SearchTask task : activeTasks.values()) {
                     Log.d(TAG, "onSearchTaskFinished|running="
-                               + task.getSearchEngine().getName(appContext));
+                               + task.getSearchEngine().getEngineId().getPreferenceKey());
                 }
             }
         }
@@ -1273,7 +1272,7 @@ public class SearchCoordinator
         if (DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
             for (final Map.Entry<EngineId, Long> entry : searchTasksStartTime.entrySet()) {
                 final EngineId engineId = entry.getKey();
-                final String engineName = engineId.getName(context);
+                final String engineName = engineId.getPreferenceKey();
 
                 final long start = entry.getValue();
                 final Long end = searchTasksEndTime.get(engineId);
