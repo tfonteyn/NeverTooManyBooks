@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.backupbase.BaseRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookCoder;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -129,7 +130,8 @@ public class CsvRecordReader
     public CsvRecordReader(@NonNull final Context context,
                            @NonNull final Locale systemLocale) {
         super(context, systemLocale);
-        bookCoder = new BookCoder(context);
+        final Style defaultStyle = ServiceLocator.getInstance().getStyles().getDefault(context);
+        bookCoder = new BookCoder(context, defaultStyle);
     }
 
     @Override
