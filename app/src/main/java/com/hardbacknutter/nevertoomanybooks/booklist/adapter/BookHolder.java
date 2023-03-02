@@ -38,11 +38,11 @@ import androidx.fragment.app.FragmentActivity;
 
 import java.io.File;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
@@ -83,8 +83,6 @@ public class BookHolder
 
     @NonNull
     private final BooksonbookshelfRowBookBinding vb;
-    @NonNull
-    private final Languages languages;
     private final int coverLongestSide;
     private final boolean imageCachingEnabled;
     /** caching the book condition strings. */
@@ -92,6 +90,10 @@ public class BookHolder
     private final String[] conditionDescriptions;
     @NonNull
     private final Style style;
+    @NonNull
+    private final Supplier<Languages> languagesSupplier;
+    @NonNull
+    private final Supplier<CoverCacheDao> coverCacheDaoSupplier;
     private final RealNumberParser realNumberParser;
     /** Only active when running in debug mode; displays the "position/rowId" for a book. */
     @Nullable
@@ -114,12 +116,14 @@ public class BookHolder
      */
     BookHolder(@NonNull final View itemView,
                @NonNull final Style style,
-               @NonNull final Languages languages,
+               @NonNull final Supplier<Languages> languagesSupplier,
+               @NonNull final Supplier<CoverCacheDao> coverCacheDaoSupplier,
                @NonNull final RealNumberParser realNumberParser,
                @Dimension final int coverLongestSide) {
         super(itemView);
         this.style = style;
-        this.languages = languages;
+        this.languagesSupplier = languagesSupplier;
+        this.coverCacheDaoSupplier = coverCacheDaoSupplier;
         this.realNumberParser = realNumberParser;
         this.coverLongestSide = coverLongestSide;
 
@@ -271,7 +275,7 @@ public class BookHolder
 
         // {@link BoBTask#fixedDomainList}
         if (use.language) {
-            final String language = languages.getDisplayNameFromISO3(
+            final String language = languagesSupplier.get().getDisplayNameFromISO3(
                     vb.language.getContext(), rowData.getString(DBKey.LANGUAGE));
             showOrHide(vb.language, language);
         }
@@ -412,7 +416,7 @@ public class BookHolder
 
         // 1. If caching is used, and we don't have cache building happening, check it.
         if (imageCachingEnabled) {
-            final CoverCacheDao coverCacheDao = ServiceLocator.getInstance().getCoverCacheDao();
+            final CoverCacheDao coverCacheDao = coverCacheDaoSupplier.get();
             if (!coverCacheDao.isBusy()) {
                 final Bitmap bitmap = coverCacheDao.getCover(context, uuid, 0,
                                                              coverLongestSide, coverLongestSide);
@@ -445,7 +449,7 @@ public class BookHolder
             //noinspection ConstantConditions
             imageLoader.fromFile(vb.coverImage0, file.get(), bitmap -> {
                 if (bitmap != null) {
-                    ServiceLocator.getInstance().getCoverCacheDao().saveCover(
+                    coverCacheDaoSupplier.get().saveCover(
                             uuid, 0, bitmap, coverLongestSide, coverLongestSide);
                 }
             });
