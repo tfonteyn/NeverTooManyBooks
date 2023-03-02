@@ -45,7 +45,7 @@ import com.google.android.material.textfield.TextInputEditText;
  * <p>
  * <strong>Notes on the virtual keyboard:</strong>
  * <p>
- * Stop if from showing when a field gets the focus.<br>
+ * Stop it from showing when a field gets the focus.<br>
  * This must be done for <strong>ALL</strong> fields individually
  * <pre>
  * {@code editText.setShowSoftInputOnFocus(false);}
