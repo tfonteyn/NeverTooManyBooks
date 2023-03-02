@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryTh
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -96,6 +97,8 @@ public class Base {
     private SharedPreferences mockPreferences;
     @Mock
     protected AppLocale appLocale;
+    @Mock
+    protected ReorderHelper reorderHelper;
     @Mock
     private LocaleList localeList;
     private Locale jdkLocale;
@@ -183,13 +186,13 @@ public class Base {
         //
         when(serviceLocator.newBundle()).thenAnswer(
                 (Answer<Bundle>) invocation -> BundleMock.create());
-
+        when(serviceLocator.getAppContext()).thenReturn(context);
         when(serviceLocator.getSystemLocaleList()).thenReturn(localeList);
         when(serviceLocator.getNetworkChecker()).thenReturn(new TestNetworkChecker(true));
         when(serviceLocator.getStyles()).thenReturn(stylesHelper);
         when(serviceLocator.getLanguages()).thenReturn(languages);
         when(serviceLocator.getAppLocale()).thenReturn(appLocale);
-        when(serviceLocator.getAppContext()).thenReturn(context);
+        when(serviceLocator.getReorderHelper()).thenReturn(reorderHelper);
 
         // See class docs.
         ImageDownloader.IGNORE_RENAME_FAILURE = true;
