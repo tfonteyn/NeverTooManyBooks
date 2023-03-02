@@ -31,7 +31,7 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
-import com.hardbacknutter.nevertoomanybooks.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 
 /**
  * FieldFormatter for {@link Money} fields.

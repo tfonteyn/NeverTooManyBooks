@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils;
+package com.hardbacknutter.nevertoomanybooks.core.utils;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -75,7 +75,7 @@ public class Money
             return new Money[size];
         }
     };
-    public static final Currency EURO = Currency.getInstance(MoneyParser.EUR);
+    public static final Currency EURO = Currency.getInstance("EUR");
     private static final Map<String, Double> EUROS = Map.ofEntries(
             // Austria
             Map.entry("ATS", 13.7603d),
@@ -243,7 +243,7 @@ public class Money
             return new Money(value, EURO);
         }
 
-        if (MoneyParser.EUR.equals(currency.getCurrencyCode())) {
+        if ("EUR".equals(currency.getCurrencyCode())) {
             // The Euro itself
             return new Money(value, currency);
         }

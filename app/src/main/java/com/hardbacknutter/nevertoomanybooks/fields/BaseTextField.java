@@ -35,11 +35,11 @@ import java.util.Collection;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.fields.endicon.ExtClearTextEndIconDelegate;
 import com.hardbacknutter.nevertoomanybooks.fields.endicon.ExtEndIconDelegate;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
-import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 /**
  * Base implementation for {@link TextViewField} and {@link EditTextField}.

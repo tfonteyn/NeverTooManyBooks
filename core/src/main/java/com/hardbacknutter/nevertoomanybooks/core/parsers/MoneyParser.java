@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.utils;
+package com.hardbacknutter.nevertoomanybooks.core.parsers;
 
 import android.content.Context;
 
@@ -34,7 +34,7 @@ import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 
 public class MoneyParser {
     public static final String EUR = "EUR";

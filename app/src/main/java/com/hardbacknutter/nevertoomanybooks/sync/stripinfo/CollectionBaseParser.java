@@ -28,11 +28,11 @@ import androidx.core.math.MathUtils;
 
 import java.math.BigDecimal;
 
+import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
-import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 import org.jsoup.nodes.Element;
 

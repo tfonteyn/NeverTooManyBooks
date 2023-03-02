@@ -25,7 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
-import com.hardbacknutter.nevertoomanybooks.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 
 /**
  * FieldFormatter for 'Number' fields with the value being a 'double'

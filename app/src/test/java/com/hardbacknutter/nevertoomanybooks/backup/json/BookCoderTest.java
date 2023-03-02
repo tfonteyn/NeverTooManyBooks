@@ -26,10 +26,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookCoder;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
+import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.utils.Money;
-import com.hardbacknutter.nevertoomanybooks.utils.MoneyParser;
 import com.hardbacknutter.org.json.JSONObject;
 
 import org.junit.jupiter.api.BeforeEach;

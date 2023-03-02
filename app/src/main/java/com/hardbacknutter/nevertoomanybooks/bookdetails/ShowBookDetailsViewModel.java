@@ -39,6 +39,7 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
@@ -58,7 +59,6 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.MoneyFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.PagesFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.StringArrayResFormatter;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
-import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 /**
  * Contains ONLY data in the <strong>Fragment</strong> scope.

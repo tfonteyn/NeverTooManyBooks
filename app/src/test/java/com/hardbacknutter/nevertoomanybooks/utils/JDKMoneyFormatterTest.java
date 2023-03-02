@@ -24,6 +24,8 @@ import java.util.Currency;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
+import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.MoneyFormatter;
 

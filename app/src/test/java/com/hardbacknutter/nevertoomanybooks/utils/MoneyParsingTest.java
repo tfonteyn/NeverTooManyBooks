@@ -26,7 +26,9 @@ import java.util.Locale;
 import java.util.stream.Stream;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
