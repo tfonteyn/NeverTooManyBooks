@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,7 +24,6 @@ import android.database.sqlite.SQLiteDoneException;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -44,18 +43,21 @@ public final class BooklistNavigatorDao {
     private final SynchronizedStatement bookStmt;
     private final int rowCount;
     @NonNull
+    private final SynchronizedDb db;
+    @NonNull
     private final String listTableName;
 
     /**
      * Constructor.
      *
+     * @param db            Underlying database
      * @param listTableName Name of underlying and <strong>existing</strong> table
      */
-    public BooklistNavigatorDao(@NonNull final String listTableName) {
+    public BooklistNavigatorDao(@NonNull final SynchronizedDb db,
+                                @NonNull final String listTableName) {
+        this.db = db;
 
         this.listTableName = listTableName;
-
-        final SynchronizedDb db = ServiceLocator.getInstance().getDb();
 
         try (SynchronizedStatement stmt = db.compileStatement(
                 "SELECT COUNT(*) FROM " + this.listTableName)) {
@@ -88,7 +90,7 @@ public final class BooklistNavigatorDao {
     @IntRange(from = 1)
     public int getRowNumber(final long listTableRowId) {
         // This method is only called once to get the initial row number
-        try (SynchronizedStatement stmt = ServiceLocator.getInstance().getDb().compileStatement(
+        try (SynchronizedStatement stmt = db.compileStatement(
                 SELECT_ + DBKey.PK_ID + _FROM_ + listTableName
                 + _WHERE_ + BooklistBuilder.FK_BL_ROW_ID + "=?")) {
             stmt.bindLong(1, listTableRowId);
