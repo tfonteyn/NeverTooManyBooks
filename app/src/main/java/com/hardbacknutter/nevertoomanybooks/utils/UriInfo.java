@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -93,15 +93,15 @@ public class UriInfo {
                 if (cursor != null && cursor.moveToFirst()) {
 
                     // display name
-                    final String name = cursor.getString(0);
+                    final String tmpName = cursor.getString(0);
                     // 0 for a directory
-                    final long size = cursor.getLong(1);
+                    final long tmpSize = cursor.getLong(1);
 
                     // sanity check, according to the android.provider.OpenableColumns
                     // documentation, the name and size MUST be present.
-                    if (name != null && !name.isEmpty()) {
-                        displayName = name;
-                        this.size = size;
+                    if (tmpName != null && !tmpName.isEmpty()) {
+                        displayName = tmpName;
+                        size = tmpSize;
                         resolved = true;
                         return;
                     }
