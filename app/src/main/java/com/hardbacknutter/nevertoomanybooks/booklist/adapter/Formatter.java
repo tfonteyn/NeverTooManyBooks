@@ -29,20 +29,21 @@ import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.BooleanParser;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 
@@ -65,15 +66,13 @@ class Formatter
     @NonNull
     private final Context context;
     @NonNull
-    private final AppLocale appLocale;
+    private final Supplier<ReorderHelper> reorderHelperSupplier;
+    @NonNull
+    private final Supplier<Languages> languagesSupplier;
+    @NonNull
+    private final Supplier<AuthorDao> authorDaoSupplier;
     @NonNull
     private final Style style;
-
-    /**
-     * We don't have full Objects here for Series/Publisher so we can't use
-     * their methods for auto-reordering.
-     */
-    private final boolean reorderTitleForDisplaying;
 
     /** caching the book condition strings. */
     @NonNull
@@ -82,15 +81,18 @@ class Formatter
     private final List<Locale> locales;
 
     Formatter(@NonNull final Context context,
-              @NonNull final AppLocale appLocale,
+              @NonNull final Supplier<ReorderHelper> reorderHelperSupplier,
+              @NonNull final Supplier<Languages> languagesSupplier,
+              @NonNull final Supplier<AuthorDao> authorDaoSupplier,
               @NonNull final Style style,
               @NonNull final List<Locale> locales) {
         this.context = context;
-        this.appLocale = appLocale;
+        this.reorderHelperSupplier = reorderHelperSupplier;
+        this.languagesSupplier = languagesSupplier;
+        this.authorDaoSupplier = authorDaoSupplier;
         this.style = style;
         this.locales = locales;
 
-        reorderTitleForDisplaying = ReorderHelper.forDisplay(context);
         conditionDescriptions = context.getResources().getStringArray(R.array.conditions_book);
     }
 
@@ -122,8 +124,7 @@ class Formatter
                     // and no lookup will be needed.
                     final long realAuthorId = rowData.getLong(DBKey.AUTHOR_REAL_AUTHOR);
                     if (realAuthorId != 0) {
-                        final Author realAuthor = ServiceLocator.getInstance().getAuthorDao()
-                                                                .getById(realAuthorId);
+                        final Author realAuthor = authorDaoSupplier.get().getById(realAuthorId);
                         if (realAuthor != null) {
                             return realAuthor.getStyledName(context, Details.Normal, style, text);
                         }
@@ -136,19 +137,15 @@ class Formatter
                 if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_series);
 
-                } else if (reorderTitleForDisplaying) {
+                } else if (reorderHelperSupplier.get().forDisplay(context)) {
+                    // We don't have full Objects here for Series/Publisher so we can't use
+                    // their methods for auto-reordering.
+                    //
                     // FIXME: translated series are reordered in the book's language
                     // It should be done using the Series language
                     // but as long as we don't store the Series language there is no point
-                    final Locale bookLocale;
                     final String lang = rowData.getString(DBKey.LANGUAGE);
-                    if (lang.isBlank()) {
-                        bookLocale = null;
-                    } else {
-                        bookLocale = ServiceLocator.getInstance().getAppLocale()
-                                                   .getLocale(context, lang);
-                    }
-                    return ReorderHelper.reorder(context, appLocale, text, bookLocale, locales);
+                    return reorderHelperSupplier.get().reorder(context, text, lang, locales);
                 } else {
                     return text;
                 }
@@ -157,8 +154,12 @@ class Formatter
                 if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_publisher);
 
-                } else if (reorderTitleForDisplaying) {
-                    return ReorderHelper.reorder(context, appLocale, text, null, locales);
+                } else if (reorderHelperSupplier.get().forDisplay(context)) {
+                    // We don't have full Objects here for Series/Publisher so we can't use
+                    // their methods for auto-reordering.
+                    //
+                    return reorderHelperSupplier
+                            .get().reorder(context, text, (Locale) null, locales);
                 } else {
                     return text;
                 }
@@ -178,8 +179,7 @@ class Formatter
                 if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_language);
                 } else {
-                    return ServiceLocator.getInstance().getLanguages()
-                                         .getDisplayNameFromISO3(context, text);
+                    return languagesSupplier.get().getDisplayNameFromISO3(context, text);
                 }
             }
             case BooklistGroup.CONDITION: {
@@ -211,7 +211,7 @@ class Formatter
                     } catch (@NonNull final NumberFormatException e) {
                         if (BuildConfig.DEBUG /* always */) {
                             LoggerFactory.getLogger()
-                                          .e(TAG, e, "RATING=" + text);
+                                         .e(TAG, e, "RATING=" + text);
                         }
                     }
                     return text;
