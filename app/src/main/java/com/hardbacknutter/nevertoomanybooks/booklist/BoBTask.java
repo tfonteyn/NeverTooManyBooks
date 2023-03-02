@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.database.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
+import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
@@ -114,10 +115,11 @@ public class BoBTask
     @WorkerThread
     protected Outcome doWork() {
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+        final SynchronizedDb db = ServiceLocator.getInstance().getDb();
 
         final Style style = bookshelf.getStyle(context);
 
-        final BooklistBuilder builder = new BooklistBuilder(style, bookshelf, rebuildMode);
+        final BooklistBuilder builder = new BooklistBuilder(db, style, bookshelf, rebuildMode);
 
         if (fixedDomainList.isEmpty()) {
             initFixedDomainExpressions();
