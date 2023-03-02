@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,7 +39,6 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
@@ -165,6 +164,8 @@ class BooklistBuilder {
 
     /** the list of Filters. */
     private final Collection<Filter> filters = new ArrayList<>();
+    @NonNull
+    private final SynchronizedDb db;
 
     @NonNull
     private RebuildBooklist rebuildMode;
@@ -172,14 +173,17 @@ class BooklistBuilder {
     /**
      * Constructor.
      *
+     * @param db          Underlying database
      * @param style       Style reference.
      *                    This is the resolved style as used by the passed bookshelf
      * @param bookshelf   the current bookshelf
      * @param rebuildMode booklist mode to use in next rebuild.
      */
-    BooklistBuilder(@NonNull final Style style,
+    BooklistBuilder(@NonNull final SynchronizedDb db,
+                    @NonNull final Style style,
                     @NonNull final Bookshelf bookshelf,
                     @NonNull final RebuildBooklist rebuildMode) {
+        this.db = db;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
             Log.d(TAG, "ENTER|BooklistBuilder"
@@ -265,8 +269,6 @@ class BooklistBuilder {
     @NonNull
     public Booklist build(@NonNull final Context context) {
         final int instanceId = ID_COUNTER.incrementAndGet();
-
-        final SynchronizedDb db = ServiceLocator.getInstance().getDb();
 
         final TableBuilder tableBuilder = new TableBuilder(
                 instanceId, style, !bookshelf.isAllBooks(), rebuildMode);
@@ -581,8 +583,7 @@ class BooklistBuilder {
                        + SELECT_ + DBKey.FK_BOOK + ',' + DBKey.PK_ID
                        + _FROM_ + listTable.getName()
                        + _WHERE_ + DBKey.BL_NODE_GROUP + "=" + BooklistGroup.BOOK
-                       + _ORDER_BY_ + DBKey.PK_ID
-                      );
+                       + _ORDER_BY_ + DBKey.PK_ID);
 
             return new Pair<>(listTable, navTable);
         }
