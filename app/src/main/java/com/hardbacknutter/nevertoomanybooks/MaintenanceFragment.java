@@ -168,7 +168,8 @@ public class MaintenanceFragment
                 .setTitle(R.string.lbl_purge_blns)
                 .setMessage(R.string.info_purge_blns_all)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(android.R.string.ok, (d, w) -> BooklistNodeDao.clearAll())
+                .setPositiveButton(android.R.string.ok, (d, w) ->
+                        BooklistNodeDao.clearAll(ServiceLocator.getInstance().getDb()))
                 .create()
                 .show());
 
