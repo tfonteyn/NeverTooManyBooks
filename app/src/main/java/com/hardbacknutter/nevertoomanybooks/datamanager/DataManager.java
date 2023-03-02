@@ -477,7 +477,7 @@ public class DataManager
      */
     public void putMoney(@NonNull final String key,
                          @NonNull final Money money) {
-        rawData.putDouble(key, money.doubleValue());
+        rawData.putDouble(key, money.getValue().doubleValue());
         if (money.getCurrency() != null) {
             rawData.putString(key + DBKey.CURRENCY_SUFFIX, money.getCurrencyCode());
         }
