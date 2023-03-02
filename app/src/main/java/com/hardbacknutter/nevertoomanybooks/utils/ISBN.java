@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.content.Context;
 import android.text.Editable;
+import android.text.TextWatcher;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,7 +40,6 @@ import java.util.regex.Pattern;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
 
 /**
  * This class name is a bit of a misnomer by now.
@@ -239,7 +239,7 @@ public class ISBN {
                 } catch (@NonNull final NumberFormatException e) {
                     if (BuildConfig.DEBUG /* always */) {
                         LoggerFactory.getLogger()
-                                      .e(TAG, e, "text=`" + text + '`');
+                                     .e(TAG, e, "text=`" + text + '`');
                     }
                 }
 
@@ -906,7 +906,7 @@ public class ISBN {
     }
 
     public static class CleanupTextWatcher
-            implements ExtTextWatcher {
+            implements TextWatcher {
 
         @NonNull
         private final TextInputEditText editText;
@@ -933,6 +933,20 @@ public class ISBN {
         @Override
         public void afterTextChanged(@NonNull final Editable editable) {
             clean(editText.getEditableText());
+        }
+
+        @Override
+        public void beforeTextChanged(@NonNull final CharSequence s,
+                                      final int start,
+                                      final int count,
+                                      final int after) {
+        }
+
+        @Override
+        public void onTextChanged(@NonNull final CharSequence s,
+                                  final int start,
+                                  final int before,
+                                  final int count) {
         }
 
         private void clean(@Nullable final Editable editable) {
@@ -980,7 +994,7 @@ public class ISBN {
     }
 
     public static class ValidationTextWatcher
-            implements ExtTextWatcher {
+            implements TextWatcher {
 
         @NonNull
         private final TextInputLayout layout;
@@ -1018,6 +1032,20 @@ public class ISBN {
         @Override
         public void afterTextChanged(@NonNull final Editable editable) {
             validate(editable);
+        }
+
+        @Override
+        public void beforeTextChanged(@NonNull final CharSequence s,
+                                      final int start,
+                                      final int count,
+                                      final int after) {
+        }
+
+        @Override
+        public void onTextChanged(@NonNull final CharSequence s,
+                                  final int start,
+                                  final int before,
+                                  final int count) {
         }
 
         /**
