@@ -682,20 +682,16 @@ public class SearchCoordinator
         } else if (isbn.isValid(true)
                    && engineId.supports(SearchEngine.SearchBy.Isbn)) {
             task.setSearchBy(SearchEngine.SearchBy.Isbn);
-            if (config.prefersIsbn10(context) && isbn.isIsbn10Compat()) {
-                task.setIsbn(isbn.asText(ISBN.Type.Isbn10));
-            } else {
-                task.setIsbn(isbn.asText());
-            }
+            task.setIsbn(isbn);
 
         } else if (isbn.isValid(false)
                    && engineId.supports(SearchEngine.SearchBy.Barcode)) {
             task.setSearchBy(SearchEngine.SearchBy.Barcode);
-            task.setIsbn(isbn.asText());
+            task.setIsbn(isbn);
 
         } else if (engineId.supports(SearchEngine.SearchBy.Text)) {
             task.setSearchBy(SearchEngine.SearchBy.Text);
-            task.setIsbn(isbn.asText());
+            task.setIsbn(isbn);
             task.setAuthor(authorSearchText);
             task.setTitle(titleSearchText);
             task.setPublisher(publisherSearchText);

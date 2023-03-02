@@ -36,6 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
+import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
 /**
  * Searches a single {@link SearchEngine}.
@@ -58,7 +59,7 @@ public class SearchTask
     private String externalId;
     /** Search criteria. Usage depends on {@link #by}. */
     @Nullable
-    private String isbnStr;
+    private ISBN isbn;
     /** Search criteria. Usage depends on {@link #by}. */
     @Nullable
     private String author;
@@ -120,10 +121,10 @@ public class SearchTask
     /**
      * Set/reset the criteria.
      *
-     * @param isbnStr to search for
+     * @param isbn to search for
      */
-    void setIsbn(@Nullable final String isbnStr) {
-        this.isbnStr = isbnStr;
+    void setIsbn(@Nullable final ISBN isbn) {
+        this.isbn = isbn;
     }
 
     /**
@@ -202,6 +203,19 @@ public class SearchTask
 
         // can we reach the site ?
         searchEngine.ping();
+
+        final String isbnStr;
+        if (isbn != null) {
+            //noinspection ConstantConditions
+            if (searchEngine.getEngineId().getConfig()
+                            .prefersIsbn10(context) && isbn.isIsbn10Compat()) {
+                isbnStr = isbn.asText(ISBN.Type.Isbn10);
+            } else {
+                isbnStr = isbn.asText();
+            }
+        } else {
+            isbnStr = null;
+        }
 
         final Book book;
         switch (by) {
