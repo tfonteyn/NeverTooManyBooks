@@ -60,7 +60,6 @@ public final class Prefs {
     public static final String pk_booklist_context_menu = "booklist.context.menu";
     public static final String pk_booklist_fastscroller_overlay = "booklist.fastscroller.overlay";
 
-    public static final String pk_edit_book_isbn_checks = "edit.book.isbn.checks";
     /** Whether to show the fragment that allows the user to edit the external id's. */
     public static final String pk_edit_book_tabs_external_id = "edit.book.tab.externalId";
 

@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
@@ -169,7 +170,7 @@ public class SettingsFragment
         });
 
         //noinspection ConstantConditions
-        findPreference(Prefs.pk_edit_book_isbn_checks).setSummaryProvider(listSummaryProvider);
+        findPreference(ISBN.PK_EDIT_BOOK_ISBN_CHECKS).setSummaryProvider(listSummaryProvider);
         //noinspection ConstantConditions
         findPreference(Prefs.pk_booklist_rebuild_state).setSummaryProvider(listSummaryProvider);
         //noinspection ConstantConditions

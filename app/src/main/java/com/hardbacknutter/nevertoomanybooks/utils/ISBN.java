@@ -40,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
  * This class name is a bit of a misnomer by now.
@@ -87,6 +86,8 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
  * <br>The prefix 977 indicates International Standard Serial Number (ISSN).
  */
 public class ISBN {
+
+    public static final String PK_EDIT_BOOK_ISBN_CHECKS = "edit.book.isbn.checks";
 
     /** Log tag. */
     private static final String TAG = "ISBN";
@@ -892,7 +893,7 @@ public class ISBN {
         @NonNull
         public static Validity getLevel(@NonNull final Context context) {
 
-            final int value = IntListPref.getInt(context, Prefs.pk_edit_book_isbn_checks,
+            final int value = IntListPref.getInt(context, PK_EDIT_BOOK_ISBN_CHECKS,
                                                  Loose.value);
             switch (value) {
                 case 2:
