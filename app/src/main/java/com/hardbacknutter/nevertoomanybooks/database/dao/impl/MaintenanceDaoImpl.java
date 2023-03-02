@@ -100,6 +100,8 @@ public class MaintenanceDaoImpl
     private final Supplier<PublisherDao> publisherDaoSupplier;
     @NonNull
     private final Supplier<AppLocale> appLocaleSupplier;
+    @NonNull
+    private final Supplier<ReorderHelper> reorderHelperSupplier;
 
     /**
      * Constructor.
@@ -111,12 +113,14 @@ public class MaintenanceDaoImpl
                               @NonNull final Supplier<AuthorDao> authorDaoSupplier,
                               @NonNull final Supplier<SeriesDao> seriesDaoSupplier,
                               @NonNull final Supplier<PublisherDao> publisherDaoSupplier,
-                              @NonNull final Supplier<AppLocale> appLocaleSupplier) {
+                              @NonNull final Supplier<AppLocale> appLocaleSupplier,
+                              @NonNull final Supplier<ReorderHelper> reorderHelperSupplier) {
         super(db, TAG);
         this.authorDaoSupplier = authorDaoSupplier;
         this.seriesDaoSupplier = seriesDaoSupplier;
         this.publisherDaoSupplier = publisherDaoSupplier;
         this.appLocaleSupplier = appLocaleSupplier;
+        this.reorderHelperSupplier = reorderHelperSupplier;
     }
 
     @Override
@@ -208,7 +212,6 @@ public class MaintenanceDaoImpl
      *
      * @param context    Current context
      * @param locale     to use for reordering this title
-     * @param locales
      * @param cursor     positioned on the row to handle
      * @param table      to update
      * @param domainName to update
@@ -234,9 +237,8 @@ public class MaintenanceDaoImpl
         final String currentObTitle = cursor.getString(2);
 
         final String rebuildObTitle;
-        if (ReorderHelper.forSorting(context)) {
-            rebuildObTitle = ReorderHelper.reorder(context, appLocaleSupplier.get(), title,
-                                                   locale, locales);
+        if (reorderHelperSupplier.get().forSorting(context)) {
+            rebuildObTitle = reorderHelperSupplier.get().reorder(context, title, locale, locales);
         } else {
             // Use the actual/original title
             rebuildObTitle = title;

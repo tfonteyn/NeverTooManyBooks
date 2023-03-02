@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.SeriesMergeHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
@@ -66,20 +67,20 @@ public class SeriesDaoImpl
     @NonNull
     private final Supplier<BookDao> bookDaoSupplier;
     @NonNull
-    private final Supplier<AppLocale> appLocaleSupplier;
+    private final Supplier<ReorderHelper> reorderHelperSupplier;
 
     /**
      * Constructor.
      *
-     * @param db                Underlying database
-     * @param appLocaleSupplier deferred supplier for the {@link AppLocale}.
+     * @param db                    Underlying database
+     * @param reorderHelperSupplier deferred supplier for the {@link AppLocale}.
      */
     public SeriesDaoImpl(@NonNull final SynchronizedDb db,
                          @NonNull final Supplier<BookDao> bookDaoSupplier,
-                         @NonNull final Supplier<AppLocale> appLocaleSupplier) {
+                         @NonNull final Supplier<ReorderHelper> reorderHelperSupplier) {
         super(db, TAG);
         this.bookDaoSupplier = bookDaoSupplier;
-        this.appLocaleSupplier = appLocaleSupplier;
+        this.reorderHelperSupplier = reorderHelperSupplier;
     }
 
     @Override
@@ -100,7 +101,7 @@ public class SeriesDaoImpl
                              @NonNull final Series series,
                              @NonNull final Supplier<Locale> localeSupplier) {
 
-        final OrderByData obd = OrderByData.create(context, appLocaleSupplier.get(),
+        final OrderByData obd = OrderByData.create(context, reorderHelperSupplier.get(),
                                                    series.getTitle(),
                                                    localeSupplier.get());
 
@@ -290,7 +291,7 @@ public class SeriesDaoImpl
 
         final Locale locale = series.getLocale(context).orElse(bookLocale);
         final OrderByData obd =
-                OrderByData.create(context, appLocaleSupplier.get(),
+                OrderByData.create(context, reorderHelperSupplier.get(),
                                    series.getTitle(), locale);
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
@@ -317,7 +318,7 @@ public class SeriesDaoImpl
 
         final Locale locale = series.getLocale(context).orElse(bookLocale);
         final OrderByData obd =
-                OrderByData.create(context, appLocaleSupplier.get(),
+                OrderByData.create(context, reorderHelperSupplier.get(),
                                    series.getTitle(), locale);
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {

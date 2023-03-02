@@ -69,7 +69,6 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.validators.OrValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
@@ -452,10 +451,9 @@ public class Book
     public String getLabel(@NonNull final Context context,
                            @Nullable final Details details,
                            @Nullable final Style style) {
-        if (ReorderHelper.forDisplay(context)) {
-            final AppLocale appLocale = ServiceLocator.getInstance().getAppLocale();
-            return ReorderHelper.reorder(context, appLocale, getTitle(),
-                                         getLocaleOrUserLocale(context));
+        final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
+        if (reorderHelper.forDisplay(context)) {
+            return reorderHelper.reorder(context, getTitle(), getLocaleOrUserLocale(context));
         } else {
             return getTitle();
         }
@@ -512,8 +510,8 @@ public class Book
         if (contains(DBKey.LANGUAGE)) {
             final String lang = getString(DBKey.LANGUAGE);
 
-            final Locale bookLocale =
-                    ServiceLocator.getInstance().getAppLocale().getLocale(context, lang);
+            final Locale bookLocale = ServiceLocator.getInstance().getAppLocale()
+                                                    .getLocale(context, lang);
             if (bookLocale != null) {
                 if (updateLanguage) {
                     putString(DBKey.LANGUAGE, lang);

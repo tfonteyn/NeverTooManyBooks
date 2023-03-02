@@ -84,6 +84,7 @@ import com.hardbacknutter.nevertoomanybooks.network.NetworkCheckerImpl;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocaleImpl;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.notifier.Notifier;
 import com.hardbacknutter.nevertoomanybooks.utils.notifier.NotifierImpl;
 
@@ -115,6 +116,9 @@ public final class ServiceLocator {
 
     @Nullable
     private StylesHelper stylesHelper;
+
+    @Nullable
+    private ReorderHelper reorderHelper;
 
     @Nullable
     private Languages languages;
@@ -300,6 +304,21 @@ public final class ServiceLocator {
     }
 
     /**
+     * Get the language cache container.
+     *
+     * @return singleton
+     */
+    @NonNull
+    public ReorderHelper getReorderHelper() {
+        synchronized (this) {
+            if (reorderHelper == null) {
+                reorderHelper = new ReorderHelper(this::getAppLocale);
+            }
+        }
+        return reorderHelper;
+    }
+
+    /**
      * Client must call this <strong>before</strong> doing its first request (lazy init).
      *
      * @return the global cookie manager.
@@ -416,7 +435,7 @@ public final class ServiceLocator {
                                           this::getStripInfoDao,
                                           this::getFtsDao,
                                           this::getCoverCacheDao,
-                                          this::getAppLocale);
+                                          this::getReorderHelper);
             }
         }
         return bookDao;
@@ -540,7 +559,8 @@ public final class ServiceLocator {
                                                         this::getAuthorDao,
                                                         this::getSeriesDao,
                                                         this::getPublisherDao,
-                                                        this::getAppLocale);
+                                                        this::getAppLocale,
+                                                        this::getReorderHelper);
             }
         }
         return maintenanceDao;
@@ -552,7 +572,7 @@ public final class ServiceLocator {
             if (publisherDao == null) {
                 publisherDao = new PublisherDaoImpl(getDb(),
                                                     this::getBookDao,
-                                                    this::getAppLocale);
+                                                    this::getReorderHelper);
             }
         }
         return publisherDao;
@@ -564,7 +584,7 @@ public final class ServiceLocator {
             if (seriesDao == null) {
                 seriesDao = new SeriesDaoImpl(getDb(),
                                               this::getBookDao,
-                                              this::getAppLocale);
+                                              this::getReorderHelper);
             }
         }
         return seriesDao;
@@ -602,7 +622,7 @@ public final class ServiceLocator {
                 tocEntryDao = new TocEntryDaoImpl(getDb(),
                                                   this::getBookDao,
                                                   this::getAuthorDao,
-                                                  this::getAppLocale);
+                                                  this::getReorderHelper);
             }
         }
         return tocEntryDao;

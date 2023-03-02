@@ -40,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 /**
@@ -429,11 +428,11 @@ public class Series
     public String getLabel(@NonNull final Context context,
                            @Nullable final Details details,
                            @Nullable final Style style) {
+        final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
         final String label;
-        if (ReorderHelper.forDisplay(context)) {
-            final AppLocale appLocale = ServiceLocator.getInstance().getAppLocale();
+        if (reorderHelper.forDisplay(context)) {
             // Using the locale here is overkill;  see #getLocale(..)
-            label = ReorderHelper.reorder(context, appLocale, title);
+            label = reorderHelper.reorder(context, title);
         } else {
             label = title;
         }

@@ -52,7 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 /**
@@ -75,7 +74,7 @@ public class BookDaoHelper {
     private static final Pattern T = Pattern.compile("T");
 
     @NonNull
-    private final Supplier<AppLocale> appLocaleSupplier;
+    private final Supplier<ReorderHelper> reorderHelperSupplier;
     @NonNull
     private final Book book;
     private final boolean isNew;
@@ -88,14 +87,14 @@ public class BookDaoHelper {
     /**
      * Constructor.
      *
-     * @param context           Current context
-     * @param appLocaleSupplier deferred supplier for the {@link AppLocale}.
+     * @param context               Current context
+     * @param reorderHelperSupplier deferred supplier for the {@link ReorderHelper}.
      */
     public BookDaoHelper(@NonNull final Context context,
-                         @NonNull final Supplier<AppLocale> appLocaleSupplier,
+                         @NonNull final Supplier<ReorderHelper> reorderHelperSupplier,
                          @NonNull final Book book,
                          final boolean isNew) {
-        this.appLocaleSupplier = appLocaleSupplier;
+        this.reorderHelperSupplier = reorderHelperSupplier;
         this.book = book;
         this.isNew = isNew;
 
@@ -122,9 +121,8 @@ public class BookDaoHelper {
         if (book.contains(DBKey.TITLE)) {
             final String title = book.getTitle();
             final String reorderedTitle;
-            if (ReorderHelper.forSorting(context)) {
-                reorderedTitle = ReorderHelper.reorder(context, appLocaleSupplier.get(),
-                                                       title, bookLocale);
+            if (reorderHelperSupplier.get().forSorting(context)) {
+                reorderedTitle = reorderHelperSupplier.get().reorder(context, title, bookLocale);
             } else {
                 reorderedTitle = title;
             }

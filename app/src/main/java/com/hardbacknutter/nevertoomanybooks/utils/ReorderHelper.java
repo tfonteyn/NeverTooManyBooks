@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.content.Context;
-import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
@@ -51,11 +51,19 @@ public final class ReorderHelper {
     public static final String PK_SORT_TITLE_REORDERED = "sort.title.reordered";
 
     /**
-     * Static cache for the pv_reformat_titles_prefixes strings.
+     * Cache for the pv_reformat_titles_prefixes strings.
      */
-    private static final Map<Locale, String> LOCALE_PREFIX_MAP = new HashMap<>();
+    private final Map<Locale, String> localePrefixMap = new HashMap<>();
+    @NonNull
+    private final Supplier<AppLocale> appLocaleSupplier;
 
-    private ReorderHelper() {
+    /**
+     * Constructor.
+     *
+     * @param appLocaleSupplier deferred supplier for the {@link AppLocale}.
+     */
+    public ReorderHelper(@NonNull final Supplier<AppLocale> appLocaleSupplier) {
+        this.appLocaleSupplier = appLocaleSupplier;
     }
 
     /**
@@ -65,24 +73,48 @@ public final class ReorderHelper {
      *
      * @return {@code true} if titles should be reordered. e.g. "The title" -> "title, The"
      */
-    public static boolean forDisplay(@NonNull final Context context) {
+    public boolean forDisplay(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(PK_SHOW_TITLE_REORDERED, false);
     }
 
-    @NonNull
-    public static String reorder(@NonNull final Context context,
-                                 @NonNull final AppLocale appLocale,
-                                 @NonNull final String title) {
-        return reorder(context, appLocale, title, null, LocaleListUtils.asList(context, null));
+    /**
+     * Get the global default for this preference.
+     *
+     * @param context Current context
+     *
+     * @return {@code true} if titles should be reordered. e.g. "The title" -> "title, The"
+     */
+    public boolean forSorting(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(PK_SORT_TITLE_REORDERED, true);
     }
 
     @NonNull
-    public static String reorder(@NonNull final Context context,
-                                 @NonNull final AppLocale appLocale,
-                                 @NonNull final String title,
-                                 @NonNull final Locale locale) {
-        return reorder(context, appLocale, title, locale, LocaleListUtils.asList(context, null));
+    public String reorder(@NonNull final Context context,
+                          @NonNull final String title) {
+        return reorder(context, title, (Locale) null, LocaleListUtils.asList(context, null));
+    }
+
+    @NonNull
+    public String reorder(@NonNull final Context context,
+                          @NonNull final String title,
+                          @NonNull final Locale locale) {
+        return reorder(context, title, locale, LocaleListUtils.asList(context, null));
+    }
+
+    @NonNull
+    public String reorder(@NonNull final Context context,
+                          @NonNull final String title,
+                          @Nullable final String language,
+                          @NonNull final List<Locale> localeList) {
+        final Locale localeFromLang;
+        if (language == null || language.isBlank()) {
+            localeFromLang = null;
+        } else {
+            localeFromLang = appLocaleSupplier.get().getLocale(context, language);
+        }
+        return reorder(context, title, localeFromLang, localeList);
     }
 
     /**
@@ -100,11 +132,10 @@ public final class ReorderHelper {
      * @return reordered title, or the original if the pattern was not found
      */
     @NonNull
-    public static String reorder(@NonNull final Context context,
-                                 @NonNull final AppLocale appLocale,
-                                 @NonNull final String title,
-                                 @Nullable final Locale firstLocale,
-                                 @NonNull final List<Locale> localeList) {
+    public String reorder(@NonNull final Context context,
+                          @NonNull final String title,
+                          @Nullable final Locale firstLocale,
+                          @NonNull final List<Locale> localeList) {
 
         final String[] titleWords = title.split(" ");
         // Single word titles (or empty titles).. just return.
@@ -121,12 +152,12 @@ public final class ReorderHelper {
 
         for (final Locale locale : locales) {
             // Creating the pattern is slow, so we cache it for every Locale.
-            String words = LOCALE_PREFIX_MAP.get(locale);
+            String words = localePrefixMap.get(locale);
             if (words == null) {
-                // the resources bundle in the language that the book (item) is written in.
-                final Resources res = appLocale.getLocalizedResources(context, locale);
-                words = res.getString(R.string.pv_reformat_titles_prefixes);
-                LOCALE_PREFIX_MAP.put(locale, words);
+                words = appLocaleSupplier.get()
+                                         .getLocalizedResources(context, locale)
+                                         .getString(R.string.pv_reformat_titles_prefixes);
+                localePrefixMap.put(locale, words);
             }
 
             // case sensitive, see notes in
@@ -144,17 +175,5 @@ public final class ReorderHelper {
             }
         }
         return title;
-    }
-
-    /**
-     * Get the global default for this preference.
-     *
-     * @param context Current context
-     *
-     * @return {@code true} if titles should be reordered. e.g. "The title" -> "title, The"
-     */
-    public static boolean forSorting(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(PK_SORT_TITLE_REORDERED, true);
     }
 }

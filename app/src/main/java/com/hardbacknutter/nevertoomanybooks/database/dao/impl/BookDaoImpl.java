@@ -83,7 +83,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
@@ -147,13 +147,12 @@ public class BookDaoImpl
     @NonNull
     private final Supplier<CoverCacheDao> coverCacheDaoSupplier;
     @NonNull
-    private final Supplier<AppLocale> appLocaleSupplier;
+    private final Supplier<ReorderHelper> reorderHelperSupplier;
 
     /**
      * Constructor.
      *
-     * @param db                Underlying database
-     * @param appLocaleSupplier deferred supplier for the {@link AppLocale}.
+     * @param db Underlying database
      */
     public BookDaoImpl(@NonNull final SynchronizedDb db,
                        @NonNull final Locale systemLocale,
@@ -167,7 +166,7 @@ public class BookDaoImpl
                        @NonNull final Supplier<StripInfoDao> stripInfoDaoSupplier,
                        @NonNull final Supplier<FtsDao> ftsDaoSupplier,
                        @NonNull final Supplier<CoverCacheDao> coverCacheDaoSupplier,
-                       @NonNull final Supplier<AppLocale> appLocaleSupplier) {
+                       @NonNull final Supplier<ReorderHelper> reorderHelperSupplier) {
         super(db, TAG);
         dateParser = new ISODateParser(systemLocale);
         this.authorDaoSupplier = authorDaoSupplier;
@@ -180,7 +179,7 @@ public class BookDaoImpl
         this.stripInfoDaoSupplier = stripInfoDaoSupplier;
         this.ftsDaoSupplier = ftsDaoSupplier;
         this.coverCacheDaoSupplier = coverCacheDaoSupplier;
-        this.appLocaleSupplier = appLocaleSupplier;
+        this.reorderHelperSupplier = reorderHelperSupplier;
     }
 
     /**
@@ -237,7 +236,7 @@ public class BookDaoImpl
             }
 
             final BookDaoHelper bookDaoHelper =
-                    new BookDaoHelper(context, appLocaleSupplier, book, true);
+                    new BookDaoHelper(context, reorderHelperSupplier, book, true);
             final ContentValues cv = bookDaoHelper
                     .process(context)
                     .filterValues(db.getTableInfo(TBL_BOOKS));
@@ -339,7 +338,7 @@ public class BookDaoImpl
             }
 
             final BookDaoHelper bookDaoHelper =
-                    new BookDaoHelper(context, appLocaleSupplier, book, false);
+                    new BookDaoHelper(context, reorderHelperSupplier, book, false);
             final ContentValues cv = bookDaoHelper
                     .process(context)
                     .filterValues(db.getTableInfo(TBL_BOOKS));
@@ -887,7 +886,7 @@ public class BookDaoImpl
                     authorDao.insert(context, author, bookLocale);
                 }
 
-                final OrderByData obd = OrderByData.create(context, appLocaleSupplier.get(),
+                final OrderByData obd = OrderByData.create(context, reorderHelperSupplier.get(),
                                                            tocEntry.getTitle(),
                                                            listLocaleSupplier.apply(tocEntry));
 

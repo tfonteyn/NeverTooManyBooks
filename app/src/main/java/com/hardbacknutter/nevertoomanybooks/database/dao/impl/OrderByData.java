@@ -26,7 +26,6 @@ import androidx.annotation.NonNull;
 
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 /**
@@ -70,11 +69,11 @@ public final class OrderByData {
      */
     @NonNull
     public static OrderByData create(@NonNull final Context context,
-                                     @NonNull final AppLocale appLocale,
+                                     @NonNull final ReorderHelper reorderHelper,
                                      @NonNull final String title,
                                      @NonNull final Locale locale) {
-        if (ReorderHelper.forSorting(context)) {
-            final String result = ReorderHelper.reorder(context, appLocale, title, locale);
+        if (reorderHelper.forSorting(context)) {
+            final String result = reorderHelper.reorder(context, title, locale);
             return new OrderByData(result, locale);
         } else {
             return new OrderByData(title, locale);

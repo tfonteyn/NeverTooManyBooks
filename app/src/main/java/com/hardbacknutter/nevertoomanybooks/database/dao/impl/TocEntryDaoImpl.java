@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntryMergeHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -71,22 +72,22 @@ public class TocEntryDaoImpl
     @NonNull
     private final Supplier<AuthorDao> authorDaoSupplier;
     @NonNull
-    private final Supplier<AppLocale> appLocaleSupplier;
+    private final Supplier<ReorderHelper> reorderHelperSupplier;
 
     /**
      * Constructor.
      *
-     * @param db                Underlying database
-     * @param appLocaleSupplier deferred supplier for the {@link AppLocale}.
+     * @param db                    Underlying database
+     * @param reorderHelperSupplier deferred supplier for the {@link AppLocale}.
      */
     public TocEntryDaoImpl(@NonNull final SynchronizedDb db,
                            @NonNull final Supplier<BookDao> bookDaoSupplier,
                            @NonNull final Supplier<AuthorDao> authorDaoSupplier,
-                           @NonNull final Supplier<AppLocale> appLocaleSupplier) {
+                           @NonNull final Supplier<ReorderHelper> reorderHelperSupplier) {
         super(db, TAG);
         this.bookDaoSupplier = bookDaoSupplier;
         this.authorDaoSupplier = authorDaoSupplier;
-        this.appLocaleSupplier = appLocaleSupplier;
+        this.reorderHelperSupplier = reorderHelperSupplier;
     }
 
     @Override
@@ -120,7 +121,7 @@ public class TocEntryDaoImpl
                      @NonNull final TocEntry tocEntry,
                      @NonNull final Supplier<Locale> localeSupplier) {
 
-        final OrderByData obd = OrderByData.create(context, appLocaleSupplier.get(),
+        final OrderByData obd = OrderByData.create(context, reorderHelperSupplier.get(),
                                                    tocEntry.getTitle(), localeSupplier.get());
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.FIND_ID)) {
