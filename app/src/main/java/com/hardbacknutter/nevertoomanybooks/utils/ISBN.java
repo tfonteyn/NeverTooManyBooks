@@ -893,16 +893,14 @@ public class ISBN {
         @NonNull
         public static Validity getLevel(@NonNull final Context context) {
 
-            final int value = IntListPref.getInt(context, PK_EDIT_BOOK_ISBN_CHECKS,
-                                                 Loose.value);
+            final int value = IntListPref.getInt(context, PK_EDIT_BOOK_ISBN_CHECKS, Loose.value);
             switch (value) {
                 case 2:
                     return Strict;
-                case 1:
-                    return Loose;
                 case 0:
-                default:
                     return None;
+                default:
+                    return Loose;
             }
         }
     }
