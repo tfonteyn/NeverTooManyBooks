@@ -44,6 +44,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -58,10 +59,12 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.CoverCacheDao;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.OnRowClickListener;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
@@ -83,6 +86,10 @@ public class BooklistAdapter
     private final int levelIndent;
     @NonNull
     private final Style style;
+    @NonNull
+    private final Supplier<Languages> languagesSupplier;
+    @NonNull
+    private final Supplier<CoverCacheDao> coverCacheDaoSupplier;
     @Dimension
     private final int groupRowHeight;
     /** Longest side for a cover in pixels. */
@@ -90,7 +97,7 @@ public class BooklistAdapter
     private final int coverLongestSide;
     @NonNull
     private final Formatter formatter;
-    private final Languages languages;
+
     /** Shared across all {@link BookHolder}s */
     private final RealNumberParser realNumberParser;
 
@@ -117,16 +124,23 @@ public class BooklistAdapter
      * @param style   to use
      */
     public BooklistAdapter(@NonNull final Context context,
-                           @NonNull final AppLocale appLocale,
                            @NonNull final Style style,
-                           @NonNull final Languages languages) {
+                           @NonNull final Supplier<ReorderHelper> reorderHelperSupplier,
+                           @NonNull final Supplier<AuthorDao> authorDaoSupplier,
+                           @NonNull final Supplier<Languages> languagesSupplier,
+                           @NonNull final Supplier<CoverCacheDao> coverCacheDaoSupplier) {
         this.inflater = LayoutInflater.from(context);
         this.style = style;
-        this.languages = languages;
+        this.languagesSupplier = languagesSupplier;
+        this.coverCacheDaoSupplier = coverCacheDaoSupplier;
 
         final List<Locale> locales = LocaleListUtils.asList(context);
         realNumberParser = new RealNumberParser(locales);
-        formatter = new Formatter(context, appLocale, style, locales);
+        formatter = new Formatter(context,
+                                  reorderHelperSupplier,
+                                  languagesSupplier,
+                                  authorDaoSupplier,
+                                  style, locales);
 
         final Resources res = context.getResources();
         levelIndent = res.getDimensionPixelSize(R.dimen.bob_group_level_padding_start);
@@ -318,7 +332,10 @@ public class BooklistAdapter
         // NEWTHINGS: BooklistGroup - add a new holder type if needed
         switch (groupId) {
             case BooklistGroup.BOOK:
-                holder = new BookHolder(itemView, style, languages, realNumberParser,
+                holder = new BookHolder(itemView, style,
+                                        languagesSupplier,
+                                        coverCacheDaoSupplier,
+                                        realNumberParser,
                                         coverLongestSide);
                 break;
 
