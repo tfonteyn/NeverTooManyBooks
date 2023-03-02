@@ -21,8 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.datamanager;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Locale;
 import javax.xml.parsers.ParserConfigurationException;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
@@ -45,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class MoneyTest
         extends Base {
 
-    private static final List<Locale> UK = List.of(Locale.UK);
+    private static final BigDecimal twelveDotThreeFour = BigDecimal.valueOf(12.34d);
 
     private DataManager dataManager;
     private RealNumberParser realNumberParser;
@@ -68,16 +66,16 @@ public class MoneyTest
      */
     @Test
     void putMoneyAndGetMoney() {
-        final Money money = MoneyParser.parse(BigDecimal.valueOf(12.34d), MoneyParser.GBP);
+        final Money money = MoneyParser.parse(twelveDotThreeFour, MoneyParser.GBP);
         assertNotNull(money);
         dataManager.putMoney(DBKey.PRICE_LISTED, money);
 
         final Money out = dataManager.getMoney(DBKey.PRICE_LISTED, realNumberParser);
         assertNotNull(out);
-        assertEquals(12.34d, out.doubleValue());
+        assertEquals(twelveDotThreeFour, out.getValue());
         assertEquals("GBP", out.getCurrencyCode());
 
-        MoneyVerifier.checkRawData(dataManager, 12.34d, "GBP");
+        MoneyVerifier.checkRawData(dataManager, twelveDotThreeFour, "GBP");
     }
 
     /**
@@ -88,7 +86,7 @@ public class MoneyTest
      */
     @Test
     void putMoneyAndGetObject() {
-        final Money money = MoneyParser.parse(BigDecimal.valueOf(12.34d), MoneyParser.GBP);
+        final Money money = MoneyParser.parse(twelveDotThreeFour, MoneyParser.GBP);
         assertNotNull(money);
         dataManager.putMoney(DBKey.PRICE_LISTED, money);
 
@@ -96,10 +94,10 @@ public class MoneyTest
         assertNotNull(out);
         assertTrue(out instanceof Money);
         final Money mOut = (Money) out;
-        assertEquals(12.34d, mOut.doubleValue());
+        assertEquals(twelveDotThreeFour, mOut.getValue());
         assertEquals("GBP", mOut.getCurrencyCode());
 
-        MoneyVerifier.checkRawData(dataManager, 12.34d, "GBP");
+        MoneyVerifier.checkRawData(dataManager, twelveDotThreeFour, "GBP");
     }
 
     /**
@@ -110,16 +108,16 @@ public class MoneyTest
      */
     @Test
     void putObjectAndGetMoney() {
-        final Money money = MoneyParser.parse(BigDecimal.valueOf(12.34d), MoneyParser.GBP);
+        final Money money = MoneyParser.parse(twelveDotThreeFour, MoneyParser.GBP);
         assertNotNull(money);
         dataManager.put(DBKey.PRICE_LISTED, money);
 
         final Money out = dataManager.getMoney(DBKey.PRICE_LISTED, realNumberParser);
         assertNotNull(out);
-        assertEquals(12.34d, out.doubleValue());
+        assertEquals(twelveDotThreeFour, out.getValue());
         assertEquals("GBP", out.getCurrencyCode());
 
-        MoneyVerifier.checkRawData(dataManager, 12.34d, "GBP");
+        MoneyVerifier.checkRawData(dataManager, twelveDotThreeFour, "GBP");
     }
 
     /**
@@ -130,7 +128,7 @@ public class MoneyTest
      */
     @Test
     void putObjectAndGetObject() {
-        final Money money = MoneyParser.parse(BigDecimal.valueOf(12.34d), MoneyParser.GBP);
+        final Money money = MoneyParser.parse(twelveDotThreeFour, MoneyParser.GBP);
         assertNotNull(money);
         dataManager.put(DBKey.PRICE_LISTED, money);
 
@@ -139,10 +137,10 @@ public class MoneyTest
 
         assertTrue(out instanceof Money);
         final Money mOut = (Money) out;
-        assertEquals(12.34d, mOut.doubleValue());
+        assertEquals(twelveDotThreeFour, mOut.getValue());
         assertEquals("GBP", mOut.getCurrencyCode());
 
-        MoneyVerifier.checkRawData(dataManager, 12.34d, "GBP");
+        MoneyVerifier.checkRawData(dataManager, twelveDotThreeFour, "GBP");
     }
 
 
@@ -160,10 +158,10 @@ public class MoneyTest
         final Money out = dataManager.getMoney(DBKey.PRICE_LISTED, realNumberParser);
         assertNotNull(out);
 
-        assertEquals(12.34d, out.doubleValue());
+        assertEquals(twelveDotThreeFour, out.getValue());
         assertEquals("GBP", out.getCurrencyCode());
 
-        MoneyVerifier.checkRawData(dataManager, 12.34d, "GBP");
+        MoneyVerifier.checkRawData(dataManager, twelveDotThreeFour, "GBP");
     }
 
     /**
@@ -182,10 +180,10 @@ public class MoneyTest
 
         assertTrue(out instanceof Money);
         final Money mOut = (Money) out;
-        assertEquals(12.34d, mOut.doubleValue());
+        assertEquals(twelveDotThreeFour, mOut.getValue());
         assertEquals("GBP", mOut.getCurrencyCode());
 
-        MoneyVerifier.checkRawData(dataManager, 12.34d, "GBP");
+        MoneyVerifier.checkRawData(dataManager, twelveDotThreeFour, "GBP");
     }
 
     /**
@@ -205,7 +203,7 @@ public class MoneyTest
         assertEquals(12.34d, outValue);
         assertEquals("GBP", outCurrency);
 
-        MoneyVerifier.checkRawData(dataManager, 12.34d, "GBP");
+        MoneyVerifier.checkRawData(dataManager, twelveDotThreeFour, "GBP");
     }
 
 
@@ -221,10 +219,10 @@ public class MoneyTest
 
         final Money out = dataManager.getMoney(DBKey.PRICE_LISTED, realNumberParser);
         assertNotNull(out);
-        assertEquals(12.34d, out.doubleValue());
+        assertEquals(twelveDotThreeFour, out.getValue());
         assertNull(out.getCurrency());
 
-        MoneyVerifier.checkRawData(dataManager, 12.34d, null);
+        MoneyVerifier.checkRawData(dataManager, twelveDotThreeFour, null);
     }
 
     /**
@@ -241,6 +239,10 @@ public class MoneyTest
         assertNotNull(out);
         assertTrue(out instanceof Money);
         final Money mOut = (Money) out;
+        assertEquals(twelveDotThreeFour, mOut.getValue());
+        assertNull(mOut.getCurrency());
+
+        MoneyVerifier.checkRawData(dataManager, twelveDotThreeFour, null);
     }
 
     @Test

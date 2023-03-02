@@ -25,6 +25,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.math.BigDecimal;
+
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
@@ -37,13 +39,13 @@ public final class MoneyVerifier {
     }
 
     public static void checkRawData(@NonNull final DataManager dataManager,
-                                    final double value,
+                                    @NonNull final BigDecimal value,
                                     @Nullable final String currency) {
         final Bundle rawData = dataManager.getRawData();
 
         final Object v = rawData.get(DBKey.PRICE_LISTED);
         assertTrue(v instanceof Double);
-        assertEquals(value, (double) v);
+        assertEquals(value.doubleValue(), (double) v);
 
         final Object c = rawData.get(DBKey.PRICE_LISTED_CURRENCY);
         if (currency == null) {
