@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,7 +25,7 @@ import androidx.annotation.Nullable;
 import java.util.Collection;
 import java.util.function.Supplier;
 
-import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 
 /**
  * Quick note: this class came into being as a solution to the missing "assert" functionality

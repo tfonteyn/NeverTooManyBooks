@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils;
+package com.hardbacknutter.nevertoomanybooks.core.utils;
 
 import android.content.Context;
 import android.text.Editable;
@@ -37,9 +37,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
-import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 
 /**
  * This class name is a bit of a misnomer by now.
