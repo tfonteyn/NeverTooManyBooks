@@ -43,6 +43,15 @@ import com.hardbacknutter.nevertoomanybooks.utils.Money;
  * Most other languages: "[value] [currency]" with 2 decimal digits.
  * <p>
  * This class can display {@link Money} with or without a {@link Currency}.
+ * <p>
+ * The ICU NumberFormatter is only available from ICU level 60, but Android
+ * <a href="https://developer.android.com/guide/topics/resources/internationalization#versioning-nougat">lags behind</a>
+ * So you need Android 9 (API level 28) and even then, the NumberFormatter
+ * is not available in android.icu so you still would need to bundle the full ICU lib
+ * For now, this is to much overkill.
+ * <p>
+ * <a href="https://github.com/unicode-org/icu/blob/master/icu4j/main/classes/core/src/com/ibm/icu/number/NumberFormatter.java">icu4</a>
+ * and {@code UnitWidth.NARROW}
  */
 
 public class MoneyFormatter
@@ -74,7 +83,7 @@ public class MoneyFormatter
         final Currency currency = rawValue.getCurrency();
         // no currency ? just display the source value as-is
         if (currency == null) {
-            return String.valueOf(rawValue.doubleValue());
+            return String.valueOf(rawValue.getValue().doubleValue());
         }
 
         try {
@@ -85,24 +94,13 @@ public class MoneyFormatter
         } catch (@NonNull final IllegalArgumentException e) {
             if (BuildConfig.DEBUG /* always */) {
                 LoggerFactory.getLogger()
-                              .e(TAG, e, "currency=" + rawValue.getCurrencyCode()
-                                         + "|value=" + rawValue.getValue());
+                             .e(TAG, e, "currency=" + rawValue.getCurrencyCode()
+                                        + "|value=" + rawValue.getValue());
             }
 
             return context.getString(R.string.fallback_currency_format,
                                      rawValue.getCurrencyCode(),
-                                     rawValue.doubleValue());
+                                     rawValue.getValue().doubleValue());
         }
     }
-
-    // The ICU NumberFormatter is only available from ICU level 60, but Android lags behind:
-    // https://developer.android.com/guide/topics/resources/internationalization
-    // #versioning-nougat
-    // So you need Android 9 (API level 28) and even then, the NumberFormatter
-    // is not available in android.icu so you still would need to bundle the full ICU lib
-    // For now, this is to much overkill.
-    //
-    //   https://github.com/unicode-org/icu/blob/master/icu4j/main/classes/core/src/
-    //   com/ibm/icu/number/NumberFormatter.java
-    //   and UnitWidth.NARROW
 }
