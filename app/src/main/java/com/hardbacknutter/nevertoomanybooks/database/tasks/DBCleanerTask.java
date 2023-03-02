@@ -62,16 +62,24 @@ public class DBCleanerTask
     @WorkerThread
     @Override
     protected Boolean doWork() {
-        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        final Context context = serviceLocator.getLocalizedAppContext();
 
         publishProgress(1, context.getString(R.string.progress_msg_optimizing));
 
         try {
-            final int modified = new DBCleaner().clean(context);
+            final int modified = new DBCleaner(
+                    serviceLocator.getDb(),
+                    serviceLocator::getAuthorDao,
+                    serviceLocator::getSeriesDao,
+                    serviceLocator::getPublisherDao,
+                    serviceLocator::getBookshelfDao,
+                    serviceLocator::getTocEntryDao,
+                    serviceLocator::getLanguageDao)
+                    .clean(context);
 
             if (modified > 0) {
-                LoggerFactory.getLogger()
-                              .w(TAG, "reposition modified=" + modified);
+                LoggerFactory.getLogger().w(TAG, "reposition modified=" + modified);
             }
             return true;
 

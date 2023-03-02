@@ -25,13 +25,13 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
+import androidx.core.util.Supplier;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
@@ -40,6 +40,12 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.LanguageDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 /**
@@ -68,20 +74,41 @@ public class DBCleaner {
     @NonNull
     private final SynchronizedDb db;
     @NonNull
-    private final ServiceLocator serviceLocator;
+    private final Supplier<AuthorDao> authorDaoSupplier;
+    @NonNull
+    private final Supplier<SeriesDao> seriesDaoSupplier;
+    @NonNull
+    private final Supplier<PublisherDao> publisherDaoSupplier;
+    @NonNull
+    private final Supplier<BookshelfDao> bookshelfDaoSupplier;
+    @NonNull
+    private final Supplier<TocEntryDao> tocEntryDaoSupplier;
+    @NonNull
+    private final Supplier<LanguageDao> languageDaoSupplier;
 
     /**
      * Constructor.
      */
-    public DBCleaner() {
-        serviceLocator = ServiceLocator.getInstance();
-        db = serviceLocator.getDb();
+    public DBCleaner(@NonNull final SynchronizedDb db,
+                     @NonNull final Supplier<AuthorDao> authorDaoSupplier,
+                     @NonNull final Supplier<SeriesDao> seriesDaoSupplier,
+                     @NonNull final Supplier<PublisherDao> publisherDaoSupplier,
+                     @NonNull final Supplier<BookshelfDao> bookshelfDaoSupplier,
+                     @NonNull final Supplier<TocEntryDao> tocEntryDaoSupplier,
+                     @NonNull final Supplier<LanguageDao> languageDaoSupplier) {
+        this.db = db;
+        this.authorDaoSupplier = authorDaoSupplier;
+        this.seriesDaoSupplier = seriesDaoSupplier;
+        this.publisherDaoSupplier = publisherDaoSupplier;
+        this.bookshelfDaoSupplier = bookshelfDaoSupplier;
+        this.tocEntryDaoSupplier = tocEntryDaoSupplier;
+        this.languageDaoSupplier = languageDaoSupplier;
     }
 
     public int clean(@NonNull final Context context) {
 
         // do a mass update of any languages not yet converted to ISO 639-2 codes
-        serviceLocator.getLanguageDao().bulkUpdate(context);
+        languageDaoSupplier.get().bulkUpdate(context);
 
         // make sure there are no 'T' separators in datetime fields
         datetimeFormat();
@@ -100,10 +127,10 @@ public class DBCleaner {
 
         // re-sort positional links - theoretically this should never be needed... flw.
         int modified;
-        modified = serviceLocator.getAuthorDao().fixPositions(context);
-        modified += serviceLocator.getSeriesDao().fixPositions(context);
-        modified += serviceLocator.getPublisherDao().fixPositions(context);
-        modified += serviceLocator.getTocEntryDao().fixPositions(context);
+        modified = authorDaoSupplier.get().fixPositions(context);
+        modified += seriesDaoSupplier.get().fixPositions(context);
+        modified += publisherDaoSupplier.get().fixPositions(context);
+        modified += tocEntryDaoSupplier.get().fixPositions(context);
 
         return modified;
     }
@@ -136,8 +163,8 @@ public class DBCleaner {
 
             if (BuildConfig.DEBUG /* always */) {
                 LoggerFactory.getLogger().d(TAG, "dates",
-                                                           "key=" + key
-                                                           + "|rows.size()=" + rows.size());
+                                            "key=" + key
+                                            + "|rows.size()=" + rows.size());
             }
             try (SynchronizedStatement stmt = db.compileStatement(
                     UPDATE_ + DBDefinitions.TBL_BOOKS.getName()
@@ -160,8 +187,8 @@ public class DBCleaner {
      * @param context Current context
      */
     public void bookshelves(@NonNull final Context context) {
-        serviceLocator.getBookshelfDao().getAll()
-                      .forEach(bookshelf -> bookshelf.validateStyle(context));
+        bookshelfDaoSupplier.get().getAll().forEach(
+                bookshelf -> bookshelf.validateStyle(context));
     }
 
 
