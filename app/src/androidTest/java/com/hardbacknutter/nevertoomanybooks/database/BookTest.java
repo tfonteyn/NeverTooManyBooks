@@ -104,15 +104,15 @@ public class BookTest {
         publisherList.clear();
         tocEntryList.clear();
 
-        final ServiceLocator sl = ServiceLocator.getInstance();
-        final SynchronizedDb db = sl.getDb();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        final SynchronizedDb db = serviceLocator.getDb();
 
         TestConstants.deleteTocs(db);
         TestConstants.deleteBooks(db);
         TestConstants.deleteAuthors(db);
         TestConstants.deletePublishers(db);
 
-        final Context context = sl.getLocalizedAppContext();
+        final Context context = serviceLocator.getLocalizedAppContext();
         final Locale bookLocale = Locale.getDefault();
 
         final int actualVolume = CoverDir.initVolume(context, 0);
@@ -137,7 +137,7 @@ public class BookTest {
         author[1] = Author.from(TestConstants.AuthorFullName(1));
 
         // insert author[0] but do NOT insert author[1]
-        authorId[0] = sl.getAuthorDao().insert(context, author[0], bookLocale);
+        authorId[0] = serviceLocator.getAuthorDao().insert(context, author[0], bookLocale);
         authorList.clear();
         authorList.add(author[0]);
 
@@ -145,7 +145,7 @@ public class BookTest {
         publisher[1] = Publisher.from(TestConstants.PUBLISHER + "1");
 
         // insert publisher[0] but do NOT insert publisher[1]
-        publisherId[0] = sl.getPublisherDao().insert(context, publisher[0], bookLocale);
+        publisherId[0] = serviceLocator.getPublisherDao().insert(context, publisher[0], bookLocale);
         publisherList.clear();
         publisherList.add(publisher[0]);
 
@@ -177,9 +177,9 @@ public class BookTest {
     public void book()
             throws DaoWriteException, IOException, StorageException {
 
-        final ServiceLocator sl = ServiceLocator.getInstance();
-        final Context context = sl.getLocalizedAppContext();
-        final BookDao bookDao = sl.getBookDao();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        final Context context = serviceLocator.getLocalizedAppContext();
+        final BookDao bookDao = serviceLocator.getBookDao();
 
         final File coverDir = CoverDir.getDir(context);
         assertNotNull(NEED_A_PICTURES_DIRECTORY, coverDir);
