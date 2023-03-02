@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,8 +30,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNavigatorDao;
+import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 
@@ -85,7 +87,8 @@ public class ShowBookPagerViewModel
             if (navTableName != null && !navTableName.isEmpty()) {
                 final long rowId = args.getLong(BKEY_LIST_TABLE_ROW_ID, 0);
                 SanityCheck.requirePositiveValue(rowId, BKEY_LIST_TABLE_ROW_ID);
-                navHelper = new BooklistNavigatorDao(navTableName);
+                final SynchronizedDb db = ServiceLocator.getInstance().getDb();
+                navHelper = new BooklistNavigatorDao(db, navTableName);
                 initialPagerPosition = navHelper.getRowNumber(rowId) - 1;
             } else {
                 initialPagerPosition = 0;
