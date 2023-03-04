@@ -399,13 +399,11 @@ public class BooksOnBookshelfViewModel
                              final long bookshelfId) {
         final long previousBookshelfId = bookshelf == null ? 0 : bookshelf.getId();
 
-        bookshelf = ServiceLocator.getInstance().getBookshelfDao().getById(bookshelfId);
-        if (bookshelf == null) {
-            bookshelf = Bookshelf
-                    .getBookshelf(context, Bookshelf.PREFERRED)
-                    .orElseGet(() -> Bookshelf.getBookshelf(context, Bookshelf.ALL_BOOKS)
-                                              .orElseThrow());
-        }
+        bookshelf = ServiceLocator.getInstance().getBookshelfDao()
+                                  .getById(bookshelfId).orElseGet(
+                        () -> Bookshelf.getBookshelf(context, Bookshelf.PREFERRED).orElseGet(
+                                () -> Bookshelf.getBookshelf(context, Bookshelf.ALL_BOOKS)
+                                               .orElseThrow()));
         bookshelf.setAsPreferred(context);
 
         if (previousBookshelfId != bookshelf.getId()) {

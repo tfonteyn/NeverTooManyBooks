@@ -26,11 +26,11 @@ import android.database.sqlite.SQLiteException;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -72,7 +72,8 @@ public class SeriesDaoImpl
      * Constructor.
      *
      * @param db                    Underlying database
-     * @param reorderHelperSupplier deferred supplier for the {@link ReorderHelper}.
+     * @param bookDaoSupplier       deferred supplier for the {@link BookDao}
+     * @param reorderHelperSupplier deferred supplier for the {@link ReorderHelper}
      */
     public SeriesDaoImpl(@NonNull final SynchronizedDb db,
                          @NonNull final Supplier<BookDao> bookDaoSupplier,
@@ -82,23 +83,23 @@ public class SeriesDaoImpl
         this.reorderHelperSupplier = reorderHelperSupplier;
     }
 
+    @NonNull
     @Override
-    @Nullable
-    public Series getById(final long id) {
+    public Optional<Series> getById(final long id) {
         try (Cursor cursor = db.rawQuery(Sql.GET_BY_ID, new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
-                return new Series(id, new CursorRow(cursor));
+                return Optional.of(new Series(id, new CursorRow(cursor)));
             } else {
-                return null;
+                return Optional.empty();
             }
         }
     }
 
     @Override
-    @Nullable
-    public Series findByName(@NonNull final Context context,
-                             @NonNull final Series series,
-                             @NonNull final Supplier<Locale> localeSupplier) {
+    @NonNull
+    public Optional<Series> findByName(@NonNull final Context context,
+                                       @NonNull final Series series,
+                                       @NonNull final Supplier<Locale> localeSupplier) {
 
         final OrderByData obd = OrderByData.create(context, reorderHelperSupplier.get(),
                                                    series.getTitle(),
@@ -109,9 +110,9 @@ public class SeriesDaoImpl
                 SqlEncode.orderByColumn(obd.title, obd.locale)})) {
             if (cursor.moveToFirst()) {
                 final CursorRow rowData = new CursorRow(cursor);
-                return new Series(rowData.getLong(DBKey.PK_ID), rowData);
+                return Optional.of(new Series(rowData.getLong(DBKey.PK_ID), rowData));
             } else {
-                return null;
+                return Optional.empty();
             }
         }
     }
@@ -255,8 +256,9 @@ public class SeriesDaoImpl
     public void fixId(@NonNull final Context context,
                       @NonNull final Series series,
                       @NonNull final Supplier<Locale> localeSupplier) {
-        final Series found = findByName(context, series, localeSupplier);
-        series.setId(found == null ? 0 : found.getId());
+        final long found = findByName(context, series, localeSupplier)
+                .map(Series::getId).orElse(0L);
+        series.setId(found);
     }
 
     @Override
@@ -271,17 +273,18 @@ public class SeriesDaoImpl
 
         // If we do already have it, update the object
         if (series.getId() > 0) {
-            final Series dbSeries = getById(series.getId());
+            final Optional<Series> dbSeries = getById(series.getId());
             // Sanity check
-            if (dbSeries != null) {
+            if (dbSeries.isPresent()) {
                 // copy any updated fields
-                series.copyFrom(dbSeries, false);
+                series.copyFrom(dbSeries.get(), false);
             } else {
                 // we shouldn't get here... but if we do, set it to 'new'
                 series.setId(0);
             }
         }
     }
+
     @Override
     public long insert(@NonNull final Context context,
                        @NonNull final Series series,

@@ -25,11 +25,11 @@ import android.database.sqlite.SQLiteException;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -71,7 +71,8 @@ public class PublisherDaoImpl
      * Constructor.
      *
      * @param db                    Underlying database
-     * @param reorderHelperSupplier deferred supplier for the {@link ReorderHelper}.
+     * @param bookDaoSupplier       deferred supplier for the {@link BookDao}
+     * @param reorderHelperSupplier deferred supplier for the {@link ReorderHelper}
      */
     public PublisherDaoImpl(@NonNull final SynchronizedDb db,
                             @NonNull final Supplier<BookDao> bookDaoSupplier,
@@ -81,23 +82,23 @@ public class PublisherDaoImpl
         this.reorderHelperSupplier = reorderHelperSupplier;
     }
 
+    @NonNull
     @Override
-    @Nullable
-    public Publisher getById(final long id) {
+    public Optional<Publisher> getById(final long id) {
         try (Cursor cursor = db.rawQuery(Sql.SELECT_BY_ID, new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
-                return new Publisher(id, new CursorRow(cursor));
+                return Optional.of(new Publisher(id, new CursorRow(cursor)));
             } else {
-                return null;
+                return Optional.empty();
             }
         }
     }
 
     @Override
-    @Nullable
-    public Publisher findByName(@NonNull final Context context,
-                                @NonNull final Publisher publisher,
-                                @NonNull final Supplier<Locale> localeSupplier) {
+    @NonNull
+    public Optional<Publisher> findByName(@NonNull final Context context,
+                                          @NonNull final Publisher publisher,
+                                          @NonNull final Supplier<Locale> localeSupplier) {
 
         final OrderByData obd = OrderByData.create(context, reorderHelperSupplier.get(),
                                                    publisher.getName(),
@@ -108,9 +109,9 @@ public class PublisherDaoImpl
                 SqlEncode.orderByColumn(obd.title, obd.locale)})) {
             if (cursor.moveToFirst()) {
                 final CursorRow rowData = new CursorRow(cursor);
-                return new Publisher(rowData.getLong(DBKey.PK_ID), rowData);
+                return Optional.of(new Publisher(rowData.getLong(DBKey.PK_ID), rowData));
             } else {
-                return null;
+                return Optional.empty();
             }
         }
     }
@@ -212,8 +213,9 @@ public class PublisherDaoImpl
     public void fixId(@NonNull final Context context,
                       @NonNull final Publisher publisher,
                       @NonNull final Supplier<Locale> localeSupplier) {
-        final Publisher found = findByName(context, publisher, localeSupplier);
-        publisher.setId(found == null ? 0 : found.getId());
+        final long found = findByName(context, publisher, localeSupplier)
+                .map(Publisher::getId).orElse(0L);
+        publisher.setId(found);
     }
 
     @Override
@@ -228,11 +230,11 @@ public class PublisherDaoImpl
 
         // If we do already have it, update the object
         if (publisher.getId() > 0) {
-            final Publisher dbPublisher = getById(publisher.getId());
+            final Optional<Publisher> dbPublisher = getById(publisher.getId());
             // Sanity check
-            if (dbPublisher != null) {
+            if (dbPublisher.isPresent()) {
                 // copy any updated fields
-                publisher.copyFrom(dbPublisher);
+                publisher.copyFrom(dbPublisher.get());
             } else {
                 // we shouldn't get here... but if we do, set it to 'new'
                 publisher.setId(0);

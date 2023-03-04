@@ -30,6 +30,7 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -123,10 +124,10 @@ public class EditAuthorViewModel
         final Author tmpRealAuthor = Author.from(currentRealAuthorName);
 
         final AuthorDao dao = ServiceLocator.getInstance().getAuthorDao();
-        final Author exiting = dao.findByName(context, tmpRealAuthor, () -> bookLocale);
+        final Optional<Author> exiting = dao.findByName(context, tmpRealAuthor, () -> bookLocale);
 
-        if (exiting != null) {
-            currentEdit.setRealAuthor(exiting);
+        if (exiting.isPresent()) {
+            currentEdit.setRealAuthor(exiting.get());
             return true;
         }
 

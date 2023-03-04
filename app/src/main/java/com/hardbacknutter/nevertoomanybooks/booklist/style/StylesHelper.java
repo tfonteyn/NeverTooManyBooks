@@ -200,6 +200,9 @@ public class StylesHelper {
         return cache;
     }
 
+    /**
+     * Clear the cached Styles. Called after the user updates a (list of) Style.
+     */
     public void clearCache() {
         cache.clear();
     }

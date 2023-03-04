@@ -24,11 +24,11 @@ import android.content.Context;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -52,22 +52,24 @@ public interface EntityBookLinksDao<T extends Entity>
      * given-name of the author is empty. e.g. "Asimov" and "Asimov"+"Isaac"
      * We only return the <strong>first entity found</strong>.
      *
-     * @param context Current context
-     * @param item    to find the id of
+     * @param context        Current context
+     * @param item           to find the id of
+     * @param localeSupplier deferred supplier for a {@link Locale}.
      *
-     * @return the {@link T}, or {@code null} if not found
+     * @return the {@link T}
      */
-    @Nullable
-    T findByName(@NonNull Context context,
-                 @NonNull T item,
-                 @NonNull Supplier<Locale> localeSupplier);
+    @NonNull
+    Optional<T> findByName(@NonNull Context context,
+                           @NonNull T item,
+                           @NonNull Supplier<Locale> localeSupplier);
 
     /**
      * Find a {@link T} by using the <strong>name</strong> fields.
      * If found, updates <strong>ONLY</strong> the id with the one found in the database.
      *
-     * @param context Current context
-     * @param item    to update
+     * @param context        Current context
+     * @param item           to update
+     * @param localeSupplier deferred supplier for a {@link Locale}.
      */
     void fixId(@NonNull Context context,
                @NonNull T item,
@@ -186,8 +188,9 @@ public interface EntityBookLinksDao<T extends Entity>
      * Will <strong>NOT</strong> insert a new {@link T} if not found;
      * instead the id of the item will be set to {@code 0}, i.e. 'new'.
      *
-     * @param context Current context
-     * @param item    to refresh
+     * @param context        Current context
+     * @param item           to refresh
+     * @param localeSupplier deferred supplier for a {@link Locale}.
      */
     void refresh(@NonNull Context context,
                  @NonNull T item,
@@ -196,8 +199,9 @@ public interface EntityBookLinksDao<T extends Entity>
     /**
      * Remove duplicates. We keep the first occurrence.
      *
-     * @param context Current context
-     * @param list    List to clean up
+     * @param context        Current context
+     * @param list           List to clean up
+     * @param localeSupplier deferred supplier for a {@link Locale}.
      *
      * @return {@code true} if the list was modified.
      */

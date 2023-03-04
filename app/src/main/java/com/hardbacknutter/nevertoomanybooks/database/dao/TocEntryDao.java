@@ -56,8 +56,9 @@ public interface TocEntryDao {
      * <p>
      * If the item has 'sub' items, then it should call those as well.
      *
-     * @param context  Current context
-     * @param tocEntry to update
+     * @param context        Current context
+     * @param tocEntry       to update
+     * @param localeSupplier deferred supplier for a {@link Locale}.
      */
     void fixId(@NonNull Context context,
                @NonNull TocEntry tocEntry,
@@ -70,6 +71,7 @@ public interface TocEntryDao {
      *
      * @param context  Current context
      * @param tocEntry to search for
+     * @param localeSupplier deferred supplier for a {@link Locale}.
      *
      * @return the id, or 0 (i.e. 'new') when not found
      */

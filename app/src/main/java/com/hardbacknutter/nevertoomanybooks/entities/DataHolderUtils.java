@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,6 +36,13 @@ public final class DataHolderUtils {
     private DataHolderUtils() {
     }
 
+    /**
+     * Check if there is some form of {@link Author} available in the given row.
+     *
+     * @param rowData to check
+     *
+     * @return {@code true} if an {@link Author} can be extracted from the row data.
+     */
     public static boolean hasAuthor(@NonNull final DataHolder rowData) {
         if (rowData.contains(Book.BKEY_AUTHOR_LIST)) {
             final List<Author> list = rowData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
@@ -47,6 +54,13 @@ public final class DataHolderUtils {
         }
     }
 
+    /**
+     * Check if there is some form of {@link Series} available in the given row.
+     *
+     * @param rowData to check
+     *
+     * @return {@code true} if an {@link Series} can be extracted from the row data.
+     */
     public static boolean hasSeries(@NonNull final DataHolder rowData) {
         if (rowData.contains(Book.BKEY_SERIES_LIST)) {
             final List<Series> list = rowData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
@@ -91,7 +105,7 @@ public final class DataHolderUtils {
         } else if (holder.contains(DBKey.FK_AUTHOR)) {
             final long id = holder.getLong(DBKey.FK_AUTHOR);
             if (id > 0) {
-                result = ServiceLocator.getInstance().getAuthorDao().getById(id);
+                result = ServiceLocator.getInstance().getAuthorDao().getById(id).orElse(null);
             }
         }
 
@@ -134,7 +148,7 @@ public final class DataHolderUtils {
         } else if (holder.contains(DBKey.FK_SERIES)) {
             final long id = holder.getLong(DBKey.FK_SERIES);
             if (id > 0) {
-                result = ServiceLocator.getInstance().getSeriesDao().getById(id);
+                result = ServiceLocator.getInstance().getSeriesDao().getById(id).orElse(null);
             }
         }
 
@@ -177,7 +191,7 @@ public final class DataHolderUtils {
         } else if (holder.contains(DBKey.FK_BOOKSHELF)) {
             final long id = holder.getLong(DBKey.FK_BOOKSHELF);
             if (id > 0) {
-                result = ServiceLocator.getInstance().getBookshelfDao().getById(id);
+                result = ServiceLocator.getInstance().getBookshelfDao().getById(id).orElse(null);
             }
         }
 
@@ -221,7 +235,7 @@ public final class DataHolderUtils {
         } else if (holder.contains(DBKey.FK_PUBLISHER)) {
             final long id = holder.getLong(DBKey.FK_PUBLISHER);
             if (id > 0) {
-                result = ServiceLocator.getInstance().getPublisherDao().getById(id);
+                result = ServiceLocator.getInstance().getPublisherDao().getById(id).orElse(null);
             }
         }
 

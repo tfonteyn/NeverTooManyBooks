@@ -29,6 +29,7 @@ import androidx.fragment.app.DialogFragment;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -69,9 +70,12 @@ final class SaveChangesHelper {
 
         // It's either a new one, or an existing one of which the name was changed.
         // Check if there is an another one with the same new name.
-        final T existingEntity = dao.findByName(context, item,
-                                                () -> item.getLocale(context).orElse(bookLocale));
-        if (existingEntity == null) {
+        final Optional<T> existingEntity = dao
+                .findByName(context, item, () -> item.getLocale(context).orElse(bookLocale));
+
+        if (existingEntity.isPresent()) {
+            askToMerge(fragment, dao, item, onSuccess, mergeMessageResId, existingEntity.get());
+        } else {
             try {
                 if (item.getId() == 0) {
                     // it's an entirely new one; add it.
@@ -83,12 +87,9 @@ final class SaveChangesHelper {
                 onSuccess.accept(item);
                 return true;
 
-            } catch (@NonNull final DaoWriteException e) {
-                return false;
+            } catch (@NonNull final DaoWriteException ignore) {
             }
         }
-
-        askToMerge(fragment, dao, item, onSuccess, mergeMessageResId, existingEntity);
         return false;
     }
 

@@ -36,7 +36,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -70,8 +69,7 @@ public class AuthorTest
         authorId[0] = authorDao.insert(context, author[0], bookLocale);
         assertTrue(authorId[0] > 0);
 
-        author[0] = authorDao.getById(authorId[0]);
-        assertNotNull(author[0]);
+        author[0] = authorDao.getById(authorId[0]).orElseThrow();
         assertEquals(TestConstants.AUTHOR_FAMILY_NAME + "0", author[0].getFamilyName());
         assertEquals(TestConstants.AUTHOR_GIVEN_NAME + "0", author[0].getGivenNames());
         assertFalse(author[0].isComplete());
@@ -79,8 +77,7 @@ public class AuthorTest
         author[0].setComplete(true);
         authorDao.update(context, author[0], bookLocale);
 
-        author[0] = authorDao.getById(authorId[0]);
-        assertNotNull(author[0]);
+        author[0] = authorDao.getById(authorId[0]).orElseThrow();
         assertEquals(TestConstants.AUTHOR_FAMILY_NAME + "0", author[0].getFamilyName());
         assertEquals(TestConstants.AUTHOR_GIVEN_NAME + "0", author[0].getGivenNames());
         assertTrue(author[0].isComplete());
@@ -129,8 +126,7 @@ public class AuthorTest
         // should have become author[0]
         assertEquals(author[0].getId(), author[1].getId());
         // original should still be there with original name
-        tmpAuthor = authorDao.getById(authorId[1]);
-        assertNotNull(tmpAuthor);
+        tmpAuthor = authorDao.getById(authorId[1]).orElseThrow();
         assertEquals(TestConstants.AUTHOR_FAMILY_NAME + "1", tmpAuthor.getFamilyName());
 
         // rename an Author to another EXISTING name and MERGE books
@@ -165,15 +161,13 @@ public class AuthorTest
 
         author[2].setName(RENAMED_FAMILY_NAME + "_a", RENAMED_GIVEN_NAMES + "_a");
 
-        existingAuthor = authorDao.findByName(context, author[2], () -> bookLocale);
-        assertNotNull(existingAuthor);
+        existingAuthor = authorDao.findByName(context, author[2], () -> bookLocale).orElseThrow();
 
         authorDao.moveBooks(context, author[2], existingAuthor);
         // - the renamed author[2] will have been deleted
         assertEquals(0, author[2].getId());
         // find the author[2] again...
-        existingAuthor = authorDao.findByName(context, author[2], () -> bookLocale);
-        assertNotNull(existingAuthor);
+        existingAuthor = authorDao.findByName(context, author[2], () -> bookLocale).orElseThrow();
         // should be recognized as author[0]
         assertEquals(author[0].getId(), existingAuthor.getId());
 
@@ -239,14 +233,12 @@ public class AuthorTest
 
         author[2].setName(RENAMED_FAMILY_NAME + "_b", RENAMED_GIVEN_NAMES + "_b");
 
-        existingAuthor = authorDao.findByName(context, author[2], () -> bookLocale);
-        assertNotNull(existingAuthor);
+        existingAuthor = authorDao.findByName(context, author[2], () -> bookLocale).orElseThrow();
         authorDao.moveBooks(context, author[2], existingAuthor);
         // - the renamed author[2] will have been deleted
         assertEquals(0, author[2].getId());
         // find the author[2] again...
-        existingAuthor = authorDao.findByName(context, author[2], () -> bookLocale);
-        assertNotNull(existingAuthor);
+        existingAuthor = authorDao.findByName(context, author[2], () -> bookLocale).orElseThrow();
         // should be recognized as author[1]
         assertEquals(author[1].getId(), existingAuthor.getId());
 
@@ -406,32 +398,9 @@ public class AuthorTest
     private void reload() {
         for (int i = 0; i <= 4; i++) {
             author[i] = Author.from(TestConstants.AuthorFullName(i));
-            author[i] = authorDao.findByName(context, author[i], () -> bookLocale);
-            assertNotNull(author[i]);
+            author[i] = authorDao.findByName(context, author[i], () -> bookLocale).orElseThrow();
+            ;
             assertEquals(authorId[i], author[i].getId());
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

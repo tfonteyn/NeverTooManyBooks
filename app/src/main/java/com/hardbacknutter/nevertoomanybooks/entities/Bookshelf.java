@@ -191,9 +191,7 @@ public class Bookshelf
         } else if (id == PREFERRED) {
             return getPreferredBookshelf(context);
         } else {
-            final Bookshelf bookshelf = ServiceLocator.getInstance().getBookshelfDao()
-                                                      .getById(id);
-            return bookshelf == null ? Optional.empty() : Optional.of(bookshelf);
+            return ServiceLocator.getInstance().getBookshelfDao().getById(id);
         }
     }
 

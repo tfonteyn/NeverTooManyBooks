@@ -24,7 +24,8 @@ import android.content.Context;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
@@ -36,10 +37,10 @@ public interface MoveBooksDao<T extends Entity> {
      *
      * @param id of {@link T} to find
      *
-     * @return the {@link T}, or {@code null} if not found
+     * @return the {@link T}
      */
-    @Nullable
-    T getById(@IntRange(from = 1) long id);
+    @NonNull
+    Optional<T> getById(@IntRange(from = 1) long id);
 
     /**
      * Moves all books from the 'source' {@link T}, to the 'target' {@link T}.

@@ -29,6 +29,7 @@ import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -124,9 +125,11 @@ class Formatter
                     // and no lookup will be needed.
                     final long realAuthorId = rowData.getLong(DBKey.AUTHOR_REAL_AUTHOR);
                     if (realAuthorId != 0) {
-                        final Author realAuthor = authorDaoSupplier.get().getById(realAuthorId);
-                        if (realAuthor != null) {
-                            return realAuthor.getStyledName(context, Details.Normal, style, text);
+                        final Optional<Author> realAuthor = authorDaoSupplier
+                                .get().getById(realAuthorId);
+                        if (realAuthor.isPresent()) {
+                            return realAuthor.get()
+                                             .getStyledName(context, Details.Normal, style, text);
                         }
                     }
                 }

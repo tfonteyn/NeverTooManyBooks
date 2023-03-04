@@ -30,7 +30,6 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
@@ -96,9 +95,9 @@ public class AuthorWorksViewModel
 
             final long authorId = args.getLong(DBKey.FK_AUTHOR, 0);
             SanityCheck.requirePositiveValue(authorId, DBKey.FK_AUTHOR);
-            author = Objects.requireNonNull(
-                    ServiceLocator.getInstance().getAuthorDao().getById(authorId),
-                    String.valueOf(authorId));
+            author = ServiceLocator.getInstance().getAuthorDao()
+                                   .getById(authorId)
+                                   .orElseThrow();
 
             final long bookshelfId = args.getLong(DBKey.FK_BOOKSHELF, Bookshelf.ALL_BOOKS);
 

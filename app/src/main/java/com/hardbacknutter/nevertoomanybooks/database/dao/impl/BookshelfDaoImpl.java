@@ -27,7 +27,6 @@ import android.database.sqlite.SQLiteException;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -66,6 +65,8 @@ public class BookshelfDaoImpl
 
     /**
      * Constructor.
+     *
+     * @param db Underlying database
      */
     public BookshelfDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);
@@ -102,14 +103,14 @@ public class BookshelfDaoImpl
                    + ')');
     }
 
+    @NonNull
     @Override
-    @Nullable
-    public Bookshelf getById(final long id) {
+    public Optional<Bookshelf> getById(final long id) {
         try (Cursor cursor = db.rawQuery(Sql.SELECT_BY_ID, new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
-                return new Bookshelf(id, new CursorRow(cursor));
+                return Optional.of(new Bookshelf(id, new CursorRow(cursor)));
             } else {
-                return null;
+                return Optional.empty();
             }
         }
     }

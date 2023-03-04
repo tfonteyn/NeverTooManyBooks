@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -78,6 +79,9 @@ public class AuthorDaoImpl
 
     /**
      * Constructor.
+     *
+     * @param db              Underlying database
+     * @param bookDaoSupplier deferred supplier for the {@link BookDao}
      */
     public AuthorDaoImpl(@NonNull final SynchronizedDb db,
                          @NonNull final Supplier<BookDao> bookDaoSupplier) {
@@ -129,23 +133,23 @@ public class AuthorDaoImpl
         }
     }
 
+    @NonNull
     @Override
-    @Nullable
-    public Author getById(final long id) {
+    public Optional<Author> getById(final long id) {
         try (Cursor cursor = db.rawQuery(Sql.SELECT_BY_ID, new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
-                return new Author(id, new CursorRow(cursor));
+                return Optional.of(new Author(id, new CursorRow(cursor)));
             } else {
-                return null;
+                return Optional.empty();
             }
         }
     }
 
     @Override
-    @Nullable
-    public Author findByName(@NonNull final Context context,
-                             @NonNull final Author author,
-                             @NonNull final Supplier<Locale> localeSupplier) {
+    @NonNull
+    public Optional<Author> findByName(@NonNull final Context context,
+                                       @NonNull final Author author,
+                                       @NonNull final Supplier<Locale> localeSupplier) {
 
         final Locale authorLocale = localeSupplier.get();
 
@@ -154,9 +158,9 @@ public class AuthorDaoImpl
                 SqlEncode.orderByColumn(author.getGivenNames(), authorLocale)})) {
             if (cursor.moveToFirst()) {
                 final CursorRow rowData = new CursorRow(cursor);
-                return new Author(rowData.getLong(DBKey.PK_ID), rowData);
+                return Optional.of(new Author(rowData.getLong(DBKey.PK_ID), rowData));
             } else {
-                return null;
+                return Optional.empty();
             }
         }
     }
@@ -394,8 +398,9 @@ public class AuthorDaoImpl
     public void fixId(@NonNull final Context context,
                       @NonNull final Author author,
                       @NonNull final Supplier<Locale> localeSupplier) {
-        final Author found = findByName(context, author, localeSupplier);
-        author.setId(found == null ? 0 : found.getId());
+        final long found = findByName(context, author, localeSupplier)
+                .map(Author::getId).orElse(0L);
+        author.setId(found);
 
         final Author realAuthor = author.getRealAuthor();
         if (realAuthor != null) {
@@ -415,11 +420,11 @@ public class AuthorDaoImpl
 
         // If we do already have it, update the object
         if (author.getId() > 0) {
-            final Author dbAuthor = getById(author.getId());
+            final Optional<Author> dbAuthor = getById(author.getId());
             // Sanity check
-            if (dbAuthor != null) {
+            if (dbAuthor.isPresent()) {
                 // copy any updated fields
-                author.copyFrom(dbAuthor, false);
+                author.copyFrom(dbAuthor.get(), false);
             } else {
                 // we shouldn't get here... but if we do, set it to 'new'
                 author.setId(0);
