@@ -70,7 +70,7 @@ class IsfdbEditionsHandlerTest
         final String locationHeader = "https://www.isfdb.org/cgi-bin/title.cgi?11169";
         final String filename = "/isfdb/11169-multi-edition.html";
 
-        Document document = null;
+        final Document document;
         try (InputStream in = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(in);
             document = Jsoup.parse(in, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader);
@@ -79,7 +79,7 @@ class IsfdbEditionsHandlerTest
         assertTrue(document.hasText());
 
         // we've set the doc, so no internet download will be done.
-        final List<Edition> editions = searchEngine.parseEditions(context, document, languages);
+        final List<Edition> editions = searchEngine.parseEditions(context, document);
 
         assertEquals(27, editions.size());
         assertEquals("eng", editions.get(0).getLangIso3());
@@ -94,7 +94,7 @@ class IsfdbEditionsHandlerTest
         final String locationHeader = "https://www.isfdb.org/cgi-bin/title.cgi?1360173";
         final String filename = "/isfdb/1360173-multi-edition.html";
 
-        Document document = null;
+        final Document document;
         try (InputStream in = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(in);
             document = Jsoup.parse(in, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader);
@@ -103,7 +103,7 @@ class IsfdbEditionsHandlerTest
         assertTrue(document.hasText());
 
         // we've set the doc, so no internet download will be done.
-        final List<Edition> editions = searchEngine.parseEditions(context, document, languages);
+        final List<Edition> editions = searchEngine.parseEditions(context, document);
 
         assertEquals(4, editions.size());
         assertEquals("nld", editions.get(0).getLangIso3());
