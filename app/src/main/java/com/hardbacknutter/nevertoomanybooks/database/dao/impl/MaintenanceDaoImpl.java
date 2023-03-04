@@ -163,10 +163,8 @@ public class MaintenanceDaoImpl
                 final int langIdx = cursor.getColumnIndex(DBKey.LANGUAGE);
                 while (cursor.moveToNext()) {
                     language = cursor.getString(langIdx);
-                    bookLocale = appLocaleSupplier.get().getLocale(context, language);
-                    if (bookLocale == null) {
-                        bookLocale = userLocale;
-                    }
+                    bookLocale = appLocaleSupplier.get().getLocale(context, language)
+                                                  .orElse(userLocale);
                     rebuildOrderByTitleColumns(context, bookLocale, locales,
                                                cursor, TBL_BOOKS, DBKey.TITLE_OB);
                 }

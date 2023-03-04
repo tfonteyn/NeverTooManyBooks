@@ -511,11 +511,8 @@ public class Series
         // See also {@link #pruneList} were we use batch mode.
         final String lang = ServiceLocator.getInstance().getSeriesDao().getLanguage(id);
         if (!lang.isEmpty()) {
-            final Locale seriesLocale = ServiceLocator.getInstance().getAppLocale()
-                                                      .getLocale(context, lang);
-            if (seriesLocale != null) {
-                return Optional.of(seriesLocale);
-            }
+            return ServiceLocator.getInstance().getAppLocale()
+                                 .getLocale(context, lang);
         }
 
         return Optional.empty();

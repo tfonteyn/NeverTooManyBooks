@@ -34,6 +34,7 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 
@@ -188,13 +189,13 @@ public abstract class SearchEngineBase
 
             default:
                 // other sites are (should be ?) just the country code.
-                final Locale locale = ServiceLocator.getInstance().getAppLocale()
-                                                    .getLocale(context, root);
+                final Optional<Locale> locale = ServiceLocator.getInstance().getAppLocale()
+                                                              .getLocale(context, root);
                 if (BuildConfig.DEBUG /* always */) {
                     LoggerFactory.getLogger()
                                  .d(TAG, "getLocale", "locale=" + locale);
                 }
-                return locale != null ? locale : Locale.US;
+                return locale.orElse(Locale.US);
         }
     }
 

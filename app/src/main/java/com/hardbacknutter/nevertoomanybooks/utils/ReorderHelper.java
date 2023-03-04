@@ -112,7 +112,7 @@ public final class ReorderHelper {
         if (language == null || language.isBlank()) {
             localeFromLang = null;
         } else {
-            localeFromLang = appLocaleSupplier.get().getLocale(context, language);
+            localeFromLang = appLocaleSupplier.get().getLocale(context, language).orElse(null);
         }
         return reorder(context, title, localeFromLang, localeList);
     }

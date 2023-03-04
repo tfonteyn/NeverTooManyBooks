@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Locale;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 
@@ -79,12 +80,11 @@ public interface AppLocale {
      * @param context   Current context
      * @param inputLang to use for Locale
      *
-     * @return the Locale for the passed language OR the user locale if the inputLang was empty,
-     *         OR {@code null} if the inputLang was invalid.
+     * @return the Locale for the passed language
      */
-    @Nullable
-    Locale getLocale(@NonNull Context context,
-                     @NonNull String inputLang);
+    @NonNull
+    Optional<Locale> getLocale(@NonNull Context context,
+                               @NonNull String inputLang);
 
     /**
      * Load a Resources set for the specified Locale.

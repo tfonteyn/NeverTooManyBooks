@@ -68,13 +68,10 @@ public class EditLanguageDialogFragment
         if (text.length() > 3) {
             editLang = text;
         } else {
-            final Locale locale = ServiceLocator.getInstance().getAppLocale()
-                                                .getLocale(context, text);
-            if (locale == null) {
-                editLang = text;
-            } else {
-                editLang = locale.getDisplayLanguage();
-            }
+            editLang = ServiceLocator.getInstance().getAppLocale()
+                                     .getLocale(context, text)
+                                     .map(Locale::getDisplayLanguage)
+                                     .orElse(text);
         }
 
         final Bundle args = new Bundle(2);

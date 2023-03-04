@@ -122,12 +122,8 @@ public class BookLight
         if (language.isEmpty()) {
             return Optional.empty();
         } else {
-            final Locale locale = ServiceLocator.getInstance().getAppLocale()
-                                                .getLocale(context, language);
-            if (locale != null) {
-                return Optional.of(locale);
-            }
-            return Optional.empty();
+            return ServiceLocator.getInstance().getAppLocale()
+                                 .getLocale(context, language);
         }
     }
 

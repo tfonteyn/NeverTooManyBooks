@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -172,12 +173,12 @@ public final class AppLocaleImpl
     }
 
     @Override
-    @Nullable
-    public Locale getLocale(@NonNull final Context context,
-                            @NonNull final String inputLang) {
+    @NonNull
+    public Optional<Locale> getLocale(@NonNull final Context context,
+                                      @NonNull final String inputLang) {
 
         if (inputLang.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
 
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
@@ -197,11 +198,11 @@ public final class AppLocaleImpl
             if (isValid(locale)) {
                 cache.put(lang, locale);
             } else {
-                locale = null;
+                return Optional.empty();
             }
         }
 
-        return locale;
+        return Optional.of(locale);
     }
 
     /**

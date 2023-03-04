@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.BuildLanguageMappingsTask;
  * </ul>
  * The JDK uses "ISO3" for the 3-character ISO 639-2 format (not to be confused with ISO 639-3)
  */
+@SuppressWarnings("WeakerAccess")
 public class Languages {
 
     /**
@@ -93,14 +94,11 @@ public class Languages {
     public Locale toLocale(@NonNull final Context context,
                            @Nullable final String language) {
 
-        if (language != null && !language.isBlank()) {
-            final Locale locale = appLocaleSupplier.get().getLocale(context, language);
-            if (locale != null) {
-                return locale;
-            }
+        if (language == null || language.isBlank()) {
+            return context.getResources().getConfiguration().getLocales().get(0);
         }
-
-        return context.getResources().getConfiguration().getLocales().get(0);
+        return appLocaleSupplier.get().getLocale(context, language).orElseGet(
+                () -> context.getResources().getConfiguration().getLocales().get(0));
     }
 
     /**
@@ -115,12 +113,11 @@ public class Languages {
     @NonNull
     public String getDisplayNameFromISO3(@NonNull final Context context,
                                          @NonNull final String iso3) {
-        final Locale langLocale = appLocaleSupplier.get().getLocale(context, iso3);
-        if (langLocale == null) {
-            return iso3;
-        }
-        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-        return langLocale.getDisplayLanguage(userLocale);
+        return appLocaleSupplier.get().getLocale(context, iso3)
+                                .map(locale -> locale.getDisplayLanguage(
+                                        context.getResources().getConfiguration().getLocales()
+                                               .get(0)))
+                                .orElse(iso3);
     }
 
     /**
@@ -232,9 +229,11 @@ public class Languages {
      * <p>
      * This is the entire set correct as on 2019-08-22.
      *
-     * @param iso3 ISO 639-2 (3-char) language code (either bibliographic or terminology coded)
+     * @param locale to use for case lowering
+     * @param iso3   ISO 639-2 (3-char) language code (either bibliographic or terminology coded)
+     *
+     * @return the bibliographic code
      */
-    @SuppressWarnings("WeakerAccess")
     @NonNull
     public String toBibliographic(@NonNull final Locale locale,
                                   @NonNull final String iso3) {
@@ -317,9 +316,11 @@ public class Languages {
      * <p>
      * This is the entire set correct as on 2019-08-22.
      *
-     * @param iso3 ISO 639-2 (3-char) language code (either bibliographic or terminology coded)
+     * @param locale to use for case lowering
+     * @param iso3   ISO 639-2 (3-char) language code (either bibliographic or terminology coded)
+     *
+     * @return the terminology code
      */
-    @SuppressWarnings({"unused", "WeakerAccess"})
     @NonNull
     public String toTerminology(@NonNull final Locale locale,
                                 @NonNull final String iso3) {

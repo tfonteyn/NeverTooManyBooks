@@ -324,6 +324,8 @@ public class Book
      * <strong>Dev. note:</strong> keep the list of data we duplicate
      * in sync with {@link BookDaoImpl} .SqlAllBooks#BOOK
      *
+     * @param context Current context
+     *
      * @return new Book
      */
     @NonNull
@@ -510,13 +512,13 @@ public class Book
         if (contains(DBKey.LANGUAGE)) {
             final String lang = getString(DBKey.LANGUAGE);
 
-            final Locale bookLocale = ServiceLocator.getInstance().getAppLocale()
-                                                    .getLocale(context, lang);
-            if (bookLocale != null) {
+            final Optional<Locale> bookLocale = ServiceLocator.getInstance().getAppLocale()
+                                                              .getLocale(context, lang);
+            if (bookLocale.isPresent()) {
                 if (updateLanguage) {
                     putString(DBKey.LANGUAGE, lang);
                 }
-                return Optional.of(bookLocale);
+                return bookLocale;
             }
         }
         return Optional.empty();
@@ -657,6 +659,7 @@ public class Book
     /**
      * Add a single {@link Series} at the given position in the list.
      *
+     * @param index  index at which the specified element is to be inserted
      * @param series to add
      */
     public void add(final int index,
