@@ -46,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.PublisherMergeHelper;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -72,7 +71,7 @@ public class PublisherDaoImpl
      * Constructor.
      *
      * @param db                    Underlying database
-     * @param reorderHelperSupplier deferred supplier for the {@link AppLocale}.
+     * @param reorderHelperSupplier deferred supplier for the {@link ReorderHelper}.
      */
     public PublisherDaoImpl(@NonNull final SynchronizedDb db,
                             @NonNull final Supplier<BookDao> bookDaoSupplier,

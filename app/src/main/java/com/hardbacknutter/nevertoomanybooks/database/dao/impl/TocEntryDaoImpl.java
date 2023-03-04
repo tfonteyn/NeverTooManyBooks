@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntryMergeHelper;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
@@ -78,7 +77,7 @@ public class TocEntryDaoImpl
      * Constructor.
      *
      * @param db                    Underlying database
-     * @param reorderHelperSupplier deferred supplier for the {@link AppLocale}.
+     * @param reorderHelperSupplier deferred supplier for the {@link ReorderHelper}.
      */
     public TocEntryDaoImpl(@NonNull final SynchronizedDb db,
                            @NonNull final Supplier<BookDao> bookDaoSupplier,
