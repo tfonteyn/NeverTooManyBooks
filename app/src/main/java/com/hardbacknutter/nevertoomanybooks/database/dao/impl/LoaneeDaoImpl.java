@@ -72,6 +72,9 @@ public class LoaneeDaoImpl
 
     /**
      * Constructor.
+     *
+     * @param db              Underlying database
+     * @param bookDaoSupplier deferred supplier for the {@link BookDao}
      */
     public LoaneeDaoImpl(@NonNull final SynchronizedDb db,
                          @NonNull final Supplier<BookDao> bookDaoSupplier) {

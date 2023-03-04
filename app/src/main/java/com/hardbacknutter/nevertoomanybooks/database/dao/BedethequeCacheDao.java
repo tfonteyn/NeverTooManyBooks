@@ -34,7 +34,8 @@ public interface BedethequeCacheDao {
     /**
      * Find a {@link BdtAuthor} with the given name.
      *
-     * @param name to find
+     * @param name   to find
+     * @param locale to use
      *
      * @return the {@link BdtAuthor}, or {@code null} if not found
      */

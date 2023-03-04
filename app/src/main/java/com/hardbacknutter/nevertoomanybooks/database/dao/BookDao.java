@@ -145,12 +145,12 @@ public interface BookDao {
      * <p>
      * <strong>Transaction:</strong> required
      *
-     * @param context      Current context
-     * @param bookId       of the book
-     * @param doUpdates    set to {@code true} to force each Author to be updated.
-     *                     <strong>ONLY</strong> set this when actually needed.
-     *                     Do not set this during for example an import.
-     * @param list         the list of authors
+     * @param context   Current context
+     * @param bookId    of the book
+     * @param doUpdates set to {@code true} to force each Author to be updated.
+     *                  <strong>ONLY</strong> set this when actually needed.
+     *                  Do not set this during for example an import.
+     * @param list      the list of authors
      *
      * @throws DaoWriteException    on failure
      * @throws TransactionException a transaction must be started before calling this method
@@ -194,6 +194,7 @@ public interface BookDao {
                       boolean lookupLocale,
                       @NonNull Locale bookLocale)
             throws DaoWriteException;
+
     /**
      * Create the link between {@link Book} and {@link Publisher}.
      * {@link DBDefinitions#TBL_BOOK_PUBLISHER}
@@ -317,7 +318,7 @@ public interface BookDao {
      * @param idList List of book ID's to retrieve; should not be empty!
      *
      * @return A Book Cursor with 0..n rows; ordered by book id
-     * Only books with {@link DBKey#AUTO_UPDATE} set will be returned.
+     *         Only books with {@link DBKey#AUTO_UPDATE} set will be returned.
      *
      * @throws SanityCheck.SanityException if the list is empty
      */
@@ -344,7 +345,7 @@ public interface BookDao {
      * @param id the lowest book id to start from.
      *
      * @return A Book Cursor with 0..n rows; ordered by book id
-     * Only books with {@link DBKey#AUTO_UPDATE} set will be returned.
+     *         Only books with {@link DBKey#AUTO_UPDATE} set will be returned.
      */
     @NonNull
     TypedCursor fetchForAutoUpdateFromIdOnwards(long id);
@@ -454,6 +455,13 @@ public interface BookDao {
     ArrayList<String> getCurrencyCodes(@NonNull String key);
 
 
+    /**
+     * Get the date the given book was last updated.
+     *
+     * @param id of the book
+     *
+     * @return date
+     */
     @Nullable
     LocalDateTime getLastUpdateDate(@IntRange(from = 1) long id);
 

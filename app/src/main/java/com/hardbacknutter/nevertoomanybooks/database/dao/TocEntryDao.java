@@ -41,8 +41,9 @@ public interface TocEntryDao {
     /**
      * Passed a list of Objects, remove duplicates.
      *
-     * @param context Current context
-     * @param list    List to clean up
+     * @param context        Current context
+     * @param list           List to clean up
+     * @param localeSupplier deferred supplier for a {@link Locale}
      *
      * @return {@code true} if the list was modified.
      */
@@ -58,7 +59,7 @@ public interface TocEntryDao {
      *
      * @param context        Current context
      * @param tocEntry       to update
-     * @param localeSupplier deferred supplier for a {@link Locale}.
+     * @param localeSupplier deferred supplier for a {@link Locale}
      */
     void fixId(@NonNull Context context,
                @NonNull TocEntry tocEntry,
