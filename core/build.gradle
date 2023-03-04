@@ -26,9 +26,6 @@ android {
         beta {
             initWith release
         }
-        debug {
-            debuggable true
-        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
