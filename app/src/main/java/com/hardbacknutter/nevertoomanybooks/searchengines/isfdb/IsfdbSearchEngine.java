@@ -365,8 +365,7 @@ public class IsfdbSearchEngine
 
             // sanity check: any data to search for?
             if (!args.isEmpty()) {
-                final Languages languages = ServiceLocator.getInstance().getLanguages();
-                final List<Edition> editions = fetchEditions(context, languages, url + args);
+                final List<Edition> editions = fetchEditions(context, url + args);
                 if (!editions.isEmpty()) {
                     fetchByEdition(context, editions.get(0), fetchCovers, book);
                 }
@@ -1181,8 +1180,7 @@ public class IsfdbSearchEngine
         searchForIsbn = validIsbn;
 
         final String url = getHostUrl() + String.format(CGI_EDITIONS, validIsbn);
-        final Languages languages = ServiceLocator.getInstance().getLanguages();
-        return fetchEditions(context, languages, url);
+        return fetchEditions(context, url);
     }
 
     /**
@@ -1196,8 +1194,7 @@ public class IsfdbSearchEngine
     @NonNull
     @VisibleForTesting
     List<Edition> parseEditions(@NonNull final Context context,
-                                @NonNull final Document document,
-                                @NonNull final Languages languages) {
+                                @NonNull final Document document) {
 
         final List<Edition> editions = new ArrayList<>();
 
@@ -1223,9 +1220,10 @@ public class IsfdbSearchEngine
                 if (langHeader != null) {
                     final Node node = langHeader.nextSibling();
                     if (node != null) {
-                        final String langStr = node.toString().trim();
-                        lang = languages.getISO3FromDisplayName(context, getLocale(context),
-                                                                langStr);
+                        final Languages languages = ServiceLocator.getInstance().getLanguages();
+                        lang = languages.getISO3FromDisplayName(
+                                context, getLocale(context),
+                                node.toString().trim());
                     }
                 }
             }
@@ -1285,7 +1283,6 @@ public class IsfdbSearchEngine
      * Get the list with {@link Edition} information for the given url.
      *
      * @param context   Current context
-     * @param languages
      * @param url       A fully qualified ISFDB search url
      *
      * @return list of editions found, can be empty, but never {@code null}
@@ -1295,14 +1292,13 @@ public class IsfdbSearchEngine
     @WorkerThread
     @NonNull
     private List<Edition> fetchEditions(@NonNull final Context context,
-                                        @NonNull final Languages languages,
                                         @NonNull final String url)
-    throws SearchException, CredentialsException {
+            throws SearchException, CredentialsException {
 
         final Document document = loadDocument(context, url, null);
 
         if (!isCancelled()) {
-            return parseEditions(context, document, languages);
+            return parseEditions(context, document);
         }
         return new ArrayList<>();
     }
