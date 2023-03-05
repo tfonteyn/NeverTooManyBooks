@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.Currency;
 import java.util.Map;
@@ -58,8 +59,12 @@ import java.util.Objects;
  * It's used on the ISFDB web site. We convert it to GBP. See
  * <a href="https://en.wikipedia.org/wiki/Decimal_Day">Decimal_Day</a>
  * <p>
+ * <p>
+ * Dev. note: this class <strong>MUST</strong> extend {@link Number} as
+ * it will be casted to one when editing.
  */
 public class Money
+        extends Number
         implements Parcelable {
 
     public static final Creator<Money> CREATOR = new Creator<>() {
@@ -124,6 +129,9 @@ public class Money
             // Spain
             Map.entry("ESP", 166.386d)
     );
+
+    private static final long serialVersionUID = -8273127556226893529L;
+
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
     private final Currency currency;
@@ -198,6 +206,30 @@ public class Money
      */
     public boolean isZero() {
         return value.compareTo(BigDecimal.ZERO) == 0;
+    }
+
+    /** Use {@link #getValue()} when possible. */
+    @Override
+    public double doubleValue() {
+        return Objects.requireNonNull(value).doubleValue();
+    }
+
+    /** <strong>DO NOT USE</strong>. */
+    @Override
+    public int intValue() {
+        return Objects.requireNonNull(value).round(MathContext.UNLIMITED).intValue();
+    }
+
+    /** <strong>DO NOT USE</strong>. */
+    @Override
+    public long longValue() {
+        return Objects.requireNonNull(value).round(MathContext.UNLIMITED).longValue();
+    }
+
+    /** <strong>DO NOT USE</strong>. */
+    @Override
+    public float floatValue() {
+        return Objects.requireNonNull(value).floatValue();
     }
 
     /**
