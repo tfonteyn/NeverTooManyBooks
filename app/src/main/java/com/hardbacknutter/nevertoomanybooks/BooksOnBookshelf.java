@@ -250,12 +250,12 @@ public class BooksOnBookshelf
     /** Update an individual Book with information from the internet. */
     private final ActivityResultLauncher<Book> updateBookLauncher =
             registerForActivityResult(new UpdateSingleBookContract(), o -> o.ifPresent(
-                    data -> vm.onBookAutoUpdateFinished(data)));
+                    data -> vm.onBookEditFinished(data)));
 
     /** Update a list of Books with information from the internet. */
     private final ActivityResultLauncher<UpdateBooklistContract.Input> updateBookListLauncher =
             registerForActivityResult(new UpdateBooklistContract(), o -> o.ifPresent(
-                    data -> vm.onBookAutoUpdateFinished(data)));
+                    data -> vm.onBookEditFinished(data)));
 
     /** View all works of an Author. */
     private final ActivityResultLauncher<AuthorWorksContract.Input> authorWorksLauncher =
@@ -1694,7 +1694,7 @@ public class BooksOnBookshelf
               .replace(R.id.details_frame, fragment, ShowBookDetailsFragment.TAG)
               .commit();
         } else {
-            ((ShowBookDetailsFragment) fragment).reloadBook(bookId);
+            ((ShowBookDetailsFragment) fragment).displayBook(bookId);
         }
     }
 

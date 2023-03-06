@@ -45,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutp
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PreferredStylesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooklistContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooksOutput;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ViewBookOnWebsiteHandler;
 import com.hardbacknutter.nevertoomanybooks.booklist.BoBTask;
@@ -845,36 +844,16 @@ public class BooksOnBookshelfViewModel
     }
 
     /**
-     * Entry point after a list of books were automatically updated with internet data.
-     *
-     * @param data returned from the update contract
-     */
-    void onBookAutoUpdateFinished(@NonNull final UpdateBooksOutput data) {
-        if (data.isListModified()) {
-            // we processed a list, just force a rebuild
-            forceRebuildInOnResume = true;
-
-        } else if (data.getBookModified() > 0) {
-            //URGENT: we processed a single book, we should NOT do a full rebuild
-            forceRebuildInOnResume = true;
-        }
-
-        // If we got an reposition id back, make any potential rebuild re-position to it.
-        if (data.getRepositionToBookId() > 0) {
-            selectedBookId = data.getRepositionToBookId();
-        }
-    }
-
-    /**
-     * Entry point after the current Book was edited; either manually by the user,
+     * Entry point after a Book (or list of) was edited; either manually by the user,
      * or automatically with an internet update action.
      *
      * @param data as returned from the contract
      */
     void onBookEditFinished(@NonNull final EditBookOutput data) {
         if (data.isModified()) {
-            //URGENT: we processed a single book, we should NOT do a full rebuild
+            //URGENT: if we processed a single book, we should NOT do a full rebuild
             forceRebuildInOnResume = true;
+            // to find out if we updated a list, use data.getLastBookIdProcessed()
         }
 
         // If we got an reposition id back, make any potential rebuild re-position to it.
