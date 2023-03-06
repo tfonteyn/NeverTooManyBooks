@@ -808,6 +808,14 @@ public class BooksOnBookshelfViewModel
         return ServiceLocator.getInstance().getLoaneeDao().setLoanee(bookId, loanee);
     }
 
+    /**
+     * Update the 'read' status of the given book.
+     *
+     * @param bookId to update
+     * @param read   new status
+     *
+     * @return the adapter positions for the book
+     */
     @NonNull
     int[] onBookRead(@IntRange(from = 1) final long bookId,
                      final boolean read) {
@@ -818,6 +826,14 @@ public class BooksOnBookshelfViewModel
                        .toArray();
     }
 
+    /**
+     * Update the 'loanee' status of the given book.
+     *
+     * @param bookId to update
+     * @param loanee new loanee or {@code null} for a returned book
+     *
+     * @return the adapter positions for the book
+     */
     @NonNull
     int[] onBookLend(@IntRange(from = 1) final long bookId,
                      @Nullable final String loanee) {
@@ -829,7 +845,7 @@ public class BooksOnBookshelfViewModel
     }
 
     /**
-     * Called when a book/book-list was updated with internet data.
+     * Entry point after a list of books were automatically updated with internet data.
      *
      * @param data returned from the update contract
      */
@@ -850,12 +866,14 @@ public class BooksOnBookshelfViewModel
     }
 
     /**
-     * This method is called from an ActivityResultContract after the result intent is parsed.
+     * Entry point after the current Book was edited; either manually by the user,
+     * or automatically with an internet update action.
      *
-     * @param data returned from the view/edit contract
+     * @param data as returned from the contract
      */
     void onBookEditFinished(@NonNull final EditBookOutput data) {
         if (data.isModified()) {
+            //URGENT: we processed a single book, we should NOT do a full rebuild
             forceRebuildInOnResume = true;
         }
 

@@ -61,6 +61,12 @@ import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderProcessor;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 
+/**
+ * IMPORTANT: {@link #onAllDone()} returns a {@link Book} while it SHOULD
+ * really just return an {@link EditBookOutput} object to be compatible
+ * with this class extending {@link SearchCoordinator} where
+ * related MutableLiveData methods return a Book.
+ */
 public class SearchBookUpdatesViewModel
         extends SearchCoordinator {
 
@@ -498,6 +504,7 @@ public class SearchBookUpdatesViewModel
         // the last book id which was handled; can be used to restart the update.
         lastBookIdProcessed = currentBookId;
 
+        // See class docs above as to why this is not an EditBookOutput object!
         final Book book = new Book();
         book.putLong(BKEY_LAST_BOOK_ID_PROCESSED, lastBookIdProcessed);
 

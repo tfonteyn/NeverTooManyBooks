@@ -1496,7 +1496,7 @@ public class BooksOnBookshelf
                               @Nullable final String... keys) {
 
         // Reminder: the actual Book table (and/or relations) are ALREADY UPDATED.
-        // The only thing we are updating here is the temporary BookList table
+        // The only thing we are updating here is the temporary BookList table as needed
         // and the displayed data
 
         if (keys != null && Arrays.asList(keys).contains(DBKey.READ__BOOL)) {
