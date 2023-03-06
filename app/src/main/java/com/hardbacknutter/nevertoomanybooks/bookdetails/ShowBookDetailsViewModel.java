@@ -69,6 +69,8 @@ public class ShowBookDetailsViewModel
     private static final String BOOK_NOT_LOADED_YET = "Book not loaded yet";
 
     private final MutableLiveData<Book> onBookLoaded = new MutableLiveData<>();
+    private final MutableLiveData<Book> onUpdateToolbar = new MutableLiveData<>();
+
     /** the list with all fields. */
     private final List<Field<?, ? extends View>> fields = new ArrayList<>();
     @Nullable
@@ -93,26 +95,80 @@ public class ShowBookDetailsViewModel
 
             initFields(context, style, ServiceLocator.getInstance().getLanguages());
         }
+        updateUI();
+        if (!embedded) {
+            onUpdateToolbar.setValue(book);
+        }
+    }
+
+    /**
+     * Observable - triggers a UI update for the given {@link Book}
+     *
+     * @return book
+     */
+    @NonNull
+    MutableLiveData<Book> onBookLoaded() {
+        return onBookLoaded;
+    }
+
+    /**
+     * Observable - triggers a Toolbar update for the given {@link Book}
+     *
+     * @return book
+     */
+    @NonNull
+    MutableLiveData<Book> onUpdateToolbar() {
+        return onUpdateToolbar;
+    }
+
+    /**
+     * Called after the user swiped left/right on the ViewPager.
+     * (i.e. only when embedded==false).
+     *
+     * @param bookId from the currently selected ViewPager fragment
+     */
+    void updateUIAfterPagerUpdate(final long bookId) {
+        Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
+
+        // all fragments in the ViewPager will be called, so only update
+        // the toolbar and current book id if OUR book IS the current one
+        if (book.getId() == bookId) {
+            storeCurrentBookId(bookId);
+            onUpdateToolbar.setValue(book);
+        }
+    }
+
+    private void updateUI() {
+        Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
+        storeCurrentBookId(book.getId());
         onBookLoaded.setValue(book);
     }
 
-    @NonNull
-    public MutableLiveData<Book> onBookLoaded() {
-        return onBookLoaded;
+    private void storeCurrentBookId(final long bookId) {
+
     }
 
     public boolean isEmbedded() {
         return embedded;
     }
 
-    void reloadBook(final long bookId) {
+    /**
+     * Load the data for the given book id and trigger a UI update.
+     *
+     * @param bookId to display
+     */
+    void displayBook(final long bookId) {
         book = Book.from(bookId);
-        onBookLoaded.setValue(book);
+        updateUI();
     }
 
-    void reloadBook() {
+    /**
+     * Reload the data for the current book and trigger a UI update.
+     */
+    void displayBook() {
         Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
-        reloadBook(book.getId());
+        book = Book.from(book.getId());
+        updateUI();
     }
 
     @NonNull

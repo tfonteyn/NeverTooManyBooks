@@ -280,53 +280,51 @@ public class ShowBookDetailsFragment
     }
 
     /**
-     * Called when the Book was updated with internet data.
+     * Entry point after the current Book was edited; either manually by the user,
+     * or automatically with an internet update action.
      *
-     * @param data details
+     * @param keys optional list of keys which were updated.
+     *             {@code null} to indicate the entire Book was potentially updated.
      */
-    private void onBookAutoUpdateFinished(@NonNull final UpdateBooksOutput data) {
-        // only override if 'true'; i.e. if we got an id back
-        if (data.getBookModified() > 0) {
-            aVm.setDataModified();
-        }
+    private void onBookEditFinished(@Nullable final String... keys) {
+        // needed when running inside the ViewPager to update the activity result data
+        aVm.setDataModified();
 
-        vm.reloadBook();
+        vm.displayBook();
 
+        // needed when running in embedded mode to update the BoB list
         if (bookChangedListener != null) {
-            bookChangedListener.onBookUpdated(vm.getBook(), (String) null);
+            bookChangedListener.onBookUpdated(vm.getBook(), keys);
         }
     }
 
     /**
-     * Called when the Book was edited.
+     * Entry point for {@link BooksOnBookshelf} when running in embedded mode.
+     * Called when the user taps a book in the BoB list.
      *
-     * @param data details
+     * @param bookId to display
      */
-    private void onBookEditFinished(@NonNull final EditBookOutput data) {
-        if (data.isModified()) {
-            // needed when running inside the ViewPager
-            aVm.setDataModified();
-
-            vm.reloadBook();
-
-            // needed when running in embedded mode
-            if (bookChangedListener != null) {
-                bookChangedListener.onBookUpdated(vm.getBook(), (String) null);
-            }
-        }
+    public void displayBook(final long bookId) {
+        vm.displayBook(bookId);
     }
 
-    public void reloadBook(final long bookId) {
-        vm.reloadBook(bookId);
-    }
-
+    /**
+     * Entry point for {@link CoverHandler} after changing a cover image.
+     *
+     * @param cIdx 0..n image index
+     */
     @Override
     public void reloadImage(@IntRange(from = 0, to = 1) final int cIdx) {
         //TODO: don't reload the whole book, just use coverHandler[cIdx].onBindView(...);
-        vm.reloadBook();
 
-        if (bookChangedListener != null) {
-            bookChangedListener.onBookUpdated(vm.getBook(), (String) null);
+        // needed when running inside the ViewPager to update the activity result data
+        aVm.setDataModified();
+
+        vm.displayBook();
+
+        // needed when running in embedded mode to update the BoB list
+        if (bookChangedListener != null && cIdx == 0) {
+            bookChangedListener.onBookUpdated(vm.getBook(), DBKey.COVER[0]);
         }
     }
 
@@ -350,8 +348,9 @@ public class ShowBookDetailsFragment
         }
     }
 
-    private void updateToolbarTitle(@NonNull final Book book) {
+    private void onUpdateToolbar(@NonNull final Book book) {
         final Toolbar toolbar = getToolbar();
+
         //noinspection ConstantConditions
         toolbar.setTitle(Author.getLabel(getContext(), book.getAuthors()));
 
@@ -365,18 +364,17 @@ public class ShowBookDetailsFragment
     // Dev. note: this will get called FOR EACH fragment currently existing
     // in the ViewPager ... so ALSO for the fragments off-screen.
     private void onBindBook(@NonNull final Book book) {
-        // The menu is entirely dependent on the book we're displaying
+        // The menu is entirely dependent on the book we're displaying,
+        // so we need to remove the old menu if present,
+        // and construct a new menu for each book we're binding.
         final Toolbar toolbar = getToolbar();
         if (toolbarMenuProvider != null) {
             toolbar.removeMenuProvider(toolbarMenuProvider);
         }
         toolbarMenuProvider = new ToolbarMenuProvider();
+        // add it, but ONLY display it when THIS fragment is resumed.
         toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner(),
                                 Lifecycle.State.RESUMED);
-
-        if (!vm.isEmbedded()) {
-            updateToolbarTitle(book);
-        }
 
         final List<Field<?, ? extends View>> fields = vm.getFields();
 
