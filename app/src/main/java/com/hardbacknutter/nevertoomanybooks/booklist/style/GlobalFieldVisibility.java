@@ -35,22 +35,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 public class GlobalFieldVisibility
         extends FieldVisibility {
 
-    public static final String[] PREFS_COVER_VISIBILITY_KEY = {
-            // fields.visibility.thumbnail.0
-            PREFS_PREFIX_FIELD_VISIBILITY + DBKey.COVER[0],
-            // fields.visibility.thumbnail.1
-            PREFS_PREFIX_FIELD_VISIBILITY + DBKey.COVER[1]
-    };
-
-    /** All visible by default. */
-    public static final long DEFAULT = getBitValue(KEYS);
-
-    /**
-     * Users can select which fields they use / don't want to use.
-     * Each field has an entry in the Preferences.
-     * The key is suffixed with the name of the field.
-     */
-    private static final String PREFS_PREFIX_FIELD_VISIBILITY = "fields.visibility.";
     /**
      * NEWTHINGS: new fields visibility.
      */
@@ -92,6 +76,22 @@ public class GlobalFieldVisibility
             DBKey.SIGNED__BOOL,
 
             DBKey.FK_TOC_ENTRY);
+
+    /** All visible by default. */
+    public static final long DEFAULT = getBitValue(KEYS);
+
+    /**
+     * Users can select which fields they use / don't want to use.
+     * Each field has an entry in the Preferences.
+     * The key is suffixed with the name of the field.
+     */
+    private static final String PREFS_PREFIX_FIELD_VISIBILITY = "fields.visibility.";
+    public static final String[] PREFS_COVER_VISIBILITY_KEY = {
+            // fields.visibility.thumbnail.0
+            PREFS_PREFIX_FIELD_VISIBILITY + DBKey.COVER[0],
+            // fields.visibility.thumbnail.1
+            PREFS_PREFIX_FIELD_VISIBILITY + DBKey.COVER[1]
+    };
 
     /**
      * Constructor.

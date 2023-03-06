@@ -62,7 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooksOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
@@ -120,10 +119,19 @@ public class ShowBookDetailsFragment
 
     /** User edits a book. */
     private final ActivityResultLauncher<Long> editBookLauncher = registerForActivityResult(
-            new EditBookByIdContract(), o -> o.ifPresent(this::onBookEditFinished));
+            new EditBookByIdContract(), o -> o.ifPresent(data -> {
+                if (data.isModified()) {
+                    onBookEditFinished((String) null);
+                }
+            }));
+
     /** User updates a book with internet data. */
     private final ActivityResultLauncher<Book> updateBookLauncher = registerForActivityResult(
-            new UpdateSingleBookContract(), o -> o.ifPresent(this::onBookAutoUpdateFinished));
+            new UpdateSingleBookContract(), o -> o.ifPresent(data -> {
+                if (data.isModified()) {
+                    onBookEditFinished((String) null);
+                }
+            }));
 
     /** Handle the edit-lender dialog. */
     private final EditLenderDialogFragment.Launcher editLenderLauncher =
@@ -131,14 +139,7 @@ public class ShowBookDetailsFragment
                 @Override
                 public void onResult(@IntRange(from = 1) final long bookId,
                                      @NonNull final String loanee) {
-                    // The db was already updated, just update the book
-                    vm.reloadBook();
-
-                    aVm.setDataModified();
-
-                    if (bookChangedListener != null) {
-                        bookChangedListener.onBookUpdated(vm.getBook(), DBKey.LOANEE_NAME);
-                    }
+                    onBookEditFinished(DBKey.LOANEE_NAME);
                 }
             };
 
@@ -219,18 +220,13 @@ public class ShowBookDetailsFragment
         createSyncDelegates();
 
         if (pagerVm != null) {
-            // hook up the ViewPager so we can update the screen title after a swipe
-            pagerVm.onCurrentBookUpdated().observe(getViewLifecycleOwner(), bookId -> {
-                // all fragments in the ViewPager will be called, so only update
-                // the toolbar if OUR book is the current one
-                final Book book = vm.getBook();
-                if (book.getId() == bookId) {
-                    updateToolbarTitle(book);
-                }
-            });
+            // hook up the ViewPager so we can react to swipes a swipe
+            pagerVm.onCurrentBookUpdated().observe(getViewLifecycleOwner(),
+                                                   bookId -> vm.updateUIAfterPagerUpdate(bookId));
         }
 
         vm.onBookLoaded().observe(getViewLifecycleOwner(), this::onBindBook);
+        vm.onUpdateToolbar().observe(getViewLifecycleOwner(), this::onUpdateToolbar);
 
         final Field<Boolean, CheckBox> cbxRead = vm.requireField(R.id.read);
         cbxRead.requireView().setOnClickListener(v -> toggleReadStatus());
