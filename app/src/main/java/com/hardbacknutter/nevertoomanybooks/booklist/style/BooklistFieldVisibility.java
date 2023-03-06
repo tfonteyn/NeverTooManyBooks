@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,12 +31,12 @@ public class BooklistFieldVisibility
         extends FieldVisibility {
 
     public static final long DEFAULT = getBitValue(Set.of(
-            FieldVisibility.COVER[0],
+            DBKey.COVER[0],
             DBKey.FK_SERIES));
 
     private static final Set<String> KEYS = Set.of(
-            FieldVisibility.COVER[0],
-            FieldVisibility.COVER[1],
+            DBKey.COVER[0],
+            DBKey.COVER[1],
             DBKey.FK_AUTHOR,
             DBKey.FK_SERIES,
             DBKey.FK_PUBLISHER,

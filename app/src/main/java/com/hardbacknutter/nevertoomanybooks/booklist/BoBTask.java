@@ -43,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.FtsMatchFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.NumberListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PEntityListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.database.DomainExpression;
@@ -228,7 +227,7 @@ public class BoBTask
     private void addDomains(@NonNull final BooklistBuilder builder,
                             @NonNull final Style style) {
 
-        if (style.isShowField(Style.Screen.List, FieldVisibility.COVER[0])) {
+        if (style.isShowField(Style.Screen.List, DBKey.COVER[0])) {
             // We need the UUID for the book to get covers
             builder.addDomain(new DomainExpression(DBDefinitions.DOM_BOOK_UUID,
                                                    DBDefinitions.TBL_BOOKS));

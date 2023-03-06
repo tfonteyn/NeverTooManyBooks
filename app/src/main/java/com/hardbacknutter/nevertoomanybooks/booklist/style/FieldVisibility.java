@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,13 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
 public abstract class FieldVisibility {
 
-    /** The "field is used" key for thumbnails. */
-    private static final String PREFIX_COVER = "thumbnail";
-    public static final String[] COVER = {
-            PREFIX_COVER + ".0",
-            PREFIX_COVER + ".1"
-    };
-
     /**
      * All keys; the position in the list represents their bit-number in the {@link #bits} value.
      * <p>
@@ -50,8 +43,8 @@ public abstract class FieldVisibility {
      */
     private static final List<String> DB_KEYS = List.of(
             // bit 0..3
-            COVER[0],
-            COVER[1],
+            DBKey.COVER[0],
+            DBKey.COVER[1],
             DBKey.FK_AUTHOR,
             DBKey.FK_BOOKSHELF,
 

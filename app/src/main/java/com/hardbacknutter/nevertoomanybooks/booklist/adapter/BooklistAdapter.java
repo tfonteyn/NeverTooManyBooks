@@ -51,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
@@ -148,7 +147,7 @@ public class BooklistAdapter
 
         groupRowHeight = this.style.getGroupRowHeight(context);
 
-        if (this.style.isShowField(Style.Screen.List, FieldVisibility.COVER[0])) {
+        if (this.style.isShowField(Style.Screen.List, DBKey.COVER[0])) {
             @Style.CoverScale
             final int frontCoverScale = this.style.getCoverScale();
 

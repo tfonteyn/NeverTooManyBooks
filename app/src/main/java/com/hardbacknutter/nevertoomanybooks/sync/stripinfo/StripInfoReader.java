@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -146,9 +145,9 @@ public class StripInfoReader
         map.put(context.getString(R.string.site_stripinfo_be), new String[]{DBKey.SID_STRIP_INFO});
 
         map.put(context.getString(R.string.lbl_cover_front),
-                new String[]{FieldVisibility.COVER[0]});
+                new String[]{DBKey.COVER[0]});
         map.put(context.getString(R.string.lbl_cover_back),
-                new String[]{FieldVisibility.COVER[1]});
+                new String[]{DBKey.COVER[1]});
 
         // the wishlist
         map.put(context.getString(R.string.lbl_bookshelves),
@@ -183,8 +182,8 @@ public class StripInfoReader
         // add the sorted fields
         map.forEach((label, keys) -> builder.add(context, label, keys));
 
-        builder.addRelatedField(FieldVisibility.COVER[0], Book.BKEY_TMP_FILE_SPEC[0])
-               .addRelatedField(FieldVisibility.COVER[1], Book.BKEY_TMP_FILE_SPEC[1])
+        builder.addRelatedField(DBKey.COVER[0], Book.BKEY_TMP_FILE_SPEC[0])
+               .addRelatedField(DBKey.COVER[1], Book.BKEY_TMP_FILE_SPEC[1])
                .addRelatedField(DBKey.PRICE_PAID, DBKey.PRICE_PAID_CURRENCY);
 
         return builder.build();

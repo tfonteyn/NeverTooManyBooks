@@ -167,9 +167,9 @@ public class SearchBookUpdatesViewModel
 
         // Cover fields will be at the top of the list.
         builder.add(context, context.getString(R.string.lbl_cover_front),
-                    new String[]{FieldVisibility.COVER[0]});
+                    new String[]{DBKey.COVER[0]});
         builder.add(context, context.getString(R.string.lbl_cover_back),
-                    new String[]{FieldVisibility.COVER[1]});
+                    new String[]{DBKey.COVER[1]});
 
         // These fields will be locally sorted and come next on the list
         final SortedMap<String, String[]> map = new TreeMap<>();
@@ -208,8 +208,8 @@ public class SearchBookUpdatesViewModel
 
         map.forEach((label, keys) -> builder.add(context, label, keys));
 
-        builder.addRelatedField(FieldVisibility.COVER[0], Book.BKEY_TMP_FILE_SPEC[0])
-               .addRelatedField(FieldVisibility.COVER[1], Book.BKEY_TMP_FILE_SPEC[1])
+        builder.addRelatedField(DBKey.COVER[0], Book.BKEY_TMP_FILE_SPEC[0])
+               .addRelatedField(DBKey.COVER[1], Book.BKEY_TMP_FILE_SPEC[1])
                .addRelatedField(DBKey.PRICE_LISTED, DBKey.PRICE_LISTED_CURRENCY);
 
 
@@ -245,7 +245,7 @@ public class SearchBookUpdatesViewModel
         }
 
         // More than 10 books, check if the user wants ALL covers
-        return syncProcessorBuilder.getSyncAction(FieldVisibility.COVER[0])
+        return syncProcessorBuilder.getSyncAction(DBKey.COVER[0])
                == SyncAction.Overwrite;
     }
 
@@ -256,8 +256,8 @@ public class SearchBookUpdatesViewModel
      * @param action to set
      */
     void setCoverSyncAction(@NonNull final SyncAction action) {
-        syncProcessorBuilder.setSyncAction(FieldVisibility.COVER[0], action);
-        syncProcessorBuilder.setSyncAction(FieldVisibility.COVER[1], action);
+        syncProcessorBuilder.setSyncAction(DBKey.COVER[0], action);
+        syncProcessorBuilder.setSyncAction(DBKey.COVER[1], action);
     }
 
     /**

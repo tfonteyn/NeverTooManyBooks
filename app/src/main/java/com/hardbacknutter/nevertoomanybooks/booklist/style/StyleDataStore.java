@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -223,7 +223,7 @@ public class StyleDataStore
                            final boolean value) {
         switch (key) {
             case PK_LIST_SHOW_COVERS:
-                style.setShowField(Style.Screen.List, FieldVisibility.COVER[0], value);
+                style.setShowField(Style.Screen.List, DBKey.COVER[0], value);
                 break;
             case PK_LIST_SHOW_AUTHOR:
                 style.setShowField(Style.Screen.List, DBKey.FK_AUTHOR, value);
@@ -289,9 +289,9 @@ public class StyleDataStore
 
             default:
                 if (key.equals(PK_DETAILS_SHOW_COVER[0])) {
-                    style.setShowField(Style.Screen.Detail, FieldVisibility.COVER[0], value);
+                    style.setShowField(Style.Screen.Detail, DBKey.COVER[0], value);
                 } else if (key.equals(PK_DETAILS_SHOW_COVER[1])) {
-                    style.setShowField(Style.Screen.Detail, FieldVisibility.COVER[1], value);
+                    style.setShowField(Style.Screen.Detail, DBKey.COVER[1], value);
                 } else {
                     throw new IllegalArgumentException(key);
                 }
@@ -305,7 +305,7 @@ public class StyleDataStore
                               final boolean defValue) {
         switch (key) {
             case PK_LIST_SHOW_COVERS:
-                return style.isShowField(Style.Screen.List, FieldVisibility.COVER[0]);
+                return style.isShowField(Style.Screen.List, DBKey.COVER[0]);
 
             case PK_LIST_SHOW_AUTHOR:
                 return style.isShowField(Style.Screen.List, DBKey.FK_AUTHOR);
@@ -363,10 +363,10 @@ public class StyleDataStore
 
             default:
                 if (key.equals(PK_DETAILS_SHOW_COVER[0])) {
-                    return style.isShowField(Style.Screen.Detail, FieldVisibility.COVER[0]);
+                    return style.isShowField(Style.Screen.Detail, DBKey.COVER[0]);
 
                 } else if (key.equals(PK_DETAILS_SHOW_COVER[1])) {
-                    return style.isShowField(Style.Screen.Detail, FieldVisibility.COVER[1]);
+                    return style.isShowField(Style.Screen.Detail, DBKey.COVER[1]);
                 }
                 throw new IllegalArgumentException(key);
         }

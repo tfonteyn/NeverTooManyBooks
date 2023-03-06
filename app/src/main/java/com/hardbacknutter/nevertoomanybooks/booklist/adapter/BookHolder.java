@@ -43,7 +43,6 @@ import java.util.function.Supplier;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
@@ -138,7 +137,7 @@ public class BookHolder
 
         a_bracket_b_bracket = context.getString(R.string.a_bracket_b_bracket);
 
-        if (this.style.isShowField(Style.Screen.List, FieldVisibility.COVER[0])) {
+        if (this.style.isShowField(Style.Screen.List, DBKey.COVER[0])) {
             // Do not go overkill here by adding a full-blown CoverHandler.
             // We only provide zooming by clicking on the image.
             vb.coverImage0.setOnClickListener(this::onZoomCover);
@@ -491,7 +490,7 @@ public class BookHolder
                       && rowData.contains(DBKey.EDITION__BITMASK);
             loanee = style.isShowField(Style.Screen.List, DBKey.LOANEE_NAME)
                      && rowData.contains(DBKey.LOANEE_NAME);
-            cover0 = style.isShowField(Style.Screen.List, FieldVisibility.COVER[0])
+            cover0 = style.isShowField(Style.Screen.List, DBKey.COVER[0])
                      && rowData.contains(DBKey.BOOK_UUID);
             rating = style.isShowField(Style.Screen.List, DBKey.RATING)
                      && rowData.contains(DBKey.RATING);

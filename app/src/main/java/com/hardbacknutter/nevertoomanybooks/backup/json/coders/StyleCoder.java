@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,7 +31,6 @@ import java.util.stream.IntStream;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BaseStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
@@ -222,11 +221,11 @@ public class StyleCoder
                                           @NonNull final JSONObject source) {
 
         if (source.has(StyleDataStore.PK_DETAILS_SHOW_COVER[0])) {
-            style.setShowField(Style.Screen.Detail, FieldVisibility.COVER[0], source.getBoolean(
+            style.setShowField(Style.Screen.Detail, DBKey.COVER[0], source.getBoolean(
                     StyleDataStore.PK_DETAILS_SHOW_COVER[0]));
         }
         if (source.has(StyleDataStore.PK_DETAILS_SHOW_COVER[1])) {
-            style.setShowField(Style.Screen.Detail, FieldVisibility.COVER[1], source.getBoolean(
+            style.setShowField(Style.Screen.Detail, DBKey.COVER[1], source.getBoolean(
                     StyleDataStore.PK_DETAILS_SHOW_COVER[1]));
         }
     }
@@ -235,7 +234,7 @@ public class StyleCoder
                                         @NonNull final JSONObject source) {
 
         if (source.has(StyleDataStore.PK_LIST_SHOW_COVERS)) {
-            style.setShowField(Style.Screen.List, FieldVisibility.COVER[0],
+            style.setShowField(Style.Screen.List, DBKey.COVER[0],
                                source.getBoolean(StyleDataStore.PK_LIST_SHOW_COVERS));
         }
         if (source.has(StyleDataStore.PK_LIST_SHOW_AUTHOR)) {

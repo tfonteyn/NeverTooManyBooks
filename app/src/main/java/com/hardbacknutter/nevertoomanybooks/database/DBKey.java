@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -298,6 +298,18 @@ public final class DBKey {
     public static final String SERIES_TITLE_OB = SERIES_TITLE + ORDER_BY_SUFFIX;
     public static final String PUBLISHER_NAME_OB = PUBLISHER_NAME + ORDER_BY_SUFFIX;
     public static final String TITLE_OB = TITLE + ORDER_BY_SUFFIX;
+
+
+    /**
+     * The "field is used" key for thumbnails and other places where we need
+     * to represent a cover.
+     * There is NO VALUE linked to this key.
+     */
+    private static final String PREFIX_COVER = "thumbnail";
+    public static final String[] COVER = {
+            PREFIX_COVER + ".0",
+            PREFIX_COVER + ".1"
+    };
 
     private DBKey() {
     }

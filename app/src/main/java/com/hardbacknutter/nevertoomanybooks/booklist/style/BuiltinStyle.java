@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -301,8 +301,8 @@ public final class BuiltinStyle
         if (id == ID_COMPACT) {
             // The predefined "Compact" style: smaller text, no images.
             style.setTextScale(Style.TEXT_SCALE_1_SMALL);
-            style.setShowField(Screen.List, FieldVisibility.COVER[0], false);
-            style.setShowField(Screen.List, FieldVisibility.COVER[1], false);
+            style.setShowField(Screen.List, DBKey.COVER[0], false);
+            style.setShowField(Screen.List, DBKey.COVER[1], false);
         }
         return Optional.of(style);
     }

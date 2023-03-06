@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,6 +21,8 @@ package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
 import java.util.Set;
 
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+
 /**
  * Encapsulate the Book fields which can be shown on the Book-details screen
  * as defined by the current style.
@@ -29,12 +31,12 @@ public class BookDetailsFieldVisibility
         extends FieldVisibility {
 
     public static final long DEFAULT = getBitValue(Set.of(
-            FieldVisibility.COVER[0],
-            FieldVisibility.COVER[1]));
+            DBKey.COVER[0],
+            DBKey.COVER[1]));
 
     private static final Set<String> KEYS = Set.of(
-            FieldVisibility.COVER[0],
-            FieldVisibility.COVER[1]);
+            DBKey.COVER[0],
+            DBKey.COVER[1]);
 
     /**
      * Constructor.

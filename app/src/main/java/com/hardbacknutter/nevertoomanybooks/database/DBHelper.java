@@ -190,7 +190,7 @@ public class DBHelper
                     throw e;
                 } catch (@NonNull final RuntimeException e) {
                     LoggerFactory.getLogger()
-                                  .e(TAG, e, "DROP INDEX failed: " + indexName);
+                                 .e(TAG, e, "DROP INDEX failed: " + indexName);
                 }
             }
         }
@@ -636,8 +636,8 @@ public class DBHelper
                         FileUtils.rename(destFile, destination);
                     } catch (@NonNull final IOException e) {
                         LoggerFactory.getLogger()
-                                      .e(TAG, e, "failed to rename source=" + destFile
-                                                 + " TO destination=" + destination, e);
+                                     .e(TAG, e, "failed to rename source=" + destFile
+                                                + " TO destination=" + destination, e);
                     }
                 }
                 // and create a new copy
@@ -797,11 +797,9 @@ public class DBHelper
 
                     final long detailFields =
                             (stylePrefs.getBoolean(StyleDataStore.PK_DETAILS_SHOW_COVER[0], true)
-                             ? FieldVisibility.getBitValue(
-                                    FieldVisibility.COVER[0]) : 0)
+                             ? FieldVisibility.getBitValue(DBKey.COVER[0]) : 0)
                             | (stylePrefs.getBoolean(StyleDataStore.PK_DETAILS_SHOW_COVER[1], true)
-                               ? FieldVisibility.getBitValue(
-                                    FieldVisibility.COVER[1]) : 0);
+                               ? FieldVisibility.getBitValue(DBKey.COVER[1]) : 0);
 
                     stmt.bindLong(++c, detailFields);
 
@@ -809,7 +807,7 @@ public class DBHelper
                             FieldVisibility.getBitValue(DBKey.FK_SERIES)
 
                             | (stylePrefs.getBoolean(StyleDataStore.PK_LIST_SHOW_COVERS, true)
-                               ? FieldVisibility.getBitValue(FieldVisibility.COVER[0]) : 0)
+                               ? FieldVisibility.getBitValue(DBKey.COVER[0]) : 0)
                             | (stylePrefs.getBoolean(StyleDataStore.PK_LIST_SHOW_AUTHOR, true)
                                ? FieldVisibility.getBitValue(DBKey.FK_AUTHOR) : 0)
                             | (stylePrefs.getBoolean(StyleDataStore.PK_LIST_SHOW_PUBLISHER, true)

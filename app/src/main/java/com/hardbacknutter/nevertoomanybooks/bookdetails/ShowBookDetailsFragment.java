@@ -65,7 +65,6 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutp
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooksOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
@@ -268,7 +267,7 @@ public class ShowBookDetailsFragment
         final TypedArray height = res.obtainTypedArray(R.array.cover_details_height);
         try {
             for (int cIdx = 0; cIdx < width.length(); cIdx++) {
-                if (aVm.getStyle().isShowField(Style.Screen.Detail, FieldVisibility.COVER[cIdx])) {
+                if (aVm.getStyle().isShowField(Style.Screen.Detail, DBKey.COVER[cIdx])) {
                     final int maxWidth = width.getDimensionPixelSize(cIdx, 0);
                     final int maxHeight = height.getDimensionPixelSize(cIdx, 0);
 
