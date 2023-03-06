@@ -49,14 +49,15 @@ import java.util.Collection;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchSitesSingleListContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooksOutput;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentUpdateFromInternetBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowUpdateFromInternetBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
@@ -259,11 +260,10 @@ public class SearchBookUpdatesFragment
         closeProgressDialog();
 
         message.getData().ifPresent(data -> {
-            final Book result = data.getResult();
+            final DataHolder result = data.getResult();
             if (result != null) {
                 //noinspection ConstantConditions
-                getActivity().setResult(Activity.RESULT_OK,
-                                        UpdateBooksOutput.createResult(result));
+                getActivity().setResult(Activity.RESULT_OK, EditBookOutput.createResult(result));
             }
 
             //noinspection ConstantConditions

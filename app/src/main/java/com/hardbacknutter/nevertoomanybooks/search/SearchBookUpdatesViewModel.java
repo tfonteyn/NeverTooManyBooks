@@ -40,7 +40,7 @@ import java.util.TreeMap;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
@@ -72,14 +72,6 @@ public class SearchBookUpdatesViewModel
 
     /** Log tag. */
     private static final String TAG = "SearchBookUpdatesViewModel";
-    public static final String BKEY_LAST_BOOK_ID_PROCESSED = TAG + ":lastId";
-    /** Boolean - whether a list was processed/modified. */
-    public static final String BKEY_LIST_MODIFIED = TAG + ":modified:list";
-    /**
-     * Long - if this was a single-book request, the book id if it was modified.
-     * Only present if {@link #BKEY_LIST_MODIFIED} is NOT present.
-     */
-    public static final String BKEY_BOOK_MODIFIED = TAG + ":modified:book";
 
     /** Prefix to store the settings. */
     private static final String SYNC_PROCESSOR_PREFIX = "fields.update.usage.";
@@ -506,19 +498,13 @@ public class SearchBookUpdatesViewModel
 
         // See class docs above as to why this is not an EditBookOutput object!
         final Book book = new Book();
-        book.putLong(BKEY_LAST_BOOK_ID_PROCESSED, lastBookIdProcessed);
 
-        // all books || a list of books (i.e. 2 or more books)
-        if (bookIdList == null || bookIdList.size() > 1) {
-            // Technically speaking when doing a list of books, the task might have been
-            // cancelled before the first book was done. We disregard this fringe case.
-            book.putBoolean(BKEY_LIST_MODIFIED, true);
-        }
+        book.putLong(EditBookOutput.BKEY_LAST_BOOK_ID_PROCESSED, lastBookIdProcessed);
 
-        // a single book
-        if (bookIdList != null && bookIdList.size() == 1) {
-            //FIXME: we should only return this if we actually modified the book
-            book.putLong(BKEY_BOOK_MODIFIED, bookIdList.get(0));
+        // all books || a list of books (i.e. 1 or more books)
+        if (bookIdList == null || !bookIdList.isEmpty()) {
+            //FIXME: we should only return this if we actually modified a book
+            book.putBoolean(EditBookOutput.BKEY_MODIFIED, true);
         }
 
         // if applicable, pass the first book for repositioning the list on screen
