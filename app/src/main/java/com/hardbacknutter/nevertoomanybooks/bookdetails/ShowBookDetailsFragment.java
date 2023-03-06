@@ -315,12 +315,11 @@ public class ShowBookDetailsFragment
      */
     @Override
     public void reloadImage(@IntRange(from = 0, to = 1) final int cIdx) {
-        //TODO: don't reload the whole book, just use coverHandler[cIdx].onBindView(...);
-
         // needed when running inside the ViewPager to update the activity result data
         aVm.setDataModified();
 
-        vm.displayBook();
+        // don't reload the whole book, just rebind the images
+        bindCoverImages();
 
         // needed when running in embedded mode to update the BoB list
         if (bookChangedListener != null && cIdx == 0) {
