@@ -1501,13 +1501,23 @@ public class BooksOnBookshelf
 
         if (keys != null && Arrays.asList(keys).contains(DBKey.READ__BOOL)) {
             Objects.requireNonNull(book);
+            final int[] positions = vm.onBookRead(book.getId(), book.getBoolean(DBKey.READ__BOOL));
             //noinspection ConstantConditions
-            adapter.requery(vm.onBookRead(book.getId(), book.getBoolean(DBKey.READ__BOOL)));
+            adapter.requery(positions);
 
         } else if (keys != null && Arrays.asList(keys).contains(DBKey.LOANEE_NAME)) {
             Objects.requireNonNull(book);
+            final int[] positions = vm.onBookLend(book.getId(), book.getLoanee().orElse(null));
             //noinspection ConstantConditions
-            adapter.requery(vm.onBookLend(book.getId(), book.getLoanee().orElse(null)));
+            adapter.requery(positions);
+
+        } else if (keys != null && Arrays.asList(keys).contains(DBKey.COVER[0])) {
+            Objects.requireNonNull(book);
+            final int[] positions = vm.getVisibleBookNodes(book.getId()).stream()
+                                      .mapToInt(BooklistNode::getAdapterPosition)
+                                      .toArray();
+            //noinspection ConstantConditions
+            adapter.requery(positions);
 
         } else {
             // ENHANCE: update the modified row without a rebuild.
