@@ -101,10 +101,8 @@ public class AuthorWorksViewModel
 
             final long bookshelfId = args.getLong(DBKey.FK_BOOKSHELF, Bookshelf.ALL_BOOKS);
 
-            bookshelf = Bookshelf.getBookshelf(context, bookshelfId)
-                                 .orElseGet(() -> Bookshelf
-                                         .getBookshelf(context, Bookshelf.ALL_BOOKS)
-                                         .orElseThrow());
+            bookshelf = Bookshelf.getBookshelf(context, bookshelfId, Bookshelf.ALL_BOOKS)
+                                 .orElseThrow();
             allBookshelves = bookshelf.getId() == Bookshelf.ALL_BOOKS;
 
             withTocEntries = args.getBoolean(AuthorWorksFragment.BKEY_WITH_TOC, withTocEntries);

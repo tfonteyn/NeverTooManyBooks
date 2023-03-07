@@ -890,10 +890,8 @@ public class Book
     public void ensureBookshelf(@NonNull final Context context) {
         final ArrayList<Bookshelf> list = getParcelableArrayList(BKEY_BOOKSHELF_LIST);
         if (list.isEmpty()) {
-            list.add(Bookshelf.getBookshelf(context, Bookshelf.PREFERRED)
-                              .orElseGet(() -> Bookshelf
-                                      .getBookshelf(context, Bookshelf.DEFAULT)
-                                      .orElseThrow()));
+            list.add(Bookshelf.getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT)
+                              .orElseThrow());
         }
     }
 

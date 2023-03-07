@@ -121,7 +121,7 @@ abstract class LibraryBase
         this.name = name;
     }
 
-    void setMappedBookshelf(final long id) {
+    public void setMappedBookshelf(final long id) {
         mappedBookshelfId = id;
     }
 
@@ -143,11 +143,9 @@ abstract class LibraryBase
     Bookshelf createAsBookshelf(@NonNull final Context context)
             throws DaoWriteException {
 
-        final Bookshelf current = Bookshelf
-                .getBookshelf(context, Bookshelf.PREFERRED)
-                .orElseGet(() -> Bookshelf
-                        .getBookshelf(context, Bookshelf.DEFAULT)
-                        .orElseThrow());
+        final Bookshelf current = Bookshelf.getBookshelf(context, Bookshelf.PREFERRED,
+                                                         Bookshelf.DEFAULT)
+                                           .orElseThrow();
 
         final Bookshelf bookshelf = new Bookshelf(name, current.getStyle(context));
         ServiceLocator.getInstance().getBookshelfDao().insert(context, bookshelf);

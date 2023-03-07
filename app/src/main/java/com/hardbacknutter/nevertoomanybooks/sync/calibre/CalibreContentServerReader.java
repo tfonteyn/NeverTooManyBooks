@@ -742,13 +742,11 @@ public class CalibreContentServerReader
 
         // Add the physical library mapped Bookshelf
         //noinspection ConstantConditions
-        final Bookshelf mappedBookshelf = Bookshelf
-                .getBookshelf(context, library.getMappedBookshelfId())
-                .orElseGet(() -> Bookshelf
-                        .getBookshelf(context, Bookshelf.PREFERRED)
-                        .orElseGet(() -> Bookshelf
-                                .getBookshelf(context, Bookshelf.DEFAULT)
-                                .orElseThrow()));
+        final Bookshelf mappedBookshelf = Bookshelf.getBookshelf(context,
+                                                                 library.getMappedBookshelfId(),
+                                                                 Bookshelf.PREFERRED,
+                                                                 Bookshelf.DEFAULT)
+                                                   .orElseThrow();
 
         if (bookShelves.isEmpty()) {
             // new book
@@ -775,10 +773,10 @@ public class CalibreContentServerReader
                        // it will always be present of course.
                        .ifPresent(vlib -> {
                            final Bookshelf vlibMappedBookshelf = Bookshelf
-                                   .getBookshelf(context, vlib.getMappedBookshelfId())
-                                   .orElseGet(() -> Bookshelf
-                                           .getBookshelf(context, library.getMappedBookshelfId())
-                                           .orElseThrow());
+                                   .getBookshelf(context,
+                                                 vlib.getMappedBookshelfId(),
+                                                 library.getMappedBookshelfId())
+                                   .orElseThrow();
 
                            // add the vlib mapped bookshelf if not already present.
                            if (bookShelves.stream()

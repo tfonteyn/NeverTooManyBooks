@@ -285,10 +285,8 @@ public class BooksOnBookshelfViewModel
         // Set the last/preferred bookshelf if not explicitly set above
         // or use the default == first start of the app
         if (bookshelf == null) {
-            bookshelf = Bookshelf
-                    .getBookshelf(context, Bookshelf.PREFERRED)
-                    .orElseGet(() -> Bookshelf.getBookshelf(context, Bookshelf.DEFAULT)
-                                              .orElseThrow());
+            bookshelf = Bookshelf.getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT)
+                                 .orElseThrow();
         }
     }
 
@@ -400,9 +398,9 @@ public class BooksOnBookshelfViewModel
 
         bookshelf = ServiceLocator.getInstance().getBookshelfDao()
                                   .getById(bookshelfId).orElseGet(
-                        () -> Bookshelf.getBookshelf(context, Bookshelf.PREFERRED).orElseGet(
-                                () -> Bookshelf.getBookshelf(context, Bookshelf.ALL_BOOKS)
-                                               .orElseThrow()));
+                        () -> Bookshelf.getBookshelf(context, Bookshelf.PREFERRED,
+                                                     Bookshelf.ALL_BOOKS)
+                                       .orElseThrow());
         bookshelf.setAsPreferred(context);
 
         if (previousBookshelfId != bookshelf.getId()) {
@@ -419,9 +417,8 @@ public class BooksOnBookshelfViewModel
     private boolean reloadSelectedBookshelf(@NonNull final Context context) {
 
         final Bookshelf newBookshelf = Bookshelf
-                .getBookshelf(context, Bookshelf.PREFERRED)
-                .orElseGet(() -> Bookshelf.getBookshelf(context, Bookshelf.ALL_BOOKS)
-                                          .orElseThrow());
+                .getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.ALL_BOOKS)
+                .orElseThrow();
         if (!newBookshelf.equals(bookshelf)) {
             // if it was.. switch to it.
             bookshelf = newBookshelf;

@@ -82,13 +82,11 @@ public class CalibreLibraryCoder
         data.put(DBKey.CALIBRE_LIBRARY_NAME, library.getName());
         data.put(DBKey.CALIBRE_LIBRARY_LAST_SYNC_DATE__UTC, library.getLastSyncDateAsString());
 
-        final Bookshelf libraryBookshelf = Bookshelf
-                .getBookshelf(context, library.getMappedBookshelfId())
-                .orElseGet(() -> Bookshelf
-                        .getBookshelf(context, Bookshelf.PREFERRED)
-                        .orElseGet(() -> Bookshelf
-                                .getBookshelf(context, Bookshelf.DEFAULT)
-                                .orElseThrow()));
+        final Bookshelf libraryBookshelf = Bookshelf.getBookshelf(context,
+                                                                  library.getMappedBookshelfId(),
+                                                                  Bookshelf.PREFERRED,
+                                                                  Bookshelf.DEFAULT)
+                                                    .orElseThrow();
 
         data.put(DBKey.FK_BOOKSHELF, bookshelfCoder.encode(libraryBookshelf));
 

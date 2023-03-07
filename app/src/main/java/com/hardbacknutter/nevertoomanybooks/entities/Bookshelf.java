@@ -194,6 +194,26 @@ public class Bookshelf
         }
     }
 
+    /**
+     * Get the first of the specified bookshelf found.
+     *
+     * @param context Current context
+     * @param ids     list of bookshelves to get in order of preference
+     *
+     * @return the bookshelf
+     */
+    @NonNull
+    public static Optional<Bookshelf> getBookshelf(@NonNull final Context context,
+                                                   final long... ids) {
+        for (final long id : ids) {
+            final Optional<Bookshelf> bookshelf = getBookshelf(context, id);
+            if (bookshelf.isPresent()) {
+                return bookshelf;
+            }
+        }
+        return Optional.empty();
+    }
+
     @NonNull
     private static Optional<Bookshelf> getAllBooksBookshelf(@NonNull final Context context) {
         final Bookshelf bookshelf = new Bookshelf(

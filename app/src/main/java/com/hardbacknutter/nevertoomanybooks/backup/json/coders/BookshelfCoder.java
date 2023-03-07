@@ -115,10 +115,6 @@ public class BookshelfCoder
             }
         }
 
-        final Optional<Bookshelf> bookshelf = Bookshelf.getBookshelf(context, Bookshelf.PREFERRED);
-        if (bookshelf.isPresent()) {
-            return bookshelf;
-        }
-        return Bookshelf.getBookshelf(context, Bookshelf.DEFAULT);
+        return Bookshelf.getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT);
     }
 }
