@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -50,6 +51,9 @@ public class StyleCoder
     @NonNull
     private final Context context;
 
+    @NonNull
+    private final Supplier<StylesHelper> stylesHelperSupplier;
+
     /**
      * Constructor.
      *
@@ -57,6 +61,8 @@ public class StyleCoder
      */
     public StyleCoder(@NonNull final Context context) {
         this.context = context;
+
+        stylesHelperSupplier = ServiceLocator.getInstance()::getStyles;
     }
 
     @NonNull
@@ -120,7 +126,7 @@ public class StyleCoder
 
         final String uuid = data.getString(DBKey.STYLE_UUID);
 
-        final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
+        final StylesHelper stylesHelper = stylesHelperSupplier.get();
 
         if (BuiltinStyle.isBuiltin(uuid)) {
             final Optional<Style> oStyle = stylesHelper.getStyle(context, uuid);
@@ -132,8 +138,7 @@ public class StyleCoder
             } else {
                 // It's a recognized Builtin Style, but it's deprecated.
                 // We return the default builtin style instead.
-                //noinspection OptionalGetWithoutIsPresent
-                return stylesHelper.getStyle(context, BuiltinStyle.DEFAULT_UUID).get();
+                return stylesHelper.getStyle(context, BuiltinStyle.DEFAULT_UUID).orElseThrow();
             }
 
         } else {
