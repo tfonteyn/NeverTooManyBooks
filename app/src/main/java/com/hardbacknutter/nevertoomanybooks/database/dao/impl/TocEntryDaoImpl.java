@@ -77,7 +77,9 @@ public class TocEntryDaoImpl
      * Constructor.
      *
      * @param db                    Underlying database
-     * @param reorderHelperSupplier deferred supplier for the {@link ReorderHelper}.
+     * @param bookDaoSupplier       deferred supplier for the {@link BookDao}
+     * @param authorDaoSupplier     deferred supplier for the {@link AuthorDao}
+     * @param reorderHelperSupplier deferred supplier for the {@link ReorderHelper}
      */
     public TocEntryDaoImpl(@NonNull final SynchronizedDb db,
                            @NonNull final Supplier<BookDao> bookDaoSupplier,

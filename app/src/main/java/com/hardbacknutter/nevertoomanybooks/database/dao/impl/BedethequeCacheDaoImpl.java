@@ -47,6 +47,11 @@ public class BedethequeCacheDaoImpl
     private static final String ERROR_INSERT_FROM = "Insert from\n";
     private static final String ERROR_UPDATE_FROM = "Update from\n";
 
+    /**
+     * Constructor.
+     *
+     * @param db Underlying database
+     */
     public BedethequeCacheDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);
     }

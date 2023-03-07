@@ -46,7 +46,7 @@ public abstract class InlineStringDaoImpl
      * Constructor.
      *
      * @param db     Underlying database
-     * @param logTag of this DAO for logging.
+     * @param logTag of this DAO for logging
      */
     InlineStringDaoImpl(@NonNull final SynchronizedDb db,
                         @NonNull final String logTag,

@@ -107,8 +107,11 @@ public class MaintenanceDaoImpl
      * Constructor.
      *
      * @param db                    Underlying database
-     * @param appLocaleSupplier     deferred supplier for the {@link AppLocale}.
-     * @param reorderHelperSupplier deferred supplier for the {@link ReorderHelper}.
+     * @param authorDaoSupplier     deferred supplier for the {@link AuthorDao}
+     * @param seriesDaoSupplier     deferred supplier for the {@link SeriesDao}
+     * @param publisherDaoSupplier  deferred supplier for the {@link PublisherDao}
+     * @param appLocaleSupplier     deferred supplier for the {@link AppLocale}
+     * @param reorderHelperSupplier deferred supplier for the {@link ReorderHelper}
      */
     public MaintenanceDaoImpl(@NonNull final SynchronizedDb db,
                               @NonNull final Supplier<AuthorDao> authorDaoSupplier,

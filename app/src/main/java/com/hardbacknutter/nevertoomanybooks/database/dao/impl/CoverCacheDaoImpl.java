@@ -44,11 +44,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.covers.Cover;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.CacheDbHelper;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CoverCacheDao;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 
 /**
  * DB Helper for Covers DB.
@@ -99,6 +99,8 @@ public class CoverCacheDaoImpl
 
     /**
      * Constructor.
+     *
+     * @param db Underlying database
      */
     public CoverCacheDaoImpl(@NonNull final SynchronizedDb db) {
         this.db = db;

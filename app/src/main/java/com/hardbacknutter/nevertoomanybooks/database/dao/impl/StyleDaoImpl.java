@@ -126,6 +126,8 @@ public class StyleDaoImpl
 
     /**
      * Constructor.
+     *
+     * @param db Underlying database
      */
     public StyleDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);

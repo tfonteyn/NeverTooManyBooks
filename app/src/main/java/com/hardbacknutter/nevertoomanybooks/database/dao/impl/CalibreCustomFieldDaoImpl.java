@@ -70,6 +70,8 @@ public class CalibreCustomFieldDaoImpl
 
     /**
      * Constructor.
+     *
+     * @param db Underlying database
      */
     public CalibreCustomFieldDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);

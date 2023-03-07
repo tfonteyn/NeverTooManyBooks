@@ -162,6 +162,8 @@ public class FtsDaoImpl
 
     /**
      * Constructor.
+     *
+     * @param db Underlying database
      */
     public FtsDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);

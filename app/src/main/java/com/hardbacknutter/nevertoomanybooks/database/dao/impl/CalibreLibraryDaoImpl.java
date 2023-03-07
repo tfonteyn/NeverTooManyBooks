@@ -139,6 +139,8 @@ public class CalibreLibraryDaoImpl
 
     /**
      * Constructor.
+     *
+     * @param db Underlying database
      */
     public CalibreLibraryDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);
@@ -215,7 +217,8 @@ public class CalibreLibraryDaoImpl
 
     @Override
     public long insert(@NonNull final CalibreLibrary library) {
-
+        // The getMappedBookshelfId MUST have been previously verified/'fixId' against
+        // the BookshelfDao!
         try (SynchronizedStatement stmt = db.compileStatement(INSERT_LIBRARY)) {
             stmt.bindString(1, library.getUuid());
             stmt.bindString(2, library.getLibraryStringId());
@@ -233,7 +236,8 @@ public class CalibreLibraryDaoImpl
 
     @Override
     public boolean update(@NonNull final CalibreLibrary library) {
-
+        // The getMappedBookshelfId MUST have been previously verified/'fixId' against
+        // the BookshelfDao!
         final ContentValues cv = new ContentValues();
         cv.put(DBKey.CALIBRE_LIBRARY_UUID, library.getUuid());
         cv.put(DBKey.CALIBRE_LIBRARY_STRING_ID, library.getLibraryStringId());

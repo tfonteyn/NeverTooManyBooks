@@ -152,7 +152,19 @@ public class BookDaoImpl
     /**
      * Constructor.
      *
-     * @param db Underlying database
+     * @param db                    Underlying database
+     * @param systemLocale          to be used for an ISODateParser
+     * @param authorDaoSupplier     deferred supplier for the {@link AuthorDao}
+     * @param seriesDaoSupplier     deferred supplier for the {@link SeriesDao}
+     * @param publisherDaoSupplier  deferred supplier for the {@link PublisherDao}
+     * @param bookshelfDaoSupplier  deferred supplier for the {@link BookshelfDao}
+     * @param tocEntryDaoSupplier   deferred supplier for the {@link TocEntryDao}
+     * @param loaneeDaoDaoSupplier  deferred supplier for the {@link LoaneeDao}
+     * @param calibreDaoSupplier    deferred supplier for the {@link CalibreDao}
+     * @param stripInfoDaoSupplier  deferred supplier for the {@link StripInfoDao}
+     * @param ftsDaoSupplier        deferred supplier for the {@link FtsDao}
+     * @param coverCacheDaoSupplier deferred supplier for the {@link CoverCacheDao}
+     * @param reorderHelperSupplier deferred supplier for the {@link ReorderHelper}
      */
     public BookDaoImpl(@NonNull final SynchronizedDb db,
                        @NonNull final Locale systemLocale,
