@@ -58,8 +58,9 @@ public class ZipArchiveReader
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param helper  import configuration
+     * @param context      Current context
+     * @param systemLocale to use for ISO date parsing
+     * @param helper       import configuration
      */
     public ZipArchiveReader(@NonNull final Context context,
                             @NonNull final Locale systemLocale,

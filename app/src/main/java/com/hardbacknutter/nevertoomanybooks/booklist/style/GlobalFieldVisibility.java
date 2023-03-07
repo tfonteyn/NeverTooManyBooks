@@ -103,7 +103,8 @@ public class GlobalFieldVisibility
     /**
      * Is the field in use; i.e. is it enabled in the user-preferences.
      *
-     * @param dbdKey DBKey.KEY_x to lookup
+     * @param context Current context
+     * @param dbdKey  {@link DBKey}.KEY_x to lookup
      *
      * @return {@code true} if the user wants to use this field.
      */

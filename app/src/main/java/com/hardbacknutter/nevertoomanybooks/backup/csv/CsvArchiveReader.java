@@ -67,7 +67,8 @@ public class CsvArchiveReader
     /**
      * Constructor.
      *
-     * @param helper import configuration
+     * @param systemLocale to use for ISO date parsing
+     * @param helper       import configuration
      */
     public CsvArchiveReader(@NonNull final Locale systemLocale,
                             @NonNull final ImportHelper helper) {

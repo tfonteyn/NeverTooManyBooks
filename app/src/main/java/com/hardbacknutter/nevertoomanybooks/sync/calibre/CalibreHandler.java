@@ -105,6 +105,8 @@ public class CalibreHandler {
     /**
      * Check if SYNC menus should be shown at all.
      *
+     * @param context Current context
+     *
      * @return {@code true} if menus should be shown
      */
     @AnyThread

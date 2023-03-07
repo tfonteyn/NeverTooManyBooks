@@ -62,18 +62,17 @@ public class StripInfoWriter
 
     @NonNull
     private final CollectionFormUploader collectionForm;
-
-    @SuppressWarnings("FieldCanBeLocal")
-    private SyncWriterResults results;
-
     @NonNull
     private final DateParser dateParser;
+    @SuppressWarnings("FieldCanBeLocal")
+    private SyncWriterResults results;
 
     /**
      * Constructor.
      *
      * @param context          Current context
      * @param syncWriterHelper export configuration
+     * @param systemLocale     to use for ISO date parsing
      */
     public StripInfoWriter(@NonNull final Context context,
                            @NonNull final SyncWriterHelper syncWriterHelper,

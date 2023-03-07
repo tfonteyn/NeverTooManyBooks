@@ -67,7 +67,8 @@ public abstract class BaseRecordReader
     /**
      * Constructor.
      *
-     * @param context Current context
+     * @param context      Current context
+     * @param systemLocale to use for ISO date parsing
      */
     protected BaseRecordReader(@NonNull final Context context,
                                @NonNull final Locale systemLocale) {

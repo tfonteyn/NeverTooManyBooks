@@ -72,7 +72,8 @@ public abstract class SearchEngineBase
     /**
      * Constructor.
      *
-     * @param config the search engine configuration
+     * @param appContext The <strong>application</strong> context
+     * @param config     the search engine configuration
      */
     public SearchEngineBase(@NonNull final Context appContext,
                             @NonNull final SearchEngineConfig config) {

@@ -98,15 +98,16 @@ public class CalibreContentServerWriter
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param helper  export configuration
+     * @param context      Current context
+     * @param systemLocale to use for ISO date parsing
+     * @param helper       export configuration
      *
      * @throws CertificateException on failures related to a user installed CA.
      */
     public CalibreContentServerWriter(@NonNull final Context context,
                                       @NonNull final SyncWriterHelper helper,
                                       @NonNull final Locale systemLocale)
-    throws CertificateException {
+            throws CertificateException {
 
         this.helper = helper;
 
@@ -197,7 +198,7 @@ public class CalibreContentServerWriter
                 } catch (@NonNull final JSONException e) {
                     // ignore, just move on to the next book
                     LoggerFactory.getLogger()
-                                  .e(TAG, e, "bookId=" + book.getId());
+                                 .e(TAG, e, "bookId=" + book.getId());
                 }
 
                 delta++;

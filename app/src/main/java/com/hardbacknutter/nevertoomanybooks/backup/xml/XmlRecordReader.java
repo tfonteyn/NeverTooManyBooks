@@ -94,6 +94,8 @@ public class XmlRecordReader
 
     /**
      * Constructor.
+     *
+     * @param context Current context
      */
     public XmlRecordReader(@NonNull final Context context) {
         this.realNumberParser = new RealNumberParser(context);

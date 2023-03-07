@@ -176,10 +176,10 @@ public final class SearchEngineConfig {
                      .collect(Collectors.toList());
     }
 
-    public static int getTimeoutValueInMs(@NonNull final Context appContext,
+    public static int getTimeoutValueInMs(@NonNull final Context context,
                                           @NonNull final String key,
                                           final int defValueInMs) {
-        final int seconds = PreferenceManager.getDefaultSharedPreferences(appContext)
+        final int seconds = PreferenceManager.getDefaultSharedPreferences(context)
                                              .getInt(key, 0);
         // <1000 as sanity check for roque preference file imports
         if (seconds > 0 && seconds < 1000) {
@@ -285,9 +285,9 @@ public final class SearchEngineConfig {
      *
      * @return milli seconds
      */
-    public int getConnectTimeoutInMs(@NonNull final Context appContext) {
-        return getTimeoutValueInMs(appContext, engineId.getPreferenceKey() + "."
-                                               + Prefs.pk_timeout_connect_in_seconds,
+    public int getConnectTimeoutInMs(@NonNull final Context context) {
+        return getTimeoutValueInMs(context, engineId.getPreferenceKey() + "."
+                                            + Prefs.pk_timeout_connect_in_seconds,
                                    connectTimeoutMs);
     }
 
@@ -296,9 +296,9 @@ public final class SearchEngineConfig {
      *
      * @return milli seconds
      */
-    public int getReadTimeoutInMs(@NonNull final Context appContext) {
-        return getTimeoutValueInMs(appContext, engineId.getPreferenceKey() + "."
-                                               + Prefs.pk_timeout_read_in_seconds,
+    public int getReadTimeoutInMs(@NonNull final Context context) {
+        return getTimeoutValueInMs(context, engineId.getPreferenceKey() + "."
+                                            + Prefs.pk_timeout_read_in_seconds,
                                    readTimeoutMs);
     }
 

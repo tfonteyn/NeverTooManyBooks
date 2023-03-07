@@ -134,6 +134,7 @@ public enum RecordEncoding {
      * Create a {@link RecordReader} for this encoding.
      *
      * @param context      Current context
+     * @param systemLocale to use for ISO date parsing
      * @param allowedTypes the record types which the reader
      *                     will be <strong>allowed</strong> to read
      *

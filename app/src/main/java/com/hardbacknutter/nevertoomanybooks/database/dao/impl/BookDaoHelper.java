@@ -158,7 +158,8 @@ public class BookDaoHelper {
     /**
      * Helper for {@link #process(Context)}.
      *
-     * @param key key for the money (value) field
+     * @param context Current context
+     * @param key     key for the money (value) field
      */
     @VisibleForTesting
     public void processPrice(@NonNull final Context context,

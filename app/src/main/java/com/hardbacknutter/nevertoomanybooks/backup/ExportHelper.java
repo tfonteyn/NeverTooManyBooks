@@ -69,20 +69,19 @@ public class ExportHelper
     private static final String PK_LAST_FULL_BACKUP_DATE = "backup.last.date";
     /** Log tag. */
     private static final String TAG = "ExportHelper";
-
+    @NonNull
+    private final DateParser dateParser;
     /** <strong>Where</strong> we write to. */
     @Nullable
     private Uri uri;
-
     /** <strong>How</strong> to write to the Uri. */
     @NonNull
     private ArchiveEncoding encoding;
 
-    @NonNull
-    private final DateParser dateParser;
-
     /**
      * Constructor.
+     *
+     * @param systemLocale to use for ISO date parsing
      */
     public ExportHelper(@NonNull final Locale systemLocale) {
         // set the default
@@ -98,8 +97,9 @@ public class ExportHelper
     /**
      * Constructor for testing individual options.
      *
-     * @param encoding    of the archive we'll be exporting to
-     * @param recordTypes to write
+     * @param encoding     of the archive we'll be exporting to
+     * @param systemLocale to use for ISO date parsing
+     * @param recordTypes  to write
      */
     @VisibleForTesting
     public ExportHelper(@NonNull final ArchiveEncoding encoding,

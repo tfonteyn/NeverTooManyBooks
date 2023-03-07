@@ -125,6 +125,7 @@ public class JsonRecordReader
      * Constructor.
      *
      * @param context      Current context
+     * @param systemLocale to use for ISO date parsing
      * @param allowedTypes the record types we're allowed to read
      */
     @AnyThread
