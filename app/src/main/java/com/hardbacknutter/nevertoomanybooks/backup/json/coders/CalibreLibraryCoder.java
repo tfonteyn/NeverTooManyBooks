@@ -189,7 +189,7 @@ public class CalibreLibraryCoder
                 final JSONObject vlData = vlArray.getJSONObject(i);
 
                 final Bookshelf vlibBookshelf = bookshelfCoder
-                        .decode(data.getJSONObject(DBKey.FK_BOOKSHELF));
+                        .decode(vlData.getJSONObject(DBKey.FK_BOOKSHELF));
                 bookshelfDao.fixId(vlibBookshelf);
 
                 final CalibreVirtualLibrary vlib = new CalibreVirtualLibrary(
