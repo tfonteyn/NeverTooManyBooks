@@ -153,7 +153,7 @@ public class BookDaoImpl
      * Constructor.
      *
      * @param db                    Underlying database
-     * @param systemLocale          to be used for an ISODateParser
+     * @param systemLocale          to use for ISO date parsing
      * @param authorDaoSupplier     deferred supplier for the {@link AuthorDao}
      * @param seriesDaoSupplier     deferred supplier for the {@link SeriesDao}
      * @param publisherDaoSupplier  deferred supplier for the {@link PublisherDao}

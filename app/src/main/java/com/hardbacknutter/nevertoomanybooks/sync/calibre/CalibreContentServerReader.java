@@ -156,15 +156,16 @@ public class CalibreContentServerReader
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param helper  import configuration
+     * @param context      Current context
+     * @param systemLocale to use for ISO date parsing
+     * @param helper       import configuration
      *
      * @throws CertificateException on failures related to a user installed CA.
      */
     public CalibreContentServerReader(@NonNull final Context context,
                                       @NonNull final Locale systemLocale,
                                       @NonNull final SyncReaderHelper helper)
-    throws CertificateException {
+            throws CertificateException {
 
         updateOption = helper.getUpdateOption();
         syncDate = helper.getSyncDate();

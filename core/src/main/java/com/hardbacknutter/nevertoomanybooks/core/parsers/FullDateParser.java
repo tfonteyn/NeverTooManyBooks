@@ -99,7 +99,7 @@ public class FullDateParser
     /**
      * Constructor.
      *
-     * @param systemLocale to be used for the first (ISO) parser to try.
+     * @param systemLocale to use for ISO date parsing
      * @param locales      the locales to creates further parsers as needed.
      */
     public FullDateParser(@NonNull final Locale systemLocale,
