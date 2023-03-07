@@ -233,9 +233,6 @@ public class SeriesDaoImpl
      * </ul>
      * Note we keep BOTH foo(5) + foo(6)
      * <p>
-     * ENHANCE: Add aliases table to allow further pruning
-     * (e.g. Foundation == The Foundation Saga).
-     * <p>
      * {@inheritDoc}
      */
     @Override
