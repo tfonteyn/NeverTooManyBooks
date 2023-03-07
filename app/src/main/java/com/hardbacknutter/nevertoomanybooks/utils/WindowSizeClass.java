@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,23 +35,23 @@ import androidx.window.layout.WindowMetricsCalculator;
  * <p>
  * Width:
  * <ul>
- *     <li>COMPACT -> base; phone in portrait</li>
- *     <li>MEDIUM -> sw600; phone in landscape + tablet in portrait</li>
- *     <li>EXPANDED -> sw800; tablet in landscape</li>
+ *     <li>{@link #Compact} -> base; phone in portrait</li>
+ *     <li>{@link #Medium} -> sw600; phone in landscape + tablet in portrait</li>
+ *     <li>{@link #Expanded} -> sw800; tablet in landscape</li>
  * </ul>
  * Height:
  * <ul>
- *     <li>COMPACT -> base; small phone in landscape</li>
- *     <li>MEDIUM -> sw600; phone in portrait + tablet in landscape</li>
- *     <li>EXPANDED -> sw800; tablet in portrait</li>
+ *     <li>{@link #Compact} -> base; small phone in landscape</li>
+ *     <li>{@link #Medium} -> sw600; phone in portrait + tablet in landscape</li>
+ *     <li>{@link #Expanded} -> sw800; tablet in portrait</li>
  * </ul>
  * <p>
  * Never change the order!
  */
 public enum WindowSizeClass {
-    COMPACT,
-    MEDIUM,
-    EXPANDED;
+    Compact,
+    Medium,
+    Expanded;
 
     @NonNull
     public static WindowSizeClass getWidth(@NonNull final Activity activity) {
@@ -61,37 +61,12 @@ public enum WindowSizeClass {
         final float widthDp = metrics.getBounds().width()
                               / activity.getResources().getDisplayMetrics().density;
         if (widthDp < 600f) {
-            return COMPACT;
+            return Compact;
         } else if (widthDp < 840f) {
-            return MEDIUM;
+            return Medium;
         } else {
-            return EXPANDED;
+            return Expanded;
         }
-    }
-
-    /**
-     * Is the screen expanded width.
-     * i.e. is there room enough for lots of extra features?
-     *
-     * @return {@code true} if it is.
-     */
-    public static boolean isScreenWidthExpanded(@NonNull final Context context) {
-        return getWidth(context) == EXPANDED;
-    }
-
-    /**
-     * Is the screen medium width.
-     * i.e. is there room enough for some extra features?
-     *
-     * @return {@code true} if it is.
-     */
-    public static boolean isScreenWidthMedium(@NonNull final Context context) {
-        return getWidth(context) == MEDIUM;
-    }
-
-    @NonNull
-    public static WindowSizeClass getWidth(@NonNull final Context context) {
-        return getWidth(getActivity(context));
     }
 
     @NonNull
@@ -102,12 +77,17 @@ public enum WindowSizeClass {
         final float heightDp = metrics.getBounds().height()
                                / activity.getResources().getDisplayMetrics().density;
         if (heightDp < 480f) {
-            return COMPACT;
+            return Compact;
         } else if (heightDp < 900f) {
-            return MEDIUM;
+            return Medium;
         } else {
-            return EXPANDED;
+            return Expanded;
         }
+    }
+
+    @NonNull
+    public static WindowSizeClass getWidth(@NonNull final Context context) {
+        return getWidth(getActivity(context));
     }
 
     @NonNull

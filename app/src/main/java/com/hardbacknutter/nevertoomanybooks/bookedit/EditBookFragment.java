@@ -302,8 +302,8 @@ public class EditBookFragment
 
             // On tablets the notes fields are incorporated in the publication fragment
             // On small screens (i.e. phones) they get their own tab
-            if (WindowSizeClass.getWidth(container) == WindowSizeClass.COMPACT
-                || WindowSizeClass.getHeight(container) == WindowSizeClass.COMPACT) {
+            if (WindowSizeClass.getWidth(container) == WindowSizeClass.Compact
+                || WindowSizeClass.getHeight(container) == WindowSizeClass.Compact) {
                 tabList.add(new TabInfo(EditBookNotesFragment.class,
                                         R.string.lbl_tab_notes,
                                         R.string.lbl_personal_notes));

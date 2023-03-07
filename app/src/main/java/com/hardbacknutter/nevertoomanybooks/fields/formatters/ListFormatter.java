@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -95,20 +95,19 @@ public class ListFormatter<T extends Entity>
         final Details listDetails;
         final Details itemDetails;
         if (details == Details.AutoSelect) {
-            //TODO: simplify the decision logic...
             final WindowSizeClass wsc;
             final int orientation = context.getResources().getConfiguration().orientation;
             if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 // In landscape
                 wsc = WindowSizeClass.getWidth(context);
                 switch (wsc) {
-                    case EXPANDED:
-                    case MEDIUM:
+                    case Expanded:
+                    case Medium:
                         listDetails = Details.Normal;
                         itemDetails = Details.Full;
                         break;
 
-                    case COMPACT:
+                    case Compact:
                         listDetails = Details.Short;
                         itemDetails = Details.Short;
                         break;
@@ -120,17 +119,17 @@ public class ListFormatter<T extends Entity>
                 // In portrait
                 wsc = WindowSizeClass.getHeight(context);
                 switch (wsc) {
-                    case EXPANDED:
+                    case Expanded:
                         listDetails = Details.Full;
                         itemDetails = Details.Full;
                         break;
 
-                    case MEDIUM:
+                    case Medium:
                         listDetails = Details.Normal;
                         itemDetails = Details.Normal;
                         break;
 
-                    case COMPACT:
+                    case Compact:
                         listDetails = Details.Short;
                         itemDetails = Details.Short;
                         break;

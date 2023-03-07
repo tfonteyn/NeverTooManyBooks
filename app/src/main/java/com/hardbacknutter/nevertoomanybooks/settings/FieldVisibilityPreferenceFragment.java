@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -86,7 +86,6 @@ public class FieldVisibilityPreferenceFragment
     public void onSharedPreferenceChanged(@NonNull final SharedPreferences prefs,
                                           @NonNull final String key) {
         // Changing ANY field visibility will usually require recreating the activity
-        // TODO: make this fine-grained
         vm.setOnBackRequiresActivityRecreation();
     }
 }

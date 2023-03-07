@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -70,8 +70,8 @@ public class EditBookPublicationFragment
         // On tablets the notes fields are incorporated in the publication fragment
         // On small screens (i.e. phones) they get their own tab
         //noinspection ConstantConditions
-        if (WindowSizeClass.getWidth(getActivity()) != WindowSizeClass.COMPACT
-            && WindowSizeClass.getHeight(getActivity()) != WindowSizeClass.COMPACT) {
+        if (WindowSizeClass.getWidth(getActivity()) != WindowSizeClass.Compact
+            && WindowSizeClass.getHeight(getActivity()) != WindowSizeClass.Compact) {
             vm.initFields(context, FragmentId.Publication, FieldGroup.Notes);
         }
 

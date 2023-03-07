@@ -54,7 +54,8 @@
     {"name": "Esperanto"}
   ],
   "editions": [
-    {"name": "First"},
+    {"name": "First Edition"},
+    {"name": "First Impression"},
     {"name": "Bookclub"}
   ],
   "condition": [

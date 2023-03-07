@@ -993,7 +993,7 @@ public class BooksOnBookshelf
             final int level = rowData.getInt(DBKey.BL_NODE_LEVEL);
             contextMenu.setTitle(adapter.getLevelText(level, adapterPosition));
 
-            if (menu.size() < 5 || WindowSizeClass.isScreenWidthMedium(this)) {
+            if (menu.size() < 5 || WindowSizeClass.getWidth(this) == WindowSizeClass.Medium) {
                 // show it anchored
                 contextMenu.showAsDropDown(v, menuItem ->
                         onRowContextMenuItemSelected(menuItem, adapterPosition));

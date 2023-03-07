@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -117,8 +117,8 @@ public abstract class RowViewHolder
                     case ButtonIfSpace: {
                         final WindowSizeClass size = WindowSizeClass.getWidth(
                                 btnRowMenu.getContext());
-                        if (size == WindowSizeClass.MEDIUM
-                            || size == WindowSizeClass.EXPANDED) {
+                        if (size == WindowSizeClass.Medium
+                            || size == WindowSizeClass.Expanded) {
                             btnRowMenu.setVisibility(View.VISIBLE);
                         } else {
                             btnRowMenu.setVisibility(View.GONE);

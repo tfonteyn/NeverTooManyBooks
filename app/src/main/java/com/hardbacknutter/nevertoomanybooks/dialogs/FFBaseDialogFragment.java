@@ -134,7 +134,7 @@ public abstract class FFBaseDialogFragment
         // Must be here as needed by both onCreateDialog/onCreateView
         //noinspection ConstantConditions
         fullscreen = forceFullscreen
-                     || WindowSizeClass.getWidth(getActivity()) == WindowSizeClass.COMPACT;
+                     || WindowSizeClass.getWidth(getActivity()) == WindowSizeClass.Compact;
     }
 
     @Nullable
