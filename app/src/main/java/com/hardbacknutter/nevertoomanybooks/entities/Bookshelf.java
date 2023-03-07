@@ -164,7 +164,6 @@ public class Bookshelf
         //noinspection ConstantConditions
         styleUuid = in.readString();
 
-        //ENHANCE: Filters not parcelled, just restore from database
         filters.addAll(ServiceLocator.getInstance().getBookshelfDao().getFilters(id));
 
         adapterPosition = in.readInt();
