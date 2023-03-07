@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -30,15 +32,17 @@ public interface CalibreDao {
     /**
      * Update existing, or insert the Calibre data for the given {@link Book}.
      *
-     * @param book to process
+     * @param context Current context
+     * @param book    to process
      *
      * @return {@code true} if an <strong>insert</strong> was done.
-     * {@code false} if no insert was <strong>attempted</strong>
+     *         {@code false} if no insert was <strong>attempted</strong>
      *
      * @throws DaoWriteException on failure
      */
     @SuppressWarnings("UnusedReturnValue")
-    boolean updateOrInsert(@NonNull Book book)
+    boolean updateOrInsert(@NonNull Context context,
+                           @NonNull Book book)
             throws DaoWriteException;
 
     /**
@@ -46,14 +50,16 @@ public interface CalibreDao {
      * <p>
      * New {@link CalibreLibrary} are added, existing ones are NOT updated.
      *
-     * @param book to process
+     * @param context Current context
+     * @param book    to process
      *
      * @return {@code true} if an insert was done.
-     * {@code false} if no insert was <strong>attempted</strong>
+     *         {@code false} if no insert was <strong>attempted</strong>
      *
      * @throws DaoWriteException on failure to insert
      */
-    boolean insert(@NonNull Book book)
+    boolean insert(@NonNull Context context,
+                   @NonNull Book book)
             throws DaoWriteException;
 
     /**

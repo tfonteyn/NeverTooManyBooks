@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import java.util.function.Supplier;
@@ -68,7 +70,8 @@ public class CalibreDaoImpl
     }
 
     @Override
-    public boolean updateOrInsert(@NonNull final Book book)
+    public boolean updateOrInsert(@NonNull final Context context,
+                                  @NonNull final Book book)
             throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -79,11 +82,12 @@ public class CalibreDaoImpl
 
         // Just delete all current data and insert from scratch.
         delete(book);
-        return insert(book);
+        return insert(context, book);
     }
 
     @Override
-    public boolean insert(@NonNull final Book book)
+    public boolean insert(@NonNull final Context context,
+                          @NonNull final Book book)
             throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -102,7 +106,7 @@ public class CalibreDaoImpl
             library = book.getParcelable(Book.BKEY_CALIBRE_LIBRARY);
 
             //noinspection ConstantConditions
-            libraryDao.fixId(library);
+            libraryDao.fixId(context, library);
             if (library.getId() == 0) {
                 if (libraryDao.insert(library) == -1) {
                     throw new DaoWriteException("CalibreLibrary insert failed");

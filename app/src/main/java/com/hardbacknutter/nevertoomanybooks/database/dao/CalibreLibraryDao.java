@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -18,6 +18,8 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao;
+
+import android.content.Context;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -95,7 +97,8 @@ public interface CalibreLibraryDao {
      */
     long insert(@NonNull CalibreLibrary library);
 
-    void fixId(@NonNull CalibreLibrary library);
+    void fixId(@NonNull Context context,
+               @NonNull CalibreLibrary library);
 
     /**
      * Update a {@link CalibreLibrary}.

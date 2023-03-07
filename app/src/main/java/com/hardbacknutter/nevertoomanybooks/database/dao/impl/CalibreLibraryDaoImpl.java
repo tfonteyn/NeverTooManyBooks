@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 
 import androidx.annotation.IntRange;
@@ -34,6 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreVirtualLibrary;
 
@@ -210,7 +212,27 @@ public class CalibreLibraryDaoImpl
     }
 
     @Override
-    public void fixId(@NonNull final CalibreLibrary library) {
+    public void fixId(@NonNull final Context context,
+                      @NonNull final CalibreLibrary library) {
+
+        // using the mapped bookshelf-if, lookup the actual Bookshelf (with fallbacks)
+        final Bookshelf libBookshelf = Bookshelf.getBookshelf(context,
+                                                              library.getMappedBookshelfId(),
+                                                              Bookshelf.PREFERRED,
+                                                              Bookshelf.DEFAULT)
+                                                .orElseThrow();
+        // and update the id
+        library.setMappedBookshelf(libBookshelf.getId());
+
+        // repeat for each virtual library, with fallback the above library Bookshelf.
+        library.getVirtualLibraries().forEach(vLib -> {
+            final Bookshelf vLibBookshelf = Bookshelf
+                    .getBookshelf(context, vLib.getMappedBookshelfId())
+                    .orElse(libBookshelf);
+            vLib.setMappedBookshelf(vLibBookshelf.getId());
+        });
+
+        // finally, fix the library id itself - note that the vlib id's never need fixing as such
         final long id = find(library);
         library.setId(id);
     }

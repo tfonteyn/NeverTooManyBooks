@@ -378,7 +378,7 @@ public class JsonRecordReader
             new CalibreLibraryCoder(context, defaultStyle)
                     .decode(jsonRoot)
                     .forEach(library -> {
-                        libraryDao.fixId(library);
+                        libraryDao.fixId(context, library);
                         if (library.getId() > 0) {
                             // The library already exists
                             final DataReader.Updates updateOption = helper.getUpdateOption();
