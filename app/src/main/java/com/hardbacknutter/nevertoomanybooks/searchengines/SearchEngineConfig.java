@@ -283,6 +283,8 @@ public final class SearchEngineConfig {
     /**
      * Timeout we allow for a connection to be established.
      *
+     * @param context Current context
+     *
      * @return milli seconds
      */
     public int getConnectTimeoutInMs(@NonNull final Context context) {
@@ -293,6 +295,8 @@ public final class SearchEngineConfig {
 
     /**
      * Timeout we allow for getting a response from the remote server.
+     *
+     * @param context Current context
      *
      * @return milli seconds
      */
