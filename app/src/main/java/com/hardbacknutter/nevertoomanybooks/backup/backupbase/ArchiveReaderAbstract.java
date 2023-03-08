@@ -306,12 +306,15 @@ public abstract class ArchiveReaderAbstract
         }
         progressListener.setMaxPos(estimatedSteps);
 
+        // On any semi-decent device the user won't see the record progress updates
+        // other than the actual books/covers but we're showing them regardless as "why-not".
+        // Also: show this HERE, before the json (or other readers) start reading
+        // as they could take some time before the actual first entry is read.
         try {
             // Seek the styles record first.
             // We'll need them to resolve styles referenced in Preferences and Bookshelves.
             if (recordTypes.contains(RecordType.Styles)) {
-                progressListener.publishProgress(
-                        1, context.getString(R.string.lbl_styles_long));
+                progressListener.publishProgress(1, context.getString(R.string.lbl_styles_long));
                 final Optional<ArchiveReaderRecord> record = seek(RecordType.Styles);
                 if (record.isPresent()) {
                     readRecord(context, recordTypes, record.get(), progressListener);
@@ -321,8 +324,7 @@ public abstract class ArchiveReaderAbstract
 
             // Seek the preferences record next, so we can apply any prefs while reading data.
             if (recordTypes.contains(RecordType.Preferences)) {
-                progressListener.publishProgress(
-                        1, context.getString(R.string.lbl_settings));
+                progressListener.publishProgress(1, context.getString(R.string.lbl_settings));
                 final Optional<ArchiveReaderRecord> record = seek(RecordType.Preferences);
                 if (record.isPresent()) {
                     readRecord(context, recordTypes, record.get(), progressListener);
@@ -339,24 +341,42 @@ public abstract class ArchiveReaderAbstract
                 if (record.getType().isPresent()) {
                     final RecordType type = record.getType().get();
 
-                    if (type == RecordType.Cover && readCovers
+                    if (type == RecordType.Cover && readCovers) {
+                        // send accumulated progress for the total nr of covers
+                        final String msg = String.format(progressMessage,
+                                                         coversText,
+                                                         results.coversCreated,
+                                                         results.coversUpdated,
+                                                         results.coversSkipped);
+                        progressListener.publishProgress(1, msg);
+                        // there will be many covers... we're re-using a single RecordReader
+                        results.add(coverReader.read(context, record, importHelper,
+                                                     progressListener));
 
-                        || type == RecordType.Books
-                           && recordTypes.contains(RecordType.Books)
+                    } else if (type == RecordType.Books
+                               && recordTypes.contains(RecordType.Books)) {
+                        progressListener.publishProgress(
+                                1, context.getString(R.string.lbl_books));
+                        readRecord(context, recordTypes, record, progressListener);
 
-                        || type == RecordType.Bookshelves
-                           && recordTypes.contains(RecordType.Bookshelves)
+                    } else if (type == RecordType.Bookshelves
+                               && recordTypes.contains(RecordType.Bookshelves)) {
+                        progressListener.publishProgress(
+                                1, context.getString(R.string.lbl_bookshelves));
+                        readRecord(context, recordTypes, record, progressListener);
 
-                        || type == RecordType.Certificates
-                           && recordTypes.contains(RecordType.Certificates)
+                    } else if (type == RecordType.Certificates
+                               && recordTypes.contains(RecordType.Certificates)) {
+                        progressListener.publishProgress(
+                                1, context.getString(R.string.lbl_certificates));
+                        readRecord(context, recordTypes, record, progressListener);
 
-                        || type == RecordType.CalibreLibraries
-                           && recordTypes.contains(RecordType.CalibreLibraries)
-
-                        || type == RecordType.CalibreCustomFields
-                           && recordTypes.contains(RecordType.CalibreCustomFields)
-
-                    ) {
+                    } else if ((type == RecordType.CalibreLibraries
+                                && recordTypes.contains(RecordType.CalibreLibraries)
+                                || (type == RecordType.CalibreCustomFields
+                                    && recordTypes.contains(RecordType.CalibreCustomFields)))) {
+                        progressListener.publishProgress(
+                                1, context.getString(R.string.lbl_calibre_content_server));
                         readRecord(context, recordTypes, record, progressListener);
                     }
                 }
@@ -386,43 +406,26 @@ public abstract class ArchiveReaderAbstract
      * @throws StorageException    on storage related failures
      */
     private void readRecord(@NonNull final Context context,
-                            @NonNull final Set<RecordType> importEntriesAllowed,
+                            @NonNull final Set<RecordType> allowedTypes,
                             @NonNull final ArchiveReaderRecord record,
                             @NonNull final ProgressListener progressListener)
             throws DataReaderException, IOException, StorageException {
 
         final Optional<RecordEncoding> recordEncoding = record.getEncoding();
         if (recordEncoding.isPresent()) {
-            final RecordEncoding encoding = recordEncoding.get();
-
-            // there will be many covers... we're re-using a single RecordReader
-            if (encoding == RecordEncoding.Cover) {
-                //noinspection ConstantConditions
-                results.add(coverReader.read(context, record, importHelper, progressListener));
-                // send accumulated progress for the total nr of covers
-                final String msg = String.format(progressMessage,
-                                                 coversText,
-                                                 results.coversCreated,
-                                                 results.coversUpdated,
-                                                 results.coversSkipped);
-                progressListener.publishProgress(1, msg);
-
-            } else {
-                // everything else, keep it clean and create a new reader for each entry.
-                RecordReader reader = null;
-                try {
-                    final Optional<RecordReader> optReader = encoding
-                            .createReader(context, systemLocale, importEntriesAllowed);
-                    if (optReader.isPresent()) {
-                        reader = optReader.get();
-                        results.add(reader.read(context, record, importHelper, progressListener));
-                    } else {
-                        results.recordsSkipped++;
-                    }
-                } finally {
-                    if (reader != null) {
-                        reader.close();
-                    }
+            RecordReader reader = null;
+            try {
+                final Optional<RecordReader> optReader =
+                        recordEncoding.get().createReader(context, systemLocale, allowedTypes);
+                if (optReader.isPresent()) {
+                    reader = optReader.get();
+                    results.add(reader.read(context, record, importHelper, progressListener));
+                } else {
+                    results.recordsSkipped++;
+                }
+            } finally {
+                if (reader != null) {
+                    reader.close();
                 }
             }
         } else {
