@@ -203,6 +203,7 @@ public class JsonRecordReader
                 final Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
                 final JSONTokener tokener = new JSONTokener(isr);
 
+                // REMINDER: this can take some time when reading a large amount of book data.
                 JSONObject root = new JSONObject(tokener);
 
                 // Is this a JsonArchiveWriter format ?
