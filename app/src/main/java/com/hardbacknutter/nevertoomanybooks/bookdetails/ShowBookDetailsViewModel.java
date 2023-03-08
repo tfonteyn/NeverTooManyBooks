@@ -133,20 +133,20 @@ public class ShowBookDetailsViewModel
         // all fragments in the ViewPager will be called, so only update
         // the toolbar and current book id if OUR book IS the current one
         if (book.getId() == bookId) {
-            storeCurrentBookId(bookId);
+//            storeCurrentBookId(bookId);
             onUpdateToolbar.setValue(book);
         }
     }
 
     private void updateUI() {
         Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
-        storeCurrentBookId(book.getId());
+//        storeCurrentBookId(book.getId());
         onBookLoaded.setValue(book);
     }
 
-    private void storeCurrentBookId(final long bookId) {
-
-    }
+//    private void storeCurrentBookId(final long bookId) {
+//
+//    }
 
     public boolean isEmbedded() {
         return embedded;
