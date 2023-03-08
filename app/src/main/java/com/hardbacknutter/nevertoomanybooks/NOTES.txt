@@ -49,6 +49,7 @@ NEW:
 
 
 FIXES:
+- importing Calibre library data now correctly maps bookshelves
 
 
 REMOVED:
