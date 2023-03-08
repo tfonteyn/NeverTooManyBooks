@@ -60,6 +60,8 @@ public class CoverRecordReader
      * Constructor.
      *
      * @param context Current context
+     *
+     * @throws StorageException The covers directory is not available
      */
     public CoverRecordReader(@NonNull final Context context)
             throws StorageException {
