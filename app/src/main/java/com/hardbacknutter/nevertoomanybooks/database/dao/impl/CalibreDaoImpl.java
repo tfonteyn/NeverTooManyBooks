@@ -32,13 +32,12 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
-
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_BOOKS;
 
 public class CalibreDaoImpl
         extends BaseDaoImpl
@@ -47,7 +46,7 @@ public class CalibreDaoImpl
     private static final String TAG = "CalibreDaoImpl";
 
     private static final String INSERT =
-            INSERT_INTO_ + TBL_CALIBRE_BOOKS.getName()
+            INSERT_INTO_ + DBDefinitions.TBL_CALIBRE_BOOKS.getName()
             + '(' + DBKey.FK_BOOK
             + ',' + DBKey.CALIBRE_BOOK_ID
             + ',' + DBKey.CALIBRE_BOOK_UUID
@@ -154,7 +153,7 @@ public class CalibreDaoImpl
 
     @Override
     public boolean delete(@NonNull final Book book) {
-        return 0 < db.delete(TBL_CALIBRE_BOOKS.getName(), DBKey.FK_BOOK + "=?",
+        return 0 < db.delete(DBDefinitions.TBL_CALIBRE_BOOKS.getName(), DBKey.FK_BOOK + "=?",
                              new String[]{String.valueOf(book.getId())});
     }
 }

@@ -126,6 +126,8 @@ public class SearchAdminViewModel
 
     /**
      * Persist ALL lists.
+     *
+     * @param context Current context
      */
     void persist(@NonNull final Context context) {
         for (final Map.Entry<Site.Type, ArrayList<Site>> entry : typeAndSites.entrySet()) {

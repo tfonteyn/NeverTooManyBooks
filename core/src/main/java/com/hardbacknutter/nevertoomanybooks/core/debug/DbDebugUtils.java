@@ -57,6 +57,7 @@ public final class DbDebugUtils {
     /**
      * Dump the content of the given table to the debug output.
      *
+     * @param db              Underlying database
      * @param tableDefinition to dump
      * @param limit           LIMIT limit
      * @param orderBy         ORDER BY orderBy

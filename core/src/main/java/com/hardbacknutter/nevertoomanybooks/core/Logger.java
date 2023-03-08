@@ -46,9 +46,9 @@ public interface Logger {
      * @param e      cause
      * @param params objects/text to log
      */
-    void e(@NonNull final String tag,
-           @Nullable final Throwable e,
-           @Nullable final Object... params);
+    void e(@NonNull String tag,
+           @Nullable Throwable e,
+           @Nullable Object... params);
 
     /**
      * WARN message. Send to the logfile (always) and the console (when in DEBUG mode).
@@ -56,8 +56,8 @@ public interface Logger {
      * @param tag    log tag
      * @param params objects/text to log
      */
-    void w(@NonNull final String tag,
-           @Nullable final Object... params);
+    void w(@NonNull String tag,
+           @Nullable Object... params);
 
     /**
      * DEBUG message.
@@ -66,7 +66,7 @@ public interface Logger {
      * @param method the calling method (added to force the developer to log the method name)
      * @param params objects/text to log
      */
-    void d(@NonNull final String tag,
-           @NonNull final String method,
-           @Nullable final Object... params);
+    void d(@NonNull String tag,
+           @NonNull String method,
+           @Nullable Object... params);
 }

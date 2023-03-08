@@ -97,7 +97,7 @@ public class BooklistAdapter
     @NonNull
     private final Formatter formatter;
 
-    /** Shared across all {@link BookHolder}s */
+    /** Shared across all {@link BookHolder}s. */
     private final RealNumberParser realNumberParser;
 
 

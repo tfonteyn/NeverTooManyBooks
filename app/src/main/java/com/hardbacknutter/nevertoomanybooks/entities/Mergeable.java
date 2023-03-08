@@ -54,7 +54,8 @@ public interface Mergeable {
      * <p>
      * Uses the ascii version of the names converted to an "ORDER BY" value.
      *
-     * @param x to hash
+     * @param x      to hash
+     * @param locale the locale of the name
      *
      * @return hash
      */
@@ -83,6 +84,10 @@ public interface Mergeable {
 
     /**
      * Convenience method to compare two Mergeable's.
+     *
+     * @param that the one to compare with
+     *
+     * @return {@code true} if its the same name
      */
     default boolean isSameName(@NonNull final Mergeable that) {
         return createNameHash(this) == createNameHash(that);
@@ -90,6 +95,12 @@ public interface Mergeable {
 
     /**
      * Convenience method to compare two Mergeable's.
+     *
+     * @param locale     the locale of the name
+     * @param that       the one to compare with
+     * @param thatLocale the locale of the one to compare with
+     *
+     * @return {@code true} if its the same name
      */
     default boolean isSameName(@NonNull final Locale locale,
                                @NonNull final Mergeable that,

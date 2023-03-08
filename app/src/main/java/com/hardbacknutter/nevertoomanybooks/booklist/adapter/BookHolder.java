@@ -109,9 +109,12 @@ public class BookHolder
      * <strong>Note:</strong> the itemView can be re-used.
      * Hence make sure to explicitly set visibility.
      *
-     * @param itemView         the view specific for this holder
-     * @param style            to use
-     * @param coverLongestSide Longest side for a cover in pixels
+     * @param itemView              the view specific for this holder
+     * @param style                 to use
+     * @param languagesSupplier     deferred supplier for the {@link Languages}
+     * @param coverCacheDaoSupplier deferred supplier for the {@link CoverCacheDao}
+     * @param realNumberParser      the shared parser
+     * @param coverLongestSide      Longest side for a cover in pixels
      */
     BookHolder(@NonNull final View itemView,
                @NonNull final Style style,

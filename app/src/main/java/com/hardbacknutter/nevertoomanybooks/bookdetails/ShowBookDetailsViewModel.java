@@ -102,7 +102,7 @@ public class ShowBookDetailsViewModel
     }
 
     /**
-     * Observable - triggers a UI update for the given {@link Book}
+     * Observable - triggers a UI update for the given {@link Book}.
      *
      * @return book
      */
@@ -112,7 +112,7 @@ public class ShowBookDetailsViewModel
     }
 
     /**
-     * Observable - triggers a Toolbar update for the given {@link Book}
+     * Observable - triggers a Toolbar update for the given {@link Book}.
      *
      * @return book
      */

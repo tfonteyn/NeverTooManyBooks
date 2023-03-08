@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -66,9 +66,9 @@ public interface AuthorWork {
      * @return the label to use.
      */
     @NonNull
-    String getLabel(@NonNull final Context context,
-                    @NonNull final Details details,
-                    @Nullable final Style style);
+    String getLabel(@NonNull Context context,
+                    @NonNull Details details,
+                    @Nullable Style style);
 
     @NonNull
     PartialDate getFirstPublicationDate();

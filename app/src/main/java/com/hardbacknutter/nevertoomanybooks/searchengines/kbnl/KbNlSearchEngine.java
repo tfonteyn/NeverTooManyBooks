@@ -78,20 +78,15 @@ public class KbNlSearchEngine
      * param 2: the set number (part of the site session vars)
      * param 3: the ISBN
      */
-    private static final String SEARCH_URL =
-            "/cbs" +
-            "/DB=%1$s" +
-            "/SET=%2$s" +
-            "/TTL=1" +
-            "/CMD?"
-            // Action is a search
-            + "ACT=SRCHA&"
-            // by ISBN/ISSN
-            + "IKT=1007&"
-            // Results sorted by Relevance
-            + "SRT=RLV&"
-            // search term
-            + "TRM=%3$s";
+    private static final String SEARCH_URL = "/cbs/DB=%1$s/SET=%2$s/TTL=1/CMD?"
+                                             // Action is a search
+                                             + "ACT=SRCHA&"
+                                             // by ISBN/ISSN
+                                             + "IKT=1007&"
+                                             // Results sorted by Relevance
+                                             + "SRT=RLV&"
+                                             // search term
+                                             + "TRM=%3$s";
 
     /**
      * param 1: db version (part of the site session vars)

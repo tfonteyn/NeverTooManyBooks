@@ -213,7 +213,8 @@ public class MaintenanceDaoImpl
      * Process a <strong>single row</strong> from the cursor.
      *
      * @param context    Current context
-     * @param locale     to use for reordering this title
+     * @param locale     the locale of the title
+     * @param locales    all user locales to use for parsing
      * @param cursor     positioned on the row to handle
      * @param table      to update
      * @param domainName to update

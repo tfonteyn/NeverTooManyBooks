@@ -97,7 +97,7 @@ public interface BookshelfDao
      *
      * @return {@code true} if the list was modified.
      */
-    boolean pruneList(@NonNull final Context context,
+    boolean pruneList(@NonNull Context context,
                       @NonNull Collection<Bookshelf> list);
 
     /**

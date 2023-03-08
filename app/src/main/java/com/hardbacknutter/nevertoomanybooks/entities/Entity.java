@@ -66,9 +66,9 @@ public interface Entity {
      * @return the label to use.
      */
     @NonNull
-    String getLabel(@NonNull final Context context,
-                    @NonNull final Details details,
-                    @Nullable final Style style);
+    String getLabel(@NonNull Context context,
+                    @NonNull Details details,
+                    @Nullable Style style);
 
 
     /**

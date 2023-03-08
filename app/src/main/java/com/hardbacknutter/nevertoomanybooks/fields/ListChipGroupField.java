@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,7 +40,8 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 /**
- * A {@link ChipGroup} where each {@link Chip} represents one {@link Parcelable,Entity} in a list.
+ * A {@link ChipGroup} where each {@link Chip} represents one
+ * {@link Parcelable} & {@link Entity} in a list.
  * <p>
  * A {@code null} value is always handled as an empty {@link ArrayList}.
  * <p>

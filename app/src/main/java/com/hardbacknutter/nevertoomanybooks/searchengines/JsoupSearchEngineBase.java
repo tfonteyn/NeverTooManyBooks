@@ -43,7 +43,8 @@ public abstract class JsoupSearchEngineBase
     /**
      * Constructor.
      *
-     * @param config the search engine configuration
+     * @param appContext The <strong>application</strong> context
+     * @param config     the search engine configuration
      */
     protected JsoupSearchEngineBase(@NonNull final Context appContext,
                                     @NonNull final SearchEngineConfig config) {
@@ -54,6 +55,7 @@ public abstract class JsoupSearchEngineBase
     /**
      * Constructor.
      *
+     * @param appContext  The <strong>application</strong> context
      * @param config      the search engine configuration
      * @param charSetName to use
      */

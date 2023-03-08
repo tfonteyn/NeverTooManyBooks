@@ -90,6 +90,8 @@ public class CollectionFormUploader {
 
     /**
      * Constructor.
+     *
+     * @param context Current context
      */
     @AnyThread
     CollectionFormUploader(@NonNull final Context context) {
@@ -210,7 +212,7 @@ public class CollectionFormUploader {
      * will be updated with the new collection-id, and set to {@link EntityStage.Stage#Dirty}.
      * It's up to the caller to update the book in the local database.
      *
-     * @param book    to send
+     * @param book to send
      *
      * @throws IOException              on generic/other IO failures
      * @throws IllegalArgumentException if the external id was not present

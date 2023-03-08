@@ -25,7 +25,7 @@ import androidx.annotation.Nullable;
  * Dev note: DO NOT make this an IOException (again).
  */
 public class StorageException
-        extends Exception{
+        extends Exception {
 
     private static final long serialVersionUID = 6521262373361215281L;
 

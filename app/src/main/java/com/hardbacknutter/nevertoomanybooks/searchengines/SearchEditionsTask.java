@@ -103,8 +103,9 @@ public class SearchEditionsTask
                         isbnList.addAll(((SearchEngine.AlternativeEditions) searchEngine)
                                                 .searchAlternativeEditions(context, isbn));
 
-                    } catch (@NonNull final IOException | CredentialsException |
-                                            SearchException
+                    } catch (@NonNull final IOException
+                                            | CredentialsException
+                                            | SearchException
                                             | RuntimeException e) {
                         // Silently ignore individual failures,
                         // we'll return what we get from the sites that worked.

@@ -233,11 +233,13 @@ public final class SearchEngineConfig {
      * We first try to get the engine specific setting, and if that does not exist,
      * the global setting. The global default is {@code false}.
      *
+     * @param context Current context
+     *
      * @return {@code true} if ISBN10 should be preferred.
      */
-    boolean prefersIsbn10(@NonNull final Context appContext) {
+    boolean prefersIsbn10(@NonNull final Context context) {
         final SharedPreferences preferences =
-                PreferenceManager.getDefaultSharedPreferences(appContext);
+                PreferenceManager.getDefaultSharedPreferences(context);
 
         final String key = engineId.getPreferenceKey() + "." + Prefs.pk_search_isbn_prefer_10;
         if (preferences.contains(key)) {

@@ -338,6 +338,8 @@ public final class Site
 
         /**
          * Load the site settings and the order of the list.
+         *
+         * @param context Current context
          */
         @VisibleForTesting
         void loadPrefs(@NonNull final Context context) {
@@ -379,6 +381,8 @@ public final class Site
 
         /**
          * Save the settings for each site in this list + the order of the sites in the list.
+         *
+         * @param context Current context
          */
         void savePrefs(@NonNull final Context context) {
             final SharedPreferences.Editor ed = PreferenceManager

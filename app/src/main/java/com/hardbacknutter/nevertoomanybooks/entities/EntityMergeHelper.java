@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -51,11 +51,11 @@ public abstract class EntityMergeHelper<T extends Mergeable> {
      *
      * @return {@code true} if the list was modified in any way
      */
-    protected abstract boolean merge(@NonNull final Context context,
+    protected abstract boolean merge(@NonNull Context context,
                                      @NonNull T previous,
-                                     @NonNull final Locale previousLocale,
+                                     @NonNull Locale previousLocale,
                                      @NonNull T current,
-                                     @NonNull final Locale CurrentLocale);
+                                     @NonNull Locale CurrentLocale);
 
     /**
      * Loop over the list and try to find and merge duplicates.

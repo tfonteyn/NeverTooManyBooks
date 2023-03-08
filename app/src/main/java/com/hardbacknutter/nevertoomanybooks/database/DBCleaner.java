@@ -88,6 +88,14 @@ public class DBCleaner {
 
     /**
      * Constructor.
+     *
+     * @param db                   Underlying database
+     * @param authorDaoSupplier    deferred supplier for the {@link AuthorDao}
+     * @param seriesDaoSupplier    deferred supplier for the {@link SeriesDao}
+     * @param publisherDaoSupplier deferred supplier for the {@link PublisherDao}
+     * @param bookshelfDaoSupplier deferred supplier for the {@link BookshelfDao}
+     * @param tocEntryDaoSupplier  deferred supplier for the {@link TocEntryDao}
+     * @param languageDaoSupplier  deferred supplier for the {@link LanguageDao}
      */
     public DBCleaner(@NonNull final SynchronizedDb db,
                      @NonNull final Supplier<AuthorDao> authorDaoSupplier,

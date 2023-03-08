@@ -45,20 +45,20 @@ public class SyncWriterHelper
 
     /** Extra arguments for specific writers. The writer must define them. */
     private final Bundle extraArgs = ServiceLocator.getInstance().newBundle();
-
-    /** <strong>Where</strong> we write to. */
-    @Nullable
-    private SyncServer syncServer;
-
-    /** If a book no longer exists on the server, should we delete the local book. */
-    private boolean deleteLocalBooks;
-
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final Locale systemLocale;
+    /** <strong>Where</strong> we write to. */
+    @Nullable
+    private SyncServer syncServer;
+    /** If a book no longer exists on the server, should we delete the local book. */
+    private boolean deleteLocalBooks;
 
     /**
      * Constructor.
+     *
+     * @param syncServer   to write to
+     * @param systemLocale to use for ISO date parsing
      */
     SyncWriterHelper(@NonNull final SyncServer syncServer,
                      @NonNull final Locale systemLocale) {

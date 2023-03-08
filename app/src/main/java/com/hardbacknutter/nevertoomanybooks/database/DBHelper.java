@@ -377,6 +377,8 @@ public class DBHelper
      * - insert/delete/update TocEntry only done when a book is inserted/updated.
      * ENHANCE: once we allow editing of TocEntry's through the 'author detail' screen
      * this will need to be added.
+     *
+     * @param db Underlying database
      */
     private void createTriggers(@NonNull final SQLiteDatabase db) {
 

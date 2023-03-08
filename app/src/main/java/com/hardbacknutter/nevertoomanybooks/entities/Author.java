@@ -102,7 +102,7 @@ public class Author
      * <strong>Dev. note:</strong> do NOT Do not set "= TYPE_WRITER"
      * as Android Studio formatting will be [censored]
      */
-    public static final int TYPE_ORIGINAL_SCRIPT_WRITER = 1; //
+    public static final int TYPE_ORIGINAL_SCRIPT_WRITER = 1;
 
     /** WRITER: the foreword. */
     public static final int TYPE_FOREWORD = 1 << 2;
@@ -783,7 +783,7 @@ public class Author
     }
 
     /**
-     * Syntax sugar for {@link #getStyledName(Context, Details, Style, CharSequence)}
+     * Syntax sugar for {@link #getStyledName(Context, Details, Style, CharSequence)}.
      *
      * @param context   Current context
      * @param details   the amount of details wanted

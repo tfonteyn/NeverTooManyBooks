@@ -108,6 +108,13 @@ public enum SyncServer
         return labelResId;
     }
 
+    /**
+     * Check if this server is globally enabled.
+     *
+     * @param context Current context
+     *
+     * @return flag
+     */
     public boolean isEnabled(@NonNull final Context context) {
         switch (this) {
             case CalibreCS:
@@ -137,8 +144,9 @@ public enum SyncServer
     /**
      * Create an {@link DataWriter} based on the type.
      *
-     * @param context Current context
-     * @param helper  writer configuration
+     * @param context      Current context
+     * @param helper       writer configuration
+     * @param systemLocale to use for ISO date parsing
      *
      * @return a new writer
      *
@@ -169,8 +177,9 @@ public enum SyncServer
     /**
      * Create an {@link DataReader} based on the type.
      *
-     * @param context Current context
-     * @param helper  import configuration
+     * @param context      Current context
+     * @param systemLocale to use for ISO date parsing
+     * @param helper       import configuration
      *
      * @return a new reader
      *
