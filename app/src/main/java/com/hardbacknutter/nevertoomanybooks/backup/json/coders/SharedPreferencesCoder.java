@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -57,19 +57,19 @@ public class SharedPreferencesCoder
     public JSONObject encode(@NonNull final SharedPreferences element)
             throws JSONException {
 
-        final JSONObject out = new JSONObject();
+        final JSONObject encoded = new JSONObject();
         for (final Map.Entry<String, ?> source : element.getAll().entrySet()) {
             final String key = source.getKey();
             // skip the acra settings
             if (!key.startsWith("acra")) {
                 final Object value = source.getValue();
                 if (value != null) {
-                    out.put(key, value);
+                    encoded.put(key, value);
                 }
             }
         }
 
-        return out;
+        return encoded;
     }
 
     @NonNull

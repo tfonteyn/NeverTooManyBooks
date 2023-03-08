@@ -39,14 +39,13 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordType;
  * Coordinate between the UI and the {@link ExportHelper}.
  * Handle the export related background tasks.
  */
-@SuppressWarnings("WeakerAccess")
 public class ExportViewModel
         extends DataWriterViewModel<ExportResults> {
 
     /**
      * The encodings we currently (fully or limited) support writing.
      */
-    public static final ArchiveEncoding[] ENCODINGS = {
+    private static final ArchiveEncoding[] ENCODINGS = {
             ArchiveEncoding.Zip,
             ArchiveEncoding.Json,
             ArchiveEncoding.SqLiteDb};
@@ -57,6 +56,11 @@ public class ExportViewModel
     /** UI helper. */
     private boolean quickOptionsAlreadyShown;
 
+    /**
+     * Pseudo constructor.
+     *
+     * @param systemLocale to use for ISO date parsing
+     */
     public void init(@NonNull final Locale systemLocale) {
         if (exportHelper == null) {
             exportHelper = new ExportHelper(systemLocale);

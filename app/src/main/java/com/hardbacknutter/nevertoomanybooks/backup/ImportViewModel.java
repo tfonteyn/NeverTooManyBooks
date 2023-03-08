@@ -33,7 +33,6 @@ import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderViewModel;
 
-@SuppressWarnings("WeakerAccess")
 public class ImportViewModel
         extends DataReaderViewModel<ArchiveMetaData, ImportResults> {
 

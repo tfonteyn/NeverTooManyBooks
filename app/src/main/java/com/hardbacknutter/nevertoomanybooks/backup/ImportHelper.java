@@ -67,7 +67,8 @@ public final class ImportHelper
      * @param systemLocale to use for ISO date parsing
      * @param uri          to read from
      *
-     * @throws DataReaderException on failure to recognise a supported archive
+     * @throws DataReaderException   on failure to recognise a supported archive
+     * @throws FileNotFoundException on...
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public ImportHelper(@NonNull final Context context,

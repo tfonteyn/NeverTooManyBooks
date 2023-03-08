@@ -56,6 +56,11 @@ public class CoverRecordReader
     @NonNull
     private final File coverDirectory;
 
+    /**
+     * Constructor.
+     *
+     * @param context Current context
+     */
     public CoverRecordReader(@NonNull final Context context)
             throws StorageException {
         coverDirectory = CoverDir.getDir(context);

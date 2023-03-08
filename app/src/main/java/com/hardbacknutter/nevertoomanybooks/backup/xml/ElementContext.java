@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -50,7 +50,7 @@ public class ElementContext {
     /**
      * @param filter to use for this tag.
      */
-    public ElementContext(@NonNull final XmlFilter filter) {
+    ElementContext(@NonNull final XmlFilter filter) {
         this.filter = filter;
 
         localName = "";
@@ -69,9 +69,9 @@ public class ElementContext {
      *                   Attributes object.
      * @param text       current inter-tag text
      */
-    public ElementContext(@NonNull final String localName,
-                          @NonNull final Attributes attributes,
-                          @NonNull final String text) {
+    ElementContext(@NonNull final String localName,
+                   @NonNull final Attributes attributes,
+                   @NonNull final String text) {
         this.localName = localName;
         this.attributes = attributes;
         this.text = text;
@@ -87,7 +87,7 @@ public class ElementContext {
     }
 
     @NonNull
-    public String getLocalName() {
+    String getLocalName() {
         return localName;
     }
 
