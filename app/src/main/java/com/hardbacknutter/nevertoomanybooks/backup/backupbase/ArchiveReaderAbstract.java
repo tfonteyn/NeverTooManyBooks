@@ -182,6 +182,9 @@ public abstract class ArchiveReaderAbstract
      * @param context Current context
      *
      * @return a populated Optional with the metadata + {@link #metaData} assigned.
+     *
+     * @throws IOException         on generic/other IO failures
+     * @throws DataReaderException on record format failures
      */
     @Override
     @WorkerThread
@@ -244,6 +247,7 @@ public abstract class ArchiveReaderAbstract
      *
      * @throws IOException         on generic/other IO failures
      * @throws DataReaderException on record format failures
+     * @throws StorageException    on storage related failures
      */
     @NonNull
     @Override
@@ -366,6 +370,21 @@ public abstract class ArchiveReaderAbstract
         }
     }
 
+    /**
+     * Read a single {@link ArchiveReaderRecord}.
+     * For each record, a new {@link RecordReader} will be created and closed after usage.
+     *
+     * @param context          Current context
+     * @param allowedTypes     the {@link RecordType}s which the reader
+     *                         will be <strong>allowed</strong> to read.
+     *                         This allows filtering/skipping unwanted entries
+     * @param record           the record to read
+     * @param progressListener Progress and cancellation interface
+     *
+     * @throws DataReaderException on record format failures
+     * @throws IOException         on generic/other IO failures
+     * @throws StorageException    on storage related failures
+     */
     private void readRecord(@NonNull final Context context,
                             @NonNull final Set<RecordType> importEntriesAllowed,
                             @NonNull final ArchiveReaderRecord record,
