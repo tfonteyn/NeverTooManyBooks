@@ -198,6 +198,11 @@ public final class ServiceLocator {
         }
     }
 
+    /**
+     * Test constructor.
+     *
+     * @param serviceLocator mock instance
+     */
     @VisibleForTesting
     public static void create(@NonNull final ServiceLocator serviceLocator) {
         synchronized (ServiceLocator.class) {
