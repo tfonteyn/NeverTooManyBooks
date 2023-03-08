@@ -1399,6 +1399,7 @@ public class BooksOnBookshelf
     /**
      * React to (non-Book) row changes made.
      */
+    @SuppressWarnings("unused")
     private void onRowChanged(@NonNull final String key,
                               @IntRange(from = 0) final long id) {
         // ENHANCE: update the modified row without a rebuild.

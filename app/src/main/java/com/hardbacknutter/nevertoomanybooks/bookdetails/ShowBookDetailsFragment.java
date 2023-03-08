@@ -147,6 +147,15 @@ public class ShowBookDetailsFragment
     @Nullable
     private ShowBookPagerViewModel pagerVm;
 
+    /**
+     * Constructor.
+     *
+     * @param bookId    to open
+     * @param styleUuid to use
+     * @param embedded  flag, whether we're running embedded in a BoB activity
+     *
+     * @return new instance
+     */
     @NonNull
     public static Fragment create(@IntRange(from = 1) final long bookId,
                                   @NonNull final String styleUuid,
