@@ -136,8 +136,9 @@ public enum RecordEncoding {
      *
      * @param context      Current context
      * @param systemLocale to use for ISO date parsing
-     * @param allowedTypes the record types which the reader
-     *                     will be <strong>allowed</strong> to read
+     * @param allowedTypes the {@link RecordType}s which the reader
+     *                     will be <strong>allowed</strong> to read.
+     *                     This allows filtering/skipping unwanted entries
      *
      * @return Optional reader
      *
