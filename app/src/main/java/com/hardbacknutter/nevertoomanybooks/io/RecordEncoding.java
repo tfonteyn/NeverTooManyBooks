@@ -122,8 +122,9 @@ public enum RecordEncoding {
             case Cover:
                 // Not useful, won't implement. It's just a File copy operation
             case Xml:
-            case Csv:
                 // No longer supported
+            case Csv:
+                // ENHANCE: re-implement a simplified version of CSV export
             default:
                 break;
         }
