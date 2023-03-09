@@ -158,7 +158,7 @@ public class CalibreContentServerReader
      *
      * @param context      Current context
      * @param systemLocale to use for ISO date parsing
-     * @param helper       import configuration
+     * @param helper       reader configuration
      *
      * @throws CertificateException on failures related to a user installed CA.
      */

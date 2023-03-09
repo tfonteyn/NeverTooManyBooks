@@ -109,6 +109,12 @@ public class StripInfoReader
 
     private ReaderResults results;
 
+    /**
+     * Constructor.
+     *
+     * @param context Current context
+     * @param helper  reader configuration
+     */
     public StripInfoReader(@NonNull final Context context,
                            @NonNull final SyncReaderHelper helper) {
 
