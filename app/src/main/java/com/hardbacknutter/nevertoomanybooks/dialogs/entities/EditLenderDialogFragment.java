@@ -53,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditLoanContentBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
@@ -306,8 +305,11 @@ public class EditLenderDialogFragment
         @Override
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
-            onResult(SanityCheck.requirePositiveValue(
-                             result.getLong(DBKey.FK_BOOK), DBKey.FK_BOOK),
+            final long value = result.getLong(DBKey.FK_BOOK);
+            if (value <= 0) {
+                throw new IllegalArgumentException(DBKey.FK_BOOK);
+            }
+            onResult(value,
                      Objects.requireNonNull(result.getString(DBKey.LOANEE_NAME),
                                             DBKey.LOANEE_NAME));
         }

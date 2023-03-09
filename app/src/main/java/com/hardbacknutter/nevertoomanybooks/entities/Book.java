@@ -67,7 +67,6 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.validators.LongValidator
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.NonBlankValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.OrValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
@@ -237,7 +236,9 @@ public class Book
      */
     @NonNull
     public static Book from(@IntRange(from = 1) final long bookId) {
-        SanityCheck.requirePositiveValue(bookId, "bookId");
+        if (bookId <= 0) {
+            throw new IllegalArgumentException("bookId");
+        }
 
         final Book book = new Book();
         try (Cursor bookCursor = ServiceLocator.getInstance().getBookDao().fetchById(bookId)) {
@@ -298,7 +299,9 @@ public class Book
      */
     public void load(@IntRange(from = 1) final long bookId,
                      @NonNull final Cursor bookCursor) {
-        SanityCheck.requirePositiveValue(bookId, "bookId");
+        if (bookId <= 0) {
+            throw new IllegalArgumentException("bookId");
+        }
 
         clearData();
         putAll(bookCursor);

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,7 +30,6 @@ import androidx.annotation.Nullable;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
 
@@ -69,7 +68,9 @@ public class EntityListDropDownMenuField<T extends Entity>
         this.items = items;
         adapter = new EntityArrayAdapter<>(context, items);
 
-        SanityCheck.requirePositiveValue(adapter.getCount(), "adapter.getCount()");
+        if ((long) adapter.getCount() <= 0) {
+            throw new IllegalArgumentException("adapter.getCount()");
+        }
     }
 
     @NonNull

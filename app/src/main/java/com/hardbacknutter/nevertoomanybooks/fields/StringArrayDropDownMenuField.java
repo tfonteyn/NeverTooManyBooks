@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,7 +30,6 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
 
 /**
@@ -64,7 +63,9 @@ public class StringArrayDropDownMenuField
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Passthrough, arrayResId);
 
-        SanityCheck.requirePositiveValue(adapter.getCount(), "adapter.getCount()");
+        if ((long) adapter.getCount() <= 0) {
+            throw new IllegalArgumentException("adapter.getCount()");
+        }
     }
 
     @NonNull

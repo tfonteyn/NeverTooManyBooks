@@ -37,15 +37,6 @@ public final class SanityCheck {
     }
 
     @SuppressWarnings("UnusedReturnValue")
-    public static long requirePositiveValue(final long value,
-                                            @Nullable final String message) {
-        if (value <= 0) {
-            throw new IllegalArgumentException(message);
-        }
-        return value;
-    }
-
-    @SuppressWarnings("UnusedReturnValue")
     @NonNull
     public static String requireValue(@Nullable final String value,
                                       @Nullable final String message) {

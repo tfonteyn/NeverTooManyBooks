@@ -36,7 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -94,7 +93,10 @@ public class AuthorWorksViewModel
             style = ServiceLocator.getInstance().getStyles().getStyleOrDefault(context, styleUuid);
 
             final long authorId = args.getLong(DBKey.FK_AUTHOR, 0);
-            SanityCheck.requirePositiveValue(authorId, DBKey.FK_AUTHOR);
+            if (authorId <= 0) {
+                throw new IllegalArgumentException(DBKey.FK_AUTHOR);
+            }
+
             author = ServiceLocator.getInstance().getAuthorDao()
                                    .getById(authorId)
                                    .orElseThrow();

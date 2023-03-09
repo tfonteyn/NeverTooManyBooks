@@ -35,7 +35,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNavigatorDao;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 
 public class ShowBookPagerViewModel
         extends ViewModel {
@@ -79,14 +78,18 @@ public class ShowBookPagerViewModel
     public void init(@NonNull final Bundle args) {
         if (initialBookId == 0) {
             initialBookId = args.getLong(DBKey.FK_BOOK, 0);
-            SanityCheck.requirePositiveValue(initialBookId, DBKey.FK_BOOK);
+            if (initialBookId <= 0) {
+                throw new IllegalArgumentException(DBKey.FK_BOOK);
+            }
 
             // the list is optional
             // If present, the user can swipe to the next/previous book in the list.
             final String navTableName = args.getString(BKEY_NAV_TABLE_NAME);
             if (navTableName != null && !navTableName.isEmpty()) {
                 final long rowId = args.getLong(BKEY_LIST_TABLE_ROW_ID, 0);
-                SanityCheck.requirePositiveValue(rowId, BKEY_LIST_TABLE_ROW_ID);
+                if (rowId <= 0) {
+                    throw new IllegalArgumentException(BKEY_LIST_TABLE_ROW_ID);
+                }
                 final SynchronizedDb db = ServiceLocator.getInstance().getDb();
                 navHelper = new BooklistNavigatorDao(db, navTableName);
                 initialPagerPosition = navHelper.getRowNumber(rowId) - 1;

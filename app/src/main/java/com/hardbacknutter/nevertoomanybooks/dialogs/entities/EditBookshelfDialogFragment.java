@@ -41,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfContentBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
@@ -237,8 +236,11 @@ public class EditBookshelfDialogFragment
         @Override
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
-            onResult(SanityCheck.requirePositiveValue(result.getLong(DBKey.FK_BOOKSHELF),
-                                                      DBKey.FK_BOOKSHELF));
+            final long value = result.getLong(DBKey.FK_BOOKSHELF);
+            if (value <= 0) {
+                throw new IllegalArgumentException(DBKey.FK_BOOKSHELF);
+            }
+            onResult(value);
         }
 
         /**
