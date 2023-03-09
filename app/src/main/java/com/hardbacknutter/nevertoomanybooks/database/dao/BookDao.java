@@ -40,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
@@ -320,7 +319,7 @@ public interface BookDao {
      * @return A Book Cursor with 0..n rows; ordered by book id
      *         Only books with {@link DBKey#AUTO_UPDATE} set will be returned.
      *
-     * @throws SanityCheck.SanityException if the list is empty
+     * @throws IllegalArgumentException if the list is empty
      */
     @NonNull
     TypedCursor fetchForAutoUpdate(@NonNull List<Long> idList);
@@ -332,7 +331,7 @@ public interface BookDao {
      *
      * @return A Book Cursor with 0..n rows; ordered by book id
      *
-     * @throws SanityCheck.SanityException if the list is empty
+     * @throws IllegalArgumentException if the list is empty
      */
     @NonNull
     TypedCursor fetchByIsbn(@NonNull List<String> isbnList);

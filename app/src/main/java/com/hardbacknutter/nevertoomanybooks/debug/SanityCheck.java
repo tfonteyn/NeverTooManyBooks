@@ -40,7 +40,7 @@ public final class SanityCheck {
     public static long requirePositiveValue(final long value,
                                             @Nullable final String message) {
         if (value <= 0) {
-            throw new SanityException(message);
+            throw new IllegalArgumentException(message);
         }
         return value;
     }
@@ -53,7 +53,7 @@ public final class SanityCheck {
             throw new NullPointerException(message);
         }
         if (value.isEmpty()) {
-            throw new SanityException(message);
+            throw new IllegalArgumentException(message);
         }
         return value;
     }
@@ -66,18 +66,8 @@ public final class SanityCheck {
             throw new NullPointerException(message);
         }
         if (value.isEmpty()) {
-            throw new SanityException(message);
+            throw new IllegalArgumentException(message);
         }
         return value;
-    }
-
-    public static class SanityException
-            extends NullPointerException {
-
-        private static final long serialVersionUID = 4418513924924222373L;
-
-        public SanityException(@Nullable final String message) {
-            super(message);
-        }
     }
 }

@@ -43,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 
 /**
  * Represents a Bookshelf.
@@ -284,7 +283,7 @@ public class Bookshelf
      * @param context Current context
      * @param style   to set; must already exist (id != 0)
      *
-     * @throws SanityCheck.SanityException if the style is 'new' (id==0)
+     * @throws IllegalArgumentException if the style is 'new' (id==0)
      */
     public void setStyle(@NonNull final Context context,
                          @NonNull final Style style) {
