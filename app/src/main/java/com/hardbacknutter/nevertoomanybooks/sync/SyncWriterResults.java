@@ -50,6 +50,9 @@ public class SyncWriterResults
     private int bookCount;
     private int coverCount;
 
+    /**
+     * Constructor.
+     */
     public SyncWriterResults() {
     }
 

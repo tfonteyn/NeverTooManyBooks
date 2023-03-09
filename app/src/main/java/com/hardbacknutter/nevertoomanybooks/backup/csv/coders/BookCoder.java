@@ -104,7 +104,9 @@ public class BookCoder {
     /**
      * Database access is strictly limited to fetching ID's for the list elements.
      *
-     * @param context Current context
+     * @param context        Current context
+     * @param csvColumnNames the array with the field(column) names
+     * @param csvDataRow     the array with the field data
      *
      * @return the decoded book
      */

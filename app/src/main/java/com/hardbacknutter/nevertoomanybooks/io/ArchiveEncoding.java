@@ -123,6 +123,8 @@ public enum ArchiveEncoding
      * @param uri     to read
      *
      * @return ArchiveEncoding
+     *
+     * @throws FileNotFoundException on...
      */
     @NonNull
     public static Optional<ArchiveEncoding> getEncoding(@NonNull final Context context,

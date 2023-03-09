@@ -78,14 +78,30 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
     protected DataReaderHelperBase() {
     }
 
+    /**
+     * Add the given set of {@link RecordType}s.
+     *
+     * @param recordTypes to add
+     */
     protected void addRecordType(@NonNull final Set<RecordType> recordTypes) {
         this.recordTypes.addAll(recordTypes);
     }
 
+    /**
+     * Add the given {@link RecordType}.
+     *
+     * @param recordType to add
+     */
     public void addRecordType(@NonNull final RecordType recordType) {
         recordTypes.add(recordType);
     }
 
+    /**
+     * Add or remove the given {@link RecordType}.
+     *
+     * @param add        {@code true} to add, {@code false} to remove
+     * @param recordType to add/remove
+     */
     public void setRecordType(final boolean add,
                               @NonNull final RecordType recordType) {
         if (add) {
@@ -96,7 +112,7 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
     }
 
     /**
-     * Get the Set of RecordType.
+     * Get the Set of {@link RecordType}.
      *
      * @return an immutable Set
      */
@@ -163,6 +179,7 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
      * @throws CredentialsException on authentication/login failures
      * @throws StorageException     on storage related failures
      * @throws IOException          on generic/other IO failures
+     * @throws CertificateException on failures related to a user installed CA.
      * @see DataReader
      */
     @NonNull
@@ -200,6 +217,7 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
      * @throws CredentialsException on authentication/login failures
      * @throws StorageException     on storage related failures
      * @throws IOException          on generic/other IO failures
+     * @throws CertificateException on failures related to a user installed CA
      * @see DataReader
      */
     @NonNull
@@ -244,5 +262,4 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
                + ", metadata=" + metadata
                + '}';
     }
-
 }

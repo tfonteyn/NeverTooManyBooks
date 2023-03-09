@@ -74,14 +74,30 @@ public abstract class DataWriterHelperBase<RESULTS> {
      */
     private boolean incremental;
 
+    /**
+     * Add the given set of {@link RecordType}s.
+     *
+     * @param recordTypes to add
+     */
     public void addRecordType(@NonNull final Set<RecordType> recordTypes) {
         this.recordTypes.addAll(recordTypes);
     }
 
+    /**
+     * Remove the given set of {@link RecordType}s.
+     *
+     * @param recordTypes to add
+     */
     public void removeRecordType(@NonNull final Set<RecordType> recordTypes) {
         this.recordTypes.removeAll(recordTypes);
     }
 
+    /**
+     * Add or remove the given {@link RecordType}.
+     *
+     * @param add        {@code true} to add, {@code false} to remove
+     * @param recordType to add/remove
+     */
     public void setRecordType(final boolean add,
                               @NonNull final RecordType recordType) {
         if (add) {
@@ -122,6 +138,8 @@ public abstract class DataWriterHelperBase<RESULTS> {
      * @throws CredentialsException on authentication/login failures
      * @throws StorageException     on storage related failures
      * @throws IOException          on generic/other IO failures
+     * @throws CertificateException on failures related to a user installed CA
+     * @throws DataWriterException  on a decoding/parsing of data issue
      * @see DataWriter
      */
     @WorkerThread

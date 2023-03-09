@@ -100,6 +100,13 @@ public class ExportResults
         database = in.readByte() != 0;
     }
 
+    /**
+     * Check if the results contains at least one of the given {@link RecordType}.
+     *
+     * @param recordType to check
+     *
+     * @return {@code true} if there is at least one.
+     */
     public boolean has(@NonNull final RecordType recordType) {
         switch (recordType) {
             case Styles:

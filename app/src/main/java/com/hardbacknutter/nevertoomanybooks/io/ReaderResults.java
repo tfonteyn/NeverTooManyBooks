@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -71,6 +71,9 @@ public class ReaderResults
     /** # covers which explicitly failed. */
     public int coversFailed;
 
+    /**
+     * Constructor.
+     */
     public ReaderResults() {
     }
 
@@ -93,6 +96,11 @@ public class ReaderResults
         coversFailed = in.readInt();
     }
 
+    /**
+     * Accumulate the results.
+     *
+     * @param results to add
+     */
     public void add(@NonNull final ReaderResults results) {
         booksProcessed += results.booksProcessed;
         booksCreated += results.booksCreated;

@@ -87,6 +87,9 @@ public class ImportResults
     public int certificates;
 
 
+    /**
+     * Constructor.
+     */
     public ImportResults() {
     }
 
@@ -107,6 +110,11 @@ public class ImportResults
         in.readList(failedLinesMessage, getClass().getClassLoader());
     }
 
+    /**
+     * Accumulate the results.
+     *
+     * @param results to add
+     */
     public void add(@NonNull final ImportResults results) {
         super.add(results);
 
@@ -119,6 +127,14 @@ public class ImportResults
         failedLinesMessage.addAll(results.failedLinesMessage);
     }
 
+    /**
+     * Add the given exception data to the results.
+     *
+     * @param context Current context
+     * @param row     where the issue happened
+     * @param e       the exception thrown
+     * @param msg     optional (localized) message
+     */
     public void handleRowException(@NonNull final Context context,
                                    final int row,
                                    @NonNull final Exception e,
