@@ -24,7 +24,6 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
@@ -91,6 +90,11 @@ public class StripInfoAuth
     @NonNull
     private final SharedPreferences prefs;
 
+    /**
+     * Constructor.
+     *
+     * @param context Current context
+     */
     public StripInfoAuth(@NonNull final Context context) {
         // Setup BEFORE doing first request!
         cookieManager = ServiceLocator.getInstance().getCookieManager();
@@ -140,17 +144,26 @@ public class StripInfoAuth
     }
 
     /**
-     * The user id for the <strong>current</strong> session.
+     * Get the user id for the <strong>current</strong> session.
      * <p>
      * In the website html sometimes referred to as "member".
      *
-     * @return user id or {@code null}
+     * @return a valid non-empty user id if present
      */
-    @Nullable
-    public String getUserId() {
-        return getUserId(cookieManager).orElse(null);
+    @NonNull
+    public Optional<String> getUserId() {
+        return getUserId(cookieManager);
     }
 
+    /**
+     * Get the user id for the <strong>current</strong> session.
+     * <p>
+     * In the website html sometimes referred to as "member".
+     *
+     * @param cookieManager to get it from
+     *
+     * @return a valid non-empty user id if present
+     */
     @NonNull
     private Optional<String> getUserId(@NonNull final CookieManager cookieManager) {
         final Optional<HttpCookie> oCookie =

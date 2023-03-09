@@ -51,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -159,7 +158,7 @@ public class StripInfoSearchEngine
 
     public void setLoginHelper(@NonNull final StripInfoAuth loginHelper) {
         if (BuildConfig.DEBUG /* always */) {
-            SanityCheck.requireValue(loginHelper.getUserId(), "not logged in?");
+            loginHelper.getUserId().orElseThrow();
         }
         this.loginHelper = loginHelper;
     }
