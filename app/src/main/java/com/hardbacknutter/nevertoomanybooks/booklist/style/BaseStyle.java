@@ -125,7 +125,9 @@ public abstract class BaseStyle
      */
     BaseStyle(@NonNull final String uuid,
               @IntRange(from = 0) final long id) {
-        SanityCheck.requireValue(uuid, "uuid");
+        if (uuid.isEmpty()) {
+            throw new IllegalArgumentException("uuid.isEmpty()");
+        }
         this.uuid = uuid;
         this.id = id;
 
