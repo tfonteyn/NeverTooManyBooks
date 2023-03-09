@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
  * <p>
  * Used by {@link RecordReader} and accumulated in {@link DataReader}.
  */
-@SuppressWarnings("WeakerAccess")
 public class ImportResults
         extends ReaderResults {
 
@@ -62,7 +61,7 @@ public class ImportResults
             return new ImportResults[size];
         }
     };
-    public static final int MAX_FAIL_LINES = 10;
+    static final int MAX_FAIL_LINES = 10;
     /** Log tag. */
     private static final String TAG = "ImportResults";
     /** Bundle key if we get passed around. */
@@ -73,9 +72,9 @@ public class ImportResults
      * Not strictly needed as row number should be part of the messages.
      * Keeping for possible future enhancements.
      */
-    public final List<Integer> failedLinesNr = new ArrayList<>();
+    final List<Integer> failedLinesNr = new ArrayList<>();
     /** Keeps track of failed import lines in a text file. */
-    public final List<String> failedLinesMessage = new ArrayList<>();
+    final List<String> failedLinesMessage = new ArrayList<>();
     /** records we found, but did not understand; i.e. did not have a {@link RecordReader} for. */
     public int recordsSkipped;
 
