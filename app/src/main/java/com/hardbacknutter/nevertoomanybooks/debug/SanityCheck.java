@@ -25,8 +25,6 @@ import androidx.annotation.Nullable;
 import java.util.Collection;
 import java.util.function.Supplier;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
-
 /**
  * Quick note: this class came into being as a solution to the missing "assert" functionality
  * in Android.
@@ -99,21 +97,6 @@ public final class SanityCheck {
             throw new SanityException(message);
         }
         return value;
-    }
-
-    /**
-     * Check the validity of an ISBN string.
-     *
-     * @param text to check
-     *
-     * @throws SanityException if invalid
-     */
-    public static void requireValidIsbn(@Nullable final String text) {
-        if (text == null || text.isEmpty()
-            || !new ISBN(text, true).isValid(true)) {
-
-            throw new SanityException("isbn must be valid");
-        }
     }
 
     public static class SanityException

@@ -318,6 +318,21 @@ public class ISBN {
     }
 
     /**
+     * Check the validity of an ISBN string.
+     *
+     * @param text to check
+     *
+     * @throws IllegalArgumentException if invalid
+     */
+    public static void requireValidIsbn(@Nullable final String text) {
+        if (text == null || text.isEmpty()
+            || !new ISBN(text, true).isValid(true)) {
+
+            throw new IllegalArgumentException("isbn must be valid");
+        }
+    }
+
+    /**
      * Check if we have a valid code. Does not check for a specific type.
      *
      * @param strictIsbn Flag: {@code true} to strictly allow ISBN codes.
@@ -332,6 +347,13 @@ public class ISBN {
         }
     }
 
+    /**
+     * Check if the ISBN code is of the given {@link Type}.
+     *
+     * @param type to check for
+     *
+     * @return {@code true} if it is
+     */
     @VisibleForTesting
     public boolean isType(@NonNull final Type type) {
         if (type == Type.Ean13) {

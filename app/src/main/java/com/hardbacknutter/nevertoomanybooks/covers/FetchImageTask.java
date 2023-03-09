@@ -30,7 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 
 /**
@@ -76,7 +76,7 @@ class FetchImageTask
 
         // sanity check
         if (BuildConfig.DEBUG /* always */) {
-            SanityCheck.requireValidIsbn(validIsbn);
+            ISBN.requireValidIsbn(validIsbn);
         }
 
         isbn = validIsbn;

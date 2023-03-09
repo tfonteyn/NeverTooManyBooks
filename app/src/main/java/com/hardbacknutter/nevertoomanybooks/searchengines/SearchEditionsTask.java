@@ -35,7 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.NetworkUnavailableException;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 
 /**
@@ -64,7 +64,7 @@ public class SearchEditionsTask
     public void search(@NonNull final String validIsbn) {
         // sanity check
         if (BuildConfig.DEBUG /* always */) {
-            SanityCheck.requireValidIsbn(validIsbn);
+            ISBN.requireValidIsbn(validIsbn);
         }
 
         isbn = validIsbn;
