@@ -34,7 +34,6 @@ import com.hardbacknutter.nevertoomanybooks.core.network.NetworkUnavailableExcep
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 
@@ -220,19 +219,25 @@ public class SearchTask
         final Book book;
         switch (by) {
             case ExternalId:
-                SanityCheck.requireValue(externalId, "externalId");
+                if (externalId == null || externalId.isEmpty()) {
+                    throw new IllegalArgumentException("externalId=" + externalId);
+                }
                 book = ((SearchEngine.ByExternalId) searchEngine)
                         .searchByExternalId(context, externalId, fetchCovers);
                 break;
 
             case Isbn:
-                SanityCheck.requireValue(isbnStr, "isbnStr");
+                if (isbnStr == null || isbnStr.isEmpty()) {
+                    throw new IllegalArgumentException("isbnStr=" + isbnStr);
+                }
                 book = ((SearchEngine.ByIsbn) searchEngine)
                         .searchByIsbn(context, isbnStr, fetchCovers);
                 break;
 
             case Barcode:
-                SanityCheck.requireValue(isbnStr, "isbnStr");
+                if (isbnStr == null || isbnStr.isEmpty()) {
+                    throw new IllegalArgumentException("isbnStr=" + isbnStr);
+                }
                 book = ((SearchEngine.ByBarcode) searchEngine)
                         .searchByBarcode(context, isbnStr, fetchCovers);
                 break;
