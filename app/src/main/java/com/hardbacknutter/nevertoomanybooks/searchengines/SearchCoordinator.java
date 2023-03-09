@@ -70,7 +70,6 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.sync.ColorMapper;
 import com.hardbacknutter.nevertoomanybooks.sync.FormatMapper;
@@ -498,7 +497,9 @@ public class SearchCoordinator
      */
     public boolean searchByExternalId(@NonNull final EngineId engineId,
                                       @NonNull final String externalIdSearchText) {
-        SanityCheck.requireValue(externalIdSearchText, "externalIdSearchText");
+        if (externalIdSearchText.isEmpty()) {
+            throw new IllegalArgumentException("externalIdSearchText.isEmpty()");
+        }
 
         // remove all other criteria (this is CRUCIAL)
         clearSearchCriteria();
