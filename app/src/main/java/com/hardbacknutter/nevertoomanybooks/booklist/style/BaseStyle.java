@@ -41,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.UnderEachGroup;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 
@@ -146,7 +145,9 @@ public abstract class BaseStyle
     @Override
     @NonNull
     public UserStyle clone(@NonNull final Context context) {
-        SanityCheck.requireValue(uuid, "uuid");
+        if (uuid.isEmpty()) {
+            throw new IllegalArgumentException("uuid.isEmpty()");
+        }
         // A cloned style is *always* a UserStyle/persistent regardless of the original
         // being a UserStyle or BuiltinStyle.
         return new UserStyle(context, this, 0, UUID.randomUUID().toString());
