@@ -33,7 +33,6 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
@@ -230,7 +229,9 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
                    StorageException,
                    IOException {
 
-        SanityCheck.requireValue(recordTypes, "recordTypes");
+        if (recordTypes.isEmpty()) {
+            throw new IllegalArgumentException("recordTypes.isEmpty()");
+        }
 
         try {
             dataReader = createReader(context);

@@ -31,10 +31,8 @@ import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
@@ -158,8 +156,8 @@ public enum SyncServer
                                                @NonNull final Locale systemLocale)
             throws CertificateException {
 
-        if (BuildConfig.DEBUG /* always */) {
-            SanityCheck.requireValue(helper.getRecordTypes(), "getRecordTypes");
+        if (helper.getRecordTypes().isEmpty()) {
+            throw new IllegalArgumentException("helper.getRecordTypes().isEmpty()");
         }
 
         switch (this) {
@@ -198,8 +196,8 @@ public enum SyncServer
                    CredentialsException,
                    IOException {
 
-        if (BuildConfig.DEBUG /* always */) {
-            SanityCheck.requireValue(helper.getRecordTypes(), "getRecordTypes");
+        if (helper.getRecordTypes().isEmpty()) {
+            throw new IllegalArgumentException("getRecordTypes.isEmpty()");
         }
 
         final DataReader<SyncReaderMetaData, ReaderResults> reader;

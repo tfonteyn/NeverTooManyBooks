@@ -22,8 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.debug;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Collection;
-
 /**
  * Quick note: this class came into being as a solution to the missing "assert" functionality
  * in Android.
@@ -40,19 +38,6 @@ public final class SanityCheck {
     @NonNull
     public static String requireValue(@Nullable final String value,
                                       @Nullable final String message) {
-        if (value == null) {
-            throw new NullPointerException(message);
-        }
-        if (value.isEmpty()) {
-            throw new IllegalArgumentException(message);
-        }
-        return value;
-    }
-
-    @SuppressWarnings("UnusedReturnValue")
-    @NonNull
-    public static <T extends Collection<?>> T requireValue(@Nullable final T value,
-                                                           @Nullable final String message) {
         if (value == null) {
             throw new NullPointerException(message);
         }

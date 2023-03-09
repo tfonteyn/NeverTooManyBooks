@@ -1070,7 +1070,9 @@ public class BookDaoImpl
     @Override
     @NonNull
     public TypedCursor fetchForAutoUpdate(@NonNull final List<Long> idList) {
-        SanityCheck.requireValue(idList, "idList");
+        if (idList.isEmpty()) {
+            throw new IllegalArgumentException("idList.isEmpty()");
+        }
 
         if (idList.size() == 1) {
             // optimize for single book
@@ -1157,7 +1159,9 @@ public class BookDaoImpl
     @Override
     @NonNull
     public TypedCursor fetchByIsbn(@NonNull final List<String> isbnList) {
-        SanityCheck.requireValue(isbnList, "isbnList");
+        if (isbnList.isEmpty()) {
+            throw new IllegalArgumentException("isbnList.isEmpty()");
+        }
 
         if (isbnList.size() == 1) {
             // optimize for single book
