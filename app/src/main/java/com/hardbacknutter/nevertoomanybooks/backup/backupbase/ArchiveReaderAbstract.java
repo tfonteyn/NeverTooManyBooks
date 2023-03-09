@@ -353,28 +353,24 @@ public abstract class ArchiveReaderAbstract
                         results.add(coverReader.read(context, record, importHelper,
                                                      progressListener));
 
-                    } else if (type == RecordType.Books
-                               && recordTypes.contains(RecordType.Books)) {
+                    } else if (type == RecordType.Books && recordTypes.contains(type)) {
                         progressListener.publishProgress(
                                 1, context.getString(R.string.lbl_books));
                         readRecord(context, recordTypes, record, progressListener);
 
-                    } else if (type == RecordType.Bookshelves
-                               && recordTypes.contains(RecordType.Bookshelves)) {
+                    } else if (type == RecordType.Bookshelves && recordTypes.contains(type)) {
                         progressListener.publishProgress(
                                 1, context.getString(R.string.lbl_bookshelves));
                         readRecord(context, recordTypes, record, progressListener);
 
-                    } else if (type == RecordType.Certificates
-                               && recordTypes.contains(RecordType.Certificates)) {
+                    } else if (type == RecordType.Certificates && recordTypes.contains(type)) {
                         progressListener.publishProgress(
                                 1, context.getString(R.string.lbl_certificates));
                         readRecord(context, recordTypes, record, progressListener);
 
                     } else if ((type == RecordType.CalibreLibraries
-                                && recordTypes.contains(RecordType.CalibreLibraries)
-                                || (type == RecordType.CalibreCustomFields
-                                    && recordTypes.contains(RecordType.CalibreCustomFields)))) {
+                                || type == RecordType.CalibreCustomFields)
+                               && recordTypes.contains(type)) {
                         progressListener.publishProgress(
                                 1, context.getString(R.string.lbl_calibre_content_server));
                         readRecord(context, recordTypes, record, progressListener);
