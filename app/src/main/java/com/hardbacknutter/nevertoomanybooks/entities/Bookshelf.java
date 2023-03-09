@@ -288,7 +288,9 @@ public class Bookshelf
      */
     public void setStyle(@NonNull final Context context,
                          @NonNull final Style style) {
-        SanityCheck.requireNonZero(style.getId(), "style.getId()");
+        if (style.getId() == 0) {
+            throw new IllegalArgumentException("style.getId() == 0");
+        }
 
         styleUuid = style.getUuid();
 

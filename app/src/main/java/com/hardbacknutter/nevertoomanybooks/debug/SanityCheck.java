@@ -23,7 +23,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Collection;
-import java.util.function.Supplier;
 
 /**
  * Quick note: this class came into being as a solution to the missing "assert" functionality
@@ -35,15 +34,6 @@ import java.util.function.Supplier;
 public final class SanityCheck {
 
     private SanityCheck() {
-    }
-
-    @SuppressWarnings("UnusedReturnValue")
-    public static long requireNonZero(final long value,
-                                      @Nullable final String message) {
-        if (value == 0) {
-            throw new SanityException(message);
-        }
-        return value;
     }
 
     @SuppressWarnings("UnusedReturnValue")
@@ -75,15 +65,6 @@ public final class SanityCheck {
             throw new SanityException(message);
         }
         return value;
-    }
-
-    @SuppressWarnings("UnusedReturnValue")
-    @NonNull
-    public static <T extends Collection<?>> T requireValue(
-            @Nullable final T value,
-            @NonNull final Supplier<String> message) {
-
-        return requireValue(value, message.get());
     }
 
     @SuppressWarnings("UnusedReturnValue")
