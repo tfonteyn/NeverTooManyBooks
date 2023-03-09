@@ -26,13 +26,13 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.io.RecordWriter;
-import com.hardbacknutter.nevertoomanybooks.io.WriterResults;
 
 /**
  * Value class to report back what was exported.
@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.io.WriterResults;
  * Used by {@link RecordWriter} and accumulated in {@link DataWriter}.
  */
 public class ExportResults
-        extends WriterResults {
+        implements Parcelable {
 
     /** {@link Parcelable}. */
     public static final Creator<ExportResults> CREATOR = new Creator<>() {
@@ -157,12 +157,10 @@ public class ExportResults
         }
     }
 
-    @Override
     public void addBook(@IntRange(from = 1) final long bookId) {
         booksExported.add(bookId);
     }
 
-    @Override
     public int getBookCount() {
         return booksExported.size();
     }
@@ -173,12 +171,20 @@ public class ExportResults
         return booksExported;
     }
 
-    @Override
-    public void addCover(@NonNull final String path) {
-        coversExported.add(path);
+    public void addCover(@NonNull final File file) {
+        addCover(file.getName());
     }
 
-    @Override
+    /**
+     * Track cover file names. This is called during book processing to collect all
+     * cover file names.The list is subsequently used to process the covers themselves.
+     *
+     * @param name the file name, without path
+     */
+    public void addCover(@NonNull final String name) {
+        coversExported.add(name);
+    }
+
     public int getCoverCount() {
         return coversExported.size();
     }

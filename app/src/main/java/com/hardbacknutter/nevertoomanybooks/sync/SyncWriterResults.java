@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,13 +24,13 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.io.WriterResults;
+import java.io.File;
 
 /**
  * Value class to report back what was witten.
  */
 public class SyncWriterResults
-        extends WriterResults {
+        implements Parcelable {
 
     /** {@link Parcelable}. */
     public static final Creator<SyncWriterResults> CREATOR = new Creator<>() {
@@ -66,22 +66,18 @@ public class SyncWriterResults
         coverCount = in.readInt();
     }
 
-    @Override
     public void addBook(final long bookId) {
         bookCount++;
     }
 
-    @Override
     public int getBookCount() {
         return bookCount;
     }
 
-    @Override
-    public void addCover(@NonNull final String path) {
+    public void addCover(@NonNull final File file) {
         coverCount++;
     }
 
-    @Override
     public int getCoverCount() {
         return coverCount;
     }
