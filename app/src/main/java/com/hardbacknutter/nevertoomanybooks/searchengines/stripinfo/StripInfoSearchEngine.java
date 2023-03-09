@@ -34,6 +34,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.CookieManager;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -46,6 +47,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -185,7 +187,8 @@ public class StripInfoSearchEngine
 
         if (StripInfoAuth.isLoginToSearch(context)) {
             if (loginHelper == null) {
-                loginHelper = new StripInfoAuth(context);
+                final CookieManager cookieManager = ServiceLocator.getInstance().getCookieManager();
+                loginHelper = new StripInfoAuth(context, cookieManager);
                 try {
                     loginHelper.login();
                 } catch (@NonNull final IOException | StorageException e) {

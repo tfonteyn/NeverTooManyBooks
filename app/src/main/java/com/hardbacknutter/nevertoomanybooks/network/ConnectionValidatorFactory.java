@@ -25,9 +25,11 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
+import java.net.CookieManager;
 import java.security.cert.CertificateException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.ConnectionValidator;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoAuth;
@@ -43,7 +45,8 @@ public final class ConnectionValidatorFactory {
         if (siteResId == R.string.site_calibre) {
             return new CalibreContentServer(context);
         } else if (siteResId == R.string.site_stripinfo_be) {
-            return new StripInfoAuth(context);
+            final CookieManager cookieManager = ServiceLocator.getInstance().getCookieManager();
+            return new StripInfoAuth(context, cookieManager);
         } else {
             throw new IllegalArgumentException(String.valueOf(siteResId));
         }

@@ -30,6 +30,7 @@ import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
+import java.net.CookieManager;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -210,7 +211,8 @@ public class StripInfoReader
 
         searchEngine.setCaller(progressListener);
 
-        final StripInfoAuth loginHelper = new StripInfoAuth(context);
+        final CookieManager cookieManager = ServiceLocator.getInstance().getCookieManager();
+        final StripInfoAuth loginHelper = new StripInfoAuth(context, cookieManager);
         final String userId = loginHelper.login();
 
         searchEngine.setLoginHelper(loginHelper);

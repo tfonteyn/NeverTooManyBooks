@@ -38,7 +38,6 @@ import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.ConnectionValidator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -93,11 +92,12 @@ public class StripInfoAuth
     /**
      * Constructor.
      *
-     * @param context Current context
+     * @param context       Current context
+     * @param cookieManager to use
      */
-    public StripInfoAuth(@NonNull final Context context) {
-        // Setup BEFORE doing first request!
-        cookieManager = ServiceLocator.getInstance().getCookieManager();
+    public StripInfoAuth(@NonNull final Context context,
+                         @NonNull final CookieManager cookieManager) {
+        this.cookieManager = cookieManager;
 
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
@@ -189,7 +189,7 @@ public class StripInfoAuth
                 } catch (@NonNull final JSONException e) {
                     if (BuildConfig.DEBUG /* always */) {
                         LoggerFactory.getLogger()
-                                      .e(TAG, e, "cookie.getValue()=" + cookie.getValue());
+                                     .e(TAG, e, "cookie.getValue()=" + cookie.getValue());
                     }
                 }
             }
