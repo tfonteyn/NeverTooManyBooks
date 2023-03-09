@@ -34,9 +34,9 @@ import androidx.fragment.app.FragmentManager;
 import java.io.File;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 
 /**
  * Wrapper for the zoomed image dialog.
@@ -82,8 +82,8 @@ public class ZoomedImageDialogFragment
         super.onCreate(savedInstanceState);
 
         final Bundle args = requireArguments();
-        final String fileSpec = args.getString(BKEY_IMAGE_PATH);
-        SanityCheck.requireValue(fileSpec, "fileSpec");
+        final String fileSpec = SanityCheck.requireValue(args.getString(BKEY_IMAGE_PATH),
+                                                         BKEY_IMAGE_PATH);
         imageFile = new File(fileSpec);
     }
 
