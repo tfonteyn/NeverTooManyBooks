@@ -46,15 +46,6 @@ public final class SanityCheck {
     }
 
     @SuppressWarnings("UnusedReturnValue")
-    public static float requirePositiveValue(final float value,
-                                             @Nullable final String message) {
-        if (value <= 0) {
-            throw new SanityException(message);
-        }
-        return value;
-    }
-
-    @SuppressWarnings("UnusedReturnValue")
     @NonNull
     public static String requireValue(@Nullable final String value,
                                       @Nullable final String message) {

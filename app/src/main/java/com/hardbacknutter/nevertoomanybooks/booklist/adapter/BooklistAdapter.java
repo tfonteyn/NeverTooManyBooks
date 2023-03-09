@@ -60,7 +60,6 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CoverCacheDao;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
@@ -406,8 +405,12 @@ public class BooklistAdapter
         }
 
         if (BuildConfig.DEBUG /* always */) {
-            SanityCheck.requirePositiveValue(fontSizeInSpUnits, "fontSizeInSpUnits");
-            SanityCheck.requirePositiveValue(paddingFactor, "paddingFactor");
+            if (fontSizeInSpUnits <= 0) {
+                throw new IllegalArgumentException("fontSizeInSpUnits");
+            }
+            if (paddingFactor <= 0) {
+                throw new IllegalArgumentException("paddingFactor");
+            }
         }
 
         scaleTextViews(view, fontSizeInSpUnits, paddingFactor);
