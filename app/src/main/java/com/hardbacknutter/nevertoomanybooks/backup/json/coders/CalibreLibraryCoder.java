@@ -88,6 +88,8 @@ public class CalibreLibraryCoder
                                                                   Bookshelf.DEFAULT)
                                                     .orElseThrow();
 
+        // We could just encode a reference to the bookshelf,
+        // but the space-saving would be minuscule.
         data.put(DBKey.FK_BOOKSHELF, bookshelfCoder.encode(libraryBookshelf));
 
         final ArrayList<CalibreVirtualLibrary> vlibs = library.getVirtualLibraries();
