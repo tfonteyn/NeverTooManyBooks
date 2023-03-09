@@ -91,7 +91,8 @@ public abstract class BaseDragDropRecyclerViewAdapter<Item, VHT extends BaseDrag
     /**
      * Set the {@link OnRowClickListener} for showing the context menu on a row.
      *
-     * @param listener to receive clicks
+     * @param contextMenuMode how to show context menus
+     * @param listener        to receive clicks
      */
     public void setOnRowShowMenuListener(@NonNull final ShowContextMenu contextMenuMode,
                                          @Nullable final OnRowClickListener listener) {

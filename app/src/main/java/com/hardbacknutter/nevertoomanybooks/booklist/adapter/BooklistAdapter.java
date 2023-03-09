@@ -119,8 +119,12 @@ public class BooklistAdapter
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param style   to use
+     * @param context               Current context
+     * @param style                 to use
+     * @param reorderHelperSupplier deferred supplier for the {@link ReorderHelper}
+     * @param authorDaoSupplier     deferred supplier for the {@link AuthorDao}
+     * @param languagesSupplier     deferred supplier for the {@link Languages}
+     * @param coverCacheDaoSupplier deferred supplier for the {@link CoverCacheDao}
      */
     public BooklistAdapter(@NonNull final Context context,
                            @NonNull final Style style,
@@ -201,7 +205,8 @@ public class BooklistAdapter
     /**
      * Set the {@link OnRowClickListener} for showing the context menu on a row.
      *
-     * @param listener to receive clicks
+     * @param contextMenuMode how to show context menus
+     * @param listener        to receive clicks
      */
     public void setOnRowShowMenuListener(@NonNull final ShowContextMenu contextMenuMode,
                                          @Nullable final OnRowClickListener listener) {
@@ -228,6 +233,8 @@ public class BooklistAdapter
 
     /**
      * Refresh the list data for the given positions.
+     *
+     * @param positions to refresh
      */
     public void requery(final int[] positions) {
         // Yes, requery() is deprecated but see BooklistCursor were we do the right thing.
