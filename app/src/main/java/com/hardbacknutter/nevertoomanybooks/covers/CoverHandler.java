@@ -69,7 +69,6 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
@@ -432,7 +431,9 @@ public class CoverHandler {
      * @param fileSpec the selected image
      */
     private void onFileSelected(@NonNull final String fileSpec) {
-        SanityCheck.requireValue(fileSpec, "fileSpec");
+        if (fileSpec.isEmpty()) {
+            throw new IllegalArgumentException("fileSpec.isEmpty()");
+        }
 
         final File srcFile = new File(fileSpec);
         if (srcFile.exists()) {
