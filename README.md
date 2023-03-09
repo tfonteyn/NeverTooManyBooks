@@ -43,7 +43,7 @@ Supports synchronizing with a Calibre Content Server.
 
 Requires minimal Android 8.0 (API 26)
 
-Make sure to check the [documentation][https://github.com/tfonteyn/NeverTooManyBooks/wiki]
+Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyBooks/wiki)
 
 In August 2018, this project was forked from:
 Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn.
