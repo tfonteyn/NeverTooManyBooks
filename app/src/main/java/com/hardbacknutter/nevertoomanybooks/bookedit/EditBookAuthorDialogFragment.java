@@ -57,6 +57,7 @@ public class EditBookAuthorDialogFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditAuthorForBookDialog";
+    public static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
     /**
      * We create a list of all the Type checkboxes for easy handling.
