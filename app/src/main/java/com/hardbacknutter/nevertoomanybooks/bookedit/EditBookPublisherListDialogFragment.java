@@ -124,9 +124,7 @@ public class EditBookPublisherListDialogFragment
         vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
         editLauncher.registerForFragmentResult(getChildFragmentManager(),
-                                               EditBookPublisherDialogFragment.BKEY_REQUEST_KEY,
-                                               RK_EDIT_PUBLISHER,
-                                               this);
+                                               RK_EDIT_PUBLISHER, this);
     }
 
     @Override
