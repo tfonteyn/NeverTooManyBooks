@@ -324,7 +324,7 @@ public class BooksOnBookshelf
      * {@link EditAuthorDialogFragment},
      * {@link EditSeriesDialogFragment}
      * {@link EditPublisherDialogFragment}
-     * and others.
+     * and all the single-string based dialog editors.
      *
      * @see #onRowContextMenuItemSelected(MenuItem, int)
      */
