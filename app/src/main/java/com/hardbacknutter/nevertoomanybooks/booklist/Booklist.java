@@ -114,6 +114,9 @@ public class Booklist
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final BooklistNodeDao nodeDao;
+    @SuppressWarnings("FieldNotUsedInToString")
+    @NonNull
+    private final String sqlSelectBooklistNodes;
 
     /** Total number of books in current list. e.g. a book can be listed under 2 authors. */
     private int totalBooks = -1;
@@ -125,18 +128,6 @@ public class Booklist
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
     private Cursor listCursor;
-
-    /** {@link #getAuthorNodes}. */
-    @SuppressWarnings("FieldNotUsedInToString")
-    private String sqlGetAuthorNodes;
-
-    /** {@link #getSeriesNodes}. */
-    @SuppressWarnings("FieldNotUsedInToString")
-    private String sqlGetSeriesNodes;
-
-    /** {@link #getBookNodes}. */
-    @SuppressWarnings("FieldNotUsedInToString")
-    private String sqlGetBookNodes;
 
     /** {@link #ensureNodeIsVisible}. */
     @SuppressWarnings("FieldNotUsedInToString")
@@ -185,6 +176,10 @@ public class Booklist
         this.listTable = listTable;
         this.navTable = navTable;
         this.nodeDao = nodeDao;
+
+        sqlSelectBooklistNodes = SELECT_ + BooklistNode.getColumns(listTable)
+                                 + _FROM_ + listTable.ref()
+                                 + _WHERE_ + listTable.dot("%1s") + "=?";
     }
 
     @NonNull
@@ -382,7 +377,7 @@ public class Booklist
      */
     @NonNull
     public List<BooklistNode> getVisibleBookNodes(@IntRange(from = 0) final long bookId) {
-        final List<BooklistNode> nodeList = getBookNodes(bookId);
+        final List<BooklistNode> nodeList = getNodes(DBKey.FK_BOOK, bookId);
 
         if (nodeList.isEmpty()) {
             // the book is not present, return the empty list
@@ -411,102 +406,25 @@ public class Booklist
     }
 
     /**
-     * Get <strong>all</strong> nodes for the given Author id.
+     * Get <strong>all</strong> nodes for the given column name and id.
      *
-     * @param authorId to use
-     *
-     * @return list of nodes, can be empty, but never {@code null}
-     */
-    @NonNull
-    private List<BooklistNode> getAuthorNodes(@IntRange(from = 0) final long authorId) {
-        final List<BooklistNode> nodeList = new ArrayList<>();
-
-        // sanity check
-        if (authorId == 0) {
-            return nodeList;
-        }
-
-        if (sqlGetAuthorNodes == null) {
-            sqlGetAuthorNodes =
-                    SELECT_ + BooklistNode.getColumns(listTable)
-                    + _FROM_ + listTable.ref()
-                    + _WHERE_ + listTable.dot(DBKey.FK_AUTHOR) + "=?";
-        }
-
-        try (Cursor cursor = db.rawQuery(sqlGetAuthorNodes, new String[]{
-                String.valueOf(authorId)})) {
-
-            while (cursor.moveToNext()) {
-                nodeList.add(new BooklistNode(cursor));
-            }
-        }
-
-        nodeList.forEach(node -> node.updateAdapterPosition(db, listTable));
-
-        return nodeList;
-    }
-
-    /**
-     * Get <strong>all</strong> nodes for the given Series id.
-     *
-     * @param seriesId to use
+     * @param column to query
+     * @param id     to query
      *
      * @return list of nodes, can be empty, but never {@code null}
      */
     @NonNull
-    private List<BooklistNode> getSeriesNodes(@IntRange(from = 0) final long seriesId) {
+    private List<BooklistNode> getNodes(@NonNull final String column,
+                                        @IntRange(from = 0) final long id) {
         final List<BooklistNode> nodeList = new ArrayList<>();
 
         // sanity check
-        if (seriesId == 0) {
+        if (id == 0) {
             return nodeList;
         }
 
-        if (sqlGetSeriesNodes == null) {
-            sqlGetSeriesNodes =
-                    SELECT_ + BooklistNode.getColumns(listTable)
-                    + _FROM_ + listTable.ref()
-                    + _WHERE_ + listTable.dot(DBKey.FK_SERIES) + "=?";
-        }
-
-        try (Cursor cursor = db.rawQuery(sqlGetSeriesNodes, new String[]{
-                String.valueOf(seriesId)})) {
-
-            while (cursor.moveToNext()) {
-                nodeList.add(new BooklistNode(cursor));
-            }
-        }
-
-        nodeList.forEach(node -> node.updateAdapterPosition(db, listTable));
-
-        return nodeList;
-    }
-
-    /**
-     * Get <strong>all</strong> nodes for the given book id.
-     *
-     * @param bookId to use
-     *
-     * @return list of nodes, can be empty, but never {@code null}
-     */
-    @NonNull
-    private List<BooklistNode> getBookNodes(@IntRange(from = 0) final long bookId) {
-        final List<BooklistNode> nodeList = new ArrayList<>();
-
-        // sanity check
-        if (bookId == 0) {
-            return nodeList;
-        }
-
-        if (sqlGetBookNodes == null) {
-            sqlGetBookNodes =
-                    SELECT_ + BooklistNode.getColumns(listTable)
-                    + _FROM_ + listTable.ref()
-                    + _WHERE_ + listTable.dot(DBKey.FK_BOOK) + "=?";
-        }
-
-        try (Cursor cursor = db.rawQuery(sqlGetBookNodes, new String[]{
-                String.valueOf(bookId)})) {
+        try (Cursor cursor = db.rawQuery(String.format(sqlSelectBooklistNodes, column),
+                                         new String[]{String.valueOf(id)})) {
 
             while (cursor.moveToNext()) {
                 nodeList.add(new BooklistNode(cursor));
@@ -590,7 +508,7 @@ public class Booklist
                 stmt.executeUpdateDelete();
             }
         }
-        return getAuthorNodes(authorId);
+        return getNodes(DBKey.FK_AUTHOR, authorId);
     }
 
     /**
@@ -620,7 +538,7 @@ public class Booklist
                 stmt.executeUpdateDelete();
             }
         }
-        return getSeriesNodes(seriesId);
+        return getNodes(DBKey.FK_SERIES, seriesId);
     }
 
     /**
@@ -650,7 +568,7 @@ public class Booklist
                 stmt.executeUpdateDelete();
             }
         }
-        return getBookNodes(bookId);
+        return getNodes(DBKey.FK_BOOK, bookId);
     }
 
     /**
@@ -680,7 +598,7 @@ public class Booklist
                 stmt.executeUpdateDelete();
             }
         }
-        return getBookNodes(bookId);
+        return getNodes(DBKey.FK_BOOK, bookId);
     }
 
     /**
