@@ -117,6 +117,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLenderDialogFra
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLocationDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditStringBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -324,7 +325,7 @@ public class BooksOnBookshelf
      * {@link EditAuthorDialogFragment},
      * {@link EditSeriesDialogFragment}
      * {@link EditPublisherDialogFragment}
-     * and all the single-string based dialog editors.
+     * {@link EditStringBaseDialogFragment}.
      *
      * @see #onRowContextMenuItemSelected(MenuItem, int)
      */
