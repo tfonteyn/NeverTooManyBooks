@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,8 +20,10 @@
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.database.Cursor;
+import android.graphics.Color;
 import android.util.Log;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -338,10 +340,6 @@ public class Booklist
                         node.isExpanded(), relativeChildLevel);
         node.updateAdapterPosition(db, listTable);
         return node;
-    }
-
-    public boolean isNodeExpanded(final long rowId) {
-        return getNodeByRowId(rowId).isExpanded();
     }
 
     /**
@@ -778,6 +776,29 @@ public class Booklist
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
             Log.d(TAG, "close|instances left=" + DEBUG_INSTANCE_COUNTER.decrementAndGet());
         }
+    }
+
+    /**
+     * DEBUG.
+     * <p>
+     * Get a ColorInt for the given row.
+     * Green: expanded
+     * Transparent: collapsed.
+     *
+     * @param rowId to check
+     *
+     * @return color
+     */
+    @ColorInt
+    public int getDbgRowColor(final int rowId) {
+        if (BuildConfig.DEBUG /* always */) {
+            if (getNodeByRowId(rowId).isExpanded()) {
+                return Color.GREEN;
+            } else {
+                return Color.TRANSPARENT;
+            }
+        }
+        throw new IllegalStateException("Not in debug");
     }
 
     @Override

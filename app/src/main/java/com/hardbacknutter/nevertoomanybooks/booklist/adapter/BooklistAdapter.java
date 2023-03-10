@@ -25,14 +25,12 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
-import android.graphics.Color;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.Dimension;
 import androidx.annotation.IntRange;
 import androidx.annotation.LayoutRes;
@@ -363,7 +361,9 @@ public class BooklistAdapter
 
         if (BuildConfig.DEBUG /* always */) {
             if (holder instanceof GenericStringHolder) {
-                ((GenericStringHolder) holder).setDebugPosition(this::getDbgRowColor);
+                Objects.requireNonNull(booklist);
+                ((GenericStringHolder) holder).setDebugPosition(
+                        rowId -> booklist.getDbgRowColor(rowId));
             }
         }
 
@@ -505,27 +505,4 @@ public class BooklistAdapter
         return null;
     }
 
-    /**
-     * DEBUG.
-     * <p>
-     * Get a ColorInt for the given row.
-     * Green: expanded
-     * Transparent: collapsed.
-     *
-     * @param rowId to check
-     *
-     * @return color
-     */
-    @ColorInt
-    private int getDbgRowColor(final int rowId) {
-        if (BuildConfig.DEBUG /* always */) {
-            Objects.requireNonNull(booklist);
-            if (booklist.isNodeExpanded(rowId)) {
-                return Color.GREEN;
-            } else {
-                return Color.TRANSPARENT;
-            }
-        }
-        throw new IllegalStateException("Not in debug");
-    }
 }
