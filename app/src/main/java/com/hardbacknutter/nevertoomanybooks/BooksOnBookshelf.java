@@ -363,7 +363,7 @@ public class BooksOnBookshelf
                 @Override
                 public void onResult(@IntRange(from = 1) final long bookId,
                                      @NonNull final String loanee) {
-                    onBookUpdated(vm.getBook(bookId), DBKey.LOANEE_NAME);
+                    vm.updateBooklistOnBookLend(bookId, loanee);
                 }
             };
 
@@ -440,6 +440,9 @@ public class BooksOnBookshelf
 
         vm.onSelectAdapterPosition().observe(this, p ->
                 positioningHelper.onSelectAdapterPosition(p.first, p.second));
+
+        //noinspection ConstantConditions
+        vm.getOnPositionsUpdated().observe(this, positions -> adapter.requery(positions));
     }
 
     /**
@@ -1068,9 +1071,7 @@ public class BooksOnBookshelf
                     final long bookId = rowData.getLong(DBKey.FK_BOOK);
                     // toggle the read status
                     final boolean status = !rowData.getBoolean(DBKey.READ__BOOL);
-                    if (vm.setBookRead(bookId, status)) {
-                        onBookUpdated(vm.getBook(bookId), DBKey.READ__BOOL);
-                    }
+                    vm.setBookRead(bookId, status);
                     return true;
 
                 } else if (itemId == R.id.MENU_BOOK_EDIT) {
@@ -1089,7 +1090,8 @@ public class BooksOnBookshelf
                     final List<Author> authors = vm.getAuthorsByBookId(bookId);
                     StandardDialogs.deleteBook(this, title, authors, () -> {
                         if (vm.deleteBook(bookId)) {
-                            onBookDeleted(bookId);
+                            saveListPosition();
+                            buildBookList();
                         }
                     });
                     return true;
@@ -1107,7 +1109,6 @@ public class BooksOnBookshelf
                 } else if (itemId == R.id.MENU_BOOK_LOAN_DELETE) {
                     final long bookId = rowData.getLong(DBKey.FK_BOOK);
                     vm.lendBook(bookId, null);
-                    onBookUpdated(vm.getBook(bookId), DBKey.LOANEE_NAME);
                     return true;
 
                 } else if (itemId == R.id.MENU_SHARE) {
@@ -1130,9 +1131,7 @@ public class BooksOnBookshelf
                     final Author author = DataHolderUtils.requireAuthor(rowData);
                     // toggle the complete status
                     final boolean status = !rowData.getBoolean(DBKey.AUTHOR_IS_COMPLETE);
-                    if (vm.setAuthorComplete(author, status)) {
-                        onAuthorUpdated(author, DBKey.AUTHOR_IS_COMPLETE);
-                    }
+                    vm.setAuthorComplete(author, status);
                     return true;
 
                 } else if (itemId == R.id.MENU_AUTHOR_EDIT) {
@@ -1153,9 +1152,7 @@ public class BooksOnBookshelf
                     final Series series = DataHolderUtils.requireSeries(rowData);
                     // toggle the complete status
                     final boolean status = !rowData.getBoolean(DBKey.SERIES_IS_COMPLETE);
-                    if (vm.setSeriesComplete(series, status)) {
-                        onSeriesUpdated(series, DBKey.SERIES_IS_COMPLETE);
-                    }
+                    vm.setSeriesComplete(series, status);
                     return true;
 
                 } else if (itemId == R.id.MENU_SERIES_EDIT) {
@@ -1167,9 +1164,10 @@ public class BooksOnBookshelf
                 } else if (itemId == R.id.MENU_SERIES_DELETE) {
                     final Series series = DataHolderUtils.requireSeries(rowData);
                     StandardDialogs.deleteSeries(this, series, () -> {
-                        vm.delete(this, series);
-                        saveListPosition();
-                        buildBookList();
+                        if (vm.delete(this, series)) {
+                            saveListPosition();
+                            buildBookList();
+                        }
                     });
                     return true;
 
@@ -1189,9 +1187,10 @@ public class BooksOnBookshelf
                 } else if (itemId == R.id.MENU_PUBLISHER_DELETE) {
                     final Publisher publisher = DataHolderUtils.requirePublisher(rowData);
                     StandardDialogs.deletePublisher(this, publisher, () -> {
-                        vm.delete(this, publisher);
-                        saveListPosition();
-                        buildBookList();
+                        if (vm.delete(this, publisher)) {
+                            saveListPosition();
+                            buildBookList();
+                        }
                     });
                     return true;
 
@@ -1210,9 +1209,10 @@ public class BooksOnBookshelf
                 } else if (itemId == R.id.MENU_BOOKSHELF_DELETE) {
                     final Bookshelf bookshelf = DataHolderUtils.requireBookshelf(rowData);
                     StandardDialogs.deleteBookshelf(this, bookshelf, () -> {
-                        vm.delete(bookshelf);
-                        saveListPosition();
-                        buildBookList();
+                        if (vm.delete(bookshelf)) {
+                            saveListPosition();
+                            buildBookList();
+                        }
                     });
                     return true;
                 }
@@ -1475,34 +1475,6 @@ public class BooksOnBookshelf
         buildBookList();
     }
 
-    public void onAuthorUpdated(@Nullable final Author author,
-                                @Nullable final String... keys) {
-        if (keys != null && Arrays.asList(keys).contains(DBKey.AUTHOR_IS_COMPLETE)) {
-            Objects.requireNonNull(author);
-            final int[] positions =
-                    vm.updateBooklistOnSetAuthorComplete(author.getId(), author.isComplete());
-            //noinspection ConstantConditions
-            adapter.requery(positions);
-        } else {
-            saveListPosition();
-            buildBookList();
-        }
-    }
-
-    public void onSeriesUpdated(@Nullable final Series series,
-                                @Nullable final String... keys) {
-        if (keys != null && Arrays.asList(keys).contains(DBKey.SERIES_IS_COMPLETE)) {
-            Objects.requireNonNull(series);
-            final int[] positions =
-                    vm.updateBooklistOnSetSeriesComplete(series.getId(), series.isComplete());
-            //noinspection ConstantConditions
-            adapter.requery(positions);
-        } else {
-            saveListPosition();
-            buildBookList();
-        }
-    }
-
     /**
      * Receives notifications that a Book was updated.
      * <p>
@@ -1521,36 +1493,31 @@ public class BooksOnBookshelf
 
         // Reminder: the actual Book table (and/or relations) are ALREADY UPDATED.
         // The only thing we are updating here is the temporary BookList table as needed
-        // and the displayed data
+        // and/or the displayed data
 
         if (keys != null && Arrays.asList(keys).contains(DBKey.READ__BOOL)) {
             Objects.requireNonNull(book);
-            final int[] positions =
-                    vm.updateBooklistOnBookRead(book.getId(), book.getBoolean(DBKey.READ__BOOL));
-            //noinspection ConstantConditions
-            adapter.requery(positions);
+            vm.updateBooklistOnBookRead(book.getId(), book.getBoolean(DBKey.READ__BOOL));
 
         } else if (keys != null && Arrays.asList(keys).contains(DBKey.LOANEE_NAME)) {
             Objects.requireNonNull(book);
-            final int[] positions =
-                    vm.updateBooklistOnBookLend(book.getId(), book.getLoanee().orElse(null));
-            //noinspection ConstantConditions
-            adapter.requery(positions);
+            vm.updateBooklistOnBookLend(book.getId(), book.getLoanee().orElse(null));
 
         } else if (keys != null && Arrays.asList(keys).contains(DBKey.COVER[0])) {
             Objects.requireNonNull(book);
-            final int[] positions = vm.getVisibleBookNodes(book.getId())
-                                      .stream()
-                                      .mapToInt(BooklistNode::getAdapterPosition)
-                                      .toArray();
-            //noinspection ConstantConditions
-            adapter.requery(positions);
+            vm.updateBooklistOnBookCover(book.getId());
 
         } else {
             // ENHANCE: update the modified row without a rebuild.
             saveListPosition();
             buildBookList();
         }
+    }
+
+    @Override
+    public void onBookUpdated(final long bookId,
+                              @Nullable final String... keys) {
+        onBookUpdated(vm.getBook(bookId), keys);
     }
 
     @Override

@@ -141,6 +141,8 @@ public class BooksOnBookshelfViewModel
 
     private final BoBTask boBTask = new BoBTask();
 
+    private final MutableLiveData<int[]> onPositionsUpdated = new MutableLiveData<>();
+
     private final MutableLiveData<Pair<Integer, Integer>> onSelectAdapterPosition =
             new MutableLiveData<>();
 
@@ -216,8 +218,14 @@ public class BooksOnBookshelfViewModel
      * @return first: previous adapter position which should be un-selected
      *         second: current adapter position to select
      */
+    @NonNull
     LiveData<Pair<Integer, Integer>> onSelectAdapterPosition() {
         return onSelectAdapterPosition;
+    }
+
+    @NonNull
+    LiveData<int[]> getOnPositionsUpdated() {
+        return onPositionsUpdated;
     }
 
     @Override
@@ -728,80 +736,55 @@ public class BooksOnBookshelfViewModel
     }
 
     /**
-     * Update the <strong>actual</strong> 'complete' status of the given Author.
+     * Update the 'complete' status of the given Author.
      *
      * @param author   Author to update
      * @param complete new status
-     *
-     * @return {@code true} for success.
      */
-    boolean setAuthorComplete(@NonNull final Author author,
-                              final boolean complete) {
-        return ServiceLocator.getInstance().getAuthorDao().setComplete(author, complete);
+    void setAuthorComplete(@NonNull final Author author,
+                           final boolean complete) {
+        if (ServiceLocator.getInstance().getAuthorDao().setComplete(author, complete)) {
+            Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
+            final int[] positions =
+                    booklist.updateAuthorComplete(author.getId(), author.isComplete())
+                            .stream()
+                            .mapToInt(BooklistNode::getAdapterPosition)
+                            .toArray();
+            onPositionsUpdated.setValue(positions);
+        }
     }
 
     /**
-     * Update the <strong>book-list</strong> 'complete' status of the given Author.
-     *
-     * @param id       Author to update
-     * @param complete new status
-     *
-     * @return the <strong>visible</strong> adapter positions for the Author
-     */
-    @NonNull
-    int[] updateBooklistOnSetAuthorComplete(@IntRange(from = 1) final long id,
-                                            final boolean complete) {
-        Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
-        return booklist.updateAuthorComplete(id, complete)
-                       .stream()
-                       .filter(BooklistNode::isVisible)
-                       .mapToInt(BooklistNode::getAdapterPosition)
-                       .toArray();
-    }
-
-    /**
-     * Update the <strong>actual</strong> 'complete' status of the given Series.
+     * Update the 'complete' status of the given Series.
      *
      * @param series   Series to update
      * @param complete new status
-     *
-     * @return {@code true} for success.
      */
-    boolean setSeriesComplete(@NonNull final Series series,
-                              final boolean complete) {
-        return ServiceLocator.getInstance().getSeriesDao().setComplete(series, complete);
+    void setSeriesComplete(@NonNull final Series series,
+                           final boolean complete) {
+        if (ServiceLocator.getInstance().getSeriesDao().setComplete(series, complete)) {
+            Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
+            final int[] positions =
+                    booklist.updateSeriesComplete(series.getId(), series.isComplete())
+                            .stream()
+                            .mapToInt(BooklistNode::getAdapterPosition)
+                            .toArray();
+            onPositionsUpdated.setValue(positions);
+        }
     }
 
     /**
-     * Update the <strong>book-list</strong> 'complete' status of the given Series.
-     *
-     * @param id       Series to update
-     * @param complete new status
-     *
-     * @return the <strong>visible</strong> adapter positions for the Series
-     */
-    @NonNull
-    int[] updateBooklistOnSetSeriesComplete(@IntRange(from = 1) final long id,
-                                            final boolean complete) {
-        Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
-        return booklist.updateSeriesComplete(id, complete)
-                       .stream()
-                       .filter(BooklistNode::isVisible)
-                       .mapToInt(BooklistNode::getAdapterPosition)
-                       .toArray();
-    }
-
-    /**
-     * Update the <strong>actual</strong> 'read' status of the given book.
+     * Update the 'read' status of the given book.
      *
      * @param id   Book to update
      * @param read new status
-     *
-     * @return {@code true} for success.
      */
-    boolean setBookRead(@IntRange(from = 1) final long id,
-                        final boolean read) {
-        return bookDao.setRead(id, read);
+    void setBookRead(@IntRange(from = 1) final long id,
+                     final boolean read) {
+        final Book book = Book.from(id);
+        if (bookDao.setRead(book.getId(), read)) {
+            updateBooklistOnBookRead(book.getId(), book.getBoolean(DBKey.READ__BOOL));
+        }
     }
 
     /**
@@ -809,32 +792,29 @@ public class BooksOnBookshelfViewModel
      *
      * @param id   Book to update
      * @param read new status
-     *
-     * @return the <strong>visible</strong> adapter positions for the book
      */
-    @NonNull
-    int[] updateBooklistOnBookRead(@IntRange(from = 1) final long id,
-                                   final boolean read) {
+    void updateBooklistOnBookRead(@IntRange(from = 1) final long id,
+                                  final boolean read) {
         Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
-        return booklist.updateBookRead(id, read)
-                       .stream()
-                       .filter(BooklistNode::isVisible)
-                       .mapToInt(BooklistNode::getAdapterPosition)
-                       .toArray();
+        final int[] positions =
+                booklist.updateBookRead(id, read)
+                        .stream()
+                        .mapToInt(BooklistNode::getAdapterPosition)
+                        .toArray();
+        onPositionsUpdated.setValue(positions);
     }
 
     /**
-     * Update the <strong>actual</strong> 'loanee' status of the given book.
+     * Update the 'loanee' for the given book.
      *
-     * @param bookId to update
+     * @param id     Book to update
      * @param loanee new loanee or {@code null} for a returned book
-     *
-     * @return the adapter positions for the book
      */
-    @SuppressWarnings("UnusedReturnValue")
-    boolean lendBook(@IntRange(from = 1) final long bookId,
-                     @SuppressWarnings("SameParameterValue") @Nullable final String loanee) {
-        return ServiceLocator.getInstance().getLoaneeDao().setLoanee(bookId, loanee);
+    void lendBook(@IntRange(from = 1) final long id,
+                  @SuppressWarnings("SameParameterValue") @Nullable final String loanee) {
+        if (ServiceLocator.getInstance().getLoaneeDao().setLoanee(id, loanee)) {
+            updateBooklistOnBookLend(id, loanee);
+        }
     }
 
     /**
@@ -842,18 +822,28 @@ public class BooksOnBookshelfViewModel
      *
      * @param bookId to update
      * @param loanee new loanee or {@code null} for a returned book
-     *
-     * @return the <strong>visible</strong> adapter positions for the book
      */
-    @NonNull
-    int[] updateBooklistOnBookLend(@IntRange(from = 1) final long bookId,
-                                   @Nullable final String loanee) {
+    void updateBooklistOnBookLend(@IntRange(from = 1) final long bookId,
+                                  @Nullable final String loanee) {
         Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
-        return booklist.updateBookLoanee(bookId, loanee)
-                       .stream()
-                       .filter(BooklistNode::isVisible)
-                       .mapToInt(BooklistNode::getAdapterPosition)
-                       .toArray();
+        final int[] positions = booklist.updateBookLoanee(bookId, loanee)
+                                        .stream()
+                                        .mapToInt(BooklistNode::getAdapterPosition)
+                                        .toArray();
+        onPositionsUpdated.setValue(positions);
+    }
+
+    /**
+     * Update the <strong>book-list</strong> 'cover' of the given book.
+     *
+     * @param bookId to update
+     */
+    void updateBooklistOnBookCover(@IntRange(from = 1) final long bookId) {
+        final int[] positions = getVisibleBookNodes(bookId)
+                .stream()
+                .mapToInt(BooklistNode::getAdapterPosition)
+                .toArray();
+        onPositionsUpdated.setValue(positions);
     }
 
     /**
@@ -864,7 +854,6 @@ public class BooksOnBookshelfViewModel
      *
      * @return {@code true} on a successful delete
      */
-    @SuppressWarnings("UnusedReturnValue")
     boolean delete(@NonNull final Context context,
                    @NonNull final Series series) {
         return ServiceLocator.getInstance().getSeriesDao().delete(context, series);
@@ -878,7 +867,6 @@ public class BooksOnBookshelfViewModel
      *
      * @return {@code true} on a successful delete
      */
-    @SuppressWarnings("UnusedReturnValue")
     boolean delete(@NonNull final Context context,
                    @NonNull final Publisher publisher) {
         return ServiceLocator.getInstance().getPublisherDao().delete(context, publisher);
@@ -891,7 +879,6 @@ public class BooksOnBookshelfViewModel
      *
      * @return {@code true} on a successful delete
      */
-    @SuppressWarnings("UnusedReturnValue")
     boolean delete(@NonNull final Bookshelf bookshelf) {
         return ServiceLocator.getInstance().getBookshelfDao().delete(bookshelf);
     }
@@ -904,7 +891,11 @@ public class BooksOnBookshelfViewModel
      * @return {@code true} on a successful delete
      */
     boolean deleteBook(@IntRange(from = 1) final long bookId) {
-        return bookDao.delete(bookId);
+        final boolean success = bookDao.delete(bookId);
+        if (success) {
+            onBookDeleted(bookId);
+        }
+        return success;
     }
 
     @NonNull
