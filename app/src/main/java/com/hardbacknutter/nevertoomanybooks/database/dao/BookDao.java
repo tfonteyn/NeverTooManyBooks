@@ -261,25 +261,26 @@ public interface BookDao {
      * This method should only be called from places where only the book id is available.
      * If the full Book is available, use {@link #setRead(Book, boolean)} instead.
      *
-     * @param id     id of the book to update
-     * @param isRead the status to set
+     * @param id   id of the book to update
+     * @param read the status to set
      *
      * @return {@code true} for success.
      */
     boolean setRead(@IntRange(from = 1) long id,
-                    boolean isRead);
+                    boolean read);
 
     /**
      * Update the 'read' status and the 'read_end' date of the book.
-     * The book will be updated.
+     * <p>
+     * If successful, the book object will have been updated with the new status.
      *
      * @param book   to update
-     * @param isRead the status to set
+     * @param read the status to set
      *
      * @return {@code true} for success.
      */
     boolean setRead(@NonNull Book book,
-                    boolean isRead);
+                    boolean read);
 
     /**
      * Count all books.

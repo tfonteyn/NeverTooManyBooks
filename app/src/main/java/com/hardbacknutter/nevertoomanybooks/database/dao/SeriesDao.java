@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -59,13 +59,15 @@ public interface SeriesDao
     String getLanguage(long id);
 
     /**
-     * Update the 'complete' status of a {@link Series}.
+     * Update the 'complete' status for the given {@link Series}.
+     * <p>
+     * If successful, the series object will have been updated with the new status.
      *
-     * @param seriesId   to update
-     * @param isComplete Flag indicating the user considers this item to be 'complete'
+     * @param series   to update
+     * @param complete Flag indicating the user considers this item to be 'complete'
      *
      * @return {@code true} for success.
      */
-    boolean setComplete(long seriesId,
-                        boolean isComplete);
+    boolean setComplete(@NonNull Series series,
+                        boolean complete);
 }

@@ -206,13 +206,18 @@ public class SeriesDaoImpl
     }
 
     @Override
-    public boolean setComplete(final long seriesId,
-                               final boolean isComplete) {
+    public boolean setComplete(@NonNull final Series series,
+                               final boolean complete) {
         final ContentValues cv = new ContentValues();
-        cv.put(DBKey.SERIES_IS_COMPLETE, isComplete);
+        cv.put(DBKey.SERIES_IS_COMPLETE, complete);
 
-        return 0 < db.update(TBL_SERIES.getName(), cv, DBKey.PK_ID + "=?",
-                             new String[]{String.valueOf(seriesId)});
+        final boolean success =
+                0 < db.update(TBL_SERIES.getName(), cv, DBKey.PK_ID + "=?",
+                              new String[]{String.valueOf(series.getId())});
+        if (success) {
+            series.setComplete(complete);
+        }
+        return success;
     }
 
     /**

@@ -365,13 +365,19 @@ public class AuthorDaoImpl
     }
 
     @Override
-    public boolean setComplete(final long authorId,
-                               final boolean isComplete) {
+    public boolean setComplete(@NonNull final Author author,
+                               final boolean complete) {
         final ContentValues cv = new ContentValues();
-        cv.put(DBKey.AUTHOR_IS_COMPLETE, isComplete);
+        cv.put(DBKey.AUTHOR_IS_COMPLETE, complete);
 
-        return 0 < db.update(TBL_AUTHORS.getName(), cv, DBKey.PK_ID + "=?",
-                             new String[]{String.valueOf(authorId)});
+        final boolean success =
+                0 < db.update(TBL_AUTHORS.getName(), cv, DBKey.PK_ID + "=?",
+                              new String[]{String.valueOf(author.getId())});
+
+        if (success) {
+            author.setComplete(complete);
+        }
+        return success;
     }
 
     /**

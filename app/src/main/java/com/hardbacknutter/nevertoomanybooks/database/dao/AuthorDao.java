@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -95,15 +95,17 @@ public interface AuthorDao
                          @NonNull Locale bookLocale);
 
     /**
-     * Update the 'complete' status of an {@link Author}.
+     * Update the 'complete' status for the given {@link Author}.
+     * <p>
+     * If successful, the author object will have been updated with the new status.
      *
-     * @param authorId   to update
-     * @param isComplete Flag indicating the user considers this item to be 'complete'
+     * @param author   to update
+     * @param complete Flag indicating the user considers this item to be 'complete'
      *
      * @return {@code true} for success.
      */
-    boolean setComplete(long authorId,
-                        boolean isComplete);
+    boolean setComplete(@NonNull Author author,
+                        boolean complete);
 
     @StringDef({
             DBKey.TITLE_OB,

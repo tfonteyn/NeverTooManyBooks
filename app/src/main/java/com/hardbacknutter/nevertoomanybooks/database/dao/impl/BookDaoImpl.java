@@ -980,11 +980,11 @@ public class BookDaoImpl
 
     @Override
     public boolean setRead(@IntRange(from = 1) final long id,
-                           final boolean isRead) {
-        final String now = isRead ? SqlEncode.date(LocalDateTime.now()) : "";
+                           final boolean read) {
+        final String now = read ? SqlEncode.date(LocalDateTime.now()) : "";
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.Update.READ)) {
-            stmt.bindBoolean(1, isRead);
+            stmt.bindBoolean(1, read);
             stmt.bindString(2, now);
             stmt.bindLong(3, id);
             return 0 < stmt.executeUpdateDelete();
@@ -993,20 +993,20 @@ public class BookDaoImpl
 
     @Override
     public boolean setRead(@NonNull final Book book,
-                           final boolean isRead) {
-        final String now = isRead ? SqlEncode.date(LocalDateTime.now()) : "";
+                           final boolean read) {
+        final String now = read ? SqlEncode.date(LocalDateTime.now()) : "";
 
         final boolean success;
         // don't call standalone method, we want to use the same 'now' to update the book
         try (SynchronizedStatement stmt = db.compileStatement(Sql.Update.READ)) {
-            stmt.bindBoolean(1, isRead);
+            stmt.bindBoolean(1, read);
             stmt.bindString(2, now);
             stmt.bindLong(3, book.getId());
             success = 0 < stmt.executeUpdateDelete();
         }
 
         if (success) {
-            book.putBoolean(DBKey.READ__BOOL, isRead);
+            book.putBoolean(DBKey.READ__BOOL, read);
             book.putString(DBKey.READ_END__DATE, now);
             book.putString(DBKey.DATE_LAST_UPDATED__UTC, now);
         }
