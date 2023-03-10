@@ -1167,7 +1167,8 @@ public class BooksOnBookshelf
                     final Series series = DataHolderUtils.requireSeries(rowData);
                     StandardDialogs.deleteSeries(this, series, () -> {
                         vm.delete(this, series);
-                        onRowChanged(DBKey.FK_SERIES, series.getId());
+                        saveListPosition();
+                        buildBookList();
                     });
                     return true;
 
@@ -1188,7 +1189,8 @@ public class BooksOnBookshelf
                     final Publisher publisher = DataHolderUtils.requirePublisher(rowData);
                     StandardDialogs.deletePublisher(this, publisher, () -> {
                         vm.delete(this, publisher);
-                        onRowChanged(DBKey.FK_PUBLISHER, publisher.getId());
+                        saveListPosition();
+                        buildBookList();
                     });
                     return true;
 
@@ -1208,7 +1210,8 @@ public class BooksOnBookshelf
                     final Bookshelf bookshelf = DataHolderUtils.requireBookshelf(rowData);
                     StandardDialogs.deleteBookshelf(this, bookshelf, () -> {
                         vm.delete(bookshelf);
-                        onRowChanged(DBKey.FK_BOOKSHELF, bookshelf.getId());
+                        saveListPosition();
+                        buildBookList();
                     });
                     return true;
                 }
