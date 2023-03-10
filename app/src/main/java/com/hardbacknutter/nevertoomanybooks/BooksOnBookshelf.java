@@ -1127,11 +1127,11 @@ public class BooksOnBookshelf
 
                 } else if (itemId == R.id.MENU_AUTHOR_SET_COMPLETE
                            || itemId == R.id.MENU_AUTHOR_SET_INCOMPLETE) {
-                    final long authorId = rowData.getLong(DBKey.FK_AUTHOR);
+                    final Author author = DataHolderUtils.requireAuthor(rowData);
                     // toggle the complete status
                     final boolean status = !rowData.getBoolean(DBKey.AUTHOR_IS_COMPLETE);
-                    if (vm.setAuthorComplete(authorId, status)) {
-                        onRowChanged(DBKey.FK_AUTHOR, authorId);
+                    if (vm.setAuthorComplete(author, status)) {
+                        onAuthorUpdated(author, DBKey.AUTHOR_IS_COMPLETE);
                     }
                     return true;
 
@@ -1150,11 +1150,11 @@ public class BooksOnBookshelf
             case BooklistGroup.SERIES: {
                 if (itemId == R.id.MENU_SERIES_SET_COMPLETE
                     || itemId == R.id.MENU_SERIES_SET_INCOMPLETE) {
-                    final long seriesId = rowData.getLong(DBKey.FK_SERIES);
+                    final Series series = DataHolderUtils.requireSeries(rowData);
                     // toggle the complete status
                     final boolean status = !rowData.getBoolean(DBKey.SERIES_IS_COMPLETE);
-                    if (vm.setSeriesComplete(seriesId, status)) {
-                        onRowChanged(DBKey.FK_SERIES, seriesId);
+                    if (vm.setSeriesComplete(series, status)) {
+                        onSeriesUpdated(series, DBKey.SERIES_IS_COMPLETE);
                     }
                     return true;
 
@@ -1400,26 +1400,6 @@ public class BooksOnBookshelf
         editStyleLauncher.launch(EditStyleContract.edit(style, true));
     }
 
-    /**
-     * React to (non-Book) row changes made.
-     */
-    @SuppressWarnings("unused")
-    private void onRowChanged(@NonNull final String key,
-                              @IntRange(from = 0) final long id) {
-        // ENHANCE: update the modified row without a rebuild.
-        saveListPosition();
-        buildBookList();
-    }
-
-    @Override
-    public void onBookDeleted(final long bookId) {
-        vm.onBookDeleted(bookId);
-        // We don't try to remove the row without a rebuild as this could quickly become complex...
-        // e.g. if there is(was) only a single book on the level, we'd have to recursively
-        // cleanup each level above the book
-        saveListPosition();
-        buildBookList();
-    }
 
     /**
      * Start the list builder.
@@ -1485,7 +1465,46 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Receive notifications that a Book was updated.
+     * React to (non-Book) row changes made.
+     */
+    @SuppressWarnings("unused")
+    private void onRowChanged(@NonNull final String key,
+                              @IntRange(from = 0) final long id) {
+        // ENHANCE: update the modified row without a rebuild.
+        saveListPosition();
+        buildBookList();
+    }
+
+    public void onAuthorUpdated(@Nullable final Author author,
+                                @Nullable final String... keys) {
+        if (keys != null && Arrays.asList(keys).contains(DBKey.AUTHOR_IS_COMPLETE)) {
+            Objects.requireNonNull(author);
+            final int[] positions =
+                    vm.updateBooklistOnSetAuthorComplete(author.getId(), author.isComplete());
+            //noinspection ConstantConditions
+            adapter.requery(positions);
+        } else {
+            saveListPosition();
+            buildBookList();
+        }
+    }
+
+    public void onSeriesUpdated(@Nullable final Series series,
+                                @Nullable final String... keys) {
+        if (keys != null && Arrays.asList(keys).contains(DBKey.SERIES_IS_COMPLETE)) {
+            Objects.requireNonNull(series);
+            final int[] positions =
+                    vm.updateBooklistOnSetSeriesComplete(series.getId(), series.isComplete());
+            //noinspection ConstantConditions
+            adapter.requery(positions);
+        } else {
+            saveListPosition();
+            buildBookList();
+        }
+    }
+
+    /**
+     * Receives notifications that a Book was updated.
      * <p>
      * For a limited set of keys, we directly update the list table which is very fast.
      * <p>
@@ -1506,19 +1525,22 @@ public class BooksOnBookshelf
 
         if (keys != null && Arrays.asList(keys).contains(DBKey.READ__BOOL)) {
             Objects.requireNonNull(book);
-            final int[] positions = vm.onBookRead(book.getId(), book.getBoolean(DBKey.READ__BOOL));
+            final int[] positions =
+                    vm.updateBooklistOnBookRead(book.getId(), book.getBoolean(DBKey.READ__BOOL));
             //noinspection ConstantConditions
             adapter.requery(positions);
 
         } else if (keys != null && Arrays.asList(keys).contains(DBKey.LOANEE_NAME)) {
             Objects.requireNonNull(book);
-            final int[] positions = vm.onBookLend(book.getId(), book.getLoanee().orElse(null));
+            final int[] positions =
+                    vm.updateBooklistOnBookLend(book.getId(), book.getLoanee().orElse(null));
             //noinspection ConstantConditions
             adapter.requery(positions);
 
         } else if (keys != null && Arrays.asList(keys).contains(DBKey.COVER[0])) {
             Objects.requireNonNull(book);
-            final int[] positions = vm.getVisibleBookNodes(book.getId()).stream()
+            final int[] positions = vm.getVisibleBookNodes(book.getId())
+                                      .stream()
                                       .mapToInt(BooklistNode::getAdapterPosition)
                                       .toArray();
             //noinspection ConstantConditions
@@ -1529,6 +1551,16 @@ public class BooksOnBookshelf
             saveListPosition();
             buildBookList();
         }
+    }
+
+    @Override
+    public void onBookDeleted(final long bookId) {
+        vm.onBookDeleted(bookId);
+        // We don't try to remove the row without a rebuild as this could quickly become complex...
+        // e.g. if there is(was) only a single book on the level, we'd have to recursively
+        // cleanup each level above the book
+        saveListPosition();
+        buildBookList();
     }
 
     /**

@@ -124,7 +124,15 @@ public class Booklist
     @Nullable
     private Cursor listCursor;
 
-    /** {@link #getVisibleBookNodes}. */
+    /** {@link #getAuthorNodes}. */
+    @SuppressWarnings("FieldNotUsedInToString")
+    private String sqlGetAuthorNodes;
+
+    /** {@link #getSeriesNodes}. */
+    @SuppressWarnings("FieldNotUsedInToString")
+    private String sqlGetSeriesNodes;
+
+    /** {@link #getBookNodes}. */
     @SuppressWarnings("FieldNotUsedInToString")
     private String sqlGetBookNodes;
 
@@ -147,6 +155,14 @@ public class Booklist
     /** {@link #getOffsetCursor(int, int)}. */
     @SuppressWarnings("FieldNotUsedInToString")
     private String sqlGetOffsetCursor;
+
+    /** {@link #updateAuthorComplete(long, boolean)}. */
+    @SuppressWarnings("FieldNotUsedInToString")
+    private String sqlUpdateAuthorIsComplete;
+
+    /** {@link #updateSeriesComplete(long, boolean)}. */
+    @SuppressWarnings("FieldNotUsedInToString")
+    private String sqlUpdateSeriesIsComplete;
 
     /** {@link #updateBookRead(long, boolean)}. */
     @SuppressWarnings("FieldNotUsedInToString")
@@ -397,6 +413,78 @@ public class Booklist
     }
 
     /**
+     * Get <strong>all</strong> nodes for the given Author id.
+     *
+     * @param authorId to use
+     *
+     * @return list of nodes, can be empty, but never {@code null}
+     */
+    @NonNull
+    private List<BooklistNode> getAuthorNodes(@IntRange(from = 0) final long authorId) {
+        final List<BooklistNode> nodeList = new ArrayList<>();
+
+        // sanity check
+        if (authorId == 0) {
+            return nodeList;
+        }
+
+        if (sqlGetAuthorNodes == null) {
+            sqlGetAuthorNodes =
+                    SELECT_ + BooklistNode.getColumns(listTable)
+                    + _FROM_ + listTable.ref()
+                    + _WHERE_ + listTable.dot(DBKey.FK_AUTHOR) + "=?";
+        }
+
+        try (Cursor cursor = db.rawQuery(sqlGetAuthorNodes, new String[]{
+                String.valueOf(authorId)})) {
+
+            while (cursor.moveToNext()) {
+                nodeList.add(new BooklistNode(cursor));
+            }
+        }
+
+        nodeList.forEach(node -> node.updateAdapterPosition(db, listTable));
+
+        return nodeList;
+    }
+
+    /**
+     * Get <strong>all</strong> nodes for the given Series id.
+     *
+     * @param seriesId to use
+     *
+     * @return list of nodes, can be empty, but never {@code null}
+     */
+    @NonNull
+    private List<BooklistNode> getSeriesNodes(@IntRange(from = 0) final long seriesId) {
+        final List<BooklistNode> nodeList = new ArrayList<>();
+
+        // sanity check
+        if (seriesId == 0) {
+            return nodeList;
+        }
+
+        if (sqlGetSeriesNodes == null) {
+            sqlGetSeriesNodes =
+                    SELECT_ + BooklistNode.getColumns(listTable)
+                    + _FROM_ + listTable.ref()
+                    + _WHERE_ + listTable.dot(DBKey.FK_SERIES) + "=?";
+        }
+
+        try (Cursor cursor = db.rawQuery(sqlGetSeriesNodes, new String[]{
+                String.valueOf(seriesId)})) {
+
+            while (cursor.moveToNext()) {
+                nodeList.add(new BooklistNode(cursor));
+            }
+        }
+
+        nodeList.forEach(node -> node.updateAdapterPosition(db, listTable));
+
+        return nodeList;
+    }
+
+    /**
      * Get <strong>all</strong> nodes for the given book id.
      *
      * @param bookId to use
@@ -419,7 +507,6 @@ public class Booklist
                     + _WHERE_ + listTable.dot(DBKey.FK_BOOK) + "=?";
         }
 
-        // get all positions the book is on
         try (Cursor cursor = db.rawQuery(sqlGetBookNodes, new String[]{
                 String.valueOf(bookId)})) {
 
@@ -428,7 +515,6 @@ public class Booklist
             }
         }
 
-        // Recalculate all positions
         nodeList.forEach(node -> node.updateAdapterPosition(db, listTable));
 
         return nodeList;
@@ -481,22 +567,83 @@ public class Booklist
 
     /**
      * Allows updating the current list-table without requiring a whole new build
+     * with the 'complete' status of an Author. Will update all nodes for the given Author.
+     *
+     * @param authorId to update
+     * @param complete status to set
+     *
+     * @return <strong>all</strong> nodes which were changed.
+     */
+    @NonNull
+    public List<BooklistNode> updateAuthorComplete(@IntRange(from = 1) final long authorId,
+                                                   final boolean complete) {
+        if (listTable.contains(DBDefinitions.DOM_AUTHOR_IS_COMPLETE)) {
+            if (sqlUpdateAuthorIsComplete == null) {
+                sqlUpdateAuthorIsComplete =
+                        UPDATE_ + listTable.getName()
+                        + _SET_ + DBKey.AUTHOR_IS_COMPLETE + "=?"
+                        + _WHERE_ + DBKey.FK_AUTHOR + "=?"
+                        + _AND_ + DBKey.BL_NODE_GROUP + "=" + BooklistGroup.AUTHOR;
+            }
+
+            try (SynchronizedStatement stmt = db.compileStatement(sqlUpdateAuthorIsComplete)) {
+                stmt.bindBoolean(1, complete);
+                stmt.bindLong(2, authorId);
+                stmt.executeUpdateDelete();
+            }
+        }
+        return getAuthorNodes(authorId);
+    }
+
+    /**
+     * Allows updating the current list-table without requiring a whole new build
+     * with the 'complete' status of a Series. Will update all nodes for the given Series.
+     *
+     * @param seriesId to update
+     * @param complete status to set
+     *
+     * @return <strong>all</strong> nodes which were changed.
+     */
+    @NonNull
+    public List<BooklistNode> updateSeriesComplete(@IntRange(from = 1) final long seriesId,
+                                                   final boolean complete) {
+        if (listTable.contains(DBDefinitions.DOM_SERIES_IS_COMPLETE)) {
+            if (sqlUpdateSeriesIsComplete == null) {
+                sqlUpdateSeriesIsComplete =
+                        UPDATE_ + listTable.getName()
+                        + _SET_ + DBKey.SERIES_IS_COMPLETE + "=?"
+                        + _WHERE_ + DBKey.FK_SERIES + "=?"
+                        + _AND_ + DBKey.BL_NODE_GROUP + "=" + BooklistGroup.SERIES;
+            }
+
+            try (SynchronizedStatement stmt = db.compileStatement(sqlUpdateSeriesIsComplete)) {
+                stmt.bindBoolean(1, complete);
+                stmt.bindLong(2, seriesId);
+                stmt.executeUpdateDelete();
+            }
+        }
+        return getSeriesNodes(seriesId);
+    }
+
+    /**
+     * Allows updating the current list-table without requiring a whole new build
      * with the 'read' status of a book. Will update all nodes for the given book.
      *
      * @param bookId to update
      * @param read   status to set
      *
-     * @return list with the nodes which were changed.
+     * @return <strong>all</strong> nodes which were changed.
      */
     @NonNull
     public List<BooklistNode> updateBookRead(@IntRange(from = 1) final long bookId,
                                              final boolean read) {
         if (listTable.contains(DBDefinitions.DOM_BOOK_READ)) {
             if (sqlUpdateBookRead == null) {
-                sqlUpdateBookRead = UPDATE_ + listTable.getName()
-                                    + _SET_ + DBKey.READ__BOOL + "=?"
-                                    + _WHERE_ + DBKey.FK_BOOK + "=?"
-                                    + _AND_ + DBKey.BL_NODE_GROUP + "=" + BooklistGroup.BOOK;
+                sqlUpdateBookRead =
+                        UPDATE_ + listTable.getName()
+                        + _SET_ + DBKey.READ__BOOL + "=?"
+                        + _WHERE_ + DBKey.FK_BOOK + "=?"
+                        + _AND_ + DBKey.BL_NODE_GROUP + "=" + BooklistGroup.BOOK;
             }
 
             try (SynchronizedStatement stmt = db.compileStatement(sqlUpdateBookRead)) {
@@ -515,17 +662,18 @@ public class Booklist
      * @param bookId to update
      * @param loanee loanee to set
      *
-     * @return list with the nodes which were changed.
+     * @return <strong>all</strong> nodes which were changed.
      */
     @NonNull
     public List<BooklistNode> updateBookLoanee(@IntRange(from = 1) final long bookId,
                                                @Nullable final String loanee) {
         if (listTable.contains(DBDefinitions.DOM_LOANEE)) {
             if (sqlUpdateBookLoanee == null) {
-                sqlUpdateBookLoanee = UPDATE_ + listTable.getName()
-                                      + _SET_ + DBKey.LOANEE_NAME + "=?"
-                                      + _WHERE_ + DBKey.FK_BOOK + "=?"
-                                      + _AND_ + DBKey.BL_NODE_GROUP + "=" + BooklistGroup.BOOK;
+                sqlUpdateBookLoanee =
+                        UPDATE_ + listTable.getName()
+                        + _SET_ + DBKey.LOANEE_NAME + "=?"
+                        + _WHERE_ + DBKey.FK_BOOK + "=?"
+                        + _AND_ + DBKey.BL_NODE_GROUP + "=" + BooklistGroup.BOOK;
             }
 
             try (SynchronizedStatement stmt = db.compileStatement(sqlUpdateBookLoanee)) {
@@ -569,6 +717,13 @@ public class Booklist
         }
     }
 
+    /**
+     * Starting from the given row id, find the next row with a book which has no front cover.
+     *
+     * @param rowId to start from
+     *
+     * @return the next node without a cover
+     */
     @NonNull
     public Optional<BooklistNode> getNextBookWithoutCover(final long rowId) {
 
