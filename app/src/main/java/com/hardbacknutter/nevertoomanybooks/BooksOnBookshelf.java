@@ -300,7 +300,9 @@ public class BooksOnBookshelf
                 @Override
                 public void onResult(final long bookshelfId) {
                     if (bookshelfId != vm.getCurrentBookshelf().getId()) {
-                        onRowChanged(DBKey.FK_BOOKSHELF, bookshelfId);
+                        // ENHANCE: update the modified row without a rebuild.
+                        saveListPosition();
+                        buildBookList();
                     }
                 }
             };
@@ -333,7 +335,9 @@ public class BooksOnBookshelf
         @Override
         public void onChange(@NonNull final String key,
                              final long id) {
-            onRowChanged(key, id);
+            // ENHANCE: update the modified row without a rebuild.
+            saveListPosition();
+            buildBookList();
         }
     };
 
@@ -985,7 +989,6 @@ public class BooksOnBookshelf
 
         // if it's a level, add the expand option
         if (rowData.getInt(DBKey.BL_NODE_GROUP) != BooklistGroup.BOOK) {
-            //noinspection UnusedAssignment
             menu.add(R.id.MENU_GROUP_BOB_EXPANSION, R.id.MENU_LEVEL_EXPAND, menuOrder++,
                      R.string.option_level_expand)
                 .setIcon(R.drawable.ic_baseline_unfold_more_24);
@@ -1462,17 +1465,6 @@ public class BooksOnBookshelf
                 recoverAfterFailedBuild();
             }
         });
-    }
-
-    /**
-     * React to (non-Book) row changes made.
-     */
-    @SuppressWarnings("unused")
-    private void onRowChanged(@NonNull final String key,
-                              @IntRange(from = 0) final long id) {
-        // ENHANCE: update the modified row without a rebuild.
-        saveListPosition();
-        buildBookList();
     }
 
     /**
