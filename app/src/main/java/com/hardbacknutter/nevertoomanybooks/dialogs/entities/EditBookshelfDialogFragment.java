@@ -23,7 +23,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
@@ -137,7 +136,7 @@ public class EditBookshelfDialogFragment
         final Context context = getContext();
         final BookshelfDao dao = ServiceLocator.getInstance().getBookshelfDao();
 
-        // The logic flow here is different from the default one as used for an Author.
+        // The logic flow here is different from the default one as used for e.g. an Author.
         // Here we reject using a name which already exists IF the user meant to create a NEW shelf.
 
         // Check if there is an existing one with the same name
@@ -154,8 +153,7 @@ public class EditBookshelfDialogFragment
             // There is one with the same name; ask whether to merge the 2
             SaveChangesHelper.askToMerge(
                     this, dao, bookshelf,
-                    savedBookshelf -> Launcher.setResult(this, requestKey,
-                                                         savedBookshelf.getId()),
+                    savedBookshelf -> Launcher.setResult(this, requestKey, savedBookshelf),
                     R.string.confirm_merge_bookshelves,
                     existingBookshelf.get());
         } else {
@@ -168,7 +166,7 @@ public class EditBookshelfDialogFragment
                     //noinspection ConstantConditions
                     dao.update(context, bookshelf);
                 }
-                Launcher.setResult(this, requestKey, bookshelf.getId());
+                Launcher.setResult(this, requestKey, bookshelf);
                 return true;
 
             } catch (@NonNull final DaoWriteException e) {
@@ -203,9 +201,9 @@ public class EditBookshelfDialogFragment
 
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
-                              @IntRange(from = 1) final long bookshelfId) {
+                              @NonNull final Bookshelf bookshelf) {
             final Bundle result = new Bundle(1);
-            result.putLong(DBKey.FK_BOOKSHELF, bookshelfId);
+            result.putParcelable(DBKey.FK_BOOKSHELF, bookshelf);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
 
@@ -236,18 +234,18 @@ public class EditBookshelfDialogFragment
         @Override
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
-            final long value = result.getLong(DBKey.FK_BOOKSHELF);
-            if (value <= 0) {
+            final Bookshelf bookshelf = result.getParcelable(DBKey.FK_BOOKSHELF);
+            if (bookshelf == null) {
                 throw new IllegalArgumentException(DBKey.FK_BOOKSHELF);
             }
-            onResult(value);
+            onResult(bookshelf);
         }
 
         /**
-         * Callback handler with the user's selection.
+         * Callback handler with the edit.
          *
-         * @param bookshelfId the id of the updated shelf, or of the newly inserted shelf.
+         * @param bookshelf the Bookshelf
          */
-        public abstract void onResult(long bookshelfId);
+        public abstract void onResult(Bookshelf bookshelf);
     }
 }

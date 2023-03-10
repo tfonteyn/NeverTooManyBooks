@@ -41,9 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 public class EditAuthorViewModel
         extends ViewModel {
 
-    private static final String TAG = "EditAuthorViewModel";
-    public static final String BKEY_REQUEST_KEY = TAG + ":rk";
-
     /** FragmentResultListener request key to use for our response. */
     private String requestKey;
 
@@ -64,7 +61,9 @@ public class EditAuthorViewModel
     public void init(@NonNull final Bundle args) {
         if (requestKey == null) {
 
-            requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
+            requestKey = Objects.requireNonNull(
+                    args.getString(EditAuthorDialogFragment.BKEY_REQUEST_KEY),
+                    EditAuthorDialogFragment.BKEY_REQUEST_KEY);
             author = Objects.requireNonNull(args.getParcelable(DBKey.FK_AUTHOR), DBKey.FK_AUTHOR);
 
             currentEdit = new Author(author);

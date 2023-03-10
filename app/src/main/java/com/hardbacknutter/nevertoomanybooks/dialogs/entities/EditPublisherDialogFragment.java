@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,14 +25,16 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentResultListener;
+import androidx.lifecycle.LifecycleOwner;
 
 import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.RowChangedListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditPublisherContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
@@ -46,7 +48,7 @@ public class EditPublisherDialogFragment
         extends FFBaseDialogFragment {
 
     /** Fragment/Log tag. */
-    private static final String TAG = "EditPublisherDialogFrag";
+    public static final String TAG = "EditPublisherDialogFrag";
     private static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
     /** FragmentResultListener request key to use for our response. */
@@ -66,23 +68,6 @@ public class EditPublisherDialogFragment
      */
     public EditPublisherDialogFragment() {
         super(R.layout.dialog_edit_publisher, R.layout.dialog_edit_publisher_content);
-    }
-
-    /**
-     * Launch the dialog.
-     *
-     * @param fm        The FragmentManager this fragment will be added to.
-     * @param publisher to edit.
-     */
-    public static void launch(@NonNull final FragmentManager fm,
-                              @NonNull final Publisher publisher) {
-        final Bundle args = new Bundle(2);
-        args.putString(BKEY_REQUEST_KEY, RowChangedListener.REQUEST_KEY);
-        args.putParcelable(DBKey.FK_PUBLISHER, publisher);
-
-        final DialogFragment frag = new EditPublisherDialogFragment();
-        frag.setArguments(args);
-        frag.show(fm, TAG);
     }
 
     @Override
@@ -160,8 +145,7 @@ public class EditPublisherDialogFragment
         return SaveChangesHelper
                 .save(this, ServiceLocator.getInstance().getPublisherDao(),
                       publisher, nameChanged, bookLocale,
-                      savedPublisher -> RowChangedListener.setResult(
-                              this, requestKey, DBKey.FK_PUBLISHER, savedPublisher.getId()),
+                      savedPublisher -> Launcher.setResult(this, requestKey, savedPublisher),
                       R.string.confirm_merge_publishers);
     }
 
@@ -179,5 +163,61 @@ public class EditPublisherDialogFragment
     public void onPause() {
         viewToModel();
         super.onPause();
+    }
+
+    public abstract static class Launcher
+            implements FragmentResultListener {
+
+        private String requestKey;
+        private FragmentManager fragmentManager;
+
+        static void setResult(@NonNull final Fragment fragment,
+                              @NonNull final String requestKey,
+                              @NonNull final Publisher publisher) {
+            final Bundle result = new Bundle(1);
+            result.putParcelable(DBKey.FK_PUBLISHER, publisher);
+            fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
+        }
+
+        public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
+                                              @NonNull final String requestKey,
+                                              @NonNull final LifecycleOwner lifecycleOwner) {
+            this.fragmentManager = fragmentManager;
+            this.requestKey = requestKey;
+            this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner, this);
+        }
+
+        /**
+         * Launch the dialog.
+         *
+         * @param publisher to edit.
+         */
+        public void launch(@NonNull final Publisher publisher) {
+
+            final Bundle args = new Bundle(2);
+            args.putString(BKEY_REQUEST_KEY, requestKey);
+            args.putParcelable(DBKey.FK_PUBLISHER, publisher);
+
+            final DialogFragment frag = new EditPublisherDialogFragment();
+            frag.setArguments(args);
+            frag.show(fragmentManager, TAG);
+        }
+
+        @Override
+        public void onFragmentResult(@NonNull final String requestKey,
+                                     @NonNull final Bundle result) {
+            final Publisher publisher = result.getParcelable(DBKey.FK_PUBLISHER);
+            if (publisher == null) {
+                throw new IllegalArgumentException(DBKey.FK_PUBLISHER);
+            }
+            onResult(publisher);
+        }
+
+        /**
+         * Callback handler with the edit.
+         *
+         * @param publisher the Publisher
+         */
+        public abstract void onResult(@NonNull Publisher publisher);
     }
 }

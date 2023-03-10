@@ -181,6 +181,13 @@ public class BooksOnBookshelf
     /** {@link FragmentResultListener} request key. */
     private static final String RK_EDIT_BOOKSHELF = TAG + ":rk:" + EditBookshelfDialogFragment.TAG;
     /** {@link FragmentResultListener} request key. */
+    private static final String RK_EDIT_AUTHOR = TAG + ":rk:" + EditAuthorDialogFragment.TAG;
+    /** {@link FragmentResultListener} request key. */
+    private static final String RK_EDIT_SERIES = TAG + ":rk:" + EditSeriesDialogFragment.TAG;
+    /** {@link FragmentResultListener} request key. */
+    private static final String RK_EDIT_PUBLISHER = TAG + ":rk:" + EditPublisherDialogFragment.TAG;
+
+    /** {@link FragmentResultListener} request key. */
     private static final String RK_STYLE_PICKER = TAG + ":rk:" + StylePickerDialogFragment.TAG;
     /** {@link FragmentResultListener} request key. */
     private static final String RK_EDIT_LENDER = TAG + ":rk:" + EditLenderDialogFragment.TAG;
@@ -273,10 +280,19 @@ public class BooksOnBookshelf
             registerForActivityResult(new EditBookshelvesContract(),
                                       bookshelfId -> vm.onManageBookshelvesFinished(this,
                                                                                     bookshelfId));
-
+    /**
+     * Accept the result from the dialog.
+     */
+    private final EditLenderDialogFragment.Launcher editLenderLauncher =
+            new EditLenderDialogFragment.Launcher() {
+                @Override
+                public void onResult(@IntRange(from = 1) final long bookId,
+                                     @NonNull final String loanee) {
+                    vm.updateBooklistOnBookLend(bookId, loanee);
+                }
+            };
     /** Encapsulates the FAB button/menu. */
     private FabMenu fabMenu;
-
     /** View Binding. */
     private BooksonbookshelfBinding vb;
     private final BookshelfFiltersDialogFragment.Launcher bookshelfFiltersLauncher =
@@ -288,22 +304,45 @@ public class BooksOnBookshelf
                     }
                 }
             };
-
     /** Delegate which will handle all positioning/scrolling. */
     private PositioningHelper positioningHelper;
-
-    /**
-     * Accept the result from the dialog.
-     */
     private final EditBookshelfDialogFragment.Launcher editBookshelfLauncher =
             new EditBookshelfDialogFragment.Launcher() {
                 @Override
-                public void onResult(final long bookshelfId) {
-                    if (bookshelfId != vm.getCurrentBookshelf().getId()) {
-                        // ENHANCE: update the modified row without a rebuild.
-                        saveListPosition();
-                        buildBookList();
-                    }
+                public void onResult(@NonNull final Bookshelf bookshelf) {
+                    // ENHANCE: update the modified row without a rebuild.
+                    saveListPosition();
+                    buildBookList();
+                }
+            };
+
+    private final EditAuthorDialogFragment.Launcher editAuthorLauncher =
+            new EditAuthorDialogFragment.Launcher() {
+                @Override
+                public void onResult(@NonNull final Author author) {
+                    // ENHANCE: update the modified row without a rebuild.
+                    saveListPosition();
+                    buildBookList();
+                }
+            };
+
+    private final EditSeriesDialogFragment.Launcher editSeriesLauncher =
+            new EditSeriesDialogFragment.Launcher() {
+                @Override
+                public void onResult(@NonNull final Series series) {
+                    // ENHANCE: update the modified row without a rebuild.
+                    saveListPosition();
+                    buildBookList();
+                }
+            };
+
+    private final EditPublisherDialogFragment.Launcher editPublisherLauncher =
+            new EditPublisherDialogFragment.Launcher() {
+                @Override
+                public void onResult(@NonNull final Publisher publisher) {
+                    // ENHANCE: update the modified row without a rebuild.
+                    saveListPosition();
+                    buildBookList();
                 }
             };
 
@@ -319,17 +358,12 @@ public class BooksOnBookshelf
                     }
                 }
             };
-
     /**
      * React to row changes made.
      * <p>
      * A number of dialogs use this common listener to report their changes back to us.
-     * {@link EditAuthorDialogFragment},
-     * {@link EditSeriesDialogFragment}
-     * {@link EditPublisherDialogFragment}
-     * {@link EditStringBaseDialogFragment}.
      *
-     * @see #onRowContextMenuItemSelected(MenuItem, int)
+     * @see EditStringBaseDialogFragment
      */
     private final RowChangedListener rowChangedListener = new RowChangedListener() {
         @Override
@@ -340,7 +374,6 @@ public class BooksOnBookshelf
             buildBookList();
         }
     };
-
     /**
      * React to the user selecting a style to apply.
      * <p>
@@ -358,19 +391,6 @@ public class BooksOnBookshelf
                     buildBookList();
                 }
             };
-
-    /**
-     * Accept the result from the dialog.
-     */
-    private final EditLenderDialogFragment.Launcher editLenderLauncher =
-            new EditLenderDialogFragment.Launcher() {
-                @Override
-                public void onResult(@IntRange(from = 1) final long bookId,
-                                     @NonNull final String loanee) {
-                    vm.updateBooklistOnBookLend(bookId, loanee);
-                }
-            };
-
     /**
      * The adapter used to fill the Bookshelf selector.
      */
@@ -428,6 +448,11 @@ public class BooksOnBookshelf
         rowChangedListener.registerForFragmentResult(fm, this);
 
         editBookshelfLauncher.registerForFragmentResult(fm, RK_EDIT_BOOKSHELF, this);
+        editAuthorLauncher.registerForFragmentResult(fm, RK_EDIT_AUTHOR, this);
+        editSeriesLauncher.registerForFragmentResult(fm, RK_EDIT_SERIES, this);
+        editPublisherLauncher.registerForFragmentResult(fm, RK_EDIT_PUBLISHER, this);
+
+
         stylePickerLauncher.registerForFragmentResult(fm, RK_STYLE_PICKER, this);
         editLenderLauncher.registerForFragmentResult(fm, RK_EDIT_LENDER, this);
         bookshelfFiltersLauncher.registerForFragmentResult(fm, RK_FILTERS, this);
@@ -1139,8 +1164,7 @@ public class BooksOnBookshelf
 
                 } else if (itemId == R.id.MENU_AUTHOR_EDIT) {
                     final Author author = DataHolderUtils.requireAuthor(rowData);
-                    // results come back in mRowChangedListener
-                    EditAuthorDialogFragment.launch(getSupportFragmentManager(), author);
+                    editAuthorLauncher.launch(author);
                     return true;
 
                 } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
@@ -1160,8 +1184,7 @@ public class BooksOnBookshelf
 
                 } else if (itemId == R.id.MENU_SERIES_EDIT) {
                     final Series series = DataHolderUtils.requireSeries(rowData);
-                    // results come back in mRowChangedListener
-                    EditSeriesDialogFragment.launch(getSupportFragmentManager(), series);
+                    editSeriesLauncher.launch(series);
                     return true;
 
                 } else if (itemId == R.id.MENU_SERIES_DELETE) {
@@ -1183,8 +1206,7 @@ public class BooksOnBookshelf
             case BooklistGroup.PUBLISHER: {
                 if (itemId == R.id.MENU_PUBLISHER_EDIT) {
                     final Publisher publisher = DataHolderUtils.requirePublisher(rowData);
-                    // results come back in mRowChangedListener
-                    EditPublisherDialogFragment.launch(getSupportFragmentManager(), publisher);
+                    editPublisherLauncher.launch(publisher);
                     return true;
 
                 } else if (itemId == R.id.MENU_PUBLISHER_DELETE) {

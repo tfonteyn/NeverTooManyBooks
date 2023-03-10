@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,7 +26,10 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentResultListener;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -36,7 +39,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.RowChangedListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditAuthorContentBinding;
@@ -59,7 +61,9 @@ public class EditAuthorDialogFragment
 
 
     /** Fragment/Log tag. */
-    private static final String TAG = "EditAuthorDialogFrag";
+    public static final String TAG = "EditAuthorDialogFrag";
+
+    static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
     /** Author View model. Fragment scope. */
     private EditAuthorViewModel authorVm;
@@ -72,23 +76,6 @@ public class EditAuthorDialogFragment
      */
     public EditAuthorDialogFragment() {
         super(R.layout.dialog_edit_author, R.layout.dialog_edit_author_content);
-    }
-
-    /**
-     * Launch the dialog.
-     *
-     * @param fm     The FragmentManager this fragment will be added to.
-     * @param author to edit.
-     */
-    public static void launch(@NonNull final FragmentManager fm,
-                              @NonNull final Author author) {
-        final Bundle args = new Bundle(2);
-        args.putString(EditAuthorViewModel.BKEY_REQUEST_KEY, RowChangedListener.REQUEST_KEY);
-        args.putParcelable(DBKey.FK_AUTHOR, author);
-
-        final DialogFragment frag = new EditAuthorDialogFragment();
-        frag.setArguments(args);
-        frag.show(fm, TAG);
     }
 
     @Override
@@ -205,9 +192,8 @@ public class EditAuthorDialogFragment
         return SaveChangesHelper
                 .save(this, ServiceLocator.getInstance().getAuthorDao(),
                       originalAuthor, nameChanged, bookLocale,
-                      savedAuthor -> RowChangedListener.setResult(
-                              this, authorVm.getRequestKey(),
-                              DBKey.FK_AUTHOR, savedAuthor.getId()),
+                      savedAuthor -> Launcher.setResult(
+                              this, authorVm.getRequestKey(), savedAuthor),
                       R.string.confirm_merge_authors);
     }
 
@@ -224,5 +210,61 @@ public class EditAuthorDialogFragment
     public void onPause() {
         viewToModel();
         super.onPause();
+    }
+
+    public abstract static class Launcher
+            implements FragmentResultListener {
+
+        private String requestKey;
+        private FragmentManager fragmentManager;
+
+        static void setResult(@NonNull final Fragment fragment,
+                              @NonNull final String requestKey,
+                              @NonNull final Author author) {
+            final Bundle result = new Bundle(1);
+            result.putParcelable(DBKey.FK_AUTHOR, author);
+            fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
+        }
+
+        public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
+                                              @NonNull final String requestKey,
+                                              @NonNull final LifecycleOwner lifecycleOwner) {
+            this.fragmentManager = fragmentManager;
+            this.requestKey = requestKey;
+            this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner, this);
+        }
+
+        /**
+         * Launch the dialog.
+         *
+         * @param author to edit.
+         */
+        public void launch(@NonNull final Author author) {
+
+            final Bundle args = new Bundle(2);
+            args.putString(BKEY_REQUEST_KEY, requestKey);
+            args.putParcelable(DBKey.FK_AUTHOR, author);
+
+            final DialogFragment frag = new EditAuthorDialogFragment();
+            frag.setArguments(args);
+            frag.show(fragmentManager, TAG);
+        }
+
+        @Override
+        public void onFragmentResult(@NonNull final String requestKey,
+                                     @NonNull final Bundle result) {
+            final Author author = result.getParcelable(DBKey.FK_AUTHOR);
+            if (author == null) {
+                throw new IllegalArgumentException(DBKey.FK_AUTHOR);
+            }
+            onResult(author);
+        }
+
+        /**
+         * Callback handler with the edit.
+         *
+         * @param author Author
+         */
+        public abstract void onResult(@NonNull Author author);
     }
 }
