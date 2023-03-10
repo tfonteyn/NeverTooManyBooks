@@ -27,6 +27,8 @@ import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -281,6 +283,15 @@ public class EditBookAuthorDialogFragment
 
     public abstract static class Launcher
             extends EditLauncher<Author> {
+
+        public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
+                                              @NonNull final String requestKeyValue,
+                                              @NonNull final LifecycleOwner lifecycleOwner) {
+            super.registerForFragmentResult(fragmentManager,
+                                            BKEY_REQUEST_KEY,
+                                            requestKeyValue,
+                                            lifecycleOwner);
+        }
 
         @Override
         public void launch(@NonNull final EditAction action,

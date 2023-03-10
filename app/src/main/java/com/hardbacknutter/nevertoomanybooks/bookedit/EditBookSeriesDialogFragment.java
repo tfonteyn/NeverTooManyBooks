@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,6 +24,8 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.Objects;
@@ -164,6 +166,15 @@ public class EditBookSeriesDialogFragment
 
     public abstract static class Launcher
             extends EditLauncher<Series> {
+
+        public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
+                                              @NonNull final String requestKeyValue,
+                                              @NonNull final LifecycleOwner lifecycleOwner) {
+            super.registerForFragmentResult(fragmentManager,
+                                            BKEY_REQUEST_KEY,
+                                            requestKeyValue,
+                                            lifecycleOwner);
+        }
 
         @Override
         public void launch(@NonNull final EditAction action,

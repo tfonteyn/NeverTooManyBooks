@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -63,10 +63,17 @@ public abstract class EditLauncher<T extends Parcelable>
         fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
-    public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
-                                          @NonNull final String requestKeyName,
-                                          @NonNull final String requestKeyValue,
-                                          @NonNull final LifecycleOwner lifecycleOwner) {
+    public abstract void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
+                                                   @NonNull final String requestKeyValue,
+                                                   @NonNull final LifecycleOwner lifecycleOwner);
+
+    /**
+     * Called from {@link #registerForFragmentResult(FragmentManager, String, LifecycleOwner)}.
+     */
+    protected void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
+                                             @NonNull final String requestKeyName,
+                                             @NonNull final String requestKeyValue,
+                                             @NonNull final LifecycleOwner lifecycleOwner) {
         this.fragmentManager = fragmentManager;
         this.requestKeyName = requestKeyName;
         this.requestKeyValue = requestKeyValue;
@@ -77,17 +84,17 @@ public abstract class EditLauncher<T extends Parcelable>
                                 @NonNull T item);
 
     /**
-     * Launch the dialog.
+     * Launch the dialog. Called from {@link #launch(EditAction, Parcelable)}.
      *
-     * @param fragment     a new instance of the desired fragment to launch
-     * @param action       add or edit
-     * @param itemKey      the {@link DBKey} for the item
-     * @param item         to edit
+     * @param fragment a new instance of the desired fragment to launch
+     * @param action   add or edit
+     * @param itemKey  the {@link DBKey} for the item
+     * @param item     to edit
      */
-    public void launch(@NonNull final DialogFragment fragment,
-                       @NonNull final EditAction action,
-                       @NonNull final String itemKey,
-                       @NonNull final T item) {
+    protected void launch(@NonNull final DialogFragment fragment,
+                          @NonNull final EditAction action,
+                          @NonNull final String itemKey,
+                          @NonNull final T item) {
         final Bundle args = new Bundle(3);
         args.putString(requestKeyName, requestKeyValue);
         args.putParcelable(EditAction.BKEY, action);
