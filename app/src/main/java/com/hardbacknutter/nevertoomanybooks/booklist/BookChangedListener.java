@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,7 +27,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 public interface BookChangedListener {
 
     /**
-     * Receive notifications that a Book was updated.
+     * Receives notifications that a {@link Book} was updated.
      *
      * @param book the book that changed,
      *             or {@code null} to indicate multiple books were potentially changed.
@@ -37,18 +37,27 @@ public interface BookChangedListener {
     void onBookUpdated(@NonNull Book book,
                        @Nullable String... keys);
 
-    // future enhancement
-    default void onBookUpdated(final long bookId,
-                               @Nullable final String... keys) {
-
-    }
+    /**
+     * Receives notifications that a {@link Book} was updated.
+     *
+     * @param bookId the book that changed
+     * @param keys   the item(s) that changed,
+     *               or {@code null} to indicate ALL data was potentially changed.
+     */
+    void onBookUpdated(final long bookId,
+                       @Nullable String... keys);
 
     /**
-     * React to a book having been deleted.
+     * Receives notifications that a {@link Book} has been deleted.
      *
-     * @param bookId which was deleted
+     * @param bookId the book that was deleted
      */
     void onBookDeleted(long bookId);
 
-    void onSyncBook(long id);
+    /**
+     * Request to update/synchronize the given {@link Book}.
+     *
+     * @param bookId to handle
+     */
+    void onSyncBook(long bookId);
 }
