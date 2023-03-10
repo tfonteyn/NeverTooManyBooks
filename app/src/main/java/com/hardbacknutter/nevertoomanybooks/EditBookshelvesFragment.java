@@ -101,11 +101,11 @@ public class EditBookshelvesFragment
     private final EditBookshelfDialogFragment.Launcher editBookshelfLauncher =
             new EditBookshelfDialogFragment.Launcher() {
                 @Override
-                public void onResult(final long bookshelfId) {
+                public void onResult(@NonNull final Bookshelf bookshelf) {
                     // first update the previous, now unselected, row.
                     adapter.notifyItemChanged(vm.getSelectedPosition());
                     // store the newly selected row.
-                    vm.onBookshelfEdited(bookshelfId);
+                    vm.onBookshelfEdited(bookshelf.getId());
                     // update the newly selected row.
                     adapter.notifyItemChanged(vm.getSelectedPosition());
                 }
