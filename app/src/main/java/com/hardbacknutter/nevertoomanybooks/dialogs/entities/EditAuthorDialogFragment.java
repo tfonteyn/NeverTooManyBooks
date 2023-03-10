@@ -59,11 +59,9 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
 public class EditAuthorDialogFragment
         extends FFBaseDialogFragment {
 
-
     /** Fragment/Log tag. */
     public static final String TAG = "EditAuthorDialogFrag";
-
-    static final String BKEY_REQUEST_KEY = TAG + ":rk";
+    public static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
     /** Author View model. Fragment scope. */
     private EditAuthorViewModel authorVm;

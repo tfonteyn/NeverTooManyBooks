@@ -51,7 +51,7 @@ public class EditBookshelfDialogFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditBookshelfDialogFrag";
-    private static final String BKEY_REQUEST_KEY = TAG + ":rk";
+    public static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
     /** FragmentResultListener request key to use for our response. */
     private String requestKey;
