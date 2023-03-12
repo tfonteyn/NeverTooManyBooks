@@ -1475,6 +1475,48 @@ public class BooksOnBookshelf
     }
 
     /**
+     * Receives notifications that an inline-string column was updated.
+     *
+     * @param requestKey the request-key, a {@link DBKey}, from the update event
+     * @param original   the original string
+     * @param modified   the updated string
+     */
+    private void onInlineStringUpdate(@NonNull final String requestKey,
+                                      @NonNull final String original,
+                                      @NonNull final String modified) {
+//        if (vm.getStyle(this).isShowField(Style.Screen.List, requestKey)) {
+//            // The entity is shown on the book level, do a full rebuild
+//            saveListPosition();
+//            buildBookList();
+//        } else {
+        // Update only the levels, and trigger an adapter update
+        // ENHANCE: update the modified row without a rebuild.
+        saveListPosition();
+        buildBookList();
+//        }
+    }
+
+    /**
+     * Receives notifications that an {@link Entity} (but NOT a Book) potentially was updated.
+     *
+     * @param requestKey the request-key, a {@link DBKey}, from the update event
+     * @param entity     the entity that potentially was updated
+     */
+    private void onEntityUpdate(@NonNull final String requestKey,
+                                @NonNull final Entity entity) {
+//        if (vm.getStyle(this).isShowField(Style.Screen.List, requestKey)) {
+//            // The entity is shown on the book level, do a full rebuild
+//            saveListPosition();
+//            buildBookList();
+//        } else {
+        // Update only the levels, and trigger an adapter update
+        // ENHANCE: update the modified row without a rebuild.
+        saveListPosition();
+        buildBookList();
+//        }
+    }
+
+    /**
      * Receives notifications that a {@link Book} potentially was updated.
      * <p>
      * For a limited set of keys, we directly update the list table which is very fast.
