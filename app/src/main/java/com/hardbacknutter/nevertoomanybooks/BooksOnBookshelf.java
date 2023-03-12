@@ -1587,12 +1587,6 @@ public class BooksOnBookshelf
     }
 
     @Override
-    public void onBookUpdated(final long bookId,
-                              @Nullable final String... keys) {
-        onBookUpdated(vm.getBook(bookId), keys);
-    }
-
-    @Override
     public void onBookDeleted(final long bookId) {
         vm.onBookDeleted(bookId);
         // We don't try to remove the row without a rebuild as this could quickly become complex...

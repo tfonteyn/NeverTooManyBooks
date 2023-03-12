@@ -27,24 +27,13 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 public interface BookChangedListener {
 
     /**
-     * Receives notifications that a {@link Book} was updated.
+     * Receives notifications that a {@link Book} potentially was updated.
      *
-     * @param book the book that changed,
-     *             or {@code null} to indicate multiple books were potentially changed.
-     * @param keys the item(s) that changed,
+     * @param book the book
+     * @param keys the item(s) that potentially were changed,
      *             or {@code null} to indicate ALL data was potentially changed.
      */
     void onBookUpdated(@NonNull Book book,
-                       @Nullable String... keys);
-
-    /**
-     * Receives notifications that a {@link Book} was updated.
-     *
-     * @param bookId the book that changed
-     * @param keys   the item(s) that changed,
-     *               or {@code null} to indicate ALL data was potentially changed.
-     */
-    void onBookUpdated(final long bookId,
                        @Nullable String... keys);
 
     /**

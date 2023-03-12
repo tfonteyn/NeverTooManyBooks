@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -101,7 +101,8 @@ public class TocFragment
                 data -> {
                     aVm.setDataModified(data);
                     if (bookChangedListener != null && data.isModified()) {
-                        bookChangedListener.onBookUpdated(vm.getBookId(), (String) null);
+                        final Book book = Book.from(vm.getBookId());
+                        bookChangedListener.onBookUpdated(book, (String) null);
                     }
                 }));
 
