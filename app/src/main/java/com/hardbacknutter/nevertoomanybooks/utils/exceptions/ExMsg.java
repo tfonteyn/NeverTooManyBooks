@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.NetworkException;
 import com.hardbacknutter.nevertoomanybooks.core.network.NetworkUnavailableException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
 
 public final class ExMsg {
@@ -104,6 +105,10 @@ public final class ExMsg {
             return map(context, e.getCause())
                     // TODO: give user detailed message
                     .orElse(context.getString(R.string.error_export_failed));
+
+        } else if (e instanceof ValidatorException) {
+            // The ValidatorException expects a localized message, so just use it
+            return e.getLocalizedMessage();
 
         } else if (e instanceof UpgradeFailedException) {
             // The UpgradeFailedException expects a localized message, so just use it

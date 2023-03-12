@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -131,7 +131,7 @@ public class ValidatorConfig {
             int i = 0;
             for (final ValidatorException e : validationExceptions) {
                 msg.append(context.getString(R.string.vldt_list_message,
-                                             ++i, e.getUserMessage(context)))
+                                             ++i, e.getLocalizedMessage()))
                    .append('\n');
             }
             return msg.toString();
