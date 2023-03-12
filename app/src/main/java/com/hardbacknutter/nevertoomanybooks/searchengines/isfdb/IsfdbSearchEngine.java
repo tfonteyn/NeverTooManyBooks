@@ -371,7 +371,7 @@ public class IsfdbSearchEngine
                 }
             }
         } catch (@NonNull final IOException e) {
-            throw new SearchException(getName(context), e);
+            throw new SearchException(getEngineId(), e);
         }
         return book;
     }
@@ -1456,7 +1456,7 @@ public class IsfdbSearchEngine
         final RealNumberParser realNumberParser = new RealNumberParser(locales);
         final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
 
-        final List<Book> publicationsList = fetchPublications(context, url, fetchCovers, 1,
+        final List<Book> publicationsList = fetchPublications(url, fetchCovers, 1,
                                                               moneyParser);
         if (publicationsList.isEmpty()) {
             return new Book();
@@ -1518,7 +1518,6 @@ public class IsfdbSearchEngine
     /**
      * Fetch a (list of) publications by REST-url which returns an xml doc.
      *
-     * @param context     Current context
      * @param url         to fetch
      * @param fetchCovers Set to {@code true} if we want to get covers
      *                    The array is guaranteed to have at least one element.
@@ -1527,8 +1526,7 @@ public class IsfdbSearchEngine
      * @throws StorageException on storage related failures
      */
     @NonNull
-    private List<Book> fetchPublications(@NonNull final Context context,
-                                         @NonNull final String url,
+    private List<Book> fetchPublications(@NonNull final String url,
                                          @NonNull final boolean[] fetchCovers,
                                          @SuppressWarnings("SameParameterValue") final int maxRecords,
                                          @NonNull final MoneyParser moneyParser)
@@ -1570,10 +1568,10 @@ public class IsfdbSearchEngine
                 throw (StorageException) cause;
             }
             // wrap other parser exceptions
-            throw new SearchException(getName(context), e);
+            throw new SearchException(getEngineId(), e);
 
         } catch (@NonNull final ParserConfigurationException | IOException e) {
-            throw new SearchException(getName(context), e);
+            throw new SearchException(getEngineId(), e);
         }
     }
 

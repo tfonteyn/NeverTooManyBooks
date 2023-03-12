@@ -87,7 +87,7 @@ public abstract class JsoupSearchEngineBase
             return jsoupLoader.loadDocument(context, url, requestProperties);
 
         } catch (@NonNull final IOException e) {
-            throw new SearchException(getName(context), e);
+            throw new SearchException(getEngineId(), e);
         }
     }
 

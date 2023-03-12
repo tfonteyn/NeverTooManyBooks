@@ -193,7 +193,7 @@ public class StripInfoSearchEngine
                     loginHelper.login();
                 } catch (@NonNull final IOException | StorageException e) {
                     loginHelper = null;
-                    throw new SearchException(getName(context), e);
+                    throw new SearchException(getEngineId(), e);
                 }
             }
 

@@ -144,7 +144,7 @@ public class KbNlSearchEngine
         try {
             futureHttpGet.get(getHostUrl() + "/cbs/", request -> true);
         } catch (@NonNull final IOException e) {
-            throw new SearchException(getName(context), e);
+            throw new SearchException(getEngineId(), e);
         }
 
         final Book book = new Book();
@@ -177,10 +177,10 @@ public class KbNlSearchEngine
                 throw (StorageException) cause;
             }
             // wrap other parser exceptions
-            throw new SearchException(getName(context), e);
+            throw new SearchException(getEngineId(), e);
 
         } catch (@NonNull final ParserConfigurationException | IOException e) {
-            throw new SearchException(getName(context), e);
+            throw new SearchException(getEngineId(), e);
         }
 
         if (isCancelled()) {

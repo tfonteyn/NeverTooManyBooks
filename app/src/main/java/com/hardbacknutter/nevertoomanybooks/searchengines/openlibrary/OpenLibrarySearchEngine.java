@@ -311,7 +311,7 @@ public class OpenLibrarySearchEngine
             }
 
         } catch (@NonNull final IOException e) {
-            throw new SearchException(getName(context), e);
+            throw new SearchException(getEngineId(), e);
         } finally {
             futureHttpGet = null;
         }
@@ -496,7 +496,7 @@ public class OpenLibrarySearchEngine
                 }
             }
         } catch (@NonNull final JSONException e) {
-            throw new SearchException(getName(context), e);
+            throw new SearchException(getEngineId(), e);
         }
 
         return true;

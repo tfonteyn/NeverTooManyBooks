@@ -125,11 +125,12 @@ public class BedethequeSearchEngine
                         .findFirst()
                         .orElse(new HttpCookie(COOKIE, "")));
             } catch (@NonNull final IOException | UncheckedIOException | StorageException e) {
-                throw new SearchException(getName(context), e);
+                throw new SearchException(getEngineId(), e);
             }
         }
         if (csrfCookie == null || csrfCookie.getValue().isEmpty()) {
-            throw new SearchException(getName(context), context.getString(R.string.httpError));
+            throw new SearchException(getEngineId(), null,
+                                      context.getString(R.string.httpError));
         }
 
         return csrfCookie.getName() + '=' + Objects.requireNonNull(csrfCookie.getValue());

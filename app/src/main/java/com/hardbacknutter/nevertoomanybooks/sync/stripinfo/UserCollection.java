@@ -173,7 +173,7 @@ public class UserCollection {
             throws SearchException, IOException {
 
         if (!(pageNr == 0 || maxPages > pageNr)) {
-            throw new SearchException(searchEngine.getName(context), "Can't fetch more pages");
+            throw new SearchException(searchEngine.getEngineId(), "Can't fetch more pages", null);
         }
 
         progressListener.publishProgress(1, context.getString(
@@ -201,12 +201,12 @@ public class UserCollection {
                 return count;
 
             } catch (@NonNull final NumberFormatException e) {
-                throw new SearchException(searchEngine.getName(context),
-                                          "Unable to read page number");
+                throw new SearchException(searchEngine.getEngineId(),
+                                          "Unable to read page number", null);
             }
         }
 
-        throw new SearchException(searchEngine.getName(context), "No page numbers");
+        throw new SearchException(searchEngine.getEngineId(), "No page numbers", null);
     }
 
     @VisibleForTesting

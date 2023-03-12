@@ -22,46 +22,78 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.LocalizedException;
 
 public class SearchException
         extends Exception
         implements LocalizedException {
 
-    private static final long serialVersionUID = -6801167882310671147L;
+    private static final long serialVersionUID = -907603819317034036L;
 
     /** The site that caused the issue. */
     @NonNull
-    private final String siteName;
+    private final EngineId engineId;
+    @Nullable
+    private final String localizedMessage;
 
-    public SearchException(@NonNull final String siteName,
+    /**
+     * Constructor.
+     *
+     * @param engineId the SearchEngine which threw the exception
+     * @param cause    the exception to wrap
+     */
+    public SearchException(@NonNull final EngineId engineId,
                            @NonNull final Throwable cause) {
-        super(cause);
-        this.siteName = siteName;
+        super(null, cause);
+        this.engineId = engineId;
+        this.localizedMessage = null;
     }
 
-    public SearchException(@NonNull final String siteName,
-                           @NonNull final String message) {
-        super(message);
-        this.siteName = siteName;
+    /**
+     * Constructor.
+     *
+     * @param engineId         the SearchEngine which threw the exception
+     * @param logMessage       (optional) a message intended to be logged and NOT shown to the user
+     * @param localizedMessage (optional) a <strong>localized</strong> message which
+     *                         <strong>will</strong> be shown to the user
+     */
+    public SearchException(@NonNull final EngineId engineId,
+                           @Nullable final String logMessage,
+                           @Nullable final String localizedMessage) {
+        super(logMessage);
+        this.engineId = engineId;
+        this.localizedMessage = localizedMessage;
     }
 
+    /**
+     * Get (and create if needed) the localized message to show to the user.
+     *
+     * @param context Current context
+     *
+     * @return message
+     */
     @NonNull
-    @Override
     public String getUserMessage(@NonNull final Context context) {
-        return context.getString(R.string.error_search_x_failed_y, siteName,
-                                 ExMsg.map(context, getCause())
-                                      .orElse(context.getString(R.string.error_unknown)));
+        if (localizedMessage != null) {
+            return context.getString(R.string.error_search_x_failed_y,
+                                     engineId.getName(context), localizedMessage);
+        } else {
+            return context.getString(R.string.error_search_x_failed_y,
+                                     engineId.getName(context),
+                                     ExMsg.map(context, getCause())
+                                          .orElse(context.getString(R.string.error_unknown)));
+        }
     }
 
     @Override
     @NonNull
     public String toString() {
         return "SearchException{"
-               + "siteName=`" + siteName + '`'
+               + "engineId=`" + engineId.getPreferenceKey() + '`'
+               + ", localizedMessage=" + localizedMessage
                + ", " + super.toString()
                + '}';
     }

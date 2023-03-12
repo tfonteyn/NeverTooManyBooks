@@ -150,7 +150,7 @@ public class LibraryThingSearchEngine
 
         } catch (@NonNull final StorageException | ParserConfigurationException
                 | SAXException | IOException e) {
-            throw new SearchException(getName(context), e);
+            throw new SearchException(getEngineId(), e);
         }
         return handler.getResult();
     }

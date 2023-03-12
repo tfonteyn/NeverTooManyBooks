@@ -198,10 +198,10 @@ public class GoogleBooksSearchEngine
                 throw (StorageException) cause;
             }
             // wrap other parser exceptions
-            throw new SearchException(getName(context), e);
+            throw new SearchException(getEngineId(), e);
 
         } catch (@NonNull final ParserConfigurationException | IOException e) {
-            throw new SearchException(getName(context), e);
+            throw new SearchException(getEngineId(), e);
         } finally {
             futureHttpGet = null;
         }
