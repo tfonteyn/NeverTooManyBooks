@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 public final class ExMsg {
 
@@ -86,9 +87,19 @@ public final class ExMsg {
     private static String getMsg(@NonNull final Context context,
                                  @NonNull final Throwable e) {
 
-        // Use the embedded localised message if possible
-        if (e instanceof LocalizedException) {
-            return ((LocalizedException) e).getUserMessage(context);
+        if (e instanceof SearchException) {
+            return ((SearchException) e).getUserMessage(context);
+
+        } else if (e instanceof DataReaderException) {
+            return ((DataReaderException) e).getUserMessage(context);
+
+        } else if (e instanceof ValidatorException) {
+            // The ValidatorException expects a localized message, so just use it
+            return e.getLocalizedMessage();
+
+        } else if (e instanceof UpgradeFailedException) {
+            // The UpgradeFailedException expects a localized message, so just use it
+            return e.getLocalizedMessage();
 
         } else if (e instanceof DiskFullException) {
             return context.getString(R.string.error_storage_no_space_left);
@@ -101,22 +112,12 @@ public final class ExMsg {
         } else if (e instanceof NetworkException) {
             return context.getString(R.string.error_network_failed_try_again);
 
-        } else if (e instanceof DataReaderException) {
-            return ((DataReaderException) e).getUserMessage(context);
 
         } else if (e instanceof DataWriterException) {
             // Typically (but not enforced) the wrapped exception will be a JSONException
             return map(context, e.getCause())
                     // TODO: give user detailed message
                     .orElse(context.getString(R.string.error_export_failed));
-
-        } else if (e instanceof ValidatorException) {
-            // The ValidatorException expects a localized message, so just use it
-            return e.getLocalizedMessage();
-
-        } else if (e instanceof UpgradeFailedException) {
-            // The UpgradeFailedException expects a localized message, so just use it
-            return e.getLocalizedMessage();
 
         } else if (e instanceof CredentialsException) {
             final CredentialsException ce = (CredentialsException) e;

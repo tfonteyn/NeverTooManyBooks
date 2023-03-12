@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,8 +28,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 public class SearchException
-        extends Exception
-        implements LocalizedException {
+        extends Exception {
 
     private static final long serialVersionUID = -907603819317034036L;
 
