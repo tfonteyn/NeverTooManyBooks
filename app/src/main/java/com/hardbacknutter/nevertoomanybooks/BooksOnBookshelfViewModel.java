@@ -898,11 +898,6 @@ public class BooksOnBookshelfViewModel
         return success;
     }
 
-    @NonNull
-    Book getBook(@IntRange(from = 1) final long bookId) {
-        return Book.from(bookId);
-    }
-
     /**
      * Entry point after a Book (or list of) was edited; either manually by the user,
      * or automatically with an internet update action.
