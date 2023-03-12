@@ -190,8 +190,13 @@ public class BookshelfFiltersDialogFragment
 
         private static final String BKEY_MODIFIED = TAG + ":m";
 
-        private String requestKey;
+        @NonNull
+        private final String requestKey;
         private FragmentManager fragmentManager;
+
+        public Launcher(@NonNull final String requestKey) {
+            this.requestKey = requestKey;
+        }
 
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
@@ -202,15 +207,15 @@ public class BookshelfFiltersDialogFragment
         }
 
         public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
-                                              @NonNull final String requestKey,
                                               @NonNull final LifecycleOwner lifecycleOwner) {
             this.fragmentManager = fragmentManager;
-            this.requestKey = requestKey;
             this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner, this);
         }
 
         /**
          * Launch the dialog.
+         *
+         * @param bookshelf to edit
          */
         public void launch(@NonNull final Bookshelf bookshelf) {
 
@@ -230,7 +235,7 @@ public class BookshelfFiltersDialogFragment
         }
 
         /**
-         * Callback handler with the user's selection.
+         * Callback handler.
          */
         public abstract void onResult(boolean modified);
     }

@@ -92,7 +92,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BoBTask;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
-import com.hardbacknutter.nevertoomanybooks.booklist.RowChangedListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.booklist.adapter.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
@@ -105,6 +104,8 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.SpinnerInteractionListe
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfHeaderBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.EditInPlaceParcelableLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.EditStringLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorDialogFragment;
@@ -117,7 +118,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLenderDialogFra
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLocationDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditStringBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -178,14 +178,18 @@ public class BooksOnBookshelf
     /** Log tag. */
     private static final String TAG = "BooksOnBookshelf";
 
-    /** {@link FragmentResultListener} request key. */
     private static final String RK_EDIT_BOOKSHELF = TAG + ":rk:" + EditBookshelfDialogFragment.TAG;
-    /** {@link FragmentResultListener} request key. */
     private static final String RK_EDIT_AUTHOR = TAG + ":rk:" + EditAuthorDialogFragment.TAG;
-    /** {@link FragmentResultListener} request key. */
     private static final String RK_EDIT_SERIES = TAG + ":rk:" + EditSeriesDialogFragment.TAG;
-    /** {@link FragmentResultListener} request key. */
     private static final String RK_EDIT_PUBLISHER = TAG + ":rk:" + EditPublisherDialogFragment.TAG;
+
+
+    private static final String RK_EDIT_COLOR = TAG + ":rk:" + EditColorDialogFragment.TAG;
+    private static final String RK_EDIT_FORMAT = TAG + ":rk:" + EditFormatDialogFragment.TAG;
+    private static final String RK_EDIT_GENRE = TAG + ":rk:" + EditGenreDialogFragment.TAG;
+    private static final String RK_EDIT_LANGUAGE = TAG + ":rk:" + EditLanguageDialogFragment.TAG;
+    private static final String RK_EDIT_LOCATION = TAG + ":rk:" + EditLocationDialogFragment.TAG;
+
 
     /** {@link FragmentResultListener} request key. */
     private static final String RK_STYLE_PICKER = TAG + ":rk:" + StylePickerDialogFragment.TAG;
@@ -284,7 +288,7 @@ public class BooksOnBookshelf
      * Accept the result from the dialog.
      */
     private final EditLenderDialogFragment.Launcher editLenderLauncher =
-            new EditLenderDialogFragment.Launcher() {
+            new EditLenderDialogFragment.Launcher(RK_EDIT_LENDER) {
                 @Override
                 public void onResult(@IntRange(from = 1) final long bookId,
                                      @NonNull final String loanee) {
@@ -296,7 +300,7 @@ public class BooksOnBookshelf
     /** View Binding. */
     private BooksonbookshelfBinding vb;
     private final BookshelfFiltersDialogFragment.Launcher bookshelfFiltersLauncher =
-            new BookshelfFiltersDialogFragment.Launcher() {
+            new BookshelfFiltersDialogFragment.Launcher(RK_FILTERS) {
                 @Override
                 public void onResult(final boolean modified) {
                     if (modified) {
@@ -306,45 +310,106 @@ public class BooksOnBookshelf
             };
     /** Delegate which will handle all positioning/scrolling. */
     private PositioningHelper positioningHelper;
-    private final EditBookshelfDialogFragment.Launcher editBookshelfLauncher =
-            new EditBookshelfDialogFragment.Launcher() {
+    private final EditInPlaceParcelableLauncher<Bookshelf> editBookshelfLauncher =
+            new EditInPlaceParcelableLauncher<>(RK_EDIT_BOOKSHELF,
+                                                EditBookshelfDialogFragment::new) {
                 @Override
-                public void onResult(@NonNull final Bookshelf bookshelf) {
+                public void onModified(@NonNull final Bookshelf modified) {
                     // ENHANCE: update the modified row without a rebuild.
                     saveListPosition();
                     buildBookList();
                 }
             };
 
-    private final EditAuthorDialogFragment.Launcher editAuthorLauncher =
-            new EditAuthorDialogFragment.Launcher() {
+    private final EditInPlaceParcelableLauncher<Author> editAuthorLauncher =
+            new EditInPlaceParcelableLauncher<>(RK_EDIT_AUTHOR,
+                                                EditAuthorDialogFragment::new) {
                 @Override
-                public void onResult(@NonNull final Author author) {
+                public void onModified(@NonNull final Author modified) {
                     // ENHANCE: update the modified row without a rebuild.
                     saveListPosition();
                     buildBookList();
                 }
             };
 
-    private final EditSeriesDialogFragment.Launcher editSeriesLauncher =
-            new EditSeriesDialogFragment.Launcher() {
+    private final EditInPlaceParcelableLauncher<Series> editSeriesLauncher =
+            new EditInPlaceParcelableLauncher<>(RK_EDIT_SERIES,
+                                                EditSeriesDialogFragment::new) {
                 @Override
-                public void onResult(@NonNull final Series series) {
+                public void onModified(@NonNull final Series modified) {
                     // ENHANCE: update the modified row without a rebuild.
                     saveListPosition();
                     buildBookList();
                 }
             };
 
-    private final EditPublisherDialogFragment.Launcher editPublisherLauncher =
-            new EditPublisherDialogFragment.Launcher() {
+    private final EditInPlaceParcelableLauncher<Publisher> editPublisherLauncher =
+            new EditInPlaceParcelableLauncher<>(RK_EDIT_PUBLISHER,
+                                                EditPublisherDialogFragment::new) {
                 @Override
-                public void onResult(@NonNull final Publisher publisher) {
+                public void onModified(@NonNull final Publisher modified) {
                     // ENHANCE: update the modified row without a rebuild.
                     saveListPosition();
                     buildBookList();
                 }
             };
+
+    private final EditStringLauncher editColorLauncher =
+            new EditStringLauncher(RK_EDIT_COLOR, EditColorDialogFragment::new) {
+                @Override
+                public void onModified(@NonNull final String original,
+                                       @NonNull final String modified) {
+                    // ENHANCE: update the modified row without a rebuild.
+                    saveListPosition();
+                    buildBookList();
+                }
+            };
+
+    private final EditStringLauncher editFormatLauncher =
+            new EditStringLauncher(RK_EDIT_FORMAT, EditFormatDialogFragment::new) {
+                @Override
+                public void onModified(@NonNull final String original,
+                                       @NonNull final String modified) {
+                    // ENHANCE: update the modified row without a rebuild.
+                    saveListPosition();
+                    buildBookList();
+                }
+            };
+
+    private final EditStringLauncher editGenreLauncher =
+            new EditStringLauncher(RK_EDIT_GENRE, EditGenreDialogFragment::new) {
+                @Override
+                public void onModified(@NonNull final String original,
+                                       @NonNull final String modified) {
+                    // ENHANCE: update the modified row without a rebuild.
+                    saveListPosition();
+                    buildBookList();
+                }
+            };
+
+    private final EditStringLauncher editLanguageLauncher =
+            new EditStringLauncher(RK_EDIT_LANGUAGE, EditLanguageDialogFragment::new) {
+
+                @Override
+                public void onModified(@NonNull final String original,
+                                       @NonNull final String modified) {
+                    // ENHANCE: update the modified row without a rebuild.
+                    saveListPosition();
+                    buildBookList();
+                }
+            };
+
+    private final EditStringLauncher editLocationLauncher =
+            new EditStringLauncher(RK_EDIT_LOCATION, EditLocationDialogFragment::new) {
+                @Override
+                public void onModified(@NonNull final String original,
+                                       @NonNull final String modified) {
+                    // ENHANCE: update the modified row without a rebuild.
+                    saveListPosition();
+                    buildBookList();
+                }
+            };
+
 
     /** Listener for the Bookshelf Spinner. */
     private final SpinnerInteractionListener bookshelfSelectionChangedListener =
@@ -359,22 +424,6 @@ public class BooksOnBookshelf
                 }
             };
     /**
-     * React to row changes made.
-     * <p>
-     * A number of dialogs use this common listener to report their changes back to us.
-     *
-     * @see EditStringBaseDialogFragment
-     */
-    private final RowChangedListener rowChangedListener = new RowChangedListener() {
-        @Override
-        public void onChange(@NonNull final String key,
-                             final long id) {
-            // ENHANCE: update the modified row without a rebuild.
-            saveListPosition();
-            buildBookList();
-        }
-    };
-    /**
      * React to the user selecting a style to apply.
      * <p>
      * We get here after the user SELECTED a style on the {@link StylePickerDialogFragment}.
@@ -382,7 +431,7 @@ public class BooksOnBookshelf
      * which is handled by {@link #editStyleLauncher}.
      */
     private final StylePickerDialogFragment.Launcher stylePickerLauncher =
-            new StylePickerDialogFragment.Launcher() {
+            new StylePickerDialogFragment.Launcher(RK_STYLE_PICKER) {
                 @Override
                 public void onResult(@NonNull final String uuid) {
                     saveListPosition();
@@ -445,17 +494,21 @@ public class BooksOnBookshelf
     private void createFragmentResultListeners() {
         final FragmentManager fm = getSupportFragmentManager();
 
-        rowChangedListener.registerForFragmentResult(fm, this);
+        editColorLauncher.registerForFragmentResult(fm, this);
+        editFormatLauncher.registerForFragmentResult(fm, this);
+        editGenreLauncher.registerForFragmentResult(fm, this);
+        editLanguageLauncher.registerForFragmentResult(fm, this);
+        editLocationLauncher.registerForFragmentResult(fm, this);
 
-        editBookshelfLauncher.registerForFragmentResult(fm, RK_EDIT_BOOKSHELF, this);
-        editAuthorLauncher.registerForFragmentResult(fm, RK_EDIT_AUTHOR, this);
-        editSeriesLauncher.registerForFragmentResult(fm, RK_EDIT_SERIES, this);
-        editPublisherLauncher.registerForFragmentResult(fm, RK_EDIT_PUBLISHER, this);
+        editBookshelfLauncher.registerForFragmentResult(fm, this);
+        editAuthorLauncher.registerForFragmentResult(fm, this);
+        editSeriesLauncher.registerForFragmentResult(fm, this);
+        editPublisherLauncher.registerForFragmentResult(fm, this);
 
 
-        stylePickerLauncher.registerForFragmentResult(fm, RK_STYLE_PICKER, this);
-        editLenderLauncher.registerForFragmentResult(fm, RK_EDIT_LENDER, this);
-        bookshelfFiltersLauncher.registerForFragmentResult(fm, RK_FILTERS, this);
+        stylePickerLauncher.registerForFragmentResult(fm, this);
+        editLenderLauncher.registerForFragmentResult(fm, this);
+        bookshelfFiltersLauncher.registerForFragmentResult(fm, this);
     }
 
     private void createViewModel() {
@@ -1245,40 +1298,45 @@ public class BooksOnBookshelf
             }
             case BooklistGroup.LANGUAGE: {
                 if (itemId == R.id.MENU_LANGUAGE_EDIT) {
-                    EditLanguageDialogFragment.launch(getSupportFragmentManager(),
-                                                      this, rowData.getString(DBKey.LANGUAGE));
+                    final String text = rowData.getString(DBKey.LANGUAGE);
+                    final String editLang;
+                    if (text.length() > 3) {
+                        editLang = text;
+                    } else {
+                        editLang = ServiceLocator.getInstance().getAppLocale()
+                                                 .getLocale(this, text)
+                                                 .map(Locale::getDisplayLanguage)
+                                                 .orElse(text);
+                    }
+                    editLanguageLauncher.launch(editLang);
                     return true;
                 }
                 break;
             }
             case BooklistGroup.LOCATION: {
                 if (itemId == R.id.MENU_LOCATION_EDIT) {
-                    EditLocationDialogFragment.launch(getSupportFragmentManager(),
-                                                      rowData.getString(DBKey.LOCATION));
+                    editLocationLauncher.launch(rowData.getString(DBKey.LOCATION));
                     return true;
                 }
                 break;
             }
             case BooklistGroup.GENRE: {
                 if (itemId == R.id.MENU_GENRE_EDIT) {
-                    EditGenreDialogFragment.launch(getSupportFragmentManager(),
-                                                   rowData.getString(DBKey.GENRE));
+                    editGenreLauncher.launch(rowData.getString(DBKey.GENRE));
                     return true;
                 }
                 break;
             }
             case BooklistGroup.FORMAT: {
                 if (itemId == R.id.MENU_FORMAT_EDIT) {
-                    EditFormatDialogFragment.launch(getSupportFragmentManager(),
-                                                    rowData.getString(DBKey.FORMAT));
+                    editFormatLauncher.launch(rowData.getString(DBKey.FORMAT));
                     return true;
                 }
                 break;
             }
             case BooklistGroup.COLOR: {
                 if (itemId == R.id.MENU_COLOR_EDIT) {
-                    EditColorDialogFragment.launch(getSupportFragmentManager(),
-                                                   rowData.getString(DBKey.COLOR));
+                    editColorLauncher.launch(rowData.getString(DBKey.COLOR));
                     return true;
                 }
                 break;

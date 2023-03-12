@@ -77,7 +77,7 @@ public class EditBookFieldsFragment
     private static final String RK_EDIT_BOOKSHELVES = TAG + ":rk:" + MultiChoiceDialogFragment.TAG;
 
     private final MultiChoiceDialogFragment.Launcher<Bookshelf> editBookshelvesLauncher =
-            new MultiChoiceDialogFragment.Launcher<>() {
+            new MultiChoiceDialogFragment.Launcher<>(RK_EDIT_BOOKSHELVES) {
                 @Override
                 public void onResult(@NonNull final Set<Long> selectedIds) {
                     final Field<List<Bookshelf>, TextView> field =
@@ -128,8 +128,7 @@ public class EditBookFieldsFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        editBookshelvesLauncher.registerForFragmentResult(getChildFragmentManager(),
-                                                          RK_EDIT_BOOKSHELVES, this);
+        editBookshelvesLauncher.registerForFragmentResult(getChildFragmentManager(), this);
     }
 
     @Override

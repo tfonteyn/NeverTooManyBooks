@@ -130,7 +130,7 @@ public class EditBookTocFragment
 
     /** Listen for the results of the entry edit-dialog. */
     private final EditTocEntryDialogFragment.Launcher editTocEntryLauncher =
-            new EditTocEntryDialogFragment.Launcher() {
+            new EditTocEntryDialogFragment.Launcher(RK_EDIT_TOC) {
                 @Override
                 public void onResult(@NonNull final TocEntry tocEntry,
                                      final int position) {
@@ -145,7 +145,7 @@ public class EditBookTocFragment
     private EditBookTocViewModel editTocVm;
 
     private final ConfirmTocDialogFragment.Launcher confirmTocResultsLauncher =
-            new ConfirmTocDialogFragment.Launcher() {
+            new ConfirmTocDialogFragment.Launcher(RK_CONFIRM_TOC) {
                 @Override
                 public void onResult(@NonNull final Book.ContentType contentType,
                                      @NonNull final List<TocEntry> tocEntries) {
@@ -172,8 +172,8 @@ public class EditBookTocFragment
 
         final FragmentManager fm = getChildFragmentManager();
 
-        editTocEntryLauncher.registerForFragmentResult(fm, RK_EDIT_TOC, this);
-        confirmTocResultsLauncher.registerForFragmentResult(fm, RK_CONFIRM_TOC, this);
+        editTocEntryLauncher.registerForFragmentResult(fm, this);
+        confirmTocResultsLauncher.registerForFragmentResult(fm, this);
     }
 
     @Override
@@ -583,8 +583,13 @@ public class EditBookTocFragment
             private static final String SEARCH_NEXT_EDITION = "searchNextEdition";
             private static final String TOC_BIT_MASK = "tocBitMask";
             private static final String TOC_LIST = "tocEntries";
-            private String requestKey;
+            @NonNull
+            private final String requestKey;
             private FragmentManager fragmentManager;
+
+            public Launcher(@NonNull final String requestKey) {
+                this.requestKey = requestKey;
+            }
 
             static void setResult(@NonNull final Fragment fragment,
                                   @NonNull final String requestKey,
@@ -624,10 +629,8 @@ public class EditBookTocFragment
             }
 
             public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
-                                                  @NonNull final String requestKey,
                                                   @NonNull final LifecycleOwner lifecycleOwner) {
                 this.fragmentManager = fragmentManager;
-                this.requestKey = requestKey;
                 this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner,
                                                                this);
             }

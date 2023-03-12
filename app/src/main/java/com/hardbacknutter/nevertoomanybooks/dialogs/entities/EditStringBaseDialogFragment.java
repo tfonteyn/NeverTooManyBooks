@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,29 +32,26 @@ import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.RowChangedListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditStringContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.EditLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.EditStringLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
 
 /**
- * Base Dialog class to edit an <strong>in-line in Books table</strong> String field.
+ * Base Dialog class to edit an <strong>in-line String field</strong> in Books table.
  */
 public abstract class EditStringBaseDialogFragment
         extends FFBaseDialogFragment {
 
     /** Fragment/Log tag. */
-    private static final String TAG = "EditStringBaseDialog";
-    /** Argument. */
-    static final String BKEY_TEXT = TAG + ":text";
-    static final String BKEY_REQUEST_KEY = TAG + ":rk";
+    public static final String TAG = "EditStringBaseDialog";
 
     @StringRes
     private final int dialogTitleId;
     @StringRes
     private final int labelResId;
-    @NonNull
-    private final String dataKey;
+
     /** FragmentResultListener request key to use for our response. */
     private String requestKey;
     /** View Binding. */
@@ -67,17 +64,15 @@ public abstract class EditStringBaseDialogFragment
     /**
      * Constructor; only used by the child class no-args constructor.
      *
-     * @param titleId    for the dialog (i.e. the toolbar)
-     * @param labelResId to use for the 'hint' of the input field
+     * @param dialogTitleId for the dialog (i.e. the toolbar)
+     * @param labelResId    to use for the 'hint' of the input field
      */
-    EditStringBaseDialogFragment(@StringRes final int titleId,
-                                 @StringRes final int labelResId,
-                                 @NonNull final String dataKey) {
+    EditStringBaseDialogFragment(@StringRes final int dialogTitleId,
+                                 @StringRes final int labelResId) {
         super(R.layout.dialog_edit_string, R.layout.dialog_edit_string_content);
 
-        dialogTitleId = titleId;
+        this.dialogTitleId = dialogTitleId;
         this.labelResId = labelResId;
-        this.dataKey = dataKey;
     }
 
     @Override
@@ -85,13 +80,14 @@ public abstract class EditStringBaseDialogFragment
         super.onCreate(savedInstanceState);
 
         final Bundle args = requireArguments();
-        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
-        originalText = args.getString(BKEY_TEXT, "");
+        requestKey = Objects.requireNonNull(
+                args.getString(EditLauncher.BKEY_REQUEST_KEY), EditLauncher.BKEY_REQUEST_KEY);
+        originalText = args.getString(EditLauncher.BKEY_ITEM, "");
 
         if (savedInstanceState == null) {
             currentText = originalText;
         } else {
-            currentText = savedInstanceState.getString(BKEY_TEXT, "");
+            currentText = savedInstanceState.getString(EditLauncher.BKEY_ITEM, "");
         }
     }
 
@@ -162,9 +158,8 @@ public abstract class EditStringBaseDialogFragment
             return true;
         }
 
-        onSave(originalText, currentText);
-
-        RowChangedListener.setResult(this, requestKey, dataKey, 0);
+        final String storedText = onSave(originalText, currentText);
+        EditStringLauncher.setResult(this, requestKey, originalText, storedText);
         return true;
     }
 
@@ -177,14 +172,18 @@ public abstract class EditStringBaseDialogFragment
      *
      * @param originalText the original text which was passed in to be edited
      * @param currentText  the modified text
+     *
+     * @return the text as <strong>stored</strong> which can be different from
+     *         the modified text passed in.
      */
-    abstract void onSave(String originalText,
-                         String currentText);
+    @NonNull
+    abstract String onSave(@NonNull String originalText,
+                           @NonNull String currentText);
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(BKEY_TEXT, currentText);
+        outState.putString(EditLauncher.BKEY_ITEM, currentText);
     }
 
     @Override

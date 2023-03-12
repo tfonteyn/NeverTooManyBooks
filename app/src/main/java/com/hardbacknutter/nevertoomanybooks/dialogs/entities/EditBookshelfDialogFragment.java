@@ -25,11 +25,6 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentResultListener;
-import androidx.lifecycle.LifecycleOwner;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -37,9 +32,10 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.EditInPlaceParcelableLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.EditLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
@@ -51,7 +47,6 @@ public class EditBookshelfDialogFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditBookshelfDialogFrag";
-    public static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
     /** FragmentResultListener request key to use for our response. */
     private String requestKey;
@@ -63,7 +58,7 @@ public class EditBookshelfDialogFragment
     private Bookshelf bookshelf;
 
     /** Current edit. Using the 'name' directly. */
-    private String name;
+    private String currentEdit;
 
     /**
      * No-arg constructor for OS use.
@@ -77,15 +72,16 @@ public class EditBookshelfDialogFragment
         super.onCreate(savedInstanceState);
 
         final Bundle args = requireArguments();
-        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
-        bookshelf = Objects.requireNonNull(args.getParcelable(DBKey.FK_BOOKSHELF),
-                                           DBKey.FK_BOOKSHELF);
+        requestKey = Objects.requireNonNull(
+                args.getString(EditLauncher.BKEY_REQUEST_KEY), EditLauncher.BKEY_REQUEST_KEY);
+        bookshelf = Objects.requireNonNull(
+                args.getParcelable(EditLauncher.BKEY_ITEM), EditLauncher.BKEY_ITEM);
 
         if (savedInstanceState == null) {
-            name = bookshelf.getName();
+            currentEdit = bookshelf.getName();
         } else {
             //noinspection ConstantConditions
-            name = savedInstanceState.getString(DBKey.BOOKSHELF_NAME);
+            currentEdit = savedInstanceState.getString(EditLauncher.BKEY_ITEM);
         }
     }
 
@@ -95,7 +91,7 @@ public class EditBookshelfDialogFragment
         super.onViewCreated(view, savedInstanceState);
         vb = DialogEditBookshelfContentBinding.bind(view.findViewById(R.id.dialog_content));
 
-        vb.bookshelf.setText(name);
+        vb.bookshelf.setText(currentEdit);
         autoRemoveError(vb.bookshelf, vb.lblBookshelf);
 
         vb.bookshelf.requestFocus();
@@ -118,12 +114,12 @@ public class EditBookshelfDialogFragment
     private boolean saveChanges() {
         viewToModel();
 
-        if (name.isEmpty()) {
+        if (currentEdit.isEmpty()) {
             vb.lblBookshelf.setError(getString(R.string.vldt_non_blank_required));
             return false;
         }
 
-        final boolean nameChanged = !bookshelf.getName().equals(name);
+        final boolean nameChanged = !bookshelf.getName().equals(currentEdit);
 
         // anything actually changed ? If not, we're done.
         if (!nameChanged) {
@@ -131,7 +127,7 @@ public class EditBookshelfDialogFragment
         }
 
         // store changes
-        bookshelf.setName(name);
+        bookshelf.setName(currentEdit);
 
         final Context context = getContext();
         final BookshelfDao dao = ServiceLocator.getInstance().getBookshelfDao();
@@ -153,7 +149,8 @@ public class EditBookshelfDialogFragment
             // There is one with the same name; ask whether to merge the 2
             SaveChangesHelper.askToMerge(
                     this, dao, bookshelf,
-                    savedBookshelf -> Launcher.setResult(this, requestKey, savedBookshelf),
+                    savedBookshelf -> EditInPlaceParcelableLauncher.setResult(
+                            this, requestKey, savedBookshelf),
                     R.string.confirm_merge_bookshelves,
                     existingBookshelf.get());
         } else {
@@ -166,7 +163,7 @@ public class EditBookshelfDialogFragment
                     //noinspection ConstantConditions
                     dao.update(context, bookshelf);
                 }
-                Launcher.setResult(this, requestKey, bookshelf);
+                EditInPlaceParcelableLauncher.setResult(this, requestKey, bookshelf);
                 return true;
 
             } catch (@NonNull final DaoWriteException e) {
@@ -178,74 +175,18 @@ public class EditBookshelfDialogFragment
 
     private void viewToModel() {
         //noinspection ConstantConditions
-        name = vb.bookshelf.getText().toString().trim();
+        currentEdit = vb.bookshelf.getText().toString().trim();
     }
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(DBKey.BOOKSHELF_NAME, name);
+        outState.putString(EditLauncher.BKEY_ITEM, currentEdit);
     }
 
     @Override
     public void onPause() {
         viewToModel();
         super.onPause();
-    }
-
-    public abstract static class Launcher
-            implements FragmentResultListener {
-
-        private String requestKey;
-        private FragmentManager fragmentManager;
-
-        static void setResult(@NonNull final Fragment fragment,
-                              @NonNull final String requestKey,
-                              @NonNull final Bookshelf bookshelf) {
-            final Bundle result = new Bundle(1);
-            result.putParcelable(DBKey.FK_BOOKSHELF, bookshelf);
-            fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
-        }
-
-        public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
-                                              @NonNull final String requestKey,
-                                              @NonNull final LifecycleOwner lifecycleOwner) {
-            this.fragmentManager = fragmentManager;
-            this.requestKey = requestKey;
-            this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner, this);
-        }
-
-        /**
-         * Launch the dialog.
-         *
-         * @param bookshelf to edit.
-         */
-        public void launch(@NonNull final Bookshelf bookshelf) {
-
-            final Bundle args = new Bundle(2);
-            args.putString(BKEY_REQUEST_KEY, requestKey);
-            args.putParcelable(DBKey.FK_BOOKSHELF, bookshelf);
-
-            final DialogFragment frag = new EditBookshelfDialogFragment();
-            frag.setArguments(args);
-            frag.show(fragmentManager, TAG);
-        }
-
-        @Override
-        public void onFragmentResult(@NonNull final String requestKey,
-                                     @NonNull final Bundle result) {
-            final Bookshelf bookshelf = result.getParcelable(DBKey.FK_BOOKSHELF);
-            if (bookshelf == null) {
-                throw new IllegalArgumentException(DBKey.FK_BOOKSHELF);
-            }
-            onResult(bookshelf);
-        }
-
-        /**
-         * Callback handler with the edit.
-         *
-         * @param bookshelf the Bookshelf
-         */
-        public abstract void onResult(Bookshelf bookshelf);
     }
 }

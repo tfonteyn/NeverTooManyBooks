@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -226,8 +226,13 @@ public class StylePickerDialogFragment
     public abstract static class Launcher
             implements FragmentResultListener {
 
-        private String requestKey;
+        @NonNull
+        private final String requestKey;
         private FragmentManager fragmentManager;
+
+        public Launcher(@NonNull final String requestKey) {
+            this.requestKey = requestKey;
+        }
 
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
@@ -238,10 +243,8 @@ public class StylePickerDialogFragment
         }
 
         public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
-                                              @NonNull final String requestKey,
                                               @NonNull final LifecycleOwner lifecycleOwner) {
             this.fragmentManager = fragmentManager;
-            this.requestKey = requestKey;
             this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner, this);
         }
 
@@ -272,7 +275,7 @@ public class StylePickerDialogFragment
         }
 
         /**
-         * Callback handler with the user's selection.
+         * Callback handler.
          *
          * @param uuid the selected style
          */

@@ -34,8 +34,8 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.dialogs.EditLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
 public class EditAuthorViewModel
@@ -62,9 +62,9 @@ public class EditAuthorViewModel
         if (requestKey == null) {
 
             requestKey = Objects.requireNonNull(
-                    args.getString(EditAuthorDialogFragment.BKEY_REQUEST_KEY),
-                    EditAuthorDialogFragment.BKEY_REQUEST_KEY);
-            author = Objects.requireNonNull(args.getParcelable(DBKey.FK_AUTHOR), DBKey.FK_AUTHOR);
+                    args.getString(EditLauncher.BKEY_REQUEST_KEY), EditLauncher.BKEY_REQUEST_KEY);
+            author = Objects.requireNonNull(
+                    args.getParcelable(EditLauncher.BKEY_ITEM), EditLauncher.BKEY_ITEM);
 
             currentEdit = new Author(author);
             final Author tmp = currentEdit.getRealAuthor();

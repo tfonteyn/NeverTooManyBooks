@@ -19,20 +19,13 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
-import android.content.Context;
-import android.os.Bundle;
-
 import androidx.annotation.NonNull;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentManager;
 
 import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.RowChangedListener;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
 /**
  * Dialog to edit an <strong>in-line in Books table</strong> Language.
@@ -43,44 +36,11 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
  */
 public class EditLanguageDialogFragment
         extends EditStringBaseDialogFragment {
-
-    /** Fragment/Log tag. */
-    private static final String TAG = "EditLanguageDialogFrag";
-
     /**
      * No-arg constructor for OS use.
      */
     public EditLanguageDialogFragment() {
-        super(R.string.lbl_language, R.string.lbl_language, DBKey.LANGUAGE);
-    }
-
-    /**
-     * Launch the dialog.
-     *
-     * @param fm      The FragmentManager this fragment will be added to.
-     * @param context Current context
-     * @param text    to edit.
-     */
-    public static void launch(@NonNull final FragmentManager fm,
-                              @NonNull final Context context,
-                              @NonNull final String text) {
-        final String editLang;
-        if (text.length() > 3) {
-            editLang = text;
-        } else {
-            editLang = ServiceLocator.getInstance().getAppLocale()
-                                     .getLocale(context, text)
-                                     .map(Locale::getDisplayLanguage)
-                                     .orElse(text);
-        }
-
-        final Bundle args = new Bundle(2);
-        args.putString(BKEY_REQUEST_KEY, RowChangedListener.REQUEST_KEY);
-        args.putString(BKEY_TEXT, editLang);
-
-        final DialogFragment frag = new EditLanguageDialogFragment();
-        frag.setArguments(args);
-        frag.show(fm, TAG);
+        super(R.string.lbl_language, R.string.lbl_language);
     }
 
     @NonNull
@@ -91,8 +51,9 @@ public class EditLanguageDialogFragment
     }
 
     @Override
-    void onSave(@NonNull final String originalText,
-                @NonNull final String currentText) {
+    @NonNull
+    String onSave(@NonNull final String originalText,
+                  @NonNull final String currentText) {
 
         final Locale userLocale = getResources().getConfiguration().getLocales().get(0);
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
@@ -101,5 +62,6 @@ public class EditLanguageDialogFragment
                 .getLanguages().getISO3FromDisplayName(getContext(), userLocale, currentText);
 
         serviceLocator.getLanguageDao().rename(originalText, iso);
+        return iso;
     }
 }

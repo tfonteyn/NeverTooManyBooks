@@ -25,11 +25,6 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentResultListener;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -42,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditAuthorContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.EditInPlaceParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
@@ -61,7 +57,6 @@ public class EditAuthorDialogFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditAuthorDialogFrag";
-    public static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
     /** Author View model. Fragment scope. */
     private EditAuthorViewModel authorVm;
@@ -190,7 +185,7 @@ public class EditAuthorDialogFragment
         return SaveChangesHelper
                 .save(this, ServiceLocator.getInstance().getAuthorDao(),
                       originalAuthor, nameChanged, bookLocale,
-                      savedAuthor -> Launcher.setResult(
+                      savedAuthor -> EditInPlaceParcelableLauncher.setResult(
                               this, authorVm.getRequestKey(), savedAuthor),
                       R.string.confirm_merge_authors);
     }
@@ -208,61 +203,5 @@ public class EditAuthorDialogFragment
     public void onPause() {
         viewToModel();
         super.onPause();
-    }
-
-    public abstract static class Launcher
-            implements FragmentResultListener {
-
-        private String requestKey;
-        private FragmentManager fragmentManager;
-
-        static void setResult(@NonNull final Fragment fragment,
-                              @NonNull final String requestKey,
-                              @NonNull final Author author) {
-            final Bundle result = new Bundle(1);
-            result.putParcelable(DBKey.FK_AUTHOR, author);
-            fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
-        }
-
-        public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
-                                              @NonNull final String requestKey,
-                                              @NonNull final LifecycleOwner lifecycleOwner) {
-            this.fragmentManager = fragmentManager;
-            this.requestKey = requestKey;
-            this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner, this);
-        }
-
-        /**
-         * Launch the dialog.
-         *
-         * @param author to edit.
-         */
-        public void launch(@NonNull final Author author) {
-
-            final Bundle args = new Bundle(2);
-            args.putString(BKEY_REQUEST_KEY, requestKey);
-            args.putParcelable(DBKey.FK_AUTHOR, author);
-
-            final DialogFragment frag = new EditAuthorDialogFragment();
-            frag.setArguments(args);
-            frag.show(fragmentManager, TAG);
-        }
-
-        @Override
-        public void onFragmentResult(@NonNull final String requestKey,
-                                     @NonNull final Bundle result) {
-            final Author author = result.getParcelable(DBKey.FK_AUTHOR);
-            if (author == null) {
-                throw new IllegalArgumentException(DBKey.FK_AUTHOR);
-            }
-            onResult(author);
-        }
-
-        /**
-         * Callback handler with the edit.
-         *
-         * @param author Author
-         */
-        public abstract void onResult(@NonNull Author author);
     }
 }

@@ -27,8 +27,6 @@ import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -41,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorViewModel;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -57,7 +56,6 @@ public class EditBookAuthorDialogFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditAuthorForBookDialog";
-    public static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
     /**
      * We create a list of all the Type checkboxes for easy handling.
@@ -250,11 +248,11 @@ public class EditBookAuthorDialogFragment
         }
 
         if (action == EditAction.Add) {
-            Launcher.setResult(this, authorVm.getRequestKey(),
-                               currentEdit);
+            EditParcelableLauncher.setResult(this, authorVm.getRequestKey(),
+                                             currentEdit);
         } else {
-            Launcher.setResult(this, authorVm.getRequestKey(),
-                               authorVm.getAuthor(), currentEdit);
+            EditParcelableLauncher.setResult(this, authorVm.getRequestKey(),
+                                             authorVm.getAuthor(), currentEdit);
         }
         return true;
     }
@@ -280,25 +278,5 @@ public class EditBookAuthorDialogFragment
     public void onPause() {
         viewToModel();
         super.onPause();
-    }
-
-    public abstract static class Launcher
-            extends EditLauncher<Author> {
-
-        public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
-                                              @NonNull final String requestKeyValue,
-                                              @NonNull final LifecycleOwner lifecycleOwner) {
-            super.registerForFragmentResult(fragmentManager,
-                                            BKEY_REQUEST_KEY,
-                                            requestKeyValue,
-                                            lifecycleOwner);
-        }
-
-        @Override
-        public void launch(@NonNull final EditAction action,
-                           @NonNull final Author author) {
-            super.launch(new EditBookAuthorDialogFragment(),
-                         action, DBKey.FK_AUTHOR, author);
-        }
     }
 }

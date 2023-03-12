@@ -24,19 +24,15 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentResultListener;
-import androidx.lifecycle.LifecycleOwner;
 
 import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditSeriesContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.EditInPlaceParcelableLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.EditLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
@@ -49,7 +45,6 @@ public class EditSeriesDialogFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditSeriesDialogFrag";
-    public static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
     /** FragmentResultListener request key to use for our response. */
     private String requestKey;
@@ -75,14 +70,16 @@ public class EditSeriesDialogFragment
         super.onCreate(savedInstanceState);
 
         final Bundle args = requireArguments();
-        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
-        series = Objects.requireNonNull(args.getParcelable(DBKey.FK_SERIES), DBKey.FK_SERIES);
+        requestKey = Objects.requireNonNull(
+                args.getString(EditLauncher.BKEY_REQUEST_KEY), EditLauncher.BKEY_REQUEST_KEY);
+        series = Objects.requireNonNull(
+                args.getParcelable(EditLauncher.BKEY_ITEM), EditLauncher.BKEY_ITEM);
 
         if (savedInstanceState == null) {
             currentEdit = new Series(series.getTitle(), series.isComplete());
         } else {
             //noinspection ConstantConditions
-            currentEdit = savedInstanceState.getParcelable(DBKey.FK_SERIES);
+            currentEdit = savedInstanceState.getParcelable(EditLauncher.BKEY_ITEM);
         }
     }
 
@@ -145,7 +142,8 @@ public class EditSeriesDialogFragment
         return SaveChangesHelper
                 .save(this, ServiceLocator.getInstance().getSeriesDao(),
                       series, nameChanged, bookLocale,
-                      savedSeries -> Launcher.setResult(this, requestKey, savedSeries),
+                      savedSeries -> EditInPlaceParcelableLauncher.setResult(
+                              this, requestKey, savedSeries),
                       R.string.confirm_merge_series);
     }
 
@@ -157,68 +155,12 @@ public class EditSeriesDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(DBKey.FK_SERIES, currentEdit);
+        outState.putParcelable(EditLauncher.BKEY_ITEM, currentEdit);
     }
 
     @Override
     public void onPause() {
         viewToModel();
         super.onPause();
-    }
-
-    public abstract static class Launcher
-            implements FragmentResultListener {
-
-        private String requestKey;
-        private FragmentManager fragmentManager;
-
-        static void setResult(@NonNull final Fragment fragment,
-                              @NonNull final String requestKey,
-                              @NonNull final Series series) {
-            final Bundle result = new Bundle(1);
-            result.putParcelable(DBKey.FK_SERIES, series);
-            fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
-        }
-
-        public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
-                                              @NonNull final String requestKey,
-                                              @NonNull final LifecycleOwner lifecycleOwner) {
-            this.fragmentManager = fragmentManager;
-            this.requestKey = requestKey;
-            this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner, this);
-        }
-
-        /**
-         * Launch the dialog.
-         *
-         * @param series to edit.
-         */
-        public void launch(@NonNull final Series series) {
-
-            final Bundle args = new Bundle(2);
-            args.putString(BKEY_REQUEST_KEY, requestKey);
-            args.putParcelable(DBKey.FK_SERIES, series);
-
-            final DialogFragment frag = new EditSeriesDialogFragment();
-            frag.setArguments(args);
-            frag.show(fragmentManager, TAG);
-        }
-
-        @Override
-        public void onFragmentResult(@NonNull final String requestKey,
-                                     @NonNull final Bundle result) {
-            final Series series = result.getParcelable(DBKey.FK_SERIES);
-            if (series == null) {
-                throw new IllegalArgumentException(DBKey.FK_SERIES);
-            }
-            onResult(series);
-        }
-
-        /**
-         * Callback handler with the edit.
-         *
-         * @param series the Series
-         */
-        public abstract void onResult(@NonNull Series series);
     }
 }

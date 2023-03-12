@@ -79,7 +79,7 @@ public abstract class EditBookBaseFragment
     /** MUST keep a strong reference. */
     private final DatePickerListener datePickerListener = this::onDateSet;
     private final PartialDatePickerDialogFragment.Launcher partialDatePickerLauncher =
-            new PartialDatePickerDialogFragment.Launcher() {
+            new PartialDatePickerDialogFragment.Launcher(RK_DATE_PICKER_PARTIAL) {
                 @Override
                 public void onResult(@IdRes final int fieldId,
                                      @NonNull final PartialDate date) {
@@ -110,8 +110,7 @@ public abstract class EditBookBaseFragment
         //noinspection ConstantConditions
         dateParser = new FullDateParser(systemLocale, LocaleListUtils.asList(getContext()));
 
-        partialDatePickerLauncher.registerForFragmentResult(getChildFragmentManager(),
-                                                            RK_DATE_PICKER_PARTIAL, this);
+        partialDatePickerLauncher.registerForFragmentResult(getChildFragmentManager(), this);
     }
 
     @CallSuper

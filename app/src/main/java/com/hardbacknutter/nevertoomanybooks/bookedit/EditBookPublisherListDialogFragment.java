@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherListContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
@@ -82,8 +83,9 @@ public class EditBookPublisherListDialogFragment
             };
     /** The adapter for the list itself. */
     private PublisherListAdapter adapter;
-    private final EditBookPublisherDialogFragment.Launcher editLauncher =
-            new EditBookPublisherDialogFragment.Launcher() {
+    private final EditParcelableLauncher<Publisher> editLauncher =
+            new EditParcelableLauncher<>(RK_EDIT_PUBLISHER,
+                                         EditBookPublisherListDialogFragment::new) {
                 @Override
                 public void onAdd(@NonNull final Publisher publisher) {
                     add(publisher);
@@ -123,8 +125,7 @@ public class EditBookPublisherListDialogFragment
         //noinspection ConstantConditions
         vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
-        editLauncher.registerForFragmentResult(getChildFragmentManager(),
-                                               RK_EDIT_PUBLISHER, this);
+        editLauncher.registerForFragmentResult(getChildFragmentManager(), this);
     }
 
     @Override

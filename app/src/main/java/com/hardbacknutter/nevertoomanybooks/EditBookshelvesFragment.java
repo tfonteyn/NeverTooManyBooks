@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookshelvesBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.EditInPlaceParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -98,14 +99,15 @@ public class EditBookshelvesFragment
     private BookshelfAdapter adapter;
 
     /** Accept the result from the dialog. */
-    private final EditBookshelfDialogFragment.Launcher editBookshelfLauncher =
-            new EditBookshelfDialogFragment.Launcher() {
+    private final EditInPlaceParcelableLauncher<Bookshelf> editLauncher =
+            new EditInPlaceParcelableLauncher<>(RK_EDIT_BOOKSHELF,
+                                                EditBookshelfDialogFragment::new) {
                 @Override
-                public void onResult(@NonNull final Bookshelf bookshelf) {
+                public void onModified(@NonNull final Bookshelf modified) {
                     // first update the previous, now unselected, row.
                     adapter.notifyItemChanged(vm.getSelectedPosition());
                     // store the newly selected row.
-                    vm.onBookshelfEdited(bookshelf.getId());
+                    vm.onBookshelfEdited(modified.getId());
                     // update the newly selected row.
                     adapter.notifyItemChanged(vm.getSelectedPosition());
                 }
@@ -143,8 +145,7 @@ public class EditBookshelvesFragment
         vm = new ViewModelProvider(this).get(EditBookshelvesViewModel.class);
         vm.init(getArguments());
 
-        editBookshelfLauncher.registerForFragmentResult(getChildFragmentManager(),
-                                                        RK_EDIT_BOOKSHELF, this);
+        editLauncher.registerForFragmentResult(getChildFragmentManager(), this);
     }
 
     @Override
@@ -198,7 +199,7 @@ public class EditBookshelvesFragment
     private void editNewBookshelf() {
         //noinspection ConstantConditions
         final Style style = ServiceLocator.getInstance().getStyles().getDefault(getContext());
-        editBookshelfLauncher.launch(new Bookshelf("", style));
+        editLauncher.launch(new Bookshelf("", style));
     }
 
     /**
@@ -228,7 +229,7 @@ public class EditBookshelvesFragment
         final Bookshelf bookshelf = vm.getBookshelf(index);
 
         if (itemId == R.id.MENU_EDIT) {
-            editBookshelfLauncher.launch(bookshelf);
+            editLauncher.launch(bookshelf);
             return true;
 
         } else if (itemId == R.id.MENU_DELETE) {

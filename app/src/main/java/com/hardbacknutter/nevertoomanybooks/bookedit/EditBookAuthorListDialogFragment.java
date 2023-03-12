@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorListContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -86,8 +87,8 @@ public class EditBookAuthorListDialogFragment
             };
     /** The adapter for the list itself. */
     private AuthorListAdapter adapter;
-    private final EditBookAuthorDialogFragment.Launcher editLauncher =
-            new EditBookAuthorDialogFragment.Launcher() {
+    private final EditParcelableLauncher<Author> editLauncher =
+            new EditParcelableLauncher<>(RK_EDIT_AUTHOR, EditBookAuthorDialogFragment::new) {
                 @Override
                 public void onAdd(@NonNull final Author author) {
                     add(author);
@@ -127,8 +128,7 @@ public class EditBookAuthorListDialogFragment
         //noinspection ConstantConditions
         vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
-        editLauncher.registerForFragmentResult(getChildFragmentManager(),
-                                               RK_EDIT_AUTHOR, this);
+        editLauncher.registerForFragmentResult(getChildFragmentManager(), this);
     }
 
     @Override

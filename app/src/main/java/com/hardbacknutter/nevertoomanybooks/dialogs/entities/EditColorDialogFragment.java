@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,18 +19,12 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
-import android.os.Bundle;
-
 import androidx.annotation.NonNull;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentManager;
 
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.RowChangedListener;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
 /**
  * Dialog to edit an <strong>in-line in Books table</strong> Color.
@@ -38,31 +32,11 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 public class EditColorDialogFragment
         extends EditStringBaseDialogFragment {
 
-    /** Fragment/Log tag. */
-    private static final String TAG = "EditColorDialogFragment";
-
     /**
      * No-arg constructor for OS use.
      */
     public EditColorDialogFragment() {
-        super(R.string.lbl_color, R.string.lbl_color, DBKey.COLOR);
-    }
-
-    /**
-     * Launch the dialog.
-     *
-     * @param fm   The FragmentManager this fragment will be added to.
-     * @param text to edit.
-     */
-    public static void launch(@NonNull final FragmentManager fm,
-                              @NonNull final String text) {
-        final Bundle args = new Bundle(2);
-        args.putString(BKEY_REQUEST_KEY, RowChangedListener.REQUEST_KEY);
-        args.putString(BKEY_TEXT, text);
-
-        final DialogFragment frag = new EditColorDialogFragment();
-        frag.setArguments(args);
-        frag.show(fm, TAG);
+        super(R.string.lbl_color, R.string.lbl_color);
     }
 
     @NonNull
@@ -72,8 +46,10 @@ public class EditColorDialogFragment
     }
 
     @Override
-    void onSave(@NonNull final String originalText,
-                @NonNull final String currentText) {
+    @NonNull
+    String onSave(@NonNull final String originalText,
+                  @NonNull final String currentText) {
         ServiceLocator.getInstance().getColorDao().rename(originalText, currentText);
+        return currentText;
     }
 }

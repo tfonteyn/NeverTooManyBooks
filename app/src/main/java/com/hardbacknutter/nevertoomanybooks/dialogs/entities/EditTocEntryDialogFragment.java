@@ -215,8 +215,13 @@ public class EditTocEntryDialogFragment
     public abstract static class Launcher
             implements FragmentResultListener {
 
-        private String requestKey;
+        @NonNull
+        private final String requestKey;
         private FragmentManager fragmentManager;
+
+        public Launcher(@NonNull final String requestKey) {
+            this.requestKey = requestKey;
+        }
 
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
@@ -230,10 +235,8 @@ public class EditTocEntryDialogFragment
         }
 
         public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
-                                              @NonNull final String requestKey,
                                               @NonNull final LifecycleOwner lifecycleOwner) {
             this.fragmentManager = fragmentManager;
-            this.requestKey = requestKey;
             this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner, this);
         }
 

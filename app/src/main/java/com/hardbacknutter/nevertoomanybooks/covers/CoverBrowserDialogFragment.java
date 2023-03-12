@@ -362,8 +362,13 @@ public class CoverBrowserDialogFragment
             implements FragmentResultListener {
 
         private static final String COVER_FILE_SPEC = "fileSpec";
-        private String requestKey;
+        @NonNull
+        private final String requestKey;
         private FragmentManager fragmentManager;
+
+        public Launcher(@NonNull final String requestKey) {
+            this.requestKey = requestKey;
+        }
 
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
@@ -396,10 +401,8 @@ public class CoverBrowserDialogFragment
         }
 
         public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
-                                              @NonNull final String requestKey,
                                               @NonNull final LifecycleOwner lifecycleOwner) {
             this.fragmentManager = fragmentManager;
-            this.requestKey = requestKey;
             this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner, this);
         }
 

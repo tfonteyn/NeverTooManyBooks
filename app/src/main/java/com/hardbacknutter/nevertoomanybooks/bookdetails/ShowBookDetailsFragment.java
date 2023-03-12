@@ -135,7 +135,7 @@ public class ShowBookDetailsFragment
 
     /** Handle the edit-lender dialog. */
     private final EditLenderDialogFragment.Launcher editLenderLauncher =
-            new EditLenderDialogFragment.Launcher() {
+            new EditLenderDialogFragment.Launcher(RK_EDIT_LENDER) {
                 @Override
                 public void onResult(@IntRange(from = 1) final long bookId,
                                      @NonNull final String loanee) {
@@ -197,8 +197,7 @@ public class ShowBookDetailsFragment
             pagerVm.init(args);
         }
 
-        editLenderLauncher.registerForFragmentResult(getChildFragmentManager(), RK_EDIT_LENDER,
-                                                     this);
+        editLenderLauncher.registerForFragmentResult(getChildFragmentManager(), this);
     }
 
     @Override

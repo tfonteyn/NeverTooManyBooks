@@ -24,8 +24,6 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.Objects;
@@ -33,6 +31,8 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.EditLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
@@ -48,7 +48,6 @@ public class EditBookSeriesDialogFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditSeriesForBookDialog";
-    public static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
     /** FragmentResultListener request key to use for our response. */
     private String requestKey;
@@ -79,16 +78,19 @@ public class EditBookSeriesDialogFragment
         vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
         final Bundle args = requireArguments();
-        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
-        action = Objects.requireNonNull(args.getParcelable(EditAction.BKEY), EditAction.BKEY);
-        series = Objects.requireNonNull(args.getParcelable(DBKey.FK_SERIES), DBKey.FK_SERIES);
+        requestKey = Objects.requireNonNull(
+                args.getString(EditLauncher.BKEY_REQUEST_KEY), EditLauncher.BKEY_REQUEST_KEY);
+        action = Objects.requireNonNull(
+                args.getParcelable(EditAction.BKEY), EditAction.BKEY);
+        series = Objects.requireNonNull(
+                args.getParcelable(EditLauncher.BKEY_ITEM), EditLauncher.BKEY_ITEM);
 
         if (savedInstanceState == null) {
             currentEdit = new Series(series.getTitle(), series.isComplete());
             currentEdit.setNumber(series.getNumber());
         } else {
             //noinspection ConstantConditions
-            currentEdit = savedInstanceState.getParcelable(DBKey.FK_SERIES);
+            currentEdit = savedInstanceState.getParcelable(EditLauncher.BKEY_ITEM);
         }
     }
 
@@ -137,9 +139,9 @@ public class EditBookSeriesDialogFragment
         }
 
         if (action == EditAction.Add) {
-            Launcher.setResult(this, requestKey, currentEdit);
+            EditParcelableLauncher.setResult(this, requestKey, currentEdit);
         } else {
-            Launcher.setResult(this, requestKey, series, currentEdit);
+            EditParcelableLauncher.setResult(this, requestKey, series, currentEdit);
         }
         return true;
     }
@@ -162,25 +164,5 @@ public class EditBookSeriesDialogFragment
     public void onPause() {
         viewToModel();
         super.onPause();
-    }
-
-    public abstract static class Launcher
-            extends EditLauncher<Series> {
-
-        public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
-                                              @NonNull final String requestKeyValue,
-                                              @NonNull final LifecycleOwner lifecycleOwner) {
-            super.registerForFragmentResult(fragmentManager,
-                                            BKEY_REQUEST_KEY,
-                                            requestKeyValue,
-                                            lifecycleOwner);
-        }
-
-        @Override
-        public void launch(@NonNull final EditAction action,
-                           @NonNull final Series series) {
-            super.launch(new EditBookSeriesDialogFragment(),
-                         action, DBKey.FK_SERIES, series);
-        }
     }
 }

@@ -24,8 +24,6 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.Objects;
@@ -33,6 +31,8 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherContentBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.EditLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
@@ -48,7 +48,6 @@ public class EditBookPublisherDialogFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditPublisherForBookDlg";
-    public static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
     /** FragmentResultListener request key to use for our response. */
     private String requestKey;
@@ -79,16 +78,18 @@ public class EditBookPublisherDialogFragment
         vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
         final Bundle args = requireArguments();
-        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
-        action = Objects.requireNonNull(args.getParcelable(EditAction.BKEY), EditAction.BKEY);
-        publisher = Objects.requireNonNull(args.getParcelable(DBKey.FK_PUBLISHER),
-                                           DBKey.FK_PUBLISHER);
+        requestKey = Objects.requireNonNull(
+                args.getString(EditLauncher.BKEY_REQUEST_KEY), EditLauncher.BKEY_REQUEST_KEY);
+        action = Objects.requireNonNull(
+                args.getParcelable(EditAction.BKEY), EditAction.BKEY);
+        publisher = Objects.requireNonNull(
+                args.getParcelable(EditLauncher.BKEY_ITEM), EditLauncher.BKEY_ITEM);
 
         if (savedInstanceState == null) {
             currentEdit = new Publisher(publisher.getName());
         } else {
             //noinspection ConstantConditions
-            currentEdit = savedInstanceState.getParcelable(DBKey.FK_PUBLISHER);
+            currentEdit = savedInstanceState.getParcelable(EditLauncher.BKEY_ITEM);
         }
     }
 
@@ -135,9 +136,9 @@ public class EditBookPublisherDialogFragment
         }
 
         if (action == EditAction.Add) {
-            Launcher.setResult(this, requestKey, currentEdit);
+            EditParcelableLauncher.setResult(this, requestKey, currentEdit);
         } else {
-            Launcher.setResult(this, requestKey, publisher, currentEdit);
+            EditParcelableLauncher.setResult(this, requestKey, publisher, currentEdit);
         }
         return true;
     }
@@ -157,25 +158,4 @@ public class EditBookPublisherDialogFragment
         viewToModel();
         super.onPause();
     }
-
-    public abstract static class Launcher
-            extends EditLauncher<Publisher> {
-
-        public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
-                                              @NonNull final String requestKeyValue,
-                                              @NonNull final LifecycleOwner lifecycleOwner) {
-            super.registerForFragmentResult(fragmentManager,
-                                            BKEY_REQUEST_KEY,
-                                            requestKeyValue,
-                                            lifecycleOwner);
-        }
-
-        @Override
-        public void launch(@NonNull final EditAction action,
-                           @NonNull final Publisher publisher) {
-            super.launch(new EditBookPublisherDialogFragment(),
-                         action, DBKey.FK_PUBLISHER, publisher);
-        }
-    }
-
 }

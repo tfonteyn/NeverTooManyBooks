@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -124,8 +124,13 @@ public class MultiChoiceDialogFragment
             implements FragmentResultListener {
 
         private static final String SELECTED = "selected";
-        private String requestKey;
+        @NonNull
+        private final String requestKey;
         private FragmentManager fragmentManager;
+
+        public Launcher(@NonNull final String requestKey) {
+            this.requestKey = requestKey;
+        }
 
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
@@ -136,10 +141,8 @@ public class MultiChoiceDialogFragment
         }
 
         public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
-                                              @NonNull final String requestKey,
                                               @NonNull final LifecycleOwner lifecycleOwner) {
             this.fragmentManager = fragmentManager;
-            this.requestKey = requestKey;
             this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner, this);
         }
 
