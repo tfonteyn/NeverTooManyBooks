@@ -38,6 +38,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorListContentBinding;
@@ -54,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
 
 /**

@@ -34,13 +34,13 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditAuthorContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditInPlaceParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
 
 /**
  * Dialog to edit an <strong>EXISTING or NEW</strong> {@link Author}.

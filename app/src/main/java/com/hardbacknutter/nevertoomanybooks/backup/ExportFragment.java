@@ -56,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentExportBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
@@ -65,7 +66,6 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.utils.FileSize;
 import com.hardbacknutter.nevertoomanybooks.utils.UriInfo;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
 
 public class ExportFragment
         extends BaseFragment {

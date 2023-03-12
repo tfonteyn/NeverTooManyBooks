@@ -55,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SyncContract
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker.DatePickerListener;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker.SingleDatePicker;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncImportBinding;
@@ -69,7 +70,6 @@ import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
 
 public class SyncReaderFragment
         extends BaseFragment {

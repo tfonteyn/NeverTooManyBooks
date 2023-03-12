@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,9 +28,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
 
 public final class FieldArrayAdapter
         extends ExtArrayAdapter<String> {

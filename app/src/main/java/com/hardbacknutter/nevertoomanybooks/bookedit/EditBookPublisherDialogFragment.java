@@ -29,13 +29,13 @@ import androidx.lifecycle.ViewModelProvider;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
 
 /**
  * Edit a single Publisher from the book's publisher list.

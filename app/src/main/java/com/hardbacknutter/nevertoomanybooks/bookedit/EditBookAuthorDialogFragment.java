@@ -37,13 +37,13 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorViewModel;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
 
 /**
  * Edit a single Author from the book's author list.

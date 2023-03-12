@@ -101,6 +101,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.SpinnerInteractionListener;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfHeaderBinding;
@@ -137,7 +138,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
 
 /**
  * Activity that displays a flattened book hierarchy based on the Booklist* classes.

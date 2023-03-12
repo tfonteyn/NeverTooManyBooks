@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.PEntityListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PStringEqualityFilter;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfFiltersContentBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfFilterBitmaskBinding;
@@ -63,7 +64,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceAlertDialogBuilde
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
 
 public class BookshelfFiltersDialogFragment
         extends FFBaseDialogFragment {

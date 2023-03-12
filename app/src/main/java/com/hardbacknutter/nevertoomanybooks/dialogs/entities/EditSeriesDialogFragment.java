@@ -30,12 +30,12 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditSeriesContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditInPlaceParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
 
 /**
  * Dialog to edit an <strong>EXISTING</strong> {@link Series}.

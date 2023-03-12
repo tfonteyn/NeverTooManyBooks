@@ -32,11 +32,11 @@ import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditStringContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditStringLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ExtArrayAdapter;
 
 /**
  * Base Dialog class to edit an <strong>in-line String field</strong> in Books table.
