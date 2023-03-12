@@ -25,14 +25,12 @@ import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.LocalizedException;
 
 /**
  * Importing data can give a detailed reason of failure.
  */
 public class DataReaderException
-        extends Exception
-        implements LocalizedException {
+        extends Exception {
 
     private static final long serialVersionUID = -1993624111906098070L;
 
@@ -71,7 +69,13 @@ public class DataReaderException
         super(localizedMessage, cause);
     }
 
-    @Override
+    /**
+     * Get (and create if needed) the localized message to show to the user.
+     *
+     * @param context Current context
+     *
+     * @return message
+     */
     @NonNull
     public String getUserMessage(@NonNull final Context context) {
         // if a custom message was added, use that.

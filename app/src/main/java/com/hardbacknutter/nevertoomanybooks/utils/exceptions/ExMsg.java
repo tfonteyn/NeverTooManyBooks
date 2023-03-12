@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.NetworkUnavailableExcep
 import com.hardbacknutter.nevertoomanybooks.core.storage.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
+import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
 
 public final class ExMsg {
@@ -99,6 +100,9 @@ public final class ExMsg {
             return context.getString(R.string.error_network_please_connect);
         } else if (e instanceof NetworkException) {
             return context.getString(R.string.error_network_failed_try_again);
+
+        } else if (e instanceof DataReaderException) {
+            return ((DataReaderException) e).getUserMessage(context);
 
         } else if (e instanceof DataWriterException) {
             // Typically (but not enforced) the wrapped exception will be a JSONException
