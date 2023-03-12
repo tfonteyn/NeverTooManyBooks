@@ -105,6 +105,10 @@ public final class ExMsg {
                     // TODO: give user detailed message
                     .orElse(context.getString(R.string.error_export_failed));
 
+        } else if (e instanceof UpgradeFailedException) {
+            // The UpgradeFailedException expects a localized message, so just use it
+            return e.getLocalizedMessage();
+
         } else if (e instanceof CredentialsException) {
             final CredentialsException ce = (CredentialsException) e;
             return context.getString(R.string.error_site_authentication_failed,

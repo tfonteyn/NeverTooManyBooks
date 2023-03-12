@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,31 +19,20 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils.exceptions;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public class UpgradeFailedException
-        extends RuntimeException
-        implements LocalizedException {
+        extends RuntimeException {
 
+    private static final long serialVersionUID = 3370647235448714043L;
 
-    private static final long serialVersionUID = 5456126186772151019L;
-
-    public UpgradeFailedException(@NonNull final String message) {
-        super(message);
-    }
-
-    protected UpgradeFailedException(@NonNull final String message,
-                                     @Nullable final Throwable cause) {
-        super(message, cause);
-    }
-
-    @NonNull
-    @Override
-    public String getUserMessage(@NonNull final Context context) {
-        //noinspection ConstantConditions
-        return getMessage();
+    /**
+     * Constructor.
+     *
+     * @param localizedMessage a <strong>localized</strong> message which
+     *                         <strong>will</strong> be shown to the user
+     */
+    public UpgradeFailedException(@NonNull final String localizedMessage) {
+        super(localizedMessage);
     }
 }
