@@ -129,18 +129,19 @@ public class ImportResults
     /**
      * Add the given exception data to the results.
      *
-     * @param context Current context
-     * @param row     where the issue happened
-     * @param e       the exception thrown
-     * @param msg     optional (localized) message
+     * @param context          Current context
+     * @param row              where the issue happened
+     * @param e                the exception thrown
+     * @param localizedMessage optional; a <strong>localized</strong> message which
+     *                         <strong>will</strong> be shown to the user
      */
     public void handleRowException(@NonNull final Context context,
                                    final int row,
                                    @NonNull final Exception e,
-                                   @Nullable final String msg) {
+                                   @Nullable final String localizedMessage) {
         final String message;
-        if (msg != null) {
-            message = msg;
+        if (localizedMessage != null) {
+            message = localizedMessage;
         } else {
             message = ExMsg.map(context, e).orElse(
                     context.getString(R.string.error_import_csv_line, row));
