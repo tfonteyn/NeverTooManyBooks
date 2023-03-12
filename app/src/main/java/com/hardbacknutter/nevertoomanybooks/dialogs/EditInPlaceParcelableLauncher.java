@@ -34,15 +34,19 @@ import java.util.function.Supplier;
  * - modifications ARE STORED in the database
  * - returns the modified item.
  */
-public abstract class EditInPlaceParcelableLauncher<T extends Parcelable>
+public class EditInPlaceParcelableLauncher<T extends Parcelable>
         extends EditLauncher {
 
     private static final String TAG = "EditInPlaceParcelableLa";
     private static final String MODIFIED = TAG + ":m";
+    @NonNull
+    private final OnModifiedCallback<T> onModifiedCallback;
 
-    protected EditInPlaceParcelableLauncher(@NonNull final String requestKey,
-                                            @NonNull final Supplier<DialogFragment> dialogSupplier) {
+    public EditInPlaceParcelableLauncher(@NonNull final String requestKey,
+                                         @NonNull final Supplier<DialogFragment> dialogSupplier,
+                                         @NonNull final OnModifiedCallback<T> onModifiedCallback) {
         super(requestKey, dialogSupplier);
+        this.onModifiedCallback = onModifiedCallback;
     }
 
 
@@ -72,13 +76,21 @@ public abstract class EditInPlaceParcelableLauncher<T extends Parcelable>
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
-        onModified(Objects.requireNonNull(result.getParcelable(MODIFIED), MODIFIED));
+        onModifiedCallback.onModified(requestKey,
+                                      Objects.requireNonNull(result.getParcelable(MODIFIED),
+                                                             MODIFIED));
     }
 
-    /**
-     * Callback handler.
-     *
-     * @param modified the modified item
-     */
-    public abstract void onModified(@NonNull final T modified);
+    @FunctionalInterface
+    public interface OnModifiedCallback<T> {
+
+        /**
+         * Callback handler.
+         *
+         * @param requestKey the key as passed in
+         * @param modified   the modified item
+         */
+        void onModified(@NonNull String requestKey,
+                        @NonNull T modified);
+    }
 }

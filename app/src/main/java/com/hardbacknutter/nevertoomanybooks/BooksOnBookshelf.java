@@ -123,6 +123,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
+import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -178,24 +179,8 @@ public class BooksOnBookshelf
     /** Log tag. */
     private static final String TAG = "BooksOnBookshelf";
 
-    private static final String RK_EDIT_BOOKSHELF = TAG + ":rk:" + EditBookshelfDialogFragment.TAG;
-    private static final String RK_EDIT_AUTHOR = TAG + ":rk:" + EditAuthorDialogFragment.TAG;
-    private static final String RK_EDIT_SERIES = TAG + ":rk:" + EditSeriesDialogFragment.TAG;
-    private static final String RK_EDIT_PUBLISHER = TAG + ":rk:" + EditPublisherDialogFragment.TAG;
-
-
-    private static final String RK_EDIT_COLOR = TAG + ":rk:" + EditColorDialogFragment.TAG;
-    private static final String RK_EDIT_FORMAT = TAG + ":rk:" + EditFormatDialogFragment.TAG;
-    private static final String RK_EDIT_GENRE = TAG + ":rk:" + EditGenreDialogFragment.TAG;
-    private static final String RK_EDIT_LANGUAGE = TAG + ":rk:" + EditLanguageDialogFragment.TAG;
-    private static final String RK_EDIT_LOCATION = TAG + ":rk:" + EditLocationDialogFragment.TAG;
-
-
     /** {@link FragmentResultListener} request key. */
     private static final String RK_STYLE_PICKER = TAG + ":rk:" + StylePickerDialogFragment.TAG;
-    /** {@link FragmentResultListener} request key. */
-    private static final String RK_EDIT_LENDER = TAG + ":rk:" + EditLenderDialogFragment.TAG;
-
     private static final String RK_FILTERS = TAG + ":rk:" + BookshelfFiltersDialogFragment.TAG;
 
     /** Number of views to cache offscreen arbitrarily set to 20; the default is 2. */
@@ -288,7 +273,7 @@ public class BooksOnBookshelf
      * Accept the result from the dialog.
      */
     private final EditLenderDialogFragment.Launcher editLenderLauncher =
-            new EditLenderDialogFragment.Launcher(RK_EDIT_LENDER) {
+            new EditLenderDialogFragment.Launcher(DBKey.LOANEE_NAME) {
                 @Override
                 public void onResult(@IntRange(from = 1) final long bookId,
                                      @NonNull final String loanee) {
@@ -308,107 +293,49 @@ public class BooksOnBookshelf
                     }
                 }
             };
+
     /** Delegate which will handle all positioning/scrolling. */
     private PositioningHelper positioningHelper;
+
     private final EditInPlaceParcelableLauncher<Bookshelf> editBookshelfLauncher =
-            new EditInPlaceParcelableLauncher<>(RK_EDIT_BOOKSHELF,
-                                                EditBookshelfDialogFragment::new) {
-                @Override
-                public void onModified(@NonNull final Bookshelf modified) {
-                    // ENHANCE: update the modified row without a rebuild.
-                    saveListPosition();
-                    buildBookList();
-                }
-            };
+            new EditInPlaceParcelableLauncher<>(DBKey.FK_BOOKSHELF,
+                                                EditBookshelfDialogFragment::new,
+                                                this::onEntityUpdate);
 
     private final EditInPlaceParcelableLauncher<Author> editAuthorLauncher =
-            new EditInPlaceParcelableLauncher<>(RK_EDIT_AUTHOR,
-                                                EditAuthorDialogFragment::new) {
-                @Override
-                public void onModified(@NonNull final Author modified) {
-                    // ENHANCE: update the modified row without a rebuild.
-                    saveListPosition();
-                    buildBookList();
-                }
-            };
+            new EditInPlaceParcelableLauncher<>(DBKey.FK_AUTHOR,
+                                                EditAuthorDialogFragment::new,
+                                                this::onEntityUpdate);
 
     private final EditInPlaceParcelableLauncher<Series> editSeriesLauncher =
-            new EditInPlaceParcelableLauncher<>(RK_EDIT_SERIES,
-                                                EditSeriesDialogFragment::new) {
-                @Override
-                public void onModified(@NonNull final Series modified) {
-                    // ENHANCE: update the modified row without a rebuild.
-                    saveListPosition();
-                    buildBookList();
-                }
-            };
+            new EditInPlaceParcelableLauncher<>(DBKey.FK_SERIES,
+                                                EditSeriesDialogFragment::new,
+                                                this::onEntityUpdate);
 
     private final EditInPlaceParcelableLauncher<Publisher> editPublisherLauncher =
-            new EditInPlaceParcelableLauncher<>(RK_EDIT_PUBLISHER,
-                                                EditPublisherDialogFragment::new) {
-                @Override
-                public void onModified(@NonNull final Publisher modified) {
-                    // ENHANCE: update the modified row without a rebuild.
-                    saveListPosition();
-                    buildBookList();
-                }
-            };
+            new EditInPlaceParcelableLauncher<>(DBKey.FK_PUBLISHER,
+                                                EditPublisherDialogFragment::new,
+                                                this::onEntityUpdate);
 
     private final EditStringLauncher editColorLauncher =
-            new EditStringLauncher(RK_EDIT_COLOR, EditColorDialogFragment::new) {
-                @Override
-                public void onModified(@NonNull final String original,
-                                       @NonNull final String modified) {
-                    // ENHANCE: update the modified row without a rebuild.
-                    saveListPosition();
-                    buildBookList();
-                }
-            };
+            new EditStringLauncher(DBKey.COLOR, EditColorDialogFragment::new,
+                                   this::onInlineStringUpdate);
 
     private final EditStringLauncher editFormatLauncher =
-            new EditStringLauncher(RK_EDIT_FORMAT, EditFormatDialogFragment::new) {
-                @Override
-                public void onModified(@NonNull final String original,
-                                       @NonNull final String modified) {
-                    // ENHANCE: update the modified row without a rebuild.
-                    saveListPosition();
-                    buildBookList();
-                }
-            };
+            new EditStringLauncher(DBKey.FORMAT, EditFormatDialogFragment::new,
+                                   this::onInlineStringUpdate);
 
     private final EditStringLauncher editGenreLauncher =
-            new EditStringLauncher(RK_EDIT_GENRE, EditGenreDialogFragment::new) {
-                @Override
-                public void onModified(@NonNull final String original,
-                                       @NonNull final String modified) {
-                    // ENHANCE: update the modified row without a rebuild.
-                    saveListPosition();
-                    buildBookList();
-                }
-            };
+            new EditStringLauncher(DBKey.GENRE, EditGenreDialogFragment::new,
+                                   this::onInlineStringUpdate);
 
     private final EditStringLauncher editLanguageLauncher =
-            new EditStringLauncher(RK_EDIT_LANGUAGE, EditLanguageDialogFragment::new) {
-
-                @Override
-                public void onModified(@NonNull final String original,
-                                       @NonNull final String modified) {
-                    // ENHANCE: update the modified row without a rebuild.
-                    saveListPosition();
-                    buildBookList();
-                }
-            };
+            new EditStringLauncher(DBKey.LANGUAGE, EditLanguageDialogFragment::new,
+                                   this::onInlineStringUpdate);
 
     private final EditStringLauncher editLocationLauncher =
-            new EditStringLauncher(RK_EDIT_LOCATION, EditLocationDialogFragment::new) {
-                @Override
-                public void onModified(@NonNull final String original,
-                                       @NonNull final String modified) {
-                    // ENHANCE: update the modified row without a rebuild.
-                    saveListPosition();
-                    buildBookList();
-                }
-            };
+            new EditStringLauncher(DBKey.LOCATION, EditLocationDialogFragment::new,
+                                   this::onInlineStringUpdate);
 
 
     /** Listener for the Bookshelf Spinner. */
@@ -1548,15 +1475,14 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Receives notifications that a Book was updated.
+     * Receives notifications that a {@link Book} potentially was updated.
      * <p>
      * For a limited set of keys, we directly update the list table which is very fast.
      * <p>
      * Other keys, or full books, will always trigger a list rebuild.
      *
-     * @param book the book that changed,
-     *             or {@code null} to indicate multiple books were potentially changed.
-     * @param keys the item(s) that changed,
+     * @param book the book
+     * @param keys the item(s) that potentially were changed,
      *             or {@code null} to indicate ALL data was potentially changed.
      */
     @Override

@@ -101,18 +101,8 @@ public class EditBookshelvesFragment
     /** Accept the result from the dialog. */
     private final EditInPlaceParcelableLauncher<Bookshelf> editLauncher =
             new EditInPlaceParcelableLauncher<>(RK_EDIT_BOOKSHELF,
-                                                EditBookshelfDialogFragment::new) {
-                @Override
-                public void onModified(@NonNull final Bookshelf modified) {
-                    // first update the previous, now unselected, row.
-                    adapter.notifyItemChanged(vm.getSelectedPosition());
-                    // store the newly selected row.
-                    vm.onBookshelfEdited(modified.getId());
-                    // update the newly selected row.
-                    adapter.notifyItemChanged(vm.getSelectedPosition());
-                }
-            };
-
+                                                EditBookshelfDialogFragment::new,
+                                                this::onModified);
     private final PositionHandler positionHandler = new PositionHandler() {
         @Override
         public int getSelectedPosition() {
@@ -257,6 +247,16 @@ public class EditBookshelvesFragment
         }
 
         return false;
+    }
+
+    private void onModified(@NonNull final String requestKey,
+                            @NonNull final Bookshelf modified) {
+        // first update the previous, now unselected, row.
+        adapter.notifyItemChanged(vm.getSelectedPosition());
+        // store the newly selected row.
+        vm.onBookshelfEdited(modified.getId());
+        // update the newly selected row.
+        adapter.notifyItemChanged(vm.getSelectedPosition());
     }
 
     /**

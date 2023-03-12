@@ -34,7 +34,7 @@ import java.util.function.Supplier;
  * - modifications ARE STORED in the database
  * - returns the modified text (and the original)
  */
-public abstract class EditStringLauncher
+public class EditStringLauncher
         extends EditLauncher {
 
     private static final String TAG = "EditStringLauncher";
@@ -42,10 +42,14 @@ public abstract class EditStringLauncher
 
     private static final String ORIGINAL = TAG + ":o";
     private static final String MODIFIED = TAG + ":m";
+    @NonNull
+    private final OnModifiedCallback onModifiedCallback;
 
-    protected EditStringLauncher(@NonNull final String requestKey,
-                                 @NonNull final Supplier<DialogFragment> dialogSupplier) {
+    public EditStringLauncher(@NonNull final String requestKey,
+                              @NonNull final Supplier<DialogFragment> dialogSupplier,
+                              @NonNull final OnModifiedCallback onModifiedCallback) {
         super(requestKey, dialogSupplier);
+        this.onModifiedCallback = onModifiedCallback;
     }
 
     public static void setResult(@NonNull final Fragment fragment,
@@ -76,16 +80,22 @@ public abstract class EditStringLauncher
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
-        onModified(Objects.requireNonNull(result.getString(ORIGINAL), ORIGINAL),
-                   Objects.requireNonNull(result.getString(MODIFIED), MODIFIED));
+        onModifiedCallback.onModified(requestKey,
+                                      Objects.requireNonNull(result.getString(ORIGINAL), ORIGINAL),
+                                      Objects.requireNonNull(result.getString(MODIFIED), MODIFIED));
     }
 
-    /**
-     * Callback handler - modifying an existing item.
-     *
-     * @param original the original item
-     * @param modified the modified item
-     */
-    public abstract void onModified(@NonNull String original,
-                                    @NonNull String modified);
+    @FunctionalInterface
+    public interface OnModifiedCallback {
+        /**
+         * Callback handler - modifying an existing item.
+         *
+         * @param requestKey the key as passed in
+         * @param original   the original item
+         * @param modified   the modified item
+         */
+        void onModified(@NonNull String requestKey,
+                        @NonNull String original,
+                        @NonNull String modified);
+    }
 }
