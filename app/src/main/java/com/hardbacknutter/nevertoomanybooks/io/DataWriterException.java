@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,37 +19,25 @@
  */
 package com.hardbacknutter.nevertoomanybooks.io;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.LocalizedException;
-
 /**
- * Exporting data can give a detailed reason of failure.
+ * Thrown during an export of data.
+ * <p>
+ * This class serves as a wrapper around q (typically) RuntimeException.
  */
 public class DataWriterException
-        extends Exception
-        implements LocalizedException {
+        extends Exception {
 
 
     private static final long serialVersionUID = -1706696680423435433L;
 
+    /**
+     * Constructor.
+     *
+     * @param cause the Exception to wrap
+     */
     public DataWriterException(@NonNull final Throwable cause) {
         super(cause);
-    }
-
-    @NonNull
-    @Override
-    public String getUserMessage(@NonNull final Context context) {
-        // if a custom message was added, use that.
-        if (getMessage() != null) {
-            return getMessage();
-        }
-
-        return ExMsg.map(context, getCause())
-                    .orElse(context.getString(R.string.error_export_failed));
     }
 }

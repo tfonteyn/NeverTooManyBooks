@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.NetworkException;
 import com.hardbacknutter.nevertoomanybooks.core.network.NetworkUnavailableException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
 
 public final class ExMsg {
 
@@ -98,6 +99,12 @@ public final class ExMsg {
         } else if (e instanceof NetworkException) {
             return context.getString(R.string.error_network_failed_try_again);
 
+        } else if (e instanceof DataWriterException) {
+            // Typically (but not enforced) the wrapped exception will be a JSONException
+            return map(context, e.getCause())
+                    // TODO: give user detailed message
+                    .orElse(context.getString(R.string.error_export_failed));
+
         } else if (e instanceof CredentialsException) {
             final CredentialsException ce = (CredentialsException) e;
             return context.getString(R.string.error_site_authentication_failed,
@@ -136,8 +143,7 @@ public final class ExMsg {
             }
 
         } else if (e instanceof com.hardbacknutter.org.json.JSONException) {
-            // we're supposed to catch all JSONException!
-            LoggerFactory.getLogger().e(TAG, e, "Please log a bug if you see this message");
+            //TODO: a JSONException is very generic, we'd need to look at the actual text.
             return context.getString(R.string.error_unknown_long,
                                      context.getString(R.string.pt_maintenance));
 
@@ -176,7 +182,7 @@ public final class ExMsg {
             // There was something wrong with certificates/key on the REMOTE end
             return context.getString(R.string.httpErrorFailedSslHandshake);
 
-        } else if (e instanceof StackOverflowError) {
+        } else if (e instanceof java.lang.StackOverflowError) {
             // This is BAD.... but we've only ever seen this in the emulator ... flw
             // ^^^ 2022-04-06
             // TODO: give user detailed message
