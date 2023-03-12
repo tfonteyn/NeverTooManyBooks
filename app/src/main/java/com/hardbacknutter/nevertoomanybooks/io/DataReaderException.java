@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,8 +28,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.LocalizedException;
 
 /**
- * Importing data can give a detailed reason of failure and the message passed
- * to the constructors <strong>MUST</strong> be localized. It can/will be shown to the user.
+ * Importing data can give a detailed reason of failure.
  */
 public class DataReaderException
         extends Exception
@@ -37,14 +36,36 @@ public class DataReaderException
 
     private static final long serialVersionUID = -1993624111906098070L;
 
+    /**
+     * Constructor.
+     *
+     * @param localizedMessage a <strong>localized</strong> message which
+     *                         <strong>will</strong> be shown to the user
+     */
     public DataReaderException(@NonNull final String localizedMessage) {
         super(localizedMessage);
     }
 
+    /**
+     * Constructor.
+     * <p>
+     * When reporting to the user, the 'orElse' message from {@link #getUserMessage(Context)}
+     * will be shown.
+     *
+     * @param cause Exception to wrap
+     */
     public DataReaderException(@NonNull final Throwable cause) {
-        super(cause);
+        // Pass null, so getUserMessage works as expected!
+        super(null, cause);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param localizedMessage a <strong>localized</strong> message which
+     *                         <strong>will</strong> be shown to the user
+     * @param cause            Exception to wrap
+     */
     public DataReaderException(@NonNull final String localizedMessage,
                                @NonNull final Throwable cause) {
         super(localizedMessage, cause);
