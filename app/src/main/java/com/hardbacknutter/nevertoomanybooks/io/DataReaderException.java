@@ -84,6 +84,6 @@ public class DataReaderException
         }
 
         return ExMsg.map(context, getCause())
-                    .orElse(context.getString(R.string.error_import_file_not_supported));
+                    .orElseGet(() -> context.getString(R.string.error_import_file_not_supported));
     }
 }

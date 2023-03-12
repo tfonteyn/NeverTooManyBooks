@@ -199,7 +199,7 @@ public class SyncWriterFragment
             final Context context = getContext();
             //noinspection ConstantConditions
             final String msg = ExMsg.map(context, data.getResult())
-                                    .orElse(getString(R.string.error_unknown));
+                                    .orElseGet(() -> getString(R.string.error_unknown));
 
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(context)

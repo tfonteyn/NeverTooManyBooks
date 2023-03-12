@@ -303,8 +303,8 @@ public class CalibreHandler {
             final Context context = hostView.getContext();
             final String msg = ExMsg
                     .map(context, data.getResult())
-                    .orElse(context.getString(R.string.error_network_site_access_failed,
-                                              CalibreContentServer.getHostUrl(context)));
+                    .orElseGet(() -> context.getString(R.string.error_network_site_access_failed,
+                                                       CalibreContentServer.getHostUrl(context)));
 
             Snackbar.make(hostView, msg, Snackbar.LENGTH_LONG).show();
         });

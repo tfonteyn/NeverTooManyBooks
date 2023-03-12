@@ -136,7 +136,7 @@ public class CalibreLibraryMappingFragment
             } catch (@NonNull final DaoWriteException e) {
                 Snackbar.make(vb.getRoot(), ExMsg
                                       .map(getContext(), e)
-                                      .orElse(getString(R.string.error_unknown)),
+                                      .orElseGet(() -> getString(R.string.error_unknown)),
                               Snackbar.LENGTH_LONG).show();
             }
         });
@@ -195,9 +195,10 @@ public class CalibreLibraryMappingFragment
         message.getData().ifPresent(data -> {
             final Context context = getContext();
             //noinspection ConstantConditions
-            final String msg = ExMsg.map(context, data.getResult())
-                                    .orElse(getString(R.string.error_network_site_access_failed,
-                                                      CalibreContentServer.getHostUrl(context)));
+            final String msg = ExMsg
+                    .map(context, data.getResult())
+                    .orElseGet(() -> getString(R.string.error_network_site_access_failed,
+                                               CalibreContentServer.getHostUrl(context)));
 
             new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_baseline_error_24)
@@ -323,7 +324,7 @@ public class CalibreLibraryMappingFragment
                 } catch (@NonNull final DaoWriteException e) {
                     Snackbar.make(holder.itemView, ExMsg
                                           .map(getContext(), e)
-                                          .orElse(getString(R.string.error_unknown)),
+                                          .orElseGet(() -> getString(R.string.error_unknown)),
                                   Snackbar.LENGTH_LONG).show();
                 }
             });

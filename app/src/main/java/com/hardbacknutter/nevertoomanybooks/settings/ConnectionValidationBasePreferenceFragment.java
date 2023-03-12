@@ -187,7 +187,7 @@ public abstract class ConnectionValidationBasePreferenceFragment
             final Context context = getContext();
             //noinspection ConstantConditions
             final String msg = ExMsg.map(context, data.getResult())
-                                    .orElse(getString(R.string.error_unknown));
+                                    .orElseGet(() -> getString(R.string.error_unknown));
 
             new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_baseline_error_24)

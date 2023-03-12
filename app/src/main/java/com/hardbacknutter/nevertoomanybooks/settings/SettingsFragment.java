@@ -469,7 +469,7 @@ public class SettingsFragment
             // This should never happen... flw
             StandardDialogs.showError(getContext(), ExMsg
                     .map(getContext(), e)
-                    .orElse(getContext().getString(R.string.error_unknown)));
+                    .orElseGet(() -> getContext().getString(R.string.error_unknown)));
             return false;
         }
     }
@@ -480,9 +480,10 @@ public class SettingsFragment
         message.getData().ifPresent(data -> {
             final Context context = getContext();
             //noinspection ConstantConditions
-            final String msg = ExMsg.map(context, data.getResult())
-                                    .orElse(getString(R.string.error_unknown_long,
-                                                      getString(R.string.pt_maintenance)));
+            final String msg = ExMsg
+                    .map(context, data.getResult())
+                    .orElseGet(() -> getString(R.string.error_unknown_long,
+                                               getString(R.string.pt_maintenance)));
             new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_baseline_error_24)
                     .setTitle(R.string.lbl_moving_data)

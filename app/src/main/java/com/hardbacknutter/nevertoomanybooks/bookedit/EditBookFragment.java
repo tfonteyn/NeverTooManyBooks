@@ -267,7 +267,7 @@ public class EditBookFragment
             LoggerFactory.getLogger().e(TAG, e);
             StandardDialogs.showError(getContext(), ExMsg
                     .map(getContext(), e)
-                    .orElse(getString(R.string.error_unknown)));
+                    .orElseGet(() -> getString(R.string.error_unknown)));
         }
     }
 

@@ -70,14 +70,13 @@ public class MaintenanceFragment
     private static final int UUID_LEN = 32;
 
     private MaintenanceViewModel vm;
-
-    /** View Binding. */
-    private FragmentMaintenanceBinding vb;
     /** The launcher for picking a Uri to write to. */
     private final ActivityResultLauncher<GetContentUriForWritingContract.Input>
             createDocumentLauncher =
             registerForActivityResult(new GetContentUriForWritingContract(),
                                       o -> o.ifPresent(this::sendDebug));
+    /** View Binding. */
+    private FragmentMaintenanceBinding vb;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -136,7 +135,7 @@ public class MaintenanceFragment
             } catch (@NonNull final StorageException | SecurityException e) {
                 StandardDialogs.showError(context, ExMsg
                         .map(context, e)
-                        .orElse(getString(R.string.error_storage_not_accessible)));
+                        .orElseGet(() -> getString(R.string.error_storage_not_accessible)));
                 return;
             }
 
@@ -156,7 +155,8 @@ public class MaintenanceFragment
                         } catch (@NonNull final StorageException | SecurityException e) {
                             StandardDialogs.showError(context, ExMsg
                                     .map(context, e)
-                                    .orElse(getString(R.string.error_storage_not_accessible)));
+                                    .orElseGet(() -> getString(
+                                            R.string.error_storage_not_accessible)));
                         }
                     })
                     .create()

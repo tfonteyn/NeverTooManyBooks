@@ -143,8 +143,8 @@ public class ImportResults
         if (localizedMessage != null) {
             message = localizedMessage;
         } else {
-            message = ExMsg.map(context, e).orElse(
-                    context.getString(R.string.error_import_csv_line, row));
+            message = ExMsg.map(context, e)
+                           .orElseGet(() -> context.getString(R.string.error_import_csv_line, row));
         }
 
         failedLinesMessage.add(message);

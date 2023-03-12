@@ -311,7 +311,7 @@ public class CoverHandler {
             } catch (@NonNull final StorageException | IOException e) {
                 StandardDialogs.showError(context, ExMsg
                         .map(context, e)
-                        .orElse(context.getString(R.string.error_unknown)));
+                        .orElseGet(() -> context.getString(R.string.error_unknown)));
 
             }
             return true;
@@ -323,7 +323,7 @@ public class CoverHandler {
             } catch (@NonNull final StorageException | IOException e) {
                 StandardDialogs.showError(context, ExMsg
                         .map(context, e)
-                        .orElse(context.getString(R.string.error_unknown)));
+                        .orElseGet(() -> context.getString(R.string.error_unknown)));
             }
             return true;
 
@@ -505,7 +505,7 @@ public class CoverHandler {
 
             StandardDialogs.showError(context, ExMsg
                     .map(context, e)
-                    .orElse(context.getString(R.string.warning_image_copy_failed)));
+                    .orElseGet(() -> context.getString(R.string.warning_image_copy_failed)));
         }
     }
 
@@ -529,7 +529,7 @@ public class CoverHandler {
             } catch (@NonNull final StorageException e) {
                 StandardDialogs.showError(context, ExMsg
                         .map(context, e)
-                        .orElse(context.getString(R.string.error_unknown)));
+                        .orElseGet(() -> context.getString(R.string.error_unknown)));
 
             } catch (@NonNull final ActivityNotFoundException e) {
                 // No Camera? we should not get here... flw
@@ -588,7 +588,7 @@ public class CoverHandler {
         } catch (@NonNull final StorageException | IOException e) {
             StandardDialogs.showError(context, ExMsg
                     .map(context, e)
-                    .orElse(context.getString(R.string.error_unknown)));
+                    .orElseGet(() -> context.getString(R.string.error_unknown)));
         }
     }
 
@@ -622,7 +622,7 @@ public class CoverHandler {
                 final Context context = fragmentView.getContext();
                 StandardDialogs.showError(context, ExMsg
                         .map(context, e)
-                        .orElse(context.getString(R.string.error_unknown)));
+                        .orElseGet(() -> context.getString(R.string.error_unknown)));
             }
         }
 

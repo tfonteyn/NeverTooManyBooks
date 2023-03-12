@@ -133,7 +133,7 @@ public class CropImageActivity
             new MaterialAlertDialogBuilder(this)
                     .setIcon(R.drawable.ic_baseline_error_24)
                     .setMessage(ExMsg.map(this, e)
-                                     .orElse(getString(R.string.error_unknown)))
+                                     .orElseGet(() -> getString(R.string.error_unknown)))
                     .setPositiveButton(android.R.string.ok, (d, w) -> finish())
                     .create()
                     .show();

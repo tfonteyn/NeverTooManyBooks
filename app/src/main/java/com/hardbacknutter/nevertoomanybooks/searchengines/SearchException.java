@@ -82,8 +82,8 @@ public class SearchException
         } else {
             return context.getString(R.string.error_search_x_failed_y,
                                      engineId.getName(context),
-                                     ExMsg.map(context, getCause())
-                                          .orElse(context.getString(R.string.error_unknown)));
+                                     ExMsg.map(context, getCause()).orElseGet(
+                                             () -> context.getString(R.string.error_unknown)));
         }
     }
 

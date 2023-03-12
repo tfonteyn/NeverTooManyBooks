@@ -35,6 +35,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.lang.ref.WeakReference;
 
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityStartupBinding;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
@@ -42,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 /**
  * Single Activity to be the 'Main' activity for the app.
@@ -222,9 +222,10 @@ public class StartupActivity
     private void onFailure(@NonNull final Throwable e) {
         LoggerFactory.getLogger().e(TAG, e);
 
-        final String msg = ExMsg.map(this, e)
-                                .orElse(getString(R.string.error_unknown_long,
-                                                  getString(R.string.pt_maintenance)));
+        final String msg = ExMsg
+                .map(this, e)
+                .orElseGet(() -> getString(R.string.error_unknown_long,
+                                           getString(R.string.pt_maintenance)));
 
         new MaterialAlertDialogBuilder(this)
                 .setIcon(R.drawable.ic_baseline_error_24)

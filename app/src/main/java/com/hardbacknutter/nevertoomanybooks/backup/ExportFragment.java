@@ -309,7 +309,7 @@ public class ExportFragment
             final Context context = getContext();
             //noinspection ConstantConditions
             final String msg = ExMsg.map(context, data.getResult())
-                                    .orElse(getString(R.string.error_unknown));
+                                    .orElseGet(() -> getString(R.string.error_unknown));
 
             @StringRes
             final int title = vm.getExportHelper().isBackup()

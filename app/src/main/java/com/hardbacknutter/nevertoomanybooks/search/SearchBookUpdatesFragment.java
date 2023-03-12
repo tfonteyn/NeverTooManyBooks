@@ -277,9 +277,10 @@ public class SearchBookUpdatesFragment
         message.getData().ifPresent(data -> {
             final Context context = getContext();
             //noinspection ConstantConditions
-            final String msg = ExMsg.map(context, data.getResult())
-                                    .orElse(getString(R.string.error_unknown_long,
-                                                      getString(R.string.pt_maintenance)));
+            final String msg = ExMsg
+                    .map(context, data.getResult())
+                    .orElseGet(() -> getString(R.string.error_unknown_long,
+                                               getString(R.string.pt_maintenance)));
 
             new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_baseline_error_24)
