@@ -1416,68 +1416,6 @@ public class BooksOnBookshelf
     }
 
 
-    /**
-     * Start the list builder.
-     */
-    private void buildBookList() {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-            Log.d(TAG, "buildBookList"
-                       + "| isBuilding()=" + vm.isBuilding()
-                       + "|called from:", new Throwable());
-        }
-
-        if (!vm.isBuilding()) {
-            vb.progressCircle.show();
-            // Invisible... theoretically this means the page should not re-layout
-            vb.content.list.setVisibility(View.INVISIBLE);
-
-            // If the book details frame and fragment is present, remove the fragment
-            if (hasEmbeddedDetailsFrame()) {
-                final Fragment fragment = vb.content.detailsFrame.getFragment();
-                if (fragment != null) {
-                    getSupportFragmentManager()
-                            .beginTransaction()
-                            .setReorderingAllowed(true)
-                            .remove(fragment)
-                            .commit();
-                }
-            }
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
-                final SimpleDateFormat dateFormat =
-                        new SimpleDateFormat("yyyy_MM_dd_hh_mm_ss", Locale.getDefault());
-                //noinspection UseOfObsoleteDateTimeApi
-                Debug.startMethodTracing("trace-" + dateFormat.format(new Date()));
-            }
-            // force the adapter to stop displaying by disabling the list.
-            // DO NOT REMOVE THE ADAPTER FROM FROM THE VIEW;
-            // i.e. do NOT call mVb.list.setAdapter(null)... crashes assured when doing so.
-            if (adapter != null) {
-                adapter.setBooklist(null);
-            }
-            vm.buildBookList();
-        }
-    }
-
-    /**
-     * Called when the list build failed or was cancelled.
-     *
-     * @param message from the task
-     */
-    private void onBuildCancelled(
-            @NonNull final LiveDataEvent<TaskResult<BoBTask.Outcome>> message) {
-        vb.progressCircle.hide();
-
-        message.getData().ifPresent(data -> {
-            vm.onBuildCancelled();
-
-            if (vm.isListLoaded()) {
-                displayList(null);
-            } else {
-                recoverAfterFailedBuild();
-            }
-        });
-    }
 
     /**
      * Receives notifications that an inline-string column was updated.
@@ -1567,6 +1505,70 @@ public class BooksOnBookshelf
         // cleanup each level above the book
         saveListPosition();
         buildBookList();
+    }
+
+
+    /**
+     * Start the list builder.
+     */
+    private void buildBookList() {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
+            Log.d(TAG, "buildBookList"
+                       + "| isBuilding()=" + vm.isBuilding()
+                       + "|called from:", new Throwable());
+        }
+
+        if (!vm.isBuilding()) {
+            vb.progressCircle.show();
+            // Invisible... theoretically this means the page should not re-layout
+            vb.content.list.setVisibility(View.INVISIBLE);
+
+            // If the book details frame and fragment is present, remove the fragment
+            if (hasEmbeddedDetailsFrame()) {
+                final Fragment fragment = vb.content.detailsFrame.getFragment();
+                if (fragment != null) {
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .setReorderingAllowed(true)
+                            .remove(fragment)
+                            .commit();
+                }
+            }
+
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
+                final SimpleDateFormat dateFormat =
+                        new SimpleDateFormat("yyyy_MM_dd_hh_mm_ss", Locale.getDefault());
+                //noinspection UseOfObsoleteDateTimeApi
+                Debug.startMethodTracing("trace-" + dateFormat.format(new Date()));
+            }
+            // force the adapter to stop displaying by disabling the list.
+            // DO NOT REMOVE THE ADAPTER FROM FROM THE VIEW;
+            // i.e. do NOT call mVb.list.setAdapter(null)... crashes assured when doing so.
+            if (adapter != null) {
+                adapter.setBooklist(null);
+            }
+            vm.buildBookList();
+        }
+    }
+
+    /**
+     * Called when the list build failed or was cancelled.
+     *
+     * @param message from the task
+     */
+    private void onBuildCancelled(
+            @NonNull final LiveDataEvent<TaskResult<BoBTask.Outcome>> message) {
+        vb.progressCircle.hide();
+
+        message.getData().ifPresent(data -> {
+            vm.onBuildCancelled();
+
+            if (vm.isListLoaded()) {
+                displayList(null);
+            } else {
+                recoverAfterFailedBuild();
+            }
+        });
     }
 
     /**
