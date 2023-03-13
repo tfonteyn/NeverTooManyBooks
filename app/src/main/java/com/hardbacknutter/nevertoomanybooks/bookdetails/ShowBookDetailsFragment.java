@@ -135,13 +135,9 @@ public class ShowBookDetailsFragment
 
     /** Handle the edit-lender dialog. */
     private final EditLenderDialogFragment.Launcher editLenderLauncher =
-            new EditLenderDialogFragment.Launcher(RK_EDIT_LENDER) {
-                @Override
-                public void onResult(@IntRange(from = 1) final long bookId,
-                                     @NonNull final String loanee) {
-                    onBookEditFinished(DBKey.LOANEE_NAME);
-                }
-            };
+            new EditLenderDialogFragment.Launcher(
+                    RK_EDIT_LENDER,
+                    (bookId, loanee) -> onBookEditFinished(DBKey.LOANEE_NAME));
 
     /** Gives access to the ViewPager2. Will be {@code null} when we're in embedded mode. */
     @Nullable
