@@ -223,15 +223,19 @@ public class StylePickerDialogFragment
         });
     }
 
-    public abstract static class Launcher
+    public static class Launcher
             implements FragmentResultListener {
 
         @NonNull
         private final String requestKey;
+        @NonNull
+        private final ResultListener resultListener;
         private FragmentManager fragmentManager;
 
-        public Launcher(@NonNull final String requestKey) {
+        public Launcher(@NonNull final String requestKey,
+                        @NonNull final ResultListener resultListener) {
             this.requestKey = requestKey;
+            this.resultListener = resultListener;
         }
 
         static void setResult(@NonNull final Fragment fragment,
@@ -270,16 +274,18 @@ public class StylePickerDialogFragment
         @Override
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
-            onResult(Objects.requireNonNull(result.getString(DBKey.FK_STYLE),
-                                            DBKey.FK_STYLE));
+            resultListener.onResult(Objects.requireNonNull(result.getString(DBKey.FK_STYLE),
+                                                           DBKey.FK_STYLE));
         }
 
-        /**
-         * Callback handler.
-         *
-         * @param uuid the selected style
-         */
-        public abstract void onResult(@NonNull String uuid);
-
+        @FunctionalInterface
+        public interface ResultListener {
+            /**
+             * Callback handler.
+             *
+             * @param uuid the selected style
+             */
+            void onResult(@NonNull String uuid);
+        }
     }
 }

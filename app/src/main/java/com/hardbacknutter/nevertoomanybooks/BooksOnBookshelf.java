@@ -347,6 +347,7 @@ public class BooksOnBookshelf
                     }
                 }
             };
+
     /**
      * React to the user selecting a style to apply.
      * <p>
@@ -355,15 +356,9 @@ public class BooksOnBookshelf
      * which is handled by {@link #editStyleLauncher}.
      */
     private final StylePickerDialogFragment.Launcher stylePickerLauncher =
-            new StylePickerDialogFragment.Launcher(RK_STYLE_PICKER) {
-                @Override
-                public void onResult(@NonNull final String uuid) {
-                    saveListPosition();
-                    vm.onStyleChanged(BooksOnBookshelf.this, uuid);
-                    vm.resetPreferredListRebuildMode(BooksOnBookshelf.this);
-                    buildBookList();
-                }
-            };
+            new StylePickerDialogFragment.Launcher(RK_STYLE_PICKER, this::onStyleSelected);
+
+
     /**
      * The adapter used to fill the Bookshelf selector.
      */
@@ -1401,7 +1396,20 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Called from {@link StylePickerDialogFragment}.
+     * The user picked a different style from the {@link StylePickerDialogFragment}.
+     *
+     * @param uuid of the style to apply
+     */
+    private void onStyleSelected(@NonNull final String uuid) {
+        saveListPosition();
+        vm.onStyleChanged(BooksOnBookshelf.this, uuid);
+        vm.resetPreferredListRebuildMode(BooksOnBookshelf.this);
+        buildBookList();
+    }
+
+    /**
+     * Called from {@link StylePickerDialogFragment} when the user wants to edit
+     * the selected style.
      */
     void editStyle(@NonNull final Style style) {
         editStyleLauncher.launch(EditStyleContract.edit(style, true));
