@@ -279,17 +279,17 @@ public class BooksOnBookshelf
 
     /** Encapsulates the FAB button/menu. */
     private FabMenu fabMenu;
+
     /** View Binding. */
     private BooksonbookshelfBinding vb;
+
     private final BookshelfFiltersDialogFragment.Launcher bookshelfFiltersLauncher =
-            new BookshelfFiltersDialogFragment.Launcher(RK_FILTERS) {
-                @Override
-                public void onResult(final boolean modified) {
-                    if (modified) {
-                        buildBookList();
-                    }
+            new BookshelfFiltersDialogFragment.Launcher(
+                    RK_FILTERS, modified -> {
+                if (modified) {
+                    buildBookList();
                 }
-            };
+            });
 
     /** Delegate which will handle all positioning/scrolling. */
     private PositioningHelper positioningHelper;

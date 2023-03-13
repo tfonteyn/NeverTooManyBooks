@@ -185,17 +185,21 @@ public class BookshelfFiltersDialogFragment
         void setModified(boolean modified);
     }
 
-    public abstract static class Launcher
+    public static class Launcher
             implements FragmentResultListener {
 
         private static final String BKEY_MODIFIED = TAG + ":m";
 
         @NonNull
         private final String requestKey;
+        @NonNull
+        private final ResultListener resultListener;
         private FragmentManager fragmentManager;
 
-        public Launcher(@NonNull final String requestKey) {
+        public Launcher(@NonNull final String requestKey,
+                        @NonNull final ResultListener resultListener) {
             this.requestKey = requestKey;
+            this.resultListener = resultListener;
         }
 
         static void setResult(@NonNull final Fragment fragment,
@@ -231,13 +235,18 @@ public class BookshelfFiltersDialogFragment
         @Override
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
-            onResult(result.getBoolean(BKEY_MODIFIED));
+            resultListener.onResult(result.getBoolean(BKEY_MODIFIED));
         }
 
-        /**
-         * Callback handler.
-         */
-        public abstract void onResult(boolean modified);
+        @FunctionalInterface
+        public interface ResultListener {
+            /**
+             * Callback handler.
+             *
+             * @param modified flag to indicate whether the filters have changed
+             */
+            void onResult(boolean modified);
+        }
     }
 
     private static class FilterListAdapter
