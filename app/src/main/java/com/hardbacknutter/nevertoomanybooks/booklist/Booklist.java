@@ -114,6 +114,7 @@ public class Booklist
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final BooklistNodeDao nodeDao;
+    /** {@link #getNodes}, {@link #getNodeByRowId}. */
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final String sqlSelectBooklistNodes;
@@ -132,10 +133,6 @@ public class Booklist
     /** {@link #ensureNodeIsVisible}. */
     @SuppressWarnings("FieldNotUsedInToString")
     private String sqlEnsureNodeIsVisible;
-
-    /** {@link #getNodeByRowId}. */
-    @SuppressWarnings("FieldNotUsedInToString")
-    private String sqlGetNodeByRowId;
 
     /** {@link #getBookIdsForNodeKey}. */
     @SuppressWarnings("FieldNotUsedInToString")
@@ -347,14 +344,8 @@ public class Booklist
      */
     @NonNull
     private BooklistNode getNodeByRowId(final long rowId) {
-        if (sqlGetNodeByRowId == null) {
-            sqlGetNodeByRowId = SELECT_ + BooklistNode.getColumns(listTable)
-                                + _FROM_ + listTable.ref()
-                                + _WHERE_ + listTable.dot(DBKey.PK_ID) + "=?";
-        }
-
-        try (Cursor cursor = db.rawQuery(sqlGetNodeByRowId, new String[]{
-                String.valueOf(rowId)})) {
+        try (Cursor cursor = db.rawQuery(String.format(sqlSelectBooklistNodes, DBKey.PK_ID),
+                                         new String[]{String.valueOf(rowId)})) {
 
             if (cursor.moveToFirst()) {
                 final BooklistNode node = new BooklistNode(cursor);
