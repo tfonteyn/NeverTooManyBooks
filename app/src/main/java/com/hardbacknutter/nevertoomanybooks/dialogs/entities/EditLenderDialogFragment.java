@@ -250,15 +250,19 @@ public class EditLenderDialogFragment
         super.onPause();
     }
 
-    public abstract static class Launcher
+    public static class Launcher
             implements FragmentResultListener {
 
         @NonNull
         private final String requestKey;
+        @NonNull
+        private final ResultListener resultListener;
         private FragmentManager fragmentManager;
 
-        public Launcher(@NonNull final String requestKey) {
+        public Launcher(@NonNull final String requestKey,
+                        @NonNull final ResultListener resultListener) {
             this.requestKey = requestKey;
+            this.resultListener = resultListener;
         }
 
         static void setResult(@NonNull final Fragment fragment,
@@ -312,18 +316,21 @@ public class EditLenderDialogFragment
             if (value <= 0) {
                 throw new IllegalArgumentException(DBKey.FK_BOOK);
             }
-            onResult(value,
-                     Objects.requireNonNull(result.getString(DBKey.LOANEE_NAME),
-                                            DBKey.LOANEE_NAME));
+            resultListener.onResult(value,
+                                    Objects.requireNonNull(result.getString(DBKey.LOANEE_NAME),
+                                                           DBKey.LOANEE_NAME));
         }
 
-        /**
-         * Callback handler.
-         *
-         * @param bookId the id of the updated book
-         * @param loanee the name of the loanee, or {@code ""} for a returned book
-         */
-        public abstract void onResult(@IntRange(from = 1) long bookId,
-                                      @NonNull String loanee);
+        @FunctionalInterface
+        public interface ResultListener {
+            /**
+             * Callback handler.
+             *
+             * @param bookId the id of the updated book
+             * @param loanee the name of the loanee, or {@code ""} for a returned book
+             */
+            void onResult(@IntRange(from = 1) long bookId,
+                          @NonNull String loanee);
+        }
     }
 }

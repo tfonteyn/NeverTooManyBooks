@@ -273,13 +273,10 @@ public class BooksOnBookshelf
      * Accept the result from the dialog.
      */
     private final EditLenderDialogFragment.Launcher editLenderLauncher =
-            new EditLenderDialogFragment.Launcher(DBKey.LOANEE_NAME) {
-                @Override
-                public void onResult(@IntRange(from = 1) final long bookId,
-                                     @NonNull final String loanee) {
-                    vm.updateBooklistOnBookLend(bookId, loanee);
-                }
-            };
+            new EditLenderDialogFragment.Launcher(
+                    DBKey.LOANEE_NAME,
+                    (bookId, loanee) -> vm.updateBooklistOnBookLend(bookId, loanee));
+
     /** Encapsulates the FAB button/menu. */
     private FabMenu fabMenu;
     /** View Binding. */
