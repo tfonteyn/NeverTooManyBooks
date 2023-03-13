@@ -388,7 +388,7 @@ public class PartialDatePickerDialogFragment
         day = dd;
     }
 
-    public abstract static class Launcher
+    public static class Launcher
             implements FragmentResultListener {
 
         private static final String FIELD_ID = "fieldId";
@@ -397,10 +397,14 @@ public class PartialDatePickerDialogFragment
         private static final String DAY = "day";
         @NonNull
         private final String requestKey;
+        @NonNull
+        private final ResultListener resultListener;
         private FragmentManager fragmentManager;
 
-        public Launcher(@NonNull final String requestKey) {
+        public Launcher(@NonNull final String requestKey,
+                        @NonNull final ResultListener resultListener) {
             this.requestKey = requestKey;
+            this.resultListener = resultListener;
         }
 
         static void setResult(@NonNull final Fragment fragment,
@@ -459,19 +463,22 @@ public class PartialDatePickerDialogFragment
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
 
-            onResult(result.getInt(FIELD_ID),
-                     new PartialDate(result.getInt(YEAR),
-                                     result.getInt(MONTH),
-                                     result.getInt(DAY)));
+            resultListener.onResult(result.getInt(FIELD_ID),
+                                    new PartialDate(result.getInt(YEAR),
+                                                    result.getInt(MONTH),
+                                                    result.getInt(DAY)));
         }
 
-        /**
-         * Callback handler with the user's selection.
-         *
-         * @param fieldId this destination field id
-         * @param date    the picked date
-         */
-        public abstract void onResult(@IdRes int fieldId,
-                                      @NonNull PartialDate date);
+        @FunctionalInterface
+        public interface ResultListener {
+            /**
+             * Callback handler with the user's selection.
+             *
+             * @param fieldId this destination field id
+             * @param date    the picked date
+             */
+            void onResult(@IdRes int fieldId,
+                          @NonNull PartialDate date);
+        }
     }
 }

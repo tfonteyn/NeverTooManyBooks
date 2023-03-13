@@ -62,7 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
 public abstract class EditBookBaseFragment
         extends BaseFragment
@@ -74,18 +73,17 @@ public abstract class EditBookBaseFragment
     /** FragmentResultListener request key. */
     private static final String RK_DATE_PICKER_PARTIAL =
             TAG + ":rk:" + PartialDatePickerDialogFragment.TAG;
+
     /** The view model. */
     EditBookViewModel vm;
     /** MUST keep a strong reference. */
     private final DatePickerListener datePickerListener = this::onDateSet;
+
     private final PartialDatePickerDialogFragment.Launcher partialDatePickerLauncher =
-            new PartialDatePickerDialogFragment.Launcher(RK_DATE_PICKER_PARTIAL) {
-                @Override
-                public void onResult(@IdRes final int fieldId,
-                                     @NonNull final PartialDate date) {
-                    onDateSet(fieldId, date.getIsoString());
-                }
-            };
+            new PartialDatePickerDialogFragment.Launcher(
+                    RK_DATE_PICKER_PARTIAL,
+                    (fieldId, date) -> onDateSet(fieldId, date.getIsoString()));
+
     /** Listener for all field changes. MUST keep strong reference. */
     private final Field.AfterChangedListener afterChangedListener = this::onAfterFieldChange;
     private DateParser dateParser;
@@ -250,7 +248,6 @@ public abstract class EditBookBaseFragment
     public void onSaveFields(@NonNull final Book book) {
         vm.saveFields(getFragmentId(), book);
     }
-
 
     /**
      * Set the OnClickListener for the 'read' fields.
