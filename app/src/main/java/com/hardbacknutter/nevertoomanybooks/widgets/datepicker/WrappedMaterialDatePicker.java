@@ -120,12 +120,16 @@ public final class WrappedMaterialDatePicker<S>
 
         @NonNull
         private final String requestKey;
+        @NonNull
+        private final ResultListener resultListener;
         private FragmentManager fragmentManager;
 
         private DateParser dateParser;
 
-        public Launcher(@NonNull final String requestKey) {
+        public Launcher(@NonNull final String requestKey,
+                        @NonNull final ResultListener resultListener) {
             this.requestKey = requestKey;
+            this.resultListener = resultListener;
         }
 
         static void setResult(@NonNull final Fragment fragment,
@@ -251,30 +255,32 @@ public final class WrappedMaterialDatePicker<S>
         @Override
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
-            onResult(Objects.requireNonNull(result.getIntArray(FIELD_ID), FIELD_ID),
-                     Objects.requireNonNull(result.getLongArray(SELECTIONS), SELECTIONS));
+            resultListener.onResult(
+                    Objects.requireNonNull(result.getIntArray(FIELD_ID), FIELD_ID),
+                    Objects.requireNonNull(result.getLongArray(SELECTIONS), SELECTIONS));
         }
 
-        /**
-         * Callback handler.
-         * <p>
-         * The resulting date can be reconstructed with for example
-         *
-         * <pre>
-         *     {@code
-         *              Instant.ofEpochMilli(selections[i])
-         *                     .atZone(ZoneId.systemDefault())
-         *                     .format(DateTimeFormatter.ISO_LOCAL_DATE)
-         *     }
-         * </pre>
-         * Instant.ofEpochMilli(selections[0])
-         *
-         * @param fieldIds   the field(s) this dialog was bound to
-         * @param selections the selected date(s)
-         */
-        public abstract void onResult(@NonNull int[] fieldIds,
-                                      @NonNull long[] selections);
-
-
+        @FunctionalInterface
+        public interface ResultListener {
+            /**
+             * Callback handler.
+             * <p>
+             * The resulting date can be reconstructed with for example
+             *
+             * <pre>
+             *     {@code
+             *              Instant.ofEpochMilli(selections[i])
+             *                     .atZone(ZoneId.systemDefault())
+             *                     .format(DateTimeFormatter.ISO_LOCAL_DATE)
+             *     }
+             * </pre>
+             * Instant.ofEpochMilli(selections[0])
+             *
+             * @param fieldIds   the field(s) this dialog was bound to
+             * @param selections the selected date(s)
+             */
+            void onResult(@NonNull int[] fieldIds,
+                          @NonNull long[] selections);
+        }
     }
 }
