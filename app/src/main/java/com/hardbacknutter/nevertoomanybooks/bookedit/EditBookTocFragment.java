@@ -130,13 +130,7 @@ public class EditBookTocFragment
 
     /** Listen for the results of the entry edit-dialog. */
     private final EditTocEntryDialogFragment.Launcher editTocEntryLauncher =
-            new EditTocEntryDialogFragment.Launcher(RK_EDIT_TOC) {
-                @Override
-                public void onResult(@NonNull final TocEntry tocEntry,
-                                     final int position) {
-                    onEntryUpdated(tocEntry, position);
-                }
-            };
+            new EditTocEntryDialogFragment.Launcher(RK_EDIT_TOC, this::onEntryUpdated);
 
     /** Drag and drop support for the list view. */
     private ItemTouchHelper itemTouchHelper;

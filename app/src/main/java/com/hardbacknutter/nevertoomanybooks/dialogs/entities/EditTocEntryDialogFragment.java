@@ -212,15 +212,19 @@ public class EditTocEntryDialogFragment
         super.onPause();
     }
 
-    public abstract static class Launcher
+    public static class Launcher
             implements FragmentResultListener {
 
         @NonNull
         private final String requestKey;
+        @NonNull
+        private final ResultListener resultListener;
         private FragmentManager fragmentManager;
 
-        public Launcher(@NonNull final String requestKey) {
+        public Launcher(@NonNull final String requestKey,
+                        @NonNull final ResultListener resultListener) {
             this.requestKey = requestKey;
+            this.resultListener = resultListener;
         }
 
         static void setResult(@NonNull final Fragment fragment,
@@ -268,17 +272,21 @@ public class EditTocEntryDialogFragment
         @Override
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
-            onResult(Objects.requireNonNull(result.getParcelable(BKEY_TOC_ENTRY), BKEY_TOC_ENTRY),
-                     result.getInt(BKEY_POSITION));
+            resultListener.onResult(
+                    Objects.requireNonNull(result.getParcelable(BKEY_TOC_ENTRY), BKEY_TOC_ENTRY),
+                    result.getInt(BKEY_POSITION));
         }
 
-        /**
-         * Callback handler.
-         *
-         * @param tocEntry the modified entry
-         * @param position the position in the list we we're editing
-         */
-        public abstract void onResult(@NonNull TocEntry tocEntry,
-                                      int position);
+        @FunctionalInterface
+        public interface ResultListener {
+            /**
+             * Callback handler.
+             *
+             * @param tocEntry the modified entry
+             * @param position the position in the list we we're editing
+             */
+            void onResult(@NonNull TocEntry tocEntry,
+                          int position);
+        }
     }
 }
