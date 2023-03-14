@@ -154,10 +154,14 @@ public class SingleChoiceDialogFragment
         private static final String SELECTED = "selected";
         @NonNull
         private final String requestKey;
+        @NonNull
+        private final ResultListener resultListener;
         private FragmentManager fragmentManager;
 
-        public Launcher(@NonNull final String requestKey) {
+        public Launcher(@NonNull final String requestKey,
+                        @NonNull final ResultListener resultListener) {
             this.requestKey = requestKey;
+            this.resultListener = resultListener;
         }
 
         static void setResult(@NonNull final Fragment fragment,
@@ -212,17 +216,20 @@ public class SingleChoiceDialogFragment
         @Override
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
-            onResult(result.getInt(FIELD_ID),
-                     result.getLong(SELECTED));
+            resultListener.onResult(result.getInt(FIELD_ID),
+                                    result.getLong(SELECTED));
         }
 
-        /**
-         * Callback handler with the user's selection.
-         *
-         * @param fieldId      this destination field id
-         * @param selectedItem the single selected item
-         */
-        public abstract void onResult(@IdRes int fieldId,
-                                      long selectedItem);
+        @FunctionalInterface
+        public interface ResultListener {
+            /**
+             * Callback handler with the user's selection.
+             *
+             * @param fieldId      this destination field id
+             * @param selectedItem the single selected item
+             */
+            void onResult(@IdRes int fieldId,
+                          long selectedItem);
+        }
     }
 }
