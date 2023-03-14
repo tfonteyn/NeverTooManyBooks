@@ -120,16 +120,20 @@ public class MultiChoiceDialogFragment
         outState.putLongArray(BKEY_SELECTED, selectedItems.stream().mapToLong(o -> o).toArray());
     }
 
-    public abstract static class Launcher<T extends Parcelable & Entity>
+    public static class Launcher<T extends Parcelable & Entity>
             implements FragmentResultListener {
 
         private static final String SELECTED = "selected";
         @NonNull
         private final String requestKey;
+        @NonNull
+        private final ResultListener resultListener;
         private FragmentManager fragmentManager;
 
-        public Launcher(@NonNull final String requestKey) {
+        public Launcher(@NonNull final String requestKey,
+                        @NonNull final ResultListener resultListener) {
             this.requestKey = requestKey;
+            this.resultListener = resultListener;
         }
 
         static void setResult(@NonNull final Fragment fragment,
@@ -179,15 +183,19 @@ public class MultiChoiceDialogFragment
         @Override
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
-            onResult(Arrays.stream(Objects.requireNonNull(result.getLongArray(SELECTED), SELECTED))
-                           .boxed().collect(Collectors.toSet()));
+            resultListener.onResult(
+                    Arrays.stream(Objects.requireNonNull(result.getLongArray(SELECTED), SELECTED))
+                          .boxed().collect(Collectors.toSet()));
         }
 
-        /**
-         * Callback handler with the user's selection.
-         *
-         * @param selectedItems the set of <strong>checked</strong> items
-         */
-        public abstract void onResult(@NonNull Set<Long> selectedItems);
+        @FunctionalInterface
+        public interface ResultListener {
+            /**
+             * Callback handler with the user's selection.
+             *
+             * @param selectedItems the set of <strong>checked</strong> items
+             */
+            void onResult(@NonNull Set<Long> selectedItems);
+        }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -184,8 +184,7 @@ public class MultiChoiceAlertDialogBuilder<T extends Number> {
         final RecyclerView listView = view.findViewById(R.id.item_list);
         listView.setAdapter(adapter);
 
-        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(
-                context)
+        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context)
                 .setView(view)
                 .setTitle(dialogTitle)
                 .setIcon(iconId)

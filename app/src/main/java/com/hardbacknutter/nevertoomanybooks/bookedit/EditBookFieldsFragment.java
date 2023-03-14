@@ -77,24 +77,8 @@ public class EditBookFieldsFragment
     private static final String RK_EDIT_BOOKSHELVES = TAG + ":rk:" + MultiChoiceDialogFragment.TAG;
 
     private final MultiChoiceDialogFragment.Launcher<Bookshelf> editBookshelvesLauncher =
-            new MultiChoiceDialogFragment.Launcher<>(RK_EDIT_BOOKSHELVES) {
-                @Override
-                public void onResult(@NonNull final Set<Long> selectedIds) {
-                    final Field<List<Bookshelf>, TextView> field =
-                            vm.requireField(R.id.bookshelves);
-                    final List<Bookshelf> previous = field.getValue();
-
-                    final ArrayList<Bookshelf> selected =
-                            vm.getAllBookshelves()
-                              .stream()
-                              .filter(bookshelf -> selectedIds.contains(bookshelf.getId()))
-                              .collect(Collectors.toCollection(ArrayList::new));
-
-                    vm.getBook().setBookshelves(selected);
-                    field.setValue(selected);
-                    field.notifyIfChanged(previous);
-                }
-            };
+            new MultiChoiceDialogFragment.Launcher<>(RK_EDIT_BOOKSHELVES,
+                                                     this::onBookshelvesSelection);
 
     /** The scanner. */
     private final ActivityResultLauncher<ScanOptions> scanLauncher =
@@ -262,6 +246,22 @@ public class EditBookFieldsFragment
         editBookshelvesLauncher.launch(getContext(), getString(R.string.lbl_bookshelves),
                                        vm.getAllBookshelves(),
                                        vm.getBook().getBookshelves());
+    }
+
+    private void onBookshelvesSelection(@NonNull final Set<Long> selectedIds) {
+        final Field<List<Bookshelf>, TextView> field =
+                vm.requireField(R.id.bookshelves);
+        final List<Bookshelf> previous = field.getValue();
+
+        final ArrayList<Bookshelf> selected =
+                vm.getAllBookshelves()
+                  .stream()
+                  .filter(bookshelf -> selectedIds.contains(bookshelf.getId()))
+                  .collect(Collectors.toCollection(ArrayList::new));
+
+        vm.getBook().setBookshelves(selected);
+        field.setValue(selected);
+        field.notifyIfChanged(previous);
     }
 
     private class ToolbarMenuProvider
