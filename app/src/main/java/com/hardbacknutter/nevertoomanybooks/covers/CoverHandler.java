@@ -142,12 +142,8 @@ public class CoverHandler {
 
         imageLoader = new ImageViewLoader(ASyncExecutor.MAIN, maxWidth, maxHeight);
 
-        coverBrowserLauncher = new CoverBrowserDialogFragment.Launcher(RK_COVER_BROWSER + cIdx) {
-            @Override
-            public void onResult(@NonNull final String fileSpec) {
-                onFileSelected(fileSpec);
-            }
-        };
+        coverBrowserLauncher = new CoverBrowserDialogFragment
+                .Launcher(RK_COVER_BROWSER + cIdx, this::onFileSelected);
     }
 
     @NonNull

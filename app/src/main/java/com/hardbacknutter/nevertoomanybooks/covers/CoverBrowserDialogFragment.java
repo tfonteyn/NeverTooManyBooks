@@ -358,16 +358,20 @@ public class CoverBrowserDialogFragment
         ImageFileInfo getFileInfo(@NonNull String isbn);
     }
 
-    public abstract static class Launcher
+    public static class Launcher
             implements FragmentResultListener {
 
         private static final String COVER_FILE_SPEC = "fileSpec";
         @NonNull
         private final String requestKey;
+        @NonNull
+        private final ResultListener resultListener;
         private FragmentManager fragmentManager;
 
-        public Launcher(@NonNull final String requestKey) {
+        public Launcher(@NonNull final String requestKey,
+                        @NonNull final ResultListener resultListener) {
             this.requestKey = requestKey;
+            this.resultListener = resultListener;
         }
 
         static void setResult(@NonNull final Fragment fragment,
@@ -409,15 +413,19 @@ public class CoverBrowserDialogFragment
         @Override
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
-            onResult(Objects.requireNonNull(result.getString(COVER_FILE_SPEC), COVER_FILE_SPEC));
+            resultListener.onResult(
+                    Objects.requireNonNull(result.getString(COVER_FILE_SPEC), COVER_FILE_SPEC));
         }
 
-        /**
-         * Callback handler with the user's selection.
-         *
-         * @param fileSpec for the selected file
-         */
-        public abstract void onResult(@NonNull String fileSpec);
+        @FunctionalInterface
+        public interface ResultListener {
+            /**
+             * Callback handler with the user's selection.
+             *
+             * @param fileSpec for the selected file
+             */
+            void onResult(@NonNull String fileSpec);
+        }
     }
 
     /**
