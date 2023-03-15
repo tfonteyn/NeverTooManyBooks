@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.core.widgets;
 
+import android.annotation.SuppressLint;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -38,11 +39,17 @@ import androidx.annotation.Nullable;
  * I found it simpler to use an OnTouchListener to only respond to user-initiated changes.
  * </em>
  */
-public abstract class SpinnerInteractionListener
+public class SpinnerInteractionListener
         implements AdapterView.OnItemSelectedListener,
                    View.OnTouchListener {
 
+    @NonNull
+    private final OnItemSelectedListener listener;
     private boolean userInteraction;
+
+    public SpinnerInteractionListener(@NonNull final OnItemSelectedListener listener) {
+        this.listener = listener;
+    }
 
     /**
      * Attach the given Spinner to this listener.
@@ -54,14 +61,8 @@ public abstract class SpinnerInteractionListener
         spinner.setOnItemSelectedListener(this);
     }
 
-    /**
-     * Callback with the selected id.
-     *
-     * @param id selected
-     */
-    protected abstract void onItemSelected(long id);
-
-    /** internal listener - use {@link #onItemSelected(long)} instead. */
+    /** internal listener - use {@link OnItemSelectedListener} instead. */
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouch(@NonNull final View v,
                            @NonNull final MotionEvent event) {
@@ -69,7 +70,7 @@ public abstract class SpinnerInteractionListener
         return false;
     }
 
-    /** internal listener - use {@link #onItemSelected(long)} instead. */
+    /** internal listener - use {@link OnItemSelectedListener} instead. */
     @Override
     public void onItemSelected(@NonNull final AdapterView<?> parent,
                                @Nullable final View view,
@@ -82,11 +83,23 @@ public abstract class SpinnerInteractionListener
             }
         }
 
-        onItemSelected(id);
+        listener.onItemSelected(id);
     }
 
-    /** internal listener - use {@link #onItemSelected(long)} instead. */
+    /** internal listener - use {@link OnItemSelectedListener} instead. */
     public void onNothingSelected(@NonNull final AdapterView<?> parent) {
         // Do nothing
+    }
+
+    @FunctionalInterface
+    public interface OnItemSelectedListener {
+
+        /**
+         * Callback with the selected id.
+         *
+         * @param id selected
+         */
+        void onItemSelected(long id);
+
     }
 }

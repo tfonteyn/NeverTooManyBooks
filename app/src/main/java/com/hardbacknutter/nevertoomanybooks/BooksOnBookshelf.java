@@ -337,16 +337,7 @@ public class BooksOnBookshelf
 
     /** Listener for the Bookshelf Spinner. */
     private final SpinnerInteractionListener bookshelfSelectionChangedListener =
-            new SpinnerInteractionListener() {
-                @Override
-                public void onItemSelected(final long bookshelfId) {
-                    if (bookshelfId != vm.getCurrentBookshelf().getId()) {
-                        saveListPosition();
-                        vm.setCurrentBookshelf(BooksOnBookshelf.this, bookshelfId);
-                        buildBookList();
-                    }
-                }
-            };
+            new SpinnerInteractionListener(this::onBookshelfSelected);
 
     /**
      * React to the user selecting a style to apply.
@@ -1415,6 +1406,13 @@ public class BooksOnBookshelf
         editStyleLauncher.launch(EditStyleContract.edit(style, true));
     }
 
+    private void onBookshelfSelected(final long bookshelfId) {
+        if (bookshelfId != vm.getCurrentBookshelf().getId()) {
+            vm.setCurrentBookshelf(BooksOnBookshelf.this, bookshelfId);
+            saveListPosition();
+            buildBookList();
+        }
+    }
 
 
     /**
