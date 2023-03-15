@@ -58,10 +58,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.security.cert.CertificateException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -1536,10 +1536,9 @@ public class BooksOnBookshelf
             }
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
-                final SimpleDateFormat dateFormat =
-                        new SimpleDateFormat("yyyy_MM_dd_hh_mm_ss", Locale.getDefault());
-                //noinspection UseOfObsoleteDateTimeApi
-                Debug.startMethodTracing("trace-" + dateFormat.format(new Date()));
+                Debug.startMethodTracing("trace-" + LocalDateTime
+                        .now().withNano(0)
+                        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
             }
             // force the adapter to stop displaying by disabling the list.
             // DO NOT REMOVE THE ADAPTER FROM FROM THE VIEW;
