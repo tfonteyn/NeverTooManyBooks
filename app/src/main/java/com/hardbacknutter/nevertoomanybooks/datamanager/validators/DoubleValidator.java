@@ -45,6 +45,8 @@ public class DoubleValidator
 
     /**
      * Constructor; default value is 0d.
+     *
+     * @param realNumberParser to use for number parsing
      */
     public DoubleValidator(@NonNull final RealNumberParser realNumberParser) {
         this.realNumberParser = realNumberParser;

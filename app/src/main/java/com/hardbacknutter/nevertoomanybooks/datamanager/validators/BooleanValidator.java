@@ -44,7 +44,8 @@ public class BooleanValidator
     /**
      * Constructor with default value.
      *
-     * @param defaultValue Default to apply
+     * @param realNumberParser to use for number parsing
+     * @param defaultValue     Default to apply
      */
     public BooleanValidator(@NonNull final RealNumberParser realNumberParser,
                             final boolean defaultValue) {

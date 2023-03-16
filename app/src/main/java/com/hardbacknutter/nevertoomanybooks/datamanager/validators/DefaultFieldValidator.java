@@ -43,7 +43,8 @@ public class DefaultFieldValidator
     /**
      * Constructor with default value.
      *
-     * @param defaultValue Default to apply if the field is empty
+     * @param realNumberParser to use for number parsing
+     * @param defaultValue     Default to apply if the field is empty
      */
     DefaultFieldValidator(@NonNull final RealNumberParser realNumberParser,
                           @NonNull final String defaultValue) {

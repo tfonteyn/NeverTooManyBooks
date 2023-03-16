@@ -39,6 +39,11 @@ public class NonBlankValidator
     @NonNull
     private final RealNumberParser realNumberParser;
 
+    /**
+     * Constructor.
+     *
+     * @param realNumberParser to use for number parsing
+     */
     public NonBlankValidator(@NonNull final RealNumberParser realNumberParser) {
         this.realNumberParser = realNumberParser;
     }
