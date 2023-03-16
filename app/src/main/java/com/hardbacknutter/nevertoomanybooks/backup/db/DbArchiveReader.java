@@ -28,8 +28,10 @@ import androidx.annotation.WorkerThread;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -38,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
@@ -89,8 +90,12 @@ public class DbArchiveReader
             }
 
             // Copy the file from the uri to a place where we can access it as a database.
-            File tmpDb = new File(context.getCacheDir(), System.nanoTime() + ".db");
-            tmpDb = ImageUtils.copy(is, tmpDb);
+            final File tmpDb = new File(context.getCacheDir(), System.nanoTime() + ".db");
+            try (OutputStream os = new FileOutputStream(tmpDb)) {
+                FileUtils.copy(is, os);
+            } finally {
+                FileUtils.delete(tmpDb);
+            }
             sqLiteDatabase = SQLiteDatabase.openDatabase(tmpDb.getAbsolutePath(), null,
                                                          SQLiteDatabase.OPEN_READONLY);
         }
