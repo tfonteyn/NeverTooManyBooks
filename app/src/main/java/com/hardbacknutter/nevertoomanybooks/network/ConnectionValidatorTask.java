@@ -46,12 +46,20 @@ public class ConnectionValidatorTask
     @Nullable
     private ConnectionValidator server;
 
-    public ConnectionValidatorTask(@StringRes final int siteResId) {
+    /**
+     * Constructor.
+     *
+     * @param siteResId string resource for the site name
+     */
+    ConnectionValidatorTask(@StringRes final int siteResId) {
         super(R.id.TASK_ID_VALIDATE_CONNECTION, TAG + ":" + siteResId);
 
         this.siteResId = siteResId;
     }
 
+    /**
+     * Start this task, connecting to the remote site.
+     */
     public void connect() {
         execute();
     }

@@ -44,9 +44,14 @@ public class HttpNotFoundException
      * @param url           (optional) The full url, for debugging
      */
     public HttpNotFoundException(@StringRes final int siteResId,
-                          @NonNull final String statusMessage,
-                          @Nullable final URL url) {
+                                 @NonNull final String statusMessage,
+                                 @Nullable final URL url) {
         super(siteResId, HttpURLConnection.HTTP_NOT_FOUND, statusMessage, url);
+    }
+
+    @Nullable
+    public String getUserMessage() {
+        return localisedMessage;
     }
 
     /**
@@ -56,10 +61,5 @@ public class HttpNotFoundException
      */
     public void setUserMessage(@NonNull final String message) {
         this.localisedMessage = message;
-    }
-
-    @Nullable
-    public String getUserMessage() {
-        return localisedMessage;
     }
 }

@@ -42,8 +42,8 @@ public class HttpUnauthorizedException
      * @param url           (optional) The full url, for debugging
      */
     public HttpUnauthorizedException(@StringRes final int siteResId,
-                              @NonNull final String statusMessage,
-                              @Nullable final URL url) {
+                                     @NonNull final String statusMessage,
+                                     @Nullable final URL url) {
         super(siteResId, HttpURLConnection.HTTP_UNAUTHORIZED, statusMessage, url);
     }
 }

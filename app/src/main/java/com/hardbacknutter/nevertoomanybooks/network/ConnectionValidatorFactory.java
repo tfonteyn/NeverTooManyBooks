@@ -38,6 +38,16 @@ public final class ConnectionValidatorFactory {
     private ConnectionValidatorFactory() {
     }
 
+    /**
+     * Factory constructor.
+     *
+     * @param context   Current context
+     * @param siteResId string resource for the site name
+     *
+     * @return new instance
+     *
+     * @throws CertificateException on failures related to a user installed CA
+     */
     @NonNull
     public static ConnectionValidator create(@NonNull final Context context,
                                              @StringRes final int siteResId)

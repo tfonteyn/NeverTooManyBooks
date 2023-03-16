@@ -36,10 +36,10 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpNotFoundException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -64,6 +64,11 @@ public class JsoupLoader {
     @Nullable
     private String charSetName;
 
+    /**
+     * Constructor.
+     *
+     * @param futureHttpGet to use
+     */
     public JsoupLoader(@NonNull final FutureHttpGet<Document> futureHttpGet) {
         this.futureHttpGet = futureHttpGet;
     }
@@ -186,8 +191,9 @@ public class JsoupLoader {
                         final Document document = Jsoup.parse(is, charSetName, locationHeader);
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
                             LoggerFactory.getLogger()
-                                          .d(TAG, "loadDocument",
-                                             "AFTER parsing|document.location()=" + document.location());
+                                         .d(TAG, "loadDocument",
+                                            "AFTER parsing|document.location()="
+                                            + document.location());
                         }
 
                         return document;

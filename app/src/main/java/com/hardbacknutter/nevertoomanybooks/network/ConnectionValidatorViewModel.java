@@ -40,6 +40,11 @@ public class ConnectionValidatorViewModel
         super.onCleared();
     }
 
+    /**
+     * Pseudo constructor.
+     *
+     * @param siteResId string resource for the site name
+     */
     public void init(@StringRes final int siteResId) {
         validatorTask = new ConnectionValidatorTask(siteResId);
     }
@@ -72,6 +77,9 @@ public class ConnectionValidatorViewModel
         }
     }
 
+    /**
+     * Run the validation connection.
+     */
     public void validateConnection() {
         validatorTask.connect();
     }

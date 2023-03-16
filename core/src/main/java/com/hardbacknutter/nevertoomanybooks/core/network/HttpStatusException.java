@@ -54,9 +54,9 @@ public class HttpStatusException
      * @param url           (optional) The full url, for debugging
      */
     public HttpStatusException(@StringRes final int siteResId,
-                        final int statusCode,
-                        @NonNull final String statusMessage,
-                        @Nullable final URL url) {
+                               final int statusCode,
+                               @NonNull final String statusMessage,
+                               @Nullable final URL url) {
         super(statusMessage);
         this.siteResId = siteResId;
         this.statusCode = statusCode;

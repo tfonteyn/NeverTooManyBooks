@@ -48,7 +48,7 @@ public final class ASIN {
      *
      * @return validity
      */
-    public static boolean isValidAsin(@NonNull final String asin) {
+    static boolean isValidAsin(@NonNull final String asin) {
 
         if (asin.length() != ASIN_LEN) {
             return false;
