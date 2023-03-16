@@ -147,7 +147,7 @@ public class SingleChoiceDialogFragment
         outState.putLong(BKEY_SELECTED, selectedItem);
     }
 
-    public abstract static class Launcher<T extends Parcelable & Entity>
+    public static class Launcher<T extends Parcelable & Entity>
             implements FragmentResultListener {
 
         private static final String FIELD_ID = "fieldId";
