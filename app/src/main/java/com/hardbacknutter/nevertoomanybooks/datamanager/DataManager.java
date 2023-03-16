@@ -262,7 +262,8 @@ public class DataManager
     /**
      * Get the data object specified by the passed key.
      *
-     * @param key Key of data object
+     * @param key    Key of data object
+     * @param parser to use for number parsing
      *
      * @return Data object, or {@code null} when not present or the value is {@code null}
      */
@@ -450,7 +451,8 @@ public class DataManager
      * This is exactly what is done in {@link #get(String, RealNumberParser)}
      * where we return an Object.
      *
-     * @param key Key of data object
+     * @param key    Key of data object
+     * @param parser to use for number parsing
      *
      * @return value or {@code null} if parsing did not produce a Money object
      *
