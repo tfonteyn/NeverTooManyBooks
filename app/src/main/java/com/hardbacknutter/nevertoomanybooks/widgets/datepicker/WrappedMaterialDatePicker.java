@@ -112,7 +112,7 @@ public final class WrappedMaterialDatePicker<S>
         }
     }
 
-    public abstract static class Launcher
+    public static class Launcher
             implements FragmentResultListener {
 
         private static final String FIELD_ID = "fieldId";
