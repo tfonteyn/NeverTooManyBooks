@@ -46,11 +46,13 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
 /**
@@ -135,7 +137,11 @@ public class PartialDatePickerDialogFragment
      * No-arg constructor for OS use.
      */
     public PartialDatePickerDialogFragment() {
-        super(R.layout.dialog_partial_date_picker, R.layout.dialog_partial_date_picker_content);
+        super(R.layout.dialog_partial_date_picker, R.layout.dialog_partial_date_picker_content,
+              // Due to the height of this dialog, we must use fullscreen
+              // on Medium-width/Compact-height as well
+              Set.of(WindowSizeClass.Compact, WindowSizeClass.Medium),
+              Set.of(WindowSizeClass.Compact));
     }
 
 
