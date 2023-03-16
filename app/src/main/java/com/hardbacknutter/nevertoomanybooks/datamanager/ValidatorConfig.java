@@ -84,7 +84,8 @@ public class ValidatorConfig {
      * {@link ValidatorException} are added to {@link #validationExceptions}
      * Use {@link #getValidationExceptionMessage} for the results.
      *
-     * @param context Current context
+     * @param context     Current context
+     * @param dataManager the data to be validated
      *
      * @return {@code true} if all validation passed.
      */

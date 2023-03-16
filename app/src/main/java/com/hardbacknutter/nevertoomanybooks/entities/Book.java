@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcel;
+import android.os.Parcelable;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -222,6 +223,11 @@ public class Book
         stage = new EntityStage();
     }
 
+    /**
+     * {@link Parcelable} Constructor.
+     *
+     * @param in Parcel to construct the object from
+     */
     public Book(@NonNull final Parcel in) {
         super(in);
         stage = in.readParcelable(getClass().getClassLoader());
@@ -582,11 +588,9 @@ public class Book
         if (contains(BKEY_AUTHOR_LIST)) {
             final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
             final Locale bookLocale = getLocaleOrUserLocale(context);
-            final ArrayList<Author> list = getAuthors();
-            for (final Author author : list) {
-                authorDao.refresh(context, author,
-                                  () -> author.getLocale(context).orElse(bookLocale));
-            }
+            getAuthors().forEach(author -> authorDao.refresh(context, author,
+                                                             () -> author.getLocale(context)
+                                                                         .orElse(bookLocale)));
         }
     }
 
@@ -679,11 +683,9 @@ public class Book
         if (contains(BKEY_SERIES_LIST)) {
             final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
             final Locale bookLocale = getLocaleOrUserLocale(context);
-            final ArrayList<Series> list = getSeries();
-            for (final Series series : list) {
-                seriesDao.refresh(context, series,
-                                  () -> series.getLocale(context).orElse(bookLocale));
-            }
+            getSeries().forEach(series -> seriesDao.refresh(context, series,
+                                                            () -> series.getLocale(context)
+                                                                        .orElse(bookLocale)));
         }
     }
 
@@ -756,11 +758,9 @@ public class Book
         if (contains(BKEY_PUBLISHER_LIST)) {
             final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
             final Locale bookLocale = getLocaleOrUserLocale(context);
-            final ArrayList<Publisher> list = getPublishers();
-            for (final Publisher publisher : list) {
-                publisherDao.refresh(context, publisher,
-                                     () -> publisher.getLocale(context).orElse(bookLocale));
-            }
+            getPublishers().forEach(publisher -> publisherDao
+                    .refresh(context, publisher, () -> publisher.getLocale(context)
+                                                                .orElse(bookLocale)));
         }
     }
 
@@ -770,6 +770,7 @@ public class Book
             final ArrayList<Publisher> publishers = getPublishers();
             if (!publishers.isEmpty()) {
                 final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
+
                 if (publisherDao.pruneList(context, publishers, item -> {
                     if (lookupLocale) {
                         return item.getLocale(context)
@@ -1173,11 +1174,28 @@ public class Book
         });
     }
 
+    /**
+     * Run all validators.
+     * <p>
+     * If this method returns {@code false}
+     * call {@link #getValidationExceptionMessage} for the failure message.
+     *
+     * @param context Current context
+     *
+     * @return {@code true} if all validations passed
+     */
     public boolean validate(@NonNull final Context context) {
         //noinspection ConstantConditions
         return validatorConfig.validate(context, this);
     }
 
+    /**
+     * Retrieve the text message associated with the {@link #validate} exceptions (if any).
+     *
+     * @param context Current context
+     *
+     * @return a user displayable list of error messages, or {@code null} if none present
+     */
     @Nullable
     public String getValidationExceptionMessage(@NonNull final Context context) {
         //noinspection ConstantConditions

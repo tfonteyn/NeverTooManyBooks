@@ -81,7 +81,8 @@ public interface DataHolder {
     /**
      * Returns the value associated with the given key.
      *
-     * @param key Key of data object
+     * @param key    Key of data object
+     * @param parser to use
      *
      * @return a double value
      */

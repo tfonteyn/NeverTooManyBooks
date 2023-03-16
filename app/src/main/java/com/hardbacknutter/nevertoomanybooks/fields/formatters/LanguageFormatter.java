@@ -42,6 +42,12 @@ public class LanguageFormatter
     @NonNull
     private final Languages languages;
 
+    /**
+     * Constructor.
+     *
+     * @param locale    to use
+     * @param languages the language cache container
+     */
     public LanguageFormatter(@NonNull final Locale locale,
                              @NonNull final Languages languages) {
         this.locale = locale;

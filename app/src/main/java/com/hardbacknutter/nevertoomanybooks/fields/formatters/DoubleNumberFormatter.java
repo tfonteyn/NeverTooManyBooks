@@ -41,6 +41,11 @@ public class DoubleNumberFormatter
     @NonNull
     private final RealNumberParser realNumberParser;
 
+    /**
+     * Constructor.
+     *
+     * @param realNumberParser to use
+     */
     public DoubleNumberFormatter(@NonNull final RealNumberParser realNumberParser) {
         this.realNumberParser = realNumberParser;
     }

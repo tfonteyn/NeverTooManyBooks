@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,6 +41,12 @@ public class StringArrayResFormatter
     @NonNull
     private final String[] stringArray;
 
+    /**
+     * Constructor.
+     *
+     * @param context    Current context
+     * @param arrayResId the string resources
+     */
     public StringArrayResFormatter(@NonNull final Context context,
                                    @ArrayRes final int arrayResId) {
         stringArray = context.getResources().getStringArray(arrayResId);

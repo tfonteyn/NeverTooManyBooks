@@ -53,8 +53,9 @@ public class EntityArrayAdapter<T extends Entity>
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param list    of entities to choose from
+     * @param context    Current context
+     * @param filterType the type of filter to apply
+     * @param list       of entities to choose from
      */
     public EntityArrayAdapter(@NonNull final Context context,
                               @NonNull final FilterType filterType,

@@ -145,6 +145,11 @@ public class ExtClearTextEndIconDelegate<V extends TextView, T>
     @Nullable
     private Consumer<View> endIconOnClickConsumer;
 
+    /**
+     * Constructor.
+     *
+     * @param field to handle
+     */
     public ExtClearTextEndIconDelegate(@NonNull final Field<T, V> field) {
         this.field = field;
     }

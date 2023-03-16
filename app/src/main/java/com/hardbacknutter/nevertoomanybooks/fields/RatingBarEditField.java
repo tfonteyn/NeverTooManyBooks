@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,6 +24,8 @@ import android.view.View;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
+
 /**
  * RatingBar.
  * <p>
@@ -32,6 +34,14 @@ import androidx.annotation.NonNull;
 public class RatingBarEditField
         extends RatingBarField {
 
+    /**
+     * Constructor.
+     *
+     * @param fragmentId  the hosting {@link FragmentId} for this {@link Field}
+     * @param fieldViewId the view id for this {@link Field}
+     * @param fieldKey    Key used to access a {@link DataManager}
+     *                    Set to {@code ""} to suppress all access.
+     */
     public RatingBarEditField(@NonNull final FragmentId fragmentId,
                               @IdRes final int fieldViewId,
                               @NonNull final String fieldKey) {

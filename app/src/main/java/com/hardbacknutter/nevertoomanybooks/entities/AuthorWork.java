@@ -116,6 +116,13 @@ public interface AuthorWork {
             this.value = value;
         }
 
+        /**
+         * Convert the given character back to the type.
+         *
+         * @param value to parse
+         *
+         * @return the type
+         */
         @NonNull
         public static Type getType(final char value) {
             switch (value) {
@@ -130,6 +137,11 @@ public interface AuthorWork {
             }
         }
 
+        /**
+         * Get the character representing this type.
+         *
+         * @return character
+         */
         public char asChar() {
             return value;
         }

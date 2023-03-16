@@ -665,6 +665,7 @@ public class ExtArrayAdapter<T>
      *         or {@code null} if object was created otherwise or if contents
      *         were dynamically changed after creation.
      */
+    @Nullable
     @Override
     public CharSequence[] getAutofillOptions() {
         // First check if app developer explicitly set them.
@@ -685,8 +686,11 @@ public class ExtArrayAdapter<T>
 
     /** Builtin Filters. */
     public enum FilterType {
+        /** The original {@link android.widget.ArrayAdapter} filter. */
         Default,
+        /** Extended default filter with Diacritic support. */
         Diacritic,
+        /** Does no actual filtering. */
         Passthrough
     }
 
