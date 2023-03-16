@@ -45,7 +45,9 @@ import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.EnumSet;
 import java.util.Objects;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
@@ -84,6 +86,11 @@ public abstract class FFBaseDialogFragment
     private final int fullscreenLayoutId;
     private final int contentLayoutId;
     private final boolean forceFullscreen;
+    @NonNull
+    private final Set<WindowSizeClass> useFullscreenWidth = EnumSet.noneOf(WindowSizeClass.class);
+    @NonNull
+    private final Set<WindowSizeClass> useFullscreenHeight = EnumSet.noneOf(WindowSizeClass.class);
+
     /** The <strong>Dialog</strong> Toolbar. Not to be confused with the Activity's Toolbar! */
     @Nullable
     private Toolbar dialogToolbar;
@@ -96,19 +103,35 @@ public abstract class FFBaseDialogFragment
     /**
      * Constructor.
      *
-     * @param fullscreenLayoutId the layout resource id which offers a full screen
-     *                           dialog-fragment with a CoordinatorLayout/AppBarLayout
-     *                           at the root.
-     * @param contentLayoutId    the layout resource if which can be used to view the same
-     *                           dialog-fragment as a floating dialog; i.e. without
-     *                           the CoordinatorLayout/AppBarLayout.
-     *                           Set this to {@code 0} to force fullscreen usage.
+     * @param fullscreenLayoutId  the layout resource id which offers a full screen
+     *                            dialog-fragment with a CoordinatorLayout/AppBarLayout
+     *                            at the root.
+     * @param contentLayoutId     the layout resource if which can be used to view the same
+     *                            dialog-fragment as a floating dialog; i.e. without
+     *                            the CoordinatorLayout/AppBarLayout.
+     *                            Set this to {@code 0} to <strong>force</strong> fullscreen usage
+     *                            on all screen sizes.
+     * @param useFullscreenWidth  set of WindowSizeClass when to use fullscreen.
+     *                            Ignored when contentLayoutId == 0
+     * @param useFullscreenHeight set of WindowSizeClass when to use fullscreen.
+     *                            Ignored when contentLayoutId == 0
      */
     protected FFBaseDialogFragment(@LayoutRes final int fullscreenLayoutId,
-                                   @LayoutRes final int contentLayoutId) {
+                                   @LayoutRes final int contentLayoutId,
+                                   @NonNull final Set<WindowSizeClass> useFullscreenWidth,
+                                   @NonNull final Set<WindowSizeClass> useFullscreenHeight) {
         this.fullscreenLayoutId = fullscreenLayoutId;
         this.contentLayoutId = contentLayoutId;
         forceFullscreen = contentLayoutId == 0;
+        this.useFullscreenWidth.addAll(useFullscreenWidth);
+        this.useFullscreenHeight.addAll(useFullscreenHeight);
+    }
+
+    protected FFBaseDialogFragment(@LayoutRes final int fullscreenLayoutId,
+                                   @LayoutRes final int contentLayoutId) {
+        this(fullscreenLayoutId, contentLayoutId,
+             EnumSet.of(WindowSizeClass.Compact),
+             EnumSet.of(WindowSizeClass.Compact));
     }
 
     /**
@@ -134,7 +157,9 @@ public abstract class FFBaseDialogFragment
         // Must be here as needed by both onCreateDialog/onCreateView
         //noinspection ConstantConditions
         fullscreen = forceFullscreen
-                     || WindowSizeClass.getWidth(getActivity()) == WindowSizeClass.Compact;
+                     ||
+                     (useFullscreenWidth.contains(WindowSizeClass.getWidth(getActivity()))
+                      && useFullscreenHeight.contains(WindowSizeClass.getHeight(getActivity())));
     }
 
     @Nullable
