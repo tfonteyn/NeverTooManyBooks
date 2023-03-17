@@ -56,7 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
@@ -462,7 +462,7 @@ public class SettingsFragment
         storageVolumePref.setValue(String.valueOf(volume));
         try {
             //noinspection ConstantConditions
-            CoverDir.initVolume(getContext(), volume);
+            CoverVolume.initVolume(getContext(), volume);
             return true;
 
         } catch (@NonNull final StorageException e) {

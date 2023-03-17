@@ -36,6 +36,7 @@ import java.net.CookiePolicy;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.network.NetworkChecker;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.database.CacheDbHelper;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
@@ -122,6 +123,9 @@ public final class ServiceLocator {
 
     @Nullable
     private Languages languages;
+
+    @Nullable
+    private CoverStorage coverStorage;
 
     @Nullable
     private CookieManager cookieManager;
@@ -309,7 +313,23 @@ public final class ServiceLocator {
     }
 
     /**
-     * Get the language cache container.
+     * Get the cover storage helper.
+     *
+     * @return singleton
+     */
+    @NonNull
+    public CoverStorage getCoverStorage() {
+        synchronized (this) {
+            if (coverStorage == null) {
+                coverStorage = new CoverStorage(this::getAppContext,
+                                                this::getCoverCacheDao);
+            }
+        }
+        return coverStorage;
+    }
+
+    /**
+     * Get the title/name reordering helper..
      *
      * @return singleton
      */
@@ -439,7 +459,7 @@ public final class ServiceLocator {
                                           this::getCalibreDao,
                                           this::getStripInfoDao,
                                           this::getFtsDao,
-                                          this::getCoverCacheDao,
+                                          this::getCoverStorage,
                                           this::getReorderHelper);
             }
         }
@@ -633,11 +653,17 @@ public final class ServiceLocator {
         return tocEntryDao;
     }
 
+    /**
+     * You probably want to use {@link #getCoverStorage()} instead.
+     *
+     * @return singleton
+     */
     @NonNull
     public CoverCacheDao getCoverCacheDao() {
         synchronized (this) {
             if (coverCacheDao == null) {
-                coverCacheDao = new CoverCacheDaoImpl(getCacheDb());
+                coverCacheDao = new CoverCacheDaoImpl(getCacheDb(),
+                                                      this::getCoverStorage);
             }
         }
         return coverCacheDao;

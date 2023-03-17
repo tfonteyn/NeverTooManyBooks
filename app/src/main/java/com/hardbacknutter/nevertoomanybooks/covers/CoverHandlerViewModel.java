@@ -32,24 +32,24 @@ import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 public class CoverHandlerViewModel
         extends ViewModel {
 
-    private final TransFormTask transFormTask = new TransFormTask();
+    private final TransformationTask transformationTask = new TransformationTask();
     /** Used to display a tip dialog when the user rotates a camera image. */
     private boolean showTipAboutRotating = true;
 
     @NonNull
-    LiveData<LiveDataEvent<TaskResult<TransFormTask.TransformedData>>> onFinished() {
-        return transFormTask.onFinished();
+    LiveData<LiveDataEvent<TaskResult<TransformationTask.TransformedData>>> onFinished() {
+        return transformationTask.onFinished();
     }
 
     void execute(@NonNull final Transformation transformation,
                  @NonNull final File destFile) {
-        transFormTask.transform(transformation, destFile, CoverHandler.NextAction.Done);
+        transformationTask.transform(transformation, destFile, CoverHandler.NextAction.Done);
     }
 
     void execute(@NonNull final Transformation transformation,
                  @NonNull final File destFile,
                  @NonNull final CoverHandler.NextAction action) {
-        transFormTask.transform(transformation, destFile, action);
+        transformationTask.transform(transformation, destFile, action);
     }
 
     boolean isShowTipAboutRotating() {

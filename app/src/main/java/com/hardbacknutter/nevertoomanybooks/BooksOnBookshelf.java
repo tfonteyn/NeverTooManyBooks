@@ -1638,7 +1638,7 @@ public class BooksOnBookshelf
                                       serviceLocator::getReorderHelper,
                                       serviceLocator::getAuthorDao,
                                       serviceLocator::getLanguages,
-                                      serviceLocator::getCoverCacheDao);
+                                      serviceLocator::getCoverStorage);
         adapter.setOnRowClickListener(this::onRowClicked);
         ShowContextMenu preferredMode = ShowContextMenu.getPreferredMode(this);
         if (preferredMode == ShowContextMenu.ButtonIfSpace && hasEmbeddedDetailsFrame()) {

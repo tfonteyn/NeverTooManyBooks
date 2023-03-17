@@ -294,7 +294,7 @@ public abstract class ArchiveReaderAbstract
 
         final boolean readCovers = recordTypes.contains(RecordType.Cover);
         if (readCovers) {
-            coverReader = new CoverRecordReader(context);
+            coverReader = new CoverRecordReader(ServiceLocator.getInstance()::getCoverStorage);
 
             final Optional<Integer> coverCount = metaData.getCoverCount();
             if (coverCount.isPresent()) {

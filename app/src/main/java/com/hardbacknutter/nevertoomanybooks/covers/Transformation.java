@@ -26,6 +26,8 @@ import android.util.Log;
 import android.view.Surface;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import androidx.exifinterface.media.ExifInterface;
 
 import java.io.File;
@@ -40,26 +42,50 @@ class Transformation {
 
     /** Log tag. */
     private static final String TAG = "Transformation";
-
-    @NonNull
-    private final File srcFile;
-
-    private int maxWidth = ImageUtils.MAX_IMAGE_WIDTH_PX;
-    private int maxHeight = ImageUtils.MAX_IMAGE_HEIGHT_PX;
+    /** By default, covers will always be downsized to maximum 600 x 1000 pixels. */
+    private static final int MAX_IMAGE_WIDTH_PX = 600;
+    private static final int MAX_IMAGE_HEIGHT_PX = 1000;
+    @Nullable
+    private File srcFile;
+    private int maxWidth = MAX_IMAGE_WIDTH_PX;
+    private int maxHeight = MAX_IMAGE_HEIGHT_PX;
     private boolean scale;
+    private boolean rotate;
 
     private int explicitRotation;
     private int surfaceRotation;
 
+    @NonNull
+    private static Optional<Bitmap> rotate(@NonNull final Bitmap bitmap,
+                                           final int angle) {
+        try {
+            final Matrix matrix = new Matrix();
+            matrix.setRotate(angle);
+            final Bitmap rotatedBitmap =
+                    Bitmap.createBitmap(bitmap, 0, 0,
+                                        bitmap.getWidth(), bitmap.getHeight(),
+                                        matrix, true);
+            if (rotatedBitmap != bitmap) {
+                // clean up the old one right now to save memory.
+                bitmap.recycle();
+                return Optional.of(rotatedBitmap);
+            }
+        } catch (@NonNull final OutOfMemoryError e) {
+            // logging is likely to fail if we're out of memory, but let's try at least
+            LoggerFactory.getLogger().e(TAG, e);
+        }
+        return Optional.empty();
+    }
+
     /**
-     * Constructor.
-     * <p>
-     * Sets a single file as source and destination.
+     * Set the source file.
      *
      * @param file to transform; The file will not be modified.
      */
-    Transformation(@NonNull final File file) {
-        srcFile = file;
+    @NonNull
+    public Transformation setFile(@Nullable final File file) {
+        this.srcFile = file;
+        return this;
     }
 
     /**
@@ -78,12 +104,11 @@ class Transformation {
     /**
      * Enable scaling to the given dimensions.
      *
-     * @param width  to use
-     * @param height to use
+     * @param width  Maximum desired width of the image
+     * @param height Maximum desired height of the image
      *
      * @return {@code this} (for chaining)
      */
-    @SuppressWarnings("unused")
     @NonNull
     Transformation setScale(final int width,
                             final int height) {
@@ -103,6 +128,7 @@ class Transformation {
     @NonNull
     Transformation setRotation(final int rotation) {
         explicitRotation = rotation;
+        rotate = true;
         return this;
     }
 
@@ -132,60 +158,41 @@ class Transformation {
                 break;
         }
 
+        rotate = true;
         return this;
     }
 
     /**
      * Process the input file.
      *
-     * @return the transformed bitmap OR the source bitmap
-     * if the transformation fails for any reason.
+     * @return the transformed bitmap
      */
+    @WorkerThread
     @NonNull
     Optional<Bitmap> transform() {
+        if (srcFile == null || !srcFile.exists()) {
+            throw new IllegalArgumentException("No file");
+        }
+
+        final String pathName = srcFile.getAbsolutePath();
+
         // Read either a scaled down version (but NOT exact dimensions),
         // or the original version.
         final Bitmap bitmap;
         if (scale) {
-            bitmap = ImageUtils.decodeFile(srcFile, maxWidth, maxHeight);
+            bitmap = decodeAndScale(pathName);
         } else {
-            bitmap = BitmapFactory.decodeFile(srcFile.getAbsolutePath());
+            bitmap = BitmapFactory.decodeFile(pathName);
         }
 
         if (bitmap != null) {
-            final int angle;
-            if (explicitRotation != 0) {
-                // just use the explicit value, ignore device and source file rotation
-                angle = explicitRotation;
-            } else {
-                // Try to adjust the rotation automatically:
-                final int exifAngle = getExifAngle(srcFile);
-                angle = surfaceRotation - exifAngle;
-
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                    Log.d(TAG, "exif=" + exifAngle
-                               + "|surfaceRotation=" + surfaceRotation
-                               + "|angle=" + angle
-                               + "|(angle % 360)=" + angle % 360);
-                }
-            }
-
-            if (angle != 0) {
-                try {
-                    final Matrix matrix = new Matrix();
-                    matrix.setRotate(angle);
-                    final Bitmap rotatedBitmap =
-                            Bitmap.createBitmap(bitmap, 0, 0,
-                                                bitmap.getWidth(), bitmap.getHeight(),
-                                                matrix, true);
-                    if (rotatedBitmap != bitmap) {
-                        // clean up the old one right now to save memory.
-                        bitmap.recycle();
-                        return Optional.of(rotatedBitmap);
+            if (rotate) {
+                final int angle = determineRotationAngle(pathName);
+                if (angle != 0) {
+                    final Optional<Bitmap> rotatedBitmap = rotate(bitmap, angle);
+                    if (rotatedBitmap.isPresent()) {
+                        return rotatedBitmap;
                     }
-                } catch (@NonNull final OutOfMemoryError e) {
-                    // logging is likely to fail if we're out of memory, but let's try at least
-                    LoggerFactory.getLogger().e(TAG, e);
                 }
             }
             return Optional.of(bitmap);
@@ -194,17 +201,37 @@ class Transformation {
         return Optional.empty();
     }
 
+    private int determineRotationAngle(@NonNull final String pathName) {
+        if (explicitRotation != 0) {
+            // just use the explicit value, ignore device and source file rotation
+            return explicitRotation;
+
+        } else {
+            // Try to adjust the rotation automatically:
+            final int exifAngle = getExifAngle(pathName);
+            final int angle = surfaceRotation - exifAngle;
+
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+                Log.d(TAG, "exif=" + exifAngle
+                           + "|surfaceRotation=" + surfaceRotation
+                           + "|angle=" + angle
+                           + "|(angle % 360)=" + angle % 360);
+            }
+            return angle;
+        }
+    }
+
     /**
      * Get the rotation angle from the EXIF information.
      *
-     * @param file to read
+     * @param pathName complete path name for the file to be decoded.
      *
      * @return angle; or {@code 0} on any failure
      */
-    private int getExifAngle(@NonNull final File file) {
+    private int getExifAngle(@NonNull final String pathName) {
         final ExifInterface exif;
         try {
-            exif = new ExifInterface(file);
+            exif = new ExifInterface(pathName);
         } catch (@NonNull final IOException ignore) {
             return 0;
         }
@@ -232,5 +259,51 @@ class Transformation {
         }
 
         return rotation;
+    }
+
+    /**
+     * <a href="https://developer.android.com/about/versions/pie/android-9.0#decoding-images">
+     *     ENHANCE: Android 9 introduces android.graphics.ImageDecoder</a>
+     * <p>
+     * Decode a file path into a bitmap and scale it to fit the given bounds
+     * while preserving the aspect ratio.
+     * <p>
+     * The image is certain to fill the box, with its exact dimensions
+     * the smallest possible larger than the requested dimensions.
+     * or i.o.w this is NOT an exact scaling!
+     *
+     * @param pathName complete path name for the file to be decoded.
+     *
+     * @return the resulting decoded bitmap, or {@code null} if it could not be decoded.
+     */
+    @Nullable
+    private Bitmap decodeAndScale(@NonNull final String pathName) {
+        // First decode with inJustDecodeBounds=true to check dimensions
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(pathName, options);
+
+        // Abort if no size info, or to small to be any good.
+        if (CoverStorage.isTooSmall(options)) {
+            return null;
+        }
+
+        // Calculate the inSampleSize
+        options.inSampleSize = 1;
+        if (options.outHeight > maxHeight || options.outWidth > maxWidth) {
+            final int halfHeight = options.outHeight / 2;
+            final int halfWidth = options.outWidth / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width LARGER than the requested height and width.
+            while (halfHeight / options.inSampleSize >= maxHeight
+                   && halfWidth / options.inSampleSize >= maxWidth) {
+                options.inSampleSize *= 2;
+            }
+        }
+
+        // Decode bitmap for real
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeFile(pathName, options);
     }
 }

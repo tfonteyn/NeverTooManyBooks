@@ -123,7 +123,8 @@ public class CropImageActivity
 
         // make an educated guess how many pics we can store.
         try {
-            if (FileUtils.getFreeSpace(CoverDir.getDir(this)) / ESTIMATED_PICTURE_SIZE < 1) {
+            final File coverDir = ServiceLocator.getInstance().getCoverStorage().getDir();
+            if (FileUtils.getFreeSpace(coverDir) / ESTIMATED_PICTURE_SIZE < 1) {
                 Snackbar.make(vb.coverImage0, R.string.error_storage_no_space_left,
                               Snackbar.LENGTH_LONG).show();
             }

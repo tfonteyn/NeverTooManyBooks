@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -53,8 +53,8 @@ public enum Size
         }
     };
 
-    public static final Size[] SMALL_FIRST = {Small, Medium, Large};
-    public static final Size[] LARGE_FIRST = {Large, Medium, Small};
+    static final Size[] SMALL_FIRST = {Small, Medium, Large};
+    static final Size[] LARGE_FIRST = {Large, Medium, Small};
 
     @Override
     public int describeContents() {

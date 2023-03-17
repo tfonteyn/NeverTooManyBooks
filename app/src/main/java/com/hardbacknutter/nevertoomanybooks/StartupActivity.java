@@ -36,7 +36,7 @@ import java.lang.ref.WeakReference;
 
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityStartupBinding;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -162,10 +162,10 @@ public class StartupActivity
     }
 
     private void initStorage() {
-        final int storedVolumeIndex = CoverDir.getVolume(this);
+        final int storedVolumeIndex = CoverVolume.getVolume(this);
         final int actualVolumeIndex;
         try {
-            actualVolumeIndex = CoverDir.initVolume(this, storedVolumeIndex);
+            actualVolumeIndex = CoverVolume.initVolume(this, storedVolumeIndex);
 
         } catch (@NonNull final StorageException e) {
             onFailure(e);
@@ -271,7 +271,7 @@ public class StartupActivity
                         }
                         case 1: {
                             // Just set the new location and continue startup
-                            CoverDir.setVolume(this, actualVolumeIndex);
+                            CoverVolume.setVolume(this, actualVolumeIndex);
                             nextStage(Stage.InitStorage);
                             break;
                         }

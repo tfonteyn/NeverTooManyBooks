@@ -41,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
- * The movable external directory for covers.
+ * The movable external volume for covers.
  * <p>
  * <strong>Dev. note:</strong> A device might have two (or seldom? more) external
  * file directories of the same type.
@@ -65,59 +65,12 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
  * </pre>
  * These can mostly be ignored.
  */
-public final class CoverDir {
-
-    /** Sub directory of the Covers directory. */
-    private static final String DIR_TMP = "tmp";
+public final class CoverVolume {
 
     /** Log tag. */
-    private static final String TAG = "CoverDir";
+    private static final String TAG = "CoverVolume";
 
-    private CoverDir() {
-    }
-
-    /**
-     * Get the *permanent* directory where we store covers.
-     *
-     * @param context Current context
-     *
-     * @return directory
-     *
-     * @throws StorageException The covers directory is not available
-     */
-    @NonNull
-    public static File getDir(@NonNull final Context context)
-            throws StorageException {
-
-        final int volume = getVolume(context);
-
-        final File[] externalFilesDirs =
-                context.getExternalFilesDirs(Environment.DIRECTORY_PICTURES);
-
-        if (externalFilesDirs == null
-            || externalFilesDirs.length < volume
-            || externalFilesDirs[volume] == null
-            || !externalFilesDirs[volume].exists()) {
-            throw new CoverStorageException("No volume: " + volume);
-        }
-
-        return externalFilesDirs[volume];
-    }
-
-    /**
-     * Get the *temporary* directory where we store covers.
-     * Currently this is a sub directory of the permanent one to facilitate move==renames.
-     *
-     * @param context Current context
-     *
-     * @return directory
-     *
-     * @throws StorageException The covers directory is not available
-     */
-    @NonNull
-    public static File getTemp(@NonNull final Context context)
-            throws StorageException {
-        return new File(getDir(context), DIR_TMP);
+    private CoverVolume() {
     }
 
 
@@ -167,13 +120,13 @@ public final class CoverDir {
 
         if (BuildConfig.DEBUG /* always */) {
             LoggerFactory.getLogger()
-                          .d(TAG, "initVolume", "volume=" + volume
-                                                + "|actualVolume=" + actualVolume);
+                         .d(TAG, "initVolume", "volume=" + volume
+                                               + "|actualVolume=" + actualVolume);
             dumpStorageInfo(context, storage);
         }
 
         // Make sure we can get the directory, no need to create.
-        final File coverDir = getDir(context);
+        final File coverDir = CoverStorage.getDir(context);
 
         // Prevent thumbnails showing up in the device Image Gallery.
         final File mif = new File(coverDir, MediaStore.MEDIA_IGNORE_FILENAME);
@@ -187,7 +140,7 @@ public final class CoverDir {
         }
 
         // Make sure we can get the directory, and create the sub directory if needed
-        final File tmpDir = new File(coverDir, DIR_TMP);
+        final File tmpDir = new File(coverDir, CoverStorage.DIR_TMP);
         if (!(tmpDir.isDirectory() || tmpDir.mkdirs())) {
             throw new CoverStorageException("No tmp directory");
         }
@@ -195,6 +148,12 @@ public final class CoverDir {
         return actualVolume;
     }
 
+    /**
+     * Set the user preferred volume.
+     *
+     * @param context Current context
+     * @param volume  to set
+     */
     public static void setVolume(@NonNull final Context context,
                                  final int volume) {
         PreferenceManager.getDefaultSharedPreferences(context)
@@ -203,6 +162,13 @@ public final class CoverDir {
                          .apply();
     }
 
+    /**
+     * Get the user preferred volume.
+     *
+     * @param context Current context
+     *
+     * @return the volume
+     */
     public static int getVolume(@NonNull final Context context) {
         return IntListPref.getInt(context, Prefs.pk_storage_volume, 0);
     }

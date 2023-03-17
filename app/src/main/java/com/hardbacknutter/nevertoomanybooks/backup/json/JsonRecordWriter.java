@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferences
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.StyleCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
-import com.hardbacknutter.nevertoomanybooks.covers.Cover;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -161,6 +161,8 @@ public class JsonRecordWriter
 
         final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
         final Style defaultStyle = stylesHelper.getDefault(context);
+
+        final CoverStorage coverStorage = ServiceLocator.getInstance().getCoverStorage();
 
         final ExportResults results = new ExportResults();
         final JSONObject jsonData = new JSONObject();
@@ -276,8 +278,8 @@ public class JsonRecordWriter
                         if (collectCoverFilenames) {
                             for (int cIdx = 0; cIdx < 2; cIdx++) {
                                 final String uuid = book.getString(DBKey.BOOK_UUID);
-                                new Cover(uuid, cIdx).getPersistedFile()
-                                                     .ifPresent(results::addCover);
+                                coverStorage.getPersistedFile(uuid, cIdx)
+                                            .ifPresent(results::addCover);
                             }
                         }
 

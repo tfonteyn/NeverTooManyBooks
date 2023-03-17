@@ -51,13 +51,13 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditPictureContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PickVisualMediaContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.TakePictureContract;
@@ -105,6 +105,8 @@ public class CoverHandler {
     private final CoverHandlerViewModel vm;
     @NonNull
     private final ImageViewLoader imageLoader;
+    @NonNull
+    private final Supplier<CoverStorage> coverStorageSupplier;
     /** The fragment root view; used for context, resources, Snackbar. */
     private View fragmentView;
     private ActivityResultLauncher<String> cameraPermissionLauncher;
@@ -144,6 +146,8 @@ public class CoverHandler {
 
         coverBrowserLauncher = new CoverBrowserDialogFragment
                 .Launcher(RK_COVER_BROWSER + cIdx, this::onFileSelected);
+
+        coverStorageSupplier = ServiceLocator.getInstance()::getCoverStorage;
     }
 
     @NonNull
@@ -354,8 +358,8 @@ public class CoverHandler {
 
         // the temp file we'll return
         // do NOT set BKEY_TMP_FILE_SPEC on the book in this method.
-        final File coverFile = new File(CoverDir.getTemp(fragmentView.getContext()),
-                                        System.nanoTime() + ".jpg");
+        final File tempDir = coverStorageSupplier.get().getTempDir();
+        final File coverFile = new File(tempDir, System.nanoTime() + ".jpg");
 
         // If we have a permanent file, copy it into the temp location
         final Optional<File> uuidFile = book.getCover(cIdx);
@@ -472,7 +476,10 @@ public class CoverHandler {
     private void onEditPictureResult(@NonNull final File file) {
         if (file.exists()) {
             showProgress();
-            vm.execute(new Transformation(file).setScale(true), file);
+            vm.execute(new Transformation()
+                               .setFile(file)
+                               .setScale(true),
+                       file);
             return;
         }
 
@@ -489,10 +496,13 @@ public class CoverHandler {
         final Context context = fragmentView.getContext();
         try (InputStream is = context.getContentResolver().openInputStream(uri)) {
             // copy the data, and retrieve the (potentially) resolved file
-            final File file = ImageUtils.copy(is, getTempFile());
+            final File file = coverStorageSupplier.get().persist(is, getTempFile());
 
             showProgress();
-            vm.execute(new Transformation(file).setScale(true), file);
+            vm.execute(new Transformation()
+                               .setFile(file)
+                               .setScale(true),
+                       file);
 
         } catch (@NonNull final StorageException | IOException e) {
             if (BuildConfig.DEBUG /* always */) {
@@ -560,7 +570,8 @@ public class CoverHandler {
             final NextAction action = NextAction.getAction(context);
 
             showProgress();
-            vm.execute(new Transformation(file)
+            vm.execute(new Transformation()
+                               .setFile(file)
                                .setScale(true)
                                .setSurfaceRotation(surfaceRotation)
                                .setRotation(explicitRotation),
@@ -579,7 +590,10 @@ public class CoverHandler {
         try {
             final File file = createTempCoverFile(bookSupplier.get());
             showProgress();
-            vm.execute(new Transformation(file).setRotation(angle), file);
+            vm.execute(new Transformation()
+                               .setFile(file)
+                               .setRotation(angle),
+                       file);
 
         } catch (@NonNull final StorageException | IOException e) {
             StandardDialogs.showError(context, ExMsg
@@ -588,15 +602,13 @@ public class CoverHandler {
         }
     }
 
-    private void onAfterTransform(@NonNull final TransFormTask.TransformedData result) {
+    private void onAfterTransform(@NonNull final TransformationTask.TransformedData result) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
             Log.d(TAG, "onAfterTransform: " + result);
         }
 
         // The bitmap != null decides if the operation was successful.
         if (null != result.getBitmap()) {
-            // sanity check: if the bitmap was good, the file will be good.
-            Objects.requireNonNull(result.getFile(), "file");
             try {
                 switch (result.getNextAction()) {
                     case Crop:
@@ -638,7 +650,7 @@ public class CoverHandler {
     @NonNull
     private File getTempFile()
             throws StorageException {
-        return new File(CoverDir.getTemp(fragmentView.getContext()), TAG + "_" + cIdx + ".jpg");
+        return new File(coverStorageSupplier.get().getTempDir(), TAG + "_" + cIdx + ".jpg");
     }
 
     /**

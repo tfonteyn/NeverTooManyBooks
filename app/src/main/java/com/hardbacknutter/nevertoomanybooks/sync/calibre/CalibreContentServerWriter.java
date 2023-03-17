@@ -155,7 +155,7 @@ public class CalibreContentServerWriter
 
                 // sanity check, we only update existing books... no books -> skip library.
                 if (library.getTotalBooks() > 0) {
-                    syncLibrary(context, library, dateSince, progressListener);
+                    syncLibrary(library, dateSince, progressListener);
                 }
                 // always set the sync date!
                 library.setLastSyncDate(LocalDateTime.now(ZoneOffset.UTC));
@@ -167,8 +167,7 @@ public class CalibreContentServerWriter
         return results;
     }
 
-    private void syncLibrary(@NonNull final Context context,
-                             @NonNull final CalibreLibrary library,
+    private void syncLibrary(@NonNull final CalibreLibrary library,
                              @Nullable final LocalDateTime dateSince,
                              @NonNull final ProgressListener progressListener)
             throws StorageException, IOException {
@@ -184,7 +183,7 @@ public class CalibreContentServerWriter
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
                 final Book book = Book.from(cursor);
                 try {
-                    syncBook(context, library, book);
+                    syncBook(library, book);
 
                 } catch (@NonNull final HttpNotFoundException e404) {
                     // The book no longer exists on the server.
@@ -212,8 +211,7 @@ public class CalibreContentServerWriter
         }
     }
 
-    private void syncBook(@NonNull final Context context,
-                          @NonNull final CalibreLibrary library,
+    private void syncBook(@NonNull final CalibreLibrary library,
                           @NonNull final Book book)
             throws IOException, StorageException, JSONException {
 
@@ -241,7 +239,7 @@ public class CalibreContentServerWriter
                     dateParser.parse(book.getString(DBKey.DATE_LAST_UPDATED__UTC, null));
             if (localTime != null && localTime.isAfter(remoteTime)) {
                 final JSONObject identifiers = calibreBook.optJSONObject(CalibreBook.IDENTIFIERS);
-                final JSONObject changes = collectChanges(context, library, identifiers, book);
+                final JSONObject changes = collectChanges(library, identifiers, book);
                 server.pushChanges(library.getLibraryStringId(), calibreId, changes);
                 results.addBook(book.getId());
             }
@@ -254,7 +252,6 @@ public class CalibreContentServerWriter
      * Copy the wanted fields from the local {@link Book} into a {@link JSONObject}
      * with field names {@link CalibreBook} as needed by Calibre.
      *
-     * @param context                Current context
      * @param library                the library to which the given books belongs
      * @param calibreBookIdentifiers the <strong>full</strong> list of identifiers for this
      *                               book as <strong>fetched from the Calibre server</strong>
@@ -265,8 +262,7 @@ public class CalibreContentServerWriter
      * @throws IOException on generic/other IO failures
      */
     @NonNull
-    private JSONObject collectChanges(@NonNull final Context context,
-                                      @NonNull final CalibreLibrary library,
+    private JSONObject collectChanges(@NonNull final CalibreLibrary library,
                                       @Nullable final JSONObject calibreBookIdentifiers,
                                       @NonNull final Book localBook)
             throws JSONException, IOException {

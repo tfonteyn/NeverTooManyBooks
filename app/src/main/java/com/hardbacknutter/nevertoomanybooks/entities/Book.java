@@ -53,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
-import com.hardbacknutter.nevertoomanybooks.covers.Cover;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
@@ -1010,7 +1009,7 @@ public class Book
             // Get the permanent, UUID based, cover file for this book.
             final String uuid = getString(DBKey.BOOK_UUID, null);
             if (uuid != null && !uuid.isEmpty()) {
-                return new Cover(uuid, cIdx).getPersistedFile();
+                return ServiceLocator.getInstance().getCoverStorage().getPersistedFile(uuid, cIdx);
             }
         }
         return Optional.empty();
@@ -1112,10 +1111,11 @@ public class Book
                     }
                 } else {
                     // Rename the temp file to the uuid permanent file name
-                    destination = new Cover(uuid, cIdx).persist(file);
+                    destination = ServiceLocator.getInstance().getCoverStorage()
+                                                .persist(uuid, cIdx, file);
                 }
             } else {
-                new Cover(uuid, cIdx).delete();
+                ServiceLocator.getInstance().getCoverStorage().delete(uuid, cIdx);
             }
 
             ServiceLocator.getInstance().getBookDao().touch(this);

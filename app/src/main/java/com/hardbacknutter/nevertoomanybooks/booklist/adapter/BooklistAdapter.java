@@ -54,10 +54,10 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.CoverCacheDao;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
@@ -85,7 +85,7 @@ public class BooklistAdapter
     @NonNull
     private final Supplier<Languages> languagesSupplier;
     @NonNull
-    private final Supplier<CoverCacheDao> coverCacheDaoSupplier;
+    private final Supplier<CoverStorage> coverStorageSupplier;
     @Dimension
     private final int groupRowHeight;
     /** Longest side for a cover in pixels. */
@@ -121,18 +121,18 @@ public class BooklistAdapter
      * @param reorderHelperSupplier deferred supplier for the {@link ReorderHelper}
      * @param authorDaoSupplier     deferred supplier for the {@link AuthorDao}
      * @param languagesSupplier     deferred supplier for the {@link Languages}
-     * @param coverCacheDaoSupplier deferred supplier for the {@link CoverCacheDao}
+     * @param coverStorageSupplier  deferred supplier for the {@link CoverStorage}
      */
     public BooklistAdapter(@NonNull final Context context,
                            @NonNull final Style style,
                            @NonNull final Supplier<ReorderHelper> reorderHelperSupplier,
                            @NonNull final Supplier<AuthorDao> authorDaoSupplier,
                            @NonNull final Supplier<Languages> languagesSupplier,
-                           @NonNull final Supplier<CoverCacheDao> coverCacheDaoSupplier) {
+                           @NonNull final Supplier<CoverStorage> coverStorageSupplier) {
         this.inflater = LayoutInflater.from(context);
         this.style = style;
         this.languagesSupplier = languagesSupplier;
-        this.coverCacheDaoSupplier = coverCacheDaoSupplier;
+        this.coverStorageSupplier = coverStorageSupplier;
 
         final List<Locale> locales = LocaleListUtils.asList(context);
         realNumberParser = new RealNumberParser(locales);
@@ -337,7 +337,7 @@ public class BooklistAdapter
             case BooklistGroup.BOOK:
                 holder = new BookHolder(itemView, style,
                                         languagesSupplier,
-                                        coverCacheDaoSupplier,
+                                        coverStorageSupplier,
                                         realNumberParser,
                                         coverLongestSide);
                 break;

@@ -56,18 +56,15 @@ import com.hardbacknutter.nevertoomanybooks.core.database.TypedCursor;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
-import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.covers.Cover;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.CoverCacheDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
@@ -145,7 +142,7 @@ public class BookDaoImpl
     @NonNull
     private final Supplier<FtsDao> ftsDaoSupplier;
     @NonNull
-    private final Supplier<CoverCacheDao> coverCacheDaoSupplier;
+    private final Supplier<CoverStorage> coverStorageSupplier;
     @NonNull
     private final Supplier<ReorderHelper> reorderHelperSupplier;
 
@@ -163,7 +160,7 @@ public class BookDaoImpl
      * @param calibreDaoSupplier    deferred supplier for the {@link CalibreDao}
      * @param stripInfoDaoSupplier  deferred supplier for the {@link StripInfoDao}
      * @param ftsDaoSupplier        deferred supplier for the {@link FtsDao}
-     * @param coverCacheDaoSupplier deferred supplier for the {@link CoverCacheDao}
+     * @param coverStorageSupplier  deferred supplier for the {@link CoverStorage}
      * @param reorderHelperSupplier deferred supplier for the {@link ReorderHelper}
      */
     public BookDaoImpl(@NonNull final SynchronizedDb db,
@@ -177,7 +174,7 @@ public class BookDaoImpl
                        @NonNull final Supplier<CalibreDao> calibreDaoSupplier,
                        @NonNull final Supplier<StripInfoDao> stripInfoDaoSupplier,
                        @NonNull final Supplier<FtsDao> ftsDaoSupplier,
-                       @NonNull final Supplier<CoverCacheDao> coverCacheDaoSupplier,
+                       @NonNull final Supplier<CoverStorage> coverStorageSupplier,
                        @NonNull final Supplier<ReorderHelper> reorderHelperSupplier) {
         super(db, TAG);
         dateParser = new ISODateParser(systemLocale);
@@ -190,7 +187,7 @@ public class BookDaoImpl
         this.calibreDaoSupplier = calibreDaoSupplier;
         this.stripInfoDaoSupplier = stripInfoDaoSupplier;
         this.ftsDaoSupplier = ftsDaoSupplier;
-        this.coverCacheDaoSupplier = coverCacheDaoSupplier;
+        this.coverStorageSupplier = coverStorageSupplier;
         this.reorderHelperSupplier = reorderHelperSupplier;
     }
 
@@ -247,8 +244,10 @@ public class BookDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            final BookDaoHelper bookDaoHelper =
-                    new BookDaoHelper(context, reorderHelperSupplier, book, true);
+            final BookDaoHelper bookDaoHelper = new BookDaoHelper(context,
+                                                                  coverStorageSupplier,
+                                                                  reorderHelperSupplier,
+                                                                  book, true);
             final ContentValues cv = bookDaoHelper
                     .process(context)
                     .filterValues(db.getTableInfo(TBL_BOOKS));
@@ -349,8 +348,10 @@ public class BookDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            final BookDaoHelper bookDaoHelper =
-                    new BookDaoHelper(context, reorderHelperSupplier, book, false);
+            final BookDaoHelper bookDaoHelper = new BookDaoHelper(context,
+                                                                  coverStorageSupplier,
+                                                                  reorderHelperSupplier,
+                                                                  book, false);
             final ContentValues cv = bookDaoHelper
                     .process(context)
                     .filterValues(db.getTableInfo(TBL_BOOKS));
@@ -451,14 +452,8 @@ public class BookDaoImpl
             if (rowsAffected > 0) {
                 // sanity check
                 if (!uuid.isEmpty()) {
-                    // Delete the covers from the file system.
                     for (int cIdx = 0; cIdx < 2; cIdx++) {
-                        new Cover(uuid, cIdx).getPersistedFile().ifPresent(FileUtils::delete);
-                    }
-                    // and from the cache. If the user flipped the cache on/off we'll
-                    // not always be cleaning up correctly. It's not that important though.
-                    if (ImageUtils.isImageCachingEnabled()) {
-                        coverCacheDaoSupplier.get().delete(uuid);
+                        coverStorageSupplier.get().delete(uuid, cIdx);
                     }
                 }
             }

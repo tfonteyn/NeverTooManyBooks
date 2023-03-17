@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 
 import androidx.annotation.AnyThread;
@@ -54,7 +53,6 @@ public interface CoverCacheDao {
     /**
      * Get a cached image.
      *
-     * @param context Current context
      * @param uuid    UUID of the book
      * @param cIdx    0..n image index
      * @param width   desired/maximum width
@@ -64,8 +62,7 @@ public interface CoverCacheDao {
      */
     @Nullable
     @AnyThread
-    Bitmap getCover(@NonNull Context context,
-                    @NonNull String uuid,
+    Bitmap getCover(@NonNull String uuid,
                     @IntRange(from = 0, to = 1) int cIdx,
                     int width,
                     int height);

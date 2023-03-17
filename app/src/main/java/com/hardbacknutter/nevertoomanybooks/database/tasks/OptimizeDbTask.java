@@ -25,12 +25,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
+import java.io.File;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskFileUtils;
 
@@ -65,17 +66,15 @@ public class OptimizeDbTask
     @WorkerThread
     protected Boolean doWork()
             throws StorageException {
-        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
-
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        final Context context = serviceLocator.getLocalizedAppContext();
 
         publishProgress(1, context.getString(R.string.progress_msg_optimizing));
 
         // Cleanup temp files. Out of precaution we only trash jpg files
-        TaskFileUtils.deleteDirectory(CoverDir.getTemp(context),
-                                      file -> file.getName().endsWith(".jpg"),
+        final File tempDir = serviceLocator.getCoverStorage().getTempDir();
+        TaskFileUtils.deleteDirectory(tempDir, file -> file.getName().endsWith(".jpg"),
                                       this);
-
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
         serviceLocator.getDb().optimize();
         serviceLocator.getCacheDb().optimize();

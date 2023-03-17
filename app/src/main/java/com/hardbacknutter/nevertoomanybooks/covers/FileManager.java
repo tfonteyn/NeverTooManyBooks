@@ -48,7 +48,10 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
- * Handles downloading, checking and cleanup of files.
+ * Given an ISBN, this class uses the list of {@link SearchEngine}s to
+ * find a matching book and download cover images as needed.
+ * Downloaded images are checked for suitability.
+ * Unused downloads are cleaned up.
  */
 public class FileManager {
 

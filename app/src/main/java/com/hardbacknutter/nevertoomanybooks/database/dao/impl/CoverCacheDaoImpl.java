@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
@@ -40,13 +39,13 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
-import com.hardbacknutter.nevertoomanybooks.covers.Cover;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.database.CacheDbHelper;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CoverCacheDao;
 
@@ -96,14 +95,19 @@ public class CoverCacheDaoImpl
 
     @NonNull
     private final SynchronizedDb db;
+    @NonNull
+    private final Supplier<CoverStorage> coverStorageSupplier;
 
     /**
      * Constructor.
      *
-     * @param db Underlying database
+     * @param db                   Underlying database
+     * @param coverStorageSupplier deferred supplier for the {@link CoverStorage}
      */
-    public CoverCacheDaoImpl(@NonNull final SynchronizedDb db) {
+    public CoverCacheDaoImpl(@NonNull final SynchronizedDb db,
+                             @NonNull final Supplier<CoverStorage> coverStorageSupplier) {
         this.db = db;
+        this.coverStorageSupplier = coverStorageSupplier;
     }
 
     /**
@@ -165,15 +169,14 @@ public class CoverCacheDaoImpl
     @Override
     @Nullable
     @AnyThread
-    public Bitmap getCover(@NonNull final Context context,
-                           @NonNull final String uuid,
+    public Bitmap getCover(@NonNull final String uuid,
                            @IntRange(from = 0, to = 1) final int cIdx,
                            final int maxWidth,
                            final int maxHeight) {
         try {
-            final long lm = new Cover(uuid, cIdx).getPersistedFile()
-                                                 .map(File::lastModified)
-                                                 .orElse(0L);
+            final long lm = coverStorageSupplier.get().getPersistedFile(uuid, cIdx)
+                                                .map(File::lastModified)
+                                                .orElse(0L);
             if (lm > 0) {
                 final String fileLastModified =
                         Instant.ofEpochMilli(lm)
@@ -264,7 +267,7 @@ public class CoverCacheDaoImpl
                 LoggerFactory.getLogger().e(TAG, e);
                 // and disable the cache
                 // We don't bother cancelling any pending tasks... oh well...
-                ImageUtils.setImageCachingEnabled(false);
+                coverStorageSupplier.get().setImageCachingEnabled(false);
                 //FIXME: we should let the user know....
             }
 

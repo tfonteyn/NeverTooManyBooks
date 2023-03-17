@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,6 +34,7 @@ import androidx.annotation.UiThread;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.util.Optional;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
@@ -61,7 +62,15 @@ public class ImageViewLoader {
     private final ImageView.ScaleType scaleType;
 
     private final boolean enforceMaxSize;
+    private final Transformation scalableImageDecoder;
 
+    /**
+     * Constructor.
+     *
+     * @param executor to use
+     * @param width    Desired width of the image
+     * @param height   Desired height of the image
+     */
     @UiThread
     public ImageViewLoader(@NonNull final Executor executor,
                            @Px final int width,
@@ -93,6 +102,9 @@ public class ImageViewLoader {
         this.width = width;
         this.height = height;
         this.enforceMaxSize = enforceMaxSize;
+
+        scalableImageDecoder = new Transformation()
+                .setScale(this.width, this.height);
     }
 
     /**
@@ -181,7 +193,7 @@ public class ImageViewLoader {
             Thread.currentThread().setName(TAG);
             Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
             // do the actual background work.
-            final Bitmap bitmap = ImageUtils.decodeFile(file, width, height);
+            final Optional<Bitmap> oBitmap = scalableImageDecoder.setFile(file).transform();
 
             // all done; back to the UI thread.
             handler.post(() -> {
@@ -190,10 +202,10 @@ public class ImageViewLoader {
                 if (view != null && this.equals(view.getTag(R.id.TAG_THUMBNAIL_TASK))) {
                     // clear the association
                     view.setTag(R.id.TAG_THUMBNAIL_TASK, null);
-                    if (bitmap != null) {
-                        fromBitmap(view, bitmap);
+                    if (oBitmap.isPresent()) {
+                        fromBitmap(view, oBitmap.get());
                         if (onSuccess != null) {
-                            onSuccess.accept(bitmap);
+                            onSuccess.accept(oBitmap.get());
                         }
                     } else {
                         // We only get here if we THOUGHT we had an image, but we failed to

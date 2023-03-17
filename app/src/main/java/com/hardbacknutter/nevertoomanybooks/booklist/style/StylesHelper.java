@@ -62,7 +62,7 @@ public class StylesHelper {
     /**
      * Constructor.
      *
-     * @param styleDaoSupplier deferred supplier for the {@link StyleDao}.
+     * @param styleDaoSupplier deferred supplier for the {@link StyleDao}
      */
     public StylesHelper(@NonNull final Supplier<StyleDao> styleDaoSupplier) {
         this.styleDaoSupplier = styleDaoSupplier;

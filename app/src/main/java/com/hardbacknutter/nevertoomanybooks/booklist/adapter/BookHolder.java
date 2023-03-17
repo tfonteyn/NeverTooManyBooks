@@ -47,11 +47,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
-import com.hardbacknutter.nevertoomanybooks.covers.Cover;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dao.CoverCacheDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfRowBookBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -92,7 +90,8 @@ public class BookHolder
     @NonNull
     private final Supplier<Languages> languagesSupplier;
     @NonNull
-    private final Supplier<CoverCacheDao> coverCacheDaoSupplier;
+    private final Supplier<CoverStorage> coverStorageSupplier;
+    @NonNull
     private final RealNumberParser realNumberParser;
     /** Only active when running in debug mode; displays the "position/rowId" for a book. */
     @Nullable
@@ -109,29 +108,29 @@ public class BookHolder
      * <strong>Note:</strong> the itemView can be re-used.
      * Hence make sure to explicitly set visibility.
      *
-     * @param itemView              the view specific for this holder
-     * @param style                 to use
-     * @param languagesSupplier     deferred supplier for the {@link Languages}
-     * @param coverCacheDaoSupplier deferred supplier for the {@link CoverCacheDao}
-     * @param realNumberParser      the shared parser
-     * @param coverLongestSide      Longest side for a cover in pixels
+     * @param itemView             the view specific for this holder
+     * @param style                to use
+     * @param languagesSupplier    deferred supplier for the {@link Languages}
+     * @param coverStorageSupplier deferred supplier for the {@link CoverStorage}
+     * @param realNumberParser     the shared parser
+     * @param coverLongestSide     Longest side for a cover in pixels
      */
     BookHolder(@NonNull final View itemView,
                @NonNull final Style style,
                @NonNull final Supplier<Languages> languagesSupplier,
-               @NonNull final Supplier<CoverCacheDao> coverCacheDaoSupplier,
+               @NonNull final Supplier<CoverStorage> coverStorageSupplier,
                @NonNull final RealNumberParser realNumberParser,
                @Dimension final int coverLongestSide) {
         super(itemView);
         this.style = style;
         this.languagesSupplier = languagesSupplier;
-        this.coverCacheDaoSupplier = coverCacheDaoSupplier;
+        this.coverStorageSupplier = coverStorageSupplier;
         this.realNumberParser = realNumberParser;
         this.coverLongestSide = coverLongestSide;
 
         final Context context = itemView.getContext();
 
-        imageCachingEnabled = ImageUtils.isImageCachingEnabled();
+        imageCachingEnabled = this.coverStorageSupplier.get().isImageCachingEnabled();
 
         final Resources res = context.getResources();
         conditionDescriptions = res.getStringArray(R.array.conditions_book);
@@ -183,7 +182,7 @@ public class BookHolder
      */
     private void onZoomCover(@NonNull final View coverView) {
         final String uuid = (String) coverView.getTag(R.id.TAG_THUMBNAIL_UUID);
-        new Cover(uuid, 0).getPersistedFile().ifPresent(file -> {
+        coverStorageSupplier.get().getPersistedFile(uuid, 0).ifPresent(file -> {
             final FragmentActivity activity = (FragmentActivity) coverView.getContext();
             ZoomedImageDialogFragment.launch(activity.getSupportFragmentManager(), file);
         });
@@ -414,25 +413,20 @@ public class BookHolder
         // store the uuid for use in the OnClickListener
         vb.coverImage0.setTag(R.id.TAG_THUMBNAIL_UUID, uuid);
 
-        final Context context = vb.coverImage0.getContext();
-
-        // 1. If caching is used, and we don't have cache building happening, check it.
+        // 1. If caching is used, check it.
         if (imageCachingEnabled) {
-            final CoverCacheDao coverCacheDao = coverCacheDaoSupplier.get();
-            if (!coverCacheDao.isBusy()) {
-                final Bitmap bitmap = coverCacheDao.getCover(context, uuid, 0,
-                                                             coverLongestSide, coverLongestSide);
-
-                if (bitmap != null) {
-                    //noinspection ConstantConditions
-                    imageLoader.fromBitmap(vb.coverImage0, bitmap);
-                    return;
-                }
+            final Bitmap bitmap = coverStorageSupplier.get().getCachedBitmap(uuid, 0,
+                                                                             coverLongestSide,
+                                                                             coverLongestSide);
+            if (bitmap != null) {
+                //noinspection ConstantConditions
+                imageLoader.fromBitmap(vb.coverImage0, bitmap);
+                return;
             }
         }
 
         // 2. Cache did not have it, or we were not allowed to check.
-        final Optional<File> file = new Cover(uuid, 0).getPersistedFile();
+        final Optional<File> file = coverStorageSupplier.get().getPersistedFile(uuid, 0);
         // Check if the file exists; if it does not...
         if (file.isEmpty()) {
             // leave the space blank, but preserve the width BASED on the coverLongestSide!
@@ -451,7 +445,7 @@ public class BookHolder
             //noinspection ConstantConditions
             imageLoader.fromFile(vb.coverImage0, file.get(), bitmap -> {
                 if (bitmap != null) {
-                    coverCacheDaoSupplier.get().saveCover(
+                    coverStorageSupplier.get().saveToCache(
                             uuid, 0, bitmap, coverLongestSide, coverLongestSide);
                 }
             });

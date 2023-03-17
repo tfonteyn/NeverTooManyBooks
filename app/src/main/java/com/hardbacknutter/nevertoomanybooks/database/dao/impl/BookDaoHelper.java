@@ -47,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
-import com.hardbacknutter.nevertoomanybooks.covers.Cover;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -74,6 +74,8 @@ public class BookDaoHelper {
     private static final Pattern T = Pattern.compile("T");
 
     @NonNull
+    private final Supplier<CoverStorage> coverStorageSupplier;
+    @NonNull
     private final Supplier<ReorderHelper> reorderHelperSupplier;
     @NonNull
     private final Book book;
@@ -88,12 +90,17 @@ public class BookDaoHelper {
      * Constructor.
      *
      * @param context               Current context
-     * @param reorderHelperSupplier deferred supplier for the {@link ReorderHelper}.
+     * @param coverStorageSupplier  deferred supplier for the {@link CoverStorage}
+     * @param reorderHelperSupplier deferred supplier for the {@link ReorderHelper}
+     * @param book                  to process
+     * @param isNew                 flag; whether the book is entirely 'new' or it's an update
      */
     public BookDaoHelper(@NonNull final Context context,
+                         @NonNull final Supplier<CoverStorage> coverStorageSupplier,
                          @NonNull final Supplier<ReorderHelper> reorderHelperSupplier,
                          @NonNull final Book book,
                          final boolean isNew) {
+        this.coverStorageSupplier = coverStorageSupplier;
         this.reorderHelperSupplier = reorderHelperSupplier;
         this.book = book;
         this.isNew = isNew;
@@ -141,7 +148,7 @@ public class BookDaoHelper {
         }
 
         // cleanup/build all price related fields
-        DBKey.MONEY_KEYS.forEach(key -> processPrice(context, key));
+        DBKey.MONEY_KEYS.forEach(this::processPrice);
 
         // replace 'T' by ' ' and truncate pure date fields if needed
         processDates();
@@ -158,12 +165,10 @@ public class BookDaoHelper {
     /**
      * Helper for {@link #process(Context)}.
      *
-     * @param context Current context
-     * @param key     key for the money (value) field
+     * @param key key for the money (value) field
      */
     @VisibleForTesting
-    public void processPrice(@NonNull final Context context,
-                             @NonNull final String key) {
+    public void processPrice(@NonNull final String key) {
         try {
             final String currencyKey = key + DBKey.CURRENCY_SUFFIX;
             if (book.contains(key) && !book.contains(currencyKey)) {
@@ -499,13 +504,12 @@ public class BookDaoHelper {
                                     "BKEY_TMP_FILE_SPEC[" + cIdx + "]=`" + fileSpec + '`');
                 }
 
-                final Cover cover = new Cover(uuid, cIdx);
                 if (fileSpec.isEmpty()) {
                     // An empty fileSpec indicates we need to delete the cover
-                    cover.delete();
+                    coverStorageSupplier.get().delete(uuid, cIdx);
                 } else {
                     // Rename the temp file to the uuid permanent file name
-                    cover.persist(new File(fileSpec));
+                    coverStorageSupplier.get().persist(uuid, cIdx, new File(fileSpec));
                 }
 
                 book.remove(Book.BKEY_TMP_FILE_SPEC[cIdx]);

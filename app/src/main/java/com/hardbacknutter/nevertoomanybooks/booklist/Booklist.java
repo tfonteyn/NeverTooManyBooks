@@ -41,12 +41,13 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
-import com.hardbacknutter.nevertoomanybooks.covers.Cover;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
@@ -643,6 +644,8 @@ public class Booklist
                     + _AND_ + listTable.dot(DBKey.PK_ID) + ">?";
         }
 
+        final CoverStorage coverStorage = ServiceLocator.getInstance().getCoverStorage();
+
         try (Cursor cursor = db.rawQuery(sqlGetNextBookWithoutCover, new String[]{
                 String.valueOf(BooklistGroup.BOOK),
                 String.valueOf(rowId)})) {
@@ -652,7 +655,7 @@ public class Booklist
             while (cursor.moveToNext()) {
                 final BooklistNode node = new BooklistNode(cursor);
                 final String uuid = cursor.getString(BooklistNode.NEXT_COL);
-                final Optional<File> file = new Cover(uuid, 0).getPersistedFile();
+                final Optional<File> file = coverStorage.getPersistedFile(uuid, 0);
                 if (file.isEmpty()) {
                     // FIRST make the node visible
                     ensureNodeIsVisible(node);

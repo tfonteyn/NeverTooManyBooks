@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNodeDao;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentMaintenanceBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.SqliteShellFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceAlertDialogBuilder;
@@ -294,23 +294,23 @@ public class MaintenanceFragment
 
     private long count(@Nullable final FileFilter coverFilter)
             throws StorageException {
-        final Context context = getContext();
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        //noinspection ConstantConditions
+        final CoverStorage coverStorage = serviceLocator.getCoverStorage();
+
         return FileUtils.getUsedSpace(LoggerFactory.getLogger().getLogDir(), null)
                + FileUtils.getUsedSpace(serviceLocator.getUpgradesDir(), null)
-               + FileUtils.getUsedSpace(CoverDir.getTemp(context), null)
-               + FileUtils.getUsedSpace(CoverDir.getDir(context), coverFilter);
+               + FileUtils.getUsedSpace(coverStorage.getTempDir(), null)
+               + FileUtils.getUsedSpace(coverStorage.getDir(), coverFilter);
     }
 
     private long delete(@Nullable final FileFilter coverFilter)
             throws StorageException {
-        final Context context = getContext();
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        //noinspection ConstantConditions
+        final CoverStorage coverStorage = serviceLocator.getCoverStorage();
+
         return FileUtils.deleteDirectory(LoggerFactory.getLogger().getLogDir(), null)
                + FileUtils.deleteDirectory(serviceLocator.getUpgradesDir(), null)
-               + FileUtils.deleteDirectory(CoverDir.getTemp(context), null)
-               + FileUtils.deleteDirectory(CoverDir.getDir(context), coverFilter);
+               + FileUtils.deleteDirectory(coverStorage.getTempDir(), null)
+               + FileUtils.deleteDirectory(coverStorage.getDir(), coverFilter);
     }
 }

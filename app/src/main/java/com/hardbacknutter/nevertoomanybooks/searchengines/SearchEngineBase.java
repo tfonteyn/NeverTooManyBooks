@@ -43,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -80,7 +79,8 @@ public abstract class SearchEngineBase
         // only stored to use for preference etc lookups.
         this.appContext = appContext;
         this.config = config;
-        imageDownloader = new ImageDownloader(createFutureGetRequest());
+        imageDownloader = new ImageDownloader(createFutureGetRequest(),
+                                              ServiceLocator.getInstance()::getCoverStorage);
     }
 
     /**
@@ -232,7 +232,9 @@ public abstract class SearchEngineBase
 
     /**
      * Convenience method which uses the engines specific network configuration
-     * to create a suitable {@link FutureHttpGet}.
+     * to create a suitable {@link FutureHttpGet#createGet(int)}.
+     *
+     * @param <T> return type
      *
      * @return new {@link FutureHttpGet} instance
      */
@@ -247,6 +249,14 @@ public abstract class SearchEngineBase
         return httpGet;
     }
 
+    /**
+     * Convenience method which uses the engines specific network configuration
+     * to create a suitable {@link FutureHttpGet#createHead(int)}.
+     *
+     * @param <T> return type
+     *
+     * @return new {@link FutureHttpGet} instance
+     */
     @SuppressWarnings("WeakerAccess")
     @NonNull
     public <T> FutureHttpGet<T> createFutureHeadRequest() {
@@ -279,10 +289,10 @@ public abstract class SearchEngineBase
                             @Nullable final Size size)
             throws StorageException {
 
-        final File tmpFile = imageDownloader.getTempFile(CoverDir.getTemp(appContext),
-                                                         getEngineId().getPreferenceKey(),
-                                                         bookId, cIdx, size);
-        return imageDownloader.fetch(url, tmpFile)
+        final String tempFilename = ImageDownloader.getTempFilename(
+                getEngineId().getPreferenceKey(), bookId, cIdx, size);
+
+        return imageDownloader.fetch(url, tempFilename)
                               .map(File::getAbsolutePath)
                               .orElse(null);
     }

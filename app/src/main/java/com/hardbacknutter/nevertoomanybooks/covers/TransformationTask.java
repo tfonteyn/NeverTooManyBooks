@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.covers;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 
@@ -28,11 +27,13 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 
 /**
@@ -47,17 +48,17 @@ import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
  * <p>
  * The transformation is done "in-place", i.e the srcFile is overwritten with the result.
  */
-public class TransFormTask
-        extends MTask<TransFormTask.TransformedData> {
+public class TransformationTask
+        extends MTask<TransformationTask.TransformedData> {
 
     /** Log tag. */
-    private static final String TAG = "TransFormTask";
+    private static final String TAG = "TransformationTask";
 
     private Transformation transformation;
     private File destFile;
     private CoverHandler.NextAction nextAction;
 
-    TransFormTask() {
+    TransformationTask() {
         super(R.id.TASK_ID_IMAGE_TRANSFORMATION, TAG);
     }
 
@@ -74,14 +75,13 @@ public class TransFormTask
     @Override
     @WorkerThread
     protected TransformedData doWork() {
-        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
-
         if (transformation.transform().isPresent()) {
             try {
-                final Bitmap bitmap =
-                        ImageUtils.writeFile(transformation.transform().get(), destFile);
-                if (bitmap != null) {
-                    return new TransformedData(bitmap, destFile, nextAction);
+                final Bitmap bitmap = transformation.transform().get();
+                try (OutputStream os = new FileOutputStream(destFile.getAbsoluteFile())) {
+                    if (bitmap.compress(Bitmap.CompressFormat.PNG, 100, os)) {
+                        return new TransformedData(bitmap, destFile, nextAction);
+                    }
                 }
             } catch (@NonNull final IOException e) {
                 if (BuildConfig.DEBUG /* always */) {
@@ -90,7 +90,7 @@ public class TransFormTask
             }
         }
 
-        return new TransformedData(null, destFile, nextAction);
+        return new TransformedData(null, null, nextAction);
     }
 
     /**
@@ -100,7 +100,7 @@ public class TransFormTask
 
         @Nullable
         private final Bitmap bitmap;
-        @NonNull
+        @Nullable
         private final File file;
         @NonNull
         private final CoverHandler.NextAction nextAction;
@@ -109,12 +109,11 @@ public class TransFormTask
          * Constructor.
          *
          * @param bitmap resulting bitmap; or {@code null} on failure
-         * @param file   If the bitmap is set, the transformed file.
-         *               If the bitmap is {@code null}, the file value MUST BE IGNORED.
+         * @param file   If the bitmap is set, the transformed file
          * @param action what to do with the result.
          */
         TransformedData(@Nullable final Bitmap bitmap,
-                        @NonNull final File file,
+                        @Nullable final File file,
                         @NonNull final CoverHandler.NextAction action) {
             this.bitmap = bitmap;
             this.file = file;
@@ -128,7 +127,7 @@ public class TransFormTask
 
         @NonNull
         File getFile() {
-            return file;
+            return Objects.requireNonNull(file, "file");
         }
 
         @NonNull
@@ -141,7 +140,7 @@ public class TransFormTask
         public String toString() {
             return "TransformedData{"
                    + "bitmap=" + (bitmap != null)
-                   + ", file=" + file.getAbsolutePath()
+                   + ", file=" + (file == null ? null : file.getAbsolutePath())
                    + ", nextAction=" + nextAction
                    + '}';
         }

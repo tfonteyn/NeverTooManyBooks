@@ -46,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
@@ -368,7 +367,7 @@ public abstract class ArchiveWriterAbstract
         int delta = 0;
         long lastUpdate = 0;
 
-        final File coverDir = CoverDir.getDir(context);
+        final File coverDir = ServiceLocator.getInstance().getCoverStorage().getDir();
 
         final String coverStr = context.getString(R.string.lbl_covers);
         for (final String filename : results.getCoverFileNames()) {
