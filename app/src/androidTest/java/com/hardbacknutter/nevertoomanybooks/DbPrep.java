@@ -36,7 +36,6 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
@@ -62,19 +61,18 @@ public class DbPrep {
     /**
      * Copy a file from the raw test resources to the temp picture directory.
      *
-     * @param context
-     * @param cIdx    0..n image index
+     * @param cIdx 0..n image index
      *
      * @return the created file
      *
      * @throws IOException on generic/other IO failures
      */
     @NonNull
-    public File getFile(@NonNull final Context context,
-                        final int cIdx)
+    public File getFile(final int cIdx)
             throws StorageException, IOException {
 
-        final File file = new File(CoverDir.getTemp(context), COVER[cIdx]);
+        final File tempDir = ServiceLocator.getInstance().getCoverStorage().getTempDir();
+        final File file = new File(tempDir, COVER[cIdx]);
         final int resId = coverResId[cIdx];
 
         final Context ic = InstrumentationRegistry.getInstrumentation().getContext();
