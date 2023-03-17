@@ -30,11 +30,11 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import javax.xml.parsers.ParserConfigurationException;
 
 import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.ContextMock;
@@ -43,7 +43,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
+import com.hardbacknutter.nevertoomanybooks.database.dao.CoverCacheDao;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryThingSearchEngine;
@@ -60,7 +62,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.mockito.stubbing.Answer;
-import org.xml.sax.SAXException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -93,12 +94,16 @@ public class Base {
     @Mock
     protected Languages languages;
     @Mock
-    private StylesHelper stylesHelper;
-    private SharedPreferences mockPreferences;
-    @Mock
     protected AppLocale appLocale;
     @Mock
     protected ReorderHelper reorderHelper;
+    @Mock
+    protected CoverStorage coverStorage;
+    @Mock
+    protected CoverCacheDao coverCacheDao;
+    @Mock
+    private StylesHelper stylesHelper;
+    private SharedPreferences mockPreferences;
     @Mock
     private LocaleList localeList;
     private Locale jdkLocale;
@@ -132,7 +137,7 @@ public class Base {
     @BeforeEach
     @CallSuper
     public void setup()
-            throws ParserConfigurationException, SAXException {
+            throws Exception {
         // save the JDK locale first
         jdkLocale = Locale.getDefault();
 
@@ -178,6 +183,13 @@ public class Base {
         when(languages.getISO3FromDisplayName(any(Context.class), any(Locale.class),
                                               eq("English"))).thenReturn("eng");
 
+        when(coverStorage.getDir()).thenReturn(getTmpDir());
+        when(coverStorage.getTempDir()).thenReturn(getTmpDir());
+        when(coverStorage.isAcceptableSize(any(File.class))).thenReturn(true);
+
+        doAnswer(invocation -> invocation.getArgument(1))
+                .when(coverStorage).persist(any(InputStream.class), any(File.class));
+
         // reminder: don't use thenReturn(BundleMock.create())
         // nor b= BundleMock.create();  and ...thenReturn(b)
         // -> that will cause:
@@ -193,6 +205,9 @@ public class Base {
         when(serviceLocator.getLanguages()).thenReturn(languages);
         when(serviceLocator.getAppLocale()).thenReturn(appLocale);
         when(serviceLocator.getReorderHelper()).thenReturn(reorderHelper);
+
+        when(serviceLocator.getCoverStorage()).thenReturn(coverStorage);
+        when(serviceLocator.getCoverCacheDao()).thenReturn(coverCacheDao);
 
         // See class docs.
         ImageDownloader.IGNORE_RENAME_FAILURE = true;

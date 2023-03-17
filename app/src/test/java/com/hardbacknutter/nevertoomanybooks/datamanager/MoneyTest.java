@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.datamanager;
 
 import java.math.BigDecimal;
-import javax.xml.parsers.ParserConfigurationException;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks.MoneyVerifier;
@@ -33,7 +32,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.xml.sax.SAXException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -51,7 +49,7 @@ public class MoneyTest
     @BeforeEach
     @Override
     public void setup()
-            throws ParserConfigurationException, SAXException {
+            throws Exception {
         super.setup();
         dataManager = new DataManager(BundleMock.create());
 

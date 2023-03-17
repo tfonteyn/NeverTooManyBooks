@@ -52,7 +52,7 @@ class IsfdbXmlPublicationTest
 
     @BeforeEach
     public void setup()
-            throws ParserConfigurationException, SAXException {
+            throws Exception {
         super.setup();
         searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));

@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.lastdodo;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import javax.xml.parsers.ParserConfigurationException;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
@@ -40,7 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.xml.sax.SAXException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -57,7 +55,7 @@ class LastDodoTest
 
     @BeforeEach
     public void setup()
-            throws ParserConfigurationException, SAXException {
+            throws Exception {
         super.setup();
         book = new Book(BundleMock.create());
         searchEngine = (LastDodoSearchEngine) EngineId.LastDodoNl.createSearchEngine(context);

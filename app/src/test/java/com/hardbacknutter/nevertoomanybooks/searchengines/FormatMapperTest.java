@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import java.util.Locale;
-import javax.xml.parsers.ParserConfigurationException;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
@@ -30,7 +29,6 @@ import com.hardbacknutter.nevertoomanybooks.sync.Mapper;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.xml.sax.SAXException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -42,7 +40,7 @@ class FormatMapperTest
     @Override
     @BeforeEach
     public void setup()
-            throws ParserConfigurationException, SAXException {
+            throws Exception {
         super.setup();
         book = new Book(BundleMock.create());
     }

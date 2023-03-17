@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.kbnl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -55,7 +54,7 @@ class KbNlBookHandlerTest
     private Book book;
     @BeforeEach
     public void setup()
-            throws ParserConfigurationException, SAXException {
+            throws Exception {
         super.setup();
         book = new Book(BundleMock.create());
 

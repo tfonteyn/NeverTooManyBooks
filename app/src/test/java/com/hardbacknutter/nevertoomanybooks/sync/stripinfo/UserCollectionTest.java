@@ -24,7 +24,6 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import javax.xml.parsers.ParserConfigurationException;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
@@ -43,7 +42,6 @@ import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.xml.sax.SAXException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -75,7 +73,7 @@ class UserCollectionTest
     @Override
     @BeforeEach
     public void setup()
-            throws ParserConfigurationException, SAXException {
+            throws Exception {
         super.setup();
 
         when(bookshelfMapper.getOwnedBooksBookshelf(any()))

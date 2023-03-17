@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.backup.json;
 
 import java.math.BigDecimal;
-import javax.xml.parsers.ParserConfigurationException;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
@@ -34,7 +33,6 @@ import com.hardbacknutter.org.json.JSONObject;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.xml.sax.SAXException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -49,7 +47,7 @@ public class BookCoderTest
     @BeforeEach
     @Override
     public void setup()
-            throws ParserConfigurationException, SAXException {
+            throws Exception {
         super.setup();
         book = new Book(BundleMock.create());
         bookCoder = new BookCoder(context, style);

@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.amazon;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
-import javax.xml.parsers.ParserConfigurationException;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
@@ -41,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.xml.sax.SAXException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -58,7 +56,7 @@ class AmazonHtmlHandlerTest
 
     @BeforeEach
     public void setup()
-            throws ParserConfigurationException, SAXException {
+            throws Exception {
         super.setup();
         book = new Book(BundleMock.create());
         searchEngine = (AmazonSearchEngine) EngineId.Amazon.createSearchEngine(context);
