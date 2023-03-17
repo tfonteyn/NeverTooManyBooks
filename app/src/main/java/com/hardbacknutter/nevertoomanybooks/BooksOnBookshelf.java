@@ -433,8 +433,13 @@ public class BooksOnBookshelf
         vm.onSelectAdapterPosition().observe(this, p ->
                 positioningHelper.onSelectAdapterPosition(p.first, p.second));
 
-        //noinspection ConstantConditions
-        vm.getOnPositionsUpdated().observe(this, positions -> adapter.requery(positions));
+        vm.getOnPositionsUpdated().observe(this, positions -> {
+            // Protect against activity restarts where this can get called BEFORE
+            // the adapter has been recreated.
+            if (adapter != null) {
+                adapter.requery(positions);
+            }
+        });
     }
 
     /**
