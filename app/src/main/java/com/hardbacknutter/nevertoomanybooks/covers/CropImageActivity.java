@@ -230,8 +230,8 @@ public class CropImageActivity
                                                @Nullable final Intent intent) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                 LoggerFactory.getLogger()
-                              .d(TAG, "parseResult",
-                                 "|resultCode=" + resultCode + "|intent=" + intent);
+                             .d(TAG, "parseResult",
+                                "|resultCode=" + resultCode + "|intent=" + intent);
             }
 
             if (intent == null || resultCode != Activity.RESULT_OK) {

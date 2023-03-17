@@ -74,7 +74,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 
 /**
@@ -309,9 +308,7 @@ public class CoverHandler {
                         getTempFile()));
 
             } catch (@NonNull final StorageException | IOException e) {
-                StandardDialogs.showError(context, ExMsg
-                        .map(context, e)
-                        .orElseGet(() -> context.getString(R.string.error_unknown)));
+                StandardDialogs.showError(context, e);
 
             }
             return true;
@@ -321,9 +318,7 @@ public class CoverHandler {
                 editPicture(createTempCoverFile(book));
 
             } catch (@NonNull final StorageException | IOException e) {
-                StandardDialogs.showError(context, ExMsg
-                        .map(context, e)
-                        .orElseGet(() -> context.getString(R.string.error_unknown)));
+                StandardDialogs.showError(context, e);
             }
             return true;
 
@@ -509,9 +504,7 @@ public class CoverHandler {
                 Log.d(TAG, "Unable to copy content to file", e);
             }
 
-            StandardDialogs.showError(context, ExMsg
-                    .map(context, e)
-                    .orElseGet(() -> context.getString(R.string.warning_image_copy_failed)));
+            StandardDialogs.showError(context, e, R.string.warning_image_copy_failed);
         }
     }
 
@@ -533,9 +526,7 @@ public class CoverHandler {
                 takePictureLauncher.launch(dstFile);
 
             } catch (@NonNull final StorageException e) {
-                StandardDialogs.showError(context, ExMsg
-                        .map(context, e)
-                        .orElseGet(() -> context.getString(R.string.error_unknown)));
+                StandardDialogs.showError(context, e);
 
             } catch (@NonNull final ActivityNotFoundException e) {
                 // No Camera? we should not get here... flw
@@ -596,9 +587,7 @@ public class CoverHandler {
                        file);
 
         } catch (@NonNull final StorageException | IOException e) {
-            StandardDialogs.showError(context, ExMsg
-                    .map(context, e)
-                    .orElseGet(() -> context.getString(R.string.error_unknown)));
+            StandardDialogs.showError(context, e);
         }
     }
 
@@ -628,9 +617,7 @@ public class CoverHandler {
                 }
             } catch (@NonNull final StorageException | IOException e) {
                 final Context context = fragmentView.getContext();
-                StandardDialogs.showError(context, ExMsg
-                        .map(context, e)
-                        .orElseGet(() -> context.getString(R.string.error_unknown)));
+                StandardDialogs.showError(context, e);
             }
         }
 

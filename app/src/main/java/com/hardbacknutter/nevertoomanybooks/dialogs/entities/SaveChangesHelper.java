@@ -117,7 +117,7 @@ final class SaveChangesHelper {
                         onSuccess.accept(item);
                     } catch (@NonNull final DaoWriteException e) {
                         LoggerFactory.getLogger().e(TAG, e);
-                        StandardDialogs.showError(context, R.string.error_storage_not_writable);
+                        StandardDialogs.showError(context, e);
                     }
                 })
                 .create()

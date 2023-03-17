@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 public final class StandardDialogs {
 
@@ -334,6 +335,37 @@ public final class StandardDialogs {
 
     public static void showError(@NonNull final Context context,
                                  @NonNull final CharSequence message) {
+        new MaterialAlertDialogBuilder(context)
+                .setIcon(R.drawable.ic_baseline_error_24)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
+                .create()
+                .show();
+    }
+
+    public static void showError(@NonNull final Context context,
+                                 @Nullable final Throwable e) {
+        showError(context, e, R.string.error_unknown);
+    }
+
+    /**
+     * Show an error message.
+     *
+     * @param context      Current context
+     * @param e            a Throwable/Exception from which a message can be derived.
+     * @param altMessageId an alternative message (string res) to show if the 'e' parameter
+     *                     cannot be mapped to a specific message
+     */
+    public static void showError(@NonNull final Context context,
+                                 @Nullable final Throwable e,
+                                 @StringRes final int altMessageId) {
+        final String message;
+        if (e != null) {
+            message = ExMsg.map(context, e).orElseGet(() -> context.getString(
+                    altMessageId != 0 ? altMessageId : R.string.error_unknown));
+        } else {
+            message = context.getString(altMessageId);
+        }
         new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.ic_baseline_error_24)
                 .setMessage(message)

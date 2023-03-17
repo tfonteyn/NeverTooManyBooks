@@ -57,7 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceAlertDialogBuilde
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.utils.FileSize;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 @Keep
 public class MaintenanceFragment
@@ -133,9 +132,7 @@ public class MaintenanceFragment
                 bytes = purge(bookUuidList, false);
 
             } catch (@NonNull final StorageException | SecurityException e) {
-                StandardDialogs.showError(context, ExMsg
-                        .map(context, e)
-                        .orElseGet(() -> getString(R.string.error_storage_not_accessible)));
+                StandardDialogs.showError(context, e);
                 return;
             }
 
@@ -153,10 +150,7 @@ public class MaintenanceFragment
                             purge(bookUuidList, true);
 
                         } catch (@NonNull final StorageException | SecurityException e) {
-                            StandardDialogs.showError(context, ExMsg
-                                    .map(context, e)
-                                    .orElseGet(() -> getString(
-                                            R.string.error_storage_not_accessible)));
+                            StandardDialogs.showError(context, e);
                         }
                     })
                     .create()

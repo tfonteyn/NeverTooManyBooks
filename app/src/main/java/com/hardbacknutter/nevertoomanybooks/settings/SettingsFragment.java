@@ -467,9 +467,7 @@ public class SettingsFragment
 
         } catch (@NonNull final StorageException e) {
             // This should never happen... flw
-            StandardDialogs.showError(getContext(), ExMsg
-                    .map(getContext(), e)
-                    .orElseGet(() -> getContext().getString(R.string.error_unknown)));
+            StandardDialogs.showError(getContext(), e);
             return false;
         }
     }

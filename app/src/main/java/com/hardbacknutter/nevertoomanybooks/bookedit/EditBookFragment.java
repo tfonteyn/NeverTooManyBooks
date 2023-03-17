@@ -62,7 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 public class EditBookFragment
         extends BaseFragment {
@@ -265,9 +264,7 @@ public class EditBookFragment
 
         } catch (@NonNull final StorageException | DaoWriteException e) {
             LoggerFactory.getLogger().e(TAG, e);
-            StandardDialogs.showError(getContext(), ExMsg
-                    .map(getContext(), e)
-                    .orElseGet(() -> getString(R.string.error_unknown)));
+            StandardDialogs.showError(getContext(), e);
         }
     }
 
