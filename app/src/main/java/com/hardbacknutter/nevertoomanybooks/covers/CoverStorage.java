@@ -88,44 +88,6 @@ public class CoverStorage {
         this.coverCacheDaoSupplier = coverCacheDaoSupplier;
     }
 
-    /**
-     * Check if a file is an image with an acceptable size.
-     * <p>
-     * This is a slow check, use only when import/saving.
-     * When displaying do a simple {@code srcFile.exists()} instead.
-     * <p>
-     * <strong>If the file is not acceptable, then it will be deleted.</strong>
-     *
-     * @param srcFile to check
-     *
-     * @return {@code true} if file is acceptable.
-     */
-    @AnyThread
-    public static boolean isAcceptableSize(@Nullable final File srcFile) {
-        if (srcFile == null) {
-            return false;
-        }
-
-        if (srcFile.length() < MIN_VALID_IMAGE_FILE_SIZE) {
-            FileUtils.delete(srcFile);
-            return false;
-        }
-
-        // Read the image files to get file size
-        final BitmapFactory.Options opt = new BitmapFactory.Options();
-        opt.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(srcFile.getAbsolutePath(), opt);
-
-        // minimal size required
-        final boolean tooSmall = isTooSmall(opt);
-
-        // cleanup bad files.
-        if (tooSmall) {
-            FileUtils.delete(srcFile);
-        }
-        return !tooSmall;
-    }
-
     static boolean isTooSmall(@NonNull final BitmapFactory.Options opt) {
         return opt.outHeight < MIN_VALID_IMAGE_SIDE || opt.outWidth < MIN_VALID_IMAGE_SIDE;
     }
@@ -156,6 +118,44 @@ public class CoverStorage {
         }
 
         return externalFilesDirs[volume];
+    }
+
+    /**
+     * Check if a file is an image with an acceptable size.
+     * <p>
+     * This is a slow check, use only when import/saving.
+     * When displaying do a simple {@code srcFile.exists()} instead.
+     * <p>
+     * <strong>If the file is not acceptable, then it will be deleted.</strong>
+     *
+     * @param srcFile to check
+     *
+     * @return {@code true} if file is acceptable.
+     */
+    @AnyThread
+    public boolean isAcceptableSize(@Nullable final File srcFile) {
+        if (srcFile == null) {
+            return false;
+        }
+
+        if (srcFile.length() < MIN_VALID_IMAGE_FILE_SIZE) {
+            FileUtils.delete(srcFile);
+            return false;
+        }
+
+        // Read the image files to get file size
+        final BitmapFactory.Options opt = new BitmapFactory.Options();
+        opt.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(srcFile.getAbsolutePath(), opt);
+
+        // minimal size required
+        final boolean tooSmall = isTooSmall(opt);
+
+        // cleanup bad files.
+        if (tooSmall) {
+            FileUtils.delete(srcFile);
+        }
+        return !tooSmall;
     }
 
     /**

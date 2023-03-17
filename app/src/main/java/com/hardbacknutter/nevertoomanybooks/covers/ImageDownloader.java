@@ -153,7 +153,7 @@ public class ImageDownloader {
 
             // too small ? reject
             // too big: N/A as we assume a picture from a website is already a good size
-            if (CoverStorage.isAcceptableSize(savedFile)) {
+            if (coverStorage.isAcceptableSize(savedFile)) {
                 return Optional.of(savedFile);
             }
             return Optional.empty();

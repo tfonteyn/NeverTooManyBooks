@@ -121,7 +121,7 @@ public class CoverRecordReader
                     final InputStream is = record.getInputStream();
                     dstFile = coverStorageSupplier.get().persist(is, dstFile);
 
-                    if (CoverStorage.isAcceptableSize(dstFile)) {
+                    if (coverStorageSupplier.get().isAcceptableSize(dstFile)) {
                         //noinspection ResultOfMethodCallIgnored
                         dstFile.setLastModified(record.getLastModifiedEpochMilli());
                         if (exists) {
