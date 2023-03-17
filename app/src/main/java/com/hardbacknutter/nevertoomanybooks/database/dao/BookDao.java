@@ -124,6 +124,13 @@ public interface BookDao {
      */
     boolean delete(@NonNull Book book);
 
+    /**
+     * Delete the given book (and its covers).
+     *
+     * @param bookLight to delete
+     *
+     * @return {@code true} if a row was deleted
+     */
     boolean delete(@NonNull BookLight bookLight);
 
     /**
@@ -274,7 +281,7 @@ public interface BookDao {
      * <p>
      * If successful, the book object will have been updated with the new status.
      *
-     * @param book   to update
+     * @param book to update
      * @param read the status to set
      *
      * @return {@code true} for success.
