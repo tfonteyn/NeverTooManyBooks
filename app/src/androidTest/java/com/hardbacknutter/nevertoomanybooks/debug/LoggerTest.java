@@ -31,7 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.core.Logger;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 
 import org.junit.Test;
 
@@ -50,7 +50,7 @@ public class LoggerTest {
         final Context context = ServiceLocator.getInstance().getAppContext();
         final Logger logger = LoggerFactory.getLogger();
 
-        CoverDir.initVolume(context, 0);
+        CoverVolume.initVolume(context, 0);
 
         final File logDir = logger.getLogDir();
 
