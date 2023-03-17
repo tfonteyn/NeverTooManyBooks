@@ -160,7 +160,9 @@ public final class SyncReaderProcessor
                             if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[0])) {
                                 final String uuid = localBook.getString(DBKey.BOOK_UUID);
                                 // check if it's missing or empty.
-                                final Optional<File> file = new Cover(uuid, 0).getPersistedFile();
+                                final Optional<File> file = ServiceLocator
+                                        .getInstance().getCoverStorage()
+                                        .getPersistedFile(uuid, 0);
                                 if (file.isEmpty()) {
                                     filteredMap.put(field.key, field);
                                 }
@@ -168,7 +170,9 @@ public final class SyncReaderProcessor
                             } else if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[1])) {
                                 final String uuid = localBook.getString(DBKey.BOOK_UUID);
                                 // check if it's missing or empty.
-                                final Optional<File> file = new Cover(uuid, 1).getPersistedFile();
+                                final Optional<File> file = ServiceLocator
+                                        .getInstance().getCoverStorage()
+                                        .getPersistedFile(uuid, 1);
                                 if (file.isEmpty()) {
                                     filteredMap.put(field.key, field);
                                 }
@@ -196,12 +200,13 @@ public final class SyncReaderProcessor
      * <p>
      * Exceptions related to storing cover files are ignored.
      *
-     * @param context      Current context
-     * @param bookId       to use for updating the database.
-     *                     Must be passed separately, as 'book' can be all-new data.
-     * @param localBook    the local book
-     * @param fieldsWanted The (subset) of fields relevant to the current book.
-     * @param remoteBook   the data to merge with the local-book
+     * @param context          Current context
+     * @param bookId           to use for updating the database.
+     *                         Must be passed separately, as 'book' can be all-new data.
+     * @param localBook        the local book
+     * @param fieldsWanted     The (subset) of fields relevant to the current book.
+     * @param remoteBook       the data to merge with the local-book
+     * @param realNumberParser to use for number parsing
      *
      * @return a {@link Book} object with the <strong>DELTA</strong> fields that we need.
      *         The book id will always be set.
@@ -323,7 +328,8 @@ public final class SyncReaderProcessor
         if (fileSpec != null && !fileSpec.isEmpty()) {
             try {
                 final String uuid = localBook.getString(DBKey.BOOK_UUID);
-                new Cover(uuid, cIdx).persist(new File(fileSpec));
+                ServiceLocator.getInstance().getCoverStorage()
+                              .persist(uuid, cIdx, new File(fileSpec));
 
             } catch (@NonNull final StorageException | IOException e) {
                 // We're called in a loop, and the chance of an exception here is very low
@@ -415,6 +421,12 @@ public final class SyncReaderProcessor
         private final Map<String, SyncField> fields = new LinkedHashMap<>();
         private final Map<String, String> relatedFields = new LinkedHashMap<>();
 
+        /**
+         * Constructor.
+         *
+         * @param context          Current context
+         * @param preferencePrefix for the site/fields
+         */
         public Builder(@NonNull final Context context,
                        @NonNull final String preferencePrefix) {
             this.preferencePrefix = preferencePrefix;
