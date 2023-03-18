@@ -49,6 +49,13 @@ public class CalibreHandlerViewModel
     @Nullable
     private Book tmpBook;
 
+    /**
+     * Pseudo constructor.
+     *
+     * @param context Current context
+     *
+     * @throws CertificateException on failures related to a user installed CA.
+     */
     public void init(@NonNull final Context context)
             throws CertificateException {
         if (server == null) {
