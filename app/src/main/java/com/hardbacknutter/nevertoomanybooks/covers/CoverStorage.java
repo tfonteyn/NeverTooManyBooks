@@ -44,6 +44,7 @@ import java.util.function.Supplier;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.storage.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CoverCacheDao;
@@ -177,18 +178,18 @@ public class CoverStorage {
      *
      * @return directory
      *
-     * @throws StorageException The covers directory is not available
+     * @throws CoverStorageException The covers directory is not available
      */
     @NonNull
     public File getTempDir()
-            throws StorageException {
+            throws CoverStorageException {
         return new File(getDir(), DIR_TMP);
     }
 
     /**
      * Get the file for this cover. We'll attempt to find a jpg or a png.
      * <p>
-     * Any {@link StorageException} is <strong>IGNORED</strong>
+     * Any {@link CoverStorageException} is <strong>IGNORED</strong>
      *
      * @param uuid the book UUID
      * @param cIdx 0..n image index
