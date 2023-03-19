@@ -41,6 +41,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
@@ -234,7 +235,12 @@ public class EditBookshelvesFragment
                 //TODO: why not ? as long as we make sure there is another one left..
                 // e.g. count > 2, then you can delete '1'
                 //noinspection ConstantConditions
-                StandardDialogs.showError(getContext(), R.string.warning_cannot_delete_1st_bs);
+                new MaterialAlertDialogBuilder(getContext())
+                        .setIcon(R.drawable.ic_baseline_warning_24)
+                        .setMessage(R.string.warning_cannot_delete_1st_bs)
+                        .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
+                        .create()
+                        .show();
             }
             return true;
 
