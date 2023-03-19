@@ -32,10 +32,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentCalibreLibraryMapperBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditCalibreLibraryBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
@@ -53,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 public class CalibreLibraryMappingFragment
         extends BaseFragment {
@@ -134,10 +134,7 @@ public class CalibreLibraryMappingFragment
                 addBookshelf(bookshelf, vb.bookshelf);
 
             } catch (@NonNull final DaoWriteException e) {
-                Snackbar.make(vb.getRoot(), ExMsg
-                                      .map(getContext(), e)
-                                      .orElseGet(() -> getString(R.string.error_unknown)),
-                              Snackbar.LENGTH_LONG).show();
+                ErrorDialog.show(getContext(), e, getString(R.string.error_storage_not_writable));
             }
         });
 
@@ -192,25 +189,17 @@ public class CalibreLibraryMappingFragment
     private void onMetaDataFailure(@NonNull final LiveDataEvent<TaskResult<Throwable>> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(data -> {
+        message.getData().map(TaskResult::getResult).filter(Objects::nonNull).ifPresent(e -> {
             final Context context = getContext();
             //noinspection ConstantConditions
-            final String msg = ExMsg
-                    .map(context, data.getResult())
-                    .orElseGet(() -> getString(R.string.error_network_site_access_failed,
-                                               CalibreContentServer.getHostUrl(context)));
-
-            new MaterialAlertDialogBuilder(context)
-                    .setIcon(R.drawable.ic_baseline_error_24)
-                    .setTitle(R.string.lbl_calibre_content_server)
-                    .setMessage(msg)
-                    .setPositiveButton(android.R.string.ok, (d, w) -> {
-                        d.dismiss();
-                        // just pop, we're always called from a fragment
-                        getParentFragmentManager().popBackStack();
-                    })
-                    .create()
-                    .show();
+            ErrorDialog.show(context, e, getString(R.string.lbl_calibre_content_server),
+                             getString(R.string.error_network_site_access_failed,
+                                       CalibreContentServer.getHostUrl(context)),
+                             (d, w) -> {
+                                 d.dismiss();
+                                 // just pop, we're always called from a fragment
+                                 getParentFragmentManager().popBackStack();
+                             });
         });
     }
 
@@ -322,10 +311,8 @@ public class CalibreLibraryMappingFragment
                     addBookshelf(bookshelf, holder.vb.bookshelf);
 
                 } catch (@NonNull final DaoWriteException e) {
-                    Snackbar.make(holder.itemView, ExMsg
-                                          .map(getContext(), e)
-                                          .orElseGet(() -> getString(R.string.error_unknown)),
-                                  Snackbar.LENGTH_LONG).show();
+                    ErrorDialog.show(getContext(), e,
+                                     getString(R.string.error_storage_not_writable));
                 }
             });
 
