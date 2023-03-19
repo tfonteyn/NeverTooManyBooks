@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.EntityBookLinksDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.MoveBooksDao;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 //TODO: this is rather hacky... needs to be refactored.
@@ -117,7 +117,8 @@ final class SaveChangesHelper {
                         onSuccess.accept(item);
                     } catch (@NonNull final DaoWriteException e) {
                         LoggerFactory.getLogger().e(TAG, e);
-                        StandardDialogs.showError(context, e);
+                        ErrorDialog.show(context, e,
+                                         context.getString(R.string.error_storage_not_writable));
                     }
                 })
                 .create()
