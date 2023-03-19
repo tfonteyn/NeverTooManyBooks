@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 
@@ -39,10 +38,10 @@ import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.network.ConnectionValidatorViewModel;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 /**
  * Intermediate abstract class providing the bulk of the logic to validate a connection.
@@ -183,20 +182,11 @@ public abstract class ConnectionValidationBasePreferenceFragment
     private void onFailure(@NonNull final LiveDataEvent<TaskResult<Throwable>> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(data -> {
-            final Context context = getContext();
+        message.getData().map(TaskResult::getResult).filter(Objects::nonNull).ifPresent(e -> {
             //noinspection ConstantConditions
-            final String msg = ExMsg.map(context, data.getResult())
-                                    .orElseGet(() -> getString(R.string.error_unknown));
-
-            new MaterialAlertDialogBuilder(context)
-                    .setIcon(R.drawable.ic_baseline_error_24)
-                    .setTitle(R.string.error_network_failed_try_again)
-                    .setMessage(msg)
-                    .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
-                    .create()
-                    .show();
+            ErrorDialog.show(getContext(), e,
+                             getString(R.string.httpError),
+                             getString(R.string.error_network_failed_try_again));
         });
     }
-
 }
