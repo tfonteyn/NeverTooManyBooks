@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -153,11 +153,8 @@
 
     <!-- Shared Storage file system access fails for some reason. No specifics. -->
     <string name="error_storage_not_accessible">Please check that storage is accessible.</string>
-    <!-- Shared Storage file system access fails for some reason. With name of the type of storage. -->
-    <string name="X_error_storage_not_accessible_s">Storage not accessible: %1$s</string>
-
     <!-- Displayed when any write operation to the database, or to Shared Storage fails
-     FIXME: error_storage_not_writable is too widely used; must be split into multiple different messages -->
+     URGENT: error_storage_not_accessible + error_storage_not_writable is too widely used; must be split into multiple different messages -->
     <string name="error_storage_not_writable">Please check that storage is writable, and has sufficient space.</string>
 
     <!-- you're out of Shared Storage space... buy a bigger SD Card -->

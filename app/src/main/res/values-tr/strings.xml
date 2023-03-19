@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -47,7 +47,6 @@
     <string name="error_record_must_contain_column">Kayıt, “%1$s” adlı bir alan içermelidir.</string>
     <string name="X_error_network_site_has_problems">Web sitesinde sorunlar var.</string>
     <string name="X_error_not_available">%1$s kullanılamıyor</string>
-    <string name="X_error_storage_not_accessible_s">Depolama erişilebilir değil: %1$s</string>
     <string name="X_httpErrorIO">Sunucuyla iletişim kurulamadı. Daha sonra tekrar deneyin.</string>
     <string name="X_info_authorized_needed">Erişime izin ver</string>
     <string name="X_info_not_authorized">Yetkilendirilmemiş</string>

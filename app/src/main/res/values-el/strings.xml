@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -47,7 +47,6 @@
     <string name="error_record_must_contain_column">Η εγγραφή πρέπει να περιέχει ένα πεδίο με το όνομα «%1$s».</string>
     <string name="X_error_network_site_has_problems">Ο ιστότοπος έχει προβλήματα.</string>
     <string name="X_error_not_available">Το %1$s δεν είναι διαθέσιμο</string>
-    <string name="X_error_storage_not_accessible_s">Δεν είναι δυνατή η αποθήκευση: %1$s</string>
     <string name="X_httpErrorIO">Δεν ήταν δυνατή η επικοινωνία με τον διακομιστή. Προσπαθήστε ξανά αργότερα.</string>
     <string name="X_info_authorized_needed">Έγκριση Πρόσβασης</string>
     <string name="X_info_not_authorized">Χωρίς άδεια</string>

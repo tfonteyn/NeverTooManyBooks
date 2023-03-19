@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -47,7 +47,6 @@
     <string name="error_record_must_contain_column">Il record deve contenere un campo denominato %1$s.</string>
     <string name="X_error_network_site_has_problems">Il sito Web ha problemi.</string>
     <string name="X_error_not_available">%1$s non disponibile</string>
-    <string name="X_error_storage_not_accessible_s">Archiviazione non accessibile: %1$s</string>
     <string name="X_httpErrorIO">Comunicazione con il server non riuscita. Riprova più tardi.</string>
     <string name="X_info_authorized_needed">Autorizza accesso</string>
     <string name="X_info_not_authorized">Non autorizzato</string>
