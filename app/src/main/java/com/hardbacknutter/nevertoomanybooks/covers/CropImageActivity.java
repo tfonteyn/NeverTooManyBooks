@@ -69,8 +69,6 @@ import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityCropimageBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 /**
  * The activity can crop specific region of interest from an image.
@@ -125,25 +123,17 @@ public class CropImageActivity
         try {
             final File coverDir = ServiceLocator.getInstance().getCoverStorage().getDir();
             if (FileUtils.getFreeSpace(coverDir) / ESTIMATED_PICTURE_SIZE < 1) {
+                // Shouldn't we 'finish()' the activity? i.e. handle like an exception?
                 Snackbar.make(vb.coverImage0, R.string.error_storage_no_space_left,
                               Snackbar.LENGTH_LONG).show();
             }
 
-        } catch (@NonNull final StorageException e) {
+        } catch (@NonNull final StorageException | IOException e) {
+            // just log, do not display exception data
             LoggerFactory.getLogger().e(TAG, e);
             new MaterialAlertDialogBuilder(this)
                     .setIcon(R.drawable.ic_baseline_error_24)
-                    .setMessage(ExMsg.map(this, e)
-                                     .orElseGet(() -> getString(R.string.error_unknown)))
-                    .setPositiveButton(android.R.string.ok, (d, w) -> finish())
-                    .create()
-                    .show();
-
-        } catch (@NonNull final IOException e) {
-            LoggerFactory.getLogger().e(TAG, e);
-            new MaterialAlertDialogBuilder(this)
-                    .setIcon(R.drawable.ic_baseline_error_24)
-                    .setMessage(R.string.error_storage_not_accessible)
+                    .setTitle(R.string.error_storage_not_accessible)
                     .setPositiveButton(android.R.string.ok, (d, w) -> finish())
                     .create()
                     .show();
@@ -199,7 +189,13 @@ public class CropImageActivity
         }
 
         if (bitmap == null) {
-            StandardDialogs.showError(this, R.string.progress_msg_saving_image);
+            new MaterialAlertDialogBuilder(this)
+                    .setIcon(R.drawable.ic_baseline_error_24)
+                    .setTitle(R.string.action_save)
+                    .setMessage(R.string.error_storage_not_writable)
+                    .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
+                    .create()
+                    .show();
             return;
         }
         finish();
