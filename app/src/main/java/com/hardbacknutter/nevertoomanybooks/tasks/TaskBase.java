@@ -34,7 +34,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.UncheckedDaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedStorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedCoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 
@@ -140,7 +140,7 @@ abstract class TaskBase<Result>
                 status = Status.Cancelled;
                 setTaskCancelled(null);
 
-            } catch (@NonNull final UncheckedStorageException
+            } catch (@NonNull final UncheckedCoverStorageException
                                     | UncheckedDaoWriteException
                                     | UncheckedIOException e) {
                 status = Status.Failed;
