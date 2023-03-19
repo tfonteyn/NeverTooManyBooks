@@ -78,7 +78,7 @@ public abstract class MTask<Result>
      * Observable to receive cancellation.
      *
      * @return the {@link Result}. It will depend on the implementation how
-     * complete/correct (if at all) this result is.
+     *         complete/correct (if at all) this result is.
      */
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<Result>>> onCancelled() {
@@ -95,7 +95,8 @@ public abstract class MTask<Result>
     /**
      * Observable to receive failure.
      *
-     * @return the result is the Exception
+     * @return the result is the Exception; {@link TaskResult#getResult()} will always
+     *         return a valid {@link Throwable} and never {@code null}
      */
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<Throwable>>> onFailure() {
