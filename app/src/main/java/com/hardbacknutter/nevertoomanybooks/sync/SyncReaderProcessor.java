@@ -334,6 +334,7 @@ public final class SyncReaderProcessor
             } catch (@NonNull final StorageException | IOException e) {
                 // We're called in a loop, and the chance of an exception here is very low
                 // so let's log it, and quietly continue.
+                // URGENT: disk full will obviously crash us here
                 LoggerFactory.getLogger()
                              .e(TAG, e, "processCoverImage|uuid="
                                         + localBook.getString(DBKey.BOOK_UUID, null)
