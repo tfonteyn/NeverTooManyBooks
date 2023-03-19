@@ -311,9 +311,6 @@ public class BookTest {
      */
     private void mustHavePersistedCover(@NonNull final Book book,
                                         final int cIdx) {
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        final Context context = serviceLocator.getLocalizedAppContext();
-
         // we're testing a permanent file, the temp string must not exist
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[cIdx]));
 
