@@ -70,7 +70,7 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -308,9 +308,12 @@ public class CoverHandler {
                         // destination
                         getTempFile()));
 
-            } catch (@NonNull final StorageException | IOException e) {
-                StandardDialogs.showError(context, e);
+            } catch (@NonNull final StorageException e) {
+                ErrorDialog.show(context, e,
+                                 context.getString(R.string.error_storage_not_accessible));
 
+            } catch (@NonNull final IOException e) {
+                ErrorDialog.show(context, e);
             }
             return true;
 
@@ -318,8 +321,12 @@ public class CoverHandler {
             try {
                 editPicture(createTempCoverFile(book));
 
-            } catch (@NonNull final StorageException | IOException e) {
-                StandardDialogs.showError(context, e);
+            } catch (@NonNull final StorageException e) {
+                ErrorDialog.show(context, e,
+                                 context.getString(R.string.error_storage_not_accessible));
+
+            } catch (@NonNull final IOException e) {
+                ErrorDialog.show(context, e);
             }
             return true;
 
@@ -500,12 +507,13 @@ public class CoverHandler {
                                .setScale(true),
                        file);
 
-        } catch (@NonNull final StorageException | IOException e) {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "Unable to copy content to file", e);
-            }
+        } catch (@NonNull final StorageException e) {
+            ErrorDialog.show(context, e, context.getString(R.string.error_storage_not_accessible));
 
-            StandardDialogs.showError(context, e, R.string.warning_image_copy_failed);
+        } catch (@NonNull final IOException e) {
+            ErrorDialog.show(context, e,
+                             context.getString(R.string.error_storage_not_writable),
+                             context.getString(R.string.warning_image_copy_failed));
         }
     }
 
@@ -527,7 +535,8 @@ public class CoverHandler {
                 takePictureLauncher.launch(dstFile);
 
             } catch (@NonNull final StorageException e) {
-                StandardDialogs.showError(context, e);
+                ErrorDialog.show(context, e,
+                                 context.getString(R.string.error_storage_not_accessible));
 
             } catch (@NonNull final ActivityNotFoundException e) {
                 // No Camera? we should not get here... flw
@@ -578,7 +587,6 @@ public class CoverHandler {
      * @param angle to rotate.
      */
     private void startRotation(final int angle) {
-        final Context context = fragmentView.getContext();
         try {
             final File file = createTempCoverFile(bookSupplier.get());
             showProgress();
@@ -587,8 +595,13 @@ public class CoverHandler {
                                .setRotation(angle),
                        file);
 
-        } catch (@NonNull final StorageException | IOException e) {
-            StandardDialogs.showError(context, e);
+        } catch (@NonNull final StorageException e) {
+            final Context context = fragmentView.getContext();
+            ErrorDialog.show(context, e,
+                             context.getString(R.string.error_storage_not_accessible));
+
+        } catch (@NonNull final IOException e) {
+            ErrorDialog.show(fragmentView.getContext(), e);
         }
     }
 
@@ -616,9 +629,12 @@ public class CoverHandler {
                         fragmentView.post(() -> coverHandlerOwner.reloadImage(cIdx));
                         return;
                 }
-            } catch (@NonNull final StorageException | IOException e) {
+            } catch (@NonNull final StorageException e) {
                 final Context context = fragmentView.getContext();
-                StandardDialogs.showError(context, e);
+                ErrorDialog.show(context, e,
+                                 context.getString(R.string.error_storage_not_accessible));
+            } catch (@NonNull final IOException e) {
+                ErrorDialog.show(fragmentView.getContext(), e);
             }
         }
 
