@@ -78,7 +78,7 @@ public class SearchBookUpdatesViewModel
 
     private final MutableLiveData<LiveDataEvent<TaskResult<Book>>> listFinished =
             new MutableLiveData<>();
-    private final MutableLiveData<LiveDataEvent<TaskResult<Exception>>> listFailed =
+    private final MutableLiveData<LiveDataEvent<TaskResult<Throwable>>> listFailed =
             new MutableLiveData<>();
 
     /**
@@ -122,7 +122,7 @@ public class SearchBookUpdatesViewModel
     }
 
     @NonNull
-    LiveData<LiveDataEvent<TaskResult<Exception>>> onAbort() {
+    LiveData<LiveDataEvent<TaskResult<Throwable>>> onAbort() {
         return listFailed;
     }
 
@@ -549,7 +549,7 @@ public class SearchBookUpdatesViewModel
 //            results.putLong(DBKey.FK_BOOK, bookIdList.get(0));
 //        }
 
-        final LiveDataEvent<TaskResult<Exception>> message =
+        final LiveDataEvent<TaskResult<Throwable>> message =
                 new LiveDataEvent<>(new TaskResult<>(R.id.TASK_ID_UPDATE_FIELDS, e));
         listFailed.setValue(message);
     }
