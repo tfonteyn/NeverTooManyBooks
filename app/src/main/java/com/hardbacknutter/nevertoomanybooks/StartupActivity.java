@@ -36,8 +36,8 @@ import java.lang.ref.WeakReference;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityStartupBinding;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
@@ -168,7 +168,7 @@ public class StartupActivity
         try {
             actualVolumeIndex = CoverVolume.initVolume(this, storedVolumeIndex);
 
-        } catch (@NonNull final StorageException e) {
+        } catch (@NonNull final CoverStorageException e) {
             onFailure(e);
             return;
         }
