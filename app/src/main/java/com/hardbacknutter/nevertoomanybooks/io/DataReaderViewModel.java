@@ -57,6 +57,12 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
         super.onCleared();
     }
 
+    /**
+     * Observable to receive failure.
+     *
+     * @return the result is the Exception; {@link TaskResult#getResult()} will always
+     *         return a valid {@link Throwable} and never {@code null}
+     */
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<Throwable>>> onReadMetaDataFailure() {
         return metaDataTask.onFailure();
@@ -77,6 +83,12 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
         return readerTask.onProgress();
     }
 
+    /**
+     * Observable to receive failure.
+     *
+     * @return the result is the Exception; {@link TaskResult#getResult()} will always
+     *         return a valid {@link Throwable} and never {@code null}
+     */
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<Throwable>>> onReadDataFailure() {
         return readerTask.onFailure();
