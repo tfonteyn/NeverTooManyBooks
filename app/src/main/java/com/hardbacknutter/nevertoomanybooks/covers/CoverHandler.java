@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditPictureC
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PickVisualMediaContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.TakePictureContract;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.storage.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
@@ -344,12 +345,12 @@ public class CoverHandler {
      *
      * @return the File
      *
-     * @throws StorageException The covers directory is not available
-     * @throws IOException      on failure to make a copy of the permanent file
+     * @throws CoverStorageException The covers directory is not available
+     * @throws IOException           on failure to make a copy of the permanent file
      */
     @NonNull
     private File createTempCoverFile(@NonNull final Book book)
-            throws StorageException, IOException {
+            throws CoverStorageException, IOException {
 
         // the temp file we'll return
         // do NOT set BKEY_TMP_FILE_SPEC on the book in this method.
@@ -448,10 +449,10 @@ public class CoverHandler {
      *
      * @param srcFile to edit
      *
-     * @throws StorageException The covers directory is not available
+     * @throws CoverStorageException The covers directory is not available
      */
     private void editPicture(@NonNull final File srcFile)
-            throws StorageException {
+            throws CoverStorageException {
 
         final File dstFile = getTempFile();
         FileUtils.delete(dstFile);
@@ -632,11 +633,11 @@ public class CoverHandler {
      *
      * @return file
      *
-     * @throws StorageException The covers directory is not available
+     * @throws CoverStorageException The covers directory is not available
      */
     @NonNull
     private File getTempFile()
-            throws StorageException {
+            throws CoverStorageException {
         return new File(coverStorageSupplier.get().getTempDir(), TAG + "_" + cIdx + ".jpg");
     }
 
@@ -646,7 +647,7 @@ public class CoverHandler {
     private void removeTempFile() {
         try {
             FileUtils.delete(getTempFile());
-        } catch (@NonNull final StorageException ignore) {
+        } catch (@NonNull final CoverStorageException ignore) {
             // safe to ignore, just a delete
         }
     }
