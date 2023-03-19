@@ -72,7 +72,7 @@ public class CoverRecordReader
                               @NonNull final ArchiveReaderRecord record,
                               @NonNull final ImportHelper helper,
                               @NonNull final ProgressListener progressListener)
-            throws StorageException {
+            throws StorageException, IOException {
 
         final ImportResults results = new ImportResults();
 
@@ -136,8 +136,7 @@ public class CoverRecordReader
                     }
                     // we swallow IOExceptions, **EXCEPT** when the disk is full.
                     if (DiskFullException.isDiskFull(e)) {
-                        //noinspection ConstantConditions
-                        throw new DiskFullException(e.getCause());
+                        throw e;
                     }
                     // we don't want to quit importing just because one cover fails.
                     results.coversFailed++;
