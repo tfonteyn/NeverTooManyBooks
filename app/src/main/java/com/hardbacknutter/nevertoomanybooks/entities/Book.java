@@ -593,6 +593,14 @@ public class Book
         }
     }
 
+    /**
+     * Remove duplicates. We keep the first occurrence.
+     *
+     * @param context      Current context
+     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
+     *                     This can be (relatively) slow, and hence should be {@code false}
+     *                     during for example an import.
+     */
     public void pruneAuthors(@NonNull final Context context,
                              final boolean lookupLocale) {
         final ArrayList<Author> authors = getAuthors();
@@ -688,6 +696,14 @@ public class Book
         }
     }
 
+    /**
+     * Remove duplicates. We keep the first occurrence.
+     *
+     * @param context      Current context
+     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
+     *                     This can be (relatively) slow, and hence should be {@code false}
+     *                     during for example an import.
+     */
     public void pruneSeries(@NonNull final Context context,
                             final boolean lookupLocale) {
         if (contains(BKEY_SERIES_LIST)) {
@@ -763,6 +779,14 @@ public class Book
         }
     }
 
+    /**
+     * Remove duplicates. We keep the first occurrence.
+     *
+     * @param context      Current context
+     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
+     *                     This can be (relatively) slow, and hence should be {@code false}
+     *                     during for example an import.
+     */
     public void prunePublishers(@NonNull final Context context,
                                 final boolean lookupLocale) {
         if (contains(BKEY_PUBLISHER_LIST)) {
