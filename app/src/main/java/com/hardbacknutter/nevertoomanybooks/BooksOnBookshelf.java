@@ -1554,7 +1554,7 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Called when the list build failed or was cancelled.
+     * Called when the list build was cancelled.
      *
      * @param message from the task
      */
@@ -1574,7 +1574,7 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Called when the list build failed or was cancelled.
+     * Called when the list build failed.
      *
      * @param message from the task
      */
