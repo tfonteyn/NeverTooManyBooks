@@ -216,12 +216,21 @@ public abstract class FutureHttpBase<T> {
      *
      * @return {@code this} (for chaining)
      */
+    @SuppressWarnings("UnusedReturnValue")
     @NonNull
     public FutureHttpBase<T> setSSLContext(@Nullable final SSLContext sslContext) {
         this.sslContext = sslContext;
         return this;
     }
 
+    /**
+     * Add a connection request property.
+     *
+     * @param key   to set
+     * @param value to set; use {@code null} to remove instead of add the property
+     *
+     * @return {@code this} (for chaining)
+     */
     @NonNull
     public FutureHttpBase<T> setRequestProperty(@NonNull final String key,
                                                 @Nullable final String value) {
