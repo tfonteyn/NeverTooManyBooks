@@ -207,18 +207,28 @@ public final class ExMsg {
             return context.getString(R.string.error_unknown_long,
                                      context.getString(R.string.pt_maintenance));
 
+        } else if (e instanceof java.io.IOException
+                   && e.getCause() instanceof android.system.ErrnoException) {
+            return mapErnoException(context, (android.system.ErrnoException) e.getCause());
+
         } else if (e instanceof android.system.ErrnoException) {
-            final int errno = ((android.system.ErrnoException) e).errno;
-            // write failed: ENOSPC (No space left on device)
-            if (errno == OsConstants.ENOSPC) {
-                return context.getString(R.string.error_storage_no_space_left);
-            } else {
-                // write to logfile for future reporting enhancements.
-                LoggerFactory.getLogger().w(TAG, "errno=" + errno);
-                return Os.strerror(errno);
-            }
+            return mapErnoException(context, (android.system.ErrnoException) e);
         }
         return null;
+    }
+
+    @NonNull
+    private static String mapErnoException(@NonNull final Context context,
+                                           @NonNull final android.system.ErrnoException e) {
+        final int errno = e.errno;
+        // write failed: ENOSPC (No space left on device)
+        if (errno == OsConstants.ENOSPC) {
+            return context.getString(R.string.error_storage_no_space_left);
+        } else {
+            // write to logfile for future reporting enhancements.
+            LoggerFactory.getLogger().w(TAG, "errno=" + errno);
+            return Os.strerror(errno);
+        }
     }
 
     public static void dumpSSLException(@NonNull final HttpsURLConnection request,
