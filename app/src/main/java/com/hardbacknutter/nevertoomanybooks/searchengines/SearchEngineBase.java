@@ -292,8 +292,12 @@ public abstract class SearchEngineBase
         final String tempFilename = ImageDownloader.getTempFilename(
                 getEngineId().getPreferenceKey(), bookId, cIdx, size);
 
-        return imageDownloader.fetch(url, tempFilename)
-                              .map(File::getAbsolutePath)
-                              .orElse(null);
+        try {
+            return imageDownloader.fetch(url, tempFilename)
+                                  .map(File::getAbsolutePath)
+                                  .orElse(null);
+        } catch (@NonNull final IOException e) {
+            return null;
+        }
     }
 }
