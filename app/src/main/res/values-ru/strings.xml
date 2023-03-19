@@ -715,5 +715,6 @@
     <string name="lbl_purge_blns">Очистить состояние узла</string>
     <string name="info_purge_blns_all">Очистить состояние узла из всех списков</string>
     <string name="info_purge_blns_item_name">Очистить состояние узла %1$s «%2$s»?</string>
+    <string name="error_updates_aborted">Обновления прерваны</string>
 
 </resources>

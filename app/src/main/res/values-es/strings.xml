@@ -717,4 +717,5 @@
     <string name="lbl_purge_blns">Borrar el estado del nodo</string>
     <string name="info_purge_blns_all">Borrar el estado del nodo de todas las listas</string>
     <string name="info_purge_blns_item_name">¿Borrar el estado del nodo de %1$s «%2$s»?</string>
+    <string name="error_updates_aborted">Actualizaciones canceladas</string>
 </resources>

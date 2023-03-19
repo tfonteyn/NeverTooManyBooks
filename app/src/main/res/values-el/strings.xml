@@ -717,4 +717,5 @@
     <string name="lbl_purge_blns">Διαγράψτε την κατάσταση του κόμβου</string>
     <string name="info_purge_blns_all">Διαγράψτε την κατάσταση του κόμβου από όλες τις λίστες</string>
     <string name="info_purge_blns_item_name">Διαγραφή της κατάστασης κόμβου του %1$s «%2$s»;</string>
+    <string name="error_updates_aborted">Οι ενημερώσεις ματαιώθηκαν</string>
 </resources>

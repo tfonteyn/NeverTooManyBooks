@@ -715,4 +715,5 @@
     <string name="lbl_purge_blns">Wis de node status</string>
     <string name="info_purge_blns_all">Wis de node status van alle lijsten</string>
     <string name="info_purge_blns_item_name">Wis de node status van %1$s „%2$s” ?</string>
+    <string name="error_updates_aborted">Updates afgebroken</string>
 </resources>

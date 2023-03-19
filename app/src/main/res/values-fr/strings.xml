@@ -719,5 +719,6 @@
     <string name="lbl_purge_blns">Effacer l\'état du nœud</string>
     <string name="info_purge_blns_all">Effacer l\'état du nœud de toutes les listes</string>
     <string name="info_purge_blns_item_name">Effacer l\'état du nœud de %1$s «%2$s» ?</string>
+    <string name="error_updates_aborted">Mises à jour annulées</string>
 
 </resources>

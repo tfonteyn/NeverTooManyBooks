@@ -714,4 +714,5 @@
     <string name="lbl_purge_blns">Vymažte stav uzlu</string>
     <string name="info_purge_blns_all">Vymažte stav uzlu ze všech seznamů</string>
     <string name="info_purge_blns_item_name">Vymazat stav uzlu %1$s „%2$s“?</string>
+    <string name="error_updates_aborted">Aktualizace přerušeny</string>
 </resources>

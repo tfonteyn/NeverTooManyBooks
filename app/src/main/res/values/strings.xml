@@ -128,6 +128,8 @@
     <!-- The placeholder will be replaced with R.string.pt_maintenance -->
     <string name="error_unknown_long">An unexpected error has occurred. If the problem persists, contact support via the “%1$s” option at the bottom of the settings page.</string>
 
+    <string name="error_updates_aborted">Updates aborted</string>
+
     <!-- [VERIFIED] -->
     <string name="error_network_please_connect">Please connect to the internet.</string>
     <!-- [VERIFIED] -->
@@ -154,7 +156,7 @@
     <!-- Shared Storage file system access fails for some reason. No specifics. -->
     <string name="error_storage_not_accessible">Please check that storage is accessible.</string>
     <!-- Displayed when any write operation to the database, or to Shared Storage fails
-     URGENT: error_storage_not_accessible + error_storage_not_writable is too widely used; must be split into multiple different messages -->
+     URGENT:  error_storage_not_accessible + error_storage_not_writable is too widely used; must be split into multiple different messages -->
     <string name="error_storage_not_writable">Please check that storage is writable, and has sufficient space.</string>
 
     <!-- you're out of Shared Storage space... buy a bigger SD Card -->

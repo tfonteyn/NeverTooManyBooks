@@ -715,4 +715,5 @@
     <string name="lbl_purge_blns">Wyczyść stan węzła</string>
     <string name="info_purge_blns_all">Wyczyść stan węzła ze wszystkich list</string>
     <string name="info_purge_blns_item_name">Wyczyścić stan węzła %1$s „%2$s”?</string>
+    <string name="error_updates_aborted">Aktualizacje przerwane</string>
 </resources>
