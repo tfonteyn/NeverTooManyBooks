@@ -43,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.core.network.HttpUnauthorizedExcepti
 import com.hardbacknutter.nevertoomanybooks.core.network.NetworkException;
 import com.hardbacknutter.nevertoomanybooks.core.network.NetworkUnavailableException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.CoverStorageException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
@@ -101,9 +100,6 @@ public final class ExMsg {
         } else if (e instanceof UpgradeFailedException) {
             // The UpgradeFailedException expects a localized message, so just use it
             return e.getLocalizedMessage();
-
-        } else if (e instanceof DiskFullException) {
-            return context.getString(R.string.error_storage_no_space_left);
 
         } else if (e instanceof CoverStorageException) {
             return context.getString(R.string.error_storage_not_accessible);

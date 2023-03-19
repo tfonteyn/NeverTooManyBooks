@@ -21,6 +21,8 @@ package com.hardbacknutter.nevertoomanybooks.core.storage;
 
 import android.os.Build;
 import android.os.StatFs;
+import android.system.ErrnoException;
+import android.system.OsConstants;
 import android.webkit.MimeTypeMap;
 
 import androidx.annotation.NonNull;
@@ -448,5 +450,12 @@ public final class FileUtils {
 
         // fallback
         return "application/" + fileExt;
+    }
+
+    //URGENT: check isDiskFull everywhere we catch IOExceptions
+    public static boolean isDiskFull(@Nullable final Exception e) {
+        return e instanceof IOException
+               && e.getCause() instanceof ErrnoException
+               && ((ErrnoException) e.getCause()).errno == OsConstants.ENOSPC;
     }
 }
