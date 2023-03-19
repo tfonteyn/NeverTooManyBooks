@@ -46,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.storage.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CoverCacheDao;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
@@ -252,14 +251,14 @@ public class CoverStorage {
      *
      * @return permanent file
      *
-     * @throws IOException      on generic/other IO failures
-     * @throws StorageException The covers directory is not available
+     * @throws IOException           on generic/other IO failures
+     * @throws CoverStorageException The covers directory is not available
      */
     @NonNull
     public File persist(@NonNull final String uuid,
                         final int cIdx,
                         @NonNull final File file)
-            throws IOException, StorageException {
+            throws IOException, CoverStorageException {
         final String name;
         if (cIdx > 0) {
             name = uuid + "_" + cIdx + ".jpg";
@@ -282,14 +281,14 @@ public class CoverStorage {
      *
      * @return File written to (the one passed in)
      *
-     * @throws StorageException      The covers directory is not available
+     * @throws CoverStorageException The covers directory is not available
      * @throws FileNotFoundException if the input stream was {@code null}
      * @throws IOException           on generic/other IO failures
      */
     @NonNull
     public File persist(@Nullable final InputStream is,
                         @NonNull final File dstFile)
-            throws StorageException,
+            throws CoverStorageException,
                    FileNotFoundException,
                    IOException {
         if (is == null) {
