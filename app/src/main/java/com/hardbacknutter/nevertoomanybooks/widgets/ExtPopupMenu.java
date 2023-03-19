@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -314,8 +314,7 @@ public class ExtPopupMenu {
          *
          * @param item the menu item that was clicked
          *
-         * @return {@code true} if the event was handled, {@code false}
-         *         otherwise
+         * @return {@code true} if the event was handled, {@code false} otherwise
          */
         @SuppressWarnings("UnusedReturnValue")
         boolean onMenuItemClick(@NonNull MenuItem item);
