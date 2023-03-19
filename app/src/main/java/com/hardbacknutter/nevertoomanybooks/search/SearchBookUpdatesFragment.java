@@ -271,7 +271,7 @@ public class SearchBookUpdatesFragment
         });
     }
 
-    private void onAbort(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
+    private void onAbort(@NonNull final LiveDataEvent<TaskResult<Throwable>> message) {
         closeProgressDialog();
 
         message.getData().ifPresent(data -> {
