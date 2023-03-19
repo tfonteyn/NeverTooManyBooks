@@ -369,6 +369,8 @@ public final class FileUtils {
      * @param name the file name to mutate
      *
      * @return the actual file name to use
+     *
+     * @throws FileNotFoundException on ...
      */
     @NonNull
     public static String buildValidFilename(@Nullable final String name)
@@ -435,6 +437,13 @@ public final class FileUtils {
         }
     }
 
+    /**
+     * Try to determine the MIME type associated with the given file extension.
+     *
+     * @param fileExt to check
+     *
+     * @return the MIME type
+     */
     @NonNull
     public static String getMimeTypeFromExtension(@NonNull final String fileExt) {
         final String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExt);
@@ -452,7 +461,13 @@ public final class FileUtils {
         return "application/" + fileExt;
     }
 
-    //URGENT: check isDiskFull everywhere we catch IOExceptions
+    /**
+     * Check if the given Exception is an IOException representing a  "Disk Full" error.
+     *
+     * @param e to check
+     *
+     * @return {@code true} if it is
+     */
     public static boolean isDiskFull(@Nullable final Exception e) {
         return e instanceof IOException
                && e.getCause() instanceof ErrnoException
