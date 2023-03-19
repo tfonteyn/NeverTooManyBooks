@@ -407,7 +407,7 @@ public class CalibreContentServerReader
      */
     private void handleBook(@NonNull final Context context,
                             @NonNull final JSONObject calibreBook)
-            throws StorageException {
+            throws StorageException, IOException {
         try {
             final String calibreUuid = calibreBook.getString(CalibreBook.UUID);
             // check if we already have the calibre book in the local database
@@ -470,7 +470,7 @@ public class CalibreContentServerReader
     private void updateBook(@NonNull final Context context,
                             @NonNull final JSONObject calibreBook,
                             @NonNull final Book book)
-            throws StorageException, DaoWriteException {
+            throws StorageException, IOException, DaoWriteException {
 
         book.setStage(EntityStage.Stage.Dirty);
         copyCalibreData(context, calibreBook, book);
@@ -488,7 +488,7 @@ public class CalibreContentServerReader
 
     private void insertBook(@NonNull final Context context,
                             @NonNull final JSONObject calibreBook)
-            throws StorageException, DaoWriteException {
+            throws StorageException, IOException, DaoWriteException {
 
         // It's a new book; construct it using the calibre server data and insert it into the db
         final Book book = new Book();
@@ -522,7 +522,7 @@ public class CalibreContentServerReader
     private void copyCalibreData(@NonNull final Context context,
                                  @NonNull final JSONObject calibreBook,
                                  @NonNull final Book localBook)
-            throws StorageException, JSONException {
+            throws StorageException, IOException, JSONException {
 
         final int calibreBookId = calibreBook.getInt(CalibreBook.ID);
         localBook.putInt(DBKey.CALIBRE_BOOK_ID, calibreBookId);

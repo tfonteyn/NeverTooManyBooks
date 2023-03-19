@@ -1127,7 +1127,7 @@ public class CalibreContentServer
     @NonNull
     Optional<File> getCover(final int calibreId,
                             @NonNull final String coverUrl)
-            throws StorageException {
+            throws StorageException, IOException {
 
         synchronized (this) {
             if (imageDownloader == null) {
