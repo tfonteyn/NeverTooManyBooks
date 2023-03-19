@@ -45,6 +45,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
@@ -57,14 +58,13 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 /**
  * Global settings page.
@@ -467,7 +467,7 @@ public class SettingsFragment
 
         } catch (@NonNull final StorageException e) {
             // This should never happen... flw
-            StandardDialogs.showError(getContext(), e);
+            ErrorDialog.show(getContext(), e, getString(R.string.error_storage_not_accessible));
             return false;
         }
     }
@@ -475,20 +475,11 @@ public class SettingsFragment
     private void onMoveFailure(@NonNull final LiveDataEvent<TaskResult<Throwable>> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(data -> {
-            final Context context = getContext();
+        message.getData().map(TaskResult::getResult).filter(Objects::nonNull).ifPresent(e -> {
             //noinspection ConstantConditions
-            final String msg = ExMsg
-                    .map(context, data.getResult())
-                    .orElseGet(() -> getString(R.string.error_unknown_long,
-                                               getString(R.string.pt_maintenance)));
-            new MaterialAlertDialogBuilder(context)
-                    .setIcon(R.drawable.ic_baseline_error_24)
-                    .setTitle(R.string.lbl_moving_data)
-                    .setMessage(msg)
-                    .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
-                    .create()
-                    .show();
+            ErrorDialog.show(getContext(), e,
+                             getString(R.string.lbl_moving_data),
+                             getString(R.string.error_storage_not_accessible));
         });
     }
 
