@@ -36,7 +36,6 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.Logger;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
@@ -85,11 +84,11 @@ public final class CoverVolume {
      *
      * @return the actual volume
      *
-     * @throws StorageException The covers directory is not available
+     * @throws CoverStorageException The covers directory is not available
      */
     public static int initVolume(@NonNull final Context context,
                                  final int volume)
-            throws StorageException {
+            throws CoverStorageException {
 
         final StorageManager storage = (StorageManager)
                 context.getSystemService(Context.STORAGE_SERVICE);
