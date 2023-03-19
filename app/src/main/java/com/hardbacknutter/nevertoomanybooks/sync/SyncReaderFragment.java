@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.sync;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -43,6 +42,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -59,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapte
 import com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker.DatePickerListener;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker.SingleDatePicker;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncImportBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
@@ -69,7 +70,6 @@ import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 public class SyncReaderFragment
         extends BaseFragment {
@@ -403,20 +403,10 @@ public class SyncReaderFragment
     private void onImportFailure(@NonNull final LiveDataEvent<TaskResult<Throwable>> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(data -> {
-            final Context context = getContext();
+        message.getData().map(TaskResult::getResult).filter(Objects::nonNull).ifPresent(e -> {
             //noinspection ConstantConditions
-            final String msg = ExMsg.map(context, data.getResult())
-                                    .orElseGet(() -> getString(R.string.error_unknown));
-
-            //noinspection ConstantConditions
-            new MaterialAlertDialogBuilder(context)
-                    .setIcon(R.drawable.ic_baseline_error_24)
-                    .setTitle(R.string.error_import_failed)
-                    .setMessage(msg)
-                    .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
-                    .create()
-                    .show();
+            ErrorDialog.show(getContext(), e, getString(R.string.error_import_failed),
+                             (d, w) -> getActivity().finish());
         });
     }
 
