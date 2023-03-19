@@ -480,7 +480,7 @@ public class ExportFragment
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_baseline_error_24)
-                    .setMessage(R.string.error_email_failed)
+                    .setTitle(R.string.error_email_failed)
                     .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
                     .create()
                     .show();
