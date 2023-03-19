@@ -41,10 +41,11 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.core.storage.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedStorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedCoverStorageException;
 
 /**
  * Given a URL and a filename, this class uses a {@link FutureHttpGet} to download an image,
@@ -143,8 +144,8 @@ public class ImageDownloader {
                     try (BufferedInputStream bis = new BufferedInputStream(
                             request.getInputStream())) {
                         return coverStorage.persist(bis, destFile);
-                    } catch (@NonNull final StorageException e) {
-                        throw new UncheckedStorageException(e);
+                    } catch (@NonNull final CoverStorageException e) {
+                        throw new UncheckedCoverStorageException(e);
                     } catch (@NonNull final IOException e) {
                         throw new UncheckedIOException(e);
                     }
