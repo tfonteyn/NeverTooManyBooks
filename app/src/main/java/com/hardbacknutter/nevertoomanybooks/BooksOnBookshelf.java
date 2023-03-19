@@ -1580,8 +1580,8 @@ public class BooksOnBookshelf
      */
     private void onBuildFailed(@NonNull final LiveDataEvent<TaskResult<Throwable>> message) {
         vb.progressCircle.hide();
-        message.getData().ifPresent(data -> {
-            LoggerFactory.getLogger().e(TAG, data.getResult());
+        message.getData().map(TaskResult::getResult).filter(Objects::nonNull).ifPresent(data -> {
+            LoggerFactory.getLogger().e(TAG, data);
 
             vm.onBuildFailed();
 
