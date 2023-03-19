@@ -44,6 +44,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.io.FileNotFoundException;
 import java.security.cert.CertificateException;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -51,12 +52,12 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetDirectory
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 /**
  * A delegate class for handling a Calibre enabled Book.
@@ -225,6 +226,8 @@ public class CalibreHandler {
      * @param context  Current context
      * @param menuItem to check
      * @param rowData  data to use
+     *
+     * @return {@code true} if the event was handled, {@code false} otherwise.
      */
     public boolean onMenuItemSelected(@NonNull final Context context,
                                       @NonNull final MenuItem menuItem,
@@ -238,6 +241,8 @@ public class CalibreHandler {
      * @param context  Current context
      * @param menuItem to check
      * @param book     data to use
+     *
+     * @return {@code true} if the event was handled, {@code false} otherwise.
      */
     public boolean onMenuItemSelected(@NonNull final Context context,
                                       @NonNull final MenuItem menuItem,
@@ -299,14 +304,11 @@ public class CalibreHandler {
     private void onFailure(@NonNull final LiveDataEvent<TaskResult<Throwable>> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(data -> {
+        message.getData().map(TaskResult::getResult).filter(Objects::nonNull).ifPresent(e -> {
             final Context context = hostView.getContext();
-            final String msg = ExMsg
-                    .map(context, data.getResult())
-                    .orElseGet(() -> context.getString(R.string.error_network_site_access_failed,
-                                                       CalibreContentServer.getHostUrl(context)));
-
-            Snackbar.make(hostView, msg, Snackbar.LENGTH_LONG).show();
+            ErrorDialog.show(context, e, context.getString(R.string.lbl_calibre_content_server),
+                             context.getString(R.string.error_network_site_access_failed,
+                                               CalibreContentServer.getHostUrl(context)));
         });
     }
 
