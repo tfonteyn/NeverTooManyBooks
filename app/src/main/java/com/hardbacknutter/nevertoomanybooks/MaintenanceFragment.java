@@ -54,8 +54,8 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentMaintenanceBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.SqliteShellFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceAlertDialogBuilder;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.utils.FileSize;
 
@@ -132,8 +132,11 @@ public class MaintenanceFragment
             try {
                 bytes = purge(bookUuidList, false);
 
-            } catch (@NonNull final StorageException | SecurityException e) {
-                StandardDialogs.showError(context, e);
+            } catch (@NonNull final StorageException e) {
+                ErrorDialog.show(context, e, getString(R.string.error_storage_not_accessible));
+                return;
+            } catch (@NonNull final SecurityException e) {
+                ErrorDialog.show(context, e);
                 return;
             }
 
@@ -150,8 +153,11 @@ public class MaintenanceFragment
                         try {
                             purge(bookUuidList, true);
 
-                        } catch (@NonNull final StorageException | SecurityException e) {
-                            StandardDialogs.showError(context, e);
+                        } catch (@NonNull final StorageException e) {
+                            ErrorDialog.show(context, e,
+                                             getString(R.string.error_storage_not_accessible));
+                        } catch (@NonNull final SecurityException e) {
+                            ErrorDialog.show(context, e);
                         }
                     })
                     .create()
