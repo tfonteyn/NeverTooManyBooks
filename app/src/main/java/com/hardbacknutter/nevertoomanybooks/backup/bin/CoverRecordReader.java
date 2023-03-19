@@ -32,7 +32,7 @@ import java.util.function.Supplier;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.core.storage.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
@@ -135,7 +135,7 @@ public class CoverRecordReader
                         Log.d(TAG, "", e);
                     }
                     // we swallow IOExceptions, **EXCEPT** when the disk is full.
-                    if (DiskFullException.isDiskFull(e)) {
+                    if (FileUtils.isDiskFull(e)) {
                         throw e;
                     }
                     // we don't want to quit importing just because one cover fails.
