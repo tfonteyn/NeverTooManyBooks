@@ -43,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.HttpUnauthorizedExcepti
 import com.hardbacknutter.nevertoomanybooks.core.network.NetworkException;
 import com.hardbacknutter.nevertoomanybooks.core.network.NetworkUnavailableException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.DiskFullException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
@@ -104,10 +104,13 @@ public final class ExMsg {
 
         } else if (e instanceof DiskFullException) {
             return context.getString(R.string.error_storage_no_space_left);
-        } else if (e instanceof StorageException) {
+
+        } else if (e instanceof CoverStorageException) {
             return context.getString(R.string.error_storage_not_accessible);
+
         } else if (e instanceof DaoWriteException) {
             return context.getString(R.string.error_storage_not_writable);
+
         } else if (e instanceof NetworkUnavailableException) {
             return context.getString(R.string.error_network_please_connect);
         } else if (e instanceof NetworkException) {
