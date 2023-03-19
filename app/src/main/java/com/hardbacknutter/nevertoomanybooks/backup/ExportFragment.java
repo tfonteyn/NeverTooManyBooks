@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.backup;
 
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -43,6 +42,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -58,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentExportBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
@@ -65,7 +66,6 @@ import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.utils.FileSize;
 import com.hardbacknutter.nevertoomanybooks.utils.UriInfo;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 public class ExportFragment
         extends BaseFragment {
@@ -305,25 +305,12 @@ public class ExportFragment
     private void onExportFailure(@NonNull final LiveDataEvent<TaskResult<Throwable>> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(data -> {
-            final Context context = getContext();
+        message.getData().map(TaskResult::getResult).filter(Objects::nonNull).ifPresent(e -> {
             //noinspection ConstantConditions
-            final String msg = ExMsg.map(context, data.getResult())
-                                    .orElseGet(() -> getString(R.string.error_unknown));
-
-            @StringRes
-            final int title = vm.getExportHelper().isBackup()
-                              ? R.string.error_backup_failed
-                              : R.string.error_export_failed;
-
-            //noinspection ConstantConditions
-            new MaterialAlertDialogBuilder(context)
-                    .setIcon(R.drawable.ic_baseline_error_24)
-                    .setTitle(title)
-                    .setMessage(msg)
-                    .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
-                    .create()
-                    .show();
+            ErrorDialog.show(getContext(), e, getString(vm.getExportHelper().isBackup()
+                                                        ? R.string.error_backup_failed
+                                                        : R.string.error_export_failed),
+                             (d, w) -> getActivity().finish());
         });
     }
 

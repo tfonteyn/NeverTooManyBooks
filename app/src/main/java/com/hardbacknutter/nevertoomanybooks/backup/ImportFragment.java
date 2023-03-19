@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.backup;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -43,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -58,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImportBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
@@ -66,7 +67,6 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 public class ImportFragment
         extends BaseFragment {
@@ -220,10 +220,25 @@ public class ImportFragment
                                                                    .getSystemLocaleList().get(0));
 
         } catch (@NonNull final DataReaderException e) {
-            onImportNotSupported(e.getUserMessage(getContext()));
+            //noinspection ConstantConditions
+            new MaterialAlertDialogBuilder(getContext())
+                    .setIcon(R.drawable.ic_baseline_error_24)
+                    .setTitle(R.string.error_import_failed)
+                    .setMessage(e.getUserMessage(getContext()))
+                    .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
+                    .create()
+                    .show();
             return;
+
         } catch (@NonNull final FileNotFoundException e) {
-            onImportNotSupported(getString(R.string.error_file_not_found, uri.getPath()));
+            //noinspection ConstantConditions
+            new MaterialAlertDialogBuilder(getContext())
+                    .setIcon(R.drawable.ic_baseline_error_24)
+                    .setTitle(R.string.error_import_failed)
+                    .setMessage(getString(R.string.error_file_not_found, uri.getPath()))
+                    .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
+                    .create()
+                    .show();
             return;
         }
 
@@ -249,7 +264,14 @@ public class ImportFragment
                 break;
 
             default:
-                onImportNotSupported(getString(R.string.error_import_file_not_supported));
+                //noinspection ConstantConditions
+                new MaterialAlertDialogBuilder(getContext())
+                        .setIcon(R.drawable.ic_baseline_error_24)
+                        .setTitle(R.string.error_import_failed)
+                        .setMessage(R.string.error_import_file_not_supported)
+                        .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
+                        .create()
+                        .show();
                 break;
         }
     }
@@ -400,16 +422,6 @@ public class ImportFragment
         }
     }
 
-    private void onImportNotSupported(@NonNull final CharSequence msg) {
-        //noinspection ConstantConditions
-        new MaterialAlertDialogBuilder(getContext())
-                .setIcon(R.drawable.ic_baseline_error_24)
-                .setMessage(msg)
-                .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
-                .create()
-                .show();
-    }
-
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         message.getData().ifPresent(data -> {
             if (progressDelegate == null) {
@@ -427,20 +439,10 @@ public class ImportFragment
     private void onImportFailure(@NonNull final LiveDataEvent<TaskResult<Throwable>> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(data -> {
-            final Context context = getContext();
+        message.getData().map(TaskResult::getResult).filter(Objects::nonNull).ifPresent(e -> {
             //noinspection ConstantConditions
-            final String msg = ExMsg.map(context, data.getResult())
-                                    .orElseGet(() -> getString(R.string.error_unknown));
-
-            //noinspection ConstantConditions
-            new MaterialAlertDialogBuilder(context)
-                    .setIcon(R.drawable.ic_baseline_error_24)
-                    .setTitle(R.string.error_import_failed)
-                    .setMessage(msg)
-                    .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
-                    .create()
-                    .show();
+            ErrorDialog.show(getContext(), e, getString(R.string.error_import_failed),
+                             (d, w) -> getActivity().finish());
         });
     }
 
