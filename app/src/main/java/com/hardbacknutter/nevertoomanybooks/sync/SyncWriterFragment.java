@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.sync;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -37,6 +36,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -47,11 +47,11 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SyncContract
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncExportBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 public class SyncWriterFragment
         extends BaseFragment {
@@ -195,20 +195,10 @@ public class SyncWriterFragment
     private void onExportFailure(@NonNull final LiveDataEvent<TaskResult<Throwable>> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(data -> {
-            final Context context = getContext();
+        message.getData().map(TaskResult::getResult).filter(Objects::nonNull).ifPresent(e -> {
             //noinspection ConstantConditions
-            final String msg = ExMsg.map(context, data.getResult())
-                                    .orElseGet(() -> getString(R.string.error_unknown));
-
-            //noinspection ConstantConditions
-            new MaterialAlertDialogBuilder(context)
-                    .setIcon(R.drawable.ic_baseline_error_24)
-                    .setTitle(R.string.error_export_failed)
-                    .setMessage(msg)
-                    .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
-                    .create()
-                    .show();
+            ErrorDialog.show(getContext(), e, getString(R.string.error_export_failed),
+                             (d, w) -> getActivity().finish());
         });
     }
 
