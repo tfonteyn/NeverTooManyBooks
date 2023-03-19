@@ -372,6 +372,12 @@ public class CoverBrowserViewModel
         return searchEditionsTask.onFinished();
     }
 
+    /**
+     * Observable to receive failure.
+     *
+     * @return the result is the Exception; {@link TaskResult#getResult()} will always
+     *         return a valid {@link Throwable} and never {@code null}
+     */
     @NonNull
     LiveData<LiveDataEvent<TaskResult<Throwable>>> onSearchEditionsTaskFailure() {
         return searchEditionsTask.onFailure();
