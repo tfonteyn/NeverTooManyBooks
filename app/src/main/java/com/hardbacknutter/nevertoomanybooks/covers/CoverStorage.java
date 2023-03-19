@@ -24,7 +24,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
-import android.util.Log;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
@@ -99,11 +98,11 @@ public class CoverStorage {
      *
      * @return directory
      *
-     * @throws StorageException The covers directory is not available
+     * @throws CoverStorageException The covers directory is not available
      */
     @NonNull
     static File getDir(@NonNull final Context context)
-            throws StorageException {
+            throws CoverStorageException {
 
         final int volume = CoverVolume.getVolume(context);
 
@@ -163,12 +162,12 @@ public class CoverStorage {
      *
      * @return directory
      *
-     * @throws StorageException The covers directory is not available
+     * @throws CoverStorageException The covers directory is not available
      * @see CoverStorage#getDir(Context)
      */
     @NonNull
     public File getDir()
-            throws StorageException {
+            throws CoverStorageException {
         return getDir(appContextSupplier.get());
     }
 
@@ -206,10 +205,7 @@ public class CoverStorage {
         final File coverDir;
         try {
             coverDir = getDir(appContextSupplier.get());
-        } catch (@NonNull final StorageException e) {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "getPersistedCoverFile", e);
-            }
+        } catch (@NonNull final CoverStorageException e) {
             return Optional.empty();
         }
 
