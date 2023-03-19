@@ -34,6 +34,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -348,7 +350,13 @@ public class EditBookSeriesListDialogFragment
         if (vm.changeForAllBooks(getContext(), original, modified)) {
             adapter.notifyDataSetChanged();
         } else {
-            StandardDialogs.showError(getContext(), R.string.error_storage_not_writable);
+            new MaterialAlertDialogBuilder(getContext())
+                    .setIcon(R.drawable.ic_baseline_error_24)
+                    .setTitle(R.string.action_save)
+                    .setMessage(R.string.error_storage_not_writable)
+                    .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
+                    .create()
+                    .show();
         }
     }
 
@@ -363,7 +371,13 @@ public class EditBookSeriesListDialogFragment
         if (vm.changeForThisBook(getContext(), original, modified)) {
             adapter.notifyDataSetChanged();
         } else {
-            StandardDialogs.showError(getContext(), R.string.error_storage_not_writable);
+            new MaterialAlertDialogBuilder(getContext())
+                    .setIcon(R.drawable.ic_baseline_error_24)
+                    .setTitle(R.string.action_save)
+                    .setMessage(R.string.error_storage_not_writable)
+                    .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
+                    .create()
+                    .show();
         }
     }
 
