@@ -43,9 +43,9 @@ import java.util.function.Function;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.UncheckedSAXException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedStorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedCoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 
 import org.xml.sax.SAXException;
@@ -59,8 +59,6 @@ public abstract class FutureHttpBase<T> {
      * Reminder: not all sites have/need a throttler.
      */
     static final int RETRY_AFTER_MS = 1_000;
-
-    private static final String TAG = "FutureHttpBase";
 
     /** timeout for opening a connection to a website. */
     private static final int CONNECT_TIMEOUT_MS = 10_000;
@@ -309,7 +307,7 @@ public abstract class FutureHttpBase<T> {
             if (cause instanceof IOException) {
                 throw (IOException) cause;
             }
-            if (cause instanceof UncheckedStorageException) {
+            if (cause instanceof UncheckedCoverStorageException) {
                 //noinspection ConstantConditions
                 throw (StorageException) cause.getCause();
             }

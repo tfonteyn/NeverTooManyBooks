@@ -35,6 +35,7 @@ import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.storage.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 public final class FutureHttpGet<T>
@@ -45,7 +46,7 @@ public final class FutureHttpGet<T>
     private final String command;
 
     /**
-     * Constructor.
+     * Private constructor.
      *
      * @param siteResId string resource for the site name
      */
@@ -72,6 +73,12 @@ public final class FutureHttpGet<T>
      * @param responseProcessor which will receive the response InputStream
      *
      * @return the processed response
+     *
+     * @throws CancellationException  if the user cancelled us
+     * @throws SocketTimeoutException if the timeout expires before
+     *                                the connection can be established
+     * @throws IOException            on generic/other IO failures
+     * @throws CoverStorageException  The covers directory is not available
      */
     @NonNull
     public T get(@NonNull final String url,

@@ -23,7 +23,7 @@ import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.CoverStorageException;
 
 public interface ConnectionValidator {
 
@@ -32,14 +32,14 @@ public interface ConnectionValidator {
      *
      * @return {@code true} if al is well.
      *
-     * @throws CredentialsException on authentication/login failures
-     * @throws StorageException     on storage related failures
-     * @throws IOException          on generic/other IO failures
+     * @throws CredentialsException  on authentication/login failures
+     * @throws CoverStorageException on storage related failures
+     * @throws IOException           on generic/other IO failures
      */
     @WorkerThread
     boolean validateConnection()
             throws CredentialsException,
-                   StorageException,
+                   CoverStorageException,
                    IOException;
 
     void cancel();

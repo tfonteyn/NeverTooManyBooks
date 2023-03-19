@@ -36,6 +36,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CancellationException;
 import java.util.function.Function;
 
+import com.hardbacknutter.nevertoomanybooks.core.storage.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 public class FutureHttpPost<T>
@@ -43,6 +44,11 @@ public class FutureHttpPost<T>
 
     private static final String POST = "POST";
 
+    /**
+     * Constructor.
+     *
+     * @param siteResId string resource for the site name
+     */
     public FutureHttpPost(@StringRes final int siteResId) {
         super(siteResId);
     }
@@ -55,6 +61,12 @@ public class FutureHttpPost<T>
      * @param responseProcessor which will receive the response InputStream
      *
      * @return the processed response; can be {@code null} if there was no response body.
+     *
+     * @throws CancellationException  if the user cancelled us
+     * @throws SocketTimeoutException if the timeout expires before
+     *                                the connection can be established
+     * @throws IOException            on generic/other IO failures
+     * @throws CoverStorageException  The covers directory is not available
      */
     @Nullable
     public T post(@NonNull final String url,

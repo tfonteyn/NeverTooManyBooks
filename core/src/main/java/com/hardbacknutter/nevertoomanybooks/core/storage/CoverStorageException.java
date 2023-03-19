@@ -17,11 +17,9 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.covers;
+package com.hardbacknutter.nevertoomanybooks.core.storage;
 
 import androidx.annotation.Nullable;
-
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 /**
  * Thrown when external storage media is not available.
