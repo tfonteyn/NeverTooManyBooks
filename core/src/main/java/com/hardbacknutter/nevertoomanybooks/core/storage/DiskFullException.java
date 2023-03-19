@@ -48,6 +48,7 @@ public class DiskFullException
         super(cause);
     }
 
+    //URGENT: check isDiskFull everywhere we catch IOExceptions
     public static boolean isDiskFull(@Nullable final Exception e) {
         return e instanceof IOException
                && e.getCause() instanceof ErrnoException
