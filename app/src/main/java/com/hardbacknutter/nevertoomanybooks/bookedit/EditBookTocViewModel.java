@@ -54,6 +54,12 @@ public class EditBookTocViewModel
         return isfdbGetEditionsTask.onCancelled();
     }
 
+    /**
+     * Observable to receive failure.
+     *
+     * @return the result is the Exception; {@link TaskResult#getResult()} will always
+     *         return a valid {@link Throwable} and never {@code null}
+     */
     @NonNull
     LiveData<LiveDataEvent<TaskResult<Throwable>>> onIsfdbEditionsFailure() {
         return isfdbGetEditionsTask.onFailure();
@@ -74,6 +80,12 @@ public class EditBookTocViewModel
         return isfdbGetBookTask.onCancelled();
     }
 
+    /**
+     * Observable to receive failure.
+     *
+     * @return the result is the Exception; {@link TaskResult#getResult()} will always
+     *         return a valid {@link Throwable} and never {@code null}
+     */
     @NonNull
     LiveData<LiveDataEvent<TaskResult<Throwable>>> onIsfdbBookFailure() {
         return isfdbGetBookTask.onFailure();
