@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.sync;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.IntRange;
@@ -36,7 +35,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -45,8 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
-import com.hardbacknutter.nevertoomanybooks.covers.Cover;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -60,22 +56,23 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
  * Handles importing data with each field controlled by a {@link SyncAction}.
  */
 public final class SyncReaderProcessor
-        implements Parcelable {
+//        implements Parcelable
+{
 
-    /** {@link Parcelable}. */
-    public static final Creator<SyncReaderProcessor> CREATOR = new Creator<>() {
-        @Override
-        @NonNull
-        public SyncReaderProcessor createFromParcel(@NonNull final Parcel in) {
-            return new SyncReaderProcessor(in);
-        }
-
-        @Override
-        @NonNull
-        public SyncReaderProcessor[] newArray(final int size) {
-            return new SyncReaderProcessor[size];
-        }
-    };
+//    /** {@link Parcelable}. */
+//    public static final Creator<SyncReaderProcessor> CREATOR = new Creator<>() {
+//        @Override
+//        @NonNull
+//        public SyncReaderProcessor createFromParcel(@NonNull final Parcel in) {
+//            return new SyncReaderProcessor(in);
+//        }
+//
+//        @Override
+//        @NonNull
+//        public SyncReaderProcessor[] newArray(final int size) {
+//            return new SyncReaderProcessor[size];
+//        }
+//    };
 
     private static final String TAG = "SyncProcessor";
 
@@ -86,29 +83,29 @@ public final class SyncReaderProcessor
         this.fields = fields;
     }
 
-    /**
-     * {@link Parcelable} Constructor.
-     *
-     * @param in Parcel to construct the object from
-     */
-    private SyncReaderProcessor(@NonNull final Parcel in) {
-        final List<SyncField> list = new ArrayList<>();
-        ParcelUtils.readParcelableList(in, list, SyncField.class.getClassLoader());
+//    /**
+//     * {@link Parcelable} Constructor.
+//     *
+//     * @param in Parcel to construct the object from
+//     */
+//    private SyncReaderProcessor(@NonNull final Parcel in) {
+//        final List<SyncField> list = new ArrayList<>();
+//        ParcelUtils.readParcelableList(in, list, SyncField.class.getClassLoader());
+//
+//        fields = new LinkedHashMap<>();
+//        list.forEach(syncField -> fields.put(syncField.key, syncField));
+//    }
 
-        fields = new LinkedHashMap<>();
-        list.forEach(syncField -> fields.put(syncField.key, syncField));
-    }
-
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        ParcelUtils.writeParcelableList(dest, new ArrayList<>(fields.values()), flags);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
+//    @Override
+//    public void writeToParcel(@NonNull final Parcel dest,
+//                              final int flags) {
+//        ParcelUtils.writeParcelableList(dest, new ArrayList<>(fields.values()), flags);
+//    }
+//
+//    @Override
+//    public int describeContents() {
+//        return 0;
+//    }
 
     /**
      * Filter the fields we want versus the fields we actually need for the given book data.
