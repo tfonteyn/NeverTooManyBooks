@@ -42,7 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.storage.CoverStorageException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedCoverStorageException;
@@ -171,9 +170,8 @@ public class ImageDownloader {
             }
 
             // we swallow IOExceptions, **EXCEPT** when the disk is full.
-            if (DiskFullException.isDiskFull(e)) {
-                //noinspection ConstantConditions
-                throw new DiskFullException(e.getCause());
+            if (FileUtils.isDiskFull(e)) {
+                throw e;
             }
             return Optional.empty();
         }
