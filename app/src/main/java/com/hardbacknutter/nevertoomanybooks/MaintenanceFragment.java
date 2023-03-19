@@ -48,6 +48,7 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForWritingContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNodeDao;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.storage.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
@@ -263,11 +264,11 @@ public class MaintenanceFragment
      *
      * @return the total size in bytes of purgeable/purged files.
      *
-     * @throws StorageException The covers directory is not available
+     * @throws CoverStorageException The covers directory is not available
      */
     private long purge(@NonNull final Collection<String> bookUuidList,
                        final boolean reallyDelete)
-            throws StorageException {
+            throws CoverStorageException {
 
         // check for orphaned cover files
         final FileFilter coverFilter = file -> {
@@ -287,7 +288,7 @@ public class MaintenanceFragment
     }
 
     private long count(@Nullable final FileFilter coverFilter)
-            throws StorageException {
+            throws CoverStorageException {
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         final CoverStorage coverStorage = serviceLocator.getCoverStorage();
 
@@ -298,7 +299,7 @@ public class MaintenanceFragment
     }
 
     private long delete(@Nullable final FileFilter coverFilter)
-            throws StorageException {
+            throws CoverStorageException {
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         final CoverStorage coverStorage = serviceLocator.getCoverStorage();
 
