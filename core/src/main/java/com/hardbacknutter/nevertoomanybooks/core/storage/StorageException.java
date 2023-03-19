@@ -39,8 +39,4 @@ public abstract class StorageException
                                @Nullable final Throwable cause) {
         super(message, cause);
     }
-
-    protected StorageException(@Nullable final Throwable cause) {
-        super(cause);
-    }
 }
