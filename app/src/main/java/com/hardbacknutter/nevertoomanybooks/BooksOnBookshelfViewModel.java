@@ -204,6 +204,12 @@ public class BooksOnBookshelfViewModel
         return boBTask.onCancelled();
     }
 
+    /**
+     * Observable to receive failure.
+     *
+     * @return the result is the Exception; {@link TaskResult#getResult()} will always
+     *         return a valid {@link Throwable} and never {@code null}
+     */
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<Throwable>>> onFailure() {
         return boBTask.onFailure();
