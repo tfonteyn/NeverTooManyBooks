@@ -83,7 +83,7 @@ public class StartupViewModel
 
     private final MutableLiveData<LiveDataEvent<Boolean>> finishedLiveData =
             new MutableLiveData<>();
-    private final MutableLiveData<LiveDataEvent<TaskResult<Exception>>> failureLiveData =
+    private final MutableLiveData<LiveDataEvent<TaskResult<Throwable>>> failureLiveData =
             new MutableLiveData<>();
     private final MutableLiveData<TaskProgress> progressLiveData =
             new MutableLiveData<>();
@@ -287,7 +287,7 @@ public class StartupViewModel
      * @return the result is the Exception
      */
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<Exception>>> onFailure() {
+    public LiveData<LiveDataEvent<TaskResult<Throwable>>> onFailure() {
         return failureLiveData;
     }
 

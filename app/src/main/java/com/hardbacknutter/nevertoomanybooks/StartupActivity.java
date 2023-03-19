@@ -33,9 +33,11 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.lang.ref.WeakReference;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityStartupBinding;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
@@ -110,10 +112,9 @@ public class StartupActivity
                 data -> nextStage(Stage.RunTasks)));
 
         // Not called for now, see {@link StartupViewModel} #mTaskListener.
-        vm.onFailure().observe(this, message -> message.getData().ifPresent(data -> {
-            final Exception e = data.getResult();
-            onFailure(e == null ? new Throwable("eh?") : e);
-        }));
+        vm.onFailure().observe(this, message ->
+                message.getData().map(TaskResult::getResult).filter(Objects::nonNull)
+                       .ifPresent(this::onFailure));
 
         nextStage(Stage.Init);
     }
