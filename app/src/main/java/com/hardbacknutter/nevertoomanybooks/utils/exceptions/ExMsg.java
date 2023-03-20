@@ -50,8 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 public final class ExMsg {
 
-    private static final String TAG = "ExMsg";
-
     private ExMsg() {
     }
 
@@ -222,7 +220,8 @@ public final class ExMsg {
             return context.getString(R.string.error_storage_no_space_left);
         } else {
             // write to logfile for future reporting enhancements.
-            LoggerFactory.getLogger().w(TAG, "errno=" + errno);
+            LoggerFactory.getLogger().w("android.system.ErrnoException",
+                                        "errno=" + errno);
             return Os.strerror(errno);
         }
     }
