@@ -27,7 +27,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 /**
- * Importing data can give a detailed reason of failure.
+ * Thrown during an import of data.
  */
 public class DataReaderException
         extends Exception {
