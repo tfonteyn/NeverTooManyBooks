@@ -24,7 +24,7 @@ import androidx.annotation.NonNull;
 /**
  * Thrown during an export of data.
  * <p>
- * This class serves as a wrapper around q (typically) RuntimeException.
+ * This class serves as a wrapper around a (typically) RuntimeException.
  */
 public class DataWriterException
         extends Exception {
