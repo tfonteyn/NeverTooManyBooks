@@ -26,6 +26,7 @@ import android.system.OsConstants;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.IOException;
 import java.security.cert.Certificate;
 import java.util.Optional;
 import javax.net.ssl.HttpsURLConnection;
@@ -84,12 +85,11 @@ public final class ExMsg {
     @Nullable
     private static String getMsg(@NonNull final Context context,
                                  @NonNull final Throwable e) {
+        if (e instanceof IOException) {
+            return getMsg(context, (IOException) e);
 
-        if (e instanceof SearchException) {
+        } else if (e instanceof SearchException) {
             return ((SearchException) e).getUserMessage(context);
-
-        } else if (e instanceof DataReaderException) {
-            return ((DataReaderException) e).getUserMessage(context);
 
         } else if (e instanceof ValidatorException) {
             // The ValidatorException expects a localized message, so just use it
@@ -105,11 +105,9 @@ public final class ExMsg {
         } else if (e instanceof DaoWriteException) {
             return context.getString(R.string.error_storage_not_writable);
 
-        } else if (e instanceof NetworkUnavailableException) {
-            return context.getString(R.string.error_network_please_connect);
-        } else if (e instanceof NetworkException) {
-            return context.getString(R.string.error_network_failed_try_again);
 
+        } else if (e instanceof DataReaderException) {
+            return ((DataReaderException) e).getUserMessage(context);
 
         } else if (e instanceof DataWriterException) {
             // Typically (but not enforced) the wrapped exception will be a JSONException
@@ -122,6 +120,51 @@ public final class ExMsg {
             return context.getString(R.string.error_site_authentication_failed,
                                      context.getString(ce.getSiteResId()));
 
+        } else if (e instanceof com.hardbacknutter.org.json.JSONException) {
+            //TODO: a JSONException is very generic, we'd need to look at the actual text.
+            return context.getString(R.string.error_unexpected_long,
+                                     context.getString(R.string.pt_maintenance));
+
+        } else if (e instanceof android.database.SQLException
+                   || e instanceof java.sql.SQLException) {
+            return context.getString(R.string.error_unexpected_long,
+                                     context.getString(R.string.pt_maintenance));
+
+        } else if (e instanceof java.security.cert.CertificateEncodingException) {
+            return context.getString(R.string.error_certificate_invalid);
+
+        } else if (e instanceof java.security.cert.CertificateException) {
+            // There was something wrong with certificates/key on OUR end
+            return context.getString(R.string.httpErrorFailedSslHandshake);
+
+        } else if (e instanceof java.lang.StackOverflowError) {
+            // This is BAD.... but we've only ever seen this in the emulator ... flw
+            // ^^^ 2022-04-06
+            // TODO: give user detailed message
+            return context.getString(R.string.error_unexpected_long,
+                                     context.getString(R.string.pt_maintenance));
+
+        } else if (e instanceof android.system.ErrnoException) {
+            return mapErnoException(context, (android.system.ErrnoException) e);
+        }
+        return null;
+    }
+
+    /**
+     * All IOException's.
+     *
+     * @param context Current context
+     * @param e       to map
+     *
+     * @return message, or {@code null} if none matching
+     */
+    @Nullable
+    private static String getMsg(@NonNull final Context context,
+                                 @NonNull final IOException e) {
+        if (e instanceof NetworkUnavailableException) {
+            return context.getString(R.string.error_network_please_connect);
+        } else if (e instanceof NetworkException) {
+            return context.getString(R.string.error_network_failed_try_again);
         } else if (e instanceof HttpNotFoundException) {
             final HttpNotFoundException he = (HttpNotFoundException) e;
             final String msg = he.getUserMessage();
@@ -134,7 +177,6 @@ public final class ExMsg {
             } else {
                 return context.getString(R.string.httpErrorFileNotFound);
             }
-
         } else if (e instanceof HttpUnauthorizedException) {
             final HttpUnauthorizedException he = (HttpUnauthorizedException) e;
             if (he.getSiteResId() != 0) {
@@ -143,7 +185,6 @@ public final class ExMsg {
             } else {
                 return context.getString(R.string.error_authorization_failed);
             }
-
         } else if (e instanceof HttpStatusException) {
             final HttpStatusException he = (HttpStatusException) e;
             if (he.getSiteResId() != 0) {
@@ -153,23 +194,12 @@ public final class ExMsg {
             } else {
                 return context.getString(R.string.httpError) + " (" + he.getStatusCode() + ")";
             }
-
-        } else if (e instanceof com.hardbacknutter.org.json.JSONException) {
-            //TODO: a JSONException is very generic, we'd need to look at the actual text.
-            return context.getString(R.string.error_unexpected_long,
-                                     context.getString(R.string.pt_maintenance));
-
         } else if (e instanceof java.io.FileNotFoundException) {
             return context.getString(R.string.httpErrorFile);
 
         } else if (e instanceof java.util.zip.ZipException) {
             //TODO: a ZipException is very generic, we'd need to look at the actual text.
             return context.getString(R.string.error_import_archive_invalid);
-
-        } else if (e instanceof android.database.SQLException
-                   || e instanceof java.sql.SQLException) {
-            return context.getString(R.string.error_unexpected_long,
-                                     context.getString(R.string.pt_maintenance));
 
         } else if (e instanceof java.io.EOFException) {
             return context.getString(R.string.error_network_failed_try_again);
@@ -182,32 +212,15 @@ public final class ExMsg {
             return context.getString(R.string.error_unknown_host, e.getMessage())
                    + '\n' + context.getString(R.string.error_search_failed_network);
 
-        } else if (e instanceof java.security.cert.CertificateEncodingException) {
-            return context.getString(R.string.error_certificate_invalid);
-
-        } else if (e instanceof java.security.cert.CertificateException) {
-            // There was something wrong with certificates/key on OUR end
-            return context.getString(R.string.httpErrorFailedSslHandshake);
-
         } else if (e instanceof javax.net.ssl.SSLException) {
             // TODO: give user detailed message
             // There was something wrong with certificates/key on the REMOTE end
             return context.getString(R.string.httpErrorFailedSslHandshake);
 
-        } else if (e instanceof java.lang.StackOverflowError) {
-            // This is BAD.... but we've only ever seen this in the emulator ... flw
-            // ^^^ 2022-04-06
-            // TODO: give user detailed message
-            return context.getString(R.string.error_unexpected_long,
-                                     context.getString(R.string.pt_maintenance));
-
-        } else if (e instanceof java.io.IOException
-                   && e.getCause() instanceof android.system.ErrnoException) {
+        } else if (e.getCause() instanceof android.system.ErrnoException) {
             return mapErnoException(context, (android.system.ErrnoException) e.getCause());
-
-        } else if (e instanceof android.system.ErrnoException) {
-            return mapErnoException(context, (android.system.ErrnoException) e);
         }
+
         return null;
     }
 
