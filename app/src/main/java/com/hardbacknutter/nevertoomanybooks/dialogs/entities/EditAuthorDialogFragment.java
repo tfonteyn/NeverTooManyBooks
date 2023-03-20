@@ -154,11 +154,11 @@ public class EditAuthorDialogFragment
         if (!authorVm.validateAndSetRealAuthor(context, bookLocale, createRealAuthorIfNeeded)) {
             new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_baseline_warning_24)
-                    .setTitle(R.string.err_real_author_must_be_valid)
+                    .setTitle(R.string.vldt_real_author_must_be_valid)
                     .setMessage(context.getString(R.string.confirm_create_real_author,
                                                   authorVm.getCurrentRealAuthorName()))
                     .setNegativeButton(R.string.action_edit, (d, w) -> vb.lblRealAuthor.setError(
-                            getString(R.string.err_real_author_must_be_valid)))
+                            getString(R.string.vldt_real_author_must_be_valid)))
                     .setPositiveButton(R.string.action_create, (d, w) -> {
                         if (saveChanges(true)) {
                             // finish the DialogFragment
