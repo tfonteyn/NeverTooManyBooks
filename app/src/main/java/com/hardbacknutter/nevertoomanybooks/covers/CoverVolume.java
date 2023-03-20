@@ -135,14 +135,14 @@ public final class CoverVolume {
                 //noinspection ResultOfMethodCallIgnored
                 mif.createNewFile();
             } catch (@NonNull final IOException | SecurityException e) {
-                throw new CoverStorageException("Failed to write .nomedia", e);
+                throw new CoverStorageException("Failed to write Pictures/.nomedia", e);
             }
         }
 
         // Make sure we can get the directory, and create the sub directory if needed
         final File tmpDir = new File(coverDir, CoverStorage.DIR_TMP);
         if (!(tmpDir.isDirectory() || tmpDir.mkdirs())) {
-            throw new CoverStorageException("No tmp directory");
+            throw new CoverStorageException("Failed to create covers directory: Pictures/tmp");
         }
 
         return actualVolume;

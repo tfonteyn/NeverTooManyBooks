@@ -113,7 +113,7 @@ public class CoverStorage {
             || externalFilesDirs.length < volume
             || externalFilesDirs[volume] == null
             || !externalFilesDirs[volume].exists()) {
-            throw new CoverStorageException("No volume: " + volume);
+            throw new CoverStorageException("Failed to access covers on volume: " + volume);
         }
 
         return externalFilesDirs[volume];
