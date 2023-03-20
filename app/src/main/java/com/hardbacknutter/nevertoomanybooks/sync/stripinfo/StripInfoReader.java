@@ -282,7 +282,8 @@ public class StripInfoReader
                              @NonNull final ProgressListener progressListener)
             throws StorageException,
                    SearchException,
-                   CredentialsException {
+                   CredentialsException,
+                   IOException {
 
         final String progressMessage =
                 context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
@@ -345,7 +346,8 @@ public class StripInfoReader
             throws StorageException,
                    SearchException,
                    CredentialsException,
-                   DaoWriteException {
+                   DaoWriteException,
+                   IOException {
 
         // The delta values we'll be updating
         final Book delta;
