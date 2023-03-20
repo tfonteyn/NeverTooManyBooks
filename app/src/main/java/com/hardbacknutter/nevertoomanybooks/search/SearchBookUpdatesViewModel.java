@@ -438,36 +438,41 @@ public class SearchBookUpdatesViewModel
      * @param context    Current context
      * @param remoteBook results of the search
      *
-     * @return {@code true} if a new search (for the next book) was started.
+     * @return {@code true} if a new search for the next book was started.
      */
     @SuppressWarnings("UnusedReturnValue")
     boolean processOne(@NonNull final Context context,
                        @Nullable final Book remoteBook) {
 
-        if (!isCancelled() && remoteBook != null && !remoteBook.isEmpty()) {
-            final RealNumberParser realNumberParser = new RealNumberParser(context);
-            //noinspection ConstantConditions
-            final Book delta = syncProcessor.process(context, currentBookId, currentBook,
-                                                     currentFieldsWanted, remoteBook,
-                                                     realNumberParser);
-            if (delta != null) {
-                try {
-                    bookDao.update(context, delta);
-                } catch (@NonNull final StorageException | DaoWriteException e) {
-                    // ignore, but log it.
-                    LoggerFactory.getLogger().e(TAG, e);
+        try {
+            if (!isCancelled() && remoteBook != null && !remoteBook.isEmpty()) {
+                final RealNumberParser realNumberParser = new RealNumberParser(context);
+                //noinspection ConstantConditions
+                final Book delta = syncProcessor.process(context, currentBookId, currentBook,
+                                                         currentFieldsWanted, remoteBook,
+                                                         realNumberParser);
+                if (delta != null) {
+                    try {
+                        bookDao.update(context, delta);
+                    } catch (@NonNull final StorageException | DaoWriteException e) {
+                        // ignore, but log it.
+                        LoggerFactory.getLogger().e(TAG, e);
+                    }
                 }
             }
+
+            //update the counter, another one done.
+            final TaskProgress taskProgress = new TaskProgress(
+                    R.id.TASK_ID_UPDATE_FIELDS, null,
+                    currentProgressCounter, currentCursorCount, null);
+            searchCoordinatorProgress.setValue(new LiveDataEvent<>(taskProgress));
+
+            // On to the next book in the list.
+            return nextBook(context);
+        } catch (@NonNull final Exception e) {
+            postSearch(e);
+            return false;
         }
-
-        //update the counter, another one done.
-        final TaskProgress taskProgress = new TaskProgress(
-                R.id.TASK_ID_UPDATE_FIELDS, null,
-                currentProgressCounter, currentCursorCount, null);
-        searchCoordinatorProgress.setValue(new LiveDataEvent<>(taskProgress));
-
-        // On to the next book in the list.
-        return nextBook(context);
     }
 
 
