@@ -706,7 +706,7 @@
     <string name="lbl_group_1st_char_publisher_name">1ος χαρακτήρας του ονόματος του εκδότη</string>
     <string name="lbl_group_1st_char_book_title">1ος χαρακτήρας του τίτλου του βιβλίου</string>
     <string name="lbl_author_pseudonym">Αυτό είναι ένα ψευδώνυμο του:</string>
-    <string name="err_real_author_must_be_valid">Πρέπει να είναι κενό ή υπάρχων Συγγραφέας.</string>
+    <string name="vldt_real_author_must_be_valid">Πρέπει να είναι κενό ή υπάρχων Συγγραφέας.</string>
     <string name="confirm_create_real_author">Το «%1$s» δεν υπάρχει ακόμα. Πρέπει να δημιουργηθούν;</string>
     <string name="pt_search_resolve_authors_bedetheque">Επιλύστε τα ψευδώνυμα των συγγραφέων χρησιμοποιώντας τον ιστότοπο Bedetheque</string>
     <string name="pt_bedetheque_search_resolve_formats">Διατηρήστε την ονομασία Bedetheque (γαλλική).</string>

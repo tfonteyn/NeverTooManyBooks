@@ -704,7 +704,7 @@
     <string name="lbl_group_1st_char_book_title">1-й символ названия книги</string>
     <string name="debug_select_items">Выберите, что вы хотите включить</string>
     <string name="lbl_author_pseudonym">Это псевдоним:</string>
-    <string name="err_real_author_must_be_valid">Должно быть пустым или существующим автором.</string>
+    <string name="vldt_real_author_must_be_valid">Должно быть пустым или существующим автором.</string>
     <string name="confirm_create_real_author">«%1$s» еще не существует. Должны ли они быть созданы?</string>
     <string name="pt_search_resolve_authors_bedetheque">Разрешить авторские псевдонимы с помощью веб-сайта Bedetheque</string>
     <string name="pt_bedetheque_search_resolve_formats">Сохранить название формата Bedetheque (французский)</string>

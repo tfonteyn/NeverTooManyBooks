@@ -704,7 +704,7 @@
     <string name="lbl_group_1st_char_publisher_name">Pierwszy znak nazwy wydawcy</string>
     <string name="lbl_group_1st_char_book_title">Pierwszy znak tytułu książki</string>
     <string name="lbl_author_pseudonym">To jest pseudonim:</string>
-    <string name="err_real_author_must_be_valid">Musi być puste lub istniejącego autora.</string>
+    <string name="vldt_real_author_must_be_valid">Musi być puste lub istniejącego autora.</string>
     <string name="confirm_create_real_author">„%1$s” jeszcze nie istnieje. Czy należy je tworzyć?</string>
     <string name="pt_search_resolve_authors_bedetheque">Rozwiąż pseudonimy autorów za pomocą strony internetowej Bedetheque</string>
     <string name="pt_bedetheque_search_resolve_formats">Zachowaj nazewnictwo formatu Bedetheque (francuskie).</string>

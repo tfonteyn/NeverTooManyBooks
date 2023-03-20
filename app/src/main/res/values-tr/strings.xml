@@ -707,7 +707,7 @@
     <string name="lbl_group_1st_char_publisher_name">Yayıncı adının 1. karakteri</string>
     <string name="lbl_group_1st_char_book_title">Kitap başlığının 1. karakteri</string>
     <string name="lbl_author_pseudonym">Bu, takma adıdır:</string>
-    <string name="err_real_author_must_be_valid">Boş veya mevcut bir Yazar olmalıdır.</string>
+    <string name="vldt_real_author_must_be_valid">Boş veya mevcut bir Yazar olmalıdır.</string>
     <string name="confirm_create_real_author">“%1$s” henüz mevcut değil. Yaratılmalılar mı?</string>
     <string name="pt_search_resolve_authors_bedetheque">Bedetheque web sitesini kullanarak yazar takma adlarını çözün</string>
     <string name="pt_bedetheque_search_resolve_formats">Bedetheque (Fransızca) biçim adlandırmasını koru</string>

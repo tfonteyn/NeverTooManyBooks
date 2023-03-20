@@ -309,6 +309,8 @@
     <!-- Specific to a check on the "reading started" versus "reading ended" dates. -->
     <string name="vldt_read_start_after_end">The date reading started, is after the end date</string>
 
+    <string name="vldt_real_author_must_be_valid">Must be blank or an existing Author</string>
+
     <!-- endregion -->
 
     <!-- region ========== Progress messages for 'lengthy' actions. -->
@@ -363,6 +365,8 @@
 
     <string name="info_story_in_multiple_books">“%1$s” is present in multiple books:\n\n%2$s</string>
     <string name="info_story_in_single_book">“%1$s” is present in a single book:\n\n%2$s</string>
+
+    <string name="info_all_books_have_covers">All books on this shelf have covers</string>
 
     <!-- Shown in the heading of booklist. -->
     <string name="info_displaying_n_books_in_m_entries">%1$d books, in %2$d entries</string>
@@ -786,6 +790,10 @@
 
     <string name="confirm_test_connection">It is advisable to test this connection to avoid issues later on.</string>
 
+    <string name="confirm_create_real_author">“%1$s” does not exist yet. Should they be created?</string>
+
+    <string name="confirm_no_missing_covers_search_from_top">All books below this row have covers. Search again from the top?</string>
+
     <!-- Displayed when the user changes their sorting preference.
          When doing this, the sorting information in the database needs to be rebuild.
  . -->
@@ -960,7 +968,10 @@
     <!-- Author types -->
     <string name="lbl_author_type">Author type</string>
     <!-- Author. Whether the user considers his collection of this Author to be complete. -->
-    <string name="lbl_author_is_complete" translatable="false">@string/lbl_is_complete</string>
+    <string name="lbl_author_is_complete"
+            translatable="false">@string/lbl_is_complete</string>
+
+    <string name="lbl_author_pseudonym">This is a pen-name of:</string>
 
     <!-- A single Series. -->
     <string name="lbl_series">Series</string>
@@ -969,7 +980,8 @@
     <!-- The book's number in a series. Either a symbol (e.g. '#') or a very short label (e.g. 'Nr') -->
     <string name="lbl_series_num">#</string>
     <!-- Series. Whether the user considers his collection of this Series to be complete. -->
-    <string name="lbl_series_is_complete" translatable="false">@string/lbl_is_complete</string>
+    <string name="lbl_series_is_complete"
+            translatable="false">@string/lbl_is_complete</string>
 
     <!-- A single Publisher. -->
     <string name="lbl_publisher">Publisher</string>
@@ -1269,6 +1281,9 @@
          This is not always desirable, and by default switched off. -->
     <string name="pt_collect_series_info_from_toc">Collect Series info from TOC</string>
 
+    <string name="pt_search_resolve_authors_bedetheque">Resolve author pen-names using the Bedetheque website</string>
+    <string name="pt_bedetheque_search_resolve_formats">Preserve Bedetheque (french) format naming</string>
+
 
     <!-- MultiSelectListPreference -->
     <string name="pt_primary_author_type">Primary author type</string>
@@ -1337,15 +1352,26 @@
     <string name="option_rebuild_index">Rebuild index</string>
     <string name="info_rebuild_scheduled">Rebuild scheduled</string>
 
+    <!-- Dialog title - Internal cleanup of Booklist node states... collapsed/expanded etc. -->
+    <string name="lbl_purge_blns">Clear the node state</string>
+    <!-- Maintenance menu - clear all the stored node status's everywhere. -->
+    <string name="info_purge_blns_all">Clear the node state for all lists</string>
+    <!-- Clear the status for a single type. e.g. a style, a shelf, ...
+        param 1: type of item; param 2: item name.
+         e.g.: "Clear the node status for Bookshelf “ToRead” -->
+    <string name="info_purge_blns_item_name">Clear the node state for %1$s “%2$s” ?</string>
+
     <!-- [VERIFIED]  Collect debug information and prepare an email to the developers -->
     <string name="option_bug_report">Bug report</string>
     <!-- Explanatory note for the bug report. -->
     <string name="debug_send_info_text">This will create a backup copy of your database as well as any log files and send it to the developers. If you do not wish to send any of these files, delete them from the mail attachments before sending.</string>
     <!-- The user can choose which files to include. -->
-    <string name="option_bug_report_database" translatable="false">@string/lbl_database</string>
+    <string name="option_bug_report_database"
+            translatable="false">@string/lbl_database</string>
     <string name="option_bug_report_database_upgrade">Database upgrade files</string>
     <string name="option_bug_report_logfiles">Log files</string>
-    <string name="option_bug_report_settings" translatable="false">@string/lbl_settings</string>
+    <string name="option_bug_report_settings"
+            translatable="false">@string/lbl_settings</string>
 
     <!-- the hint text for the input field on the SQLite Shell page. -->
     <string name="lbl_sql_query">SQL query</string>
@@ -1648,27 +1674,8 @@
     <!-- ========== likely to change still. -->
     <!-- ####################################################################################### -->
 
-    <!-- Dialog title - Internal cleanup of Booklist node states... collapsed/expanded etc. -->
-    <string name="lbl_purge_blns">Clear the node state</string>
-    <!-- Maintenance menu - clear all the stored node status's everywhere. -->
-    <string name="info_purge_blns_all">Clear the node state for all lists</string>
-    <!-- Clear the status for a single type. e.g. a style, a shelf, ...
-        param 1: type of item; param 2: item name.
-         e.g.: "Clear the node status for Bookshelf “ToRead” -->
-    <string name="info_purge_blns_item_name">Clear the node state for %1$s “%2$s” ?</string>
-
     <string name="lbl_strip_info_mapped_bookshelf_wishlist">Wishlist mapped bookshelf</string>
     <string name="lbl_strip_info_mapped_bookshelf_owned_books">Owned books mapped bookshelf</string>
-
-    <string name="lbl_author_pseudonym">This is a pen-name of:</string>
-    <string name="err_real_author_must_be_valid">Must be blank or an existing Author</string>
-    <string name="confirm_create_real_author">“%1$s” does not exist yet. Should they be created?</string>
-    <string name="pt_search_resolve_authors_bedetheque">Resolve author pen-names using the Bedetheque website</string>
-    <string name="pt_bedetheque_search_resolve_formats">Preserve Bedetheque (french) format naming</string>
-
-    <string name="confirm_no_missing_covers_search_from_top">All books below this row have covers. Search again from the top?</string>
-    <string name="info_all_books_have_covers">All books on this shelf have covers</string>
-
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
 

@@ -706,7 +706,7 @@
     <string name="lbl_group_1st_char_publisher_name">1er carácter del nombre del editor</string>
     <string name="lbl_group_1st_char_book_title">1er carácter del título del libro</string>
     <string name="lbl_author_pseudonym">Este es un seudónimo de:</string>
-    <string name="err_real_author_must_be_valid">Debe estar en blanco o ser un autor existente.</string>
+    <string name="vldt_real_author_must_be_valid">Debe estar en blanco o ser un autor existente.</string>
     <string name="confirm_create_real_author">«%1$s» aún no existe. ¿Deberían crearse?</string>
     <string name="pt_search_resolve_authors_bedetheque">Resuelva los seudónimos de los autores utilizando el sitio web Bedetheque</string>
     <string name="pt_bedetheque_search_resolve_formats">Preservar la nomenclatura en formato Bedetheque (francés)</string>
