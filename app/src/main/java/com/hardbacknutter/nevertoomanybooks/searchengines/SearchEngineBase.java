@@ -297,6 +297,9 @@ public abstract class SearchEngineBase
                                   .map(File::getAbsolutePath)
                                   .orElse(null);
         } catch (@NonNull final IOException e) {
+            // we swallow IOExceptions, even when the disk is full.
+            // We're counting on that condition to be caught elsewhere...
+            // as handling it in each call here would become [bleep] fast.
             return null;
         }
     }
