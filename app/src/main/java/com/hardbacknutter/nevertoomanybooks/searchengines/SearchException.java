@@ -76,15 +76,16 @@ public class SearchException
      */
     @NonNull
     public String getUserMessage(@NonNull final Context context) {
+        // if a custom message was added, use that.
         if (localizedMessage != null) {
             return context.getString(R.string.error_search_x_failed_y,
                                      engineId.getName(context), localizedMessage);
-        } else {
-            return context.getString(R.string.error_search_x_failed_y,
-                                     engineId.getName(context),
-                                     ExMsg.map(context, getCause()).orElseGet(
-                                             () -> context.getString(R.string.error_unexpected)));
         }
+
+        return context.getString(R.string.error_search_x_failed_y,
+                                 engineId.getName(context),
+                                 ExMsg.map(context, getCause()).orElseGet(
+                                         () -> context.getString(R.string.error_unexpected)));
     }
 
     @Override
