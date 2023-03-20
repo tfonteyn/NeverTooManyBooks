@@ -221,9 +221,9 @@
     <string name="error_storage_no_space_left">Spazio disponibile insufficiente</string>
     <string name="error_storage_not_accessible">Si prega di verificare che lo spazio di archiviazione sia accessibile.</string>
     <string name="error_storage_not_writable">Verifica che lo spazio di archiviazione sia scrivibile e che disponga di spazio sufficiente.</string>
-    <string name="error_unknown">Si è verificato un errore non identificato</string>
+    <string name="error_unexpected">Si è verificato un errore non identificato</string>
     <string name="error_unknown_host">Si è verificato un problema di connessione al servizio attivo «%1$s»</string>
-    <string name="error_unknown_long">Si è verificato un errore imprevisto. Se il problema persiste, contatta l\'assistenza utilizzando l\'opzione «%1$s» nella parte inferiore della pagina delle impostazioni.</string>
+    <string name="error_unexpected_long">Si è verificato un errore imprevisto. Se il problema persiste, contatta l\'assistenza utilizzando l\'opzione «%1$s» nella parte inferiore della pagina delle impostazioni.</string>
     <string name="error_unsupported_version_v">Versione non supportata: %1$d</string>
     <string name="error_upgrade_not_supported">L\'aggiornamento da versioni precedenti alla %1$s non è supportato.</string>
     <string name="option_fab_add_book_by_barcode_scan">Acquisisci codice a barre</string>

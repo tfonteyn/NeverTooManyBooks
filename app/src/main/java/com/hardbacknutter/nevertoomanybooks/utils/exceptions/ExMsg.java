@@ -158,7 +158,7 @@ public final class ExMsg {
 
         } else if (e instanceof com.hardbacknutter.org.json.JSONException) {
             //TODO: a JSONException is very generic, we'd need to look at the actual text.
-            return context.getString(R.string.error_unknown_long,
+            return context.getString(R.string.error_unexpected_long,
                                      context.getString(R.string.pt_maintenance));
 
         } else if (e instanceof java.io.FileNotFoundException) {
@@ -170,7 +170,7 @@ public final class ExMsg {
 
         } else if (e instanceof android.database.SQLException
                    || e instanceof java.sql.SQLException) {
-            return context.getString(R.string.error_unknown_long,
+            return context.getString(R.string.error_unexpected_long,
                                      context.getString(R.string.pt_maintenance));
 
         } else if (e instanceof java.io.EOFException) {
@@ -200,7 +200,7 @@ public final class ExMsg {
             // This is BAD.... but we've only ever seen this in the emulator ... flw
             // ^^^ 2022-04-06
             // TODO: give user detailed message
-            return context.getString(R.string.error_unknown_long,
+            return context.getString(R.string.error_unexpected_long,
                                      context.getString(R.string.pt_maintenance));
 
         } else if (e instanceof java.io.IOException

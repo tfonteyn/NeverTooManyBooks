@@ -121,12 +121,12 @@
 
     <!-- region ========== General error messages. -->
 
-    <string name="error_upgrade_not_supported">Upgrading from versions older than %1$s is not supported.</string>
-
-    <string name="error_unknown">An unexpected error occurred.</string>
-
+    <string name="error_unexpected">An unexpected error occurred.</string>
     <!-- The placeholder will be replaced with R.string.pt_maintenance -->
-    <string name="error_unknown_long">An unexpected error has occurred. If the problem persists, contact support via the “%1$s” option at the bottom of the settings page.</string>
+    <string name="error_unexpected_long">An unexpected error has occurred. If the problem persists, contact support via the “%1$s” option at the bottom of the settings page.</string>
+
+
+    <string name="error_upgrade_not_supported">Upgrading from versions older than %1$s is not supported.</string>
 
     <string name="error_updates_aborted">Updates aborted</string>
 

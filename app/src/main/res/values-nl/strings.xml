@@ -219,9 +219,9 @@
     <string name="error_storage_no_space_left">Onvoldoende opslag beschikbaar</string>
     <string name="error_storage_not_accessible">Controleer aub of opslag toegankelijk is.</string>
     <string name="error_storage_not_writable">Controleer aub of opslag beschrijfbaar is en voldoende vrije ruimte heeft.</string>
-    <string name="error_unknown">Er is een onbekende fout opgetreden</string>
+    <string name="error_unexpected">Er is een onbekende fout opgetreden</string>
     <string name="error_unknown_host">Er was een connectie probleem naar de service op „%1$s”.</string>
-    <string name="error_unknown_long">Er is een onverwachte fout opgetreden. Als het probleem zich blijft voordoen, neem contact op met de ondersteuning via de „%1$s”-optie onderaan de instellingenpagina.</string>
+    <string name="error_unexpected_long">Er is een onverwachte fout opgetreden. Als het probleem zich blijft voordoen, neem contact op met de ondersteuning via de „%1$s”-optie onderaan de instellingenpagina.</string>
     <string name="error_unsupported_version_v">Niet-ondersteunde versie: %1$d</string>
     <string name="error_upgrade_not_supported">Upgraden vanaf versies ouder dan %1$s wordt niet ondersteund.</string>
     <string name="option_fab_add_book_by_barcode_scan">Scan barcode</string>

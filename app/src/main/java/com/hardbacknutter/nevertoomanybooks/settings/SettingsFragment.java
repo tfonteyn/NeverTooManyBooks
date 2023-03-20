@@ -467,7 +467,7 @@ public class SettingsFragment
 
         } catch (@NonNull final StorageException e) {
             // This should never happen... flw
-            ErrorDialog.show(getContext(), e, getString(R.string.error_storage_not_accessible));
+            ErrorDialog.show(getContext(), TAG, e);
             return false;
         }
     }

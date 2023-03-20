@@ -83,7 +83,7 @@ public class SearchException
             return context.getString(R.string.error_search_x_failed_y,
                                      engineId.getName(context),
                                      ExMsg.map(context, getCause()).orElseGet(
-                                             () -> context.getString(R.string.error_unknown)));
+                                             () -> context.getString(R.string.error_unexpected)));
         }
     }
 

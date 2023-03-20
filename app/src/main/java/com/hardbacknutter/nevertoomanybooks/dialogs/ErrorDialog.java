@@ -28,46 +28,85 @@ import androidx.annotation.Nullable;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import java.io.IOException;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 /**
- * {@link #show(Context, Throwable, CharSequence, CharSequence, DialogInterface.OnClickListener)}
- * <p>
- * All other methods are convenience methods which call the above.
+ * All public methods are convenience methods which call {@link #showDialog}.
+ * Done this way to ensure specific exceptions are ALWAYS showing the same message
+ * and to allow {@link #showDialog} to recurse.
  */
 public final class ErrorDialog {
     private ErrorDialog() {
     }
 
     /**
-     * Show an error message after an Exception was thrown.
+     * Show an error message after an {@link IOException} was thrown.
      *
      * @param context Current context
-     * @param e       The error
+     * @param tag     log tag
+     * @param e       The IOException
      */
     public static void show(@NonNull final Context context,
-                            @NonNull final Throwable e) {
-        show(context, e, null, null, (d, w) -> d.dismiss());
+                            @NonNull final String tag,
+                            @NonNull final IOException e) {
+        LoggerFactory.getLogger().e(tag, e);
+        showDialog(context, e, null, null, (d, w) -> d.dismiss());
     }
 
     /**
-     * Show an error message after an Exception was thrown.
+     * Show an error message after a {@link StorageException} was thrown.
      *
      * @param context Current context
-     * @param e       The error
-     * @param title   Dialog title
+     * @param tag     log tag
+     * @param e       The StorageException
      */
     public static void show(@NonNull final Context context,
-                            @NonNull final Throwable e,
-                            @NonNull final CharSequence title) {
-        show(context, e, title, null, (d, w) -> d.dismiss());
+                            @NonNull final String tag,
+                            @NonNull final StorageException e) {
+        LoggerFactory.getLogger().e(tag, e);
+        showDialog(context, e, context.getString(R.string.error_storage_not_accessible), null,
+                   (d, w) -> d.dismiss());
     }
 
     /**
-     * Show an error message after an Exception was thrown.
+     * Show an error message after a {@link DaoWriteException} was thrown.
+     *
+     * @param context Current context
+     * @param tag     log tag
+     * @param e       The DaoWriteException
+     */
+    public static void show(@NonNull final Context context,
+                            @NonNull final String tag,
+                            @NonNull final DaoWriteException e) {
+        LoggerFactory.getLogger().e(tag, e);
+        showDialog(context, e, context.getString(R.string.error_storage_not_writable), null,
+                   (d, w) -> d.dismiss());
+    }
+
+    /**
+     * Show an error message after an {@link SecurityException} was thrown.
+     *
+     * @param context Current context
+     * @param tag     log tag
+     * @param e       The SecurityException
+     */
+    public static void show(@NonNull final Context context,
+                            @NonNull final String tag,
+                            @NonNull final SecurityException e) {
+        LoggerFactory.getLogger().e(tag, e);
+        showDialog(context, e, context.getString(R.string.error_unexpected), null,
+                   (d, w) -> d.dismiss());
+    }
+
+    /**
+     * Show an error message after a generic Exception was thrown.
      *
      * @param context       Current context
      * @param e             The error
@@ -78,11 +117,11 @@ public final class ErrorDialog {
                             @NonNull final Throwable e,
                             @NonNull final CharSequence title,
                             @NonNull final DialogInterface.OnClickListener closingAction) {
-        show(context, e, title, null, closingAction);
+        showDialog(context, e, title, null, closingAction);
     }
 
     /**
-     * Show an error message after an Exception was thrown.
+     * Show an error message after a generic Exception was thrown.
      *
      * @param context Current context
      * @param e       The error
@@ -93,11 +132,28 @@ public final class ErrorDialog {
                             @NonNull final Throwable e,
                             @NonNull final CharSequence title,
                             @NonNull final CharSequence message) {
-        show(context, e, title, message, (d, w) -> d.dismiss());
+        showDialog(context, e, title, message, (d, w) -> d.dismiss());
     }
 
     /**
-     * Show an error message after an Exception was thrown.
+     * Show an error message after a generic Exception was thrown.
+     *
+     * @param context       Current context
+     * @param e             The error
+     * @param title         Dialog title
+     * @param message       The message to show
+     * @param closingAction to use for the positive button
+     */
+    public static void show(@NonNull final Context context,
+                            @NonNull final Throwable e,
+                            @NonNull final CharSequence title,
+                            @NonNull final CharSequence message,
+                            @NonNull final DialogInterface.OnClickListener closingAction) {
+        showDialog(context, e, title, message, closingAction);
+    }
+
+    /**
+     * Show the dialog.
      *
      * @param context       Current context
      * @param e             The error. SHOULD NOT be {@code null}.
@@ -106,11 +162,11 @@ public final class ErrorDialog {
      * @param message       optional; The message to show; use {@code null} for none
      * @param closingAction to use for the positive button
      */
-    public static void show(@NonNull final Context context,
-                            @Nullable final Throwable e,
-                            @Nullable final CharSequence title,
-                            @Nullable final CharSequence message,
-                            @NonNull final DialogInterface.OnClickListener closingAction) {
+    private static void showDialog(@NonNull final Context context,
+                                   @Nullable final Throwable e,
+                                   @Nullable final CharSequence title,
+                                   @Nullable final CharSequence message,
+                                   @NonNull final DialogInterface.OnClickListener closingAction) {
 
         final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.ic_baseline_error_24)
@@ -127,9 +183,9 @@ public final class ErrorDialog {
                 // show the message concatenated with the actual exception message.
                 // Pass in a null exception so we don't loop.
                 builder.setNeutralButton(R.string.action_more_ellipsis, (d, w) ->
-                        show(context, null,
-                             title, message + "\n\n" + e.getLocalizedMessage(),
-                             closingAction)
+                        showDialog(context, null,
+                                   title, message + "\n\n" + e.getLocalizedMessage(),
+                                   closingAction)
                 );
             }
             builder.create()
@@ -145,7 +201,7 @@ public final class ErrorDialog {
             final Optional<String> mappedMsg = ExMsg.map(context, e);
             // If we have no mapped message or the exception was null - freak-out!
             final String message2 = mappedMsg.orElseGet(() -> context.getString(
-                    R.string.error_unknown_long, context.getString(R.string.pt_maintenance)));
+                    R.string.error_unexpected_long, context.getString(R.string.pt_maintenance)));
             builder.setMessage(message2);
 
             // The exception SHOULD be present but we're paranoid.
@@ -154,9 +210,9 @@ public final class ErrorDialog {
                 // show the derived message concatenated with the actual exception message.
                 // Pass in a null exception so we don't loop.
                 builder.setNeutralButton(R.string.action_more_ellipsis, (d, w) ->
-                        show(context, null,
-                             title, message2 + "\n\n" + e.getLocalizedMessage(),
-                             closingAction)
+                        showDialog(context, null,
+                                   title, message2 + "\n\n" + e.getLocalizedMessage(),
+                                   closingAction)
                 );
             }
             builder.create()
@@ -165,13 +221,14 @@ public final class ErrorDialog {
         }
 
 
-        // worst case, we have no title and no message.
+        // Worst case, we have no title and no message.
+        // This would typically be an IOException
 
         // Try to map the exception to a localized/simple message.
         final Optional<String> mappedMsg = ExMsg.map(context, e);
         // If we have no mapped message or the exception was null - freak-out!
         final String title2 = mappedMsg.orElseGet(() -> context.getString(
-                R.string.error_unknown_long, context.getString(R.string.pt_maintenance)));
+                R.string.error_unexpected_long, context.getString(R.string.pt_maintenance)));
         // Set it as the title and leave the message itself blank.
         builder.setTitle(title2);
 
@@ -181,9 +238,9 @@ public final class ErrorDialog {
             // show the actual exception message.
             // Pass in a null exception so we don't loop.
             builder.setNeutralButton(R.string.action_more_ellipsis, (d, w) ->
-                    show(context, null,
-                         title2, e.getLocalizedMessage(),
-                         closingAction)
+                    showDialog(context, null,
+                               title2, e.getLocalizedMessage(),
+                               closingAction)
             );
         }
 

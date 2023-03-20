@@ -133,10 +133,10 @@ public class MaintenanceFragment
                 bytes = purge(bookUuidList, false);
 
             } catch (@NonNull final StorageException e) {
-                ErrorDialog.show(context, e, getString(R.string.error_storage_not_accessible));
+                ErrorDialog.show(context, TAG, e);
                 return;
             } catch (@NonNull final SecurityException e) {
-                ErrorDialog.show(context, e);
+                ErrorDialog.show(context, TAG, e);
                 return;
             }
 
@@ -154,10 +154,9 @@ public class MaintenanceFragment
                             purge(bookUuidList, true);
 
                         } catch (@NonNull final StorageException e) {
-                            ErrorDialog.show(context, e,
-                                             getString(R.string.error_storage_not_accessible));
+                            ErrorDialog.show(context, TAG, e);
                         } catch (@NonNull final SecurityException e) {
-                            ErrorDialog.show(context, e);
+                            ErrorDialog.show(context, TAG, e);
                         }
                     })
                     .create()

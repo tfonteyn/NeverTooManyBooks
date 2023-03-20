@@ -309,11 +309,9 @@ public class CoverHandler {
                         getTempFile()));
 
             } catch (@NonNull final StorageException e) {
-                ErrorDialog.show(context, e,
-                                 context.getString(R.string.error_storage_not_accessible));
-
+                ErrorDialog.show(context, TAG, e);
             } catch (@NonNull final IOException e) {
-                ErrorDialog.show(context, e);
+                ErrorDialog.show(context, TAG, e);
             }
             return true;
 
@@ -322,11 +320,9 @@ public class CoverHandler {
                 editPicture(createTempCoverFile(book));
 
             } catch (@NonNull final StorageException e) {
-                ErrorDialog.show(context, e,
-                                 context.getString(R.string.error_storage_not_accessible));
-
+                ErrorDialog.show(context, TAG, e);
             } catch (@NonNull final IOException e) {
-                ErrorDialog.show(context, e);
+                ErrorDialog.show(context, TAG, e);
             }
             return true;
 
@@ -508,9 +504,9 @@ public class CoverHandler {
                        file);
 
         } catch (@NonNull final StorageException e) {
-            ErrorDialog.show(context, e, context.getString(R.string.error_storage_not_accessible));
-
+            ErrorDialog.show(context, TAG, e);
         } catch (@NonNull final IOException e) {
+            // Don't call generic IOException; we *know* what went wrong
             ErrorDialog.show(context, e,
                              context.getString(R.string.error_storage_not_writable),
                              context.getString(R.string.warning_image_copy_failed));
@@ -535,12 +531,10 @@ public class CoverHandler {
                 takePictureLauncher.launch(dstFile);
 
             } catch (@NonNull final StorageException e) {
-                ErrorDialog.show(context, e,
-                                 context.getString(R.string.error_storage_not_accessible));
-
+                ErrorDialog.show(context, TAG, e);
             } catch (@NonNull final ActivityNotFoundException e) {
                 // No Camera? we should not get here... flw
-                Snackbar.make(fragmentView, R.string.error_unknown, Snackbar.LENGTH_LONG)
+                Snackbar.make(fragmentView, R.string.error_unexpected, Snackbar.LENGTH_LONG)
                         .show();
             }
 
@@ -596,12 +590,9 @@ public class CoverHandler {
                        file);
 
         } catch (@NonNull final StorageException e) {
-            final Context context = fragmentView.getContext();
-            ErrorDialog.show(context, e,
-                             context.getString(R.string.error_storage_not_accessible));
-
+            ErrorDialog.show(fragmentView.getContext(), TAG, e);
         } catch (@NonNull final IOException e) {
-            ErrorDialog.show(fragmentView.getContext(), e);
+            ErrorDialog.show(fragmentView.getContext(), TAG, e);
         }
     }
 
@@ -630,11 +621,9 @@ public class CoverHandler {
                         return;
                 }
             } catch (@NonNull final StorageException e) {
-                final Context context = fragmentView.getContext();
-                ErrorDialog.show(context, e,
-                                 context.getString(R.string.error_storage_not_accessible));
+                ErrorDialog.show(fragmentView.getContext(), TAG, e);
             } catch (@NonNull final IOException e) {
-                ErrorDialog.show(fragmentView.getContext(), e);
+                ErrorDialog.show(fragmentView.getContext(), TAG, e);
             }
         }
 

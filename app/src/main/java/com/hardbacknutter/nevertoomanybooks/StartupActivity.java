@@ -225,7 +225,7 @@ public class StartupActivity
 
         final String msg = ExMsg
                 .map(this, e)
-                .orElseGet(() -> getString(R.string.error_unknown_long,
+                .orElseGet(() -> getString(R.string.error_unexpected_long,
                                            getString(R.string.pt_maintenance)));
 
         new MaterialAlertDialogBuilder(this)

@@ -221,9 +221,9 @@
     <string name="error_storage_no_space_left">Niewystarczająca pamięć dostępna</string>
     <string name="error_storage_not_accessible">Sprawdź, czy pamięć jest dostępna.</string>
     <string name="error_storage_not_writable">Sprawdź, czy pamięć jest zapisywalna i czy ma wystarczającą ilość miejsca.</string>
-    <string name="error_unknown">Wystąpił nieznany błąd</string>
+    <string name="error_unexpected">Wystąpił nieznany błąd</string>
     <string name="error_unknown_host">Wystąpił problem z połączeniem z usługą w „%1$s”</string>
-    <string name="error_unknown_long">Wystąpił nieoczekiwany błąd. Jeśli problem nie ustąpi, skontaktuj się z pomocą, korzystając z opcji „%1$s” u dołu strony ustawień.</string>
+    <string name="error_unexpected_long">Wystąpił nieoczekiwany błąd. Jeśli problem nie ustąpi, skontaktuj się z pomocą, korzystając z opcji „%1$s” u dołu strony ustawień.</string>
     <string name="error_unsupported_version_v">Nieobsługiwana wersja: %1$d</string>
     <string name="error_upgrade_not_supported">Aktualizacja z wersji starszych niż %1$s nie jest obsługiwana.</string>
     <string name="option_fab_add_book_by_barcode_scan">Skanowanie kodów kreskowych</string>

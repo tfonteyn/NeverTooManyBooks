@@ -1004,7 +1004,7 @@ public class SearchCoordinator
                                     return context.getString(R.string.error_search_failed_network);
                                 }
                                 // generic unknown message
-                                return context.getString(R.string.error_unknown);
+                                return context.getString(R.string.error_unexpected);
                             }))
                     .collect(Collectors.joining("\n"));
 

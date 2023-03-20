@@ -220,9 +220,9 @@
     <string name="error_storage_no_space_left">Nedostatečné úložiště</string>
     <string name="error_storage_not_accessible">Zkontrolujte, zda je úložiště přístupné.</string>
     <string name="error_storage_not_writable">Zkontrolujte, zda je úložiště zapisovatelné a má dostatek místa.</string>
-    <string name="error_unknown">Neznámá chyba</string>
+    <string name="error_unexpected">Neznámá chyba</string>
     <string name="error_unknown_host">Došlo k problému s připojením ke službě na „%1$s“</string>
-    <string name="error_unknown_long">Vyskytla se neočekávaná chyba. Pokud problém přetrvává, kontaktujte podporu pomocí možnosti „%1$s“ ve spodní části stránky nastavení.</string>
+    <string name="error_unexpected_long">Vyskytla se neočekávaná chyba. Pokud problém přetrvává, kontaktujte podporu pomocí možnosti „%1$s“ ve spodní části stránky nastavení.</string>
     <string name="error_unsupported_version_v">Nepodporovaná verze: %1$d</string>
     <string name="error_upgrade_not_supported">Upgrade z verzí starších než %1$s není podporován.</string>
     <string name="option_fab_add_book_by_barcode_scan">Skenování čárového kódu</string>

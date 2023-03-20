@@ -134,7 +134,7 @@ public class CalibreLibraryMappingFragment
                 addBookshelf(bookshelf, vb.bookshelf);
 
             } catch (@NonNull final DaoWriteException e) {
-                ErrorDialog.show(getContext(), e, getString(R.string.error_storage_not_writable));
+                ErrorDialog.show(getContext(), TAG, e);
             }
         });
 
@@ -192,7 +192,8 @@ public class CalibreLibraryMappingFragment
         message.getData().map(TaskResult::getResult).filter(Objects::nonNull).ifPresent(e -> {
             final Context context = getContext();
             //noinspection ConstantConditions
-            ErrorDialog.show(context, e, getString(R.string.lbl_calibre_content_server),
+            ErrorDialog.show(context, e,
+                             getString(R.string.lbl_calibre_content_server),
                              getString(R.string.error_network_site_access_failed,
                                        CalibreContentServer.getHostUrl(context)),
                              (d, w) -> {
@@ -311,8 +312,7 @@ public class CalibreLibraryMappingFragment
                     addBookshelf(bookshelf, holder.vb.bookshelf);
 
                 } catch (@NonNull final DaoWriteException e) {
-                    ErrorDialog.show(getContext(), e,
-                                     getString(R.string.error_storage_not_writable));
+                    ErrorDialog.show(getContext(), TAG, e);
                 }
             });
 

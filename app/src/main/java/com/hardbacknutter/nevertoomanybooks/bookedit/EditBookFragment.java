@@ -51,7 +51,6 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -264,12 +263,10 @@ public class EditBookFragment
             setResultsAndFinish();
 
         } catch (@NonNull final StorageException e) {
-            LoggerFactory.getLogger().e(TAG, e);
-            ErrorDialog.show(getContext(), e, getString(R.string.error_storage_not_accessible));
+            ErrorDialog.show(getContext(), TAG, e);
 
         } catch (@NonNull final DaoWriteException e) {
-            LoggerFactory.getLogger().e(TAG, e);
-            ErrorDialog.show(getContext(), e, getString(R.string.error_storage_not_writable));
+            ErrorDialog.show(getContext(), TAG, e);
         }
     }
 

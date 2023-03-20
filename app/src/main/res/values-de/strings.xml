@@ -221,9 +221,9 @@
     <string name="error_storage_no_space_left">Nicht genügend Speicher verfügbar</string>
     <string name="error_storage_not_accessible">Bitte überprüfen Sie, ob der Speicher verfügbar ist.</string>
     <string name="error_storage_not_writable">Bitte überprüfen Sie, ob der Speicher beschreibbar ist und über ausreichend Speicherplatz verfügt.</string>
-    <string name="error_unknown">Es ist ein unbekannter Fehler aufgetreten</string>
+    <string name="error_unexpected">Es ist ein unbekannter Fehler aufgetreten</string>
     <string name="error_unknown_host">Es gab ein Verbindungsproblem mit dem Dienst „%1$s“</string>
-    <string name="error_unknown_long">Ein unerwarteter Fehler ist aufgetreten. Wenn das Problem weiterhin besteht, wenden Sie sich über die Option „%1$s“ unten auf der Einstellungsseite an den Support.</string>
+    <string name="error_unexpected_long">Ein unerwarteter Fehler ist aufgetreten. Wenn das Problem weiterhin besteht, wenden Sie sich über die Option „%1$s“ unten auf der Einstellungsseite an den Support.</string>
     <string name="error_unsupported_version_v">Nicht unterstützte Version: %1$d</string>
     <string name="error_upgrade_not_supported">Ein Upgrade von Versionen älter als %1$s wird nicht unterstützt.</string>
     <string name="option_fab_add_book_by_barcode_scan">Barcode scannen</string>

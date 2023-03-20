@@ -223,9 +223,9 @@
     <string name="error_storage_no_space_left">Stockage insuffisant disponible</string>
     <string name="error_storage_not_accessible">Veuillez vérifier que le stockage est accessible.</string>
     <string name="error_storage_not_writable">Veuillez vérifier que le stockage est accessible en écriture et qu\'il dispose d\'un espace suffisant.</string>
-    <string name="error_unknown">Une erreur inconnue s\'est produite</string>
+    <string name="error_unexpected">Une erreur inconnue s\'est produite</string>
     <string name="error_unknown_host">Il y a eu un problème de connexion au service sur «%1$s»</string>
-    <string name="error_unknown_long">Une erreur inattendue est apparue. Si le problème persiste, contactez le support technique en utilisant l\'option «%1$s» en bas de la page de paramètres.</string>
+    <string name="error_unexpected_long">Une erreur inattendue est apparue. Si le problème persiste, contactez le support technique en utilisant l\'option «%1$s» en bas de la page de paramètres.</string>
     <string name="error_unsupported_version_v">Version non prise en charge: %1$d</string>
     <string name="error_upgrade_not_supported">La mise à niveau à partir de versions antérieures à %1$s n\'est pas prise en charge.</string>
     <string name="option_fab_add_book_by_barcode_scan">Scanner le code barre</string>

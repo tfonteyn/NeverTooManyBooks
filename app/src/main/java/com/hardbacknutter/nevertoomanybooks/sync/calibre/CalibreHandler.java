@@ -306,7 +306,8 @@ public class CalibreHandler {
 
         message.getData().map(TaskResult::getResult).filter(Objects::nonNull).ifPresent(e -> {
             final Context context = hostView.getContext();
-            ErrorDialog.show(context, e, context.getString(R.string.lbl_calibre_content_server),
+            ErrorDialog.show(context, e,
+                             context.getString(R.string.lbl_calibre_content_server),
                              context.getString(R.string.error_network_site_access_failed,
                                                CalibreContentServer.getHostUrl(context)));
         });

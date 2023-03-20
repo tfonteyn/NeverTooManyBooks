@@ -221,9 +221,9 @@
     <string name="error_storage_no_space_left">Almacenamiento insuficiente disponible</string>
     <string name="error_storage_not_accessible">Por favor, compruebe que el almacenamiento es accesible.</string>
     <string name="error_storage_not_writable">Por favor, compruebe que el almacenamiento es grabable y tiene espacio suficiente.</string>
-    <string name="error_unknown">Se ha producido un error desconocido</string>
+    <string name="error_unexpected">Se ha producido un error desconocido</string>
     <string name="error_unknown_host">Hubo un problema de conexión al servicio en «%1$s»</string>
-    <string name="error_unknown_long">Ocurrió un error inesperado. Si el problema persiste, comuníquese con el servicio de asistencia mediante la opción «%1$s» en la parte inferior de la página de configuración.</string>
+    <string name="error_unexpected_long">Ocurrió un error inesperado. Si el problema persiste, comuníquese con el servicio de asistencia mediante la opción «%1$s» en la parte inferior de la página de configuración.</string>
     <string name="error_unsupported_version_v">Versión no compatible: %1$d</string>
     <string name="error_upgrade_not_supported">No se admite la actualización desde versiones anteriores a la %1$s.</string>
     <string name="option_fab_add_book_by_barcode_scan">Escanear código de barras</string>

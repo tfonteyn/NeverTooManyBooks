@@ -221,9 +221,9 @@
     <string name="error_storage_no_space_left">Недостаточно места</string>
     <string name="error_storage_not_accessible">Пожалуйста, проверьте, что хранилище доступно.</string>
     <string name="error_storage_not_writable">Пожалуйста, проверьте, что хранилище доступно для записи и имеет достаточно места.</string>
-    <string name="error_unknown">Произошла неизвестная ошибка</string>
+    <string name="error_unexpected">Произошла неизвестная ошибка</string>
     <string name="error_unknown_host">Возникла проблема с подключением к сервису на «%1$s»</string>
-    <string name="error_unknown_long">Произошла непредвиденная ошибка. Если проблема не исчезнет, обратитесь в службу поддержки, используя параметр «%1$s» внизу страницы настроек.</string>
+    <string name="error_unexpected_long">Произошла непредвиденная ошибка. Если проблема не исчезнет, обратитесь в службу поддержки, используя параметр «%1$s» внизу страницы настроек.</string>
     <string name="error_unsupported_version_v">Неподдерживаемая версия: %1$d</string>
     <string name="error_upgrade_not_supported">Обновление с версий старше %1$s не поддерживается.</string>
     <string name="option_fab_add_book_by_barcode_scan">Сканировать штрих-код</string>

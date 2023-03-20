@@ -33,7 +33,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.EntityBookLinksDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.MoveBooksDao;
@@ -116,9 +115,7 @@ final class SaveChangesHelper {
                         // return the item who 'lost' it's books
                         onSuccess.accept(item);
                     } catch (@NonNull final DaoWriteException e) {
-                        LoggerFactory.getLogger().e(TAG, e);
-                        ErrorDialog.show(context, e,
-                                         context.getString(R.string.error_storage_not_writable));
+                        ErrorDialog.show(context, TAG, e);
                     }
                 })
                 .create()
