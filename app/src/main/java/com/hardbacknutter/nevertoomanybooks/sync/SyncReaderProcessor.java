@@ -30,6 +30,7 @@ import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -55,24 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 /**
  * Handles importing data with each field controlled by a {@link SyncAction}.
  */
-public final class SyncReaderProcessor
-//        implements Parcelable
-{
-
-//    /** {@link Parcelable}. */
-//    public static final Creator<SyncReaderProcessor> CREATOR = new Creator<>() {
-//        @Override
-//        @NonNull
-//        public SyncReaderProcessor createFromParcel(@NonNull final Parcel in) {
-//            return new SyncReaderProcessor(in);
-//        }
-//
-//        @Override
-//        @NonNull
-//        public SyncReaderProcessor[] newArray(final int size) {
-//            return new SyncReaderProcessor[size];
-//        }
-//    };
+public final class SyncReaderProcessor {
 
     private static final String TAG = "SyncProcessor";
 
@@ -82,30 +67,6 @@ public final class SyncReaderProcessor
     private SyncReaderProcessor(@NonNull final Map<String, SyncField> fields) {
         this.fields = fields;
     }
-
-//    /**
-//     * {@link Parcelable} Constructor.
-//     *
-//     * @param in Parcel to construct the object from
-//     */
-//    private SyncReaderProcessor(@NonNull final Parcel in) {
-//        final List<SyncField> list = new ArrayList<>();
-//        ParcelUtils.readParcelableList(in, list, SyncField.class.getClassLoader());
-//
-//        fields = new LinkedHashMap<>();
-//        list.forEach(syncField -> fields.put(syncField.key, syncField));
-//    }
-
-//    @Override
-//    public void writeToParcel(@NonNull final Parcel dest,
-//                              final int flags) {
-//        ParcelUtils.writeParcelableList(dest, new ArrayList<>(fields.values()), flags);
-//    }
-//
-//    @Override
-//    public int describeContents() {
-//        return 0;
-//    }
 
     /**
      * Filter the fields we want versus the fields we actually need for the given book data.
@@ -208,6 +169,9 @@ public final class SyncReaderProcessor
      * @return a {@link Book} object with the <strong>DELTA</strong> fields that we need.
      *         The book id will always be set.
      *         It can be passed to {@link BookDao#update}
+     *
+     * @throws IOException on <strong>very serious</strong> io issues.
+     *                     Less serious io issues are swallowed/ignored
      */
     @Nullable
     public Book process(@NonNull final Context context,
@@ -215,7 +179,8 @@ public final class SyncReaderProcessor
                         @NonNull final Book localBook,
                         @NonNull final Map<String, SyncField> fieldsWanted,
                         @NonNull final Book remoteBook,
-                        @NonNull final RealNumberParser realNumberParser) {
+                        @NonNull final RealNumberParser realNumberParser)
+            throws IOException {
 
         // Filter the data to remove keys we don't care about
         final Collection<String> toRemove = new ArrayList<>();
@@ -229,36 +194,45 @@ public final class SyncReaderProcessor
             remoteBook.remove(key);
         }
 
-        // For each field, process it according the SyncAction set.
-        fieldsWanted
-                .values()
-                .stream()
-                .filter(field -> remoteBook.contains(field.key))
-                .forEach(field -> {
-                    // Handle thumbnail specially
-                    if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[0])) {
-                        processCover(localBook, remoteBook, 0);
-                    } else if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[1])) {
-                        processCover(localBook, remoteBook, 1);
-                    } else {
-                        switch (field.getAction()) {
-                            case CopyIfBlank:
-                                // remove unneeded fields from the new data
-                                if (hasField(localBook, field.key, realNumberParser)) {
-                                    remoteBook.remove(field.key);
+        try {
+            // For each field, process it according the SyncAction set.
+            fieldsWanted
+                    .values()
+                    .stream()
+                    .filter(field -> remoteBook.contains(field.key))
+                    .forEach(field -> {
+                        try {
+                            // Handle thumbnail specially
+                            if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[0])) {
+                                processCover(localBook, remoteBook, 0);
+                            } else if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[1])) {
+                                processCover(localBook, remoteBook, 1);
+                            } else {
+                                switch (field.getAction()) {
+                                    case CopyIfBlank:
+                                        // remove unneeded fields from the new data
+                                        if (hasField(localBook, field.key, realNumberParser)) {
+                                            remoteBook.remove(field.key);
+                                        }
+                                        break;
+
+                                    case Append:
+                                        processList(context, localBook, remoteBook, field.key);
+                                        break;
+
+                                    case Overwrite:
+                                    case Skip:
+                                        break;
                                 }
-                                break;
-
-                            case Append:
-                                processList(context, localBook, remoteBook, field.key);
-                                break;
-
-                            case Overwrite:
-                            case Skip:
-                                break;
+                            }
+                        } catch (@NonNull final IOException e) {
+                            throw new UncheckedIOException(e);
                         }
-                    }
-                });
+                    });
+        } catch (@NonNull final UncheckedIOException e) {
+            //noinspection ConstantConditions
+            throw e.getCause();
+        }
 
         // Commit the new data
         if (!remoteBook.isEmpty()) {
@@ -319,7 +293,8 @@ public final class SyncReaderProcessor
 
     private void processCover(@NonNull final Book localBook,
                               @NonNull final Book remoteBook,
-                              @IntRange(from = 0, to = 1) final int cIdx) {
+                              @IntRange(from = 0, to = 1) final int cIdx)
+            throws IOException {
 
         final String fileSpec = remoteBook.getString(Book.BKEY_TMP_FILE_SPEC[cIdx], null);
         if (fileSpec != null && !fileSpec.isEmpty()) {
@@ -331,11 +306,15 @@ public final class SyncReaderProcessor
             } catch (@NonNull final StorageException | IOException e) {
                 // We're called in a loop, and the chance of an exception here is very low
                 // so let's log it, and quietly continue.
-                // URGENT: disk full will obviously crash us here
                 LoggerFactory.getLogger()
                              .e(TAG, e, "processCoverImage|uuid="
                                         + localBook.getString(DBKey.BOOK_UUID, null)
                                         + "|cIdx=" + cIdx);
+                // except disk-full!
+                if (FileUtils.isDiskFull(e)) {
+                    //noinspection ConstantConditions
+                    throw (IOException) e;
+                }
             }
         }
         remoteBook.remove(Book.BKEY_TMP_FILE_SPEC[cIdx]);
@@ -586,6 +565,11 @@ public final class SyncReaderProcessor
             return this;
         }
 
+        /**
+         * Build the processor.
+         *
+         * @return new instance
+         */
         @NonNull
         public SyncReaderProcessor build() {
             relatedFields.forEach((key, relatedKey) -> {
