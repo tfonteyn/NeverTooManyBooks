@@ -29,6 +29,8 @@ import androidx.core.math.MathUtils;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -37,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -106,8 +109,10 @@ public class CollectionFormUploader {
                       .setRequestProperty(HttpConstants.CONTENT_TYPE,
                                           HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED);
 
-        realNumberParser = new RealNumberParser(context);
-        moneyParser = new MoneyParser(context, realNumberParser);
+        final Locale siteLocale = config.getEngineId().getDefaultLocale();
+        final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
+        realNumberParser = new RealNumberParser(locales);
+        moneyParser = new MoneyParser(siteLocale, realNumberParser);
     }
 
     /**
