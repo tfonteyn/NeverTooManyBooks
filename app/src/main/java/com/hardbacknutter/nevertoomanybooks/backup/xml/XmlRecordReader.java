@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.backupbase.ArchiveReaderAbstract;
 import com.hardbacknutter.nevertoomanybooks.backup.backupbase.ArchiveWriterAbstract;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
@@ -98,7 +99,7 @@ public class XmlRecordReader
      * @param context Current context
      */
     public XmlRecordReader(@NonNull final Context context) {
-        this.realNumberParser = new RealNumberParser(context);
+        this.realNumberParser = new RealNumberParser(LocaleListUtils.asList(context));
     }
 
     @Override
