@@ -86,7 +86,7 @@ class UserCollectionTest
     void parseCollectionPage()
             throws IOException, SearchException {
         setLocale(Locale.FRANCE);
-        final RealNumberParser realNumberParser = new RealNumberParser(context);
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
 
         final String locationHeader = "https://www.stripinfo.be/userCollection/index/666/0/0/0000";
         final String filename = "/stripinfo/collection.html";
