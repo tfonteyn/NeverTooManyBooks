@@ -786,12 +786,15 @@ public class IsfdbSearchEngine
             throws StorageException, SearchException, CredentialsException {
 
         final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
-        final List<Locale> locales = LocaleListUtils.asList(context, getLocale(context));
 
+        // Use the site locale for all parsing!
+        final Locale siteLocale = getLocale(context);
+        final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
+        // the usual system locale for ISO parsing, and the site locale for all else
         final DateParser dateParser = new FullDateParser(systemLocale, locales);
 
         final RealNumberParser realNumberParser = new RealNumberParser(locales);
-        final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
+        final MoneyParser moneyParser = new MoneyParser(siteLocale, realNumberParser);
 
         final Elements allContentBoxes = document.select(CSS_Q_DIV_CONTENTBOX);
         // sanity check
@@ -871,7 +874,7 @@ public class IsfdbSearchEngine
                                 tmpString = UNKNOWN_M_D_LITERAL.matcher(tmpString).replaceAll("");
                                 // and we're paranoid...
                                 final LocalDateTime date = dateParser.parse(tmpString,
-                                                                            getLocale(context));
+                                                                            siteLocale);
                                 if (date != null) {
                                     // Note that partial dates, e.g. "1987", "1978-03"
                                     // will get 'completed' to "1987-01-01", "1978-03-01"
@@ -1452,9 +1455,11 @@ public class IsfdbSearchEngine
         //    return 0
         final String url = getHostUrl() + String.format(REST_BY_EXTERNAL_ID, externalId);
 
-        final List<Locale> locales = LocaleListUtils.asList(context, getLocale(context));
+        // Use the site locale for all parsing!
+        final Locale siteLocale = getLocale(context);
+        final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
         final RealNumberParser realNumberParser = new RealNumberParser(locales);
-        final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
+        final MoneyParser moneyParser = new MoneyParser(siteLocale, realNumberParser);
 
         final List<Book> publicationsList = fetchPublications(url, fetchCovers, 1,
                                                               moneyParser);
