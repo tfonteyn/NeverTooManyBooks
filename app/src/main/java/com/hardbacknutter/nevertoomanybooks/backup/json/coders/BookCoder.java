@@ -33,6 +33,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
@@ -75,7 +76,7 @@ public class BookCoder
 
         bookshelfCoder = new BookshelfCoder(context, defaultStyle);
         calibreLibraryCoder = new CalibreLibraryCoder(context, defaultStyle);
-        this.realNumberParser = new RealNumberParser(context);
+        this.realNumberParser = new RealNumberParser(LocaleListUtils.asList(context));
     }
 
     @Override
