@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.BooleanParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -148,7 +149,8 @@ public class DataManager
      */
     protected void putAll(final Context context,
                           @NonNull final DataManager src) {
-        final RealNumberParser realNumberParser = new RealNumberParser(context);
+        final RealNumberParser realNumberParser =
+                new RealNumberParser(LocaleListUtils.asList(context));
         for (final String key : src.keySet()) {
             put(key, src.get(key, realNumberParser));
         }
