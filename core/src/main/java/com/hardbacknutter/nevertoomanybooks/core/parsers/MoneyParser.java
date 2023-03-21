@@ -20,8 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.core.parsers;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -53,13 +51,19 @@ public class MoneyParser {
     /** A Map to translate currency <strong>symbols</strong> to their official ISO code. */
     private static final Map<String, String> CURRENCY_MAP = new HashMap<>();
     @NonNull
-    private final Locale userLocale;
+    private final Locale locale;
     @NonNull
     private final RealNumberParser realNumberParser;
 
-    public MoneyParser(@NonNull final Context context,
+    /**
+     * Constructor.
+     *
+     * @param locale           to use for parsing the currency
+     * @param realNumberParser to use for parsing the number part
+     */
+    public MoneyParser(@NonNull final Locale locale,
                        @NonNull final RealNumberParser realNumberParser) {
-        userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        this.locale = locale;
         this.realNumberParser = realNumberParser;
     }
 
@@ -240,7 +244,7 @@ public class MoneyParser {
         if (currencyStr != null && !currencyStr.isEmpty()) {
             try {
                 // We MUST use the users Locale here as currencies can use local characters.
-                String currencyCode = currencyStr.trim().toUpperCase(userLocale);
+                String currencyCode = currencyStr.trim().toUpperCase(locale);
                 // if we don't have a normalized ISO3 code, see if we can convert it to one.
                 if (currencyCode.length() != 3) {
                     currencyCode = fromSymbol(currencyStr);
@@ -279,7 +283,7 @@ public class MoneyParser {
         if (CURRENCY_MAP.isEmpty()) {
             createCurrencyMap();
         }
-        final String key = symbol.trim().toLowerCase(userLocale);
+        final String key = symbol.trim().toLowerCase(locale);
         return CURRENCY_MAP.get(key);
     }
 }
