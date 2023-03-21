@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreDao;
@@ -116,7 +117,7 @@ public class CalibreContentServerWriter
         deleteLocalBook = this.helper.isDeleteLocalBooks();
 
         dateParser = new ISODateParser(systemLocale);
-        realNumberParser = new RealNumberParser(context);
+        realNumberParser = new RealNumberParser(LocaleListUtils.asList(context));
     }
 
     @Override
