@@ -111,7 +111,7 @@ public class BookDaoHelper {
 
         final List<Locale> locales = LocaleListUtils.asList(context, bookLocale);
         realNumberParser = new RealNumberParser(locales);
-        moneyParser = new MoneyParser(context, realNumberParser);
+        moneyParser = new MoneyParser(userLocale, realNumberParser);
     }
 
     /**
