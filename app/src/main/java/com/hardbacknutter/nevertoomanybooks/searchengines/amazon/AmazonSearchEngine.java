@@ -258,11 +258,12 @@ public class AmazonSearchEngine
         final String title = titleElement.text().trim();
         book.putString(DBKey.TITLE, title);
 
+        // Use the site locale for all parsing!
         final Locale siteLocale = getLocale(context, document.location().split("/")[2]);
 
         final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
         final RealNumberParser realNumberParser = new RealNumberParser(locales);
-        final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
+        final MoneyParser moneyParser = new MoneyParser(siteLocale, realNumberParser);
 
         parsePrice(document, book, moneyParser);
         parseAuthors(document, book, siteLocale);
