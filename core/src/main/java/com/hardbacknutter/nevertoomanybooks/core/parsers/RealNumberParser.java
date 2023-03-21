@@ -20,7 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.core.parsers;
 
-import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -34,8 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
-
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 
 /**
  * Tested with Device running in US Locale, app in Dutch.
@@ -83,16 +80,7 @@ public class RealNumberParser
     /**
      * Constructor.
      *
-     * @param context Current context
-     */
-    public RealNumberParser(@NonNull final Context context) {
-        this(LocaleListUtils.asList(context));
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param locales to use for the formatter/parser.
+     * @param locales to use for parsing.
      */
     public RealNumberParser(@NonNull final List<Locale> locales) {
         this.locales = locales;
