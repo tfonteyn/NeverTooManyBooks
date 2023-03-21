@@ -206,6 +206,45 @@ public class BookDaoHelper {
      * The 'T' is the exception as that is easier to handle here for all fields.
      * <p>
      * <strong>Note 2:</strong>: such a full parse should be done during import operations.
+     * <p>
+     * <strong>VERY IMPORTANT:</strong> SQLite date functions:
+     * <a href="https://sqlite.org/lang_datefunc.html">https://sqlite.org/lang_datefunc.html</a>
+     * <p>
+     * <pre>
+     *      Function        Equivalent strftime()
+     *      date(...)       strftime('%Y-%m-%d', ...)
+     *      time(...)       strftime('%H:%M:%S', ...)
+     *      datetime(...)   strftime('%Y-%m-%d %H:%M:%S', ...)
+     * </pre>
+     * <p>
+     * ==> the default 'datetime' function <strong>does NOT include the 'T' character</strong>
+     * as used in ISO standards.
+     * <p>
+     * ==> the standard 'current_timestamp' <strong>does NOT include the 'T' character</strong>
+     * * as used in ISO standards.
+     * <p>
+     * Which means that when using {@link java.time.format.DateTimeFormatter}
+     * versus SQLite 'datetime/current_timestamp' conversions between 'T' and ' '
+     * will need to be done.
+     * Reading/writing itself is not an issue (parsers in sqlite and in our app take care of that),
+     * but <strong>string COMPARE as in 'where' clauses</strong> will cause faulty results.
+     * <p>
+     * Affected columns are those of type
+     * {@link  com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType#DateTime}.
+     * Status on 2020-09-26:
+     * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#DATE_ADDED__UTC}
+     * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#DATE_LAST_UPDATED__UTC}
+     * and
+     * {@link com.hardbacknutter.nevertoomanybooks.database.CacheDbHelper}#IMAGE_LAST_UPDATED__UTC
+     * <p>
+     * Columns of type
+     * {@link  com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType#Date}
+     * Status on 2020-09-26:
+     * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#READ_START__DATE}
+     * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#READ_END__DATE}
+     * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#DATE_ACQUIRED}
+     * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#BOOK_PUBLICATION__DATE}
+     * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#FIRST_PUBLICATION__DATE}
      */
     @VisibleForTesting
     public void processDates() {
