@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils.dates;
+package com.hardbacknutter.nevertoomanybooks.core.utils;
 
 import android.annotation.SuppressLint;
 import android.os.Parcel;
@@ -40,7 +40,7 @@ import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 
 /**

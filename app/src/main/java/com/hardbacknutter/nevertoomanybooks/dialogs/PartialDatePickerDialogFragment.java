@@ -52,8 +52,8 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
 /**
  * DialogFragment class to allow for selection of partial dates from 0AD to 9999AD.

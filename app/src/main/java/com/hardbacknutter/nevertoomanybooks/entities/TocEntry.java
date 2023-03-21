@@ -33,9 +33,9 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
 /**
  * Represent a single title within an TOC(Anthology).

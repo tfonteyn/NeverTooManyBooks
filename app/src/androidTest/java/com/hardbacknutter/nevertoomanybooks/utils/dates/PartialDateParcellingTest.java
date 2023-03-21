@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,6 +22,8 @@ package com.hardbacknutter.nevertoomanybooks.utils.dates;
 import android.os.Parcel;
 
 import androidx.test.filters.SmallTest;
+
+import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 
 import org.junit.Test;
 

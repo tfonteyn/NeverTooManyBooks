@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,9 +26,9 @@ import androidx.annotation.Nullable;
 
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.fields.EditTextField;
 import com.hardbacknutter.nevertoomanybooks.fields.TextViewField;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
 /**
  * FieldFormatter for 'date' fields.

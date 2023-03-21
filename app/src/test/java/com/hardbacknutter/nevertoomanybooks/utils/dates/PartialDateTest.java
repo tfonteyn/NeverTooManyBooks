@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils.dates;
 
+import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
+
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

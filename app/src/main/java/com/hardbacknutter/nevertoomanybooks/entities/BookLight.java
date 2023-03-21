@@ -31,9 +31,9 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
 /**
  * A 'light' Book object used where the full {@link Book} would be a performance penalty.

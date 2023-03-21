@@ -27,8 +27,8 @@ import androidx.annotation.Nullable;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
 /**
  * Abstracts/shield a {@link Book}, {@link BookLight}, {@link TocEntry}
