@@ -72,7 +72,7 @@ class IsfdbXmlPublicationTest
         final String filename = "/isfdb/425189.xml";
 
         final RealNumberParser realNumberParser = new RealNumberParser(locales);
-        final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
+        final MoneyParser moneyParser = new MoneyParser(locales.get(0), realNumberParser);
 
         final IsfdbPublicationListHandler listHandler =
                 new IsfdbPublicationListHandler(searchEngine,
