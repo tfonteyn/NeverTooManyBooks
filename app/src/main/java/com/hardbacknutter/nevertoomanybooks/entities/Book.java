@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
@@ -339,7 +340,8 @@ public class Book
     @NonNull
     public Book duplicate(@NonNull final Context context) {
         final Book duplicate = new Book();
-        final RealNumberParser realNumberParser = new RealNumberParser(context);
+        final RealNumberParser realNumberParser = new RealNumberParser(
+                LocaleListUtils.asList(context));
 
         // Q: Why don't we get the DataManager#mRawData, remove the identifiers/dates and use that?
         // A: because we would need to clone mRawData before we can start removing fields,
@@ -1157,7 +1159,8 @@ public class Book
 
         validatorConfig = new ValidatorConfig();
 
-        final RealNumberParser realNumberParser = new RealNumberParser(context);
+        final RealNumberParser realNumberParser =
+                new RealNumberParser(LocaleListUtils.asList(context));
 
         final DataValidator priceValidator = new OrValidator(
                 new BlankValidator(),
@@ -1269,7 +1272,8 @@ public class Book
                                                 value.getLabel(context, Details.AutoSelect, style)))
                 .orElse("");
 
-        final RealNumberParser realNumberParser = new RealNumberParser(context);
+        final RealNumberParser realNumberParser =
+                new RealNumberParser(LocaleListUtils.asList(context));
 
         //remove trailing 0's
         final float rating = getFloat(DBKey.RATING, realNumberParser);
