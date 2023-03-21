@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,12 +21,9 @@ package com.hardbacknutter.nevertoomanybooks.utils.dates;
 
 import org.junit.jupiter.api.Test;
 
-import com.hardbacknutter.nevertoomanybooks.Base;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class PartialDateTest
-        extends Base {
+class PartialDateTest {
 
     @Test
     void t01() {
