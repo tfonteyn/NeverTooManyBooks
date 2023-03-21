@@ -43,8 +43,8 @@ class JDKMoneyFormatterTest
 
     @Test
     void formatUS() {
-        setLocale(Locale.US);
-        final FieldFormatter<Money> f = new MoneyFormatter(locales.get(0));
+        final FieldFormatter<Money> f = new MoneyFormatter(Locale.US);
+
         Money money;
         money = new Money(BigDecimal.valueOf(1234.50d), Currency.getInstance(MoneyParser.USD));
         assertNotNull(money);
@@ -59,8 +59,8 @@ class JDKMoneyFormatterTest
 
     @Test
     void formatUK() {
-        setLocale(Locale.UK);
-        final FieldFormatter<Money> f = new MoneyFormatter(locales.get(0));
+        final FieldFormatter<Money> f = new MoneyFormatter(Locale.UK);
+
         Money money;
         money = new Money(BigDecimal.valueOf(1234.50d), Currency.getInstance(MoneyParser.USD));
         assertNotNull(money);
@@ -75,8 +75,8 @@ class JDKMoneyFormatterTest
 
     @Test
     void formatGERMANY() {
-        setLocale(Locale.GERMANY);
-        final FieldFormatter<Money> f = new MoneyFormatter(locales.get(0));
+        final FieldFormatter<Money> f = new MoneyFormatter(Locale.GERMANY);
+
         Money money;
         money = new Money(BigDecimal.valueOf(1234.50d), Currency.getInstance(MoneyParser.USD));
         assertNotNull(money);
