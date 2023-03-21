@@ -116,8 +116,9 @@ public abstract class BaseTextField<T, V extends TextView>
 
     @Override
     public void setInitialValue(@NonNull final Context context,
-                                @NonNull final DataManager source) {
-        final Object obj = source.get(fieldKey, new RealNumberParser(context));
+                                @NonNull final DataManager source,
+                                @NonNull final RealNumberParser realNumberParser) {
+        final Object obj = source.get(fieldKey, realNumberParser);
         if (obj != null) {
             //noinspection unchecked
             initialValue = (T) obj;

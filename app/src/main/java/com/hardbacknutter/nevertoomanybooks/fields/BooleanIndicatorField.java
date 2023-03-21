@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,6 +27,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
@@ -83,7 +84,8 @@ public class BooleanIndicatorField
 
     @Override
     public void setInitialValue(@NonNull final Context context,
-                                @NonNull final DataManager source) {
+                                @NonNull final DataManager source,
+                                @NonNull final RealNumberParser realNumberParser) {
         initialValue = source.getBoolean(fieldKey);
         setValue(initialValue);
     }

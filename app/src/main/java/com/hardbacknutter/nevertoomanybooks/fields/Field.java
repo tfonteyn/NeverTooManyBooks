@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 
 import com.google.android.material.textfield.TextInputLayout;
 
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.EditFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
@@ -62,11 +63,11 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  * <p>
  * <ul>Data flows to and from a view as follows:
  *      <li>IN  (no formatter ):<br>
- *          {@link Field#setInitialValue(Context, DataManager)} ->
+ *          {@link Field#setInitialValue(Context, DataManager, RealNumberParser)} ->
  *          {@link Field#setValue(Object)} ->
  *          populates the View.</li>
  *      <li>IN  (with FieldFormatter):<br>
- *          {@link Field#setInitialValue(Context, DataManager)} ->
+ *          {@link Field#setInitialValue(Context, DataManager, RealNumberParser)} ->
  *          {@link Field#setValue(Object)} ->
  *          {@link FieldFormatter#apply} ->
  *          populates the View.</li>
@@ -160,11 +161,13 @@ public interface Field<T, V extends View> {
      * This is used for the <strong>INITIAL LOAD</strong>, i.e. the value as stored
      * in the database.
      *
-     * @param context Current context
-     * @param source  DataManager to load the Field objects from
+     * @param context          Current context
+     * @param source           DataManager to load the Field objects from
+     * @param realNumberParser to use for parsing
      */
     void setInitialValue(@NonNull Context context,
-                         @NonNull DataManager source);
+                         @NonNull DataManager source,
+                         @NonNull RealNumberParser realNumberParser);
 
     /**
      * Get the value from the view associated with the Field.

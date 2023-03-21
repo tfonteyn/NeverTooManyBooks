@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
@@ -123,7 +124,8 @@ public class ListChipGroupField<T extends Parcelable & Entity>
 
     @Override
     public void setInitialValue(@NonNull final Context context,
-                                @NonNull final DataManager source) {
+                                @NonNull final DataManager source,
+                                @NonNull final RealNumberParser realNumberParser) {
         initialValue = new ArrayList<>(source.getParcelableArrayList(fieldKey));
         setValue(initialValue);
     }

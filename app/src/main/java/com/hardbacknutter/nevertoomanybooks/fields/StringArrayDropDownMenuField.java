@@ -29,6 +29,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
@@ -109,7 +110,8 @@ public class StringArrayDropDownMenuField
 
     @Override
     public void setInitialValue(@NonNull final Context context,
-                                @NonNull final DataManager source) {
+                                @NonNull final DataManager source,
+                                @NonNull final RealNumberParser realNumberParser) {
         initialValue = source.getInt(fieldKey);
         setValue(initialValue);
     }

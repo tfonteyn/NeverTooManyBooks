@@ -49,7 +49,6 @@ public class RatingBarField
                           @IdRes final int fieldViewId,
                           @NonNull final String fieldKey) {
         super(fragmentId, fieldViewId, fieldKey, fieldKey);
-
     }
 
     @Override
@@ -70,8 +69,8 @@ public class RatingBarField
 
     @Override
     public void setInitialValue(@NonNull final Context context,
-                                @NonNull final DataManager source) {
-        final RealNumberParser realNumberParser = new RealNumberParser(context);
+                                @NonNull final DataManager source,
+                                @NonNull final RealNumberParser realNumberParser) {
         initialValue = source.getFloat(fieldKey, realNumberParser);
         setValue(initialValue);
     }

@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
@@ -115,7 +116,8 @@ public class EntityListDropDownMenuField<T extends Entity>
 
     @Override
     public void setInitialValue(@NonNull final Context context,
-                                @NonNull final DataManager source) {
+                                @NonNull final DataManager source,
+                                @NonNull final RealNumberParser realNumberParser) {
         initialValue = source.getLong(fieldKey);
         setValue(initialValue);
     }
