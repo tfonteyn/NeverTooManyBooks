@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -198,7 +199,7 @@ public class EditBookViewModel
             final Languages languages = ServiceLocator.getInstance().getLanguages();
             final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
-            realNumberParser = new RealNumberParser(context);
+            realNumberParser = new RealNumberParser(LocaleListUtils.asList(context));
 
             dateFormatter = new DateFieldFormatter(userLocale);
             languageFormatter = new LanguageFormatter(userLocale, languages);
