@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -446,7 +447,8 @@ public class SearchBookUpdatesViewModel
 
         try {
             if (!isCancelled() && remoteBook != null && !remoteBook.isEmpty()) {
-                final RealNumberParser realNumberParser = new RealNumberParser(context);
+                final RealNumberParser realNumberParser =
+                        new RealNumberParser(LocaleListUtils.asList(context));
                 //noinspection ConstantConditions
                 final Book delta = syncProcessor.process(context, currentBookId, currentBook,
                                                          currentFieldsWanted, remoteBook,
