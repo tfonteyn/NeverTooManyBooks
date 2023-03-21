@@ -139,7 +139,7 @@ class BookTest
     void preprocessPrices04() {
         setLocale(Locale.FRANCE);
         final RealNumberParser realNumberParser = new RealNumberParser(locales);
-        final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
+        final MoneyParser moneyParser = new MoneyParser(locales.get(0), realNumberParser);
 
         book.putString(DBKey.LANGUAGE, "eng");
         final Money money = moneyParser.parse("EUR 45");
