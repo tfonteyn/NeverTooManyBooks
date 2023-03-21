@@ -568,7 +568,7 @@ public enum EngineId
     }
 
     @NonNull
-    Locale getDefaultLocale() {
+    public Locale getDefaultLocale() {
         return defaultLocale;
     }
 
