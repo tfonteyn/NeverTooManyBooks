@@ -17,15 +17,13 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils;
+package com.hardbacknutter.nevertoomanybooks.core.parsers;
 
 import androidx.annotation.NonNull;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
-
-import com.hardbacknutter.nevertoomanybooks.Base;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -37,8 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 /**
  * <a href="https://en.wikipedia.org/wiki/Decimal_separator">wikipedia</a>
  */
-class RealNumberParserTest
-        extends Base {
+class RealNumberParserTest {
 
     private static final String DEC_DOT_NO_GROUPING = "1234.56";
     private static final String DEC_COMMA_NO_GROUPING = "1234,56";
@@ -52,9 +49,9 @@ class RealNumberParserTest
     @NonNull
     static Stream<Arguments> decDotGrpComma() {
         return Stream.of(
-                Arguments.of((Object) new Locale[]{Locale.ENGLISH}),
-                Arguments.of((Object) new Locale[]{Locale.US}),
-                Arguments.of((Object) new Locale[]{Locale.UK})
+                Arguments.of(List.of(Locale.ENGLISH)),
+                Arguments.of(List.of(Locale.US)),
+                Arguments.of(List.of(Locale.UK))
         );
     }
 
@@ -62,36 +59,35 @@ class RealNumberParserTest
     static Stream<Arguments> decCommaNoGrp() {
         return Stream.of(
                 // Grouping separator is ' ' (0x202F) -> Narrow No-Break Space
-                Arguments.of((Object) new Locale[]{new Locale("fr")}),
-                Arguments.of((Object) new Locale[]{new Locale("fr", "FR")})
+                Arguments.of(List.of(new Locale("fr"))),
+                Arguments.of(List.of(new Locale("fr", "FR")))
         );
     }
 
     @NonNull
     static Stream<Arguments> decCommaGrpDot() {
         return Stream.of(
-                Arguments.of((Object) new Locale[]{new Locale("de")}),
-                Arguments.of((Object) new Locale[]{new Locale("de", "DE")}),
-                Arguments.of((Object) new Locale[]{new Locale("nl")}),
-                Arguments.of((Object) new Locale[]{new Locale("nl", "NL")})
+                Arguments.of(List.of(new Locale("de"))),
+                Arguments.of(List.of(new Locale("de", "DE"))),
+                Arguments.of(List.of(new Locale("nl"))),
+                Arguments.of(List.of(new Locale("nl", "NL")))
         );
     }
 
     @NonNull
     static Stream<Arguments> decDotGrpComma_decDotGrpComma() {
         return Stream.of(
-                Arguments.of((Object) new Locale[]{new Locale("de"), Locale.US}),
-                Arguments.of((Object) new Locale[]{new Locale("de", "DE"), Locale.US}),
-                Arguments.of((Object) new Locale[]{new Locale("nl"), Locale.US}),
-                Arguments.of((Object) new Locale[]{new Locale("nl", "NL"), Locale.US})
+                Arguments.of(List.of(new Locale("de"), Locale.US)),
+                Arguments.of(List.of(new Locale("de", "DE"), Locale.US)),
+                Arguments.of(List.of(new Locale("nl"), Locale.US)),
+                Arguments.of(List.of(new Locale("nl", "NL"), Locale.US))
         );
     }
 
     @ParameterizedTest
     @MethodSource("decDotGrpComma")
-    void parseFloat10(@NonNull final Locale[] testLocales) {
-        setLocale(testLocales);
-        final RealNumberParser parser = new RealNumberParser(locales);
+    void parseFloat10(@NonNull final List<Locale> testLocales) {
+        final RealNumberParser parser = new RealNumberParser(testLocales);
 
         assertEquals(FLOAT, parser.parseFloat(DEC_DOT_NO_GROUPING));
         assertEquals(FLOAT, parser.parseFloat(DEC_DOT_GROUPING_COMMA));
@@ -109,9 +105,8 @@ class RealNumberParserTest
 
     @ParameterizedTest
     @MethodSource("decCommaNoGrp")
-    void parseFloat20(@NonNull final Locale[] testLocales) {
-        setLocale(testLocales);
-        final RealNumberParser parser = new RealNumberParser(locales);
+    void parseFloat20(@NonNull final List<Locale> testLocales) {
+        final RealNumberParser parser = new RealNumberParser(testLocales);
 
         assertThrows(NumberFormatException.class, () -> parser.parseFloat(DEC_DOT_NO_GROUPING));
         assertThrows(NumberFormatException.class, () -> parser.parseFloat(DEC_DOT_GROUPING_COMMA));
@@ -129,9 +124,8 @@ class RealNumberParserTest
 
     @ParameterizedTest
     @MethodSource("decCommaGrpDot")
-    void parseFloat30(@NonNull final Locale[] testLocales) {
-        setLocale(testLocales);
-        final RealNumberParser parser = new RealNumberParser(locales);
+    void parseFloat30(@NonNull final List<Locale> testLocales) {
+        final RealNumberParser parser = new RealNumberParser(testLocales);
 
         assertThrows(NumberFormatException.class, () -> parser.parseFloat(DEC_DOT_NO_GROUPING));
         assertThrows(NumberFormatException.class, () -> parser.parseFloat(DEC_DOT_GROUPING_COMMA));
@@ -149,9 +143,8 @@ class RealNumberParserTest
 
     @ParameterizedTest
     @MethodSource("decDotGrpComma_decDotGrpComma")
-    void parseFloat30_10(@NonNull final Locale[] testLocales) {
-        setLocale(testLocales);
-        final RealNumberParser parser = new RealNumberParser(locales);
+    void parseFloat30_10(@NonNull final List<Locale> testLocales) {
+        final RealNumberParser parser = new RealNumberParser(testLocales);
 
         assertEquals(FLOAT, parser.parseFloat(DEC_DOT_NO_GROUPING));
         assertEquals(FLOAT, parser.parseFloat(DEC_DOT_GROUPING_COMMA));

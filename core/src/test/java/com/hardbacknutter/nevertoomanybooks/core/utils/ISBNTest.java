@@ -17,14 +17,11 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils;
+package com.hardbacknutter.nevertoomanybooks.core.utils;
 
 import androidx.annotation.Nullable;
 
 import java.util.Arrays;
-
-import com.hardbacknutter.nevertoomanybooks.Base;
-import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 
 import org.junit.jupiter.api.Test;
 
@@ -33,8 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ISBNTest
-        extends Base {
+class ISBNTest {
 
     /**
      * Valid ISBN 10,13 digits

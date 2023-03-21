@@ -17,28 +17,24 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils.dates;
+package com.hardbacknutter.nevertoomanybooks.core.parsers;
 
 import java.time.LocalDateTime;
-
-import com.hardbacknutter.nevertoomanybooks.Base;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
+import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-class ISODateParserTest
-        extends Base {
+class ISODateParserTest {
+
+    private static final Locale LOCALE = Locale.US;
 
     /** "yyyy" */
     @Test
     void isoYear() {
-        final DateParser parser = new ISODateParser(
-                ServiceLocator.getInstance().getSystemLocaleList().get(0));
+        final DateParser parser = new ISODateParser(LOCALE);
 
         assertEquals(LocalDateTime.of(1987, 1, 1,
                                       0, 0, 0),
@@ -48,8 +44,7 @@ class ISODateParserTest
     /** "yyyy-MM" */
     @Test
     void isoYearMonth() {
-        final DateParser parser = new ISODateParser(
-                ServiceLocator.getInstance().getSystemLocaleList().get(0));
+        final DateParser parser = new ISODateParser(LOCALE);
 
         assertEquals(LocalDateTime.of(1987, 6, 1,
                                       0, 0, 0),
@@ -63,8 +58,7 @@ class ISODateParserTest
     /** "yyyy-MM-dd" */
     @Test
     void isoYearMonthDay() {
-        final DateParser parser = new ISODateParser(
-                ServiceLocator.getInstance().getSystemLocaleList().get(0));
+        final DateParser parser = new ISODateParser(LOCALE);
 
         assertEquals(LocalDateTime.of(1987, 6, 10,
                                       0, 0, 0),
@@ -81,8 +75,7 @@ class ISODateParserTest
      */
     @Test
     void isoDateTime() {
-        final DateParser parser = new ISODateParser(
-                ServiceLocator.getInstance().getSystemLocaleList().get(0));
+        final DateParser parser = new ISODateParser(LOCALE);
 
         assertEquals(LocalDateTime.of(2020, 9, 1,
                                       14, 20, 21, 542_000_000),
@@ -108,8 +101,7 @@ class ISODateParserTest
     /** JDK 'T' variations */
     @Test
     void isoTeaTime() {
-        final DateParser parser = new ISODateParser(
-                ServiceLocator.getInstance().getSystemLocaleList().get(0));
+        final DateParser parser = new ISODateParser(LOCALE);
 
         assertEquals(LocalDateTime.of(2020, 8, 12,
                                       14, 29, 9, 414_000_000),

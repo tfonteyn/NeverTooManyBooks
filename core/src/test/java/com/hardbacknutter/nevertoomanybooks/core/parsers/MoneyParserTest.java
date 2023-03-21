@@ -17,17 +17,15 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils;
+package com.hardbacknutter.nevertoomanybooks.core.parsers;
 
 import androidx.annotation.NonNull;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
 
-import com.hardbacknutter.nevertoomanybooks.Base;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 
 import org.junit.jupiter.params.ParameterizedTest;
@@ -37,73 +35,70 @@ import org.junit.jupiter.params.provider.MethodSource;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-class MoneyParsingTest
-        extends Base {
+class MoneyParserTest {
 
     private static final BigDecimal twelveDotThreeFour = BigDecimal.valueOf(12.34d);
-    private static final BigDecimal tenDotFive = BigDecimal.valueOf(10.50d);
 
     @NonNull
     static Stream<Arguments> readArgs() {
         return Stream.of(
                 // Variations of GBP and Locale.UK
-                Arguments.of((Object) new Locale[]{Locale.UK},
+                Arguments.of(List.of(Locale.UK),
                              "GBP&nbsp;12.34", twelveDotThreeFour, MoneyParser.GBP),
-                Arguments.of((Object) new Locale[]{Locale.UK},
+                Arguments.of(List.of(Locale.UK),
                              "GBP12.34", twelveDotThreeFour, MoneyParser.GBP),
-                Arguments.of((Object) new Locale[]{Locale.UK},
+                Arguments.of(List.of(Locale.UK),
                              "£ 12.34", twelveDotThreeFour, MoneyParser.GBP),
-                Arguments.of((Object) new Locale[]{Locale.UK},
+                Arguments.of(List.of(Locale.UK),
                              "£12.34", twelveDotThreeFour, MoneyParser.GBP),
-                Arguments.of((Object) new Locale[]{Locale.UK},
+                Arguments.of(List.of(Locale.UK),
                              "£12", BigDecimal.valueOf(12.0d), MoneyParser.GBP),
 
                 // Variations of EUR and Locale.{eu}
-                Arguments.of((Object) new Locale[]{new Locale("de", "DE")},
+                Arguments.of(List.of(new Locale("de", "DE")),
                              "12,34&nbsp;€", twelveDotThreeFour, MoneyParser.EUR),
-                Arguments.of((Object) new Locale[]{new Locale("fr", "FR")},
+                Arguments.of(List.of(new Locale("fr", "FR")),
                              "12,34 €", twelveDotThreeFour, MoneyParser.EUR),
-                Arguments.of((Object) new Locale[]{new Locale("nl", "NL")},
+                Arguments.of(List.of(new Locale("nl", "NL")),
                              "12,34€", twelveDotThreeFour, MoneyParser.EUR),
-                Arguments.of((Object) new Locale[]{new Locale("es", "ES")},
+                Arguments.of(List.of(new Locale("es", "ES")),
                              "12,34 eur", twelveDotThreeFour, MoneyParser.EUR),
-                Arguments.of((Object) new Locale[]{new Locale("nl", "BE")},
+                Arguments.of(List.of(new Locale("nl", "BE")),
                              "EUR 12,34", twelveDotThreeFour, MoneyParser.EUR),
 
                 // Multiple Locales
-                Arguments.of((Object) new Locale[]{Locale.CANADA_FRENCH, Locale.UK},
+                Arguments.of(List.of(Locale.CANADA_FRENCH, Locale.UK),
                              "GBP&nbsp;12.34", twelveDotThreeFour, MoneyParser.GBP),
-                Arguments.of((Object) new Locale[]{Locale.CANADA_FRENCH, Locale.UK},
+                Arguments.of(List.of(Locale.CANADA_FRENCH, Locale.UK),
                              "GBP12.34", twelveDotThreeFour, MoneyParser.GBP),
-                Arguments.of((Object) new Locale[]{Locale.CANADA_FRENCH, Locale.UK},
+                Arguments.of(List.of(Locale.CANADA_FRENCH, Locale.UK),
                              "£ 12.34", twelveDotThreeFour, MoneyParser.GBP),
-                Arguments.of((Object) new Locale[]{Locale.CANADA_FRENCH, Locale.UK},
+                Arguments.of(List.of(Locale.CANADA_FRENCH, Locale.UK),
                              "£12.34", twelveDotThreeFour, MoneyParser.GBP),
-                Arguments.of((Object) new Locale[]{Locale.CANADA_FRENCH, Locale.UK},
+                Arguments.of(List.of(Locale.CANADA_FRENCH, Locale.UK),
                              "£12", BigDecimal.valueOf(12.0d), MoneyParser.GBP),
 
-                Arguments.of((Object) new Locale[]{new Locale("de", "DE"), Locale.UK},
+                Arguments.of(List.of(new Locale("de", "DE"), Locale.UK),
                              "12,34&nbsp;€", twelveDotThreeFour, MoneyParser.EUR),
-                Arguments.of((Object) new Locale[]{new Locale("fr", "FR"), Locale.UK},
+                Arguments.of(List.of(new Locale("fr", "FR"), Locale.UK),
                              "12,34 €", twelveDotThreeFour, MoneyParser.EUR),
-                Arguments.of((Object) new Locale[]{new Locale("nl", "NL"), Locale.UK},
+                Arguments.of(List.of(new Locale("nl", "NL"), Locale.UK),
                              "12,34€", twelveDotThreeFour, MoneyParser.EUR),
-                Arguments.of((Object) new Locale[]{new Locale("es", "ES"), Locale.UK},
+                Arguments.of(List.of(new Locale("es", "ES"), Locale.UK),
                              "12,34 eur", twelveDotThreeFour, MoneyParser.EUR),
-                Arguments.of((Object) new Locale[]{new Locale("nl", "BE"), Locale.UK},
+                Arguments.of(List.of(new Locale("nl", "BE"), Locale.UK),
                              "EUR 12,34", twelveDotThreeFour, MoneyParser.EUR)
         );
     }
 
     @ParameterizedTest
     @MethodSource("readArgs")
-    void simple(@NonNull final Locale[] testLocales,
+    void simple(@NonNull final List<Locale> testLocales,
                 @NonNull final CharSequence source,
                 @NonNull final BigDecimal value,
                 @NonNull final String code) {
-        setLocale(testLocales);
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
-        final MoneyParser moneyParser = new MoneyParser(context, realNumberParser);
+        final RealNumberParser realNumberParser = new RealNumberParser(testLocales);
+        final MoneyParser moneyParser = new MoneyParser(testLocales.get(0), realNumberParser);
         final Money money = moneyParser.parse(source);
         assertNotNull(money);
         assertEquals(value, money.getValue());
