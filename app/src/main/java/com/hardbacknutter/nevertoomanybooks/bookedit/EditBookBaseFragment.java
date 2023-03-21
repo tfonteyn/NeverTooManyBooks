@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker.DatePickerListener;
@@ -87,6 +88,7 @@ public abstract class EditBookBaseFragment
     /** Listener for all field changes. MUST keep strong reference. */
     private final Field.AfterChangedListener afterChangedListener = this::onAfterFieldChange;
     private DateParser dateParser;
+    private RealNumberParser realNumberParser;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -106,7 +108,9 @@ public abstract class EditBookBaseFragment
 
         final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
         //noinspection ConstantConditions
-        dateParser = new FullDateParser(systemLocale, LocaleListUtils.asList(getContext()));
+        final List<Locale> locales = LocaleListUtils.asList(getContext());
+        dateParser = new FullDateParser(systemLocale, locales);
+        realNumberParser = new RealNumberParser(locales);
 
         partialDatePickerLauncher.registerForFragmentResult(getChildFragmentManager(), this);
     }
@@ -189,7 +193,7 @@ public abstract class EditBookBaseFragment
         //noinspection ConstantConditions
         fields.stream()
               .filter(Field::isAutoPopulated)
-              .forEach(field -> field.setInitialValue(getContext(), book));
+              .forEach(field -> field.setInitialValue(getContext(), book, realNumberParser));
 
         // With all Views populated, (re-)add the date helpers
         // which rely on fields having valid views

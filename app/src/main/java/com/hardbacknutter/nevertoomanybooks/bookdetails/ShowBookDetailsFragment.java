@@ -54,6 +54,7 @@ import com.google.android.material.progressindicator.CircularProgressIndicator;
 import java.security.cert.CertificateException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
@@ -65,6 +66,8 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutp
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -113,6 +116,12 @@ public class ShowBookDetailsFragment
     private CalibreHandler calibreHandler;
     private ShowBookDetailsActivityViewModel aVm;
     private ShowBookDetailsViewModel vm;
+
+    /** Gives access to the ViewPager2. Will be {@code null} when we're in embedded mode. */
+    @Nullable
+    private ShowBookPagerViewModel pagerVm;
+    private RealNumberParser realNumberParser;
+
     /** Callback - used when we're running inside another component; e.g. the BoB. */
     @Nullable
     private BookChangedListener bookChangedListener;
@@ -138,10 +147,6 @@ public class ShowBookDetailsFragment
             new EditLenderDialogFragment.Launcher(
                     RK_EDIT_LENDER,
                     (bookId, loanee) -> onBookEditFinished(DBKey.LOANEE_NAME));
-
-    /** Gives access to the ViewPager2. Will be {@code null} when we're in embedded mode. */
-    @Nullable
-    private ShowBookPagerViewModel pagerVm;
 
     /**
      * Constructor.
@@ -209,6 +214,9 @@ public class ShowBookDetailsFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        final List<Locale> locales = LocaleListUtils.asList(view.getContext());
+        realNumberParser = new RealNumberParser(locales);
 
         // update all Fields with their current View instances
         vm.getFields().forEach(field -> field.setParentView(view));
@@ -385,7 +393,7 @@ public class ShowBookDetailsFragment
         //noinspection ConstantConditions
         fields.stream()
               .filter(Field::isAutoPopulated)
-              .forEach(field -> field.setInitialValue(getContext(), book));
+              .forEach(field -> field.setInitialValue(getContext(), book, realNumberParser));
 
         bindCoverImages();
         bindLoanee(book);
