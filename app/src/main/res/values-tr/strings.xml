@@ -17,12 +17,10 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-<!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
-
-<!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») -->
-<!--suppress LongLine -->
-<resources>
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
+<!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
     <string name="X_acra_resToastText">&APP_NAME; bilinmeyen bir nedenle çöktü. Uygulamanın kalitesini iyileştirebilmemiz için lütfen bu çökmeyi rapor edin.</string>
     <string name="X_action_clear_credentials">Kimlik bilgilerini temizle</string>
     <string name="X_action_execute">"Çalıştır"</string>
@@ -45,7 +43,7 @@
     <string name="X_error_download_failed">Yükleme başarısız</string>
     <string name="error_record_must_contain_column">Kayıt, “%1$s” adlı bir alan içermelidir.</string>
     <string name="X_error_network_site_has_problems">Web sitesinde sorunlar var.</string>
-    <string name="X_error_not_available">%1$s kullanılamıyor</string>
+    <string name="X_error_not_available">%1$s kullanılamıyor.</string>
     <string name="X_httpErrorIO">Sunucuyla iletişim kurulamadı. Daha sonra tekrar deneyin.</string>
     <string name="X_info_authorized_needed">Erişime izin ver</string>
     <string name="X_info_not_authorized">Yetkilendirilmemiş</string>
@@ -79,7 +77,7 @@
     <string name="X_use_default_setting">Varsayılan ayarları kullan</string>
     <string name="X_vldt_failed_for_x">“%1$s” için doğrulama başarısız</string>
     <string name="X_warning_no_matching_book_found_long">Aranan kitap bulunamadı. Bazen doğru barkodu kitap kapağının içinde bulabilirsiniz. Bulamazsanız, bilgileri elle giriniz.</string>
-    <string name="X_whichImageCaptureApplication">Fotoğraf çekmek için şu uygulamayı kullan:</string>
+    <string name="X_whichImageCaptureApplication">Fotoğraf çekmek için şu uygulamayı kullan</string>
     <string name="X_whichSendToApplication">Göndermek için kullanılacak uygulama</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Yorumlarınız (isteğe bağlı):</string>
@@ -111,7 +109,7 @@
     <string name="action_skip">Atla</string>
     <string name="action_synchronize">Senkronize et</string>
     <string name="option_amazon_ellipsis">Amazon…</string>
-    <string name="and_others">%s …</string>
+    <string name="and_others">%1$s …</string>
     <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
     <string name="bob_empty_author">(Yazar eksik)</string>
     <string name="bob_empty_day">(Gün ayarlanmadı)</string>
@@ -152,14 +150,14 @@
     <string name="action_start_import">İçe aktarmayı başlat</string>
     <string name="action_stop_scanning">Taramayı durdur</string>
     <string name="btn_this_book">Bu kitap</string>
-    <string name="size_bytes">%.0fB</string>
+    <string name="size_bytes">%1$.0fB</string>
     <string name="pc_camera">Kamera</string>
     <string name="pe_camera_back">Arka kamera</string>
     <string name="pe_camera_front">Ön kamera</string>
     <string name="camera_next_action">Fotoğraf çektikten sonraki eylem</string>
     <string name="pe_camera_other">Diğer</string>
     <string name="cancelled">İptal edildi</string>
-    <string name="cd_btn_drag_handle">Bu listeyi yeniden düzenlemek için beni sürükleyin.</string>
+    <string name="cd_btn_drag_handle">Bu listeyi yeniden düzenlemek için beni sürükleyin</string>
     <string name="cd_clear_text_end_icon">Metni temizle</string>
     <string name="lbl_certificate_issued_by">Sertifikayı veren: %1$s</string>
     <string name="lbl_certificate_issued_to">Verilen: %1$s</string>
@@ -182,7 +180,13 @@
     <string name="confirm_registration_benefits">Bu özellik %1$s kayıt işleminden faydalanır. Daha fazla bilgi görmek veya bu mesajı devre dışı bırakmak ister misiniz?\n Bu bilgiyi daha sonra ayarlarda “%2$s” bölümünün altında bulabilirsiniz.</string>
     <string name="confirm_registration_required">Bu özellik %1$s ile kayıt gerektiriyor. Daha fazla bilgi görmek ister misiniz?</string>
     <string name="confirm_remove_toc_entry">“%1$s” başlığı %2$s tarafından bu kitaptan kaldırılsın mı?</string>
-    <string name="confirm_scope_for_change">Değiştirdiniz:\n “%1$s”,\n“%2$s”\n olarak.\n\nDeğişiklikleri nasıl uygulamak istersiniz?\n\nNot: “%3$s” seçimi anında uygulanacaktır. “%4$s” seçerseniz, yeni bir %5$s oluşturulacaktır.</string>
+    <string name="confirm_scope_for_change">Değiştirdiniz:
+\n “%1$s”,
+\n“%2$s”
+\n olarak.
+\n
+\nDeğişiklikleri nasıl uygulamak istersiniz\?
+\nNot: “%3$s” seçimi anında uygulanacaktır. “%4$s” seçerseniz, yeni bir %5$s oluşturulacaktır.</string>
     <string name="confirm_scope_for_delete">“%1$s” başlığını %2$s ile silin.\n\nBu değişikliği nasıl uygulamak istersiniz?\nUYARI: “%3$s” seçimi geri alınamaz!</string>
     <string name="confirm_test_connection">Daha sonra sorunları önlemek için bu bağlantıyı test etmeniz önerilir.</string>
     <string name="confirm_unsaved_edits">Saklanmamış değişiklikler var, şimdi çıkarsanız hepsi silinecektir.</string>
@@ -193,11 +197,11 @@
     <string name="pe_fast_scroller_overlay_dynamic">Dinamik</string>
     <string name="enabled">Etkin</string>
     <string name="error_authorization_failed">Yetkilendirme başarısız oldu</string>
-    <string name="error_auto_toc_population_failed">Kitap adlarının kendiliğinden doldurulması başarısız oldu</string>
-    <string name="error_backup_failed">Yedekleme başarısız!</string>
+    <string name="error_auto_toc_population_failed">Kitap adlarının kendiliğinden doldurulması başarısız oldu.</string>
+    <string name="error_backup_failed">Yedekleme başarısız.</string>
     <string name="error_certificate_invalid">Sertifika geçersiz veya erişilemez.</string>
     <string name="error_email_failed">E-posta gönderilemedi.</string>
-    <string name="error_export_failed">Dışa aktarılamadı</string>
+    <string name="error_export_failed">Dışa aktarılamadı.</string>
     <string name="error_file_not_found">Dosya bulunamadı: %1$s</string>
     <string name="error_file_not_recognized">Seçilen dosya tanınmıyor.</string>
     <string name="error_import_archive_invalid">Arşiv dosyası bozuk veya başka bir şekilde geçersiz.</string>
@@ -208,20 +212,20 @@
     <string name="error_import_failed">İçe aktarma başarısız.</string>
     <string name="error_import_failed_for_record">İçe aktarma başarısız (%1$s).</string>
     <string name="error_import_file_not_supported">Seçilen dosya içe aktarılamaz.</string>
-    <string name="error_network_failed_try_again">Bağlantıyı kontrol edip tekrar deneyin</string>
+    <string name="error_network_failed_try_again">Bağlantıyı kontrol edip tekrar deneyin.</string>
     <string name="error_network_please_connect">Lütfen İnternet\'e bağlanın.</string>
     <string name="error_network_site_access_failed">%1$s\'e erişilirken bir ağ sorunu oluştu. Lütfen web sitesinin açık olup olmadığını kontrol edin ve sorun devam ederse lütfen destek ile iletişime geçin.</string>
-    <string name="error_no_image_editor">Resim editörü bulunamadı</string>
+    <string name="error_no_image_editor">Resim editörü bulunamadı.</string>
     <string name="error_search_could_not_be_started">Kitap araması başarısız oldu.</string>
     <string name="error_search_failed_network">Lütfen Ayarlar\'ı açın ve ağ ve Arama Sitesi tercihlerinizi kontrol edin.\nAyrıca cihaz ağ ayarlarınızı da kontrol edin.</string>
     <string name="error_search_x_failed_y">%1$s\'de arama başarısız oldu: %2$s</string>
     <string name="error_site_authentication_failed">%1$s kimlik doğrulaması başarısız oldu</string>
-    <string name="error_site_authorization_failed">%1$s yetkilendirmesi bir hataya neden oldu</string>
-    <string name="error_storage_no_space_left">Mevcut depolama yetersiz</string>
+    <string name="error_site_authorization_failed">%1$s yetkilendirmesi bir hataya neden oldu.</string>
+    <string name="error_storage_no_space_left">Mevcut depolama yetersiz.</string>
     <string name="error_storage_not_accessible">Lütfen depolamanın erişilebilir olduğunu kontrol edin.</string>
     <string name="error_storage_not_writable">Lütfen deponun yazılabilir olduğunu ve yeterli alana sahip olduğunu kontrol edin.</string>
-    <string name="error_unexpected">Bilinmeyen bir hata oluştu</string>
-    <string name="error_unknown_host">“%1$s” adresindeki hizmetle bağlantı sorunu oluştu</string>
+    <string name="error_unexpected">Bilinmeyen bir hata oluştu.</string>
+    <string name="error_unknown_host">“%1$s” adresindeki hizmetle bağlantı sorunu oluştu.</string>
     <string name="error_unexpected_long">Beklenmedik bir sorun oluştu. Sorun devam ederse, ayarlar sayfasının altındaki “%1$s” seçeneğini kullanarak desteğe başvurun.</string>
     <string name="error_unsupported_version_v">Desteklenmeyen sürüm: %1$d</string>
     <string name="error_upgrade_not_supported">%1$s\'ten daha eski sürümlerden yükseltme desteklenmez.</string>
@@ -242,7 +246,7 @@
     <string name="option_moving_covers_from_x_to_y">Tüm kapakları “%1$s”\'den “%2$s”\'ye taşıyın</string>
     <string name="option_isfdb_menu_populate_toc">Kitap adlarını kendiliğinden doldur (ISFDB)</string>
     <string name="info_isfdb_warning_limited_to">(yalnızca ISFDB web sitesi tarafından desteklenir)</string>
-    <string name="size_kilobytes">%.2fkB</string>
+    <string name="size_kilobytes">%1$.2fkB</string>
     <string name="lbl_about">Uygulama hakkında</string>
     <string name="lbl_about_contact">İletişim:</string>
     <string name="lbl_add_book">Kitap ekle</string>
@@ -315,7 +319,7 @@
     <string name="lbl_credentials">Kullanıcı kimlik bilgileri</string>
     <string name="lbl_currency">Para birimi</string>
     <string name="lbl_database">Veri tabanı</string>
-    <string name="option_bug_report_database_upgrade">Veritabanı yükseltme dosyaları.</string>
+    <string name="option_bug_report_database_upgrade">Veritabanı yükseltme dosyaları</string>
     <string name="lbl_date_acquired">Alınan Tarih</string>
     <string name="lbl_date_acquired_day">Alınan Gün</string>
     <string name="lbl_date_acquired_month">Alınan Ay</string>
@@ -357,7 +361,7 @@
     <string name="option_import_books_option_new_and_updated">Yeni ve güncellenmiş kitaplar</string>
     <string name="option_header_import_books_option_new_and_updated_cutoff_date">Yalnızca bu tarihten sonra \n değiştirilen kitapları içe aktarın</string>
     <string name="option_import_books_option_new_only">Yalnızca yeni kitaplar</string>
-    <string name="lbl_import_options">Neyin içe aktarılacağını seçin</string>
+    <string name="lbl_import_options">Neyin içe aktarılacağını seçin.</string>
     <string name="lbl_importing">İçe aktarılıyor…</string>
     <string name="lbl_is_complete">Tamamlandı</string>
     <string name="lbl_keywords">Anahtar kelimeler</string>
@@ -374,7 +378,7 @@
     <string name="lbl_local_search_long">Gelişmiş Yerel Arama</string>
     <string name="lbl_location">Konum</string>
     <string name="lbl_location_long">Kitabın yeri</string>
-    <string name="option_bug_report_logfiles">Log dosyaları.</string>
+    <string name="option_bug_report_logfiles">Log dosyaları</string>
     <string name="lbl_login_to_search">Aramak için giriş yapın</string>
     <string name="lbl_month">Ay</string>
     <string name="lbl_moving_data">Veriler taşınıyor</string>
@@ -450,9 +454,9 @@
     <string name="lbl_websites">Web siteleri</string>
     <string name="bookshelf_my_wishlist">İstek Listesi</string>
     <string name="lbl_year">Yıl</string>
-    <string name="list_and">and</string>
+    <string name="list_and">ve</string>
     <string name="list_element">• %s</string>
-    <string name="size_megabytes">%.2fMB</string>
+    <string name="size_megabytes">%1$.2fMB</string>
     <string name="option_amazon_books_by_author">Bu yazarın kitapları</string>
     <string name="option_amazon_books_by_author_in_series">Yazara/diziye göre kitaplar</string>
     <string name="option_amazon_books_in_series">Bu dizideki kitaplar</string>
@@ -525,9 +529,9 @@
     <string name="pc_ui">Kullanıcı arayüzü</string>
     <string name="pt_field_visibility">Alan görünürlüğünü yönet</string>
     <string name="preference_not_set">Ayarlanmadı</string>
-    <string name="info_backup_successful">Yedekleme başarılı!</string>
+    <string name="info_backup_successful">Yedekleme başarılı</string>
     <string name="info_download_successful">İndirme başarılı</string>
-    <string name="info_export_report">%2$s adında bir %3$s dosyası SD kartınızın “%1$s” dizininde oluşturuldu.\n\nBu dosyayı el ile başka bir yere yedeklemeniz aygıtınızın hasar görmesi, kaybolması veya çalınması durumunda verilerinizin korunması için tavsiye edilir.</string>
+    <string name="info_export_report">%2$s adında bir %3$s dosyası SD kartınızın “%1$s” dizininde oluşturuldu. Bu dosyayı el ile başka bir yere yedeklemeniz aygıtınızın hasar görmesi, kaybolması veya çalınması durumunda verilerinizin korunması için tavsiye edilir.</string>
     <string name="info_export_successful">İhracat başarılı</string>
     <string name="info_import_complete">İçe aktarma başarılı</string>
     <string name="info_import_partially_complete">Kısmi ithalat yapıldı</string>
@@ -547,10 +551,10 @@
     <string name="progress_msg_starting_up">Başlatılıyor…</string>
     <string name="progress_msg_upgrading">Yükseltiliyor…</string>
     <string name="progress_msg_x_created_y_updated_z_skipped">%1$s: %2$d oluşturuldu, %3$d güncellendi, %4$d atlandı</string>
-    <string name="pt_allow_editing_external_id">Yerel web sitesi kitap kimliğinin düzenlenmesine izin ver.</string>
+    <string name="pt_allow_editing_external_id">Yerel web sitesi kitap kimliğinin düzenlenmesine izin ver</string>
     <string name="pt_allow_metered_network_data">Mobil veri kullanımına izin ver</string>
     <string name="pt_bob_books_under_multiple_authors">Birden fazla yazarlı kitaplar</string>
-    <string name="pt_bob_books_under_multiple_publisher">Birden çok yayıncının bulunduğu kitapları gösterin.</string>
+    <string name="pt_bob_books_under_multiple_publisher">Birden çok yayıncının bulunduğu kitapları gösterin</string>
     <string name="pt_bob_books_under_multiple_series">Birden fazla seride bulunan kitaplar</string>
     <string name="pt_bob_cover_scale">Listelerdeki görüntü boyutu</string>
     <string name="pt_bob_cover_show">Ufak resimleri göster</string>
@@ -561,11 +565,11 @@
     <string name="pt_collect_series_info_from_toc">Seri bilgilerini içindekiler tablosundan toplayın</string>
     <string name="pt_cropper_frame_is_whole_image">Öntanımlı kırpma alanı bütün görseldir</string>
     <string name="pt_edit_book_isbn_checks">ISBN geçerlilik kontrolleri</string>
-    <string name="pt_bob_row_menu">Satır bağlam menüsü.</string>
+    <string name="pt_bob_row_menu">Satır bağlam menüsü</string>
     <string name="pe_bob_row_menu_button">Her zaman bir düğme göster.</string>
     <string name="pe_bob_row_menu_button_when_space">Boşluk varsa bir düğme gösterin, aksi takdirde uzun tıklamayı kullanın.</string>
     <string name="pe_bob_row_menu_long_click">Her zaman uzun tıklamayı kullanın.</string>
-    <string name="pt_fast_scroller_overlay">Kaydırma sırasında metin balonu</string>
+    <string name="pt_fast_scroller_overlay">Kaydırma sırasında metin balonu.</string>
     <string name="pt_line_spacing">Satır aralığı</string>
     <string name="pt_maintenance">Bakım</string>
     <string name="pt_primary_author_type">Tipo de autor principal</string>
@@ -589,10 +593,10 @@
     <string name="ps_author_name_family_first">Örneğin “Nesin, Aziz”</string>
     <string name="ps_author_name_given_first">Örneğin “Aziz Nesin”</string>
     <string name="ps_bob_books_under_multiple_each_author">Her yazar altında</string>
-    <string name="ps_bob_books_under_multiple_each_publisher">her yayıncının altında.</string>
+    <string name="ps_bob_books_under_multiple_each_publisher">her yayıncının altında</string>
     <string name="ps_bob_books_under_multiple_each_series">Her dizi altında</string>
     <string name="ps_bob_books_under_multiple_primary_author_only">Yalnızca birincil yazar altında</string>
-    <string name="ps_bob_books_under_multiple_primary_publisher_only">yalnızca birincil yayıncıları altında.</string>
+    <string name="ps_bob_books_under_multiple_primary_publisher_only">yalnızca birincil yayıncıları altında</string>
     <string name="ps_bob_books_under_multiple_primary_series_only">Yalnızca birincil dizi altında</string>
     <string name="pv_bob_header_filters">Kitap süzgeçleri</string>
     <string name="pv_bob_header_nr_of_books">Kitap sayısını göster</string>
@@ -620,7 +624,7 @@
     <string name="tip_authors_works_single_book">Başlık tek bir kitapta mevcuttur.</string>
     <string name="tip_autorotate_camera_images">Eğer kendinizi sürekli kamera resimlerini aynı doğrultuda döndürüyor buluyorsanız uygulama ayarlarını sürekli bir yöne görselleri kendiliğinden döndürecek biçimde ayarlayabilirsiniz.</string>
     <string name="tip_book_list">Bir kitabın üzerine dokunmak kitap ayrıntılarını gösterir, uzun basılı tutmak daha fazla seçeneğin olduğu bir dizelge verir.</string>
-    <string name="tip_book_search_by_text">Kitapları ISBN ile eklemek kitap adı veya yazar adı ile eklemekten çok daha doğru sonuç verir ve genelde yeğlenir. Unutmayın ki doğru barkodu ön kapağın iç kısmında da bulabilirsiniz\n\n</string>
+    <string name="tip_book_search_by_text">Kitapları ISBN ile eklemek kitap adı veya yazar adı ile eklemekten çok daha doğru sonuç verir ve genelde yeğlenir. Unutmayın ki doğru barkodu ön kapağın iç kısmında da bulabilirsiniz.</string>
     <string name="tip_booklist_style_groups">Belirli bir kitap listesi stiline ilişkin başlık sıradüzenini değiştirmek için bu ekranı kullanabilirsiniz. Bir onay işareti başlığın listede gösterileceğini belirtir, gizlemek için onay işaretini kaldırın ve bunun tersi de geçerlidir. Her satırın en sağındaki simgeyi yukarı veya aşağı sürükleyerek hiyerarşiyi yeniden sipariş edebilirsiniz.</string>
     <string name="tip_booklist_style_properties">Belirli bir kitap listesi stilinin özelliklerini ayarlamak için bu ekranı kullanabilirsiniz. Adı değiştirebilir, hiyerarşiyi değiştirmek için grupları düzenleyebilir ve kullanışlı bulduğunuz bir stil oluşturmak için çeşitli diğer tercihleri ayarlayabilirsiniz.</string>
     <string name="tip_booklist_styles_editor">Bu ekranı, varsayılan stiller menünüzde görüntülenecek stillerin listesini özelleştirmek için kullanabilirsiniz. Bir onay işareti, stilin listede gösterileceğini belirtir, gizlemek için seçimini kaldırın ve bunun tersi de geçerlidir. Hiçbir stil işaretlenmezse, tüm stiller gösterilecektir. Her satırın en sağındaki simgeyi yukarı veya aşağı sürükleyerek hiyerarşiyi yeniden sipariş edebilirsiniz. Üst üste herhangi bir yere uzun basmak, belirli bir stilin ayrıntılarını düzenlemenizi veya klonlamanızı sağlar. Bir stili klonladıysanız ve fikrinizi değiştirdiyseniz, onu kendiniz silmeniz gerekir.</string>
@@ -633,7 +637,7 @@
     <string name="info_cleanup_files">Temizlenebilir dosyalar şu anda SD kartta %1$s kullanmaktadır. Her güncellemenizde, her veritabanı yedeklemenizde veya her uygulamanın çökmesinde günlük dosyaları ve diğer veriler SD kartta saklanır. Bu bilgileri temizlemek için aşağıdaki düğmeye dokunun. Eğer çökmeler veya başka sorunlar yaşıyorsanız öncelikle “%2$s” düğmesini kullanmayı deneyin.</string>
     <string name="info_displaying_n_books_in_m_entries">%2$d giride %1$d kitap</string>
     <string name="info_export_backup_all">Tüm kitaplar, kapaklar, ayarlar ve kişiselleştirilmiş biçemler arşive aktarılacaktır.</string>
-    <string name="info_export_books_option_since_last_full_backup">Son tüm yedeklemeden bu yana eklenen veya güncellenen kitaplar</string>
+    <string name="info_export_books_option_since_last_full_backup">Son tüm yedeklemeden bu yana eklenen veya güncellenen kitaplar.</string>
     <string name="option_info_import_books_option_all">Yeni kitapları içe aktarın ve mevcut kitapların üzerine yazın. Bunu bir yedeği geri yüklemek için kullanın.</string>
     <string name="option_info_import_books_option_new_and_updated">Yeni kitapları içe aktarın ve mevcut kitapları son değişiklik tarihlerine göre senkronize edin.</string>
     <string name="option_info_import_books_option_new_only">Yalnızca yeni kitapları içe aktarın. Mevcut kitaplara yapılan herhangi bir güncelleme göz ardı edilecektir.</string>
@@ -651,7 +655,7 @@
     <string name="vldt_blank_required_for_x">“%1$s” için boş değer gerekli</string>
     <string name="vldt_boolean_expected_for_x">“%1$s” için bir ikili (bool) değer gerekli (0,1,t,f,true,false)</string>
     <string name="vldt_date_expected_for_x">“%1$s” için bir tarih gerekli</string>
-    <string name="vldt_failure">Doğrulama hatası.</string>
+    <string name="vldt_failure">Doğrulama hatası</string>
     <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="vldt_integer_expected_for_x">“%1$s” için bir tamsayı değeri gerekli</string>
     <string name="vldt_non_blank_required">boş olmayan bir değer gerekli</string>
@@ -661,7 +665,7 @@
     <string name="warning_already_in_list">Zaten listede!</string>
     <string name="warning_backup_request">Veritabanınızı SD karta yedeklemek ister misiniz?</string>
     <string name="warning_book_not_always_found">Tüm siteler geçerli veri döndürmedi.</string>
-    <string name="warning_book_not_found">Belirtilen kitap bulunamıyor</string>
+    <string name="warning_book_not_found">Belirtilen kitap bulunamıyor.</string>
     <string name="warning_cannot_delete_1st_bs">Birinci kitaplık silinemiyor.</string>
     <string name="warning_enable_at_least_1_website">Her kategori için en az bir web sitesini etkinleştirin.</string>
     <string name="warning_export_contains_no_data">İhraç edecek bir şey yoktu.</string>
@@ -669,12 +673,15 @@
     <string name="warning_if_month_set_year_must_be">Eğer bir ay belirtmiş iseniz yıl da belirtmelisiniz.</string>
     <string name="warning_image_copy_failed">Görüntü kopyalanamadı.</string>
     <string name="warning_image_not_found">Resim bulunamadı.</string>
-    <string name="warning_immediate_global_changes">Not: Tüm kaydedilmiş değişiklikler anında ve genel olarak uygulanır</string>
+    <string name="warning_immediate_global_changes">Not: Tüm kaydedilmiş değişiklikler anında ve genel olarak uygulanır.</string>
     <string name="warning_import_csv">Uyarı: Bilgileri içe aktarırken eğer içe aktardığınız dosyaların ID numarası var olan bir kitabın ID\'si ile aynı ise, varolan kitap verilerinin üstüne yazılmasına neden olabilir. Eğer dışa aktarılmış bir dosyada bir giriyi değiştirdiyseniz bu sorun değildir; ancak yeni bir kitap girişi oluşturuyorsanız ID bölümünün boş olduğundan emin olun.</string>
     <string name="warning_import_csv_unescaped_quote">%1$d. Satırda çıkış karakteri olmayan alıntı karakter, %2$d. konum</string>
     <string name="warning_import_failed_for_lines_lots">Ayrıştırma işlemi \n%1$s\n satırları ve diğerleri için başarısız oldu.</string>
-    <string name="warning_import_failed_for_lines_some">Ayrıştırma \n%1$s\n satırları için başarısız oldu.</string>
-    <string name="warning_no_editions">Ek yayın bilgisi yok</string>
+    <string name="warning_import_failed_for_lines_some">Ayrıştırma
+\n%1$s
+\n satırları için başarısız oldu.
+\n</string>
+    <string name="warning_no_editions">Ek yayın bilgisi yok.</string>
     <string name="warning_no_matching_book_found">Eşleşen kitap bulunamadı</string>
     <string name="warning_no_search_data_for_active_sites">Etkin siteler için geçerli arama verisi yok.</string>
     <string name="warning_no_site_supports_this_method">UYARI: Şu anda seçili sitelerin hiçbiri %1$s ile aramayı desteklemiyor. Alternatif siteleri etkinleştirmek için lütfen site menüsünü kullanın veya farklı bir arama yöntemi kullanın.</string>
@@ -684,29 +691,29 @@
     <string name="warning_requires_site_and_id">Bir web sitesi seçin ve bir kimlik girin.</string>
     <string name="warning_select_at_least_1_field">Güncellemek için en azından bir alan seçin.</string>
     <string name="warning_select_at_least_1_group">En az bir grup seçin.</string>
-    <string name="warning_toc_confirm">Lütfen bu seçki adlarının doğru olduğunu onaylayın</string>
+    <string name="warning_toc_confirm">Lütfen bu seçki adlarının doğru olduğunu onaylayın.</string>
     <string name="warning_x_already_exists">%1$s zaten var.</string>
     <string name="warning_x_is_not_a_valid_code">“%1$s” geçerli bir kod değil</string>
-    <string name="whichEditApplication">Şununla düzenle:</string>
+    <string name="whichEditApplication">Şununla düzenle</string>
     <string name="whichSendApplication">Paylaş</string>
-    <string name="whichViewApplication">Şununla aç:</string>
+    <string name="whichViewApplication">Şununla aç</string>
     <string name="x_of_y">%1$d (Toplam %2$d)</string>
     <string name="yes">Evet</string>
     <string name="info_story_in_single_book">“%1$s” tek bir kitapta mevcut:\n\n%2$s</string>
     <string name="tip_import_isbn_list">ISBN numaralarına sahip bir metin dosyasını içe aktarın. Dosyanın her satırında tek bir ISBN olmalıdır. Sonuçlar sıraya konulacaktır.</string>
     <string name="lbl_date_added">Eklenen günay</string>
-    <string name="debug_select_items">Ne eklemek istediğinizi seçin</string>
+    <string name="debug_select_items">Ne eklemek istediğinizi seçin:</string>
     <string name="lbl_group_1st_char_author_family_name">Yazar soyadının 1. karakteri</string>
     <string name="lbl_group_1st_char_series_title">Seri başlığının 1. karakteri</string>
     <string name="lbl_group_1st_char_publisher_name">Yayıncı adının 1. karakteri</string>
     <string name="lbl_group_1st_char_book_title">Kitap başlığının 1. karakteri</string>
     <string name="lbl_author_pseudonym">Bu, takma adıdır:</string>
-    <string name="vldt_real_author_must_be_valid">Boş veya mevcut bir Yazar olmalıdır.</string>
+    <string name="vldt_real_author_must_be_valid">Boş veya mevcut bir Yazar olmalıdır</string>
     <string name="confirm_create_real_author">“%1$s” henüz mevcut değil. Yaratılmalılar mı?</string>
     <string name="pt_search_resolve_authors_bedetheque">Bedetheque web sitesini kullanarak yazar takma adlarını çözün</string>
     <string name="pt_bedetheque_search_resolve_formats">Bedetheque (Fransızca) biçim adlandırmasını koru</string>
     <string name="confirm_no_missing_covers_search_from_top">Bu sıranın altındaki tüm kitapların kapakları vardır. Baştan tekrar aransın mı?</string>
-    <string name="info_all_books_have_covers">Bu kitaplıktaki tüm kitapların kapakları vardır.</string>
+    <string name="info_all_books_have_covers">Bu kitaplıktaki tüm kitapların kapakları vardır</string>
     <string name="book_format_hardcover_oblong">Ciltli / dikdörtgen</string>
     <string name="book_format_softcover_oblong">Yumuşak kapak / dikdörtgen</string>
     <string name="lbl_purge_blns">Düğüm durumunu temizle</string>
