@@ -17,13 +17,10 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-<!DOCTYPE resources [
-    <!ENTITY APP_NAME "NeverTooManyBooks">
-    ]>
-<!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») -->
-<!--suppress LongLine -->
-<resources>
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
+<!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources>
     <string name="X_acra_resToastText">&APP_NAME; is onverwacht gecrasht. Help ons aub de toepassing beter te maken door deze crash te melden.</string>
     <string name="X_action_clear_credentials">Certificaatgegevens wissen</string>
     <string name="X_action_execute">Uitvoeren</string>
@@ -213,7 +210,8 @@
     <string name="error_no_image_editor">Geen foto-editor gevonden.</string>
     <string name="error_record_must_contain_column">Record moet een veld met de naam „%1$s” bevatten.</string>
     <string name="error_search_could_not_be_started">Het zoeken naar het boek is mislukt.</string>
-    <string name="error_search_failed_network">Open de instellingen en controleer uw netwerk- en zoeksite-voorkeuren. Controleer ook de netwerkinstellingen van uw apparaat.</string>
+    <string name="error_search_failed_network">Open de instellingen en controleer uw netwerk- en zoeksite-voorkeuren. 
+\nControleer ook de netwerkinstellingen van uw apparaat.</string>
     <string name="error_search_x_failed_y">Zoeken op %1$s is mislukt: %2$s</string>
     <string name="error_site_authentication_failed">%1$s authenticatie mislukt</string>
     <string name="error_site_authorization_failed">%1$s autorisatie leidde tot een fout.</string>
@@ -242,7 +240,7 @@
     <string name="info_download_successful">Download succesvol</string>
     <string name="info_export_backup_all">Alle boeken, afbeeldingen, instellingen en aangepaste stijlen zullen worden geëxporteerd naar het archief.</string>
     <string name="info_export_books_option_since_last_full_backup">Alle boeken die zijn toegevoegd of bijgewerkt sinds de laatste volledige back-up.</string>
-    <string name="info_export_report">Een %3$s bestand met de naam %2$s is aangemaakt in de „%1$s” folder.\n\nWe raden aan dit bestand naar een ander plek te kopiëren om de gegevens veilig te stellen in geval uw apparaat wordt gestolen, beschadigd of verloren raakt.</string>
+    <string name="info_export_report">Een %3$s bestand met de naam %2$s is aangemaakt in de „%1$s” folder. We raden aan dit bestand naar een ander plek te kopiëren om de gegevens veilig te stellen in geval uw apparaat wordt gestolen, beschadigd of verloren raakt.</string>
     <string name="info_export_successful">Export succesvol</string>
     <string name="info_import_complete">Import Compleet</string>
     <string name="info_import_partially_complete">Gedeeltelijke import voltooid</string>
