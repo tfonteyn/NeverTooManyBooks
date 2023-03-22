@@ -25,6 +25,10 @@ The UI is available in:
 English, German, French, Dutch, Italian, Spanish, Greek, Czech, Polish, Turkish and Russian.
 The quality of translation of the latter half of this list is likely not perfect.
 
+New 22-March-2023: translations are now integrated and editable
+on [https://hosted.weblate.org/projects/nevertoomanybooks/](https://hosted.weblate.org/projects/nevertoomanybooks/)
+(pending approval)
+
 Data is fetched on-demand from multiple internet sites.
 You can enable/disable and prioritize the sites in the settings.
 
