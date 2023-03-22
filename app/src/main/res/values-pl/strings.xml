@@ -17,10 +17,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
-<!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources>
+  -->
+<!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
+<!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») -->
+<!--suppress LongLine -->
+<resources>
     <string name="X_acra_resToastText">&APP_NAME; niespodziewanie się zawiesił. Pomóż nam ulepszyć aplikację, zgłaszając tę awarię.</string>
     <string name="X_action_clear_credentials">Wyczyść dane o certyfikatach</string>
     <string name="X_action_execute">Wykonaj</string>
@@ -164,11 +165,7 @@
     <string name="confirm_delete_book">Zamierzasz usunąć książkę o tytule „%1$s” autora %2$s.\n\n Czy chcesz kontynuować?</string>
     <string name="confirm_delete_bookshelf">Naprawdę usunąć półkę „%1$s”? Same książki nie zostaną usunięte. Nadal będą obecne na innych półkach lub na półce „%2$s”.</string>
     <string name="confirm_delete_publisher">Naprawdę usunąć wydawcę „%1$s”?\n\nSame książki nie zostaną usunięte.\n\nRozważ edycję wydawcy i zmianę nazwy wydawcy na nazwę innego wydawcy, aby zachować te dane.</string>
-    <string name="confirm_delete_series">Czy na pewno usunąć serię „%1$s”\?
-\n
-\nKsiążki nie będą usuwane.
-\n
-\nRozważ zmianę nazwy serii by zachować te dane.</string>
+    <string name="confirm_delete_series">Czy na pewno usunąć serię „%1$s”?\n\nKsiążki nie będą usuwane.\n\nRozważ zmianę nazwy serii by zachować te dane</string>
     <string name="confirm_delete_style">Usunąć styl „%1$s”?</string>
     <string name="confirm_delete_toc_entry_everywhere">Naprawdę usuń wpis „%1$s” (przez %2$s)? Zostanie usunięty ze wszystkich książek, w których jest wymieniony. Same książki nie zostaną usunięte.</string>
     <string name="confirm_duplicate_book_message">Książka, którą próbujesz dodać już istnieje w katalogu, czy na pewno chcesz dodać jeszcze jeden egzemplarz?</string>
@@ -177,22 +174,14 @@
     <string name="confirm_merge_bookshelves">Półka o zmienionej nazwie już istnieje. Czy chcesz je połączyć?</string>
     <string name="confirm_merge_publishers">Wydawca o zmienionej nazwie już istnieje.. Czy chcesz je połączyć?</string>
     <string name="confirm_merge_series">Seria o zmienionej nazwie już istnieje. Czy chcesz je połączyć?</string>
-    <string name="confirm_overwrite_cover">Wybrane pola zostaną zaktualizowane, natomiast okładki mogą by opcjonalnie pobrane dla wszystkich książek.
-\n
-\nCzy chcesz zastąpić wszystkie istniejące okładki\? Uwaga - może to zająć sporo czasu.</string>
+    <string name="confirm_overwrite_cover">Wybrane pola zostaną zaktualizowane, natomiast okładki mogą by opcjonalnie pobrane dla wszystkich książek.\n\nCzy chcesz zastąpić wszystkie istniejące okładki? Uwaga - może to zająć sporo czasu…</string>
     <string name="confirm_rebuild_fts">Dane indeksu wyszukiwania zostaną odbudowane po ponownym uruchomieniu aplikacji. Jesteś pewien, że chcesz kontynuować ?</string>
     <string name="confirm_rebuild_index">Indeksy zostaną odbudowane po ponownym uruchomieniu aplikacji. Jesteś pewien, że chcesz kontynuować ?</string>
     <string name="confirm_rebuild_orderby_columns">Spowoduje to odbudowanie danych sortowania po ponownym uruchomieniu aplikacji. Jesteś pewien, że chcesz kontynuować ?</string>
     <string name="confirm_registration_benefits">Ta funkcja korzysta z rejestracji w %1$s. Czy chcesz zobaczyć więcej informacji lub wyłączyć tę wiadomość?\n Informacje te można znaleźć później w sekcji „%2$s” w ustawieniach.</string>
     <string name="confirm_registration_required">Ta funkcja wymaga rejestracji w %1$s. Czy chcesz zobaczyć więcej informacji?</string>
     <string name="confirm_remove_toc_entry">Usunąć tytuł „%1$s” autorstwa %2$s z tej książki?</string>
-    <string name="confirm_scope_for_change">Zmieniłeś:
-\n „%1$s”
-\n na
-\n „%2$s”
-\n
-\nJak chcesz zastosować tę zmianę\?
-\nUwaga: Zmiana „%3$s” zostanie wykonana natychmiast. Jeśli wybierzesz „%4$s”, zostanie utworzone nowe %5$s.</string>
+    <string name="confirm_scope_for_change">Zmieniłeś:\n „%1$s”\n na\n „%2$s”\n\nJak chcesz zastosować tę zmianę?\n\nUwaga: Zmiana „%3$s” zostanie wykonana natychmiast. Jeśli wybierzesz „%4$s”, zostanie utworzone nowe %5$s.</string>
     <string name="confirm_scope_for_delete">Usuń tytuł „%1$s” do %2$s.\n\nJak chcesz zastosować tę zmianę?\nOSTRZEŻENIE: wyboru „%3$s” nie można cofnąć!</string>
     <string name="confirm_test_connection">Zaleca się przetestowanie tego połączenia, aby później uniknąć problemów.</string>
     <string name="confirm_unsaved_edits">Masz niezapisane zmiany, jeśli wyjdziesz teraz, zostaną utracone.</string>
@@ -223,8 +212,7 @@
     <string name="error_network_site_access_failed">Wystąpił problem z siecią podczas uzyskiwania dostępu do %1$s. Sprawdź, czy witryna jest uruchomiona, a jeśli problem będzie się powtarzał, skontaktuj się z pomocą techniczną.</string>
     <string name="error_no_image_editor">Nie znaleziono edytora zdjęć.</string>
     <string name="error_search_could_not_be_started">Wyszukiwanie książki nie powiodło się.</string>
-    <string name="error_search_failed_network">Otwórz Ustawienia i sprawdź preferencje sieci i witryny wyszukiwania.
-\nSprawdź także ustawienia sieciowe urządzenia.</string>
+    <string name="error_search_failed_network">Otwórz Ustawienia i sprawdź preferencje sieci i witryny wyszukiwania.\nSprawdź także ustawienia sieciowe urządzenia.</string>
     <string name="error_search_x_failed_y">Wyszukiwanie w %1$s nie powiodło się: %2$s</string>
     <string name="error_site_authentication_failed">Uwierzytelnienie %1$s nie powiodło się</string>
     <string name="error_site_authorization_failed">Autoryzacja %1$s spowodowała błąd.</string>

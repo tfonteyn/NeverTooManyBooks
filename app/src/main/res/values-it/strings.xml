@@ -17,10 +17,12 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
-<!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
+  -->
+
+<!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
+<!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) -->
+<!--suppress LongLine -->
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="X_acra_resToastText">&APP_NAME; si è bloccato in modo anomalo. Aiutaci a migliorare il programma informandoci del problema.</string>
     <string name="X_action_clear_credentials">Cancella credenziali</string>
     <string name="X_action_execute">Vykdyti</string>
@@ -164,11 +166,7 @@
     <string name="confirm_delete_book">Il libro intitolato «%1$s» verrà completamente cancellato da %2$s.\n\n Procedere?</string>
     <string name="confirm_delete_bookshelf">Eliminare davvero lo scaffale «%1$s»? I libri stessi non verranno eliminati. Saranno comunque presenti su qualsiasi altro scaffale o sullo scaffale «%2$s».</string>
     <string name="confirm_delete_publisher">Eliminare davvero l\'editore «%1$s»?\n\nI libri stessi non verranno eliminati.\n\nConsidera la possibilità di modificare l\'editore e di cambiare il nome dell\'editore con quello di un altro editore per conservare questi dati.</string>
-    <string name="confirm_delete_series">Cancellare la serie «%1$s»\?
-\n
-\nI libri non verranno cancellati.
-\n
-\nValuta se modificare la serie e cambiare il nome della serie in quello di un\'altra serie per preservare i dati.</string>
+    <string name="confirm_delete_series">Cancellare la serie «%1$s»?\n\nI libri non verranno cancellati.\n\nValuta se modificare la serie e cambiare il nome della serie in quello di un\'altra serie per preservare i dati</string>
     <string name="confirm_delete_style">Eliminare lo stile «%1$s»?</string>
     <string name="confirm_delete_toc_entry_everywhere">Cancellare davvero il titolo «%1$s» (di %2$s)\? Sarà cancellato da tutti i libri in cui è elencato. Libri stessi non saranno cancellati.</string>
     <string name="confirm_duplicate_book_message">Il libro che stai cercando di aggiungere è già presente nel database, vuoi aggiungerne un\'altra copia?</string>
@@ -184,13 +182,7 @@
     <string name="confirm_registration_benefits">Questa funzione beneficia della registrazione con %1$s. Desideri visualizzare ulteriori informazioni o disabilitare questo messaggio?\nPuoi trovare queste informazioni in un secondo momento nella sezione «%2$s» nelle impostazioni.</string>
     <string name="confirm_registration_required">Questa funzione richiede la registrazione con %1$s. Vuoi vedere maggiori informazioni?</string>
     <string name="confirm_remove_toc_entry">Rimuovere il titolo «%1$s» di %2$s da questo libro?</string>
-    <string name="confirm_scope_for_change">Hai modificato:
-\n «%1$s»
-\n in
-\n «%2$s»
-\n
-\nCome desideri applicare questa modifica\?
-\nNota: La scelta «%3$s» sarà applicata immediatamente. Se scegli «%4$s», verrà creato un nuovo %5$s.</string>
+    <string name="confirm_scope_for_change">Hai modificato:\n «%1$s»\n in\n «%2$s»\n\nCome desideri applicare questa modifica?\n\nNota: La scelta «%3$s» sarà applicata immediatamente. Se scegli «%4$s», verrà creato un nuovo %5$s.</string>
     <string name="confirm_scope_for_delete">Elimina il titolo «%1$s» di %2$s.\n\nCome desideri applicare questa modifica?\nATTENZIONE: la scelta «%3$s» non può essere annullata!</string>
     <string name="confirm_test_connection">Si consiglia di testare questa connessione per evitare problemi in seguito.</string>
     <string name="confirm_unsaved_edits">Vi sono modifiche non salvate, se esci adesso saranno perse.</string>
@@ -221,8 +213,7 @@
     <string name="error_network_site_access_failed">Si è verificato un problema di rete durante l\'accesso a %1$s. Verifica se il sito Web è attivo e se il problema persiste, contatta l\'assistenza.</string>
     <string name="error_no_image_editor">Nessun editor di immagini trovato.</string>
     <string name="error_search_could_not_be_started">Ricerca del libro fallita.</string>
-    <string name="error_search_failed_network">Si prega di aprire le impostazioni e controllare la rete e le preferenze del sito di ricerca.
-\nControlla anche le impostazioni di rete del tuo dispositivo.</string>
+    <string name="error_search_failed_network">Si prega di aprire le impostazioni e controllare la rete e le preferenze del sito di ricerca.\nControlla anche le impostazioni di rete del tuo dispositivo</string>
     <string name="error_search_x_failed_y">Ricerca su %1$s non riuscita: %2$s</string>
     <string name="error_site_authentication_failed">Autenticazione %1$s non riuscita</string>
     <string name="error_site_authorization_failed">Errore durante l\'autorizzazione di %1$s.</string>

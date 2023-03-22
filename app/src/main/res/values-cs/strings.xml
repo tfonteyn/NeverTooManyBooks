@@ -17,10 +17,12 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
-<!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
+  -->
+
+<!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
+<!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») -->
+<!--suppress LongLine -->
+<resources>
     <string name="X_acra_resToastText">Došlo k neočekávanému pádu aplikace &APP_NAME;. Prosím pomozte nám zlepšit aplikaci a informujte nás o tomto problému.</string>
     <string name="X_action_clear_credentials">Vymazat pověření</string>
     <string name="X_action_execute">Spustit</string>
@@ -173,22 +175,14 @@
     <string name="confirm_merge_bookshelves">Knihovna, kterou přejmenujete, již existuje. Chcete je sloučit?</string>
     <string name="confirm_merge_publishers">Vydavatel, kterou přejmenujete, již existuje. Chcete je sloučit?</string>
     <string name="confirm_merge_series">Série, kterou přejmenujete, již existuje. Chcete je sloučit?</string>
-    <string name="confirm_overwrite_cover">Toto aktualizuje pouze vybraná pole, ale náhledy budou staženy pro VŠECHNY knihy.
-\n
-\nChcete přepsat všechny existující náhledy\? Pozor, může to chvíli trvat.</string>
+    <string name="confirm_overwrite_cover">Toto aktualizuje pouze vybraná pole, ale náhledy budou staženy pro VŠECHNY knihy.\n\nChcete přepsat všechny existující náhledy? Pozor, může to chvíli trvat…</string>
     <string name="confirm_rebuild_fts">Po restartování aplikace se data indexu vyhledávání znovu vytvoří. Jste si jistý, že chcete pokračovat ?</string>
     <string name="confirm_rebuild_index">Po restartování aplikace se indexy znovu sestaví. Jste si jistý, že chcete pokračovat ?</string>
     <string name="confirm_rebuild_orderby_columns">Po restartování aplikace dojde k opětovnému vytvoření třídicích dat. Jste si jistý, že chcete pokračovat ?</string>
     <string name="confirm_registration_benefits">Tato funkce těží z registrace u %1$s. Chcete zobrazit další informace nebo tuto zprávu deaktivovat?\nTyto informace najdete později v části „%2$s“ v nastavení.</string>
     <string name="confirm_registration_required">Tato funkce vyžaduje registraci s %1$s. Chtěli byste vidět více informací?</string>
     <string name="confirm_remove_toc_entry">Odebrat z této knihy titul „%1$s“ od autora %2$s?</string>
-    <string name="confirm_scope_for_change">Změnili jste:
-\n „%1$s“
-\n na
-\n „%2$s“
-\n
-\nJak si přejete aplikovat tuto změnu\?
-\nUpozornění: Volba „%3$s“ bude aplikována okamžitě. Pokud zvolíte „%4$s“, vytvoří se nový %5$s.</string>
+    <string name="confirm_scope_for_change">Změnili jste:\n „%1$s“\n na\n „%2$s“\n\nJak si přejete aplikovat tuto změnu?\n\nUpozornění: Volba „%3$s“ bude aplikována okamžitě. Pokud zvolíte „%4$s“, vytvoří se nový %5$s.</string>
     <string name="confirm_scope_for_delete">Smazat název „%1$s“ od %2$s.\n\nJak chcete tuto změnu uplatnit?\nVAROVÁNÍ: Volbu „%3$s“ nelze vrátit zpět!</string>
     <string name="confirm_test_connection">Doporučujeme toto připojení otestovat, abyste se později vyhnuli problémům.</string>
     <string name="confirm_unsaved_edits">Máte neuložené změny, pokud nyní ukončíte, budou ztraceny.</string>
@@ -219,8 +213,7 @@
     <string name="error_network_site_access_failed">Při přístupu k %1$s došlo k chybě v síti. Zkontrolujte, zda je web funkční, a pokud problém přetrvává, kontaktujte podporu.</string>
     <string name="error_no_image_editor">Nebyl nalezen žádný editor obrázků.</string>
     <string name="error_search_could_not_be_started">Vyhledávání knihy se nezdařilo.</string>
-    <string name="error_search_failed_network">Otevřete Nastavení a zkontrolujte předvolby sítě a vyhledávacího webu.
-\nZkontrolujte také nastavení sítě v zařízení.</string>
+    <string name="error_search_failed_network">Otevřete Nastavení a zkontrolujte předvolby sítě a vyhledávacího webu.\nZkontrolujte také nastavení sítě v zařízení</string>
     <string name="error_search_x_failed_y">Hledání na %1$s se nezdařilo: %2$s</string>
     <string name="error_site_authentication_failed">Ověření %1$s se nezdařilo</string>
     <string name="error_site_authorization_failed">%1$s autorizace skončila chybou.</string>

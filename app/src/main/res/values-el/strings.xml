@@ -17,10 +17,12 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
-<!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
+  -->
+
+<!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
+<!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) -->
+<!--suppress LongLine -->
+<resources>
     <string name="X_acra_resToastText">Η λειτουργία του &APP_NAME; διακόπηκε. Παρακαλούμε βοηθήστε μας να βελτιώσουμε την εφαρμογή στέλνοντας την αναφορά της διακοπής.</string>
     <string name="X_action_clear_credentials">Διαγραφή διαπιστευτηρίων</string>
     <string name="X_action_execute">Εκτέλεση</string>
@@ -211,8 +213,7 @@
     <string name="error_network_site_access_failed">Παρουσιάστηκε πρόβλημα δικτύου κατά την πρόσβαση στο %1$s. Ελέγξτε εάν ο ιστότοπος είναι ανεβασμένος και εάν το πρόβλημα παραμένει, επικοινωνήστε με την υποστήριξη.</string>
     <string name="error_no_image_editor">Δεν βρέθηκε επεξεργαστής εικόνων.</string>
     <string name="error_search_could_not_be_started">Η αναζήτηση του βιβλίου απέτυχε.</string>
-    <string name="error_search_failed_network">Ανοίξτε τις Ρυθμίσεις και ελέγξτε το δίκτυο και τις προτιμήσεις Ρυθμίσεις ιστοτόπου.
-\nΕλέγξτε επίσης τις ρυθμίσεις δικτύου της συσκευής σας.</string>
+    <string name="error_search_failed_network">Ανοίξτε τις Ρυθμίσεις και ελέγξτε το δίκτυο και τις προτιμήσεις Ρυθμίσεις ιστοτόπου. Ελέγξτε επίσης τις ρυθμίσεις δικτύου της συσκευής σας</string>
     <string name="error_search_x_failed_y">Η αναζήτηση στο %1$s απέτυχε: %2$s</string>
     <string name="error_site_authentication_failed">Ο έλεγχος ταυτότητας %1$s απέτυχε</string>
     <string name="error_site_authorization_failed">Η αδειοδότηση του %1$s οδήγησε σε λάθος.</string>
