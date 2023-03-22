@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,12 +17,10 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
-<!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») -->
-<!--suppress LongLine -->
-<resources>
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
+<!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
     <string name="X_acra_resToastText">Došlo k neočekávanému pádu aplikace &APP_NAME;. Prosím pomozte nám zlepšit aplikaci a informujte nás o tomto problému.</string>
     <string name="X_action_clear_credentials">Vymazat pověření</string>
     <string name="X_action_execute">Spustit</string>
@@ -597,7 +595,6 @@
     <string name="pv_bob_header_filters">Filtry knih</string>
     <string name="pv_bob_header_nr_of_books">Počet knih</string>
     <string name="pv_bob_header_style_name">Název stylu</string>
-    <string name="pv_reformat_titles_prefixes">""</string>
     <string name="size_hidden">Skrytý</string>
     <string name="size_large">Velký</string>
     <string name="size_medium">Střední</string>
@@ -697,7 +694,6 @@
     <string name="tip_import_isbn_list">Importujte textový soubor s čísly ISBN. Soubor by měl mít na každém řádku jedno ISBN. Výsledky budou zařazeny do fronty.</string>
     <string name="lbl_date_added">Datum přidání</string>
     <string name="debug_select_items">Vyberte, co chcete zahrnout</string>
-
     <string name="lbl_group_1st_char_author_family_name">1. znak příjmení Author</string>
     <string name="lbl_group_1st_char_series_title">1. postava názvu seriálu</string>
     <string name="lbl_group_1st_char_publisher_name">1. znak jména vydavatele</string>

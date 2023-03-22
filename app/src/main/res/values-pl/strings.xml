@@ -17,13 +17,10 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
-<!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») -->
-<!--suppress LongLine -->
-<resources>
-
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
+<!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources>
     <string name="X_acra_resToastText">&APP_NAME; niespodziewanie się zawiesił. Pomóż nam ulepszyć aplikację, zgłaszając tę awarię.</string>
     <string name="X_action_clear_credentials">Wyczyść dane o certyfikatach</string>
     <string name="X_action_execute">Wykonaj</string>
@@ -598,7 +595,6 @@
     <string name="pv_bob_header_filters">Filtry</string>
     <string name="pv_bob_header_nr_of_books">Liczba książek</string>
     <string name="pv_bob_header_style_name">Nazwa stylu</string>
-    <string name="pv_reformat_titles_prefixes">""</string>
     <string name="size_hidden">Ukryty</string>
     <string name="size_large">Duży</string>
     <string name="size_medium">Średni</string>
@@ -698,7 +694,6 @@
     <string name="tip_import_isbn_list">Zaimportuj plik tekstowy z numerami ISBN. Plik powinien mieć jeden numer ISBN w każdym wierszu. Wyniki zostaną umieszczone w kolejce.</string>
     <string name="lbl_date_added">Data dodania</string>
     <string name="debug_select_items">Wybierz, co chcesz uwzględnić</string>
-
     <string name="lbl_group_1st_char_author_family_name">Pierwsza litera nazwiska autora</string>
     <string name="lbl_group_1st_char_series_title">Pierwszy znak tytułu serii</string>
     <string name="lbl_group_1st_char_publisher_name">Pierwszy znak nazwy wydawcy</string>

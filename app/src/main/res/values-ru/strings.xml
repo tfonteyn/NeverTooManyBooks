@@ -17,13 +17,10 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
-<!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) -->
-<!--suppress LongLine -->
-<resources>
-
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
+<!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
     <string name="X_acra_resToastText">&APP_NAME;" завершилось с ошибкой. Пожалуйста, помогите нам сделать приложение лучше, отправив эту ошибку."</string>
     <string name="X_action_clear_credentials">Очистить учетные данные</string>
     <string name="X_action_execute">"Выполнить"</string>
@@ -598,7 +595,6 @@
     <string name="pv_bob_header_filters">Фильтры книг</string>
     <string name="pv_bob_header_nr_of_books">Показывать номера книг</string>
     <string name="pv_bob_header_style_name">Название стиля</string>
-    <string name="pv_reformat_titles_prefixes">""</string>
     <string name="size_hidden">скрытый</string>
     <string name="size_large">большой</string>
     <string name="size_medium">Средняя</string>
@@ -697,7 +693,6 @@
     <string name="info_story_in_single_book">«%1$s» присутствует в одной книге:\n\n%2$s</string>
     <string name="tip_import_isbn_list">Импортируйте текстовый файл с номерами ISBN. Файл должен иметь один ISBN в каждой строке. Результаты будут помещены в очередь.</string>
     <string name="lbl_date_added">Дата добавления</string>
-
     <string name="lbl_group_1st_char_author_family_name">1-й символ фамилии Автора</string>
     <string name="lbl_group_1st_char_series_title">1-й персонаж названия сериала</string>
     <string name="lbl_group_1st_char_publisher_name">1-й символ имени издателя</string>
@@ -716,5 +711,4 @@
     <string name="info_purge_blns_all">Очистить состояние узла из всех списков</string>
     <string name="info_purge_blns_item_name">Очистить состояние узла %1$s «%2$s»?</string>
     <string name="error_updates_aborted">Обновления прерваны</string>
-
 </resources>
