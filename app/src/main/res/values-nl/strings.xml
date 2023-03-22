@@ -33,7 +33,7 @@
     <string name="X_action_reset">Resetten</string>
     <string name="X_action_send">Verzenden</string>
     <string name="X_action_swap">Wisselen</string>
-    <string name="X_action_try_again">Opnieuw proberen</string>
+    <string name="X_action_try_again">Opnieuw</string>
     <string name="X_action_update">Updaten</string>
     <string name="X_action_validate">Valideer</string>
     <string name="X_btn_continue_edit">Doorgaan met bewerken</string>
@@ -110,7 +110,7 @@
     <string name="action_more_ellipsis">Meer…</string>
     <string name="action_not_now">Niet nu</string>
     <string name="action_reset_to_default">Standaardinstellingen herstellen</string>
-    <string name="action_retry">Opnieuw\n proberen</string>
+    <string name="action_retry">Opnieuw</string>
     <string name="action_save">Opslaan</string>
     <string name="action_search">Zoeken</string>
     <string name="action_select">Selecteren</string>
