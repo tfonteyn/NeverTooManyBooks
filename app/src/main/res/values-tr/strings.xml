@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,12 +18,11 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
-
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
+
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») -->
 <!--suppress LongLine -->
 <resources>
-
     <string name="X_acra_resToastText">&APP_NAME; bilinmeyen bir nedenle çöktü. Uygulamanın kalitesini iyileştirebilmemiz için lütfen bu çökmeyi rapor edin.</string>
     <string name="X_action_clear_credentials">Kimlik bilgilerini temizle</string>
     <string name="X_action_execute">"Çalıştır"</string>
@@ -80,8 +79,7 @@
     <string name="X_use_default_setting">Varsayılan ayarları kullan</string>
     <string name="X_vldt_failed_for_x">“%1$s” için doğrulama başarısız</string>
     <string name="X_warning_no_matching_book_found_long">Aranan kitap bulunamadı. Bazen doğru barkodu kitap kapağının içinde bulabilirsiniz. Bulamazsanız, bilgileri elle giriniz.</string>
-    <string
-        name="X_whichImageCaptureApplication">Fotoğraf çekmek için şu uygulamayı kullan:</string>
+    <string name="X_whichImageCaptureApplication">Fotoğraf çekmek için şu uygulamayı kullan:</string>
     <string name="X_whichSendToApplication">Göndermek için kullanılacak uygulama</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Yorumlarınız (isteğe bağlı):</string>
@@ -218,8 +216,7 @@
     <string name="error_search_failed_network">Lütfen Ayarlar\'ı açın ve ağ ve Arama Sitesi tercihlerinizi kontrol edin.\nAyrıca cihaz ağ ayarlarınızı da kontrol edin.</string>
     <string name="error_search_x_failed_y">%1$s\'de arama başarısız oldu: %2$s</string>
     <string name="error_site_authentication_failed">%1$s kimlik doğrulaması başarısız oldu</string>
-    <string
-        name="error_site_authorization_failed">%1$s yetkilendirmesi bir hataya neden oldu</string>
+    <string name="error_site_authorization_failed">%1$s yetkilendirmesi bir hataya neden oldu</string>
     <string name="error_storage_no_space_left">Mevcut depolama yetersiz</string>
     <string name="error_storage_not_accessible">Lütfen depolamanın erişilebilir olduğunu kontrol edin.</string>
     <string name="error_storage_not_writable">Lütfen deponun yazılabilir olduğunu ve yeterli alana sahip olduğunu kontrol edin.</string>
@@ -427,8 +424,7 @@
     <string name="option_storage_select">“%1$s” kullan</string>
     <string name="lbl_storage_settings">Depolama</string>
     <string name="pt_storage_volume">Depolama hacmi</string>
-    <string
-        name="info_story_in_multiple_books">“%1$s” birden fazla kitapta mevcuttur:\n\n%2$s</string>
+    <string name="info_story_in_multiple_books">“%1$s” birden fazla kitapta mevcuttur:\n\n%2$s</string>
     <string name="option_isbn_strict">Sıkı ISBN</string>
     <string name="lbl_style">Stil</string>
     <string name="lbl_styles">Stilleri</string>
@@ -601,7 +597,6 @@
     <string name="pv_bob_header_filters">Kitap süzgeçleri</string>
     <string name="pv_bob_header_nr_of_books">Kitap sayısını göster</string>
     <string name="pv_bob_header_style_name">Stil adı</string>
-    <string name="pv_reformat_titles_prefixes">""</string>
     <string name="size_hidden">Gizli</string>
     <string name="size_large">Büyük</string>
     <string name="size_medium">Orta</string>
@@ -701,7 +696,6 @@
     <string name="tip_import_isbn_list">ISBN numaralarına sahip bir metin dosyasını içe aktarın. Dosyanın her satırında tek bir ISBN olmalıdır. Sonuçlar sıraya konulacaktır.</string>
     <string name="lbl_date_added">Eklenen günay</string>
     <string name="debug_select_items">Ne eklemek istediğinizi seçin</string>
-
     <string name="lbl_group_1st_char_author_family_name">Yazar soyadının 1. karakteri</string>
     <string name="lbl_group_1st_char_series_title">Seri başlığının 1. karakteri</string>
     <string name="lbl_group_1st_char_publisher_name">Yayıncı adının 1. karakteri</string>

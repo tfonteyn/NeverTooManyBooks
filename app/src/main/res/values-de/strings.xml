@@ -1,5 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,10 +17,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-    <!ENTITY APP_NAME "NeverTooManyBooks">
-    ]>
-<!-- Quotes „…“  - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine -->
+  -->
+
+<!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
+<!-- Quotes „…“  - Regex to find wrong ones: ('|”|‘|’|«|») -->
+<!--suppress LongLine -->
 <resources>
     <string name="X_acra_resToastText">&APP_NAME; ist abgestürzt. Bitte helfen Sie uns bei der Verbesserung der App, indem Sie diesen Absturz melden.</string>
     <string name="X_action_clear_credentials">Anmeldedaten löschen</string>
