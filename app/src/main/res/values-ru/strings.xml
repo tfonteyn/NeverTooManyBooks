@@ -17,12 +17,10 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
-<!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) -->
-<!--suppress LongLine -->
-<resources>
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
+<!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
     <string name="X_acra_resToastText">&APP_NAME;" завершилось с ошибкой. Пожалуйста, помогите нам сделать приложение лучше, отправив эту ошибку."</string>
     <string name="X_action_clear_credentials">Очистить учетные данные</string>
     <string name="X_action_execute">"Выполнить"</string>
@@ -45,12 +43,12 @@
     <string name="X_error_download_failed">Загрузка не удалась</string>
     <string name="error_record_must_contain_column">Запись должна содержать поле с именем «%1$s».</string>
     <string name="X_error_network_site_has_problems">На сайте есть проблемы.</string>
-    <string name="X_error_not_available">%1$s недоступен</string>
+    <string name="X_error_not_available">%1$s недоступен.</string>
     <string name="X_httpErrorIO">Не удалось подключиться к серверу. Повторите попытку позже.</string>
     <string name="X_info_authorized_needed">Авторизация</string>
     <string name="X_info_not_authorized">Не авторизовано</string>
     <string name="X_info_site_authorization_successful">Авторизация %1$s прошла успешно</string>
-    <string name="X_lbl_about_sourcecode">Исходный код:</string>
+    <string name="X_lbl_about_sourcecode">Исходный код</string>
     <string name="X_lbl_completed">Завершено</string>
     <string name="X_lbl_cover_long">Эскиз обложки</string>
     <string name="X_lbl_delete_book">Удалить книгу</string>
@@ -79,7 +77,7 @@
     <string name="X_use_default_setting">Использовать настройки по умолчанию</string>
     <string name="X_vldt_failed_for_x">Проверка не удалась для «%1$s»</string>
     <string name="X_warning_no_matching_book_found_long">Не найдена книга, соответствующая отсканированному штрих-коду. Возможно правильный штрих-код находится внутри книги. Иначе, пожалуйста, введите детализированную информацию о книге вручную.</string>
-    <string name="X_whichImageCaptureApplication">Делать снимки с помощью:</string>
+    <string name="X_whichImageCaptureApplication">Делать снимки с помощью</string>
     <string name="X_whichSendToApplication">Выберите приложение</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Ваши комментарии (или оставьте пустым):</string>
@@ -111,7 +109,7 @@
     <string name="action_skip">Пропустить</string>
     <string name="action_synchronize">Синхронизировать</string>
     <string name="option_amazon_ellipsis">Amazon…</string>
-    <string name="and_others">%s …</string>
+    <string name="and_others">%1$s …</string>
     <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
     <string name="bob_empty_author">(Автор отсутствует)</string>
     <string name="bob_empty_day">(День не назначен)</string>
@@ -152,21 +150,25 @@
     <string name="action_start_import">Начать импорт</string>
     <string name="action_stop_scanning">Остановить сканирование</string>
     <string name="btn_this_book">Эта книга</string>
-    <string name="size_bytes">%.0f байт</string>
+    <string name="size_bytes">%1$.0fB</string>
     <string name="pc_camera">камера</string>
     <string name="pe_camera_back">Задняя камера</string>
     <string name="pe_camera_front">Фронтальная камера</string>
     <string name="camera_next_action">Действие после съемки</string>
     <string name="pe_camera_other">Другое</string>
     <string name="cancelled">Печать отменена</string>
-    <string name="cd_btn_drag_handle">Перетащите меня, чтобы изменить порядок в этом списке.</string>
+    <string name="cd_btn_drag_handle">Перетащите меня, чтобы изменить порядок в этом списке</string>
     <string name="cd_clear_text_end_icon">Очистить текстовое поле</string>
     <string name="lbl_certificate_issued_by">Кем выдан: %1$s</string>
     <string name="lbl_certificate_issued_to">Кому выдан: %1$s</string>
     <string name="confirm_delete_book">Книга с названием «%1$s» будет полностью удалена %2$s.\n\n Вы уверены?</string>
     <string name="confirm_delete_bookshelf">Действительно удалить книжную полку «%1$s»? Сами книги удалены не будут. Они по-прежнему будут присутствовать на любых других полках или на полке «%2$s».</string>
     <string name="confirm_delete_publisher">Действительно удалить издателя «%1$s»?\n\nСами книги не будут удалены.\n\nРассмотрите возможность изменения издателя и изменения имени издателя на имя другого издателя, чтобы сохранить эти данные.</string>
-    <string name="confirm_delete_series">Действительно удалить серию «%1$s»?\n\nКниги этой серии не будут удалены.\n\nВместо удаления вы можете переименовать серию, чтобы сохранить существующую связь с книгами</string>
+    <string name="confirm_delete_series">Действительно удалить серию «%1$s»\?
+\n
+\nКниги этой серии не будут удалены.
+\n
+\nВместо удаления вы можете переименовать серию, чтобы сохранить существующую связь с книгами.</string>
     <string name="confirm_delete_style">Удалить стиль «%1$s»?</string>
     <string name="confirm_delete_toc_entry_everywhere">Действительно удалить запись «%1$s» (от %2$s)? Он будет удален из всех книг, в которых он указан. Сами книги не будут удалены.</string>
     <string name="confirm_duplicate_book_message">Книга, которую Вы пытаетесь добавить уже есть в базе. Вы уверены, что хотите добавить ещё одну копию этой книги?</string>
@@ -182,7 +184,13 @@
     <string name="confirm_registration_benefits">Эта функция имеет преимущества при регистрации в %1$s. Хотите увидеть больше информации или отключить это сообщение?\n Вы можете найти эту информацию позже в разделе «%2$s» в настройках.</string>
     <string name="confirm_registration_required">Эта функция требует регистрации в %1$s. Хотите увидеть больше информации?</string>
     <string name="confirm_remove_toc_entry">Удалить название «%1$s» пользователя %2$s из этой книги?</string>
-    <string name="confirm_scope_for_change">Вы изменили:\n «%1$s»\n на\n «%2$s»\n\nКак вы хотите применить это изменение?\n\nЗамечание: выбор «%3$s» будет применён немедленно. Если вы выберете «%4$s», будет создан новый %5$s.</string>
+    <string name="confirm_scope_for_change">Вы изменили:
+\n «%1$s»
+\n на
+\n «%2$s»
+\n
+\nКак вы хотите применить это изменение\?
+\nЗамечание: выбор «%3$s» будет применён немедленно. Если вы выберете «%4$s», будет создан новый %5$s.</string>
     <string name="confirm_scope_for_delete">Удалить заголовок «%1$s» пользователем %2$s.\n\nКак вы хотите применить это изменение? Примечание.\nВНИМАНИЕ «%3$s» нельзя отменить!</string>
     <string name="confirm_test_connection">Желательно проверить это соединение, чтобы избежать проблем в дальнейшем.</string>
     <string name="confirm_unsaved_edits">Если вы выйдете сейчас, не сохраненные изменения будут потеряны.</string>
@@ -193,11 +201,11 @@
     <string name="pe_fast_scroller_overlay_dynamic">динамический</string>
     <string name="enabled">Включено</string>
     <string name="error_authorization_failed">Авторизация не удалась</string>
-    <string name="error_auto_toc_population_failed">Автоматическое заполнение названий не удалось</string>
-    <string name="error_backup_failed">Резервное копирование не удалось</string>
+    <string name="error_auto_toc_population_failed">Автоматическое заполнение названий не удалось.</string>
+    <string name="error_backup_failed">Резервное копирование не удалось.</string>
     <string name="error_certificate_invalid">Сертификат недействителен или недоступен.</string>
     <string name="error_email_failed">Не удалось отправить электронное письмо.</string>
-    <string name="error_export_failed">Ошибка экспорта</string>
+    <string name="error_export_failed">Ошибка экспорта.</string>
     <string name="error_file_not_found">Файл не найден: %1$s</string>
     <string name="error_file_not_recognized">Выбранный файл не распознан.</string>
     <string name="error_import_archive_invalid">Файл архива поврежден или недействителен.</string>
@@ -211,17 +219,18 @@
     <string name="error_network_failed_try_again">Проверьте подключение и повторите попытку.</string>
     <string name="error_network_please_connect">Подключитесь к Интернету.</string>
     <string name="error_network_site_access_failed">При доступе к %1$s возникла проблема с сетью. Пожалуйста, проверьте, работает ли веб-сайт, и если проблема не устранена, обратитесь в службу поддержки.</string>
-    <string name="error_no_image_editor">Редактор изображений не найден</string>
+    <string name="error_no_image_editor">Редактор изображений не найден.</string>
     <string name="error_search_could_not_be_started">Поиск книги не удался.</string>
-    <string name="error_search_failed_network">Пожалуйста, откройте «Настройки» и проверьте настройки сети и поиска на сайте.\nТакже проверьте настройки сети вашего устройства</string>
+    <string name="error_search_failed_network">Пожалуйста, откройте «Настройки» и проверьте настройки сети и поиска на сайте.
+\nТакже проверьте настройки сети вашего устройства.</string>
     <string name="error_search_x_failed_y">Поиск по %1$s не удался: %2$s</string>
     <string name="error_site_authentication_failed">%1$s аутентификация не удалась</string>
     <string name="error_site_authorization_failed">Авторизация %1$s завершилась с ошибкой.</string>
-    <string name="error_storage_no_space_left">Недостаточно места</string>
+    <string name="error_storage_no_space_left">Недостаточно места.</string>
     <string name="error_storage_not_accessible">Пожалуйста, проверьте, что хранилище доступно.</string>
     <string name="error_storage_not_writable">Пожалуйста, проверьте, что хранилище доступно для записи и имеет достаточно места.</string>
-    <string name="error_unexpected">Произошла неизвестная ошибка</string>
-    <string name="error_unknown_host">Возникла проблема с подключением к сервису на «%1$s»</string>
+    <string name="error_unexpected">Произошла неизвестная ошибка.</string>
+    <string name="error_unknown_host">Возникла проблема с подключением к сервису на «%1$s».</string>
     <string name="error_unexpected_long">Произошла непредвиденная ошибка. Если проблема не исчезнет, обратитесь в службу поддержки, используя параметр «%1$s» внизу страницы настроек.</string>
     <string name="error_unsupported_version_v">Неподдерживаемая версия: %1$d</string>
     <string name="error_upgrade_not_supported">Обновление с версий старше %1$s не поддерживается.</string>
@@ -242,8 +251,8 @@
     <string name="option_moving_covers_from_x_to_y">Перенести все обложки из «%1$s» в «%2$s»</string>
     <string name="option_isfdb_menu_populate_toc">Автоматически заполнить названия (ISFDB)</string>
     <string name="info_isfdb_warning_limited_to">(поддерживается только веб-сайтом ISFDB)</string>
-    <string name="size_kilobytes">%.2fкб</string>
-    <string name="lbl_about">О приложении…</string>
+    <string name="size_kilobytes">%1$.2fkB</string>
+    <string name="lbl_about">О приложении</string>
     <string name="lbl_about_contact">Контакт:</string>
     <string name="lbl_add_book">Добавить книгу</string>
     <string name="lbl_add_filter">Добавить фильтр</string>
@@ -315,7 +324,7 @@
     <string name="lbl_credentials">Учетные данные пользователя</string>
     <string name="lbl_currency">валюта</string>
     <string name="lbl_database">База данных</string>
-    <string name="option_bug_report_database_upgrade">Файлы обновления базы данных.</string>
+    <string name="option_bug_report_database_upgrade">Файлы обновления базы данных</string>
     <string name="lbl_date_acquired">Дата покупки</string>
     <string name="lbl_date_acquired_day">День куплен</string>
     <string name="lbl_date_acquired_month">Месяц купил</string>
@@ -374,7 +383,7 @@
     <string name="lbl_local_search_long">Расширенный локальный поиск</string>
     <string name="lbl_location">Местоположение</string>
     <string name="lbl_location_long">Местоположение книги</string>
-    <string name="option_bug_report_logfiles">Лог-файлы.</string>
+    <string name="option_bug_report_logfiles">Лог-файлы</string>
     <string name="lbl_login_to_search">Авторизуйтесь для поиска</string>
     <string name="lbl_month">Месяц</string>
     <string name="lbl_moving_data">Перенос данных</string>
@@ -420,7 +429,7 @@
     <string name="option_sort_and_style_ellipsis">Сортировать &amp; Стиль…</string>
     <string name="lbl_sorting">Сортировка</string>
     <string name="lbl_sql_query">SQL-запрос</string>
-    <string name="option_storage_quit_and_reinsert_sdcard">Закройте приложение и вставьте правильную SD-карту.</string>
+    <string name="option_storage_quit_and_reinsert_sdcard">Закройте приложение и вставьте правильную SD-карту</string>
     <string name="option_storage_select">Используйте «%1$s»</string>
     <string name="lbl_storage_settings">Хранилище</string>
     <string name="pt_storage_volume">Объем хранилища</string>
@@ -452,7 +461,7 @@
     <string name="lbl_year">г.</string>
     <string name="list_and">и</string>
     <string name="list_element">• %s</string>
-    <string name="size_megabytes">%.2fМб</string>
+    <string name="size_megabytes">%1$.2fMB</string>
     <string name="option_amazon_books_by_author">Книги этого автора</string>
     <string name="option_amazon_books_by_author_in_series">Книги по автору/серии</string>
     <string name="option_amazon_books_in_series">Книги в этой серии</string>
@@ -527,7 +536,7 @@
     <string name="preference_not_set">Не указано</string>
     <string name="info_backup_successful">Резервное копирование выполнено успешно</string>
     <string name="info_download_successful">Загрузка прошла успешно</string>
-    <string name="info_export_report">Файл %3$s с именем %2$s был создан в папке «%1$s».\n\nВам следует вручную скопировать его, чтобы защитить данные в случае утери или повреждения телефона.</string>
+    <string name="info_export_report">Файл %3$s с именем %2$s был создан в папке «%1$s». Вам следует вручную скопировать его, чтобы защитить данные в случае утери или повреждения телефона.</string>
     <string name="info_export_successful">Экспорт успешен</string>
     <string name="info_import_complete">Импорт завершен</string>
     <string name="info_import_partially_complete">Частичный импорт выполнен</string>
@@ -547,10 +556,10 @@
     <string name="progress_msg_starting_up">Запуск…</string>
     <string name="progress_msg_upgrading">Обновление…</string>
     <string name="progress_msg_x_created_y_updated_z_skipped">%1$s: %2$d создано, %3$d обновлено, %4$d пропущена</string>
-    <string name="pt_allow_editing_external_id">Разрешить редактировать родной идентификатор книги сайта.</string>
+    <string name="pt_allow_editing_external_id">Разрешить редактировать родной идентификатор книги сайта</string>
     <string name="pt_allow_metered_network_data">Разрешить использование мобильных данных</string>
     <string name="pt_bob_books_under_multiple_authors">Книги с множеством авторов</string>
-    <string name="pt_bob_books_under_multiple_publisher">Показать книги с несколькими издателями.</string>
+    <string name="pt_bob_books_under_multiple_publisher">Показать книги с несколькими издателями</string>
     <string name="pt_bob_books_under_multiple_series">Книги в множестве серий</string>
     <string name="pt_bob_cover_scale">Размер изображения в списках</string>
     <string name="pt_bob_cover_show">Показывать миниатюры</string>
@@ -561,11 +570,11 @@
     <string name="pt_collect_series_info_from_toc">Собрать информацию серии из оглавления</string>
     <string name="pt_cropper_frame_is_whole_image">Рамка по умолчанию: всё изображение</string>
     <string name="pt_edit_book_isbn_checks">ISBN проверки достоверности</string>
-    <string name="pt_bob_row_menu">Контекстное меню строки.</string>
+    <string name="pt_bob_row_menu">Контекстное меню строки</string>
     <string name="pe_bob_row_menu_button">Всегда показывать кнопку.</string>
     <string name="pe_bob_row_menu_button_when_space">Покажите кнопку, если есть место, в противном случае используйте долгий щелчок.</string>
     <string name="pe_bob_row_menu_long_click">Всегда используйте длинный щелчок.</string>
-    <string name="pt_fast_scroller_overlay">Текстовая всплывающая подсказка при прокрутке</string>
+    <string name="pt_fast_scroller_overlay">Текстовая всплывающая подсказка при прокрутке.</string>
     <string name="pt_line_spacing">Межстрочный интервал</string>
     <string name="pt_maintenance">обслуживание</string>
     <string name="pt_primary_author_type">Основной тип автора</string>
@@ -589,10 +598,10 @@
     <string name="ps_author_name_family_first">например «Достоевский, Фёдор»</string>
     <string name="ps_author_name_given_first">например «Фёдор Достоевский»</string>
     <string name="ps_bob_books_under_multiple_each_author">Под каждым автор</string>
-    <string name="ps_bob_books_under_multiple_each_publisher">под каждым издателем.</string>
+    <string name="ps_bob_books_under_multiple_each_publisher">под каждым издателем</string>
     <string name="ps_bob_books_under_multiple_each_series">Под каждым серии</string>
     <string name="ps_bob_books_under_multiple_primary_author_only">Только под первым автор</string>
-    <string name="ps_bob_books_under_multiple_primary_publisher_only">только под своим основным издателем.</string>
+    <string name="ps_bob_books_under_multiple_primary_publisher_only">только под своим основным издателем</string>
     <string name="ps_bob_books_under_multiple_primary_series_only">Только под первым серии</string>
     <string name="pv_bob_header_filters">Фильтры книг</string>
     <string name="pv_bob_header_nr_of_books">Показывать номера книг</string>
@@ -620,7 +629,7 @@
     <string name="tip_authors_works_single_book">Название присутствует в одной книге.</string>
     <string name="tip_autorotate_camera_images">Если вы заметили, что всегда поворачиваете камеру в одном направлении, попробуйте установить в настройках опцию автоматического поворота.</string>
     <string name="tip_book_list">Клик по книге покажет детальную информацию, долгое нажатие на элемент списка покажет остальные действия.</string>
-    <string name="tip_book_search_by_text">Добавление книг по ISBN гораздо более точное, чем добавление по автору и названию и в большинстве случаев является предпочтительным. Имейте в виду, что иногда правильный штрих-код находится внутри книги. \n\n</string>
+    <string name="tip_book_search_by_text">Добавление книг по ISBN гораздо более точное, чем добавление по автору и названию и в большинстве случаев является предпочтительным. Имейте в виду, что иногда правильный штрих-код находится внутри книги.</string>
     <string name="tip_booklist_style_groups">Вы можете использовать этот экран для изменения иерархии заголовков для определенного стиля списка книг. Галочка указывает, что заголовок будет отображаться в списке, снимите галочку, чтобы скрыть его, и наоборот. Вы можете изменить порядок иерархии, перетаскивая значок в крайнем правом углу каждой строки вверх или вниз.</string>
     <string name="tip_booklist_style_properties">Вы можете использовать этот экран, чтобы установить характеристики определенного стиля списка книг. Вы можете изменить имя, отредактировать группы, чтобы изменить иерархию, и настроить множество других предпочтений, чтобы создать стиль, который вы считаете полезным.</string>
     <string name="tip_booklist_styles_editor">Вы можете использовать этот экран для настройки списка стилей, который будет отображаться в вашем меню стилей по умолчанию. Галочка указывает, что стиль будет отображаться в списке, снимите флажок, чтобы скрыть его, и наоборот. Если никакие стили не отмечены галочкой, тогда будут показаны все стили. Вы можете изменить порядок иерархии, перетаскивая значок в крайнем правом углу каждой строки вверх или вниз. Длительное нажатие в любом месте строки позволит вам редактировать или клонировать детали определенного стиля. Если вы клонировали стиль и передумали, вам придется удалить его самостоятельно.</string>
@@ -633,7 +642,7 @@
     <string name="info_cleanup_files">Файлы, подлежащие очистке сейчас занимают %1$s на SD-карте. Лог-файлы и другие данные сохраняются на SD-карте при каждом обновлении, когда происходит резервное копирование базы, или в случае аварийного завершения программы. Нажмите кнопку внизу экрана, чтобы очистить эти файлы с SD-карты. Если у вас аварийно завершается программа или происходят иные ошибки, пожалуйста, сначала воспользуйтесь кнопкой «%2$s».</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d книг, в %2$d элементах</string>
     <string name="info_export_backup_all">Все книги, обложки, настройки и пользовательские стили будут экспортированы в архив.</string>
-    <string name="info_export_books_option_since_last_full_backup">Все добавленные или обновленные книги с последнего бэкапа</string>
+    <string name="info_export_books_option_since_last_full_backup">Все добавленные или обновленные книги с последнего бэкапа.</string>
     <string name="option_info_import_books_option_all">Импортируйте новые книги и перезаписывайте существующие книги. Используйте это для восстановления резервной копии.</string>
     <string name="option_info_import_books_option_new_and_updated">Импортируйте новые книги и синхронизируйте существующие книги по дате их последнего изменения.</string>
     <string name="option_info_import_books_option_new_only">Импортируйте только новые книги. Любые обновления существующих книг будут проигнорированы.</string>
@@ -651,7 +660,7 @@
     <string name="vldt_blank_required_for_x">Требуется пустое значение: «%1$s»</string>
     <string name="vldt_boolean_expected_for_x">Введите логическое да-нет значение (0,1,t,f,true,false) for «%1$s»</string>
     <string name="vldt_date_expected_for_x">Введите дату: «%1$s»</string>
-    <string name="vldt_failure">Ошибка проверки.</string>
+    <string name="vldt_failure">Ошибка проверки</string>
     <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="vldt_integer_expected_for_x">Введите целое значение: «%1$s»</string>
     <string name="vldt_non_blank_required">Требуется не пустое значение</string>
@@ -661,7 +670,7 @@
     <string name="warning_already_in_list">Уже в списке!</string>
     <string name="warning_backup_request">Вы хотите создать резервную копию базы данных на SD-карте?</string>
     <string name="warning_book_not_always_found">Не все сайты вернули достоверные данные.</string>
-    <string name="warning_book_not_found">Поиск указанной книги не удался</string>
+    <string name="warning_book_not_found">Поиск указанной книги не удался.</string>
     <string name="warning_cannot_delete_1st_bs">Невозможно удалить единственную книжную полку.</string>
     <string name="warning_enable_at_least_1_website">Включите хотя бы один веб-сайт для каждой категории.</string>
     <string name="warning_export_contains_no_data">Экспортировать было нечего.</string>
@@ -669,12 +678,12 @@
     <string name="warning_if_month_set_year_must_be">Если указан месяц, также необходимо указать год.</string>
     <string name="warning_image_copy_failed">Изображение не может быть скопировано.</string>
     <string name="warning_image_not_found">Изображение не может быть найдено.</string>
-    <string name="warning_immediate_global_changes">ЗАМЕЧАНИЕ: Все сохраняемые изменения применяются немедленно</string>
+    <string name="warning_immediate_global_changes">ЗАМЕЧАНИЕ: Все сохраняемые изменения применяются немедленно.</string>
     <string name="warning_import_csv">Предупреждение. Импорт данных может заменить существующие записи книг обновлённой информацией, в случае, если номер в файле совпадает с существующим номером. Обычно это то, что требуется, если вы обновляете поле в файле экспорта. Если вы добавляете запись новой книге, убедитесь, что поле id не заполнено.</string>
     <string name="warning_import_csv_unescaped_quote">Неэкранированный кавычка в строке %1$d, позиция %2$d</string>
     <string name="warning_import_failed_for_lines_lots">Сбой разбора для строк \n%1$s\n и других.</string>
     <string name="warning_import_failed_for_lines_some">Сбой разбора для строк \n%1$s\n</string>
-    <string name="warning_no_editions">Нет дополнительной информации о выпуске</string>
+    <string name="warning_no_editions">Нет дополнительной информации о выпуске.</string>
     <string name="warning_no_matching_book_found">Нет совпавших книг</string>
     <string name="warning_no_search_data_for_active_sites">Нет действительных поисковых данных для активных сайтов.</string>
     <string name="warning_no_site_supports_this_method">ВНИМАНИЕ: ни один из выбранных в данный момент сайтов не поддерживает поиск по %1$s. Пожалуйста, используйте меню сайта, чтобы включить альтернативные сайты, или используйте другой метод поиска.</string>
@@ -684,12 +693,12 @@
     <string name="warning_requires_site_and_id">Выберите сайт и введите идентификатор.</string>
     <string name="warning_select_at_least_1_field">Выберите хотя бы одно поле для обновления.</string>
     <string name="warning_select_at_least_1_group">Выберите хотя бы одну группу.</string>
-    <string name="warning_toc_confirm">Пожалуйста, подтвердите, что названия антологий (в основном) правильны</string>
+    <string name="warning_toc_confirm">Пожалуйста, подтвердите, что названия антологий (в основном) правильны.</string>
     <string name="warning_x_already_exists">%1$s уже существует.</string>
     <string name="warning_x_is_not_a_valid_code">«%1$s» не является допустимым кодом</string>
-    <string name="whichEditApplication">Редактировать с помощью приложения:</string>
+    <string name="whichEditApplication">Редактировать с помощью приложения</string>
     <string name="whichSendApplication">Отправка данных</string>
-    <string name="whichViewApplication">Открыть с помощью приложения:</string>
+    <string name="whichViewApplication">Открыть с помощью приложения</string>
     <string name="x_of_y">%1$d из %2$d</string>
     <string name="yes">Да</string>
     <string name="info_story_in_single_book">«%1$s» присутствует в одной книге:\n\n%2$s</string>
@@ -699,14 +708,14 @@
     <string name="lbl_group_1st_char_series_title">1-й персонаж названия сериала</string>
     <string name="lbl_group_1st_char_publisher_name">1-й символ имени издателя</string>
     <string name="lbl_group_1st_char_book_title">1-й символ названия книги</string>
-    <string name="debug_select_items">Выберите, что вы хотите включить</string>
+    <string name="debug_select_items">Выберите, что вы хотите включить:</string>
     <string name="lbl_author_pseudonym">Это псевдоним:</string>
-    <string name="vldt_real_author_must_be_valid">Должно быть пустым или существующим автором.</string>
+    <string name="vldt_real_author_must_be_valid">Должно быть пустым или существующим автором</string>
     <string name="confirm_create_real_author">«%1$s» еще не существует. Должны ли они быть созданы?</string>
     <string name="pt_search_resolve_authors_bedetheque">Разрешить авторские псевдонимы с помощью веб-сайта Bedetheque</string>
     <string name="pt_bedetheque_search_resolve_formats">Сохранить название формата Bedetheque (французский)</string>
     <string name="confirm_no_missing_covers_search_from_top">Все книги ниже этого ряда имеют обложки. Искать снова сверху?</string>
-    <string name="info_all_books_have_covers">У всех книг на этой полке есть обложки.</string>
+    <string name="info_all_books_have_covers">У всех книг на этой полке есть обложки</string>
     <string name="book_format_hardcover_oblong">Твердая обложка - продолговатый</string>
     <string name="book_format_softcover_oblong">Мягкое покрытие - продолговатый</string>
     <string name="lbl_purge_blns">Очистить состояние узла</string>
