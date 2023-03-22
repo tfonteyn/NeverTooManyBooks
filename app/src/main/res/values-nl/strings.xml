@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
@@ -16,11 +18,10 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
-<!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») -->
-<!--suppress LongLine -->
+  --><!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
+<!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine -->
 <resources>
     <string name="X_acra_resToastText">&APP_NAME; is onverwacht gecrasht. Help ons aub de toepassing beter te maken door deze crash te melden.</string>
     <string name="X_action_clear_credentials">Certificaatgegevens wissen</string>
@@ -49,7 +50,7 @@
     <string name="X_info_authorized_needed">Toegang autoriseren</string>
     <string name="X_info_not_authorized">Niet geautoriseerd</string>
     <string name="X_info_site_authorization_successful">%1$s autorisatie gelukt</string>
-    <string name="X_lbl_about_sourcecode">Broncode:</string>
+    <string name="X_lbl_about_sourcecode">Broncode</string>
     <string name="X_lbl_completed">Gereed</string>
     <string name="X_lbl_cover_long">Omslagafbeelding</string>
     <string name="X_lbl_delete_book">Boek verwijderen</string>
@@ -192,11 +193,11 @@
     <string name="pe_fast_scroller_overlay_dynamic">Dynamisch</string>
     <string name="enabled">Ingeschakeld</string>
     <string name="error_authorization_failed">Autorisatie mislukt</string>
-    <string name="error_auto_toc_population_failed">Automatisch titels invullen mislukt</string>
-    <string name="error_backup_failed">Back-up mislukt</string>
+    <string name="error_auto_toc_population_failed">Automatisch titels invullen mislukt.</string>
+    <string name="error_backup_failed">Back-up mislukt.</string>
     <string name="error_certificate_invalid">Het certificaat is ongeldig of niet toegankelijk.</string>
     <string name="error_email_failed">Het verzenden van de e-mail is mislukt.</string>
-    <string name="error_export_failed">Export mislukt</string>
+    <string name="error_export_failed">Export mislukt.</string>
     <string name="error_file_not_found">Bestand niet gevonden: %1$s</string>
     <string name="error_file_not_recognized">Het geselecteerde bestand is niet herkend.</string>
     <string name="error_import_archive_invalid">Het archiefbestand is beschadigd of anderszins ongeldig.</string>
@@ -207,19 +208,19 @@
     <string name="error_import_failed">Import mislukt.</string>
     <string name="error_import_failed_for_record">Import mislukt (%1$s).</string>
     <string name="error_import_file_not_supported">Het geselecteerde bestand kan niet worden geïmporteerd.</string>
-    <string name="error_network_failed_try_again">Controleer de verbinding en probeer het opnieuw</string>
+    <string name="error_network_failed_try_again">Controleer de verbinding en probeer het opnieuw.</string>
     <string name="error_network_please_connect">Maak verbinding met internet.</string>
     <string name="error_network_site_access_failed">Er was een netwerkprobleem terwijl je probeerde toegang te krijgen tot %1$s. Controleer of de website in de lucht is en als het probleem aanhoudt maak dan contact met ondersteuning.</string>
-    <string name="error_no_image_editor">Geen foto-editor gevonden</string>
+    <string name="error_no_image_editor">Geen foto-editor gevonden.</string>
     <string name="error_search_could_not_be_started">Het zoeken naar het boek is mislukt.</string>
     <string name="error_search_failed_network">Open de instellingen en controleer uw netwerk- en zoeksite-voorkeuren. Controleer ook de netwerkinstellingen van uw apparaat</string>
     <string name="error_search_x_failed_y">Zoeken op %1$s is mislukt: %2$s</string>
     <string name="error_site_authentication_failed">%1$s authenticatie mislukt</string>
     <string name="error_site_authorization_failed">%1$s autorisatie leidde tot een fout.</string>
-    <string name="error_storage_no_space_left">Onvoldoende opslag beschikbaar</string>
+    <string name="error_storage_no_space_left">Onvoldoende opslag beschikbaar.</string>
     <string name="error_storage_not_accessible">Controleer aub of opslag toegankelijk is.</string>
     <string name="error_storage_not_writable">Controleer aub of opslag beschrijfbaar is en voldoende vrije ruimte heeft.</string>
-    <string name="error_unexpected">Er is een onbekende fout opgetreden</string>
+    <string name="error_unexpected">Er is een onbekende fout opgetreden.</string>
     <string name="error_unknown_host">Er was een connectie probleem naar de service op „%1$s”.</string>
     <string name="error_unexpected_long">Er is een onverwachte fout opgetreden. Als het probleem zich blijft voordoen, neem contact op met de ondersteuning via de „%1$s”-optie onderaan de instellingenpagina.</string>
     <string name="error_unsupported_version_v">Niet-ondersteunde versie: %1$d</string>
@@ -228,7 +229,7 @@
     <string name="option_fab_add_book_by_barcode_scan_batch">Barcodes in batch scannen</string>
     <string name="option_fab_add_book_by_external_id">Website boek-id</string>
     <string name="option_fab_add_book_by_internet_search">Internet doorzoeken</string>
-    <string name="option_fab_add_book_by_isbn">"ISBN invoeren "</string>
+    <string name="option_fab_add_book_by_isbn">ISBN invoeren</string>
     <string name="option_fab_add_book_manually">Handmatig toevoegen</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
     <string name="httpError">Er is een netwerkfout opgetreden.</string>
@@ -651,10 +652,10 @@
     <string name="unknown_author">[Onbekende auteur]</string>
     <string name="unknown_title">[Onbekende titel]</string>
     <string name="username">gebruikersnaam</string>
-    <string name="vldt_blank_required_for_x">Veld „%1$s” moet leeg zijn.</string>
+    <string name="vldt_blank_required_for_x">Veld „%1$s” moet leeg zijn</string>
     <string name="vldt_boolean_expected_for_x">Verwachtte een boolean waarde (0,1,t,f,true,false) voor „%1$s”</string>
     <string name="vldt_date_expected_for_x">Verwachtte een datum voor „%1$s”</string>
-    <string name="vldt_failure">Validatiefout.</string>
+    <string name="vldt_failure">Validatiefout</string>
     <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="vldt_integer_expected_for_x">Verwachtte een numerieke waarde voor „%1$s”</string>
     <string name="vldt_non_blank_required">Veld mag niet leeg zijn</string>
@@ -662,9 +663,9 @@
     <string name="vldt_read_start_after_end">De begindatum moet vóór de einddatum liggen.</string>
     <string name="vldt_real_expected_for_x">Verwachtte een echt nummer voor „%1$s”</string>
     <string name="warning_already_in_list">Al in de lijst!</string>
-    <string name="warning_backup_request">Wil je  een back-up van uw database op uw SD kaart maken?</string>
+    <string name="warning_backup_request">Wil je een back-up van uw database op uw SD kaart maken\?</string>
     <string name="warning_book_not_always_found">Niet alle sites hebben geldige gegevens geretourneerd.</string>
-    <string name="warning_book_not_found">Kan gespecificeerd boek niet vinden</string>
+    <string name="warning_book_not_found">Kan gespecificeerd boek niet vinden.</string>
     <string name="warning_cannot_delete_1st_bs">De eerste boekenplank kan niet verwijderd worden.</string>
     <string name="warning_enable_at_least_1_website">Schakel ten minste één website in voor elke categorie.</string>
     <string name="warning_export_contains_no_data">Er viel niets te exporteren.</string>
@@ -675,8 +676,8 @@
     <string name="warning_immediate_global_changes">Let op: Veranderingen worden direct en globaal toegepast.</string>
     <string name="warning_import_csv">Waarschuwing. Het importeren van gegevens kan bestaande boekgegevens onbedoeld bijwerken met nieuwe informatie als de UUID-kolom niet aanwezig is en de id in het import-bestand dezelfde is als het bestaande id. Dit is meestal geen bezwaar als je een veld in een exportbestand hebt veranderd. Als je een nieuw boek item hebt gemaakt, of iemand anders zijn boeken importeert, zorg dan dat het UUID veld aanwezig is of dat het id veld leeg is.</string>
     <string name="warning_import_csv_unescaped_quote">Niet ge-escaped aanhalingsteken op rij %1$d, positie %2$d</string>
-    <string name="warning_import_failed_for_lines_lots">Het parseren is mislukt voor regels \n%1$s\n en andere.</string>
-    <string name="warning_import_failed_for_lines_some">Het parseren is mislukt voor regels \n%1$s\n</string>
+    <string name="warning_import_failed_for_lines_lots">Het parseren is mislukt voor regels\n%1$s\n en andere.</string>
+    <string name="warning_import_failed_for_lines_some">Het parseren is mislukt voor regels\n%1$s\n</string>
     <string name="warning_no_editions">Geen andere uitgave informatie beschikbaar</string>
     <string name="warning_no_matching_book_found">Geen overeenkomstig boek gevonden</string>
     <string name="warning_no_search_data_for_active_sites">Geen geldige zoekgegevens voor actieve sites.</string>
@@ -687,7 +688,7 @@
     <string name="warning_requires_site_and_id">Selecteer een website en voer een ID in.</string>
     <string name="warning_select_at_least_1_field">Selecteer tenminste één veld om te updaten.</string>
     <string name="warning_select_at_least_1_group">Selecteer ten minste één groep.</string>
-    <string name="warning_toc_confirm">Bevestig dat deze titels (merendeels) correct zijn</string>
+    <string name="warning_toc_confirm">Bevestig dat deze titels (merendeels) correct zijn.</string>
     <string name="warning_x_already_exists">%1$s bestaat al.</string>
     <string name="warning_x_is_not_a_valid_code">„%1$s” is geen geldige code</string>
     <string name="whichEditApplication">Bewerken met</string>
@@ -697,8 +698,7 @@
     <string name="yes">Ja</string>
     <string name="tip_import_isbn_list">Importeer een tekstbestand met ISBN-nummers. Het bestand moet op elke regel één enkel ISBN-nummer hebben. De resultaten worden in de wachtrij geplaatst.</string>
     <string name="lbl_date_added">Datum toegevoegd</string>
-    <string name="debug_select_items">Selecteer wat u wilt opnemen</string>
-
+    <string name="debug_select_items">Selecteer wat u wilt opnemen:</string>
     <string name="lbl_group_1st_char_author_family_name">1e karakter van de achternaam van de auteur</string>
     <string name="lbl_group_1st_char_series_title">1e karakter van de serietitel</string>
     <string name="lbl_group_1st_char_publisher_name">1e karakter van de uitgeversnaam</string>
