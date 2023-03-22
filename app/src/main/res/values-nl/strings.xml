@@ -17,10 +17,13 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
-<!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources>
+  -->
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
+<!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») -->
+<!--suppress LongLine -->
+<resources>
     <string name="X_acra_resToastText">&APP_NAME; is onverwacht gecrasht. Help ons aub de toepassing beter te maken door deze crash te melden.</string>
     <string name="X_action_clear_credentials">Certificaatgegevens wissen</string>
     <string name="X_action_execute">Uitvoeren</string>
@@ -160,16 +163,8 @@
     <string name="confirm_create_real_author">„%1$s” bestaat nog niet. Moeten ze worden gemaakt\?</string>
     <string name="confirm_delete_book">Dit zal het boek met de titel „%1$s” door %2$s compleet verwijderen.\n\nWeet je zeker dat je door wilt gaan?</string>
     <string name="confirm_delete_bookshelf">De boekenplank „%1$s” verwijderen? De boeken zelf worden niet verwijderd. Ze zullen nog steeds aanwezig zijn op alle andere schappen, of op de „%2$s” -plank.</string>
-    <string name="confirm_delete_publisher">De uitgever „%1$s” verwijderen\?
-\n
-\nDe boeken zelf worden niet verwijderd.
-\n
-\nOverweeg de uitgever te bewerken en de naam te veranderen om deze gegevens te behouden.</string>
-    <string name="confirm_delete_series">De reeks „%1$s” verwijderen\?
-\n
-\nDe boeken zelf worden niet verwijderd.
-\n
-\nOverweeg de reeks te bewerken en de reeksnaam te veranderen om deze gegevens te behouden.</string>
+    <string name="confirm_delete_publisher">De uitgever „%1$s” verwijderen\?\n\nDe boeken zelf worden niet verwijderd.\n\nOverweeg de uitgever te bewerken en de naam te veranderen om deze gegevens te behouden.</string>
+    <string name="confirm_delete_series">De reeks „%1$s” verwijderen\?\n\nDe boeken zelf worden niet verwijderd.\n\nOverweeg de reeks te bewerken en de reeksnaam te veranderen om deze gegevens te behouden.</string>
     <string name="confirm_delete_style">De stijl „%1$s” verwijderen?</string>
     <string name="confirm_delete_toc_entry_everywhere">De titel „%1$s” (door %2$s) echt verwijderen? Het wordt verwijderd uit alle boeken waarin het wordt vermeld. De boeken zelf worden niet verwijderd.</string>
     <string name="confirm_duplicate_book_message">Het boek dat je wil toevoegen is al aanwezig in de database, weet je zeker dat je nog een exemplaar wilt toevoegen?</string>
@@ -186,13 +181,7 @@
     <string name="confirm_registration_benefits">Deze functie profiteert van registratie bij %1$s. Wil je meer informatie bekijken of dit bericht uitschakelen?\nJe vind deze informatie op een later tijdstip in de sectie „%2$s” in de instellingen.</string>
     <string name="confirm_registration_required">Deze functie vereist registratie bij %1$s. Wil je meer informatie zien?</string>
     <string name="confirm_remove_toc_entry">De titel „%1$s” door %2$s uit dit boek verwijderen?</string>
-    <string name="confirm_scope_for_change">Je wijzigde:
-\n „%1$s”
-\n naar
-\n „%2$s”
-\n
-\nHoe wil je deze verandering toepassen\?
-\nNB: De keuze „%3$s” wordt onmiddellijk toegepast. Als u „%4$s” kiest, wordt een nieuwe %5$s aangemaakt.</string>
+    <string name="confirm_scope_for_change">Je wijzigde:\n „%1$s”\n naar\n „%2$s”\n\nHoe wil je deze verandering toepassen\?\nNB: De keuze „%3$s” wordt onmiddellijk toegepast. Als u „%4$s” kiest, wordt een nieuwe %5$s aangemaakt.</string>
     <string name="confirm_scope_for_delete">Verwijder de titel „%1$s” door %2$s.\n\nHoe wilt u deze wijziging toepassen?\nWAARSCHUWING: De keuze „%3$s” kan niet ongedaan worden gemaakt!</string>
     <string name="confirm_test_connection">Het is raadzaam om deze verbinding te testen om later problemen te voorkomen.</string>
     <string name="confirm_unsaved_edits">Je hebt niet opgeslagen veranderingen. Als je nu afsluit gaan die verloren.</string>

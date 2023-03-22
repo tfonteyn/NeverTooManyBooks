@@ -17,11 +17,13 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+  -->
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
---><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
+--><!--suppress LongLine -->
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="X_acra_resToastText">&APP_NAME; a planté. Merci de nous aider en reportant ce crash.</string>
     <string name="X_action_clear_credentials">Effacer les identifiants</string>
     <string name="X_action_execute">Exécuter</string>
@@ -163,36 +165,27 @@
     <string name="lbl_certificate_issued_by">Émis par : %1$s</string>
     <string name="lbl_certificate_issued_to">Délivré à : %1$s</string>
     <string name="confirm_delete_book">Cela effacera totalement le livre intitulé «%1$s» par %2$s.\n\nÊtes vous sûr de vouloir poursuivre ?</string>
-    <string name="confirm_delete_bookshelf" tools:ignore="TypographyQuotes">Supprimer l\'étagère «%1$s» \? Les livres eux-mêmes ne seront pas supprimés. Ils seront toujours présents sur toutes les autres étagères, ou sur l\'étagère «%2$s».</string>
-    <string name="confirm_delete_publisher" tools:ignore="TypographyQuotes">Supprimer l\'éditeur «%1$s» \?
-\n
-\nLes livres eux-mêmes ne seront pas supprimés.
-\n
-\nEnvisagez de modifier l\'éditeur et de remplacer le nom pour conserver ces données.</string>
+    <string name="confirm_delete_bookshelf"
+            tools:ignore="TypographyQuotes">Supprimer l\'étagère «%1$s» ? Les livres eux-mêmes ne seront pas supprimés. Ils seront toujours présents sur toutes les autres étagères, ou sur l\'étagère «%2$s».</string>
+    <string name="confirm_delete_publisher"
+            tools:ignore="TypographyQuotes">Supprimer l\'éditeur «%1$s» ?\n\nLes livres eux-mêmes ne seront pas supprimés.\n\nEnvisagez de modifier l\'éditeur et de remplacer le nom pour conserver ces données.</string>
     <string name="confirm_delete_series">Supprimer la série «%1$s» ?\n\nLes livres eux-mêmes ne seront pas supprimés.\n\n Envisagez de modifier la série et d\'en changer le nom pour conserver ces données.</string>
     <string name="confirm_delete_style">Supprimer le style «%1$s» ?</string>
-    <string name="confirm_delete_toc_entry_everywhere">Vraiment supprimer le titre «%1$s» (par %2$s) \? Il sera supprimé de tous les livres dans lesquels il est répertorié. Les livres eux-mêmes ne seront pas supprimés.</string>
+    <string name="confirm_delete_toc_entry_everywhere">Vraiment supprimer le titre «%1$s» (par %2$s) ? Il sera supprimé de tous les livres dans lesquels il est répertorié. Les livres eux-mêmes ne seront pas supprimés.</string>
     <string name="confirm_duplicate_book_message">Le livre que vous tentez d\'ajouter existe déjà dans la base de donnnées. Êtes vous certain de vouloir en ajouter une nouvelle copie ?</string>
-    <string name="confirm_email_file">Souhaitez-vous envoyer ce fichier par e-mail à quelqu\'un \?</string>
-    <string name="confirm_merge_authors">L\'auteur que vous renommez existe déjà. Voulez-vous les fusionner \?</string>
-    <string name="confirm_merge_bookshelves">La bibliothèque que vous renommez existe déjà. Voulez-vous les fusionner \?</string>
-    <string name="confirm_merge_publishers">La bibliothèque que vous renommez existe déjà. Voulez-vous les fusionner \?</string>
-    <string name="confirm_merge_series">L\'éditeur que vous renommez existe déjà. Voulez-vous les fusionner \?</string>
+    <string name="confirm_email_file">Souhaitez-vous envoyer ce fichier par e-mail à quelqu\'un ?</string>
+    <string name="confirm_merge_authors">L\'auteur que vous renommez existe déjà. Voulez-vous les fusionner ?</string>
+    <string name="confirm_merge_bookshelves">La bibliothèque que vous renommez existe déjà. Voulez-vous les fusionner ?</string>
+    <string name="confirm_merge_publishers">La bibliothèque que vous renommez existe déjà. Voulez-vous les fusionner ?</string>
+    <string name="confirm_merge_series">L\'éditeur que vous renommez existe déjà. Voulez-vous les fusionner ?</string>
     <string name="confirm_overwrite_cover">Les champs sélectionnés vont être mis à jour tels que montré ; en option, les couvertures peuvent être téléchargées pour tous les livres.\n\nVoulez-vous remplacer toutes les couvertures existantes ? Attention, cela peut prendre du temps.</string>
     <string name="confirm_rebuild_fts">Les données de l\'index de recherche seront reconstruites au redémarrage de l\'application. Es-tu sur de vouloir continuer ?</string>
     <string name="confirm_rebuild_index">Les index seront reconstruits au redémarrage de l\'application. Es-tu sur de vouloir continuer ?</string>
     <string name="confirm_rebuild_orderby_columns">Cela reconstruira les données de tri au redémarrage de l\'application. Es-tu sur de vouloir continuer ?</string>
-    <string name="confirm_registration_benefits">Cette fonctionnalité bénéficie d\'une inscription avec %1$s. Souhaitez-vous avoir plus d\'informations ou désactiver ce message \?
-\nVous trouverez ces informations ultérieurement dans la section «%2$s» des paramètres.</string>
-    <string name="confirm_registration_required">Cette fonctionnalité nécessite une inscription avec %1$s. Souhaitez-vous avoir plus d\'informations \?</string>
+    <string name="confirm_registration_benefits">Cette fonctionnalité bénéficie d\'une inscription avec %1$s. Souhaitez-vous avoir plus d\'informations ou désactiver ce message ?\nVous trouverez ces informations ultérieurement dans la section «%2$s» des paramètres.</string>
+    <string name="confirm_registration_required">Cette fonctionnalité nécessite une inscription avec %1$s. Souhaitez-vous avoir plus d\'informations ?</string>
     <string name="confirm_remove_toc_entry">Supprimer le titre «%1$s» par %2$s de ce livre ?</string>
-    <string name="confirm_scope_for_change">Vous avez changé :
-\n «%1$s»
-\n en
-\n «%2$s»
-\n
-\nComment souhaitez-vous appliquer ce changement \?
-\nNote : votre choix «%3$s» sera pris en compte instantanément. Si vous choisissez «%4$s», alors un nouveau %5$s sera créé.</string>
+    <string name="confirm_scope_for_change">Vous avez changé :\n «%1$s»\n en\n «%2$s»\n\nComment souhaitez-vous appliquer ce changement ?\nNote : votre choix «%3$s» sera pris en compte instantanément. Si vous choisissez «%4$s», alors un nouveau %5$s sera créé.</string>
     <string name="confirm_scope_for_delete">Supprimer le titre «%1$s» par %2$s.\n\nComment souhaitez-vous appliquer ce changement ?\nAVERTISSEMENT : Le choix « %3$s » ne peut pas être annulé !</string>
     <string name="confirm_test_connection">Il est conseillé de tester cette connexion pour éviter les problèmes par la suite.</string>
     <string name="confirm_unsaved_edits">Des modifications ne sont pas sauvées, si vous quittez maintenant elles seront perdues.</string>
@@ -223,8 +216,7 @@
     <string name="error_network_site_access_failed">Un problème de réseau s\'est produit lors de l\'accès à %1$s. Veuillez vérifier si le site Web fonctionne et si le problème persiste, veuillez contacter le support.</string>
     <string name="error_no_image_editor">Aucun éditeur d\'image trouvé.</string>
     <string name="error_search_could_not_be_started">La recherche du livre a échoué.</string>
-    <string name="error_search_failed_network">Ouvrez les paramètres et vérifiez les préférences de votre réseau et de votre site de recherche.
-\nVérifiez également les paramètres réseau de votre appareil.</string>
+    <string name="error_search_failed_network">Ouvrez les paramètres et vérifiez les préférences de votre réseau et de votre site de recherche.\nVérifiez également les paramètres réseau de votre appareil.</string>
     <string name="error_search_x_failed_y">Échec de la recherche sur %1$s : %2$s</string>
     <string name="error_site_authentication_failed">L\'authentification %1$s a échoué</string>
     <string name="error_site_authorization_failed">Autorisation %1$s en erreur.</string>
@@ -706,9 +698,7 @@
     <string name="whichViewApplication">Ouvrir avec</string>
     <string name="x_of_y">%1$d de %2$d</string>
     <string name="yes">Oui</string>
-    <string name="info_story_in_single_book">«%1$s» est présent dans un seul livre :
-\n
-\n%2$s</string>
+    <string name="info_story_in_single_book">«%1$s» est présent dans un seul livre :\n\n%2$s</string>
     <string name="tip_import_isbn_list">Importez un fichier texte avec des numéros ISBN. Le fichier doit avoir un seul ISBN sur chaque ligne. Les résultats seront placés dans la file d\'attente.</string>
     <string name="lbl_date_added">Date ajoutée</string>
     <string name="lbl_group_1st_char_author_family_name">1er caractère du nom de famille de l\'auteur</string>
