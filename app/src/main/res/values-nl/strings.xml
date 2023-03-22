@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,13 +17,10 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
-    <!ENTITY APP_NAME "NeverTooManyBooks">
-    ]>
-<!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine -->
-<resources>
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
+<!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources>
     <string name="X_acra_resToastText">&APP_NAME; is onverwacht gecrasht. Help ons aub de toepassing beter te maken door deze crash te melden.</string>
     <string name="X_action_clear_credentials">Certificaatgegevens wissen</string>
     <string name="X_action_execute">Uitvoeren</string>
@@ -46,7 +42,7 @@
     <string name="X_error_authentication_failed">Authenticatie mislukt</string>
     <string name="X_error_download_failed">Download mislukt</string>
     <string name="X_error_network_site_has_problems">De website heeft problemen.</string>
-    <string name="X_error_not_available">%1$s is niet beschikbaar</string>
+    <string name="X_error_not_available">%1$s is niet beschikbaar.</string>
     <string name="X_error_report">Feedback verzenden</string>
     <string name="X_httpErrorIO">Kan niet communiceren met de server. Probeer het later opnieuw.</string>
     <string name="X_info_authorized_needed">Toegang autoriseren</string>
@@ -159,13 +155,21 @@
     <string name="btn_this_book">Dit boek</string>
     <string name="camera_next_action">Actie na het nemen van een foto</string>
     <string name="cancelled">Geannuleerd</string>
-    <string name="cd_btn_drag_handle">Sleep om deze lijst opnieuw te ordenen.</string>
+    <string name="cd_btn_drag_handle">Sleep om deze lijst opnieuw te ordenen</string>
     <string name="cd_clear_text_end_icon">Tekst wissen</string>
     <string name="confirm_create_real_author">„%1$s” bestaat nog niet. Moeten ze worden gemaakt\?</string>
     <string name="confirm_delete_book">Dit zal het boek met de titel „%1$s” door %2$s compleet verwijderen.\n\nWeet je zeker dat je door wilt gaan?</string>
     <string name="confirm_delete_bookshelf">De boekenplank „%1$s” verwijderen? De boeken zelf worden niet verwijderd. Ze zullen nog steeds aanwezig zijn op alle andere schappen, of op de „%2$s” -plank.</string>
-    <string name="confirm_delete_publisher">De uitgever „%1$s” verwijderen?\n\nDe boeken zelf worden niet verwijderd.\n\nOverweeg de uitgever te bewerken en de naam te veranderen om deze gegevens te behouden</string>
-    <string name="confirm_delete_series">De reeks „%1$s” verwijderen?\n\nDe boeken zelf worden niet verwijderd.\n\nOverweeg de reeks te bewerken en de reeksnaam te veranderen om deze gegevens te behouden</string>
+    <string name="confirm_delete_publisher">De uitgever „%1$s” verwijderen\?
+\n
+\nDe boeken zelf worden niet verwijderd.
+\n
+\nOverweeg de uitgever te bewerken en de naam te veranderen om deze gegevens te behouden.</string>
+    <string name="confirm_delete_series">De reeks „%1$s” verwijderen\?
+\n
+\nDe boeken zelf worden niet verwijderd.
+\n
+\nOverweeg de reeks te bewerken en de reeksnaam te veranderen om deze gegevens te behouden.</string>
     <string name="confirm_delete_style">De stijl „%1$s” verwijderen?</string>
     <string name="confirm_delete_toc_entry_everywhere">De titel „%1$s” (door %2$s) echt verwijderen? Het wordt verwijderd uit alle boeken waarin het wordt vermeld. De boeken zelf worden niet verwijderd.</string>
     <string name="confirm_duplicate_book_message">Het boek dat je wil toevoegen is al aanwezig in de database, weet je zeker dat je nog een exemplaar wilt toevoegen?</string>
@@ -182,7 +186,13 @@
     <string name="confirm_registration_benefits">Deze functie profiteert van registratie bij %1$s. Wil je meer informatie bekijken of dit bericht uitschakelen?\nJe vind deze informatie op een later tijdstip in de sectie „%2$s” in de instellingen.</string>
     <string name="confirm_registration_required">Deze functie vereist registratie bij %1$s. Wil je meer informatie zien?</string>
     <string name="confirm_remove_toc_entry">De titel „%1$s” door %2$s uit dit boek verwijderen?</string>
-    <string name="confirm_scope_for_change">Je wijzigde:\n „%1$s”\n naar\n „%2$s”\n\nHoe wil je deze verandering toepassen?\n\nNB: De keuze „%3$s” wordt onmiddelijk toegepast. Als u „%4$s” kiest, wordt een nieuwe %5$s aangemaakt.</string>
+    <string name="confirm_scope_for_change">Je wijzigde:
+\n „%1$s”
+\n naar
+\n „%2$s”
+\n
+\nHoe wil je deze verandering toepassen\?
+\nNB: De keuze „%3$s” wordt onmiddellijk toegepast. Als u „%4$s” kiest, wordt een nieuwe %5$s aangemaakt.</string>
     <string name="confirm_scope_for_delete">Verwijder de titel „%1$s” door %2$s.\n\nHoe wilt u deze wijziging toepassen?\nWAARSCHUWING: De keuze „%3$s” kan niet ongedaan worden gemaakt!</string>
     <string name="confirm_test_connection">Het is raadzaam om deze verbinding te testen om later problemen te voorkomen.</string>
     <string name="confirm_unsaved_edits">Je hebt niet opgeslagen veranderingen. Als je nu afsluit gaan die verloren.</string>
@@ -214,7 +224,7 @@
     <string name="error_no_image_editor">Geen foto-editor gevonden.</string>
     <string name="error_record_must_contain_column">Record moet een veld met de naam „%1$s” bevatten.</string>
     <string name="error_search_could_not_be_started">Het zoeken naar het boek is mislukt.</string>
-    <string name="error_search_failed_network">Open de instellingen en controleer uw netwerk- en zoeksite-voorkeuren. Controleer ook de netwerkinstellingen van uw apparaat</string>
+    <string name="error_search_failed_network">Open de instellingen en controleer uw netwerk- en zoeksite-voorkeuren. Controleer ook de netwerkinstellingen van uw apparaat.</string>
     <string name="error_search_x_failed_y">Zoeken op %1$s is mislukt: %2$s</string>
     <string name="error_site_authentication_failed">%1$s authenticatie mislukt</string>
     <string name="error_site_authorization_failed">%1$s autorisatie leidde tot een fout.</string>
@@ -234,7 +244,7 @@
     <string name="httpErrorFile">Kan het bestand niet openen.</string>
     <string name="httpErrorFileNotFound">Kan het opgevraagde bestand niet vinden.</string>
     <string name="httpErrorTimeout">Er is een time-out voor de serververbinding opgetreden.</string>
-    <string name="info_all_books_have_covers">Alle boeken op deze boekenplank hebben omslagen.</string>
+    <string name="info_all_books_have_covers">Alle boeken op deze boekenplank hebben omslagen</string>
     <string name="info_authorized">Geautoriseerd</string>
     <string name="info_backup_successful">Back-up succesvol</string>
     <string name="info_calibre_content_server_extension">Calibre content server-extensie is niet geïnstalleerd.</string>
@@ -242,7 +252,7 @@
     <string name="info_displaying_n_books_in_m_entries">%1$d boeken, in %2$d slots</string>
     <string name="info_download_successful">Download succesvol</string>
     <string name="info_export_backup_all">Alle boeken, afbeeldingen, instellingen en aangepaste stijlen zullen worden geëxporteerd naar het archief.</string>
-    <string name="info_export_books_option_since_last_full_backup">Alle boeken die zijn toegevoegd of bijgewerkt sinds de laatste volledige back-up</string>
+    <string name="info_export_books_option_since_last_full_backup">Alle boeken die zijn toegevoegd of bijgewerkt sinds de laatste volledige back-up.</string>
     <string name="info_export_report">Een %3$s bestand met de naam %2$s is aangemaakt in de „%1$s” folder.\n\nWe raden aan dit bestand naar een ander plek te kopiëren om de gegevens veilig te stellen in geval uw apparaat wordt gestolen, beschadigd of verloren raakt.</string>
     <string name="info_export_successful">Export succesvol</string>
     <string name="info_import_complete">Import Compleet</string>
@@ -456,7 +466,7 @@
     <string name="option_author_details">Alle werken van deze Auteur</string>
     <string name="option_author_works_book">Alleen boeken</string>
     <string name="option_author_works_toc">Alleen inhouds titels</string>
-    <string name="option_auto_updates">Laat automatische verbeteringen van het internet toe</string>
+    <string name="option_auto_updates">Laat automatische verbeteringen van het internet toe.</string>
     <string name="option_barcode_scan">Scan barcode</string>
     <string name="option_barcode_scan_continuous">Scan continu</string>
     <string name="option_bob_filter_isbn_no">Zonder ISBN</string>
@@ -469,8 +479,8 @@
     <string name="option_bob_filter_signed_yes">Gesigneerd boeken</string>
     <string name="option_book_sync_list_with_details">Synchroniseer/positioneer de lijst</string>
     <string name="option_bug_report">Bugrapport</string>
-    <string name="option_bug_report_database_upgrade">Database-upgradebestanden.</string>
-    <string name="option_bug_report_logfiles">Log bestanden.</string>
+    <string name="option_bug_report_database_upgrade">Database-upgradebestanden</string>
+    <string name="option_bug_report_logfiles">Log bestanden</string>
     <string name="option_cover_crop">Bijsnijden</string>
     <string name="option_cover_edit">Start de editor</string>
     <string name="option_cover_replace">Vervangen…</string>
@@ -580,20 +590,20 @@
     <string name="ps_author_name_family_first">bvb. „Reve, Gerard”</string>
     <string name="ps_author_name_given_first">bvb. „Gerard Reve”</string>
     <string name="ps_bob_books_under_multiple_each_author">Onder elke auteur</string>
-    <string name="ps_bob_books_under_multiple_each_publisher">onder elke uitgever.</string>
+    <string name="ps_bob_books_under_multiple_each_publisher">onder elke uitgever</string>
     <string name="ps_bob_books_under_multiple_each_series">Onder elke reeks</string>
     <string name="ps_bob_books_under_multiple_primary_author_only">Alleen onder primaire auteur</string>
-    <string name="ps_bob_books_under_multiple_primary_publisher_only">alleen onder hun primaire uitgever.</string>
+    <string name="ps_bob_books_under_multiple_primary_publisher_only">alleen onder hun primaire uitgever</string>
     <string name="ps_bob_books_under_multiple_primary_series_only">Alleen onder primaire reeks</string>
     <string name="ps_manage_fields">Geselecteerde velden zijn zichtbaar in de toevoegen/bewerken boekschermen. Ongeselecteerde velden zijn verborgen.</string>
     <string name="ps_show_titles_reordered_off">De titel</string>
     <string name="ps_show_titles_reordered_on">titel, De</string>
-    <string name="pt_allow_editing_external_id">Sta bewerken van website-boek-ID toe.</string>
+    <string name="pt_allow_editing_external_id">Sta bewerken van website-boek-ID toe</string>
     <string name="pt_allow_metered_network_data">Sta mobiel dataverbruik toe</string>
     <string name="pt_barcode_scanner">Barcode scanner</string>
     <string name="pt_bedetheque_search_resolve_formats">Behoud Bedetheque (Frans) naamgeving</string>
     <string name="pt_bob_books_under_multiple_authors">Boeken met meerdere auteurs</string>
-    <string name="pt_bob_books_under_multiple_publisher">Toon boeken met meerdere uitgevers.</string>
+    <string name="pt_bob_books_under_multiple_publisher">Toon boeken met meerdere uitgevers</string>
     <string name="pt_bob_books_under_multiple_series">Boeken in meerdere reeksen</string>
     <string name="pt_bob_cover_scale">Afbeelding grootte in lijsten</string>
     <string name="pt_bob_cover_show">Toon afbeeldingen</string>
@@ -607,7 +617,7 @@
     <string name="pt_collect_series_info_from_toc">Verzamel reeks-informatie van de inhouds tabel</string>
     <string name="pt_cropper_frame_is_whole_image">Standaard kader voor bijsnijden is hele afbeelding</string>
     <string name="pt_edit_book_isbn_checks">ISBN geldigheidscontroles</string>
-    <string name="pt_fast_scroller_overlay">Tekstballon tijdens het scrollen</string>
+    <string name="pt_fast_scroller_overlay">Tekstballon tijdens het scrollen.</string>
     <string name="pt_field_visibility">Zichtbaarheid velden beheren</string>
     <string name="pt_line_spacing">Regelafstand</string>
     <string name="pt_maintenance">Onderhoud</string>
@@ -681,8 +691,8 @@
     <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="vldt_non_blank_required">Veld mag niet leeg zijn</string>
     <string name="vldt_non_blank_required_for_x">Veld mag niet leeg zijn voor „%1$s”</string>
-    <string name="vldt_read_start_after_end">De begindatum moet vóór de einddatum liggen.</string>
-    <string name="vldt_real_author_must_be_valid">Moet leeg zijn of een bestaande auteur zijn.</string>
+    <string name="vldt_read_start_after_end">De begindatum moet vóór de einddatum liggen</string>
+    <string name="vldt_real_author_must_be_valid">Moet leeg zijn of een bestaande auteur zijn</string>
     <string name="vldt_real_expected_for_x">Verwachtte een echt nummer voor „%1$s”</string>
     <string name="warning_already_in_list">Al in de lijst!</string>
     <string name="warning_backup_request">Wil je een back-up van uw database op uw SD kaart maken\?</string>
@@ -700,7 +710,7 @@
     <string name="warning_import_csv_unescaped_quote">Niet ge-escaped aanhalingsteken op rij %1$d, positie %2$d</string>
     <string name="warning_import_failed_for_lines_lots">Het parseren is mislukt voor regels\n%1$s\n en andere.</string>
     <string name="warning_import_failed_for_lines_some">Het parseren is mislukt voor regels\n%1$s\n</string>
-    <string name="warning_no_editions">Geen andere uitgave informatie beschikbaar</string>
+    <string name="warning_no_editions">Geen andere uitgave informatie beschikbaar.</string>
     <string name="warning_no_matching_book_found">Geen overeenkomstig boek gevonden</string>
     <string name="warning_no_search_data_for_active_sites">Geen geldige zoekgegevens voor actieve sites.</string>
     <string name="warning_no_site_supports_this_method">WAARSCHUWING: geen van de momenteel geselecteerde sites ondersteunt zoeken op %1$s. Gebruik het sitemenu om alternatieve sites in te schakelen, of gebruik een andere zoekmethode.</string>
