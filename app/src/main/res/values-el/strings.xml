@@ -17,13 +17,10 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
-<!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) -->
-<!--suppress LongLine -->
-<resources>
-
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
+<!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
     <string name="X_acra_resToastText">Η λειτουργία του &APP_NAME; διακόπηκε. Παρακαλούμε βοηθήστε μας να βελτιώσουμε την εφαρμογή στέλνοντας την αναφορά της διακοπής.</string>
     <string name="X_action_clear_credentials">Διαγραφή διαπιστευτηρίων</string>
     <string name="X_action_execute">Εκτέλεση</string>
@@ -46,12 +43,12 @@
     <string name="X_error_download_failed">Η λήψη απέτυχε</string>
     <string name="error_record_must_contain_column">Η εγγραφή πρέπει να περιέχει ένα πεδίο με το όνομα «%1$s».</string>
     <string name="X_error_network_site_has_problems">Ο ιστότοπος έχει προβλήματα.</string>
-    <string name="X_error_not_available">Το %1$s δεν είναι διαθέσιμο</string>
+    <string name="X_error_not_available">Το %1$s δεν είναι διαθέσιμο.</string>
     <string name="X_httpErrorIO">Δεν ήταν δυνατή η επικοινωνία με τον διακομιστή. Προσπαθήστε ξανά αργότερα.</string>
     <string name="X_info_authorized_needed">Έγκριση Πρόσβασης</string>
     <string name="X_info_not_authorized">Χωρίς άδεια</string>
     <string name="X_info_site_authorization_successful">Επιτυχής η αδειοδότηση %1$s</string>
-    <string name="X_lbl_about_sourcecode">Πηγαίος Κώδικας:</string>
+    <string name="X_lbl_about_sourcecode">Πηγαίος Κώδικας</string>
     <string name="X_lbl_completed">Ολοκληρώθηκαν</string>
     <string name="X_lbl_cover_long">εξώφυλλο βιβλίου</string>
     <string name="X_lbl_delete_book">Διαγραφή Βιβλίου</string>
@@ -112,7 +109,7 @@
     <string name="action_skip">Παράλ</string>
     <string name="action_synchronize">Συγχρονίζω</string>
     <string name="option_amazon_ellipsis">Amazon…</string>
-    <string name="and_others">%s …</string>
+    <string name="and_others">%1$s …</string>
     <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
     <string name="bob_empty_author">(Ο συγγραφέας λείπει)</string>
     <string name="bob_empty_day">(Ημέρα δεν έχει οριστεί)</string>
@@ -137,9 +134,9 @@
     <string name="book_format_paperback">βιβλίο τσέπης</string>
     <string name="book_format_paperback_large">χαρτόδετο βιβλίο</string>
     <string name="book_format_softcover">μαλακό κάλυμμα</string>
-    <string name="bookshelf_all_books">Όλα τα βιβλία.</string>
+    <string name="bookshelf_all_books">Όλα τα βιβλία</string>
     <string name="bookshelf_my_books">Τα βιβλία μου</string>
-    <string name="btn_all_books">Όλα τα βιβλία.</string>
+    <string name="btn_all_books">Όλα τα βιβλία</string>
     <string name="action_clear_queue">Εκκαθάριση ουράς</string>
     <string name="action_disable_message">Απενεργοποίηση μηνυμάτων</string>
     <string name="action_email">Ηλεκτρονικό ταχυδρομείο</string>
@@ -153,14 +150,14 @@
     <string name="action_start_import">Έναρξη εισαγωγής</string>
     <string name="action_stop_scanning">Σταματήστε τη σάρωση</string>
     <string name="btn_this_book">Αυτό το βιβλίο</string>
-    <string name="size_bytes">%.0fB</string>
+    <string name="size_bytes">%1$.0fB</string>
     <string name="pc_camera">Κάμερα</string>
     <string name="pe_camera_back">Πίσω Κάμερα</string>
     <string name="pe_camera_front">Μπροστινή Κάμερα</string>
     <string name="camera_next_action">Ενέργεια μετά τη λήψη μιας φωτογραφίας</string>
     <string name="pe_camera_other">Άλλο</string>
     <string name="cancelled">Ακυρώθηκε</string>
-    <string name="cd_btn_drag_handle">Σύρετε με για να αναδιατάξετε αυτήν τη λίστα.</string>
+    <string name="cd_btn_drag_handle">Σύρετε με για να αναδιατάξετε αυτήν τη λίστα</string>
     <string name="cd_clear_text_end_icon">Διαγραφή κειμένου</string>
     <string name="lbl_certificate_issued_by">Εκδόθηκε από: %1$s</string>
     <string name="lbl_certificate_issued_to">Εκδόθηκε σε: %1$s</string>
@@ -194,11 +191,11 @@
     <string name="pe_fast_scroller_overlay_dynamic">Δυναμικός</string>
     <string name="enabled">Ενεργοποιήθηκε</string>
     <string name="error_authorization_failed">Η εξουσιοδότηση απέτυχε</string>
-    <string name="error_auto_toc_population_failed">Η αυτόματη συμπλήρωση τίτλων απέτυχε</string>
-    <string name="error_backup_failed">Αντίγραφο απέτυχε</string>
+    <string name="error_auto_toc_population_failed">Η αυτόματη συμπλήρωση τίτλων απέτυχε.</string>
+    <string name="error_backup_failed">Αντίγραφο απέτυχε.</string>
     <string name="error_certificate_invalid">Το πιστοποιητικό δεν είναι έγκυρο ή δεν είναι δυνατή η πρόσβαση σε αυτό.</string>
     <string name="error_email_failed">Αποτυχία αποστολής του μηνύματος ηλεκτρονικού ταχυδρομείου.</string>
-    <string name="error_export_failed">Η εξαγωγή απέτυχε</string>
+    <string name="error_export_failed">Η εξαγωγή απέτυχε.</string>
     <string name="error_file_not_found">Το αρχείο δε βρέθηκε: %1$s</string>
     <string name="error_file_not_recognized">Το επιλεγμένο αρχείο δεν αναγνωρίζεται.</string>
     <string name="error_import_archive_invalid">Το αρχείο αρχειοθέτησης είναι κατεστραμμένο ή με άλλο τρόπο άκυρο.</string>
@@ -209,20 +206,21 @@
     <string name="error_import_failed">Αποτυχία Εισαγωγής.</string>
     <string name="error_import_failed_for_record">Αποτυχία Εισαγωγής (%1$s).</string>
     <string name="error_import_file_not_supported">Δεν είναι δυνατή η εισαγωγή του επιλεγμένου αρχείου.</string>
-    <string name="error_network_failed_try_again">Ελέγξτε τη σύνδεση και δοκιμάστε ξανά</string>
+    <string name="error_network_failed_try_again">Ελέγξτε τη σύνδεση και δοκιμάστε ξανά.</string>
     <string name="error_network_please_connect">Συνδεθείτε στο διαδίκτυο.</string>
     <string name="error_network_site_access_failed">Παρουσιάστηκε πρόβλημα δικτύου κατά την πρόσβαση στο %1$s. Ελέγξτε εάν ο ιστότοπος είναι ανεβασμένος και εάν το πρόβλημα παραμένει, επικοινωνήστε με την υποστήριξη.</string>
-    <string name="error_no_image_editor">Δεν βρέθηκε επεξεργαστής εικόνων</string>
+    <string name="error_no_image_editor">Δεν βρέθηκε επεξεργαστής εικόνων.</string>
     <string name="error_search_could_not_be_started">Η αναζήτηση του βιβλίου απέτυχε.</string>
-    <string name="error_search_failed_network">Ανοίξτε τις Ρυθμίσεις και ελέγξτε το δίκτυο και τις προτιμήσεις Ρυθμίσεις ιστοτόπου. Ελέγξτε επίσης τις ρυθμίσεις δικτύου της συσκευής σας</string>
+    <string name="error_search_failed_network">Ανοίξτε τις Ρυθμίσεις και ελέγξτε το δίκτυο και τις προτιμήσεις Ρυθμίσεις ιστοτόπου.
+\nΕλέγξτε επίσης τις ρυθμίσεις δικτύου της συσκευής σας.</string>
     <string name="error_search_x_failed_y">Η αναζήτηση στο %1$s απέτυχε: %2$s</string>
     <string name="error_site_authentication_failed">Ο έλεγχος ταυτότητας %1$s απέτυχε</string>
     <string name="error_site_authorization_failed">Η αδειοδότηση του %1$s οδήγησε σε λάθος.</string>
-    <string name="error_storage_no_space_left">Ανεπαρκής χώρος αποθήκευσης</string>
+    <string name="error_storage_no_space_left">Ανεπαρκής χώρος αποθήκευσης.</string>
     <string name="error_storage_not_accessible">Βεβαιωθείτε ότι έχετε πρόσβαση στο χώρο αποθήκευσης.</string>
     <string name="error_storage_not_writable">Ελέγξτε ότι η αποθήκευση είναι εγγράψιμη και έχει αρκετό χώρο.</string>
     <string name="error_unexpected">Ένα άγνωστο σφάλμα συνέβη.</string>
-    <string name="error_unknown_host">Παρουσιάστηκε πρόβλημα σύνδεσης με την υπηρεσία «%1$s»</string>
+    <string name="error_unknown_host">Παρουσιάστηκε πρόβλημα σύνδεσης με την υπηρεσία «%1$s».</string>
     <string name="error_unexpected_long">Προέκυψε ένα μη αναμενόμενο σφάλμα. Εάν το πρόβλημα παραμένει, επικοινωνήστε με την υποστήριξη χρησιμοποιώντας την επιλογή «%1$s» στο κάτω μέρος της σελίδας ρυθμίσεων.</string>
     <string name="error_unsupported_version_v">Μη υποστηριζόμενη έκδοση: %1$d</string>
     <string name="error_upgrade_not_supported">Δεν υποστηρίζεται η αναβάθμιση από εκδόσεις παλαιότερες από %1$s.</string>
@@ -243,7 +241,7 @@
     <string name="option_moving_covers_from_x_to_y">Μετακινήστε όλα τα καλύμματα από «%1$s» σε «%2$s»</string>
     <string name="option_isfdb_menu_populate_toc">Αυτόματη συμπλήρωση τίτλων (ISFDB)</string>
     <string name="info_isfdb_warning_limited_to">(υποστηρίζεται μόνο από την τοποθεσία ISFDB)</string>
-    <string name="size_kilobytes">%.2fkB</string>
+    <string name="size_kilobytes">%1$.2fkB</string>
     <string name="lbl_about">Σχετικά με την εφαρμογή</string>
     <string name="lbl_about_contact">Επαφές:</string>
     <string name="lbl_add_book">Προσθήκη Βιβλίου</string>
@@ -316,7 +314,7 @@
     <string name="lbl_credentials">Διαπιστευτήρια χρήστη</string>
     <string name="lbl_currency">Νομίσματα</string>
     <string name="lbl_database">Βάση δεδομένων</string>
-    <string name="option_bug_report_database_upgrade">Αρχεία αναβάθμισης βάσης δεδομένων.</string>
+    <string name="option_bug_report_database_upgrade">Αρχεία αναβάθμισης βάσης δεδομένων</string>
     <string name="lbl_date_acquired">Ημερομηνία που αποκτήθηκαν</string>
     <string name="lbl_date_acquired_day">Ημέρα που αποκτήθηκε</string>
     <string name="lbl_date_acquired_month">Μήνας που αποκτήθηκε</string>
@@ -337,7 +335,7 @@
     <string name="lbl_edition_first_impression">Πρώτη εκτύπωση</string>
     <string name="lbl_edition_limited">Περιορισμένη έκδοση</string>
     <string name="lbl_edition_slipcase">παντζούρια</string>
-    <string name="lbl_export_books_option_all">Όλα τα βιβλία.</string>
+    <string name="lbl_export_books_option_all">Όλα τα βιβλία</string>
     <string name="lbl_export_books_option_since_last_full_backup">Καινούρια και ενημερωμένα βιβλία</string>
     <string name="lbl_export_options">Επιλέξτε τι θα εξαχθεί.</string>
     <string name="lbl_family_name">Επώνυμο</string>
@@ -354,7 +352,7 @@
     <string name="lbl_given_names">Ονόματα</string>
     <string name="lbl_import">εισάγω</string>
     <string name="lbl_import_books">Εισαγωγή Βιβλιων</string>
-    <string name="option_import_books_option_all">Όλα τα βιβλία.</string>
+    <string name="option_import_books_option_all">Όλα τα βιβλία</string>
     <string name="option_import_books_option_new_and_updated">Νέα και ενημερωμένα βιβλία</string>
     <string name="option_header_import_books_option_new_and_updated_cutoff_date">Εισαγάγετε μόνο βιβλία που έχουν \n τροποποιηθεί από αυτήν την ημερομηνία</string>
     <string name="option_import_books_option_new_only">Μόνο νέα βιβλία</string>
@@ -375,7 +373,7 @@
     <string name="lbl_local_search_long">Προηγμένη τοπική αναζήτηση</string>
     <string name="lbl_location">Τοποθεσία</string>
     <string name="lbl_location_long">Τοποθεσία του βιβλίου</string>
-    <string name="option_bug_report_logfiles">Αρχεία καταγραφής.</string>
+    <string name="option_bug_report_logfiles">Αρχεία καταγραφής</string>
     <string name="lbl_login_to_search">Συνδεθείτε για αναζήτηση</string>
     <string name="lbl_month">Μήνας</string>
     <string name="lbl_moving_data">Μετακίνηση δεδομένων</string>
@@ -453,7 +451,7 @@
     <string name="lbl_year">Έτος</string>
     <string name="list_and">και</string>
     <string name="list_element">• %s</string>
-    <string name="size_megabytes">%.2fMB</string>
+    <string name="size_megabytes">%1$.2fMB</string>
     <string name="option_amazon_books_by_author">Βιβλία από αυτόν το συγγραφέα</string>
     <string name="option_amazon_books_by_author_in_series">Βιβλία από συγγραφέα/σειρά</string>
     <string name="option_amazon_books_in_series">Βιβλία σε αυτή τη σειρά</string>
@@ -528,7 +526,7 @@
     <string name="preference_not_set">Δεν έχει οριστεί</string>
     <string name="info_backup_successful">Η δημιουργία αντιγράφων ασφαλείας ήταν επιτυχής</string>
     <string name="info_download_successful">Η λήψη ήταν επιτυχής</string>
-    <string name="info_export_report">;Ένα αρχείο %3$s με το όνομα %2$s δημιουργήθηκε στον κατάλογο «%1$s».\n\nΜπορείτε το αντιγράψετε κάπου αλλού για να προστατέψετε τα δεδομένα σε περίπτωση που η συσκευή σας πάθει ζημιά, χαθεί, ή κλαπεί.</string>
+    <string name="info_export_report">;Ένα αρχείο %3$s με το όνομα %2$s δημιουργήθηκε στον κατάλογο «%1$s». Μπορείτε το αντιγράψετε κάπου αλλού για να προστατέψετε τα δεδομένα σε περίπτωση που η συσκευή σας πάθει ζημιά, χαθεί, ή κλαπεί.</string>
     <string name="info_export_successful">Η εξαγωγή ήταν επιτυχής</string>
     <string name="info_import_complete">Εισαγωγή Ολοκληρώθηκε</string>
     <string name="info_import_partially_complete">Έγινε μερική εισαγωγή</string>
@@ -548,10 +546,10 @@
     <string name="progress_msg_starting_up">Εκκίνηση…</string>
     <string name="progress_msg_upgrading">Γίνεται αναβάθμηση…</string>
     <string name="progress_msg_x_created_y_updated_z_skipped">%1$s: %2$d δημιουργήθηκαν, %3$d ενημερώθηκαν, %4$d παρελείφθησαν</string>
-    <string name="pt_allow_editing_external_id">Να επιτρέπεται η επεξεργασία του εγγενούς αναγνωριστικού ιστοτόπου ιστοτόπου.</string>
+    <string name="pt_allow_editing_external_id">Να επιτρέπεται η επεξεργασία του εγγενούς αναγνωριστικού ιστοτόπου</string>
     <string name="pt_allow_metered_network_data">Να επιτρέπεται η χρήση δεδομένων κινητής τηλεφωνίας</string>
     <string name="pt_bob_books_under_multiple_authors">Βιβλία με πολλούς συγγραφείς</string>
-    <string name="pt_bob_books_under_multiple_publisher">Εμφάνιση βιβλίων με πολλούς εκδότες.</string>
+    <string name="pt_bob_books_under_multiple_publisher">Εμφάνιση βιβλίων με πολλούς εκδότες</string>
     <string name="pt_bob_books_under_multiple_series">Βιβλία σε πολλές σειρές</string>
     <string name="pt_bob_cover_scale">Μικρογραφεί μέγεθος σε λίστες</string>
     <string name="pt_bob_cover_show">Εμφάνιση μικρογραφιών</string>
@@ -562,11 +560,11 @@
     <string name="pt_collect_series_info_from_toc">Συλλέξτε τις πληροφορίες σειράς από τον πίνακα περιεχομένων</string>
     <string name="pt_cropper_frame_is_whole_image">Η προεπιλεγμένη περικοπή πλαισίου είναι ολόκληρη η εικόνα</string>
     <string name="pt_edit_book_isbn_checks">Έλεγχοι εγκυρότητας ISBN</string>
-    <string name="pt_bob_row_menu">Μενού περιβάλλοντος σειράς.</string>
+    <string name="pt_bob_row_menu">Μενού περιβάλλοντος σειράς</string>
     <string name="pe_bob_row_menu_button">Να εμφανίζεται πάντα ένα κουμπί.</string>
     <string name="pe_bob_row_menu_button_when_space">Εμφάνιση ενός κουμπιού εάν υπάρχει χώρος, διαφορετικά χρησιμοποιήστε παρατεταμένο κλικ.</string>
     <string name="pe_bob_row_menu_long_click">Να χρησιμοποιείτε πάντα παρατεταμένο κλικ.</string>
-    <string name="pt_fast_scroller_overlay">Φούσκα κειμένου κατά την κύλιση</string>
+    <string name="pt_fast_scroller_overlay">Φούσκα κειμένου κατά την κύλιση.</string>
     <string name="pt_line_spacing">Διάστιχο</string>
     <string name="pt_maintenance">Συντήρηση</string>
     <string name="pt_primary_author_type">Κύριος τύπος συγγραφέα</string>
@@ -592,10 +590,10 @@
     <string name="ps_author_name_family_first">για παράδειγμα «Παλαμάς, Κωστής»</string>
     <string name="ps_author_name_given_first">για παράδειγμα «Κωστής  Παλαμάς»</string>
     <string name="ps_bob_books_under_multiple_each_author">Κάτω από κάθε συντάκτης</string>
-    <string name="ps_bob_books_under_multiple_each_publisher">κάτω από κάθε εκδότη.</string>
+    <string name="ps_bob_books_under_multiple_each_publisher">κάτω από κάθε εκδότη</string>
     <string name="ps_bob_books_under_multiple_each_series">Κάτω από κάθε Σειρά</string>
     <string name="ps_bob_books_under_multiple_primary_author_only">Κάτω από κύρια συντάκτης μόνο</string>
-    <string name="ps_bob_books_under_multiple_primary_publisher_only">μόνο στον κύριο εκδότη τους.</string>
+    <string name="ps_bob_books_under_multiple_primary_publisher_only">μόνο στον κύριο εκδότη τους</string>
     <string name="ps_bob_books_under_multiple_primary_series_only">Κάτω από κύρια Σειρά μόνο</string>
     <string name="pv_bob_header_filters">Φίλτρα Βιβλίων</string>
     <string name="pv_bob_header_nr_of_books">Εμφάνιση αριθμού βιβλίων</string>
@@ -624,7 +622,7 @@
     <string name="tip_authors_works_single_book">Ο τίτλος υπάρχει σε ένα μόνο βιβλίο.</string>
     <string name="tip_autorotate_camera_images">Αν παρατηρείτε ότι περιστρέφετε τις εικόνες από κάμερα πάντα στην ίδια κατεύθυνση, μπορείτε να αλλάξετε τις επιλογές ορίζοντας μια περιστροφή που να εφαρμόζεται αυτόματα.</string>
     <string name="tip_book_list">Πατώντας στιγμιαία σε ένα βιβλίο θα εμφανίσει λεπτομέρειες, πατώντας παρατεταμένα θα εμφανίσει και άλλες επιλογές.</string>
-    <string name="tip_book_search_by_text">Η προσθήκη βιβλίων με ISBN είναι πολύ πιο ακριβής από την προσθήκη με συγγραφέα και τίτλο και γενικά είναι η προτεινομενη μέθοδος. Παρακαλούμε να θυμάστε ότι μερικές φορές το σωστό barcode βρίσκεται στην εσωτερική πλευρά του εξωφύλλου. \n\n</string>
+    <string name="tip_book_search_by_text">Η προσθήκη βιβλίων με ISBN είναι πολύ πιο ακριβής από την προσθήκη με συγγραφέα και τίτλο και γενικά είναι η προτεινομενη μέθοδος. Παρακαλούμε να θυμάστε ότι μερικές φορές το σωστό barcode βρίσκεται στην εσωτερική πλευρά του εξωφύλλου.</string>
     <string name="tip_booklist_style_groups">Μπορείτε να χρησιμοποιήσετε αυτήν την οθόνη για να τροποποιήσετε την ιεραρχία των επικεφαλίδων για ένα συγκεκριμένο στυλ λίστας βιβλίων. Ένα tick δείχνει ότι η επικεφαλίδα θα εμφανιστεί στη λίστα, απενεργοποιήστε την για να την κρύψετε και αντίστροφα. Μπορείτε να αναδιατάξετε την ιεραρχία σύροντας το εικονίδιο στην άκρη δεξιά κάθε γραμμής πάνω ή κάτω.</string>
     <string name="tip_booklist_style_properties">Μπορείτε να χρησιμοποιήσετε αυτήν την οθόνη για να ορίσετε τα χαρακτηριστικά ενός συγκεκριμένου στυλ λίστας βιβλίων. Μπορείτε να αλλάξετε το όνομα, να επεξεργαστείτε τις ομάδες για να αλλάξετε την ιεραρχία και να προσαρμόσετε διάφορες άλλες προτιμήσεις για να δημιουργήσετε ένα στυλ που θεωρείτε χρήσιμο.</string>
     <string name="tip_booklist_styles_editor">Μπορείτε να χρησιμοποιήσετε αυτήν την οθόνη για να προσαρμόσετε τη λίστα των στυλ που θα εμφανίζονται στο μενού προεπιλεγμένων στυλ. Ένα τσεκ που δείχνει ότι το στυλ θα εμφανιστεί στη λίστα, θα αφαιρεθεί για να το κρύψει και το αντίστροφο. Εάν δεν έχουν επιλεγεί στυλ, τότε θα εμφανίζονται όλα τα στυλ. Μπορείτε να αναδιατάξετε την ιεραρχία σύροντας το εικονίδιο στην άκρη δεξιά κάθε γραμμής πάνω ή κάτω. Εάν πατήσετε παρατεταμένα οπουδήποτε αλλού σε μια σειρά, θα μπορείτε να επεξεργαστείτε ή να κλωνοποιήσετε τις λεπτομέρειες ενός συγκεκριμένου στυλ. Αν κλωνοποιήσατε ένα στυλ και αλλάξατε γνώμη, θα πρέπει να το διαγράψετε μόνοι σας.</string>
@@ -637,7 +635,7 @@
     <string name="info_cleanup_files">Τα προσωρινά αρχεία χρησιμοποιούν %1$s στην κάρτα SD. Αρχεία καταγραφής και άλλων δεδομένων αποθηκεύονται στην κάρτα SD σε κάθε ενημέρωση, όταν γινονται αντίγραφα ασφαλείας της βάσης δεδομένων και όταν η εφαρμογή σταματάει να λειτουργεί. Πατήστε το παρακάτω κουμπί για να καθαρίσετε αυτά τα αρχεία από την κάρτα SD. Εαν αντιμετωπίζετε διακοπές λειτουργίας ή άλλα σφάλματα, παρακαλούμε σκεφτείτε να πατήσετε πρώτα το κουμπί «%2$s».</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d βιβλία, σε %2$d καταχωρήσεις</string>
     <string name="info_export_backup_all">Όλα τα βιβλία, εξώφυλλα, ρυθμίσεις και προσαρμοσμένα στυλ θα εξαχθούν στο Αρχείο.</string>
-    <string name="info_export_books_option_since_last_full_backup">Όλα τα βιβλία που προστέθηκαν ή ενημερώθηκαν από το τελευταίο πλήρες αντίγραφο ασφαλείας</string>
+    <string name="info_export_books_option_since_last_full_backup">Όλα τα βιβλία που προστέθηκαν ή ενημερώθηκαν από το τελευταίο πλήρες αντίγραφο ασφαλείας.</string>
     <string name="option_info_import_books_option_all">Εισαγάγετε νέα βιβλία και αντικαταστήστε τα υπάρχοντα βιβλία. Χρησιμοποιήστε αυτό για την επαναφορά ενός αντιγράφου ασφαλείας.</string>
     <string name="option_info_import_books_option_new_and_updated">Εισαγάγετε νέα βιβλία και συγχρονίστε υπάρχοντα βιβλία με βάση την τελευταία ημερομηνία τροποποίησής τους.</string>
     <string name="option_info_import_books_option_new_only">Εισαγωγή μόνο νέων βιβλίων. Τυχόν ενημερώσεις σε υπάρχοντα βιβλία θα αγνοηθούν.</string>
@@ -655,7 +653,7 @@
     <string name="vldt_blank_required_for_x">Απαιτείται κενή τιμή για «%1$s»</string>
     <string name="vldt_boolean_expected_for_x">Αναμένεται boolean τιμή (0,1,t,f,true,false) για «%1$s»</string>
     <string name="vldt_date_expected_for_x">Αναμένεται ημερομηνία για «%1$s»</string>
-    <string name="vldt_failure">Αποτυχία επικύρωσης.</string>
+    <string name="vldt_failure">Αποτυχία επικύρωσης</string>
     <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="vldt_integer_expected_for_x">Αναμένεται ακέραια τιμή για «%1$s»</string>
     <string name="vldt_non_blank_required">Απαιτείται μη κενή τιμή</string>
@@ -665,7 +663,7 @@
     <string name="warning_already_in_list">Ήδη στη λίστα!</string>
     <string name="warning_backup_request">Θέλετε να κρατήσετε αντίγραφο ασφαλείας της βάσης στην SDcard;</string>
     <string name="warning_book_not_always_found">Δεν επέστρεψαν όλοι οι ιστότοποι έγκυρα δεδομένα.</string>
-    <string name="warning_book_not_found">Δεν μπόρεσε να βρεθεί το συγκεκριμένο βιβλίο</string>
+    <string name="warning_book_not_found">Δεν μπόρεσε να βρεθεί το συγκεκριμένο βιβλίο.</string>
     <string name="warning_cannot_delete_1st_bs">Δεν μπορεί να διαγραφεί το 1ο ράφι.</string>
     <string name="warning_enable_at_least_1_website">Ενεργοποιήστε τουλάχιστον έναν ιστότοπο για κάθε κατηγορία.</string>
     <string name="warning_export_contains_no_data">Δεν υπήρχε τίποτα για εξαγωγή.</string>
@@ -673,12 +671,12 @@
     <string name="warning_if_month_set_year_must_be">Αν προσδιοριστεί μήνας, τότε πρέπει να προσδιοριστεί και έτος.</string>
     <string name="warning_image_copy_failed">Δεν ήταν δυνατή η αντιγραφή της εικόνας.</string>
     <string name="warning_image_not_found">Δεν βρέθηκε εικόνα.</string>
-    <string name="warning_immediate_global_changes">ΣΗΜΕΙΩΣΗ: Όλες οι αποθηκευμένες αλλαγές εφαρμόζονται στιγμιαία και παντού</string>
+    <string name="warning_immediate_global_changes">ΣΗΜΕΙΩΣΗ: Όλες οι αποθηκευμένες αλλαγές εφαρμόζονται στιγμιαία και παντού.</string>
     <string name="warning_import_csv">Προσοχή. Η εισαγωγή δεδομένων μπορεί να ενημερώσει υπάρχοντα βιβλία με νέες πληροφορίες εαν η στήλη uuid δεν είναι παρούσα και το id στο αρχείο εισαγωγής είναι το ίδιο με κάποιο υπάρχον id. Αυτό είναι εντάξει εαν έχει αλλαχτεί κάποιο πεδίο σε ένα εξαγμένο αρχείο. Εαν δημιουργήσατε μια νεα βιβλιογραφική εγγραφή ή εαν εισάγετε τα βιβλία κάποιου άλλου, σιγουρευτείτε ότι το πεδίο uuid είναι παρόν ή το πεδίο id είναι κενό.</string>
     <string name="warning_import_csv_unescaped_quote">Χαρακτηριστικό απόσβεσης μη έτοιμο στη σειρά %1$d, θέση %2$d</string>
     <string name="warning_import_failed_for_lines_lots">Η ανάλυση του απέτυχε για τις γραμμές \n%1$s\n και άλλες.</string>
     <string name="warning_import_failed_for_lines_some">Η ανάλυση του απέτυχε για τις γραμμές \n%1$s\n</string>
-    <string name="warning_no_editions">Δεν υπάρχουν διαθέσιμες εκδόσεις</string>
+    <string name="warning_no_editions">Δεν υπάρχουν διαθέσιμες εκδόσεις.</string>
     <string name="warning_no_matching_book_found">Δεν βρέθηκε βιβλίο που να ταιριάζει</string>
     <string name="warning_no_search_data_for_active_sites">Δεν υπάρχουν έγκυρα δεδομένα αναζήτησης για ενεργούς ιστότοπους.</string>
     <string name="warning_no_site_supports_this_method">ΠΡΟΕΙΔΟΠΟΙΗΣΗ: κανένας από τους επιλεγμένους ιστότοπους δεν υποστηρίζει την αναζήτηση κατά %1$s. Χρησιμοποιήστε το μενού ιστότοπου για να ενεργοποιήσετε εναλλακτικούς ιστότοπους ή χρησιμοποιήστε διαφορετική μέθοδο αναζήτησης.</string>
@@ -688,7 +686,7 @@
     <string name="warning_requires_site_and_id">Επιλέξτε έναν ιστότοπο και πληκτρολογήστε ένα αναγνωριστικό.</string>
     <string name="warning_select_at_least_1_field">Επιλέξτε τουυλάχιστον ένα πεδία για ενημέρωση.</string>
     <string name="warning_select_at_least_1_group">Επιλέξτε τουλάχιστον μία ομάδα.</string>
-    <string name="warning_toc_confirm">Παρακαλούμε επιβεβαιώστε ότι αυτοί οι τίτλοι ανθολογίας είναι (κυρίως) σωστοί</string>
+    <string name="warning_toc_confirm">Παρακαλούμε επιβεβαιώστε ότι αυτοί οι τίτλοι ανθολογίας είναι (κυρίως) σωστοί.</string>
     <string name="warning_x_already_exists">Το %1$s υπάρχει ήδη.</string>
     <string name="warning_x_is_not_a_valid_code">«%1$s» δεν είναι έγκυρος κωδικός κώδικας</string>
     <string name="whichEditApplication">Επεξεργασία με</string>
@@ -699,19 +697,18 @@
     <string name="info_story_in_single_book">Το «%1$s» υπάρχει σε ένα μόνο βιβλίο:\n\n%2$s</string>
     <string name="tip_import_isbn_list">Εισαγάγετε ένα αρχείο κειμένου με αριθμούς ISBN. Το αρχείο θα πρέπει να έχει ένα μόνο ISBN σε κάθε γραμμή. Τα αποτελέσματα θα τοποθετηθούν στην ουρά.</string>
     <string name="lbl_date_added">Ημερομηνία προσθήκης</string>
-    <string name="debug_select_items">Επιλέξτε αυτό που θέλετε να συμπεριλάβετε</string>
-
+    <string name="debug_select_items">Επιλέξτε αυτό που θέλετε να συμπεριλάβετε:</string>
     <string name="lbl_group_1st_char_author_family_name">1ος χαρακτήρας του ονόματος της οικογένειας του συγγραφέα</string>
     <string name="lbl_group_1st_char_series_title">1ος χαρακτήρας του τίτλου της σειράς</string>
     <string name="lbl_group_1st_char_publisher_name">1ος χαρακτήρας του ονόματος του εκδότη</string>
     <string name="lbl_group_1st_char_book_title">1ος χαρακτήρας του τίτλου του βιβλίου</string>
     <string name="lbl_author_pseudonym">Αυτό είναι ένα ψευδώνυμο του:</string>
-    <string name="vldt_real_author_must_be_valid">Πρέπει να είναι κενό ή υπάρχων Συγγραφέας.</string>
+    <string name="vldt_real_author_must_be_valid">Πρέπει να είναι κενό ή υπάρχων Συγγραφέας</string>
     <string name="confirm_create_real_author">Το «%1$s» δεν υπάρχει ακόμα. Πρέπει να δημιουργηθούν;</string>
     <string name="pt_search_resolve_authors_bedetheque">Επιλύστε τα ψευδώνυμα των συγγραφέων χρησιμοποιώντας τον ιστότοπο Bedetheque</string>
-    <string name="pt_bedetheque_search_resolve_formats">Διατηρήστε την ονομασία Bedetheque (γαλλική).</string>
+    <string name="pt_bedetheque_search_resolve_formats">Διατηρήστε την ονομασία Bedetheque (γαλλική)</string>
     <string name="confirm_no_missing_covers_search_from_top">Όλα τα βιβλία κάτω από αυτή τη σειρά έχουν εξώφυλλα. Ψάξτε ξανά από την κορυφή;</string>
-    <string name="info_all_books_have_covers">Όλα τα βιβλία σε αυτό το ράφι έχουν εξώφυλλα.</string>
+    <string name="info_all_books_have_covers">Όλα τα βιβλία σε αυτό το ράφι έχουν εξώφυλλα</string>
     <string name="book_format_hardcover_oblong">σκληρό βιβλίο - επίμηκες</string>
     <string name="book_format_softcover_oblong">μαλακό κάλυμμα - επίμηκες</string>
     <string name="lbl_purge_blns">Διαγράψτε την κατάσταση του κόμβου</string>
