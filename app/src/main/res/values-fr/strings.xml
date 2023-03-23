@@ -23,22 +23,22 @@
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
 --><!--suppress LongLine -->
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <plurals name="displaying_n_books"
-             tools:ignore="MissingQuantity">
+    <plurals name="displaying_n_books">
         <item quantity="one">Affichage de %1$d livre</item>
         <item quantity="other">Affichage de %1$d livres</item>
+        <item quantity="many">Affichage de %1$d livres</item>
     </plurals>
 
-    <plurals name="n_books_found"
-             tools:ignore="MissingQuantity">
+    <plurals name="n_books_found">
         <item quantity="one">%1$d livre trouvé</item>
         <item quantity="other">%1$d livres trouvés</item>
+        <item quantity="many">%1$d livres trouvés</item>
     </plurals>
 
-    <plurals name="n_stars"
-             tools:ignore="MissingQuantity">
+    <plurals name="n_stars">
         <item quantity="one">%1$s étoile</item>
         <item quantity="other">%1$s étoiles</item>
+        <item quantity="many">%1$s étoiles</item>
     </plurals>
 
     <string name="X_acra_resToastText">&APP_NAME; a planté. Merci de nous aider en reportant ce crash.</string>
