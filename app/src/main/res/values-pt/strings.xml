@@ -17,16 +17,12 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!--
+  --><!--
   WORK IN PROGRESS
--->
-<!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
-<!-- Quotes «…» - Regex to find wrong ones: ('|„|‘|’|“|”) -->
-<!--suppress LongLine -->
-<resources xmlns:tools="http://schemas.android.com/tools"
-           tools:locale="pt">
+--><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
+<!-- Quotes «…» - Regex to find wrong ones: ('|„|‘|’|“|”) --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pt">
     <!-- region ========== Order formatters. -->
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <!-- generic "label: value" -->
@@ -36,7 +32,7 @@
     <!-- "name #nr" -->
     <string name="name_hash_nr">%1$s #%2$d</string>
     <!-- x and y are numbers; e.g.: 5 of 9 -->
-    <string name="x_of_y">%1$d of %2$d</string>
+    <string name="x_of_y">%1$d de %2$d</string>
     <!-- abbreviation to indicate there are more of something.
          e.g. a list of Series: "Foundation …" indicates a book belongs to the
          "Foundation" Series, but is also present in others.
@@ -44,7 +40,6 @@
     <string name="and_others">%1$s …</string>
     <!-- same as "and_others" but with the number of items added. -->
     <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
-
     <!-- Should internal formatting of price/currency fail, then this fallback format is used.
 
          Currency: %1$s
@@ -57,31 +52,31 @@
     <!-- endregion -->
     <!-- region ========== System Notification channel names. -->
     <!-- [VERIFIED] -->
-    <string name="notification_channel_error">Error</string>
-    <string name="notification_channel_warn">Warning</string>
-    <string name="notification_channel_info">Info</string>
+    <string name="notification_channel_error">Erro</string>
+    <string name="notification_channel_warn">Aviso</string>
+    <string name="notification_channel_info">Informações</string>
     <!-- endregion -->
     <!-- region ========== Fatal/Crash/Debug messages. -->
-    <string name="debug_email_subject">Gathered debugging information</string>
-    <string name="debug_email_body">Please take the time to briefly describe the problem you are experiencing.</string>
-    <string name="debug_select_items">Select what you would like to include:</string>
-    <string name="acra_resDialogText">It looks like &APP_NAME; has crashed. If possible describe anything you think may be relevant below and press “OK” to send us an email about the crash. You will see the email before it is sent.</string>
-    <string name="acra_resDialogCommentPrompt">Your comments (or just leave blank):</string>
+    <string name="debug_email_subject">Informações de depuração recolhidas</string>
+    <string name="debug_email_body">Por favor reserve algum tempo para descrever brevemente o problema que encontrou.</string>
+    <string name="debug_select_items">Seleccione o que gostaria de incluir:</string>
+    <string name="acra_resDialogText">Parece que &APP_NAME; encerrou inesperadamente. Se possível, descreva abaixo tudo o que acha poder ser relevante e prima “OK” para nos enviar um e-mail sobre este encerramento. Irá ver o e-mail antes de ser enviado.</string>
+    <string name="acra_resDialogCommentPrompt">Os seus comentários (ou deixe em branco):</string>
     <!-- endregion -->
     <!-- region ========== HTTP(S) error messages. -->
     <!-- copied from: "https://github.com/aosp-mirror/platform_frameworks_base/blob/master/core/res/res/values/strings.xml" -->
     <!-- [VERIFIED] - Displayed when a web request failed because there was an input or output error. -->
-    <string name="X_httpErrorIO">Couldn\'t communicate with the server. Try again later.</string>
+    <string name="X_httpErrorIO">Não foi possível comunicar com o servidor. Tente novamente mais tarde.</string>
     <!-- [VERIFIED] - Displayed when a web request failed because the request timed out -->
-    <string name="httpErrorTimeout">The connection to the server timed out.</string>
+    <string name="httpErrorTimeout">O tempo de conexão ao servidor acabou.</string>
     <!-- [VERIFIED] - Displayed when a web request failed because the a secure connection couldn't be made to the server.-->
-    <string name="httpErrorFailedSslHandshake">Couldn\'t establish a secure connection.</string>
+    <string name="httpErrorFailedSslHandshake">Não foi possível estabelecer uma conexão segura.</string>
     <!-- [VERIFIED] - Displayed when a web request failed because the authentication failed. -->
-    <string name="httpErrorAuth">Couldn\'t authenticate.</string>
+    <string name="httpErrorAuth">Não foi possível autenticar.</string>
     <!-- [VERIFIED] - Displayed when a web request failed with a generic network error. -->
-    <string name="httpError">There was a network error.</string>
+    <string name="httpError">Ocorreu um erro de rede.</string>
     <!-- [VERIFIED] - Displayed when a request failed because we failed to open the file. -->
-    <string name="httpErrorFile">Couldn\'t access the file.</string>
+    <string name="httpErrorFile">Não foi possível aceder ao ficheiro.</string>
     <!-- [VERIFIED] - Displayed when a request failed because the file wasn't found. -->
     <string name="httpErrorFileNotFound">Couldn\'t find the requested file.</string>
     <!-- endregion -->
@@ -207,7 +202,6 @@
          if we indeed got the right content. So ask the user first. -->
     <string name="warning_toc_confirm">Please confirm that these titles are (mostly) correct.</string>
     <string name="warning_backup_request">Would you like to backup your database to your sdcard?</string>
-
     <string name="warning_no_site_supports_this_method">WARNING: none of the currently selected sites supports searching by %1$s. Please use the site menu to enable alternative sites, or use a different search method.</string>
     <!-- endregion -->
     <!-- region ========== ValidatorException error messages. -->
@@ -397,36 +391,21 @@
     <string name="style_builtin_author_series">Author, Series</string>
     <string name="style_builtin_author_year">Author, Year</string>
     <string name="style_builtin_compact">Compact</string>
-    <string name="style_builtin_bookshelf"
-            translatable="false">@string/lbl_bookshelf</string>
-    <string name="style_builtin_date_acquired"
-            translatable="false">@string/lbl_date_acquired</string>
-    <string name="style_builtin_date_added"
-            translatable="false">@string/lbl_date_added</string>
-    <string name="style_builtin_date_last_updated"
-            translatable="false">@string/lbl_date_last_updated</string>
-    <string name="style_builtin_date_published"
-            translatable="false">@string/lbl_date_published</string>
-    <string name="style_builtin_date_read"
-            translatable="false">@string/lbl_date_read</string>
-    <string name="style_builtin_1st_char_book_title"
-            translatable="false">@string/lbl_group_1st_char_book_title</string>
-    <string name="style_builtin_format"
-            translatable="false">@string/lbl_format</string>
-    <string name="style_builtin_genre"
-            translatable="false">@string/lbl_genre</string>
-    <string name="style_builtin_language"
-            translatable="false">@string/lbl_language</string>
-    <string name="style_builtin_lending"
-            translatable="false">@string/lbl_lending</string>
-    <string name="style_builtin_location"
-            translatable="false">@string/lbl_location</string>
-    <string name="style_builtin_rating"
-            translatable="false">@string/lbl_rating</string>
-    <string name="style_builtin_read_and_unread"
-            translatable="false">@string/lbl_group_read_and_unread</string>
-    <string name="style_builtin_series"
-            translatable="false">@string/lbl_series</string>
+    <string name="style_builtin_bookshelf" translatable="false">@string/lbl_bookshelf</string>
+    <string name="style_builtin_date_acquired" translatable="false">@string/lbl_date_acquired</string>
+    <string name="style_builtin_date_added" translatable="false">@string/lbl_date_added</string>
+    <string name="style_builtin_date_last_updated" translatable="false">@string/lbl_date_last_updated</string>
+    <string name="style_builtin_date_published" translatable="false">@string/lbl_date_published</string>
+    <string name="style_builtin_date_read" translatable="false">@string/lbl_date_read</string>
+    <string name="style_builtin_1st_char_book_title" translatable="false">@string/lbl_group_1st_char_book_title</string>
+    <string name="style_builtin_format" translatable="false">@string/lbl_format</string>
+    <string name="style_builtin_genre" translatable="false">@string/lbl_genre</string>
+    <string name="style_builtin_language" translatable="false">@string/lbl_language</string>
+    <string name="style_builtin_lending" translatable="false">@string/lbl_lending</string>
+    <string name="style_builtin_location" translatable="false">@string/lbl_location</string>
+    <string name="style_builtin_rating" translatable="false">@string/lbl_rating</string>
+    <string name="style_builtin_read_and_unread" translatable="false">@string/lbl_group_read_and_unread</string>
+    <string name="style_builtin_series" translatable="false">@string/lbl_series</string>
     <!-- endregion -->
     <!-- region ========== Style terminology. -->
     <!-- Single Style -->
@@ -460,8 +439,7 @@
     <string name="lbl_edition_first_edition">First Edition</string>
     <string name="lbl_edition_first_impression">First impression</string>
     <string name="lbl_edition_limited">Limited</string>
-    <string name="lbl_edition_signed"
-            translatable="false">@string/lbl_signed</string>
+    <string name="lbl_edition_signed" translatable="false">@string/lbl_signed</string>
     <string name="lbl_edition_slipcase">Slipcase</string>
     <string name="lbl_edition_book_club">Bookclub edition</string>
     <!-- endregion -->
@@ -559,8 +537,7 @@
     <!-- Cover image context menu option -->
     <string name="option_cover_rotate_ccw">Anti-Clockwise</string>
     <!-- Cover image context menu option -->
-    <string name="option_cover_rotate_180"
-            translatable="false">180°</string>
+    <string name="option_cover_rotate_180" translatable="false">180°</string>
     <!-- Booklist FAB menu option -->
     <string name="option_fab_add_book_by_barcode_scan">Scan Barcode</string>
     <string name="option_fab_add_book_by_barcode_scan_batch">Scan Barcodes in batch</string>
@@ -589,8 +566,7 @@
     <!-- Whether a book can be updated without user-permission. -->
     <string name="option_auto_updates">Allow automatic updates from the internet.</string>
     <string name="option_import">Import</string>
-    <string name="option_backup_and_export"
-            translatable="false">@string/title_backup_and_export</string>
+    <string name="option_backup_and_export" translatable="false">@string/title_backup_and_export</string>
     <string name="option_download_set_folder">Set the download folder</string>
     <string name="option_download_folder">Local download folder</string>
     <string name="option_download_ebook_format">Download eBook (%1$s)</string>
@@ -599,57 +575,41 @@
     <!-- endregion -->
     <!-- region ========== Messages for actions that need confirming first. -->
     <string name="confirm_unsaved_edits">You have unsaved changes, if you exit now they will be lost.</string>
-
     <string name="confirm_delete_series">Delete the series “%1$s”?\n\nThe books themselves will not be deleted.\n\nConsider editing the series and changing the series name to that of another series to preserve this data.</string>
     <string name="confirm_delete_publisher">Delete the publisher “%1$s”?\n\nThe books themselves will not be deleted.\n\nConsider editing the publisher and changing the publisher name to that of another publisher to preserve this data.</string>
     <string name="confirm_delete_bookshelf">Delete the bookshelf “%1$s”? The books themselves will not be deleted. They will still be present on any other shelves, or on the “%2$s” shelf.</string>
-
     <string name="confirm_delete_toc_entry_everywhere">Really delete the title “%1$s” by %2$s? It will be deleted from all books in which it is listed. The books themselves will not be deleted.</string>
-
     <string name="confirm_remove_toc_entry">Remove the title “%1$s” by %2$s from this book?</string>
-
     <!-- param 1: work title
          param 2: author
          param 3: the text on the button for making a global change. e.g. "All books" -->
     <string name="confirm_scope_for_delete">Delete the title “%1$s” by %2$s\n\nHow do you wish to apply this change?\nNote: The choice “%3$s” cannot be undone!</string>
-
     <string name="confirm_delete_book">This will completely delete the book entitled “%1$s” by %2$s.\n\nAre you sure you want to continue?</string>
-
     <string name="confirm_delete_style">Delete the style “%1$s”?</string>
-
     <!-- URGENT: these 4 could do with a better/clearer message. We're proposing to move the books from nr 1 to nr 2 and delete nr 1. -->
     <string name="confirm_merge_bookshelves">The bookshelf you are modifying already exists. Would you like to merge them?</string>
     <string name="confirm_merge_authors">The author you are modifying already exists. Would you like to merge them?</string>
     <string name="confirm_merge_series">The series you are modifying already exists. Would you like to merge them?</string>
     <string name="confirm_merge_publishers">The publisher you are modifying already exists. Would you like to merge them?</string>
-
     <string name="confirm_duplicate_book_message">The book you are trying to add already exists in the database, are you sure you want to add another copy?</string>
     <string name="confirm_overwrite_cover">This will update the selected fields as shown, but images can optionally be downloaded for ALL books.\n\nDo you want to overwrite all existing images? Warning, this may take a long time.</string>
-
     <!-- param 1: previous name; param 2: new name - each time as a single string.
          param 3: the text on the button for making a global change. e.g. "All books"
          param 4: the text on the button for making a local change. e.g. "This book only"
          param 5: the type of object we'll create a new one of if the user chooses "This book only"
        . -->
     <string name="confirm_scope_for_change">You have changed:\n “%1$s”\n to\n “%2$s”\n\nHow do you wish to apply this change?\nNote: The choice “%3$s” will be applied instantly. If you choose “%4$s”, then a new %5$s will be created.</string>
-
     <!-- offer to send the exported file as an email attachment -->
     <string name="confirm_email_file">Would you like to send this file as an email?</string>
-
     <string name="confirm_test_connection">It is advisable to test this connection to avoid issues later on.</string>
-
     <string name="confirm_create_real_author">“%1$s” does not exist yet. Should they be created?</string>
-
     <string name="confirm_no_missing_covers_search_from_top">All books below this row have covers. Search again from the top?</string>
-
     <!-- Displayed when the user changes their sorting preference.
          When doing this, the sorting information in the database needs to be rebuild.
  . -->
     <string name="confirm_rebuild_orderby_columns">This will rebuild the sorting data when the app is restarted. Are you sure you want to continue ?</string>
-
     <string name="confirm_rebuild_fts">This will rebuild the search index data when the app is restarted. Are you sure you want to continue ?</string>
     <string name="confirm_rebuild_index">This will rebuild the indexes when the app is restarted. Are you sure you want to continue ?</string>
-
     <string name="confirm_registration_required">This feature requires registration with %1$s. Would you like to see more information?</string>
     <string name="confirm_registration_benefits">This feature benefits from registration with %1$s. Would you like to see more information, or disable this message?\n You can find this information at a later date under the “%2$s” section in the settings.</string>
     <!-- endregion -->
@@ -729,8 +689,7 @@
     <string name="action_start_export">Start export</string>
     <string name="action_synchronize">Synchronize</string>
     <!-- Small screens. Ideally 3-5 characters long. -->
-    <string name="action_show_toc"
-            translatable="false">@string/lbl_table_of_content_short</string>
+    <string name="action_show_toc" translatable="false">@string/lbl_table_of_content_short</string>
     <!-- Large screens; max 25 chars -->
     <string name="action_show_toc_long">Show Table Of Content</string>
     <!-- endregion -->
@@ -791,8 +750,7 @@
     <!-- Author types -->
     <string name="lbl_author_type">Author type</string>
     <!-- Author. Whether the user considers his collection of this Author to be complete. -->
-    <string name="lbl_author_is_complete"
-            translatable="false">@string/lbl_is_complete</string>
+    <string name="lbl_author_is_complete" translatable="false">@string/lbl_is_complete</string>
     <string name="lbl_author_pseudonym">This is a pen-name of:</string>
     <!-- A single Series. -->
     <string name="lbl_series">Series</string>
@@ -801,8 +759,7 @@
     <!-- The book's number in a series. Either a symbol (e.g. '#') or a very short label (e.g. 'Nr') -->
     <string name="lbl_series_num">#</string>
     <!-- Series. Whether the user considers his collection of this Series to be complete. -->
-    <string name="lbl_series_is_complete"
-            translatable="false">@string/lbl_is_complete</string>
+    <string name="lbl_series_is_complete" translatable="false">@string/lbl_is_complete</string>
     <!-- A single Publisher. -->
     <string name="lbl_publisher">Publisher</string>
     <!-- Multiple Publishers. -->
@@ -816,8 +773,7 @@
     <!-- Multiple Book. -->
     <string name="lbl_books">Books</string>
     <string name="lbl_book_type">Book type</string>
-    <string name="lbl_book_type_book"
-            translatable="false">@string/lbl_book</string>
+    <string name="lbl_book_type_book" translatable="false">@string/lbl_book</string>
     <string name="lbl_book_type_anthology">Anthology</string>
     <string name="lbl_book_type_collection">Collection</string>
     <!-- Single book cover - Short label. -->
@@ -835,8 +791,7 @@
     <!-- number of pages; this is a field-label. -->
     <string name="lbl_pages">Pages</string>
     <!-- number of pages; this is formatted text. -->
-    <string name="info_x_pages"
-            tools:ignore="PluralsCandidate">%1$d pages</string>
+    <string name="info_x_pages" tools:ignore="PluralsCandidate">%1$d pages</string>
     <string name="lbl_currency">Currency</string>
     <string name="lbl_price_listed">List Price</string>
     <string name="lbl_price_paid">Price paid</string>
@@ -941,8 +896,7 @@
     <string name="info_export_successful">Export successful</string>
     <!-- progress final message - displayed when a Backup is done: 1: folder; 2: filename; 3: file size -->
     <string name="info_export_report">A %3$s file called “%2$s” was created in the “%1$s” folder and you should manually copy it elsewhere to protect the data in case your device is damaged, lost, or stolen.</string>
-    <string name="info_backup_email_subject"
-            translatable="false">@string/lbl_backup</string>
+    <string name="info_backup_email_subject" translatable="false">@string/lbl_backup</string>
     <!-- Dialog import all options. -->
     <string name="lbl_import_options">Select what will be imported.</string>
     <!-- Radio button text -->
@@ -975,13 +929,10 @@
     <string name="preference_not_set">Not Set</string>
     <!-- Preference Category -->
     <string name="pc_ui">User Interface</string>
-    <string name="pc_search"
-            translatable="false">@android:string/search_go</string>
+    <string name="pc_search" translatable="false">@android:string/search_go</string>
     <string name="pc_formatting">Formatting</string>
-    <string name="pc_sorting"
-            translatable="false">@string/lbl_sorting</string>
-    <string name="pc_edit"
-            translatable="false">@string/action_edit</string>
+    <string name="pc_sorting" translatable="false">@string/lbl_sorting</string>
+    <string name="pc_edit" translatable="false">@string/action_edit</string>
     <string name="pc_bob">Booklists</string>
     <string name="pc_lists">Lists</string>
     <!-- [VERIFIED] -->
@@ -990,15 +941,12 @@
     <string name="pc_camera">Camera</string>
     <!-- Opens a new screen with the related settings. -->
     <string name="pt_website_search_order_and_enable">Reorder, enable &amp; disable</string>
-    <string name="pt_covers"
-            translatable="false">@string/lbl_covers_long</string>
+    <string name="pt_covers" translatable="false">@string/lbl_covers_long</string>
     <string name="pt_barcode_scanner">Barcode scanner</string>
-    <string name="pt_calibre_content_server"
-            translatable="false">@string/lbl_calibre_content_server</string>
+    <string name="pt_calibre_content_server" translatable="false">@string/lbl_calibre_content_server</string>
     <string name="pt_storage_volume">Storage volume</string>
     <string name="pt_maintenance">Maintenance</string>
-    <string name="pt_more"
-            translatable="false">@string/action_more_ellipsis</string>
+    <string name="pt_more" translatable="false">@string/action_more_ellipsis</string>
     <string name="pt_field_visibility">Field Visibility</string>
     <string name="ps_manage_fields">Selected fields are visible in the add/edit book screens. Unselected fields are hidden.</string>
     <!-- SwitchPreference - How to display titles. -->
@@ -1025,8 +973,7 @@
          Allow the user to lookup books using such an ID, and manually modify them. -->
     <string name="pt_allow_editing_external_id">Allow editing website book id</string>
     <!-- SwitchPreference - Enable or disable all lending functionality. -->
-    <string name="pt_lending_enabled"
-            translatable="false">@string/lbl_lending</string>
+    <string name="pt_lending_enabled" translatable="false">@string/lbl_lending</string>
     <!-- SwitchPreference - beep when the barcode scanner found a valid code -->
     <string name="pt_scanning_beep_on_barcode_found">Beep when a barcode is found</string>
     <!-- SwitchPreference -->
@@ -1084,8 +1031,7 @@
     <string name="pe_bob_row_menu_long_click">Always use long-click.</string>
     <!-- ListPreference: the popup bubble displayed while scrolling through a booklist. -->
     <string name="pt_fast_scroller_overlay">Text bubble while scrolling.</string>
-    <string name="pe_fast_scroller_overlay_none"
-            translatable="false">@string/none</string>
+    <string name="pe_fast_scroller_overlay_none" translatable="false">@string/none</string>
     <string name="pe_fast_scroller_overlay_static">Static</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dynamic</string>
     <!-- ListPreference - Degrees by which to rotate camera pictures automatically -->
@@ -1093,8 +1039,7 @@
     <!-- [VERIFIED] ListPreference -->
     <string name="camera_next_action">Action after taking a picture</string>
     <!-- ListPreference - shows a list of cameras of the device by lens-facing -->
-    <string name="pt_camera_lens_facing"
-            translatable="false">@string/pc_camera</string>
+    <string name="pt_camera_lens_facing" translatable="false">@string/pc_camera</string>
     <!-- [VERIFIED] -->
     <string name="pe_camera_front">Front Camera</string>
     <!-- [VERIFIED] -->
@@ -1126,12 +1071,10 @@
     <!-- Explanatory note for the bug report. -->
     <string name="debug_send_info_text">This will create a backup copy of your database as well as any log files and send it to the developers. If you do not wish to send any of these files, delete them from the mail attachments before sending.</string>
     <!-- The user can choose which files to include. -->
-    <string name="option_bug_report_database"
-            translatable="false">@string/lbl_database</string>
+    <string name="option_bug_report_database" translatable="false">@string/lbl_database</string>
     <string name="option_bug_report_database_upgrade">Database upgrade files</string>
     <string name="option_bug_report_logfiles">Log files</string>
-    <string name="option_bug_report_settings"
-            translatable="false">@string/lbl_settings</string>
+    <string name="option_bug_report_settings" translatable="false">@string/lbl_settings</string>
     <!-- the hint text for the input field on the SQLite Shell page. -->
     <string name="lbl_sql_query">SQL query</string>
     <!-- endregion -->
@@ -1238,8 +1181,7 @@
     <!-- Edit book: Name of the 'Notes' tab.-->
     <string name="lbl_tab_notes">Notes</string>
     <!-- Edit book: Name of the 'Table Of Content' tab. -->
-    <string name="lbl_tab_table_of_content"
-            translatable="false">@string/lbl_table_of_content_short</string>
+    <string name="lbl_tab_table_of_content" translatable="false">@string/lbl_table_of_content_short</string>
     <!-- Edit book: Name of the 'External website id' tab.-->
     <string name="lbl_tab_lbl_ext_id">External ID</string>
     <!-- SearchAdmin page: Name of the 'Alternative Editions' tab. -->
@@ -1271,8 +1213,7 @@
     <string name="list_and">and</string>
     <!-- endregion -->
     <!-- region ========== Other labels - TODO: needs cleaning up... -->
-    <string name="lbl_add_book_by_external_id"
-            translatable="false">@string/option_fab_add_book_by_external_id</string>
+    <string name="lbl_add_book_by_external_id" translatable="false">@string/option_fab_add_book_by_external_id</string>
     <string name="lbl_local_search">Local Search</string>
     <string name="lbl_local_search_long">Advanced Local Search</string>
     <!-- Search on keywords entered. -->
