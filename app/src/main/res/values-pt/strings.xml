@@ -21,10 +21,10 @@
 
 <!--
   WORK IN PROGRESS
--->
-<!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
-<!-- Quotes «…» - Regex to find wrong ones: ('|„|‘|’|“|”) -->
-<!--suppress LongLine -->
+--><!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
+<!-- Quotes «…» - Regex to find wrong ones: ('|„|‘|’|“|”) --><!--suppress LongLine -->
 <resources xmlns:tools="http://schemas.android.com/tools"
            tools:locale="pt">
     <!-- region ========== Order formatters. -->
@@ -36,7 +36,7 @@
     <!-- "name #nr" -->
     <string name="name_hash_nr">%1$s #%2$d</string>
     <!-- x and y are numbers; e.g.: 5 of 9 -->
-    <string name="x_of_y">%1$d of %2$d</string>
+    <string name="x_of_y">%1$d de %2$d</string>
     <!-- abbreviation to indicate there are more of something.
          e.g. a list of Series: "Foundation …" indicates a book belongs to the
          "Foundation" Series, but is also present in others.
@@ -44,7 +44,6 @@
     <string name="and_others">%1$s …</string>
     <!-- same as "and_others" but with the number of items added. -->
     <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
-
     <!-- Should internal formatting of price/currency fail, then this fallback format is used.
 
          Currency: %1$s
@@ -57,31 +56,31 @@
     <!-- endregion -->
     <!-- region ========== System Notification channel names. -->
     <!-- [VERIFIED] -->
-    <string name="notification_channel_error">Error</string>
-    <string name="notification_channel_warn">Warning</string>
-    <string name="notification_channel_info">Info</string>
+    <string name="notification_channel_error">Erro</string>
+    <string name="notification_channel_warn">Aviso</string>
+    <string name="notification_channel_info">Informações</string>
     <!-- endregion -->
     <!-- region ========== Fatal/Crash/Debug messages. -->
-    <string name="debug_email_subject">Gathered debugging information</string>
-    <string name="debug_email_body">Please take the time to briefly describe the problem you are experiencing.</string>
-    <string name="debug_select_items">Select what you would like to include:</string>
-    <string name="acra_resDialogText">It looks like &APP_NAME; has crashed. If possible describe anything you think may be relevant below and press “OK” to send us an email about the crash. You will see the email before it is sent.</string>
-    <string name="acra_resDialogCommentPrompt">Your comments (or just leave blank):</string>
+    <string name="debug_email_subject">Informações de depuração recolhidas</string>
+    <string name="debug_email_body">Por favor reserve algum tempo para descrever brevemente o problema que encontrou.</string>
+    <string name="debug_select_items">Seleccione o que gostaria de incluir:</string>
+    <string name="acra_resDialogText">Parece que &APP_NAME; encerrou inesperadamente. Se possível, descreva abaixo tudo o que acha poder ser relevante e prima “OK” para nos enviar um e-mail sobre este encerramento. Irá ver o e-mail antes de ser enviado.</string>
+    <string name="acra_resDialogCommentPrompt">Os seus comentários (ou deixe em branco):</string>
     <!-- endregion -->
     <!-- region ========== HTTP(S) error messages. -->
     <!-- copied from: "https://github.com/aosp-mirror/platform_frameworks_base/blob/master/core/res/res/values/strings.xml" -->
     <!-- [VERIFIED] - Displayed when a web request failed because there was an input or output error. -->
-    <string name="X_httpErrorIO">Couldn\'t communicate with the server. Try again later.</string>
+    <string name="X_httpErrorIO">Não foi possível comunicar com o servidor. Tente novamente mais tarde.</string>
     <!-- [VERIFIED] - Displayed when a web request failed because the request timed out -->
-    <string name="httpErrorTimeout">The connection to the server timed out.</string>
+    <string name="httpErrorTimeout">O tempo de conexão ao servidor acabou.</string>
     <!-- [VERIFIED] - Displayed when a web request failed because the a secure connection couldn't be made to the server.-->
-    <string name="httpErrorFailedSslHandshake">Couldn\'t establish a secure connection.</string>
+    <string name="httpErrorFailedSslHandshake">Não foi possível estabelecer uma conexão segura.</string>
     <!-- [VERIFIED] - Displayed when a web request failed because the authentication failed. -->
-    <string name="httpErrorAuth">Couldn\'t authenticate.</string>
+    <string name="httpErrorAuth">Não foi possível autenticar.</string>
     <!-- [VERIFIED] - Displayed when a web request failed with a generic network error. -->
-    <string name="httpError">There was a network error.</string>
+    <string name="httpError">Ocorreu um erro de rede.</string>
     <!-- [VERIFIED] - Displayed when a request failed because we failed to open the file. -->
-    <string name="httpErrorFile">Couldn\'t access the file.</string>
+    <string name="httpErrorFile">Não foi possível aceder ao ficheiro.</string>
     <!-- [VERIFIED] - Displayed when a request failed because the file wasn't found. -->
     <string name="httpErrorFileNotFound">Couldn\'t find the requested file.</string>
     <!-- endregion -->
@@ -207,7 +206,6 @@
          if we indeed got the right content. So ask the user first. -->
     <string name="warning_toc_confirm">Please confirm that these titles are (mostly) correct.</string>
     <string name="warning_backup_request">Would you like to backup your database to your sdcard?</string>
-
     <string name="warning_no_site_supports_this_method">WARNING: none of the currently selected sites supports searching by %1$s. Please use the site menu to enable alternative sites, or use a different search method.</string>
     <!-- endregion -->
     <!-- region ========== ValidatorException error messages. -->
@@ -469,7 +467,7 @@
     <string name="lbl_condition_fine">As new</string>
     <string name="lbl_condition_very_good">Very good</string>
     <string name="lbl_condition_good">Good</string>
-    <string name="lbl_condition_fair">"Acceptable "</string>
+    <string name="lbl_condition_fair">Acceptable</string>
     <string name="lbl_condition_reading_copy">Reading copy</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Missing/Fair</string>
     <string name="lbl_condition_dust_cover_none">None</string>
@@ -599,57 +597,41 @@
     <!-- endregion -->
     <!-- region ========== Messages for actions that need confirming first. -->
     <string name="confirm_unsaved_edits">You have unsaved changes, if you exit now they will be lost.</string>
-
     <string name="confirm_delete_series">Delete the series “%1$s”?\n\nThe books themselves will not be deleted.\n\nConsider editing the series and changing the series name to that of another series to preserve this data.</string>
     <string name="confirm_delete_publisher">Delete the publisher “%1$s”?\n\nThe books themselves will not be deleted.\n\nConsider editing the publisher and changing the publisher name to that of another publisher to preserve this data.</string>
     <string name="confirm_delete_bookshelf">Delete the bookshelf “%1$s”? The books themselves will not be deleted. They will still be present on any other shelves, or on the “%2$s” shelf.</string>
-
     <string name="confirm_delete_toc_entry_everywhere">Really delete the title “%1$s” by %2$s? It will be deleted from all books in which it is listed. The books themselves will not be deleted.</string>
-
     <string name="confirm_remove_toc_entry">Remove the title “%1$s” by %2$s from this book?</string>
-
     <!-- param 1: work title
          param 2: author
          param 3: the text on the button for making a global change. e.g. "All books" -->
     <string name="confirm_scope_for_delete">Delete the title “%1$s” by %2$s\n\nHow do you wish to apply this change?\nNote: The choice “%3$s” cannot be undone!</string>
-
     <string name="confirm_delete_book">This will completely delete the book entitled “%1$s” by %2$s.\n\nAre you sure you want to continue?</string>
-
     <string name="confirm_delete_style">Delete the style “%1$s”?</string>
-
     <!-- URGENT: these 4 could do with a better/clearer message. We're proposing to move the books from nr 1 to nr 2 and delete nr 1. -->
     <string name="confirm_merge_bookshelves">The bookshelf you are modifying already exists. Would you like to merge them?</string>
     <string name="confirm_merge_authors">The author you are modifying already exists. Would you like to merge them?</string>
     <string name="confirm_merge_series">The series you are modifying already exists. Would you like to merge them?</string>
     <string name="confirm_merge_publishers">The publisher you are modifying already exists. Would you like to merge them?</string>
-
     <string name="confirm_duplicate_book_message">The book you are trying to add already exists in the database, are you sure you want to add another copy?</string>
     <string name="confirm_overwrite_cover">This will update the selected fields as shown, but images can optionally be downloaded for ALL books.\n\nDo you want to overwrite all existing images? Warning, this may take a long time.</string>
-
     <!-- param 1: previous name; param 2: new name - each time as a single string.
          param 3: the text on the button for making a global change. e.g. "All books"
          param 4: the text on the button for making a local change. e.g. "This book only"
          param 5: the type of object we'll create a new one of if the user chooses "This book only"
        . -->
     <string name="confirm_scope_for_change">You have changed:\n “%1$s”\n to\n “%2$s”\n\nHow do you wish to apply this change?\nNote: The choice “%3$s” will be applied instantly. If you choose “%4$s”, then a new %5$s will be created.</string>
-
     <!-- offer to send the exported file as an email attachment -->
     <string name="confirm_email_file">Would you like to send this file as an email?</string>
-
     <string name="confirm_test_connection">It is advisable to test this connection to avoid issues later on.</string>
-
     <string name="confirm_create_real_author">“%1$s” does not exist yet. Should they be created?</string>
-
     <string name="confirm_no_missing_covers_search_from_top">All books below this row have covers. Search again from the top?</string>
-
     <!-- Displayed when the user changes their sorting preference.
          When doing this, the sorting information in the database needs to be rebuild.
  . -->
     <string name="confirm_rebuild_orderby_columns">This will rebuild the sorting data when the app is restarted. Are you sure you want to continue ?</string>
-
     <string name="confirm_rebuild_fts">This will rebuild the search index data when the app is restarted. Are you sure you want to continue ?</string>
     <string name="confirm_rebuild_index">This will rebuild the indexes when the app is restarted. Are you sure you want to continue ?</string>
-
     <string name="confirm_registration_required">This feature requires registration with %1$s. Would you like to see more information?</string>
     <string name="confirm_registration_benefits">This feature benefits from registration with %1$s. Would you like to see more information, or disable this message?\n You can find this information at a later date under the “%2$s” section in the settings.</string>
     <!-- endregion -->

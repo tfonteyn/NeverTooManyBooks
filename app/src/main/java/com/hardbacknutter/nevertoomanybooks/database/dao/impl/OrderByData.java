@@ -38,8 +38,8 @@ public final class OrderByData {
     @NonNull
     public final Locale locale;
 
-    public OrderByData(@NonNull final String title,
-                       @NonNull final Locale locale) {
+    private OrderByData(@NonNull final String title,
+                        @NonNull final Locale locale) {
         this.title = title;
         this.locale = locale;
     }
