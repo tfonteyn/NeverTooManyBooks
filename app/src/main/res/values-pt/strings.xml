@@ -447,7 +447,7 @@
     <string name="lbl_condition_fine">As new</string>
     <string name="lbl_condition_very_good">Very good</string>
     <string name="lbl_condition_good">Good</string>
-    <string name="lbl_condition_fair">"Acceptable "</string>
+    <string name="lbl_condition_fair">Acceptable</string>
     <string name="lbl_condition_reading_copy">Reading copy</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Missing/Fair</string>
     <string name="lbl_condition_dust_cover_none">None</string>
