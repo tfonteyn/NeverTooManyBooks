@@ -22,6 +22,28 @@
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») -->
 <!--suppress LongLine -->
 <resources>
+    <plurals name="displaying_n_books">
+        <item quantity="one">Wyświetlanie %1$d książki</item>
+        <item quantity="few">Wyświetlanie %1$d książek</item>
+        <item quantity="many">Wyświetlanie %1$d książek</item>
+        <item quantity="other">Wyświetlanie %1$d książki</item>
+    </plurals>
+
+    <plurals name="n_books_found">
+        <item quantity="one">Znaleziono %1$d książkę</item>
+        <item quantity="few">%1$d książki znalezione</item>
+        <item quantity="many">Znaleziono %1$d książek</item>
+        <item quantity="other">Znaleziono 1%1$d książki</item>
+    </plurals>
+
+    <!-- Short text for "n stars" -->
+    <plurals name="n_stars">
+        <item quantity="one">%1$s gwiazdka</item>
+        <item quantity="few">%1$s gwiazdki</item>
+        <item quantity="many">%1$s gwiazdek</item>
+        <item quantity="other">%1$s gwiazdki</item>
+    </plurals>
+
     <string name="X_acra_resToastText">&APP_NAME; niespodziewanie się zawiesił. Pomóż nam ulepszyć aplikację, zgłaszając tę awarię.</string>
     <string name="X_action_clear_credentials">Wyczyść dane o certyfikatach</string>
     <string name="X_action_execute">Wykonaj</string>

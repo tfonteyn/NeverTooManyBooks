@@ -23,6 +23,21 @@
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) -->
 <!--suppress LongLine -->
 <resources>
+    <plurals name="displaying_n_books">
+        <item quantity="one">εμφανίζονται %1$d βιβλίο</item>
+        <item quantity="other">εμφανίζονται %1$d βιβλία</item>
+    </plurals>
+
+    <plurals name="n_books_found">
+        <item quantity="one">Βρέθηκε %1$d βιβλίο</item>
+        <item quantity="other">%1$d βιβλία που βρέθηκαν</item>
+    </plurals>
+
+    <plurals name="n_stars">
+        <item quantity="one">%1$s αστέρι</item>
+        <item quantity="other">%1$s αστέρια</item>
+    </plurals>
+
     <string name="X_acra_resToastText">Η λειτουργία του &APP_NAME; διακόπηκε. Παρακαλούμε βοηθήστε μας να βελτιώσουμε την εφαρμογή στέλνοντας την αναφορά της διακοπής.</string>
     <string name="X_action_clear_credentials">Διαγραφή διαπιστευτηρίων</string>
     <string name="X_action_execute">Εκτέλεση</string>

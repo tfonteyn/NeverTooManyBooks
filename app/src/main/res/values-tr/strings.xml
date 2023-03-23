@@ -23,6 +23,21 @@
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») -->
 <!--suppress LongLine -->
 <resources>
+    <plurals name="displaying_n_books">
+        <item quantity="one">%1$d kitap görüntüleniyor</item>
+        <item quantity="other">%1$d kitap görüntüleniyor</item>
+    </plurals>
+
+    <plurals name="n_books_found">
+        <item quantity="one">%1$d kitap bulundu</item>
+        <item quantity="other">%1$d kitap bulundu</item>
+    </plurals>
+
+    <plurals name="n_stars">
+        <item quantity="one">%1$s yıldız</item>
+        <item quantity="other">%1$s yıldız</item>
+    </plurals>
+
     <string name="X_acra_resToastText">&APP_NAME; bilinmeyen bir nedenle çöktü. Uygulamanın kalitesini iyileştirebilmemiz için lütfen bu çökmeyi rapor edin.</string>
     <string name="X_action_clear_credentials">Kimlik bilgilerini temizle</string>
     <string name="X_action_execute">"Çalıştır"</string>

@@ -22,7 +22,28 @@
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») -->
 <!--suppress LongLine -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <plurals name="displaying_n_books"
+             tools:ignore="MissingQuantity">
+        <item quantity="one">Zobrazuji %1$d knihu</item>
+        <item quantity="few">Zobrazuji %1$d knihy</item>
+        <item quantity="other">Zobrazeno %1$d knih</item>
+    </plurals>
+
+    <plurals name="n_books_found"
+             tools:ignore="MissingQuantity">
+        <item quantity="one">Nalezena %1$d kniha</item>
+        <item quantity="few">Nalezeno %1$d knih</item>
+        <item quantity="other">Nalezeno %1$d knih</item>
+    </plurals>
+
+    <plurals name="n_stars"
+             tools:ignore="MissingQuantity">
+        <item quantity="one">%1$s hvězda</item>
+        <item quantity="few">%1$s hvězdičky</item>
+        <item quantity="other">%1$s hvězd</item>
+    </plurals>
+
     <string name="X_acra_resToastText">Došlo k neočekávanému pádu aplikace &APP_NAME;. Prosím pomozte nám zlepšit aplikaci a informujte nás o tomto problému.</string>
     <string name="X_action_clear_credentials">Vymazat pověření</string>
     <string name="X_action_execute">Spustit</string>

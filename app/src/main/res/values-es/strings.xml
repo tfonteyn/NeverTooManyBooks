@@ -23,6 +23,21 @@
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) -->
 <!--suppress LongLine -->
 <resources>
+    <plurals name="displaying_n_books">
+        <item quantity="one">%1$d libro mostrado</item>
+        <item quantity="other">Se muestran %1$d libros</item>
+    </plurals>
+
+    <plurals name="n_books_found">
+        <item quantity="one">%1$d libro encontrado</item>
+        <item quantity="other">%1$d libros encontrados</item>
+    </plurals>
+
+    <plurals name="n_stars">
+        <item quantity="one">%1$s estrella</item>
+        <item quantity="other">%1$s estrellas</item>
+    </plurals>
+
     <string name="X_acra_resToastText">&APP_NAME; se ha detenido de forma inesperada. Por favor, ayúdenos a mejorar la aplicación reportando este problema.</string>
     <string name="X_action_clear_credentials">Eliminar certificados</string>
     <string name="X_action_execute">Ejecutar</string>

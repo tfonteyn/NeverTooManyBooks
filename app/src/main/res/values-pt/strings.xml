@@ -27,6 +27,32 @@
 <!-- Quotes «…» - Regex to find wrong ones: ('|„|‘|’|“|”) --><!--suppress LongLine -->
 <resources xmlns:tools="http://schemas.android.com/tools"
            tools:locale="pt">
+
+    <!-- region ========== Plurals. -->
+    <!-- displayed in the header of booklist -->
+    <plurals name="displaying_n_books"
+             tools:ignore="MissingTranslation">
+        <item quantity="zero">No books</item>
+        <item quantity="one">%1$d book displayed</item>
+        <item quantity="other">Displaying %1$d books</item>
+    </plurals>
+
+    <plurals name="n_books_found"
+             tools:ignore="MissingTranslation">
+        <item quantity="zero">No books found</item>
+        <item quantity="one">%1$d book found</item>
+        <item quantity="other">%1$d books found</item>
+    </plurals>
+
+    <!-- Short text for 'n stars' -->
+    <plurals name="n_stars"
+             tools:ignore="MissingTranslation">
+        <item quantity="zero">%1$s stars</item>
+        <item quantity="one">%1$s star</item>
+        <item quantity="other">%1$s stars</item>
+    </plurals>
+    <!-- endregion -->
+
     <!-- region ========== Order formatters. -->
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <!-- generic "label: value" -->
