@@ -17,27 +17,22 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
-<!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) -->
-<!--suppress LongLine -->
-<resources>
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
+<!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d libro mostrado</item>
         <item quantity="other">Se muestran %1$d libros</item>
     </plurals>
-
     <plurals name="n_books_found">
         <item quantity="one">%1$d libro encontrado</item>
         <item quantity="other">%1$d libros encontrados</item>
     </plurals>
-
     <plurals name="n_stars">
         <item quantity="one">%1$s estrella</item>
         <item quantity="other">%1$s estrellas</item>
     </plurals>
-
     <string name="X_acra_resToastText">&APP_NAME; se ha detenido de forma inesperada. Por favor, ayúdenos a mejorar la aplicación reportando este problema.</string>
     <string name="X_action_clear_credentials">Eliminar certificados</string>
     <string name="X_action_execute">Ejecutar</string>
@@ -731,4 +726,6 @@
     <string name="info_purge_blns_all">Borrar el estado del nodo de todas las listas</string>
     <string name="info_purge_blns_item_name">¿Borrar el estado del nodo de %1$s «%2$s»?</string>
     <string name="error_updates_aborted">Actualizaciones canceladas</string>
+    <string name="lbl_strip_info_mapped_bookshelf_owned_books">Estantería mapeada con tus libros</string>
+    <string name="lbl_strip_info_mapped_bookshelf_wishlist">Estantería asignada a la lista de deseos</string>
 </resources>
