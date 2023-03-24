@@ -102,7 +102,7 @@
     <string name="action_add">Προσθήκη</string>
     <string name="action_add_with_details">Προσθήκη με λεπτομέρειες</string>
     <string name="action_clear">Διαγραφή</string>
-    <string name="action_create">Δημιουργώ</string>
+    <string name="action_create">Δημιουργία</string>
     <string name="action_delete">Διαγραφή</string>
     <string name="action_discard">Απόρριψη</string>
     <string name="action_done">Τέλος</string>

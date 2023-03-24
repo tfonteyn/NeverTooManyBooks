@@ -108,7 +108,7 @@
     <string name="action_add">Dodaj</string>
     <string name="action_add_with_details">Dodaj ze szczegółami</string>
     <string name="action_clear">Wyczyść</string>
-    <string name="action_create">Stwórz</string>
+    <string name="action_create">Utwórz</string>
     <string name="action_delete">Usuń</string>
     <string name="action_discard">Odrzuć</string>
     <string name="action_done">Gotowe</string>
@@ -174,7 +174,7 @@
     <string name="action_stop_scanning">Zatrzymaj skanowanie</string>
     <string name="btn_this_book">Ta książka</string>
     <string name="size_bytes">%1$.0fB</string>
-    <string name="pc_camera">Aparat fotograficzny</string>
+    <string name="pc_camera">Aparat</string>
     <string name="pe_camera_back">Tylny aparat</string>
     <string name="pe_camera_front">Przedni aparat</string>
     <string name="camera_next_action">Działanie po zrobieniu zdjęcia</string>

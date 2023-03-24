@@ -107,7 +107,7 @@
     <string name="action_add_with_details">Toevoegen met details</string>
     <string name="action_clear">Wissen</string>
     <string name="action_clear_queue">Wachtrij wissen</string>
-    <string name="action_create">Creëer</string>
+    <string name="action_create">Aanmaken</string>
     <string name="action_delete">Verwijderen</string>
     <string name="action_disable_message">Bericht uitschakelen</string>
     <string name="action_discard">Weggooien</string>

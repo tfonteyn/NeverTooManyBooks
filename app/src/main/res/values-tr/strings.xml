@@ -102,7 +102,7 @@
     <string name="action_add">Ekle</string>
     <string name="action_add_with_details">Ayrıntılarla ekle</string>
     <string name="action_clear">Temizle</string>
-    <string name="action_create">Oluşturmak</string>
+    <string name="action_create">Oluştur</string>
     <string name="action_delete">Sil</string>
     <string name="action_discard">Sil</string>
     <string name="action_done">"Bitti"</string>

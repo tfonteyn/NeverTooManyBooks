@@ -108,7 +108,7 @@
     <string name="action_add">Добавить</string>
     <string name="action_add_with_details">Добавить с подробностями</string>
     <string name="action_clear">Очистить</string>
-    <string name="action_create">Создайте</string>
+    <string name="action_create">Создать</string>
     <string name="action_delete">Удалить</string>
     <string name="action_discard">Отменить</string>
     <string name="action_done">"Готово"</string>

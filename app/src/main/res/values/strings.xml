@@ -130,11 +130,14 @@
     <string name="error_unexpected">An unexpected error occurred.</string>
     <!-- The placeholder will be replaced with R.string.pt_maintenance -->
     <string name="error_unexpected_long">An unexpected error has occurred. If the problem persists, contact support via the “%1$s” option at the bottom of the settings page.</string>
+    <!-- shown when a user tries to upgrade from a very old version to the current. -->
     <string name="error_upgrade_not_supported">Upgrading from versions older than %1$s is not supported.</string>
+    <!-- Shown when the user aborts an automatic internet-data update for a list of books -->
     <string name="error_updates_aborted">Updates aborted</string>
-    <!-- [VERIFIED] -->
+    <!-- [VERIFIED] Ask user to connect to the internet -->
     <string name="error_network_please_connect">Please connect to the internet.</string>
-    <!-- [VERIFIED] -->
+    <!-- [VERIFIED] An error message presented to the user when the certificate they
+         specified for connecting to a server is inaccessible -->
     <string name="error_certificate_invalid">The certificate is invalid or inaccessible.</string>
     <string name="error_network_site_access_failed">There was a network problem while accessing %1$s. Please check if the website is up, and if the problem persists please contact support.</string>
     <!-- A website did respond to a request, but the response was not valid.
@@ -728,6 +731,7 @@
     <!-- [VERIFIED] -->
     <string name="X_action_execute">Execute</string>
     <string name="X_action_validate">Validate</string>
+    <!-- [VERIFIED] -->
     <string name="action_create">Create</string>
     <!-- merging two objects (e.g. two Bookshelves; two Author names... -->
     <string name="action_merge">Merge</string>
@@ -867,9 +871,9 @@
     <string name="lbl_barcode">Barcode</string>
     <string name="lbl_description">Description</string>
     <string name="lbl_personal_notes">Personal notes</string>
-    <!-- [VERIFIED] short label for the Location field -->
+    <!-- short label for the Location field -->
     <string name="lbl_location">Location</string>
-    <!-- [VERIFIED] long label for the Location field -->
+    <!-- long label for the Location field -->
     <string name="lbl_location_long">Location of the book</string>
     <!-- Header for a screen section. -->
     <string name="lbl_publication">Publication</string>
@@ -1002,6 +1006,7 @@
     <!-- [VERIFIED] -->
     <string name="pc_advanced_options">Advanced</string>
     <string name="pc_image_cache">Image cache</string>
+    <!-- [VERIFIED] -->
     <string name="pc_camera">Camera</string>
     <!-- Opens a new screen with the related settings. -->
     <string name="pt_website_search_order_and_enable">Reorder, enable &amp; disable</string>
@@ -1074,11 +1079,11 @@
     <string name="pt_bedetheque_search_resolve_formats">Preserve Bedetheque (french) format naming</string>
     <!-- MultiSelectListPreference -->
     <string name="pt_primary_author_type">Primary author type</string>
-    <!-- [VERIFIED] ListPreference - "Preferred interface Language" -->
+    <!-- [VERIFIED] ListPreference - "UI Language" -->
     <string name="pt_ui_language">Language</string>
-    <!-- ListPreference - Preferred interface Language; option 1 in the list -->
+    <!-- ListPreference - UI Language; option 1 in the list -->
     <string name="pt_ui_system_locale">System Locale</string>
-    <!-- ListPreference - Preferred interface Theme -->
+    <!-- ListPreference - UI Theme -->
     <string name="pt_ui_theme">Interface Theme</string>
     <string name="pe_ui_theme_day_night">Day / Night</string>
     <string name="pe_ui_theme_dark">Dark</string>
@@ -1105,7 +1110,7 @@
     <string name="pe_fast_scroller_overlay_dynamic">Dynamic</string>
     <!-- ListPreference - Degrees by which to rotate camera pictures automatically -->
     <string name="pt_thumbnails_rotate_auto">Rotate pictures</string>
-    <!-- [VERIFIED] ListPreference -->
+    <!-- ListPreference - the user can choose which action to take after taking a picture -->
     <string name="camera_next_action">Action after taking a picture</string>
     <!-- ListPreference - shows a list of cameras of the device by lens-facing -->
     <string name="pt_camera_lens_facing"

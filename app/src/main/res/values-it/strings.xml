@@ -103,7 +103,7 @@
     <string name="action_add">Aggiungi</string>
     <string name="action_add_with_details">Aggiungi con i dettagli</string>
     <string name="action_clear">Cancella</string>
-    <string name="action_create">Creare</string>
+    <string name="action_create">Crea</string>
     <string name="action_delete">Elimina</string>
     <string name="action_discard">Ignora</string>
     <string name="action_done">Atlikta</string>
@@ -388,7 +388,7 @@
     <string name="lbl_library">Biblioteca</string>
     <string name="lbl_local_search">Ricerca locale</string>
     <string name="lbl_local_search_long">Ricerca locale avanzata</string>
-    <string name="lbl_location">Locazione</string>
+    <string name="lbl_location">Posizione</string>
     <string name="lbl_location_long">Locazione del libro</string>
     <string name="option_bug_report_logfiles">Log files</string>
     <string name="lbl_login_to_search">Accedi per cercare</string>

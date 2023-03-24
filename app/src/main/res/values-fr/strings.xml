@@ -392,7 +392,7 @@
     <string name="lbl_library">Bibliothèque</string>
     <string name="lbl_local_search">Recherche locale</string>
     <string name="lbl_local_search_long">Recherche locale avancée</string>
-    <string name="lbl_location">Localisation</string>
+    <string name="lbl_location">Emplacement</string>
     <string name="lbl_location_long">Localisation du livre</string>
     <string name="option_bug_report_logfiles">Fichiers journaux</string>
     <string name="lbl_login_to_search">connectez-vous pour rechercher</string>
