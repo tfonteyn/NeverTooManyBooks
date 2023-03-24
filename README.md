@@ -22,12 +22,17 @@ This is a book collection application, to keep track of your books and comics.
 Books can be added either manually, by ISBN, or by barcode.
 
 The UI is available in:
-English, German, French, Dutch, Italian, Spanish, Greek, Czech, Polish, Turkish and Russian.
-The quality of translation of the latter half of this list is likely not perfect.
+
+- English, Dutch
+- German, French: quality should be very good but may lack in some places.
+- Italian, Spanish: should be useable, but certainly not perfect.
+- Greek, Czech, Polish, Turkish and Russian: mostly machine translated, no guarantees for quality.
+
+A translation to Portuguese has started but will take time.
 
 New 22-March-2023: translations are now integrated and editable
 on [https://hosted.weblate.org/projects/nevertoomanybooks/](https://hosted.weblate.org/projects/nevertoomanybooks/)
-(pending approval)
+(pending approval) - All are welcome.
 
 Data is fetched on-demand from multiple internet sites.
 You can enable/disable and prioritize the sites in the settings.
@@ -46,6 +51,12 @@ Please do not ask for GoodReads/LibraryThing to be added.
 Supports synchronizing with a Calibre Content Server.
 
 Requires minimal Android 8.0 (API 26)
+
+Screen size support:
+
+- 4" works but will be very cramped.
+- 5" is the default aimed for.
+- 7" and 10" tablets fully supported with dedicated screen layouts.
 
 Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyBooks/wiki)
 
