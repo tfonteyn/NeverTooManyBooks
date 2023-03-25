@@ -25,7 +25,7 @@ The UI is available in:
 
 - English, Dutch
 - German, French: quality should be very good but may lack in some places.
-- Italian, Spanish: should be useable, but certainly not perfect.
+- Italian, Spanish: should be usable, but certainly not perfect.
 - Greek, Czech, Polish, Turkish and Russian: mostly machine translated, no guarantees for quality.
 
 A translation to Portuguese has started but will take time.
