@@ -22,15 +22,18 @@
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
-        <item quantity="one">%1$d libro mostrado</item>
-        <item quantity="other">Se muestran %1$d libros</item>
+        <item quantity="one">%1$d libro visualizado</item>
+        <item quantity="many">Visualizando %1$d libros</item>
+        <item quantity="other">Visualizando %1$d libros</item>
     </plurals>
     <plurals name="n_books_found">
         <item quantity="one">%1$d libro encontrado</item>
+        <item quantity="many">%1$d libros encontrado</item>
         <item quantity="other">%1$d libros encontrados</item>
     </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s estrella</item>
+        <item quantity="many">%1$s estrellas</item>
         <item quantity="other">%1$s estrellas</item>
     </plurals>
     <string name="X_acra_resToastText">&APP_NAME; se ha detenido de forma inesperada. Por favor, ayúdenos a mejorar la aplicación reportando este problema.</string>
@@ -176,7 +179,11 @@
     <string name="confirm_delete_book">Se dispone a eliminar el libro con el título «%1$s» de %2$s.\n\n ¿Está seguro de que desea continuar?</string>
     <string name="confirm_delete_bookshelf">¿Realmente eliminar la estantería «%1$s»? Los libros en sí no se eliminarán. Seguirán estando presentes en cualquier otro estante o en el estante «%2$s».</string>
     <string name="confirm_delete_publisher">¿Eliminar realmente el editor «%1$s»?\n\nLos libros en sí no se eliminarán.\n\nConsidere editar el editor y cambiar el nombre del editor por el de otro editor para conservar estos datos.</string>
-    <string name="confirm_delete_series">Confirme la eliminación de la serie «%1$s»\n\nLos libros no se eliminarán.\n\nConsidere la opción de editar la serie para cambiar el nombre, para conservar los datos</string>
+    <string name="confirm_delete_series">¿Borrar la serie \"%1$s\"\?
+\n
+\nLos libros en sí no se borrarán.
+\n
+\nConsidere la posibilidad de editar la serie y cambiar el nombre de la serie por el de otra serie para conservar estos datos.</string>
     <string name="confirm_delete_style">¿Eliminar el estilo «%1$s»?</string>
     <string name="confirm_delete_toc_entry_everywhere">¿Realmente elimina la entrada «%1$s» (por %2$s)? Se eliminará de todos los libros en los que figura. Los libros en sí no serán borrados.</string>
     <string name="confirm_duplicate_book_message">El libro que intenta añadir ya está en la base de datos. ¿Desea añadir otra copia?</string>
@@ -191,8 +198,14 @@
     <string name="confirm_rebuild_orderby_columns">Esto reconstruirá los datos de clasificación cuando se reinicie la aplicación. Estás seguro de que quieres continuar ?</string>
     <string name="confirm_registration_benefits">Esta característica se beneficia del registro con %1$s. ¿Desea ver más información o deshabilitar este mensaje?\nPuede encontrar esta información más adelante en la sección «%2$s» en la configuración.</string>
     <string name="confirm_registration_required">Esta función requiere registro con %1$s. ¿Te gustaría ver más información?</string>
-    <string name="confirm_remove_toc_entry">¿Eliminar el título «%1$s» de %2$s de este libro?</string>
-    <string name="confirm_scope_for_change">Ha cambiado:\n «%1$s»\n a\n «%2$s»\n\n¿Cómo quiere aplicar este cambio?\n\nNota: La opción «%3$s» se aplicará de manera inmediata. Si elige «%4$s», se creará un nuevo %5$s.</string>
+    <string name="confirm_remove_toc_entry">¿Eliminar el título \"%1$s\" de %2$s este libro\?</string>
+    <string name="confirm_scope_for_change">Has cambiado:
+\n \"%1$s\"
+\n a
+\n \"%2$s\"
+\n
+\n¿Cómo desea aplicar este cambio\?
+\nNota: La opción \"%3$s\" se aplicará al instante. Si elige \"%4$s\", se creará un nuevo %5$s.</string>
     <string name="confirm_scope_for_delete">Eliminar el título «%1$s» por %2$s.\n\n¿Cómo desea aplicar este cambio?\nADVERTENCIA: ¡La opción «%3$s» no se puede deshacer!</string>
     <string name="confirm_test_connection">Es recomendable probar esta conexión para evitar problemas más adelante.</string>
     <string name="confirm_unsaved_edits">Hay cambios que no se han guardado. Si sale ahora, se perderán.</string>
@@ -223,7 +236,8 @@
     <string name="error_network_site_access_failed">Hubo un problema de red al acceder a %1$s. Compruebe si el sitio web está activo y, si el problema persiste, póngase en contacto con el servicio de asistencia.</string>
     <string name="error_no_image_editor">No se encontró editor de imágenes.</string>
     <string name="error_search_could_not_be_started">La búsqueda del libro ha fallado.</string>
-    <string name="error_search_failed_network">Abra la Configuración y verifique su red y las preferencias de Buscar en el sitio.\nCompruebe también la configuración de red de su dispositivo</string>
+    <string name="error_search_failed_network">Por favor, abre los Ajustes y comprueba tus preferencias de red y del Sitio de Búsqueda.
+\nComprueba también la configuración de red de tu dispositivo.</string>
     <string name="error_search_x_failed_y">La búsqueda en %1$s falló: %2$s</string>
     <string name="error_site_authentication_failed">%1$s autenticación fallida</string>
     <string name="error_site_authorization_failed">Error de autorización en %1$s.</string>
@@ -365,7 +379,7 @@
     <string name="lbl_import_books">Importar libros</string>
     <string name="option_import_books_option_all">Todos los libros</string>
     <string name="option_import_books_option_new_and_updated">Libros nuevos y actualizados</string>
-    <string name="option_header_import_books_option_new_and_updated_cutoff_date">Solo importa libros que hayan sido \n modificados desde esta fecha</string>
+    <string name="option_header_import_books_option_new_and_updated_cutoff_date">Importar sólo los libros modificados desde</string>
     <string name="option_import_books_option_new_only">Solo libros nuevos</string>
     <string name="lbl_import_options">Seleccione lo que se importará.</string>
     <string name="lbl_importing">Importando…</string>
