@@ -342,9 +342,18 @@ public class CalibreContentServer
                       .findFirst();
     }
 
+    /**
+     * Set the self-signed CA certificate.
+     *
+     * @param context Current context
+     * @param ca      the certificate
+     *
+     * @throws CertificateEncodingException on failures related to a user installed CA
+     * @throws IOException                  on generic/other IO failures
+     */
     public static void setCertificate(@NonNull final Context context,
                                       @Nullable final X509Certificate ca)
-            throws IOException, CertificateEncodingException {
+            throws CertificateEncodingException, IOException {
         if (ca != null) {
             try (FileOutputStream fos = context.openFileOutput(SERVER_CA, Context.MODE_PRIVATE)) {
                 fos.write(ca.getEncoded());
@@ -354,6 +363,16 @@ public class CalibreContentServer
         }
     }
 
+    /**
+     * Get the self-signed CA certificate.
+     *
+     * @param context Current context
+     *
+     * @return the certificate
+     *
+     * @throws CertificateException on failures related to a user installed CA
+     * @throws IOException          on generic/other IO failures
+     */
     @NonNull
     public static X509Certificate getCertificate(@NonNull final Context context)
             throws CertificateException, IOException {
@@ -469,6 +488,7 @@ public class CalibreContentServer
      *
      * @throws IOException      on generic/other IO failures
      * @throws StorageException on storage related failures
+     * @throws JSONException    upon any parsing error
      */
     @WorkerThread
     public void readMetaData(@NonNull final Context context)
@@ -715,6 +735,7 @@ public class CalibreContentServer
      *
      * @throws IOException      on generic/other IO failures
      * @throws StorageException on storage related failures
+     * @throws JSONException    upon any parsing error
      */
     @WorkerThread
     @NonNull
@@ -757,8 +778,16 @@ public class CalibreContentServer
      *      "vl": ""}
      * </pre>
      *
+     * @param libraryId to search in
+     * @param num       the maximum number of entries to return
+     * @param offset    the offset for the next set to return
+     * @param query     the search query, see above
+     *
+     * @return books matching the specified search query.
+     *
      * @throws IOException      on generic/other IO failures
      * @throws StorageException on storage related failures
+     * @throws JSONException    upon any parsing error
      */
     @WorkerThread
     @NonNull
@@ -1047,6 +1076,7 @@ public class CalibreContentServer
      *
      * @throws IOException      on generic/other IO failures
      * @throws StorageException on storage related failures
+     * @throws JSONException    upon any parsing error
      */
     @WorkerThread
     @NonNull
@@ -1089,7 +1119,9 @@ public class CalibreContentServer
      *
      * @return Calibre book object
      *
-     * @throws IOException on generic/other IO failuress
+     * @throws IOException      on generic/other IO failures
+     * @throws StorageException on storage related failures
+     * @throws JSONException    upon any parsing error
      */
     @WorkerThread
     @NonNull
@@ -1112,6 +1144,7 @@ public class CalibreContentServer
      *
      * @throws IOException      on generic/other IO failures
      * @throws StorageException on storage related failures
+     * @throws JSONException    upon any parsing error
      */
     @WorkerThread
     @NonNull

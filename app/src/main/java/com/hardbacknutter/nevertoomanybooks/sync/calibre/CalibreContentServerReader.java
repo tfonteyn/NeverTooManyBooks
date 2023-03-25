@@ -517,7 +517,7 @@ public class CalibreContentServerReader
      * @param localBook   the local book to add the data to
      *
      * @throws StorageException The covers directory is not available
-     * @throws JSONException    upon any error
+     * @throws JSONException    upon any parsing error
      */
     private void copyCalibreData(@NonNull final Context context,
                                  @NonNull final JSONObject calibreBook,
