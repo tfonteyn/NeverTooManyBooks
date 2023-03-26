@@ -49,7 +49,7 @@ You can enable/disable and prioritize the sites in the settings.
 Please do not ask for GoodReads/LibraryThing to be added.
 
 WARNING: Amazon are increasingly blocking access - if you see any Amazon specific errors, I suggest
-you switch off Amazon in Settings/Search/More.
+you switch off Amazon in Settings/Search/Websites.
 
 Supports synchronizing with a Calibre Content Server.
 
