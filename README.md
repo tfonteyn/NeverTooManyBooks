@@ -37,7 +37,7 @@ on [https://hosted.weblate.org/projects/nevertoomanybooks/](https://hosted.webla
 Data is fetched on-demand from multiple internet sites.
 You can enable/disable and prioritize the sites in the settings.
 
-- Amazon
+- Amazon (see warning below)
 - Bedetheque (new in v4)
 - Google Books
 - ISFDB
@@ -47,6 +47,9 @@ You can enable/disable and prioritize the sites in the settings.
 - StripInfo
 
 Please do not ask for GoodReads/LibraryThing to be added.
+
+WARNING: Amazon are increasingly blocking access - if you see any Amazon specific errors, I suggest
+you switch off Amazon in Settings/Search/More.
 
 Supports synchronizing with a Calibre Content Server.
 
