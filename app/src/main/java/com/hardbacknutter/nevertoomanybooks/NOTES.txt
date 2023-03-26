@@ -38,18 +38,12 @@ Prices: when importing books with a price field containing a value which cannot 
  FIXME: Solution would be to allow Money to have string (instead/aside-of double) values.
 
 ----------------------------------------------------------------------------------------------------
-4.1.0
+4.2.0
 
 NEW:
-- context menu button now available for all lists.
-- group/sorting by date-acquired now uses date-added as fallback
-  when the former is not explicitly set
-- embedded list/detail mode no longer needs to refresh the whole list when a cover is changed
-- dialog boxes have been restyled using full m3
 
 
 FIXES:
-- importing Calibre library data now correctly maps bookshelves
 
 
 REMOVED:

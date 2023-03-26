@@ -280,6 +280,7 @@ public enum EngineId
                   // .setDomainKey(DBKey.SID_ASIN)
                   // .setDomainViewId(R.id.site_amazon)
                   // .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_AMAZON)
+                  .setThrottlerTimeoutMs(1_000)
                   .build();
         }
         if (Bedetheque.isEnabled()) {

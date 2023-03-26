@@ -157,8 +157,8 @@ public class AmazonSearchEngine
                                @NonNull final String url,
                                @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
-        // FIXME: for some weird reason Amazon will now throw a 503 / SSLHandshake exception
-        //  if the book is not found.
+        // FIXME: Amazon ia blocking more and more... we'll have to stop supporting it soon.
+        //  it now starts to throw a 503 / SSLHandshake exception
         final Document document = loadDocument(context, url, null);
         final Book book = new Book();
         if (!isCancelled()) {
