@@ -163,23 +163,21 @@ public class EditTextField<T, V extends EditText>
                 text = formatter.format(view.getContext(), rawValue);
 
             } catch (@NonNull final ClassCastException e) {
-                // Due to the way a Book loads data from the database,
+                // 1. Due to the way a Book loads data from the database,
                 // it's possible that it gets the column type wrong.
                 // See {@link TypedCursor} class docs.
                 //
-                // Secondly, when the data comes from the internet,
+                // 2. When the data comes from the internet,
                 // the parser might get it wrong when a webpage changes structural data
-                // Also see {@link SearchCoordinator#accumulateStringData}
+                //
+                // 3. see {@link SearchCoordinator#accumulateStringData}
+                // where some data is transformed into a String regardless
                 LoggerFactory.getLogger().w(TAG, e, "fieldKey=" + fieldKey,
                                             "value=" + value,
                                             "text=" + text);
                 text = rawValue != null ? String.valueOf(rawValue) : "";
             }
 
-//            // 2023-03-27: See github issue#4
-//            // root cause not found yet as I can't reproduce with the example ISBN 3518366823
-//            // but this should prevent the hang.
-//            if (text != null) {
             // Second step set the view but ...
             // ... disable the ChangedTextWatcher.
             view.removeTextChangedListener(this);
@@ -192,7 +190,6 @@ public class EditTextField<T, V extends EditText>
             }
             // ... finally re-enable the watcher
             view.addTextChangedListener(this);
-//            }
         }
     }
 
