@@ -948,6 +948,10 @@ public class IsfdbSearchEngine
                                         // parsing failed, store the string as-is;
                                         // no separate currency!
                                         book.putString(DBKey.PRICE_LISTED, tmpString);
+                                        // log this as we need to understand WHY it failed
+                                        LoggerFactory.getLogger().w(TAG, "Failed to parse",
+                                                                    DBKey.PRICE_LISTED,
+                                                                    "text=" + tmpString);
                                     }
                                 }
                             }
