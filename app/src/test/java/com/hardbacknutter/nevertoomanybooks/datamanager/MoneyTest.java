@@ -44,7 +44,6 @@ public class MoneyTest
     private static final BigDecimal twelveDotThreeFour = BigDecimal.valueOf(12.34d);
 
     private DataManager dataManager;
-    private RealNumberParser realNumberParser;
 
     @BeforeEach
     @Override
@@ -52,8 +51,6 @@ public class MoneyTest
             throws Exception {
         super.setup();
         dataManager = new DataManager(BundleMock.create());
-
-        realNumberParser = new RealNumberParser(locales);
     }
 
     /**
@@ -64,6 +61,8 @@ public class MoneyTest
      */
     @Test
     void putMoneyAndGetMoney() {
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
+
         final Money money = MoneyParser.parse(twelveDotThreeFour, MoneyParser.GBP);
         assertNotNull(money);
         dataManager.putMoney(DBKey.PRICE_LISTED, money);
@@ -84,6 +83,8 @@ public class MoneyTest
      */
     @Test
     void putMoneyAndGetObject() {
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
+
         final Money money = MoneyParser.parse(twelveDotThreeFour, MoneyParser.GBP);
         assertNotNull(money);
         dataManager.putMoney(DBKey.PRICE_LISTED, money);
@@ -106,6 +107,8 @@ public class MoneyTest
      */
     @Test
     void putObjectAndGetMoney() {
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
+
         final Money money = MoneyParser.parse(twelveDotThreeFour, MoneyParser.GBP);
         assertNotNull(money);
         dataManager.put(DBKey.PRICE_LISTED, money);
@@ -126,6 +129,8 @@ public class MoneyTest
      */
     @Test
     void putObjectAndGetObject() {
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
+
         final Money money = MoneyParser.parse(twelveDotThreeFour, MoneyParser.GBP);
         assertNotNull(money);
         dataManager.put(DBKey.PRICE_LISTED, money);
@@ -150,6 +155,8 @@ public class MoneyTest
      */
     @Test
     void putComponentsAndGetMoney() {
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
+
         dataManager.putDouble(DBKey.PRICE_LISTED, 12.34d);
         dataManager.putString(DBKey.PRICE_LISTED_CURRENCY, "GBP");
 
@@ -170,6 +177,8 @@ public class MoneyTest
      */
     @Test
     void putComponentsAndGetObject() {
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
+
         dataManager.putDouble(DBKey.PRICE_LISTED, 12.34d);
         dataManager.putString(DBKey.PRICE_LISTED_CURRENCY, "GBP");
 
@@ -192,6 +201,8 @@ public class MoneyTest
      */
     @Test
     void putComponentsAndGetComponents() {
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
+
         dataManager.putDouble(DBKey.PRICE_LISTED, 12.34d);
         dataManager.putString(DBKey.PRICE_LISTED_CURRENCY, "GBP");
 
@@ -213,6 +224,8 @@ public class MoneyTest
      */
     @Test
     void putValueAndGetMoney() {
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
+
         dataManager.putDouble(DBKey.PRICE_LISTED, 12.34d);
 
         final Money out = dataManager.getMoney(DBKey.PRICE_LISTED, realNumberParser);
@@ -231,6 +244,8 @@ public class MoneyTest
      */
     @Test
     void putValueAndGetObject() {
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
+
         dataManager.putDouble(DBKey.PRICE_LISTED, 12.34d);
 
         final Object out = dataManager.get(DBKey.PRICE_LISTED, realNumberParser);
@@ -245,6 +260,8 @@ public class MoneyTest
 
     @Test
     void putSentiment() {
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
+
         dataManager.putString(DBKey.PRICE_LISTED, "Far to much dosh");
 
         final Object out = dataManager.get(DBKey.PRICE_LISTED, realNumberParser);
