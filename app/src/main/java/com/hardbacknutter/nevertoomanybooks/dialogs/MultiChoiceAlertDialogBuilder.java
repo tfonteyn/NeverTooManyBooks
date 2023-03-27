@@ -60,8 +60,8 @@ public class MultiChoiceAlertDialogBuilder<T extends Number> {
     private List<T> itemIds;
     @Nullable
     private List<String> itemLabels;
-    @Nullable
-    private Set<T> selectedItems;
+    @NonNull
+    private final Set<T> selectedItems = new HashSet<>();
 
     @StringRes
     private int positiveButtonTextId;
@@ -125,7 +125,10 @@ public class MultiChoiceAlertDialogBuilder<T extends Number> {
 
     @NonNull
     public MultiChoiceAlertDialogBuilder<T> setSelectedItems(@Nullable final Set<T> selectedItems) {
-        this.selectedItems = selectedItems;
+        this.selectedItems.clear();
+        if (selectedItems != null) {
+            this.selectedItems.addAll(selectedItems);
+        }
         return this;
     }
 
@@ -158,9 +161,6 @@ public class MultiChoiceAlertDialogBuilder<T extends Number> {
         Objects.requireNonNull(itemIds);
         Objects.requireNonNull(itemLabels);
         Objects.requireNonNull(positiveButtonConsumer);
-        if (selectedItems == null) {
-            selectedItems = new HashSet<>();
-        }
 
         final View view = layoutInflater.inflate(R.layout.dialog_edit_checklist, null);
         final TextView messageView = view.findViewById(R.id.message);
