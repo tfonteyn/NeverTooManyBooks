@@ -176,6 +176,10 @@ public class EditTextField<T, V extends EditText>
                 text = rawValue != null ? String.valueOf(rawValue) : "";
             }
 
+//            // 2023-03-27: See github issue#4
+//            // root cause not found yet as I can't reproduce with the example ISBN 3518366823
+//            // but this should prevent the hang.
+//            if (text != null) {
             // Second step set the view but ...
             // ... disable the ChangedTextWatcher.
             view.removeTextChangedListener(this);
@@ -188,6 +192,7 @@ public class EditTextField<T, V extends EditText>
             }
             // ... finally re-enable the watcher
             view.addTextChangedListener(this);
+//            }
         }
     }
 
