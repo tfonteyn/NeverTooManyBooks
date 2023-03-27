@@ -156,17 +156,23 @@ public class EditTextField<T, V extends EditText>
 
         final V view = getView();
         if (view != null) {
-            // We need to do this in two steps. First format the value as normal.
-            String text;
+            // We need to do this in two steps.
+            String text = null;
             try {
+                //  First format the value as normal.
                 text = formatter.format(view.getContext(), rawValue);
 
             } catch (@NonNull final ClassCastException e) {
                 // Due to the way a Book loads data from the database,
                 // it's possible that it gets the column type wrong.
                 // See {@link TypedCursor} class docs.
+                //
+                // Secondly, when the data comes from the internet,
+                // the parser might get it wrong when a webpage changes structural data
                 // Also see {@link SearchCoordinator#accumulateStringData}
-                LoggerFactory.getLogger().e(TAG, e, value);
+                LoggerFactory.getLogger().w(TAG, e, "fieldKey=" + fieldKey,
+                                            "value=" + value,
+                                            "text=" + text);
                 text = rawValue != null ? String.valueOf(rawValue) : "";
             }
 
