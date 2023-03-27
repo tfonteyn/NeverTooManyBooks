@@ -31,7 +31,7 @@ The UI is available in:
 A translation to Portuguese has started but will take time.
 
 New 22-March-2023: translations are now integrated and editable
-on [https://hosted.weblate.org/projects/nevertoomanybooks/](https://hosted.weblate.org/projects/nevertoomanybooks/)
+on [https://hosted.weblate.org/engage/nevertoomanybooks/](https://hosted.weblate.org/engage/nevertoomanybooks/)
 
 Data is fetched on-demand from multiple internet sites.
 You can enable/disable and prioritize the sites in the settings.
