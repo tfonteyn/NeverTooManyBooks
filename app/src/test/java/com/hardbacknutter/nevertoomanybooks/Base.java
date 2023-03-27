@@ -23,7 +23,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.os.Bundle;
 import android.os.LocaleList;
 
 import androidx.annotation.CallSuper;
@@ -36,7 +35,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.ContextMock;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.SharedPreferencesMock;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
@@ -45,14 +43,12 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
-import com.hardbacknutter.nevertoomanybooks.database.dao.CoverCacheDao;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryThingSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
-import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -89,21 +85,13 @@ public class Base {
     @Mock
     protected Style style;
     protected Context context;
+    protected ServiceLocatorMock serviceLocatorMock;
+
     @Mock
-    protected ServiceLocator serviceLocator;
-    @Mock
-    protected Languages languages;
-    @Mock
-    protected AppLocale appLocale;
-    @Mock
-    protected ReorderHelper reorderHelper;
-    @Mock
-    protected CoverStorage coverStorage;
-    @Mock
-    protected CoverCacheDao coverCacheDao;
+    private CoverStorage coverStorage;
     @Mock
     private StylesHelper stylesHelper;
-    private SharedPreferences mockPreferences;
+    private SharedPreferences sharedPreferences;
     @Mock
     private LocaleList localeList;
     private Locale jdkLocale;
@@ -146,11 +134,10 @@ public class Base {
         when(app.getApplicationContext()).thenReturn(context);
         when(context.getResources()).thenReturn(resources);
 
-
-        mockPreferences = SharedPreferencesMock.create();
+        sharedPreferences = SharedPreferencesMock.create();
         setupSearchEnginePreferences();
         when(context.getSharedPreferences(eq(PACKAGE_NAME + "_preferences"), anyInt()))
-                .thenReturn(mockPreferences);
+                .thenReturn(sharedPreferences);
         final SharedPreferences languageMap = createLanguageMap();
         when(context.getSharedPreferences(eq(Languages.LANGUAGE_MAP), anyInt()))
                 .thenReturn(languageMap);
@@ -168,20 +155,12 @@ public class Base {
 //        doNothing().when(configuration).setLocales(any(LocaleList.class));
 //        doNothing().when(configuration).setLocale(any(Locale.class));
 
-        when(appLocale.apply(any(Context.class))).thenReturn(context);
-
         when(localeList.size()).thenReturn(locales.size());
         doAnswer(invocation -> locales.get(invocation.getArgument(0)))
                 .when(localeList).get(anyInt());
 
         when(style.getUuid()).thenReturn(BuiltinStyle.DEFAULT_UUID);
         when(stylesHelper.getDefault(any(Context.class))).thenReturn(style);
-
-        when(languages.isUserLanguage(any(Context.class), any(String.class))).thenReturn(true);
-        when(languages.getISO3FromDisplayName(any(Context.class), any(Locale.class),
-                                              eq("Dutch"))).thenReturn("nld");
-        when(languages.getISO3FromDisplayName(any(Context.class), any(Locale.class),
-                                              eq("English"))).thenReturn("eng");
 
         when(coverStorage.getDir()).thenReturn(getTmpDir());
         when(coverStorage.getTempDir()).thenReturn(getTmpDir());
@@ -190,31 +169,16 @@ public class Base {
         doAnswer(invocation -> invocation.getArgument(1))
                 .when(coverStorage).persist(any(InputStream.class), any(File.class));
 
-        // reminder: don't use thenReturn(BundleMock.create())
-        // nor b= BundleMock.create();  and ...thenReturn(b)
-        // -> that will cause:
-        //  you are stubbing the behaviour of another mock inside before
-        //  'thenReturn' instruction if completed
-        //
-        when(serviceLocator.newBundle()).thenAnswer(
-                (Answer<Bundle>) invocation -> BundleMock.create());
-        when(serviceLocator.getAppContext()).thenReturn(context);
-        when(serviceLocator.getSystemLocaleList()).thenReturn(localeList);
-        when(serviceLocator.getNetworkChecker()).thenReturn(new TestNetworkChecker(true));
-        when(serviceLocator.getStyles()).thenReturn(stylesHelper);
-        when(serviceLocator.getLanguages()).thenReturn(languages);
-        when(serviceLocator.getAppLocale()).thenReturn(appLocale);
-        when(serviceLocator.getReorderHelper()).thenReturn(reorderHelper);
-
-        when(serviceLocator.getCoverStorage()).thenReturn(coverStorage);
-        when(serviceLocator.getCoverCacheDao()).thenReturn(coverCacheDao);
-
+        serviceLocatorMock = new ServiceLocatorMock(context,
+                                                    localeList,
+                                                    stylesHelper,
+                                                    coverStorage);
         // See class docs.
         ImageDownloader.IGNORE_RENAME_FAILURE = true;
 
         LoggerFactory.setLogger(new TestLogger(getTmpDir()));
-        ServiceLocator.create(serviceLocator);
-        SearchEngineConfig.createRegistry(context, languages);
+        ServiceLocator.create(serviceLocatorMock);
+        SearchEngineConfig.createRegistry(context, serviceLocatorMock.getLanguages());
     }
 
     private SharedPreferences createLanguageMap() {
@@ -248,34 +212,34 @@ public class Base {
     }
 
     private void setupSearchEnginePreferences() {
-        mockPreferences.edit()
-                       .putString(Prefs.pk_ui_locale, AppLocale.SYSTEM_LANGUAGE)
-                       // random some at true, some at false.
-                       .putBoolean("search.site.amazon.data.enabled", true)
-                       .putBoolean("search.site.googlebooks.data.enabled", false)
-                       .putBoolean("search.site.isfdb.data.enabled", true)
-                       .putBoolean("search.site.kbnl.data.enabled", false)
-                       .putBoolean("search.site.lastdodo.data.enabled", true)
-                       .putBoolean("search.site.librarything.data.enabled", false)
-                       .putBoolean("search.site.openlibrary.data.enabled", true)
-                       .putBoolean("search.site.stripinfo.data.enabled", false)
+        sharedPreferences.edit()
+                         .putString(Prefs.pk_ui_locale, AppLocale.SYSTEM_LANGUAGE)
+                         // random some at true, some at false.
+                         .putBoolean("search.site.amazon.data.enabled", true)
+                         .putBoolean("search.site.googlebooks.data.enabled", false)
+                         .putBoolean("search.site.isfdb.data.enabled", true)
+                         .putBoolean("search.site.kbnl.data.enabled", false)
+                         .putBoolean("search.site.lastdodo.data.enabled", true)
+                         .putBoolean("search.site.librarything.data.enabled", false)
+                         .putBoolean("search.site.openlibrary.data.enabled", true)
+                         .putBoolean("search.site.stripinfo.data.enabled", false)
 
-                       .putString("search.siteOrder.data",
-                                  "kbnl,openlibrary,isfdb,librarything,amazon,googlebooks")
-                       .putString("search.siteOrder.covers",
-                                  "isfdb,amazon,kbnl,openlibrary")
-                       .putString("search.siteOrder.alted",
-                                  "isfdb,librarything")
+                         .putString("search.siteOrder.data",
+                                    "kbnl,openlibrary,isfdb,librarything,amazon,googlebooks")
+                         .putString("search.siteOrder.covers",
+                                    "isfdb,amazon,kbnl,openlibrary")
+                         .putString("search.siteOrder.alted",
+                                    "isfdb,librarything")
 
-                       .apply();
+                         .apply();
 
-        when(mockPreferences.getString(eq(AmazonSearchEngine.PK_HOST_URL),
-                                       nullable(String.class)))
+        when(sharedPreferences.getString(eq(AmazonSearchEngine.PK_HOST_URL),
+                                         nullable(String.class)))
                 .thenAnswer((Answer<String>) invocation ->
                         getLocalizedSiteUrl("amazon", true));
 
-        when(mockPreferences.getString(eq(LibraryThingSearchEngine.PK_HOST_URL),
-                                       nullable(String.class)))
+        when(sharedPreferences.getString(eq(LibraryThingSearchEngine.PK_HOST_URL),
+                                         nullable(String.class)))
                 .thenAnswer((Answer<String>) invocation ->
                         getLocalizedSiteUrl("librarything", false));
     }
