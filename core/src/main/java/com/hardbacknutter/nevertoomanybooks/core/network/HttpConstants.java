@@ -31,6 +31,22 @@ public final class HttpConstants {
     /** HTTP Request Header. */
     public static final String CONNECTION = "Connection";
     public static final String CONNECTION_CLOSE = "close";
+    public static final String CONNECTION_KEEP_ALIVE = "keep-alive";
+
+    /** HTTP Request Header. */
+    public static final String ACCEPT = "Accept";
+    public static final String ACCEPT_KITCHEN_SINK =
+            "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8";
+
+    /** HTTP Request Header. */
+    public static final String ACCEPT_LANGUAGE = "Accept-Language";
+    /** HTTP Request Header. */
+    public static final String ACCEPT_ENCODING = "Accept-Encoding";
+    public static final String ACCEPT_ENCODING_GZIP_DEFLATE = "gzip, deflate";
+    /** HTTP Request Header. */
+    public static final String UPGRADE_INSECURE_REQUESTS = "Upgrade-Insecure-Requests";
+    public static final String UPGRADE_INSECURE_REQUESTS_TRUE = "1";
+
 
     /** HTTP Request Header. */
     public static final String CONTENT_TYPE = "Content-Type";
@@ -41,13 +57,14 @@ public final class HttpConstants {
     /** HTTP Request Header. */
     public static final String USER_AGENT = "User-Agent";
     /**
-     * RELEASE: 2022-12-30. Continuously update to latest version.
+     * RELEASE: 2023-03-26. Continuously update to latest version. Now set to Firefox.
      * Some sites don't return full data unless the user agent is set to a valid browser.
      */
     public static final String USER_AGENT_VALUE =
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-            + " AppleWebKit/537.36 (KHTML, like Gecko)"
-            + " Chrome/108.0.0.0 Safari/537.36";
+//            "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+//            + " AppleWebKit/537.36 (KHTML, like Gecko)"
+//            + " Chrome/108.0.0.0 Safari/537.36";
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/111.0";
 
 
     /** HTTP Response Header. */
