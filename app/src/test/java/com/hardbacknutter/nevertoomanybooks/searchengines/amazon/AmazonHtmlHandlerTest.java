@@ -74,7 +74,7 @@ class AmazonHtmlHandlerTest
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
         searchEngine.parse(context, document, new boolean[]{false, false}, book);
-        // System.out.println(rawData);
+        // System.out.println(book);
 
         assertEquals("Bone Silence", book.getString(DBKey.TITLE, null));
         assertEquals("978-0575090675", book.getString(DBKey.BOOK_ISBN, null));
@@ -110,7 +110,7 @@ class AmazonHtmlHandlerTest
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
         searchEngine.parse(context, document, new boolean[]{false, false}, book);
-        // System.out.println(rawData);
+        // System.out.println(book);
 
         assertEquals("The Medusa Chronicles", book.getString(DBKey.TITLE, null));
         assertEquals("978-1473210202", book.getString(DBKey.BOOK_ISBN, null));
@@ -148,7 +148,7 @@ class AmazonHtmlHandlerTest
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
         searchEngine.parse(context, document, new boolean[]{false, false}, book);
-        // System.out.println(rawData);
+        // System.out.println(book);
 
         assertEquals("Le retour à la terre, 1 : La vraie vie",
                      book.getString(DBKey.TITLE, null));
@@ -170,5 +170,41 @@ class AmazonHtmlHandlerTest
         assertEquals("Manu", authors.get(1).getFamilyName());
         assertEquals("Larcenet", authors.get(1).getGivenNames());
         assertEquals(Author.TYPE_ARTIST, authors.get(1).getType());
+    }
+
+    @Test
+    void parse11()
+            throws SearchException, IOException, CredentialsException, StorageException {
+        setLocale(Locale.GERMANY);
+
+        searchEngine = (AmazonSearchEngine) EngineId.Amazon.createSearchEngine(context);
+        searchEngine.setCaller(new TestProgressListener(TAG));
+
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
+
+        final String locationHeader = "https://www.amazon.de/Siddhartha-indische-Dichtung-Hermann-Hesse/dp/3518366823/ref=sr_1_1?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=EM8GE4M54T6N&keywords=3518366823&qid=1679912159&sprefix=3518366823%2Caps%2C75&sr=8-1";
+        final String filename = "/amazon/3518366823.html";
+
+        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        searchEngine.parse(context, document, new boolean[]{false, false}, book);
+        System.out.println(book);
+    }
+
+    @Test
+    void parse12()
+            throws SearchException, IOException, CredentialsException, StorageException {
+        setLocale(Locale.GERMANY);
+
+        searchEngine = (AmazonSearchEngine) EngineId.Amazon.createSearchEngine(context);
+        searchEngine.setCaller(new TestProgressListener(TAG));
+
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
+
+        final String locationHeader = "https://www.amazon.com/Siddhartha-German-Hermann-Hesse/dp/3518366823/ref=sr_1_1?crid=1KWU787T6IGNO&keywords=3518366823&qid=1679916105&sprefix=%2Caps%2C150&sr=8-1";
+        final String filename = "/amazon/3518366823-us.html";
+
+        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        searchEngine.parse(context, document, new boolean[]{false, false}, book);
+        System.out.println(book);
     }
 }
