@@ -27,6 +27,7 @@ import java.io.EOFException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
@@ -89,6 +90,8 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 class IsfdbPublicationListHandler
         extends DefaultHandler {
+
+    private static final String TAG = "IsfdbPublicationListHan";
 
     private static final String XML_PUBLICATION = "Publication";
     private static final String XML_AUTHORS = "Authors";
@@ -305,6 +308,10 @@ class IsfdbPublicationListHandler
                         // parsing failed, store the string as-is;
                         // no separate currency!
                         addIfNotPresent(DBKey.PRICE_LISTED, tmpString);
+                        // log this as we need to understand WHY it failed
+                        LoggerFactory.getLogger().w(TAG, "Failed to parse",
+                                                    DBKey.PRICE_LISTED,
+                                                    "text=" + tmpString);
                     }
                     break;
                 }
