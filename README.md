@@ -32,7 +32,6 @@ A translation to Portuguese has started but will take time.
 
 New 22-March-2023: translations are now integrated and editable
 on [https://hosted.weblate.org/projects/nevertoomanybooks/](https://hosted.weblate.org/projects/nevertoomanybooks/)
-(pending approval) - All are welcome.
 
 Data is fetched on-demand from multiple internet sites.
 You can enable/disable and prioritize the sites in the settings.
