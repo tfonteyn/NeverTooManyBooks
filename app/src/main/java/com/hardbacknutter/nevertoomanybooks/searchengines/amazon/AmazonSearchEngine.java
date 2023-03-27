@@ -302,6 +302,10 @@ public class AmazonSearchEngine
                 // parsing failed, store the string as-is;
                 // no separate currency!
                 book.putString(DBKey.PRICE_LISTED, price.text());
+                // added to debug github issue #4
+                LoggerFactory.getLogger().w(TAG, "Failed to parse",
+                                            DBKey.PRICE_LISTED,
+                                            "text=" + price.text());
             }
         }
     }
