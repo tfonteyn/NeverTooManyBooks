@@ -89,7 +89,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.notifier.Notifier;
 import com.hardbacknutter.nevertoomanybooks.utils.notifier.NotifierImpl;
 
-public final class ServiceLocator {
+public class ServiceLocator {
 
     /**
      * Sub directory of {@link Context#getFilesDir()}.
@@ -185,7 +185,8 @@ public final class ServiceLocator {
      *
      * @param context Current context
      */
-    private ServiceLocator(@NonNull final Context context) {
+    @VisibleForTesting
+    ServiceLocator(@NonNull final Context context) {
         appContext = context.getApplicationContext();
     }
 
