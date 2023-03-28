@@ -293,7 +293,10 @@ public final class DBKey {
      */
     public static final Set<String> DATE_KEYS = Set.of(
             BOOK_PUBLICATION__DATE,
-            FIRST_PUBLICATION__DATE);
+            FIRST_PUBLICATION__DATE,
+            DATE_ACQUIRED,
+            READ_START__DATE,
+            READ_END__DATE);
 
     /** Suffix added to a column name to create a specific 'order by' copy of that column. */
     private static final String ORDER_BY_SUFFIX = "_ob";
