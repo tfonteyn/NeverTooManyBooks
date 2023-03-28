@@ -281,12 +281,16 @@ public final class DBKey {
 
     /**
      * All money keys.
-     * Used with {@code MONEY_KEYS.contains(key)} to check if a key is about money.
+     * Used with {@code MONEY_KEYS.contains(key)} to check if a key represents money.
      */
     public static final Set<String> MONEY_KEYS = Set.of(
             PRICE_LISTED,
             PRICE_PAID);
 
+    /**
+     * All date keys (i.e. NOT datetime!).
+     * Used with {@code DATE_KEYS.contains(key)} to check if a key represents a date.
+     */
     public static final Set<String> DATE_KEYS = Set.of(
             BOOK_PUBLICATION__DATE,
             FIRST_PUBLICATION__DATE);
