@@ -40,6 +40,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
@@ -354,7 +355,13 @@ public abstract class BaseField<T, V extends View>
 
     @Override
     public boolean isEmpty() {
-        return isEmpty(getValue());
+        try {
+            return isEmpty(getValue());
+        } catch (@NonNull final ClassCastException e) {
+            // added due to github #4.
+            LoggerFactory.getLogger().e(TAG, e, "value=" + getValue());
+        }
+        return true;
     }
 
     /**
@@ -363,20 +370,31 @@ public abstract class BaseField<T, V extends View>
      * @param value to check
      *
      * @return {@code true} if empty.
+     *
+     * @throws ClassCastException if the value (which comes from a Bundle) does not match the type
      */
     abstract boolean isEmpty(@Nullable T value);
 
     @Override
     public void notifyIfChanged(@Nullable final T previous) {
         final T currentValue = getValue();
-        final boolean allEqual =
-                // all empty
-                isEmpty(initialValue) && isEmpty(previous) && isEmpty(currentValue)
-                // or all equal?
-                || Objects.equals(initialValue, previous)
-                   && Objects.equals(previous, currentValue);
+        final boolean changed;
+        try {
+            final boolean allEmpty = isEmpty(initialValue)
+                                     && isEmpty(previous)
+                                     && isEmpty(currentValue);
+            final boolean allEqual = Objects.equals(initialValue, previous)
+                                     && Objects.equals(previous, currentValue);
 
-        if (!allEqual) {
+            changed = !allEmpty && !allEqual;
+
+        } catch (@NonNull final ClassCastException e) {
+            // added due to github #4.
+            LoggerFactory.getLogger().e(TAG, e, "value=" + getValue());
+            return;
+        }
+
+        if (changed) {
             if (afterFieldChangeListener != null && afterFieldChangeListener.get() != null) {
                 afterFieldChangeListener.get().onAfterChanged(this);
 
