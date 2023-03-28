@@ -25,6 +25,7 @@ import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
@@ -90,7 +91,7 @@ class IsfdbBookHandlerTest
         final Document document = loadDocument(filename, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
                                                locationHeader);
         searchEngine.parse(context, document, new boolean[]{false, false}, book);
-        // System.out.println(rawData);
+        // System.out.println(book);
 
         assertEquals("Like Nothing on Earth", book.getString(DBKey.TITLE, null));
         assertEquals(112781L, book.getLong(DBKey.SID_ISFDB));
@@ -164,7 +165,7 @@ class IsfdbBookHandlerTest
         final Document document = loadDocument(filename, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
                                                locationHeader);
         searchEngine.parse(context, document, new boolean[]{false, false}, book);
-        // System.out.println(rawData);
+        // System.out.println(book);
 
         assertEquals("Mort", book.getString(DBKey.TITLE, null));
         assertEquals(431964L, book.getLong(DBKey.SID_ISFDB));
@@ -225,7 +226,7 @@ class IsfdbBookHandlerTest
         final Document document = loadDocument(filename, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
                                                locationHeader);
         searchEngine.parse(context, document, new boolean[]{false, false}, book);
-        // System.out.println(rawData);
+        // System.out.println(book);
 
         assertEquals("The Shepherd's Crown", book.getString(DBKey.TITLE, null));
         assertEquals(542125L, book.getLong(DBKey.SID_ISFDB));
@@ -276,5 +277,26 @@ class IsfdbBookHandlerTest
         assertEquals(2015, entry.getFirstPublicationDate().getYearValue());
         assertEquals("Wilkins", entry.getPrimaryAuthor().getFamilyName());
         assertEquals("Rob", entry.getPrimaryAuthor().getGivenNames());
+    }
+
+    @Test
+    void parse04()
+            throws SearchException, IOException, CredentialsException, StorageException {
+
+        setLocale(Locale.GERMANY);
+
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
+
+        final String locationHeader = "https://www.isfdb.org/cgi-bin/pl.cgi?808391";
+        final String filename = "/isfdb/808391.html";
+
+        final Document document = loadDocument(filename, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
+                                               locationHeader);
+        searchEngine.parse(context, document, new boolean[]{false, false}, book);
+        System.out.println(book);
+
+        // We're only interested in the price field to check if the Locale is working as expected.
+        assertEquals(7.0d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals("DEM", book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
     }
 }
