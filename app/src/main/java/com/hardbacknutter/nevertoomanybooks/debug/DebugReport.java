@@ -55,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.io.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
@@ -85,8 +86,7 @@ public class DebugReport {
         message = "App: " + info.getPackageName() + '\n'
                   + "Version: " + info.getVersionName()
                   + " (" + info.getVersionCode() + ", " + BuildConfig.TIMESTAMP + ")\n"
-                  + "User country: " + locale.getCountry() + '\n'
-                  + "User language: " + locale.getLanguage() + '\n'
+
                   + "SDK: " + Build.VERSION.RELEASE
                   + " (" + Build.VERSION.SDK_INT + ' ' + Build.TAGS + ")\n"
                   + "Model: " + Build.MODEL + '\n'
@@ -95,6 +95,11 @@ public class DebugReport {
                   + "Product: " + Build.PRODUCT + '\n'
                   + "Brand: " + Build.BRAND + '\n'
                   + "Build: " + Build.ID + '\n'
+
+                  + "User country: " + locale.getCountry() + '\n'
+                  + "User language: " + locale.getLanguage() + '\n'
+                  + "All Locales: " + LocaleListUtils.asList(context) + '\n'
+
                   + "Signed-By: " + info.getSignedBy() + '\n';
         return this;
     }
