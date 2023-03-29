@@ -226,6 +226,7 @@ public class AmazonSearchEngine
      * @param document    to parse
      * @param fetchCovers Set to {@code true} if we want to get covers
      *                    The array is guaranteed to have at least one element.
+     * @param book        Bundle to update
      *
      * @throws StorageException     on storage related failures
      * @throws CredentialsException on authentication/login failures
@@ -249,9 +250,7 @@ public class AmazonSearchEngine
 
         final Element titleElement = document.selectFirst("span#productTitle");
         if (titleElement == null) {
-            if (BuildConfig.DEBUG /* always */) {
-                LoggerFactory.getLogger().d(TAG, "parse", "no title?");
-            }
+            LoggerFactory.getLogger().w(TAG, "parse", "no title?");
             return;
         }
 
@@ -260,7 +259,6 @@ public class AmazonSearchEngine
 
         // Use the site locale for all parsing!
         final Locale siteLocale = getLocale(context, document.location().split("/")[2]);
-
         final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
         final RealNumberParser realNumberParser = new RealNumberParser(locales);
         final MoneyParser moneyParser = new MoneyParser(siteLocale, realNumberParser);
@@ -428,7 +426,6 @@ public class AmazonSearchEngine
                 case "brutogewicht (incl. verpakking)":
                 case "klantenrecensies":
                 case "plaats op amazon-bestsellerlijst":
-
                     // These labels are ignored, but listed as an indication we know them.
                     break;
 

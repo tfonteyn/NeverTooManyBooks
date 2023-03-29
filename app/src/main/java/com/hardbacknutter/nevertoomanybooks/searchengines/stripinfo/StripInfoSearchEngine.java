@@ -482,9 +482,7 @@ public class StripInfoSearchEngine
                 }
 
             } catch (@NonNull final Exception e) {
-                if (BuildConfig.DEBUG /* always */) {
-                    LoggerFactory.getLogger().e(TAG, e, "row=" + row);
-                }
+                LoggerFactory.getLogger().e(TAG, e, "row=" + row);
             }
         }
 
@@ -548,6 +546,12 @@ public class StripInfoSearchEngine
         }
     }
 
+    /**
+     * Parse the barcode found during the search.
+     *
+     * @param searchIsbnText the ISBN which we searched for
+     * @param book           Bundle to update
+     */
     @VisibleForTesting
     public void processBarcode(@NonNull final String searchIsbnText,
                                @NonNull final Book book) {

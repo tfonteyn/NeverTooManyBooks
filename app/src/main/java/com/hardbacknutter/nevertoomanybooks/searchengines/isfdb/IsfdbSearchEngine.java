@@ -443,6 +443,7 @@ public class IsfdbSearchEngine
      *
      * @param context  Current context
      * @param document to parse
+     * @param book     Bundle to update
      *
      * @return the toc list
      */
@@ -768,6 +769,7 @@ public class IsfdbSearchEngine
      * @param document    to parse
      * @param fetchCovers Set to {@code true} if we want to get covers
      *                    The array is guaranteed to have at least one element.
+     * @param book        Bundle to update
      *
      * @throws StorageException     on storage related failures
      * @throws CredentialsException on authentication/login failures
@@ -782,27 +784,23 @@ public class IsfdbSearchEngine
                       @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
+        final Elements allContentBoxes = document.select(CSS_Q_DIV_CONTENTBOX);
+        // sanity check
+        if (allContentBoxes.isEmpty()) {
+            LoggerFactory.getLogger().w(TAG, "parse|no contentbox found",
+                                        "document.location()=" + document.location());
+            return;
+        }
+
         final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
 
         // Use the site locale for all parsing!
         final Locale siteLocale = getLocale(context);
         final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
-        // the usual system locale for ISO parsing, and the site locale for all else
-        final DateParser dateParser = new FullDateParser(systemLocale, locales);
-
         final RealNumberParser realNumberParser = new RealNumberParser(locales);
         final MoneyParser moneyParser = new MoneyParser(siteLocale, realNumberParser);
-
-        final Elements allContentBoxes = document.select(CSS_Q_DIV_CONTENTBOX);
-        // sanity check
-        if (allContentBoxes.isEmpty()) {
-            if (BuildConfig.DEBUG /* always */) {
-                LoggerFactory.getLogger()
-                             .d(TAG, "parseDoc|no contentbox found",
-                                "document.location()=" + document.location());
-            }
-            return;
-        }
+        // the usual system locale for ISO parsing, and the site locale for all else
+        final DateParser dateParser = new FullDateParser(systemLocale, locales);
 
         final Element contentBox = allContentBoxes.first();
         // sanity check
@@ -1286,8 +1284,8 @@ public class IsfdbSearchEngine
     /**
      * Get the list with {@link Edition} information for the given url.
      *
-     * @param context   Current context
-     * @param url       A fully qualified ISFDB search url
+     * @param context Current context
+     * @param url     A fully qualified ISFDB search url
      *
      * @return list of editions found, can be empty, but never {@code null}
      *

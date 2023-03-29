@@ -209,6 +209,7 @@ public class BedethequeSearchEngine
      * @param document       to parse
      * @param fetchCovers    Set to {@code true} if we want to get covers
      *                       The array is guaranteed to have at least one element.
+     * @param book           Bundle to update
      * @param authorResolver (optional) {@link AuthorResolver} to use
      *
      * @throws StorageException     on storage related failures
