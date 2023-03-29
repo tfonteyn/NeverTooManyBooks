@@ -82,7 +82,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 import org.jsoup.nodes.Document;
@@ -106,9 +105,7 @@ public class IsfdbSearchEngine
     /** Preferences - Type: {@code boolean}. */
     public static final String PK_USE_PUBLISHER = EngineId.Isfdb.getPreferenceKey()
                                                   + ".search.uses.publisher";
-    /** Preferences - Type: {@code String}. */
-    static final String PK_HOST_URL = EngineId.Isfdb.getPreferenceKey()
-                                      + Prefs.pk_suffix_host_url;
+
     /**
      * The site claims to use ISO-8859-1.
      * <pre>
