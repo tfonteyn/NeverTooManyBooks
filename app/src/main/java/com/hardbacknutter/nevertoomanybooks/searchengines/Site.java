@@ -265,7 +265,8 @@ public final class Site
         /**
          * Reset the list back to the hardcoded defaults.
          *
-         * @param context Current context
+         * @param context   Current context
+         * @param languages the language cache container
          */
         public void resetList(@NonNull final Context context,
                               @NonNull final Languages languages) {
@@ -306,6 +307,13 @@ public final class Site
             return new Site(s);
         }
 
+        /**
+         * Check if this list-type contains the given engine.
+         *
+         * @param engineId the search engine id
+         *
+         * @return {@code true} if the engine is included
+         */
         public boolean contains(@NonNull final EngineId engineId) {
             return siteList.stream().anyMatch(site -> site.engineId == engineId);
         }

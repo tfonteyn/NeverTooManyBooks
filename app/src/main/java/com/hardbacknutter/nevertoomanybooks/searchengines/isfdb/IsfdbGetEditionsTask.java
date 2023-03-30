@@ -54,10 +54,18 @@ public class IsfdbGetEditionsTask
     @Nullable
     private IsfdbSearchEngine searchEngine;
 
+    /**
+     * Constructor.
+     */
     public IsfdbGetEditionsTask() {
         super(R.id.TASK_ID_SEARCH_EDITIONS, TAG);
     }
 
+    /**
+     * Start the search.
+     *
+     * @param isbn to search for
+     */
     @UiThread
     public void search(@NonNull final ISBN isbn) {
         this.isbn = isbn.asText();

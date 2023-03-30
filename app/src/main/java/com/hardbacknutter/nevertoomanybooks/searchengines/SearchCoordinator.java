@@ -306,12 +306,19 @@ public class SearchCoordinator
      * Handles both Successful and Failed searches.
      * <p>
      * The Bundle will (optionally) contain {@link #BKEY_SEARCH_ERROR} with a list of errors.
+     *
+     * @return book data
      */
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<Book>>> onSearchFinished() {
         return searchCoordinatorFinished;
     }
 
+    /**
+     * The result if the user cancelled the search.
+     *
+     * @return book data found so far
+     */
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<Book>>> onSearchCancelled() {
         return searchCoordinatorCancelled;

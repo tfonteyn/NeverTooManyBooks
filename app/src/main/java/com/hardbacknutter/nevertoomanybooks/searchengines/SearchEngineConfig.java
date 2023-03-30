@@ -107,7 +107,8 @@ public final class SearchEngineConfig {
     /**
      * Called by {@link ServiceLocator#create(Context)}.
      *
-     * @param context <strong>Application</strong> or <strong>test</strong> context.
+     * @param context   <strong>Application</strong> or <strong>test</strong> context.
+     * @param languages the language cache container
      */
     public static void createRegistry(@NonNull final Context context,
                                       @NonNull final Languages languages) {
@@ -176,6 +177,15 @@ public final class SearchEngineConfig {
                      .collect(Collectors.toList());
     }
 
+    /**
+     * Get the user-configured timeout value for the given key.
+     *
+     * @param context      Current context
+     * @param key          to fetch
+     * @param defValueInMs default to use if not found
+     *
+     * @return timeout value in milliseconds
+     */
     public static int getTimeoutValueInMs(@NonNull final Context context,
                                           @NonNull final String key,
                                           final int defValueInMs) {
@@ -199,9 +209,16 @@ public final class SearchEngineConfig {
         return engineId;
     }
 
+    /**
+     * Get the user-configured host url for this engine.
+     *
+     * @param context Current context
+     *
+     * @return host url
+     */
     @NonNull
-    public String getHostUrl(@NonNull final Context appContext) {
-        return PreferenceManager.getDefaultSharedPreferences(appContext).getString(
+    public String getHostUrl(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getString(
                 engineId.getPreferenceKey() + Prefs.pk_suffix_host_url,
                 engineId.getDefaultUrl());
     }
@@ -369,10 +386,18 @@ public final class SearchEngineConfig {
         /** The DEFAULT for the engine: {@code false}. */
         private boolean prefersIsbn10;
 
+        /**
+         * Constructor.
+         *
+         * @param engineId to create
+         */
         public Builder(@NonNull final EngineId engineId) {
             this.engineId = engineId;
         }
 
+        /**
+         * Finish the build. Initialise the engine with the configuration.
+         */
         public void build() {
             engineId.setConfig(new SearchEngineConfig(this));
         }

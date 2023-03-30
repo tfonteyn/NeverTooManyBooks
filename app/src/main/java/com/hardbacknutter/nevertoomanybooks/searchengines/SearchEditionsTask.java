@@ -51,6 +51,9 @@ public class SearchEditionsTask
     /** the book to look up. */
     private String isbn;
 
+    /**
+     * Constructor.
+     */
     public SearchEditionsTask() {
         super(R.id.TASK_ID_SEARCH_EDITIONS, TAG);
     }

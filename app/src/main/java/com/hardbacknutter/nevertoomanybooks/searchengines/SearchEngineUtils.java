@@ -65,6 +65,13 @@ public final class SearchEngineUtils {
         return sb.toString();
     }
 
+    /**
+     * Clean the given text. Currently cleans up {@code &}, {@code div} and {@code \n}.
+     *
+     * @param s to clean
+     *
+     * @return cleansed string
+     */
     @NonNull
     public static String cleanText(@NonNull final String s) {
         String text = s.trim();

@@ -53,6 +53,9 @@ public class IsfdbGetBookTask
     @Nullable
     private IsfdbSearchEngine searchEngine;
 
+    /**
+     * Constructor.
+     */
     public IsfdbGetBookTask() {
         super(R.id.TASK_ID_ISFDB_GET_BOOK, TAG);
     }
