@@ -54,7 +54,7 @@ public abstract class SearchEngineBase
         implements SearchEngine {
 
     @NonNull
-    private final Context appContext;
+    protected final Context appContext;
     @NonNull
     private final SearchEngineConfig config;
 
