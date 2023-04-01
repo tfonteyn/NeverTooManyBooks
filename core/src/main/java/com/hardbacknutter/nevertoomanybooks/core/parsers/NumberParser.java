@@ -44,7 +44,9 @@ public final class NumberParser {
                || "0".equals(s)
                || "0.0".equals(s)
                // Comma as decimal separator.
-               || "0,0".equals(s);
+               || "0,0".equals(s)
+               // Used by Amazon for free kindle books etc...
+               || "free".equalsIgnoreCase(s);
     }
 
     /**
