@@ -94,6 +94,9 @@ android {
         buildConfigField("boolean", "ENABLE_STRIP_INFO", "true")
 
         buildConfigField("boolean", "ENABLE_LIBRARY_THING_ALT_ED", "true")
+
+        // under development
+        buildConfigField("boolean", "ENABLE_BOL", "false")
     }
 
     buildTypes {
@@ -114,6 +117,8 @@ android {
                     '"' + LocalDateTime.now(ZoneOffset.UTC)
                             .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + '"')
 
+            // under development
+            buildConfigField("boolean", "ENABLE_BOL", "false")
             // under development
             buildConfigField("boolean", "ENABLE_STRIP_INFO_LOGIN", "false")
             // under development
@@ -144,6 +149,8 @@ android {
             resValue("string", "fileProviderAuthority",
                     "${applicationId}.GenericFileProvider.debug")
 
+            // under development
+            buildConfigField("boolean", "ENABLE_BOL", "true")
             // under development
             buildConfigField("boolean", "ENABLE_STRIP_INFO_LOGIN", "true")
             // under development
