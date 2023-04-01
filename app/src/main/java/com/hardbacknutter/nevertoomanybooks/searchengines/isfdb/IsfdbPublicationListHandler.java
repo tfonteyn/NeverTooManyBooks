@@ -141,6 +141,7 @@ class IsfdbPublicationListHandler
     @Nullable
     private String externalId;
 
+    @NonNull
     private final MoneyParser moneyParser;
 
     IsfdbPublicationListHandler(@NonNull final IsfdbSearchEngine isfdbApiSearchEngine,
