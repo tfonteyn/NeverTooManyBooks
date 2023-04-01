@@ -20,10 +20,19 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-                  xmlns:app="http://schemas.android.com/apk/res-auto">
+                  xmlns:app="http://schemas.android.com/apk/res-auto"
+                  xmlns:tools="http://schemas.android.com/tools">
 
     <PreferenceCategory
         android:title="@string/site_bol">
+
+        <!-- values set from code -->
+        <ListPreference
+            android:icon="@drawable/ic_baseline_language_24"
+            android:key="bol.country"
+            android:title="@string/lbl_country"
+            tools:summary="Belgium"
+            />
 
         <SwitchPreference
             android:defaultValue="false"
