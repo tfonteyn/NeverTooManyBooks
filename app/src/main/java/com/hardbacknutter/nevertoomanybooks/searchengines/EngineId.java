@@ -134,9 +134,14 @@ public enum EngineId
                BedethequeSearchEngine.class,
                BuildConfig.ENABLE_BEDETHEQUE),
 
+    /**
+     * All genres; dutch and english books.
+     * Shopping site from The Netherlands / Belgium.
+     * Headquartered in The Netherlands -> "nl/nl" is the default
+     * but switching the nl_BE will be automatic depending on the users country
+     */
     Bol("bol",
         R.string.site_bol,
-        // Headquartered in The Netherlands -> "nl/nl" is the default
         "https://www.bol.com/nl/nl",
         new Locale("nl", "NL"),
         BolSearchEngine.class,
@@ -426,8 +431,8 @@ public enum EngineId
                 type.addSite(LastDodoNl, activateIfDutch);
                 type.addSite(Bedetheque, activateIfFrench);
                 type.addSite(KbNl, activateIfDutch);
-                // Deactivated by default as data from this site is not very complete.
-                type.addSite(OpenLibrary, false);
+                type.addSite(Bol, activateIfDutch);
+                type.addSite(OpenLibrary, true);
                 break;
             }
             case Covers: {
