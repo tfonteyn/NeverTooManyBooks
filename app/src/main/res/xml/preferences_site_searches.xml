@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -57,6 +57,12 @@
             android:fragment="com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequePreferencesFragment"
             android:key="psk_search_site_bedetheque"
             android:title="@string/site_bedetheque">
+        </Preference>
+
+        <Preference
+            android:fragment="com.hardbacknutter.nevertoomanybooks.searchengines.bol.BolPreferencesFragment"
+            android:key="psk_search_site_bol"
+            android:title="@string/site_bol">
         </Preference>
 
         <Preference

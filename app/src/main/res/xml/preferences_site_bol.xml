@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                  xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        android:title="@string/site_bol">
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_barcode"
+            android:key="bol.search.byIsbn.prefer.10"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_search_prefer_isbn10" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/lbl_timeouts">
+        <SeekBarPreference
+            android:defaultValue="20"
+            android:icon="@drawable/ic_baseline_more_time_24"
+            android:key="bol.timeout.connect"
+            android:max="60"
+            android:title="@string/lbl_connection_timeout"
+            app:min="3"
+            app:showSeekBarValue="true"
+            />
+        <SeekBarPreference
+            android:defaultValue="60"
+            android:icon="@drawable/ic_baseline_more_time_24"
+            android:key="bol.timeout.read"
+            android:max="120"
+            android:title="@string/lbl_read_timeout"
+            app:min="3"
+            app:showSeekBarValue="true"
+            />
+    </PreferenceCategory>
+</PreferenceScreen>
