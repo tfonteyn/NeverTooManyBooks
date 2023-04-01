@@ -1526,6 +1526,7 @@ public class IsfdbSearchEngine
      * @param fetchCovers Set to {@code true} if we want to get covers
      *                    The array is guaranteed to have at least one element.
      * @param maxRecords  the maximum number of "Publication" records to fetch
+     * @param moneyParser shared parser
      *
      * @throws StorageException on storage related failures
      */
