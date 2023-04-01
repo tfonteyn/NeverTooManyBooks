@@ -87,6 +87,7 @@ public class CollectionFormUploader {
     @NonNull
     private final String postUrl;
 
+    @NonNull
     private final RealNumberParser realNumberParser;
     @NonNull
     private final MoneyParser moneyParser;
