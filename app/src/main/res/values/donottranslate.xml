@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -46,6 +46,8 @@
     <string name="site_open_library" translatable="false">OpenLibrary</string>
     <string name="site_stripinfo_be" translatable="false">StripInfo</string>
     <string name="site_bedetheque" translatable="false">Bedetheque</string>
+    <string name="site_bol"
+            translatable="false">BOL</string>
 
     <string name="site_calibre" translatable="false">Calibre</string>
 
