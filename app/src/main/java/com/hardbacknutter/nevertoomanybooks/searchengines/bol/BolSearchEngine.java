@@ -22,15 +22,18 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.bol;
 
 import android.content.Context;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
+import androidx.preference.PreferenceManager;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -47,10 +50,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.org.json.JSONObject;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -59,6 +64,9 @@ import org.jsoup.select.Elements;
 public class BolSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn {
+
+    /** one of {"","be","nl"} */
+    static final String PK_BOL_COUNTRY = "bol.country";
 
     private static final String TAG = "BolSearchEngine";
     private static final String SEARCH = "/s/?searchtext=+%1$s+";
@@ -78,32 +86,35 @@ public class BolSearchEngine
     @NonNull
     @Override
     public Locale getLocale(@NonNull final Context context) {
-        // Derive the Locale from the user configured url.
+        // The site can display in french, but we don't support this as
+        // 1. they don't sell french books anyhow (at least for now)
+        // 2. their french book pages don't display the book title (oh boy...)
+        return new Locale("nl", getCountry());
+    }
 
-        // BOL is from The Netherlands -> "nl/nl" is the default
-        // https://www.bol.com
-        // https://www.bol.com/be
-        // https://www.bol.com/nl
-        // https://www.bol.com/be/nl
-        // https://www.bol.com/nl/nl
-        // https://www.bol.com/be/fr
-        // https://www.bol.com/nl/fr
+    @NonNull
+    @Override
+    public String getHostUrl() {
+        return super.getHostUrl() + "/" + getCountry() + "/nl";
+    }
 
-        final String url = getHostUrl();
-        final String language;
-        if (url.contains("fr")) {
-            language = "fr";
+    private String getCountry() {
+        String country = PreferenceManager.getDefaultSharedPreferences(appContext)
+                                          .getString(PK_BOL_COUNTRY, null);
+        if (country != null && !country.isEmpty()) {
+            return country;
         } else {
-            language = "nl";
+            // Never configured, use the users actual country
+            country = ServiceLocator.getInstance().getSystemLocaleList().get(0)
+                                    .getCountry();
+            if ("BE".equals(country)) {
+                // Belgium
+                return "be";
+            } else {
+                // The Netherlands + rest of the world.
+                return "nl";
+            }
         }
-        final String country;
-        if (url.contains("be")) {
-            country = "BE";
-        } else {
-            country = "NL";
-        }
-
-        return new Locale(language, country);
     }
 
     @NonNull
@@ -264,6 +275,17 @@ public class BolSearchEngine
             }
         }
 
+        parseRating(document, book, realNumberParser);
+        parsePrice(document, book, realNumberParser);
+
+        if (fetchCovers[0]) {
+            parseCovers(document, fetchCovers, book);
+        }
+    }
+
+    private void parseRating(@NonNull final Document document,
+                             @NonNull final Book book,
+                             final RealNumberParser realNumberParser) {
         final Element ratingElement = document.selectFirst("div.reviews-summary__avg-score");
         if (ratingElement != null) {
             try {
@@ -273,26 +295,82 @@ public class BolSearchEngine
                 // ignore
             }
         }
+    }
 
+    private void parsePrice(@NonNull final Document document,
+                            @NonNull final Book book,
+                            @NonNull final RealNumberParser realNumberParser) {
         //FIXME: if they are out of stock, these will NOT contain a price.
         // We should get the price from the buttons on the page just above this field
         // but those button elements are not easy to parse for.
         final Element priceElement = document.selectFirst("span.promo-price");
         if (priceElement != null) {
             try {
-                double price = realNumberParser.parseDouble(priceElement.text());
-                final Element priceFractionElement = document.selectFirst(
-                        "span.promo-price__fraction");
-                if (priceFractionElement != null) {
-                    final double fraction = realNumberParser.parseDouble(
-                            priceFractionElement.text());
-                    price += (fraction / 100);
-                }
+                // <span class="promo-price" data-test="price">22
+                //    <sup class="promo-price__fraction" data-test="price-fraction">99</sup>
+                // </span>
+                // text() will get "22 99", so add a "," as decimal separator and parse as normal
+                final String priceText = priceElement.text().replace(" ", ",");
+                final double price = realNumberParser.parseDouble(priceText);
                 book.putMoney(DBKey.PRICE_LISTED,
                               new Money(BigDecimal.valueOf(price), Money.EURO));
 
             } catch (@NonNull final IllegalArgumentException ignore) {
                 // ignore
+            }
+        }
+    }
+
+    private void parseCovers(@NonNull final Document document,
+                             @NonNull final boolean[] fetchCovers,
+                             @NonNull final Book book)
+            throws StorageException {
+        final String isbn = book.getString(DBKey.BOOK_ISBN);
+
+        final Element imageSlotConfig = document.selectFirst(
+                "section[data-group-name='product-images'] script");
+        if (imageSlotConfig != null
+            && imageSlotConfig.hasAttr("data-image-slot-config")) {
+            final String text = imageSlotConfig.data();
+            final JSONObject json = new JSONObject(text);
+            final JSONObject imageSlotSlider = json.optJSONObject("imageSlotSlider");
+            if (imageSlotSlider != null) {
+                final JSONObject currentItem = imageSlotSlider.optJSONObject("currentItem");
+                if (currentItem != null) {
+                    processCover(currentItem.optString("coverImageUrl"), isbn, 0, book);
+                    if (fetchCovers.length > 1 && fetchCovers[1]) {
+                        processCover(currentItem.optString("backImageUrl"), isbn, 1, book);
+
+                    }
+                }
+            }
+        } else {
+            // Fallback attempt 1
+            Element frontCover = document.selectFirst("div > img[data-test='product-main-image'");
+            if (frontCover != null) {
+                processCover(frontCover.attr("src"), isbn, 0, book);
+            } else {
+                // Fallback attempt 2
+                frontCover = document.selectFirst("div > img.book__cover-image");
+                if (frontCover != null) {
+                    processCover(frontCover.attr("src"), isbn, 0, book);
+                }
+            }
+        }
+    }
+
+    private void processCover(@Nullable final String url,
+                              @NonNull final String isbn,
+                              @IntRange(from = 0, to = 1) final int cIdx,
+                              @NonNull final Book book)
+            throws StorageException {
+
+        if (url != null && !url.isEmpty()) {
+            final String fileSpec = saveImage(url, isbn, cIdx, null);
+            if (fileSpec != null && !fileSpec.isEmpty()) {
+                final ArrayList<String> list = new ArrayList<>();
+                list.add(fileSpec);
+                book.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[cIdx], list);
             }
         }
     }
