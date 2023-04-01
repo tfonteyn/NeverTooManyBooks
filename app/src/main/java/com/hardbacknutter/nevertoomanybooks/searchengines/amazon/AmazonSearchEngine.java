@@ -288,23 +288,37 @@ public class AmazonSearchEngine
         }
     }
 
+    /**
+     * Parse the document for a price field.
+     * <p>
+     * We try a couple of but there is no guarantee.
+     *
+     * @param document    to parse
+     * @param book        to update
+     * @param moneyParser shared parser
+     */
     private void parsePrice(@NonNull final Document document,
                             @NonNull final Book book,
                             @NonNull final MoneyParser moneyParser) {
-        final Element price = document.selectFirst("span.offer-price");
-        if (price != null) {
-            final Money money = moneyParser.parse(price.text());
-            if (money != null) {
-                book.putMoney(DBKey.PRICE_LISTED, money);
-            } else {
-                // parsing failed, store the string as-is;
-                // no separate currency!
-                book.putString(DBKey.PRICE_LISTED, price.text());
-                // log this as we need to understand WHY it failed
-                LoggerFactory.getLogger().w(TAG, "Failed to parse",
-                                            DBKey.PRICE_LISTED,
-                                            "text=" + price.text());
-            }
+        Element price = document.selectFirst("span.price");
+        if (price == null) {
+            price = document.selectFirst("span.offer-price");
+        }
+        if (price == null) {
+            return;
+        }
+
+        final Money money = moneyParser.parse(price.text());
+        if (money != null) {
+            book.putMoney(DBKey.PRICE_LISTED, money);
+        } else {
+            // parsing failed, store the string as-is;
+            // no separate currency!
+            book.putString(DBKey.PRICE_LISTED, price.text());
+            // log this as we need to understand WHY it failed
+            LoggerFactory.getLogger().w(TAG, "Failed to parse",
+                                        DBKey.PRICE_LISTED,
+                                        "text=" + price.text());
         }
     }
 
