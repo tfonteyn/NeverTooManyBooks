@@ -83,7 +83,9 @@ public class BookDaoHelper {
 
     @NonNull
     private final Locale bookLocale;
+    @NonNull
     private final RealNumberParser realNumberParser;
+    @NonNull
     private final MoneyParser moneyParser;
 
     /**
