@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.bol;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,11 +31,13 @@ import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.jsoup.nodes.Document;
@@ -43,6 +46,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BolTest
         extends JSoupBase {
@@ -75,7 +79,7 @@ public class BolTest
                 new RealNumberParser(List.of(searchEngine.getLocale(context)));
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
-        searchEngine.parse(context, document, new boolean[]{false, false}, book);
+        searchEngine.parse(context, document, new boolean[]{true, true}, book);
         //System.out.println(book);
 
         assertEquals("Alter Ego", book.getString(DBKey.TITLE, null));
@@ -85,6 +89,8 @@ public class BolTest
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
         assertEquals(5.0f, book.getFloat(DBKey.RATING, realNumberParser));
+        assertEquals(new Money(BigDecimal.valueOf(22.99d), Money.EURO),
+                     book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
 
         final ArrayList<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -99,6 +105,20 @@ public class BolTest
         assertEquals("Verhoef", author.getFamilyName());
         assertEquals("Esther", author.getGivenNames());
         assertEquals(Author.TYPE_UNKNOWN, author.getType());
+
+        final List<String> covers = book.getStringArrayList(
+                SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0]);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(EngineId.Bol.getPreferenceKey()
+                                          + "_9789044652901_0_.jpg"));
+
+        final List<String> backCovers = book.getStringArrayList(
+                SearchCoordinator.BKEY_FILE_SPEC_ARRAY[1]);
+        assertNotNull(backCovers);
+        assertEquals(1, backCovers.size());
+        assertTrue(backCovers.get(0).endsWith(EngineId.Bol.getPreferenceKey()
+                                              + "_9789044652901_1_.jpg"));
     }
 
     /**
@@ -142,4 +162,55 @@ public class BolTest
 //        assertEquals(Author.TYPE_UNKNOWN, author.getType());
     }
 
+    @Test
+    void parse02()
+            throws SearchException, IOException, CredentialsException, StorageException {
+        setLocale(searchEngine.getLocale(context));
+        final String locationHeader = "https://www.bol.com/be/nl/p/europa/9300000130411439/?promo=main_861_new_for_you___product_0_9300000130411439&bltgh=vwTKjOiKpqSmgLkGxPZJow.90_91.92.ProductImage";
+        final String filename = "/bol/9789044544725.html";
+
+        final RealNumberParser realNumberParser =
+                new RealNumberParser(List.of(searchEngine.getLocale(context)));
+
+        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        searchEngine.parse(context, document, new boolean[]{true, true}, book);
+        //System.out.println(book);
+
+        assertEquals("Europa", book.getString(DBKey.TITLE, null));
+        assertEquals("9789044544725", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("2023-03-14", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("408", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
+        assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
+        assertEquals(new Money(BigDecimal.valueOf(26.99d), Money.EURO),
+                     book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
+
+        final ArrayList<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+        assertEquals("de Geus", allPublishers.get(0).getName());
+
+        final ArrayList<Author> authors = book.getAuthors();
+        assertNotNull(authors);
+        assertEquals(1, authors.size());
+
+        final Author author = authors.get(0);
+        assertEquals("Ash", author.getFamilyName());
+        assertEquals("Timothy Garton", author.getGivenNames());
+        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+
+        final List<String> covers = book.getStringArrayList(
+                SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0]);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(EngineId.Bol.getPreferenceKey()
+                                          + "_9789044544725_0_.jpg"));
+
+        final List<String> backCovers = book.getStringArrayList(
+                SearchCoordinator.BKEY_FILE_SPEC_ARRAY[1]);
+        assertNotNull(backCovers);
+        assertEquals(1, backCovers.size());
+        assertTrue(backCovers.get(0).endsWith(EngineId.Bol.getPreferenceKey()
+                                              + "_9789044544725_1_.jpg"));
+    }
 }
