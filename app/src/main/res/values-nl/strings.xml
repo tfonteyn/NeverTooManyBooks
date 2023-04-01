@@ -731,4 +731,5 @@
     <string name="whichViewApplication">Openen met</string>
     <string name="x_of_y">%1$d van %2$d</string>
     <string name="yes">Ja</string>
+    <string name="lbl_country">Land</string>
 </resources>

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -742,4 +743,5 @@
     <string name="error_updates_aborted">Actualizaciones canceladas</string>
     <string name="lbl_strip_info_mapped_bookshelf_owned_books">Estantería mapeada con tus libros</string>
     <string name="lbl_strip_info_mapped_bookshelf_wishlist">Estantería asignada a la lista de deseos</string>
+    <string name="lbl_country">País</string>
 </resources>

@@ -731,4 +731,5 @@
     <string name="info_purge_blns_all">Löschen Sie den Knotenstatus aus allen Listen</string>
     <string name="info_purge_blns_item_name">Knotenstatus von %1$s „%2$s“ löschen?</string>
     <string name="error_updates_aborted">Aktualisierungen abgebrochen</string>
+    <string name="lbl_country">Land</string>
 </resources>

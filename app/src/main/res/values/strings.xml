@@ -917,9 +917,14 @@
     <!-- number of pages; this is formatted text. -->
     <string name="info_x_pages"
             tools:ignore="PluralsCandidate">%1$d pages</string>
+    <!-- [VERIFIED] -->
+    <string name="lbl_country">Country</string>
+
+    <!-- Label for the currency used for prices. -->
     <string name="lbl_currency">Currency</string>
     <!-- Official price for a book -->
     <string name="lbl_price_listed">List Price</string>
+    <!-- What the user paid when they bought it. -->
     <string name="lbl_price_paid">Price paid</string>
     <!-- hwo good is this book in your opinion -->
     <string name="lbl_rating">Rating</string>
@@ -929,12 +934,16 @@
     <string name="lbl_color">Color</string>
     <!-- [VERIFIED] -->
     <string name="lbl_language">Language</string>
+    <!-- Label for the genre of the book (e.g. Romance, Crime, etc..) -->
     <string name="lbl_genre">Genre</string>
     <!-- is this book signed by the author? -->
     <string name="lbl_signed">Signed</string>
+    <!-- Label for the title of a book, series, story, ... -->
     <string name="lbl_title">Title</string>
     <string name="lbl_barcode">Barcode</string>
+    <!-- Label for the description which the app fetches from internet sites -->
     <string name="lbl_description">Description</string>
+    <!-- Label for the notes a user can make on their own copy of a book. -->
     <string name="lbl_personal_notes">Personal notes</string>
     <!-- short label for the Location field -->
     <string name="lbl_location">Location</string>
@@ -942,13 +951,13 @@
     <string name="lbl_location_long">Location of the book</string>
     <!-- Header for a screen section which groups all publication data. -->
     <string name="lbl_publication">Publication</string>
-    <!-- Number of books printed of this edition. -->
+    <!-- Label for the number of books printed of this edition. -->
     <string name="lbl_print_run">Print run</string>
-    <!-- Book edition -->
+    <!-- Label for the Book edition -->
     <string name="lbl_edition">Edition</string>
     <!-- Whether the user considers his collection of this [Author, Series, ...] to be complete. -->
     <string name="lbl_is_complete">Is complete</string>
-    <!-- Book / Dust cover condition -->
+    <!-- Label for the Book / Dust cover condition -->
     <string name="lbl_condition">Condition</string>
     <string name="lbl_dust_cover">Dust cover</string>
     <!-- a one line label, with the name of the person appended. Shown as a banner on the screen. -->
