@@ -300,9 +300,9 @@ public class AmazonSearchEngine
     private void parsePrice(@NonNull final Document document,
                             @NonNull final Book book,
                             @NonNull final MoneyParser moneyParser) {
-        Element price = document.selectFirst("span.price");
+        Element price = document.selectFirst("span.offer-price");
         if (price == null) {
-            price = document.selectFirst("span.offer-price");
+            price = document.selectFirst("span.price");
         }
         if (price == null) {
             return;
