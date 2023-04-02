@@ -314,11 +314,23 @@ public class BolSearchEngine
             }
         }
 
+        parseDescription(document, book);
         parseRating(document, book, realNumberParser);
         parsePrice(document, book, realNumberParser);
 
         if (fetchCovers[0]) {
             parseCovers(document, fetchCovers, book);
+        }
+    }
+
+    private void parseDescription(@NonNull final Document document,
+                                  @NonNull final Book book) {
+        final Element descrElement = document.selectFirst("div.product-description");
+        if (descrElement != null) {
+            final String description = descrElement.text();
+            if (!description.isEmpty()) {
+                book.putString(DBKey.DESCRIPTION, description);
+            }
         }
     }
 
