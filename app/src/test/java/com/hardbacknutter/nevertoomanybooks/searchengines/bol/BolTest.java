@@ -65,6 +65,88 @@ public class BolTest
         searchEngine.setCaller(new TestProgressListener(TAG));
     }
 
+    /** Network access! */
+    @Test
+    void parseMultiResult01()
+            throws SearchException, IOException, CredentialsException, StorageException {
+        setLocale(searchEngine.getLocale(context));
+        final String locationHeader = "https://www.bol.com/be/nl/s/?searchtext=+9789056478193+";
+        final String filename = "/bol/multi-1-result-9789056478193.html";
+
+        final RealNumberParser realNumberParser =
+                new RealNumberParser(List.of(searchEngine.getLocale(context)));
+
+        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        searchEngine.parseMultiResult(context, document, new boolean[]{false, false}, book);
+        // System.out.println(book);
+
+        assertEquals("nijntjes voorleesfeest", book.getString(DBKey.TITLE, null));
+        assertEquals("9789056478193", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("2019-01-31", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("144", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
+        assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
+        assertEquals(5.0f, book.getFloat(DBKey.RATING, realNumberParser));
+        assertEquals(new Money(BigDecimal.valueOf(16.5d), Money.EURO),
+                     book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
+
+        final ArrayList<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+        assertEquals("Mercis Publishing B.V.", allPublishers.get(0).getName());
+
+        final ArrayList<Author> authors = book.getAuthors();
+        assertNotNull(authors);
+        assertEquals(1, authors.size());
+
+        final Author author = authors.get(0);
+        assertEquals("Bruna", author.getFamilyName());
+        assertEquals("Dick", author.getGivenNames());
+        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+
+    }
+
+    /** Network access! */
+    @Test
+    void parseMultiResult02()
+            throws SearchException, IOException, CredentialsException, StorageException {
+        setLocale(searchEngine.getLocale(context));
+        final String locationHeader = "https://www.bol.com/be/nl/s/?searchtext=asimov%20foundation&suggestFragment=asimov";
+        final String filename = "/bol/asimov_foundation.html";
+
+        final RealNumberParser realNumberParser =
+                new RealNumberParser(List.of(searchEngine.getLocale(context)));
+
+        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        searchEngine.parseMultiResult(context, document, new boolean[]{false, false}, book);
+        //System.out.println(book);
+
+        assertEquals("Foundation Trilogy", book.getString(DBKey.TITLE, null));
+        assertEquals("9781841593326", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("2010-10-29", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("664", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
+        assertEquals("en", book.getString(DBKey.LANGUAGE, null));
+        assertEquals(4.8f, book.getFloat(DBKey.RATING, realNumberParser));
+        assertEquals(new Money(BigDecimal.valueOf(18.07d), Money.EURO),
+                     book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
+
+        final ArrayList<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+        assertEquals("Everyman'S Library", allPublishers.get(0).getName());
+
+        final ArrayList<Author> authors = book.getAuthors();
+        assertNotNull(authors);
+        assertEquals(1, authors.size());
+
+        final Author author = authors.get(0);
+        assertEquals("Asimov", author.getFamilyName());
+        assertEquals("Isaac", author.getGivenNames());
+        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+
+    }
+
     /**
      * be/nl + dutch book
      */
