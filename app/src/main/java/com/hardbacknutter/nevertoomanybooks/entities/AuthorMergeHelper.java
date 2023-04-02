@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,7 +34,7 @@ public class AuthorMergeHelper
                             @NonNull final Author previous,
                             @NonNull final Locale previousLocale,
                             @NonNull final Author current,
-                            @NonNull final Locale CurrentLocale) {
+                            @NonNull final Locale currentLocale) {
         // always combine the types using 'OR'
         previous.setType(previous.getType() | current.getType());
 

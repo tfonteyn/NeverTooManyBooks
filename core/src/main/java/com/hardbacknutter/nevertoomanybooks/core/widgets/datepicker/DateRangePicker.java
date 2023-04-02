@@ -41,6 +41,7 @@ public class DateRangePicker
     /**
      * Constructor.
      *
+     * @param fm               The FragmentManager this fragment dialog be added to.
      * @param titleResId       for the dialog screen
      * @param startDateFieldId field to bind the start-date to
      * @param endDateFieldId   field to bind the end-date to

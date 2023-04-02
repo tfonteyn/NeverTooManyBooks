@@ -45,9 +45,11 @@ public abstract class EntityMergeHelper<T extends Mergeable> {
      * This method is called after we determined that the "name" fields of the object are
      * matching. This method should try to merge the non-name fields and the id if possible.
      *
-     * @param context  Current context
-     * @param previous element
-     * @param current  element
+     * @param context        Current context
+     * @param previous       element
+     * @param previousLocale Locale for the previous element
+     * @param current        element
+     * @param currentLocale  Locale for the current element
      *
      * @return {@code true} if the list was modified in any way
      */
@@ -55,7 +57,7 @@ public abstract class EntityMergeHelper<T extends Mergeable> {
                                      @NonNull T previous,
                                      @NonNull Locale previousLocale,
                                      @NonNull T current,
-                                     @NonNull Locale CurrentLocale);
+                                     @NonNull Locale currentLocale);
 
     /**
      * Loop over the list and try to find and merge duplicates.

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,7 +34,7 @@ public class PublisherMergeHelper
                             @NonNull final Publisher previous,
                             @NonNull final Locale previousLocale,
                             @NonNull final Publisher current,
-                            @NonNull final Locale CurrentLocale) {
+                            @NonNull final Locale currentLocale) {
 
         if (current.getId() > 0) {
             previous.setId(current.getId());

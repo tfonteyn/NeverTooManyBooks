@@ -45,23 +45,24 @@ public abstract class InlineStringDaoImpl
     /**
      * Constructor.
      *
-     * @param db     Underlying database
-     * @param logTag of this DAO for logging
+     * @param db         Underlying database
+     * @param logTag     of this DAO for logging
+     * @param columnName the name of the inline column
      */
     InlineStringDaoImpl(@NonNull final SynchronizedDb db,
                         @NonNull final String logTag,
-                        @NonNull final String key) {
+                        @NonNull final String columnName) {
         super(db, logTag);
 
-        sqlSelectAll = SELECT_DISTINCT_ + key
+        sqlSelectAll = SELECT_DISTINCT_ + columnName
                        + _FROM_ + DBDefinitions.TBL_BOOKS.getName()
-                       + _WHERE_ + key + "<> ''"
-                       + _ORDER_BY_ + key + _COLLATION;
+                       + _WHERE_ + columnName + "<> ''"
+                       + _ORDER_BY_ + columnName + _COLLATION;
 
         sqlUpdate = UPDATE_ + DBDefinitions.TBL_BOOKS.getName()
                     + _SET_ + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
-                    + ',' + key + "=?"
-                    + _WHERE_ + key + "=?";
+                    + ',' + columnName + "=?"
+                    + _WHERE_ + columnName + "=?";
     }
 
     @Override

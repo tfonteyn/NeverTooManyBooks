@@ -701,6 +701,7 @@ public class StripInfoSearchEngine
      *
      * @param context  Current context
      * @param document to parse
+     * @param book     Bundle to update
      *
      * @return the toc list with at least 2 entries
      */
@@ -844,6 +845,7 @@ public class StripInfoSearchEngine
      *
      * @param td                label td
      * @param currentAuthorType of this entry
+     * @param book              Bundle to update
      *
      * @return 1 if we found a value td; 0 otherwise.
      */
@@ -918,7 +920,8 @@ public class StripInfoSearchEngine
     /**
      * Found a Series/Collection. The latter being a publisher-named collection.
      *
-     * @param td label td
+     * @param td   label td
+     * @param book Bundle to update
      *
      * @return 1 if we found a value td; 0 otherwise.
      */
@@ -946,7 +949,8 @@ public class StripInfoSearchEngine
     /**
      * Found a Publisher.
      *
-     * @param td label td
+     * @param td   label td
+     * @param book Bundle to update
      *
      * @return 1 if we found a value td; 0 otherwise.
      */

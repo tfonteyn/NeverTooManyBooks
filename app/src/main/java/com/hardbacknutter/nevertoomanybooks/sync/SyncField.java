@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -48,7 +48,7 @@ public final class SyncField
     };
 
     @NonNull
-    public final String key;
+    private final String key;
     /** label to show to the user. */
     @NonNull
     private final String label;
@@ -137,6 +137,16 @@ public final class SyncField
 
     void setDefaultAction() {
         syncAction = defaultAction;
+    }
+
+    /**
+     * Get the key (colum nname) for the field.
+     *
+     * @return key
+     */
+    @NonNull
+    public String getKey() {
+        return key;
     }
 
     /**

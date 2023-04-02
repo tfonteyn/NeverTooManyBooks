@@ -56,11 +56,27 @@ public final class FutureHttpGet<T>
         this.command = command;
     }
 
+    /**
+     * Create a {@code GET} request.
+     *
+     * @param siteResId the site name string resource
+     * @param <T>       the type of the return value for the request
+     *
+     * @return new request
+     */
     @NonNull
     public static <T> FutureHttpGet<T> createGet(@StringRes final int siteResId) {
         return new FutureHttpGet<>(siteResId, "GET");
     }
 
+    /**
+     * Create a {@code HEAD} request.
+     *
+     * @param siteResId the site name string resource
+     * @param <T>       the type of the return value for the request
+     *
+     * @return new request
+     */
     @NonNull
     public static <T> FutureHttpGet<T> createHead(@StringRes final int siteResId) {
         return new FutureHttpGet<>(siteResId, "HEAD");
@@ -135,8 +151,8 @@ public final class FutureHttpGet<T>
                 // UnknownHostException: DNS or other low-level network issue
                 // FileNotFoundException: seen on some sites. A retry and the site was ok.
                 if (BuildConfig.DEBUG /* always */) {
-                    LoggerFactory.getLogger().d(TAG, "open", "retry=" + retry
-                            , "url=`" + request.getURL() + '`', "e=" + e);
+                    LoggerFactory.getLogger().d(TAG, "open", "retry=" + retry,
+                                                "url=`" + request.getURL() + '`', "e=" + e);
                 }
 
                 retry--;

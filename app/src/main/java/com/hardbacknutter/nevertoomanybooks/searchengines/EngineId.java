@@ -399,8 +399,9 @@ public enum EngineId
     /**
      * Register all {@link Site} instances; called during startup.
      *
-     * @param context Current context
-     * @param type    the type of Site list
+     * @param context   Current context
+     * @param type      the type of Site list
+     * @param languages the language cache container
      */
     static void registerSites(@NonNull final Context context,
                               @NonNull final Site.Type type,

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,11 +34,11 @@ public class TocEntryMergeHelper
                             @NonNull final TocEntry previous,
                             @NonNull final Locale previousLocale,
                             @NonNull final TocEntry current,
-                            @NonNull final Locale CurrentLocale) {
+                            @NonNull final Locale currentLocale) {
 
         final boolean canMerge = mergeDate(previous, current)
                                  && mergeAuthor(previous, previousLocale,
-                                                current, CurrentLocale);
+                                                current, currentLocale);
 
         if (canMerge && current.getId() > 0) {
             previous.setId(current.getId());

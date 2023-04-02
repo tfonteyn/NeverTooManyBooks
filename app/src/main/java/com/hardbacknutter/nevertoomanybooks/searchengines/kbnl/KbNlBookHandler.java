@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -94,6 +94,9 @@ class KbNlBookHandler
      * Labels for both Dutch (default) and English are listed.
      * <p>
      * Note that "Colorist" is also used in Dutch.
+     *
+     * @param currentLabel the current {@code labelledLabel}
+     * @param currentData  content of {@code labelledData}
      */
     protected void processEntry(@NonNull final String currentLabel,
                                 @NonNull final List<String> currentData) {
@@ -245,6 +248,8 @@ class KbNlBookHandler
      *    </psi:line>
      *  </psi:labelledData>
      * }</pre>
+     *
+     * @param currentData content of {@code labelledData}
      */
     private void processTitle(@NonNull final Iterable<String> currentData) {
         final String[] cleanedData = String.join(" ", currentData).split("/");
@@ -294,6 +299,9 @@ class KbNlBookHandler
      * <p>
      * Getting author names:
      * http://opc4.kb.nl/DB=1/SET=1/TTL=1/REL?PPN=068561504
+     *
+     * @param currentData content of {@code labelledData}
+     * @param type        the author type
      */
     private void processAuthor(@NonNull final Iterable<String> currentData,
                                @Author.Type final int type) {
@@ -331,6 +339,8 @@ class KbNlBookHandler
      *   </psi:line>
      *  </psi:labelledData>
      * }</pre>
+     *
+     * @param currentData content of {@code labelledData}
      */
     private void processSeries(@NonNull final List<String> currentData) {
         data.add(Series.from(currentData.get(0)));
@@ -345,6 +355,8 @@ class KbNlBookHandler
      *   </psi:line>
      * </psi:labelledData>
      * }</pre>
+     *
+     * @param currentData content of {@code labelledData}
      */
     private void processSeriesNumber(@NonNull final List<String> currentData) {
         // This element is listed BEFORE the Series ("reeks") itself so store it tmp.
@@ -394,6 +406,8 @@ class KbNlBookHandler
      *   </psi:line>
      * </psi:labelledData>
      * }</pre>
+     *
+     * @param currentData content of {@code labelledData}
      */
     private void processIsbn(@NonNull final List<String> currentData) {
         for (final String text : currentData) {
@@ -442,6 +456,8 @@ class KbNlBookHandler
      *   </psi:line>
      * </psi:labelledData>
      * }</pre>
+     *
+     * @param currentData content of {@code labelledData}
      */
     private void processPublisher(@NonNull final List<String> currentData) {
         String publisherName = currentData.stream()
@@ -480,6 +496,8 @@ class KbNlBookHandler
      *   </psi:line>
      * </psi:labelledData>
      * }</pre>
+     *
+     * @param currentData content of {@code labelledData}
      */
     private void processDatePublished(@NonNull final List<String> currentData) {
         if (!data.contains(DBKey.BOOK_PUBLICATION__DATE)) {
@@ -505,6 +523,8 @@ class KbNlBookHandler
      *   </psi:line>
      * </psi:labelledData>
      * }</pre>
+     *
+     * @param currentData content of {@code labelledData}
      */
     private void processPages(@NonNull final List<String> currentData) {
         if (!data.contains(DBKey.PAGE_COUNT)) {
@@ -533,14 +553,15 @@ class KbNlBookHandler
      *   </psi:line>
      * </psi:labelledData>
      * }</pre>
+     *
+     * @param currentData content of {@code labelledData}
      */
     private void processIllustration(@NonNull final List<String> currentData) {
         if (!data.contains(DBKey.COLOR)) {
             if (ColorMapper.isMappingAllowed(context)) {
-                int resId = 0;
+                final int resId;
                 // As usual on this site, the data is unstructured... we do our best
                 // Anything not recognized is rejected as it could not be a color at all.
-                //noinspection SwitchStatementWithoutDefaultBranch
                 switch (currentData.get(0)) {
                     case "gekleurde illustraties":
                     case "gekleurde ill":
@@ -553,6 +574,10 @@ class KbNlBookHandler
                     case "zw. tek":
                     case "ill.(zw./w.)":
                         resId = R.string.book_color_black_and_white;
+                        break;
+
+                    default:
+                        resId = 0;
                         break;
                 }
 

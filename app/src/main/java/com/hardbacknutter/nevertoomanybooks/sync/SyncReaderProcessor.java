@@ -93,53 +93,53 @@ public final class SyncReaderProcessor {
                 case Append:
                 case Overwrite: {
                     // Append + Overwrite: we always need to get the data
-                    filteredMap.put(field.key, field);
+                    filteredMap.put(field.getKey(), field);
                     break;
                 }
                 case CopyIfBlank: {
-                    switch (field.key) {
+                    switch (field.getKey()) {
                         // We should never have a book without authors, but be paranoid
                         case Book.BKEY_AUTHOR_LIST:
                         case Book.BKEY_SERIES_LIST:
                         case Book.BKEY_PUBLISHER_LIST:
                         case Book.BKEY_TOC_LIST:
                         case Book.BKEY_BOOKSHELF_LIST:
-                            if (localBook.contains(field.key)) {
+                            if (localBook.contains(field.getKey())) {
                                 final ArrayList<Parcelable> list =
-                                        localBook.getParcelableArrayList(field.key);
+                                        localBook.getParcelableArrayList(field.getKey());
                                 if (list.isEmpty()) {
-                                    filteredMap.put(field.key, field);
+                                    filteredMap.put(field.getKey(), field);
                                 }
                             }
                             break;
 
                         default:
                             // If it's a cover...
-                            if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[0])) {
+                            if (Book.BKEY_TMP_FILE_SPEC[0].equals(field.getKey())) {
                                 final String uuid = localBook.getString(DBKey.BOOK_UUID);
                                 // check if it's missing or empty.
                                 final Optional<File> file = ServiceLocator
                                         .getInstance().getCoverStorage()
                                         .getPersistedFile(uuid, 0);
                                 if (file.isEmpty()) {
-                                    filteredMap.put(field.key, field);
+                                    filteredMap.put(field.getKey(), field);
                                 }
 
-                            } else if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[1])) {
+                            } else if (Book.BKEY_TMP_FILE_SPEC[1].equals(field.getKey())) {
                                 final String uuid = localBook.getString(DBKey.BOOK_UUID);
                                 // check if it's missing or empty.
                                 final Optional<File> file = ServiceLocator
                                         .getInstance().getCoverStorage()
                                         .getPersistedFile(uuid, 1);
                                 if (file.isEmpty()) {
-                                    filteredMap.put(field.key, field);
+                                    filteredMap.put(field.getKey(), field);
                                 }
 
                             } else {
                                 // If the original was blank/zero, add to list
-                                final String value = localBook.getString(field.key, null);
+                                final String value = localBook.getString(field.getKey(), null);
                                 if (value == null || value.isEmpty() || "0".equals(value)) {
-                                    filteredMap.put(field.key, field);
+                                    filteredMap.put(field.getKey(), field);
                                 }
                             }
                             break;
@@ -199,25 +199,25 @@ public final class SyncReaderProcessor {
             fieldsWanted
                     .values()
                     .stream()
-                    .filter(field -> remoteBook.contains(field.key))
+                    .filter(field -> remoteBook.contains(field.getKey()))
                     .forEach(field -> {
                         try {
                             // Handle thumbnail specially
-                            if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[0])) {
+                            if (Book.BKEY_TMP_FILE_SPEC[0].equals(field.getKey())) {
                                 processCover(localBook, remoteBook, 0);
-                            } else if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[1])) {
+                            } else if (Book.BKEY_TMP_FILE_SPEC[1].equals(field.getKey())) {
                                 processCover(localBook, remoteBook, 1);
                             } else {
                                 switch (field.getAction()) {
                                     case CopyIfBlank:
                                         // remove unneeded fields from the new data
-                                        if (hasField(localBook, field.key, realNumberParser)) {
-                                            remoteBook.remove(field.key);
+                                        if (hasField(localBook, field.getKey(), realNumberParser)) {
+                                            remoteBook.remove(field.getKey());
                                         }
                                         break;
 
                                     case Append:
-                                        processList(context, localBook, remoteBook, field.key);
+                                        processList(context, localBook, remoteBook, field.getKey());
                                         break;
 
                                     case Overwrite:
@@ -417,7 +417,7 @@ public final class SyncReaderProcessor {
 
             final SharedPreferences.Editor ed = prefs.edit();
             for (final SyncField syncField : fields.values()) {
-                syncField.getAction().write(ed, preferencePrefix + syncField.key);
+                syncField.getAction().write(ed, preferencePrefix + syncField.getKey());
             }
             ed.apply();
         }

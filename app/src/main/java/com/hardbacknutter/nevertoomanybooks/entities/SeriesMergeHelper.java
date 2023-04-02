@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,7 +34,7 @@ public class SeriesMergeHelper
                             @NonNull final Series previous,
                             @NonNull final Locale previousLocale,
                             @NonNull final Series current,
-                            @NonNull final Locale CurrentLocale) {
+                            @NonNull final Locale currentLocale) {
 
         final boolean canMerge = mergeNumber(previous, current);
 

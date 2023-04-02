@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -43,6 +43,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 
 public final class MenuUtils {
+
+    private static final float TEXT_SCALING_PERCENTAGE = 0.88f;
 
     private MenuUtils() {
     }
@@ -90,7 +92,7 @@ public final class MenuUtils {
         final int color = AttrUtils
                 .getColorInt(context, com.google.android.material.R.attr.colorSecondary);
         title.setSpan(new ForegroundColorSpan(color), 0, title.length(), 0);
-        title.setSpan(new RelativeSizeSpan(0.88f), 0, title.length(), 0);
+        title.setSpan(new RelativeSizeSpan(TEXT_SCALING_PERCENTAGE), 0, title.length(), 0);
         item.setTitle(title);
 
         // can be set in xml, but here for paranoia

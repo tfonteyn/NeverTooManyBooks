@@ -542,6 +542,7 @@ public class LastDodoSearchEngine
      *
      * @param td   data td
      * @param type of this entry
+     * @param book Bundle to update
      */
     private void processAuthor(@NonNull final Element td,
                                @Author.Type final int type,
@@ -571,7 +572,8 @@ public class LastDodoSearchEngine
     /**
      * Found a Series.
      *
-     * @param td data td
+     * @param td   data td
+     * @param book Bundle to update
      */
     private void processSeries(@NonNull final Element td,
                                @NonNull final Book book) {
@@ -590,7 +592,8 @@ public class LastDodoSearchEngine
     /**
      * Found a Publisher.
      *
-     * @param td data td
+     * @param td   data td
+     * @param book Bundle to update
      */
     private void processPublisher(@NonNull final Element td,
                                   @NonNull final Book book) {

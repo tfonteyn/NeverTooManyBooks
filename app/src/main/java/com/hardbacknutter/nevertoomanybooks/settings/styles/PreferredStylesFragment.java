@@ -87,6 +87,24 @@ public class PreferredStylesFragment
                     getActivity().finish();
                 }
             };
+    private final PositionHandler positionHandler = new PositionHandler() {
+
+        @Override
+        public int getSelectedPosition() {
+            return vm.getSelectedPosition();
+        }
+
+        @Override
+        public int findPreferredAndSelect(final int position) {
+            return vm.findPreferredAndSelect(position);
+        }
+
+        @Override
+        public void swapItems(final int fromPosition,
+                              final int toPosition) {
+            vm.onItemMove(fromPosition, toPosition);
+        }
+    };
     /** The adapter for the list. */
     private StylesAdapter listAdapter;
     /** React to changes in the adapter. */
@@ -123,25 +141,6 @@ public class PreferredStylesFragment
                     listAdapter.notifyDataSetChanged();
                 }
             }));
-
-    private final PositionHandler positionHandler = new PositionHandler() {
-
-        @Override
-        public int getSelectedPosition() {
-            return vm.getSelectedPosition();
-        }
-
-        @Override
-        public int findPreferredAndSelect(final int position) {
-            return vm.findPreferredAndSelect(position);
-        }
-
-        @Override
-        public void swapItems(final int fromPosition,
-                              final int toPosition) {
-            vm.onItemMove(fromPosition, toPosition);
-        }
-    };
     /** Drag and drop support for the list view. */
     private ItemTouchHelper itemTouchHelper;
     /** View Binding. */
@@ -394,6 +393,10 @@ public class PreferredStylesFragment
          * <li>set the row to 'not preferred'</li>
          * <li>look up and down in the list to find a 'preferred' row, and set it 'selected'</li>
          * </ol>
+         *
+         * @param position to toggle
+         *
+         * @return the new status
          */
         private boolean togglePreferredStatus(final int position) {
             final Style style = getItem(position);

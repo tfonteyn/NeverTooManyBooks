@@ -62,8 +62,9 @@ abstract class DatePickerBase<S>
     /**
      * Constructor.
      *
-     * @param titleResId for the dialog screen
-     * @param fieldIds   field this dialog is bound to
+     * @param fragmentManager The FragmentManager this fragment dialog be added to.
+     * @param titleResId      for the dialog screen
+     * @param fieldIds        field this dialog is bound to
      */
     DatePickerBase(@NonNull final FragmentManager fragmentManager,
                    @StringRes final int titleResId,

@@ -158,8 +158,8 @@ public abstract class FFBaseDialogFragment
         //noinspection ConstantConditions
         fullscreen = forceFullscreen
                      ||
-                     (useFullscreenWidth.contains(WindowSizeClass.getWidth(getActivity()))
-                      && useFullscreenHeight.contains(WindowSizeClass.getHeight(getActivity())));
+                     useFullscreenWidth.contains(WindowSizeClass.getWidth(getActivity()))
+                     && useFullscreenHeight.contains(WindowSizeClass.getHeight(getActivity()));
     }
 
     @Nullable
