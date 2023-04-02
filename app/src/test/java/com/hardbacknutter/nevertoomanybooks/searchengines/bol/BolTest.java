@@ -118,7 +118,7 @@ public class BolTest
                 new RealNumberParser(List.of(searchEngine.getLocale(context)));
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
-        searchEngine.parseMultiResult(context, document, new boolean[]{false, false}, book);
+        searchEngine.parseMultiResult(context, document, new boolean[]{true, true}, book);
         //System.out.println(book);
 
         assertEquals("Foundation Trilogy", book.getString(DBKey.TITLE, null));
@@ -145,6 +145,17 @@ public class BolTest
         assertEquals("Isaac", author.getGivenNames());
         assertEquals(Author.TYPE_UNKNOWN, author.getType());
 
+        final List<String> covers = book.getStringArrayList(
+                SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0]);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(EngineId.Bol.getPreferenceKey()
+                                          + "_9781841593326_0_.jpg"));
+
+        final List<String> backCovers = book.getStringArrayList(
+                SearchCoordinator.BKEY_FILE_SPEC_ARRAY[1]);
+        assertNotNull(backCovers);
+        assertEquals(0, backCovers.size());
     }
 
     /**
