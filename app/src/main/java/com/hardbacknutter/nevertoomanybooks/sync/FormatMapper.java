@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -72,6 +72,7 @@ public final class FormatMapper
 
         // ### e-books ###
         MAPPER.put("ebook", R.string.book_format_ebook);
+        MAPPER.put("e-book", R.string.book_format_ebook);
         // dutch - stripinfo.be
         MAPPER.put("digitaal", R.string.book_format_ebook);
 
@@ -79,6 +80,10 @@ public final class FormatMapper
         // ### Audio-books ###
         MAPPER.put("audio cassette", R.string.book_format_audiobook);
         MAPPER.put("audio cd", R.string.book_format_audiobook);
+        // dutch - BOL
+        MAPPER.put("digitaal luisterboek", R.string.book_format_audiobook);
+        // french - BOL
+        MAPPER.put("livre audio numérique", R.string.book_format_audiobook);
 
 
         // ### Special ###
