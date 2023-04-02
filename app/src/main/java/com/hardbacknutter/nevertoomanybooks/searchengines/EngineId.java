@@ -292,7 +292,6 @@ public enum EngineId
                   // .setDomainKey(DBKey.SID_ASIN)
                   // .setDomainViewId(R.id.site_amazon)
                   // .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_AMAZON)
-                  .setThrottlerTimeoutMs(1_000)
                   .build();
         }
         if (Bedetheque.isEnabled()) {
@@ -302,16 +301,10 @@ public enum EngineId
                       // default timeouts based on limited testing
                       .setConnectTimeoutMs(15_000)
                       .setReadTimeoutMs(60_000)
-                      // There are no specific usage rules but as a courtesy/precaution,
-                      // we're only going to send one request a second.
-                      .setThrottlerTimeoutMs(1_000)
                       .build();
         }
         if (Bol.isEnabled()) {
             Bol.createConfiguration()
-               // There are no specific usage rules but as a courtesy/precaution,
-               // we're only going to send one request a second.
-               .setThrottlerTimeoutMs(1_000)
                .build();
         }
         if (Goodreads.isEnabled()) {
@@ -336,10 +329,6 @@ public enum EngineId
                  // default timeouts based on limited testing
                  .setConnectTimeoutMs(20_000)
                  .setReadTimeoutMs(60_000)
-                 // As proposed by another user on the ISFDB wiki,
-                 // we're only going to send one request a second.
-                 //<a href="https://isfdb.org/wiki/index.php/ISFDB:Help_desk/archives/archive_34#Some_Downloading_Questions_and_a_Request">throttling</a>
-                 .setThrottlerTimeoutMs(1_000)
                  .build();
         }
         if (KbNl.isEnabled()) {
@@ -385,9 +374,6 @@ public enum EngineId
                        // default timeouts based on limited testing
                        .setConnectTimeoutMs(7_000)
                        .setReadTimeoutMs(60_000)
-                       // There are no specific usage rules but as a courtesy/precaution,
-                       // we're only going to send one request a second.
-                       .setThrottlerTimeoutMs(1_000)
                        .build();
         }
 
@@ -607,11 +593,25 @@ public enum EngineId
         this.config = config;
     }
 
+    /**
+     * Get the configuration.
+     *
+     * @return {@link SearchEngineConfig}
+     *
+     * @throws NullPointerException if there is none (which would be a bug)
+     */
     @NonNull
     public SearchEngineConfig requireConfig() {
         return Objects.requireNonNull(config);
     }
 
+    /**
+     * Check if the given interface is supported by this engine.
+     *
+     * @param by to check
+     *
+     * @return {@code true} if it is
+     */
     public boolean supports(@NonNull final SearchEngine.SearchBy by) {
         return by.clazz.isAssignableFrom(clazz);
     }

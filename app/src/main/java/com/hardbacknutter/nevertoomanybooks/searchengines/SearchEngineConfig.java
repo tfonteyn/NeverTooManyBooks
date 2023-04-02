@@ -354,8 +354,15 @@ public final class SearchEngineConfig {
                + '}';
     }
 
+    @SuppressWarnings({"SameParameterValue", "unused"})
     public static class Builder {
 
+        /**
+         * Even if there are no specific terms of usage,
+         * we're only going to send one request a second by default
+         * as a courtesy/precaution.
+         */
+        static final int THROTTLER_DEFAULT_MS = 1_000;
         static final int FIVE_SECONDS = 5_000;
         static final int TEN_SECONDS = 10_000;
 
@@ -377,8 +384,8 @@ public final class SearchEngineConfig {
         private int connectTimeoutMs = FIVE_SECONDS;
         /** The DEFAULT for the engine. */
         private int readTimeoutMs = TEN_SECONDS;
-
-        private int throttlerTimeoutMs;
+        /** The DEFAULT for the engine. */
+        private int throttlerTimeoutMs = THROTTLER_DEFAULT_MS;
 
         /** {@link SearchEngine.CoverByIsbn} only. */
         private boolean supportsMultipleCoverSizes;
@@ -403,7 +410,7 @@ public final class SearchEngineConfig {
         }
 
         @NonNull
-        Builder setThrottlerTimeoutMs(@SuppressWarnings("SameParameterValue") final int timeoutInMillis) {
+        Builder setThrottlerTimeoutMs(final int timeoutInMillis) {
             throttlerTimeoutMs = timeoutInMillis;
             return this;
         }
@@ -415,8 +422,7 @@ public final class SearchEngineConfig {
         }
 
         @NonNull
-        Builder setReadTimeoutMs(
-                @SuppressWarnings("SameParameterValue") final int timeoutInMillis) {
+        Builder setReadTimeoutMs(final int timeoutInMillis) {
             readTimeoutMs = timeoutInMillis;
             return this;
         }
@@ -446,15 +452,13 @@ public final class SearchEngineConfig {
         }
 
         @NonNull
-        Builder setSupportsMultipleCoverSizes(
-                @SuppressWarnings("SameParameterValue") final boolean supportsMultipleCoverSizes) {
+        Builder setSupportsMultipleCoverSizes(final boolean supportsMultipleCoverSizes) {
             this.supportsMultipleCoverSizes = supportsMultipleCoverSizes;
             return this;
         }
 
         @NonNull
-        Builder setPrefersIsbn10(
-                @SuppressWarnings("SameParameterValue") final boolean prefersIsbn10) {
+        Builder setPrefersIsbn10(final boolean prefersIsbn10) {
             this.prefersIsbn10 = prefersIsbn10;
             return this;
         }
