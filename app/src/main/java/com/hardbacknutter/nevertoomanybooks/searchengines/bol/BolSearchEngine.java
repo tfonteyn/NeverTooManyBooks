@@ -376,32 +376,46 @@ public class BolSearchEngine
             if (imageSlotSlider != null) {
                 final JSONObject currentItem = imageSlotSlider.optJSONObject("currentItem");
                 if (currentItem != null) {
-                    processCover(currentItem.optString("coverImageUrl"), isbn, 0, book);
-                    if (fetchCovers.length > 1 && fetchCovers[1]) {
-                        processCover(currentItem.optString("backImageUrl"), isbn, 1, book);
-
+                    String coverImageUrl;
+                    // There is more than 1 possible key for the frontcover
+                    coverImageUrl = currentItem.optString("coverImageUrl");
+                    boolean gotFrontCover = false;
+                    if (coverImageUrl != null && !coverImageUrl.isEmpty()) {
+                        gotFrontCover = processCover(coverImageUrl, isbn, 0, book);
                     }
-                }
-            }
-        } else {
-            // Fallback attempt 1
-            Element frontCover = document.selectFirst("div > img[data-test='product-main-image'");
-            if (frontCover != null) {
-                processCover(frontCover.attr("src"), isbn, 0, book);
-            } else {
-                // Fallback attempt 2
-                frontCover = document.selectFirst("div > img.book__cover-image");
-                if (frontCover != null) {
-                    processCover(frontCover.attr("src"), isbn, 0, book);
+                    if (!gotFrontCover) {
+                        // try alternative key.
+                        coverImageUrl = currentItem.optString("imageUrl");
+                        if (coverImageUrl != null && !coverImageUrl.isEmpty()) {
+                            gotFrontCover = processCover(coverImageUrl, isbn, 0, book);
+                        }
+                    }
+
+                    // only attempt to get the back-cover if we got a frontcover
+                    // and (obv.) we want one.
+                    if (gotFrontCover && fetchCovers.length > 1 && fetchCovers[1]) {
+                        coverImageUrl = currentItem.optString("backImageUrl");
+                        processCover(coverImageUrl, isbn, 1, book);
+                    }
                 }
             }
         }
     }
 
-    private void processCover(@Nullable final String url,
-                              @NonNull final String isbn,
-                              @IntRange(from = 0, to = 1) final int cIdx,
-                              @NonNull final Book book)
+    /**
+     * Fetch the given cover url if possible.
+     *
+     * @param url  to fetch
+     * @param isbn of the book
+     * @param cIdx 0..n image index
+     * @param book Bundle to update
+     *
+     * @return {@code true} if an image was successfully saved.
+     */
+    private boolean processCover(@Nullable final String url,
+                                 @NonNull final String isbn,
+                                 @IntRange(from = 0, to = 1) final int cIdx,
+                                 @NonNull final Book book)
             throws StorageException {
 
         if (url != null && !url.isEmpty()) {
@@ -410,8 +424,10 @@ public class BolSearchEngine
                 final ArrayList<String> list = new ArrayList<>();
                 list.add(fileSpec);
                 book.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[cIdx], list);
+                return true;
             }
         }
+        return false;
     }
 
     /**
