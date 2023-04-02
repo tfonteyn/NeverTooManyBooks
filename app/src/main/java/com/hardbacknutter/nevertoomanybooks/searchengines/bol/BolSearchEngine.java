@@ -36,6 +36,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -63,13 +64,23 @@ import org.jsoup.select.Elements;
 
 public class BolSearchEngine
         extends JsoupSearchEngineBase
-        implements SearchEngine.ByIsbn {
+        implements SearchEngine.ByIsbn,
+                   SearchEngine.ByText {
 
     /** one of {"","be","nl"} */
     static final String PK_BOL_COUNTRY = "bol.country";
 
     private static final String TAG = "BolSearchEngine";
-    private static final String SEARCH = "/s/?searchtext=+%1$s+";
+    /**
+     * param 1: the country "be" or "nl"
+     * param 2: the isbn
+     */
+    private static final String BY_ISBN = "/%1$s/nl/s/?searchtext=+%2$s+";
+    /**
+     * param 1: the country "be" or "nl"
+     * param 2: words, separated by spaces
+     */
+    private static final String BY_TEXT = "/%1$s/nl/s/?searchtext=%2$s";
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
@@ -89,13 +100,7 @@ public class BolSearchEngine
         // The site can display in french, but we don't support this as
         // 1. they don't sell french books anyhow (at least for now)
         // 2. their french book pages don't display the book title (oh boy...)
-        return new Locale("nl", getCountry());
-    }
-
-    @NonNull
-    @Override
-    public String getHostUrl() {
-        return super.getHostUrl() + "/" + getCountry() + "/nl";
+        return new Locale("nl", getCountry().toUpperCase(Locale.ROOT));
     }
 
     private String getCountry() {
@@ -119,14 +124,47 @@ public class BolSearchEngine
 
     @NonNull
     @Override
+    public Book search(@NonNull final Context context,
+                       @Nullable final String code,
+                       @Nullable final String author,
+                       @Nullable final String title,
+                       @Nullable final String publisher,
+                       @NonNull final boolean[] fetchCovers)
+            throws StorageException, SearchException, CredentialsException {
+
+        final StringJoiner words = new StringJoiner(" ");
+        if (author != null && !author.isEmpty()) {
+            words.add(author);
+        }
+        if (title != null && !title.isEmpty()) {
+            words.add(title);
+        }
+        if (publisher != null && !publisher.isEmpty()) {
+            words.add(publisher);
+        }
+        if (code != null && !code.isEmpty()) {
+            words.add(code);
+        }
+
+        final String url = getHostUrl() + String.format(BY_TEXT, getCountry(), words);
+        final Document document = loadDocument(context, url, null);
+        final Book book = new Book();
+        if (!isCancelled()) {
+            // it's ALWAYS multi-result, even if only one result is returned.
+            parseMultiResult(context, document, fetchCovers, book);
+        }
+        return book;
+    }
+
+    @NonNull
+    @Override
     public Book searchByIsbn(@NonNull final Context context,
                              @NonNull final String validIsbn,
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final Document document = loadDocument(context, getHostUrl()
-                                                        + String.format(SEARCH, validIsbn),
-                                               null);
+        final String url = getHostUrl() + String.format(BY_ISBN, getCountry(), validIsbn);
+        final Document document = loadDocument(context, url, null);
         final Book book = new Book();
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
@@ -148,18 +186,19 @@ public class BolSearchEngine
      * @throws CredentialsException on authentication/login failures
      * @throws StorageException     on storage related failures
      */
+    @VisibleForTesting
     @WorkerThread
-    private void parseMultiResult(@NonNull final Context context,
-                                  @NonNull final Document document,
-                                  @NonNull final boolean[] fetchCovers,
-                                  @NonNull final Book book)
+    public void parseMultiResult(@NonNull final Context context,
+                                 @NonNull final Document document,
+                                 @NonNull final boolean[] fetchCovers,
+                                 @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
-        // Grab the first search result, and redirect to that page
-        final Element section = document.selectFirst(
-                "p.px_list_page_product_click list_page_product_tracking_target");
-        // it will be null if there were no results.
+        final Element section = document.selectFirst("div.product-title--inline");
+        // section will be null if there were no results.
         if (section != null) {
-            final Element urlElement = section.selectFirst("a");
+            // Grab the first search result, and redirect to that page
+            final Element urlElement = section.selectFirst(
+                    "a.product-title.px_list_page_product_click.list_page_product_tracking_target");
             if (urlElement != null) {
                 String url = urlElement.attr("href");
                 // sanity check - it normally does NOT have the protocol/site part

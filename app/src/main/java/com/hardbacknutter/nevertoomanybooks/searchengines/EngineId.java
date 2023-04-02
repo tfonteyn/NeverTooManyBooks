@@ -137,12 +137,10 @@ public enum EngineId
     /**
      * All genres; dutch and english books.
      * Shopping site from The Netherlands / Belgium.
-     * Headquartered in The Netherlands -> "nl/nl" is the default
-     * but switching the nl_BE will be automatic depending on the users country
      */
     Bol("bol",
         R.string.site_bol,
-        "https://www.bol.com/nl/nl",
+        "https://www.bol.com",
         new Locale("nl", "NL"),
         BolSearchEngine.class,
         BuildConfig.ENABLE_BOL),
