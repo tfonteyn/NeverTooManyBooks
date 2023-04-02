@@ -292,7 +292,39 @@ public class BolSearchEngine
                     case "Auteur principal": {
                         final Element a = value.selectFirst("a");
                         if (a != null) {
-                            book.add(Author.from(a.text()));
+                            final Author author = Author.from(a.text());
+                            author.setType(Author.TYPE_WRITER);
+                            book.add(author);
+                        }
+                        break;
+                    }
+                    case "Hoofdillustrator":
+                    case "Illustrateur en chef": {
+                        final Element a = value.selectFirst("a");
+                        if (a != null) {
+                            final Author author = Author.from(a.text());
+                            author.setType(Author.TYPE_ARTIST);
+                            book.add(author);
+                        }
+                        break;
+                    }
+                    case "Eerste Vertaler":
+                    case "Tweede Vertaler":
+                    case "Premier traducteur":
+                    case "Deuxième traducteur": {
+                        final Element a = value.selectFirst("a");
+                        if (a != null) {
+                            final Author author = Author.from(a.text());
+                            author.setType(Author.TYPE_TRANSLATOR);
+                            book.add(author);
+                        }
+                        break;
+                    }
+                    case "Originele titel":
+                    case "Titre original": {
+                        final String originalTitle = value.text();
+                        if (!originalTitle.isEmpty()) {
+                            book.putString(SiteField.ORIGINAL_TITLE, originalTitle);
                         }
                         break;
                     }
@@ -460,6 +492,17 @@ public class BolSearchEngine
                     book.putString(key, text);
                 }
             }
+        }
+    }
+
+    /**
+     * BOL specific field names we add to the bundle based on parsed data.
+     */
+    public static final class SiteField {
+
+        static final String ORIGINAL_TITLE = "__original_title";
+
+        private SiteField() {
         }
     }
 }
