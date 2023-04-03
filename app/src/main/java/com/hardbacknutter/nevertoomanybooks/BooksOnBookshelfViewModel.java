@@ -66,7 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
+import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
@@ -192,7 +192,7 @@ public class BooksOnBookshelfViewModel
     @Nullable
     private ViewBookOnWebsiteHandler viewBookHandler;
     @Nullable
-    private AmazonHandler amazonHandler;
+    private AmazonMenuHandler amazonMenuHandler;
 
     @NonNull
     public LiveData<LiveDataEvent<TaskProgress>> onProgress() {
@@ -325,10 +325,10 @@ public class BooksOnBookshelfViewModel
 
     @NonNull
     MenuHandler getAmazonHandler() {
-        if (amazonHandler == null) {
-            amazonHandler = new AmazonHandler();
+        if (amazonMenuHandler == null) {
+            amazonMenuHandler = new AmazonMenuHandler();
         }
-        return amazonHandler;
+        return amazonMenuHandler;
     }
 
     /**

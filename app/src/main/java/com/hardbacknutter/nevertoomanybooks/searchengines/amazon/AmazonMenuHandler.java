@@ -45,7 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 /**
  * Stateless.
  */
-public class AmazonHandler
+public class AmazonMenuHandler
         implements MenuHandler {
 
     /**

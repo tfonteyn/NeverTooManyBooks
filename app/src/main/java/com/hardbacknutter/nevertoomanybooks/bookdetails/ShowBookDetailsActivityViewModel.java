@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,7 +31,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
+import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
 
@@ -87,7 +87,7 @@ public class ShowBookDetailsActivityViewModel
             style = ServiceLocator.getInstance().getStyles().getStyleOrDefault(context, styleUuid);
 
             menuHandlers.add(new ViewBookOnWebsiteHandler());
-            menuHandlers.add(new AmazonHandler());
+            menuHandlers.add(new AmazonMenuHandler());
         }
     }
 

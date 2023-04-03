@@ -83,7 +83,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.LanguageFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.ListFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.LongNumberFormatter;
-import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
+import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
@@ -254,7 +254,7 @@ public class EditBookViewModel
     List<MenuHandler> getMenuHandlers() {
         if (menuHandlers.isEmpty()) {
             menuHandlers.add(new ViewBookOnWebsiteHandler());
-            menuHandlers.add(new AmazonHandler());
+            menuHandlers.add(new AmazonMenuHandler());
         }
         return menuHandlers;
     }
