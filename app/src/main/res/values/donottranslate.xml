@@ -40,18 +40,33 @@
     <string name="site_goodreads" translatable="false">Goodreads</string>
     <string name="site_google_books" translatable="false">Google Books</string>
     <string name="site_isfdb" translatable="false">ISFDB</string>
-    <string name="site_kb_nl" translatable="false">KBNL</string>
-    <string name="site_lastdodo_nl" translatable="false">LastDodo</string>
-    <string name="site_library_thing" translatable="false">LibraryThing</string>
-    <string name="site_open_library" translatable="false">OpenLibrary</string>
-    <string name="site_stripinfo_be" translatable="false">StripInfo</string>
-    <string name="site_bedetheque" translatable="false">Bedetheque</string>
+    <string name="site_kb_nl"
+            translatable="false">KBNL</string>
+    <string name="site_lastdodo_nl"
+            translatable="false">LastDodo</string>
+    <string name="site_library_thing"
+            translatable="false">LibraryThing</string>
+    <string name="site_open_library"
+            translatable="false">OpenLibrary</string>
+    <string name="site_stripinfo_be"
+            translatable="false">StripInfo</string>
+    <string name="site_bedetheque"
+            translatable="false">Bedetheque</string>
     <string name="site_bol"
             translatable="false">BOL</string>
 
-    <string name="site_calibre" translatable="false">Calibre</string>
+    <string name="site_calibre"
+            translatable="false">Calibre</string>
 
-    <string name="brackets" translatable="false">(%1$s)</string>
+    <!-- submenu title -->
+    <string name="option_amazon_ellipsis"
+            translatable="false">Amazon…</string>
+    <!-- submenu title -->
+    <string name="option_bol_ellipsis"
+            translatable="false">BOL…</string>
+
+    <string name="brackets"
+            translatable="false">(%1$s)</string>
 
     <!--&lt;!&ndash; Regular expression with all possible prefixes-->
     <!--(as seen in the wild) for a Series number. &ndash;&gt;-->

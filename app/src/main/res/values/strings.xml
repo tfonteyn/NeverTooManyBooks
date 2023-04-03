@@ -613,8 +613,7 @@
     <string name="option_author_details">All works by this author</string>
     <!-- Book context/options submenu - will contain links to external websites for the current book.  -->
     <string name="option_view_book_at">View on…</string>
-    <!-- submenu title -->
-    <string name="option_amazon_ellipsis">Amazon…</string>
+
     <!-- submenu options for the "amazon" menu -->
     <string name="option_shop_books_in_series">Books in this series</string>
     <!-- submenu options for the "amazon" menu -->

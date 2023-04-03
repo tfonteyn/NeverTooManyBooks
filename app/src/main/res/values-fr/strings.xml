@@ -128,7 +128,6 @@
     <string name="action_show_all">Tout afficher</string>
     <string name="action_skip">Ignorer</string>
     <string name="action_synchronize">Synchroniser</string>
-    <string name="option_amazon_ellipsis">Amazon…</string>
     <string name="and_others">%1$s …</string>
     <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
     <string name="bob_empty_author">(L\'auteur est manquant)</string>
