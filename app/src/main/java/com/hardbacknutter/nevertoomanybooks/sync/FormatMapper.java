@@ -49,6 +49,8 @@ public final class FormatMapper
         MAPPER.put("geb.", R.string.book_format_hardcover);
         // dutch - KBNL
         MAPPER.put("gebonden", R.string.book_format_hardcover);
+        // french - BOL
+        MAPPER.put("couverture rigide", R.string.book_format_hardcover);
 
 
         // ### Plain paperback ###
@@ -59,7 +61,8 @@ public final class FormatMapper
         MAPPER.put("paperback", R.string.book_format_paperback);
         // dutch - KBNL
         MAPPER.put("pbk.", R.string.book_format_paperback);
-
+        // french - BOL
+        MAPPER.put(" broché ", R.string.book_format_paperback);
 
         // ### Mid-size (a.k.a 'trade') format paperback ###
         MAPPER.put("tp", R.string.book_format_paperback_large);
@@ -75,6 +78,8 @@ public final class FormatMapper
         MAPPER.put("e-book", R.string.book_format_ebook);
         // dutch - stripinfo.be
         MAPPER.put("digitaal", R.string.book_format_ebook);
+        // french - BOL
+        MAPPER.put("livre numérique", R.string.book_format_ebook);
 
 
         // ### Audio-books ###
