@@ -70,7 +70,7 @@ public class LibraryThingSearchEngine
 
     /** Preferences - Type: {@code String}. */
     public static final String PK_HOST_URL = EngineId.LibraryThing.getPreferenceKey()
-                                             + Prefs.pk_suffix_host_url;
+                                             + '.' + Prefs.pk_host_url;
     @Nullable
     private FutureHttpGet<Boolean> futureHttpGet;
 

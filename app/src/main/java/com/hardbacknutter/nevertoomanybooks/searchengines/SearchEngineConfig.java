@@ -219,7 +219,7 @@ public final class SearchEngineConfig {
     @NonNull
     public String getHostUrl(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getString(
-                engineId.getPreferenceKey() + Prefs.pk_suffix_host_url,
+                engineId.getPreferenceKey() + '.' + Prefs.pk_host_url,
                 engineId.getDefaultUrl());
     }
 

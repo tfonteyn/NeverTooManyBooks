@@ -46,8 +46,6 @@ public final class Prefs {
     public static final String pk_search_reformat_format = "search.reformat.format";
     public static final String pk_search_reformat_color = "search.reformat.color";
     public static final String pk_search_isbn_prefer_10 = "search.byIsbn.prefer.10";
-
-    /** suffix for site specific option. */
     public static final String pk_search_show_shopping_menu = "search.shopping.menu";
 
     public static final String pk_camera_image_autorotate = "camera.image.autorotate";
@@ -68,7 +66,9 @@ public final class Prefs {
 
     public static final String pk_sqlite_max_lines = "sqlite.shell.max.lines";
 
-    public static final String pk_suffix_host_url = ".host.url";
+    public static final String pk_host_url = "host.url";
+    public static final String pk_host_user = "host.user";
+    public static final String pk_host_password = "host.password";
 
     public static final String pk_timeout_connect_in_seconds = "timeout.connect";
     public static final String pk_timeout_read_in_seconds = "timeout.read";

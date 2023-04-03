@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpPost;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
@@ -57,8 +58,8 @@ public class StripInfoAuth
     /** Preferences prefix. */
     private static final String PREF_KEY = EngineId.StripInfoBe.getPreferenceKey();
 
-    public static final String PK_HOST_USER = PREF_KEY + ".host.user";
-    public static final String PK_HOST_PASS = PREF_KEY + ".host.password";
+    public static final String PK_HOST_USER = PREF_KEY + '.' + Prefs.pk_host_user;
+    public static final String PK_HOST_PASS = PREF_KEY + '.' + Prefs.pk_host_password;
 
     static final String PK_LAST_SYNC = PREF_KEY + ".last.sync.date";
 

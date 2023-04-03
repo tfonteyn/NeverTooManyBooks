@@ -260,8 +260,8 @@ public class DBHelper
               .remove("fields.visibility.read")
 
               // Editing the URL for these sites has been removed.
-              .remove(EngineId.Isfdb.getPreferenceKey() + Prefs.pk_suffix_host_url)
-              .remove(EngineId.LibraryThing.getPreferenceKey() + Prefs.pk_suffix_host_url)
+              .remove(EngineId.Isfdb.getPreferenceKey() + '.' + Prefs.pk_host_url)
+              .remove(EngineId.LibraryThing.getPreferenceKey() + '.' + Prefs.pk_host_url)
 
               .apply();
     }

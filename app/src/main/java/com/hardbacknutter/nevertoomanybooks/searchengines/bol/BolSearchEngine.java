@@ -50,6 +50,8 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -68,7 +70,7 @@ public class BolSearchEngine
                    SearchEngine.ByText {
 
     /** one of {"","be","nl"} */
-    static final String PK_BOL_COUNTRY = "bol.country";
+    static final String PK_BOL_COUNTRY = EngineId.Bol.getPreferenceKey() + ".country";
 
     /** Website character encoding. */
     static final String CHARSET = "UTF-8";

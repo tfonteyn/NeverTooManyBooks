@@ -97,7 +97,7 @@ public class AmazonSearchEngine
 
     /** Preferences - Type: {@code String}. */
     public static final String PK_HOST_URL = EngineId.Amazon.getPreferenceKey()
-                                             + Prefs.pk_suffix_host_url;
+                                             + '.' + Prefs.pk_host_url;
     /** Website character encoding. */
     static final String CHARSET = "UTF-8";
     /** Log tag. */
