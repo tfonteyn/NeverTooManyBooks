@@ -457,9 +457,9 @@
     <string name="notification_channel_error">Fout</string>
     <string name="notification_channel_info">Informatie</string>
     <string name="notification_channel_warn">Waarschuwing</string>
-    <string name="option_amazon_books_by_author">Boeken van deze auteur</string>
-    <string name="option_amazon_books_by_author_in_series">Boeken per auteur/reeks</string>
-    <string name="option_amazon_books_in_series">Boeken in deze reeks</string>
+    <string name="option_shop_books_by_author">Boeken van deze auteur</string>
+    <string name="option_shop_books_by_author_in_series">Boeken per auteur/reeks</string>
+    <string name="option_shop_books_in_series">Boeken in deze reeks</string>
     <string name="option_amazon_ellipsis">Amazon…</string>
     <string name="option_archive_type_backup_tar">Backup kopie (.tar)</string>
     <string name="option_archive_type_backup_zip">Backup kopie (.zip)</string>

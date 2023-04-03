@@ -474,9 +474,9 @@
     <string name="list_and">a</string>
     <string name="list_element">• %s</string>
     <string name="size_megabytes">%1$.2fMB</string>
-    <string name="option_amazon_books_by_author">Knihy tohoto autora</string>
-    <string name="option_amazon_books_by_author_in_series">Knihy podle autora / série</string>
-    <string name="option_amazon_books_in_series">Knihy v této sérii</string>
+    <string name="option_shop_books_by_author">Knihy tohoto autora</string>
+    <string name="option_shop_books_by_author_in_series">Knihy podle autora / série</string>
+    <string name="option_shop_books_in_series">Knihy v této sérii</string>
     <string name="option_author_details">Všechna díla tohoto autora</string>
     <string name="option_author_works_book">Pouze knihy</string>
     <string name="option_author_works_toc">Pouze tituly obsahu</string>

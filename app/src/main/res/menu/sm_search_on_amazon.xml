@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -32,19 +32,19 @@
                     android:id="@id/MENU_AMAZON_BOOKS_BY_AUTHOR"
                     android:icon="@drawable/ic_baseline_search_24"
                     android:orderInCategory="@integer/MENU_ORDER_AMAZON_AUTHOR"
-                    android:title="@string/option_amazon_books_by_author" />
+                    android:title="@string/option_shop_books_by_author" />
 
                 <item
                     android:id="@id/MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES"
                     android:icon="@drawable/ic_baseline_search_24"
                     android:orderInCategory="@integer/MENU_ORDER_AMAZON_AUTHOR_IN_SERIES"
-                    android:title="@string/option_amazon_books_by_author_in_series" />
+                    android:title="@string/option_shop_books_by_author_in_series" />
 
                 <item
                     android:id="@id/MENU_AMAZON_BOOKS_IN_SERIES"
                     android:icon="@drawable/ic_baseline_search_24"
                     android:orderInCategory="@integer/MENU_ORDER_AMAZON_SERIES"
-                    android:title="@string/option_amazon_books_in_series" />
+                    android:title="@string/option_shop_books_in_series" />
             </menu>
         </item>
     </group>

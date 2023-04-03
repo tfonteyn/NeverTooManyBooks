@@ -474,9 +474,9 @@
     <string name="list_and">i</string>
     <string name="list_element">• %s</string>
     <string name="size_megabytes">%1$.2fMB</string>
-    <string name="option_amazon_books_by_author">Książki tego autora</string>
-    <string name="option_amazon_books_by_author_in_series">Książki według autora / serii</string>
-    <string name="option_amazon_books_in_series">Książki z tej serii</string>
+    <string name="option_shop_books_by_author">Książki tego autora</string>
+    <string name="option_shop_books_by_author_in_series">Książki według autora / serii</string>
+    <string name="option_shop_books_in_series">Książki z tej serii</string>
     <string name="option_author_details">Wszystkie prace tego autora</string>
     <string name="option_author_works_book">Tylko książki</string>
     <string name="option_author_works_toc">Tylko tytuły treści</string>
