@@ -97,6 +97,16 @@ public class BolSearchEngine
         super(appContext, config);
     }
 
+    /**
+     * Get the country for the website: nl or be.
+     * By default we use the country the user is in, defined as either Belgium or
+     * The Netherlands+rest-of-the-world.
+     * The user can set their personal preference to BE or NL in the settings.
+     *
+     * @param context Current context
+     *
+     * @return "be" or "nl"
+     */
     @NonNull
     static String getCountry(@NonNull final Context context) {
         String country = PreferenceManager.getDefaultSharedPreferences(context)
@@ -120,9 +130,8 @@ public class BolSearchEngine
     @NonNull
     @Override
     public Locale getLocale(@NonNull final Context context) {
-        // The site can display in french, but we don't support this as
-        // 1. they don't sell french books anyhow (at least for now)
-        // 2. their french book pages don't display the book title (oh boy...)
+        // The site can display in French, but we always access the site in Dutch for now.
+        // This should not cause any issue as searches show books in all languages.
         return new Locale("nl", getCountry(context).toUpperCase(Locale.ROOT));
     }
 
@@ -220,6 +229,8 @@ public class BolSearchEngine
     /**
      * Parses the downloaded {@link org.jsoup.nodes.Document}.
      * We only parse the <strong>first book</strong> found.
+     * <p>
+     * We're ignoring the label "Co Auteur" and "Hoofdredacteur" on purpose.
      *
      * @param context     Current context
      * @param document    to parse
@@ -243,8 +254,9 @@ public class BolSearchEngine
         final Element titleElement = document.selectFirst("span[data-test='title']");
         if (titleElement == null || titleElement.text().isEmpty()) {
             // well, this is unexpected...
-            // however, when accessing the site in french and looking for
-            // a dutch book.... the site simply does not list the title... anywhere! ... ouch...
+            // This is seen when accessing the site in french and looking for
+            // a dutch (or german...) book....
+            // The site simply does not list the title... anywhere! ... ouch...
             return;
         }
         processText(titleElement, DBKey.TITLE, book);
@@ -267,6 +279,7 @@ public class BolSearchEngine
                 switch (label.text()) {
                     case "Taal":
                     case "Langue": {
+                        // the first occurrence uses the iso abbreviation
                         processText(value, DBKey.LANGUAGE, book);
                         break;
                     }
@@ -293,50 +306,64 @@ public class BolSearchEngine
                         break;
                     }
                     case "Hoofdauteur":
-                    case "Auteur principal": {
-                        final Element a = value.selectFirst("a");
-                        if (a != null) {
-                            final Author author = Author.from(a.text());
-                            author.setType(Author.TYPE_WRITER);
-                            book.add(author);
-                        }
+                    case "Auteur principal":
+                    case "Tweede Auteur":
+                    case "Deuxième auteur": {
+                        processAuthor(value, Author.TYPE_WRITER, book);
                         break;
                     }
                     case "Hoofdillustrator":
-                    case "Illustrateur en chef": {
-                        final Element a = value.selectFirst("a");
-                        if (a != null) {
-                            final Author author = Author.from(a.text());
-                            author.setType(Author.TYPE_ARTIST);
-                            book.add(author);
-                        }
+                    case "Illustrateur en chef":
+                    case "Tweede Illustrator":
+                    case "Deuxième illustrateur": {
+                        processAuthor(value, Author.TYPE_ARTIST, book);
+                        break;
+                    }
+                    case "Hoofdredacteur":
+                    case "Rédacteur en chef":
+                    case "Tweede Redacteur":
+                    case "Deuxième rédacteur": {
+                        processAuthor(value, Author.TYPE_EDITOR, book);
                         break;
                     }
                     case "Eerste Vertaler":
                     case "Tweede Vertaler":
                     case "Premier traducteur":
                     case "Deuxième traducteur": {
-                        final Element a = value.selectFirst("a");
-                        if (a != null) {
-                            final Author author = Author.from(a.text());
-                            author.setType(Author.TYPE_TRANSLATOR);
-                            book.add(author);
-                        }
+                        processAuthor(value, Author.TYPE_TRANSLATOR, book);
+                        break;
+                    }
+                    case "Verteller":
+                    case "Narrateur": {
+                        processAuthor(value, Author.TYPE_NARRATOR, book);
                         break;
                     }
                     case "Originele titel":
                     case "Titre original": {
-                        final String originalTitle = value.text();
-                        if (!originalTitle.isEmpty()) {
-                            book.putString(SiteField.ORIGINAL_TITLE, originalTitle);
+                        processText(value, SiteField.ORIGINAL_TITLE, book);
+                        break;
+                    }
+                    case "Serie": {
+                        // The series number is only available embedded in the title
+                        // but without any specific structure to it.
+                        final Element a = value.selectFirst("a");
+                        if (a != null) {
+                            final String text = a.text();
+                            if (!text.isEmpty()) {
+                                book.add(Series.from(text));
+                            }
                         }
                         break;
                     }
+
                     case "Hoofduitgeverij":
                     case "Editeur principal": {
                         final Element a = value.selectFirst("a");
                         if (a != null) {
-                            book.add(Publisher.from(a.text()));
+                            final String text = a.text();
+                            if (!text.isEmpty()) {
+                                book.add(Publisher.from(text));
+                            }
                         }
                         break;
                     }
@@ -356,6 +383,17 @@ public class BolSearchEngine
 
         if (fetchCovers[0]) {
             parseCovers(document, fetchCovers, book);
+        }
+    }
+
+    private void processAuthor(@NonNull final Element value,
+                               @Author.Type final int type,
+                               @NonNull final Book book) {
+        final Element a = value.selectFirst("a");
+        if (a != null) {
+            final Author author = Author.from(a.text());
+            author.setType(type);
+            book.add(author);
         }
     }
 
@@ -387,7 +425,7 @@ public class BolSearchEngine
     private void parsePrice(@NonNull final Document document,
                             @NonNull final Book book,
                             @NonNull final RealNumberParser realNumberParser) {
-        //FIXME: if they are out of stock, these will NOT contain a price.
+        //TODO: if they are out of stock, this element will NOT contain a price.
         // We should get the price from the buttons on the page just above this field
         // but those button elements are not easy to parse for.
         final Element priceElement = document.selectFirst("span.promo-price");
@@ -404,6 +442,27 @@ public class BolSearchEngine
 
             } catch (@NonNull final IllegalArgumentException ignore) {
                 // ignore
+            }
+        }
+    }
+
+    /**
+     * Process a value which is pure text.
+     *
+     * @param value value element
+     * @param key   for this field
+     * @param book  Bundle to update
+     */
+    private void processText(@Nullable final Element value,
+                             @NonNull final String key,
+                             @NonNull final Book book) {
+        // some 'specs' can appear more than once (e.g. "Taal")
+        if (!book.contains(key)) {
+            if (value != null) {
+                final String text = SearchEngineUtils.cleanText(value.text());
+                if (!text.isEmpty()) {
+                    book.putString(key, text);
+                }
             }
         }
     }
@@ -476,27 +535,6 @@ public class BolSearchEngine
             }
         }
         return false;
-    }
-
-    /**
-     * Process a value which is pure text.
-     *
-     * @param value value element
-     * @param key   for this field
-     * @param book  Bundle to update
-     */
-    private void processText(@Nullable final Element value,
-                             @NonNull final String key,
-                             @NonNull final Book book) {
-        // some 'specs' can appear more than once (e.g. "Taal")
-        if (!book.contains(key)) {
-            if (value != null) {
-                final String text = SearchEngineUtils.cleanText(value.text());
-                if (!text.isEmpty()) {
-                    book.putString(key, text);
-                }
-            }
-        }
     }
 
     /**
