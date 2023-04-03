@@ -834,8 +834,7 @@ public class BooksOnBookshelf
                 if (calibreHandler != null) {
                     calibreHandler.onCreateMenu(menu, inflater);
                 }
-                vm.getViewBookHandler().onCreateMenu(this, menu, inflater);
-                vm.getAmazonHandler().onCreateMenu(this, menu, inflater);
+                vm.getMenuHandlers().forEach(h -> h.onCreateMenu(this, menu, inflater));
 
                 final boolean isRead = rowData.getBoolean(DBKey.READ__BOOL);
                 menu.findItem(R.id.MENU_BOOK_SET_READ).setVisible(!isRead);
@@ -852,33 +851,32 @@ public class BooksOnBookshelf
                     calibreHandler.onPrepareMenu(this, menu, book);
                 }
 
-                vm.getViewBookHandler().onPrepareMenu(menu, rowData);
-                vm.getAmazonHandler().onPrepareMenu(menu, rowData);
+                vm.getMenuHandlers().forEach(h -> h.onPrepareMenu(this, menu, rowData));
                 break;
             }
             case BooklistGroup.AUTHOR: {
                 final MenuInflater inflater = getMenuInflater();
                 inflater.inflate(R.menu.author, menu);
-                vm.getAmazonHandler().onCreateMenu(this, menu, inflater);
+                vm.getMenuHandlers().forEach(h -> h.onCreateMenu(this, menu, inflater));
 
                 final boolean complete = rowData.getBoolean(DBKey.AUTHOR_IS_COMPLETE);
                 menu.findItem(R.id.MENU_AUTHOR_SET_COMPLETE).setVisible(!complete);
                 menu.findItem(R.id.MENU_AUTHOR_SET_INCOMPLETE).setVisible(complete);
 
-                vm.getAmazonHandler().onPrepareMenu(menu, rowData);
+                vm.getMenuHandlers().forEach(h -> h.onPrepareMenu(this, menu, rowData));
                 break;
             }
             case BooklistGroup.SERIES: {
                 if (rowData.getLong(DBKey.FK_SERIES) != 0) {
                     final MenuInflater inflater = getMenuInflater();
                     inflater.inflate(R.menu.series, menu);
-                    vm.getAmazonHandler().onCreateMenu(this, menu, inflater);
+                    vm.getMenuHandlers().forEach(h -> h.onCreateMenu(this, menu, inflater));
 
                     final boolean complete = rowData.getBoolean(DBKey.SERIES_IS_COMPLETE);
                     menu.findItem(R.id.MENU_SERIES_SET_COMPLETE).setVisible(!complete);
                     menu.findItem(R.id.MENU_SERIES_SET_INCOMPLETE).setVisible(complete);
 
-                    vm.getAmazonHandler().onPrepareMenu(menu, rowData);
+                    vm.getMenuHandlers().forEach(h -> h.onPrepareMenu(this, menu, rowData));
 
                 } else {
                     // It's a "(No Series)" node
@@ -1280,13 +1278,10 @@ public class BooksOnBookshelf
             && calibreHandler.onMenuItemSelected(this, menuItem, rowData)) {
             return true;
         }
-        if (vm.getAmazonHandler().onMenuItemSelected(this, menuItem, rowData)) {
-            return true;
-        }
-        if (vm.getViewBookHandler().onMenuItemSelected(this, menuItem, rowData)) {
-            return true;
-        }
-        return false;
+
+        return vm.getMenuHandlers()
+                 .stream()
+                 .anyMatch(h -> h.onMenuItemSelected(this, menuItem, rowData));
     }
 
     private void searchMissingCover(final long nodeRowId) {

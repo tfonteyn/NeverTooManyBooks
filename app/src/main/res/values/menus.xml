@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -78,15 +78,26 @@
     <integer name="MENU_ORDER_AMAZON_SERIES">910</integer>
     <integer name="MENU_ORDER_AMAZON_AUTHOR_IN_SERIES">915</integer>
 
+    <integer name="MENU_ORDER_BOL">900</integer>
+    <integer name="MENU_ORDER_BOL_AUTHOR">905</integer>
+    <integer name="MENU_ORDER_BOL_SERIES">910</integer>
+    <integer name="MENU_ORDER_BOL_AUTHOR_IN_SERIES">915</integer>
+
+
     <integer name="MENU_ORDER_NEXT_MISSING_COVER">999</integer>
 
     <!-- Used by the ExtPopupMenu. -->
-    <item name="MENU_DIVIDER" type="id" />
+    <item name="MENU_DIVIDER"
+          type="id" />
 
-    <item name="MENU_EDIT" type="id" />
-    <item name="MENU_DELETE" type="id" />
-    <item name="MENU_DUPLICATE" type="id" />
-    <item name="MENU_SHOW_ALL" type="id" />
+    <item name="MENU_EDIT"
+          type="id" />
+    <item name="MENU_DELETE"
+          type="id" />
+    <item name="MENU_DUPLICATE"
+          type="id" />
+    <item name="MENU_SHOW_ALL"
+          type="id" />
     <item name="MENU_SEARCH" type="id" />
 
     <item name="MENU_UPDATE_FROM_INTERNET" type="id" />
@@ -167,24 +178,46 @@
     <item name="MENU_VIEW_BOOK_AT_GOODREADS" type="id" />
     <item name="MENU_VIEW_BOOK_AT_ISFDB" type="id" />
     <item name="MENU_VIEW_BOOK_AT_LAST_DODO_NL" type="id" />
-    <item name="MENU_VIEW_BOOK_AT_LIBRARY_THING" type="id" />
-    <item name="MENU_VIEW_BOOK_AT_OPEN_LIBRARY" type="id" />
-    <item name="MENU_VIEW_BOOK_AT_STRIP_INFO_BE" type="id" />
+    <item name="MENU_VIEW_BOOK_AT_LIBRARY_THING"
+          type="id" />
+    <item name="MENU_VIEW_BOOK_AT_OPEN_LIBRARY"
+          type="id" />
+    <item name="MENU_VIEW_BOOK_AT_STRIP_INFO_BE"
+          type="id" />
 
     <!-- Book - Amazon search -->
-    <item name="SUBMENU_AMAZON_SEARCH" type="id" />
-    <item name="MENU_AMAZON_BOOKS_IN_SERIES" type="id" />
-    <item name="MENU_AMAZON_BOOKS_BY_AUTHOR" type="id" />
-    <item name="MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES" type="id" />
+    <item name="SUBMENU_AMAZON_SEARCH"
+          type="id" />
+    <item name="MENU_AMAZON_BOOKS_IN_SERIES"
+          type="id" />
+    <item name="MENU_AMAZON_BOOKS_BY_AUTHOR"
+          type="id" />
+    <item name="MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES"
+          type="id" />
+
+    <!-- Book - BOL search -->
+    <item name="SUBMENU_BOL_SEARCH"
+          type="id" />
+    <item name="MENU_BOL_BOOKS_IN_SERIES"
+          type="id" />
+    <item name="MENU_BOL_BOOKS_BY_AUTHOR"
+          type="id" />
+    <item name="MENU_BOL_BOOKS_BY_AUTHOR_IN_SERIES"
+          type="id" />
 
     <!-- Book - Calibre -->
-    <item name="SUBMENU_CALIBRE" type="id" />
-    <item name="MENU_CALIBRE_DOWNLOAD" type="id" />
-    <item name="MENU_CALIBRE_READ" type="id" />
+    <item name="SUBMENU_CALIBRE"
+          type="id" />
+    <item name="MENU_CALIBRE_DOWNLOAD"
+          type="id" />
+    <item name="MENU_CALIBRE_READ"
+          type="id" />
 
     <!-- Toolbar menu -->
-    <item name="MENU_CALIBRE_SETTINGS" type="id" />
-    <item name="MENU_STRIP_INFO_SETTING" type="id" />
+    <item name="MENU_CALIBRE_SETTINGS"
+          type="id" />
+    <item name="MENU_STRIP_INFO_SETTING"
+          type="id" />
 
     <!-- Navigation drawer menu -->
     <item name="MENU_ADVANCED_SEARCH" type="id" />

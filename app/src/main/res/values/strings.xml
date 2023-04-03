@@ -1513,6 +1513,7 @@
     <!-- ####################################################################################### -->
     <string name="lbl_strip_info_mapped_bookshelf_wishlist">Wishlist mapped bookshelf</string>
     <string name="lbl_strip_info_mapped_bookshelf_owned_books">Owned books mapped bookshelf</string>
+    <string name="pt_search_show_shopping_options">Show shopping menus</string>
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
     <!-- Notification title when external media is missing [CHAR LIMIT=30] -->
     <!--    <string name="ext_media_missing_title">%s missing</string>-->

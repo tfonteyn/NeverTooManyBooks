@@ -47,6 +47,9 @@ public final class Prefs {
     public static final String pk_search_reformat_color = "search.reformat.color";
     public static final String pk_search_isbn_prefer_10 = "search.byIsbn.prefer.10";
 
+    /** suffix for site specific option. */
+    public static final String pk_search_show_shopping_menu = "search.shopping.menu";
+
     public static final String pk_camera_image_autorotate = "camera.image.autorotate";
     public static final String pk_camera_image_action = "camera.image.action";
     public static final String pk_camera_lens_facing = "camera.lens.facing";

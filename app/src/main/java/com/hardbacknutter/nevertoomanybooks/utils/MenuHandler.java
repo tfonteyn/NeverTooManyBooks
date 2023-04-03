@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,13 +30,37 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
 public interface MenuHandler {
 
+    /**
+     * Inflate/create the menu.
+     *
+     * @param context  Current context
+     * @param menu     The Menu to inflate into
+     * @param inflater to use
+     */
     void onCreateMenu(@NonNull Context context,
                       @NonNull Menu menu,
                       @NonNull MenuInflater inflater);
 
-    void onPrepareMenu(@NonNull Menu menu,
+    /**
+     * Prepare the menu before opening it.
+     *
+     * @param context Current context
+     * @param menu    to prepare
+     * @param rowData the row data
+     */
+    void onPrepareMenu(@NonNull Context context,
+                       @NonNull Menu menu,
                        @NonNull DataHolder rowData);
 
+    /**
+     * Called after the user selected a menu item.
+     *
+     * @param context  Current context
+     * @param menuItem item which was selected
+     * @param rowData  the row data
+     *
+     * @return {@code true} if the event was handled, {@code false} otherwise.
+     */
     boolean onMenuItemSelected(@NonNull Context context,
                                @NonNull MenuItem menuItem,
                                @NonNull DataHolder rowData);

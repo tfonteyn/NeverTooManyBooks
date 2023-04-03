@@ -46,7 +46,6 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
-import com.hardbacknutter.nevertoomanybooks.bookdetails.ViewBookOnWebsiteHandler;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -83,7 +82,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.LanguageFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.ListFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.LongNumberFormatter;
-import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonMenuHandler;
+import com.hardbacknutter.nevertoomanybooks.searchengines.MenuHandlerFactory;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
@@ -107,7 +106,7 @@ public class EditBookViewModel
     private final Collection<FragmentId> fragmentsWithUnfinishedEdits =
             EnumSet.noneOf(FragmentId.class);
 
-    private final List<MenuHandler> menuHandlers = new ArrayList<>();
+    private List<MenuHandler> menuHandlers;
     private final Collection<FieldGroup> fieldGroups = EnumSet.noneOf(FieldGroup.class);
 
     /**
@@ -196,6 +195,8 @@ public class EditBookViewModel
             errStrNonBlankRequired = context.getString(R.string.vldt_non_blank_required);
             errStrReadStartAfterEnd = context.getString(R.string.vldt_read_start_after_end);
 
+            menuHandlers = MenuHandlerFactory.create();
+
             final Languages languages = ServiceLocator.getInstance().getLanguages();
             final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
@@ -252,10 +253,6 @@ public class EditBookViewModel
 
     @NonNull
     List<MenuHandler> getMenuHandlers() {
-        if (menuHandlers.isEmpty()) {
-            menuHandlers.add(new ViewBookOnWebsiteHandler());
-            menuHandlers.add(new AmazonMenuHandler());
-        }
         return menuHandlers;
     }
 

@@ -70,17 +70,18 @@ public class BolSearchEngine
     /** one of {"","be","nl"} */
     static final String PK_BOL_COUNTRY = "bol.country";
 
-    private static final String TAG = "BolSearchEngine";
+    /** Website character encoding. */
+    static final String CHARSET = "UTF-8";
+    /**
+     * param 1: the country "be" or "nl"
+     * param 2: words, separated by spaces
+     */
+    static final String BY_TEXT = "/%1$s/nl/s/?searchtext=%2$s";
     /**
      * param 1: the country "be" or "nl"
      * param 2: the isbn
      */
     private static final String BY_ISBN = "/%1$s/nl/s/?searchtext=+%2$s+";
-    /**
-     * param 1: the country "be" or "nl"
-     * param 2: words, separated by spaces
-     */
-    private static final String BY_TEXT = "/%1$s/nl/s/?searchtext=%2$s";
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
@@ -95,16 +96,8 @@ public class BolSearchEngine
     }
 
     @NonNull
-    @Override
-    public Locale getLocale(@NonNull final Context context) {
-        // The site can display in french, but we don't support this as
-        // 1. they don't sell french books anyhow (at least for now)
-        // 2. their french book pages don't display the book title (oh boy...)
-        return new Locale("nl", getCountry().toUpperCase(Locale.ROOT));
-    }
-
-    private String getCountry() {
-        String country = PreferenceManager.getDefaultSharedPreferences(appContext)
+    static String getCountry(@NonNull final Context context) {
+        String country = PreferenceManager.getDefaultSharedPreferences(context)
                                           .getString(PK_BOL_COUNTRY, null);
         if (country != null && !country.isEmpty()) {
             return country;
@@ -120,6 +113,15 @@ public class BolSearchEngine
                 return "nl";
             }
         }
+    }
+
+    @NonNull
+    @Override
+    public Locale getLocale(@NonNull final Context context) {
+        // The site can display in french, but we don't support this as
+        // 1. they don't sell french books anyhow (at least for now)
+        // 2. their french book pages don't display the book title (oh boy...)
+        return new Locale("nl", getCountry(context).toUpperCase(Locale.ROOT));
     }
 
     @NonNull
@@ -146,7 +148,7 @@ public class BolSearchEngine
             words.add(code);
         }
 
-        final String url = getHostUrl() + String.format(BY_TEXT, getCountry(), words);
+        final String url = getHostUrl() + String.format(BY_TEXT, getCountry(context), words);
         final Document document = loadDocument(context, url, null);
         final Book book = new Book();
         if (!isCancelled()) {
@@ -163,7 +165,7 @@ public class BolSearchEngine
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final String url = getHostUrl() + String.format(BY_ISBN, getCountry(), validIsbn);
+        final String url = getHostUrl() + String.format(BY_ISBN, getCountry(context), validIsbn);
         final Document document = loadDocument(context, url, null);
         final Book book = new Book();
         if (!isCancelled()) {

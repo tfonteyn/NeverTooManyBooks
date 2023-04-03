@@ -46,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleCon
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PreferredStylesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooklistContract;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.bookdetails.ViewBookOnWebsiteHandler;
 import com.hardbacknutter.nevertoomanybooks.booklist.BoBTask;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
@@ -66,7 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonMenuHandler;
+import com.hardbacknutter.nevertoomanybooks.searchengines.MenuHandlerFactory;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
@@ -188,11 +187,7 @@ public class BooksOnBookshelfViewModel
      */
     private int selectedAdapterPosition = RecyclerView.NO_POSITION;
 
-    // Not using a list here as we need separate access to the amazon handler
-    @Nullable
-    private ViewBookOnWebsiteHandler viewBookHandler;
-    @Nullable
-    private AmazonMenuHandler amazonMenuHandler;
+    private List<MenuHandler> menuHandlers;
 
     @NonNull
     public LiveData<LiveDataEvent<TaskProgress>> onProgress() {
@@ -291,6 +286,8 @@ public class BooksOnBookshelfViewModel
             rebuildMode = RebuildBooklist.FromSaved;
         }
 
+        menuHandlers = MenuHandlerFactory.create();
+
         // create if not explicitly set above
         if (searchCriteria == null) {
             searchCriteria = new SearchCriteria();
@@ -316,19 +313,8 @@ public class BooksOnBookshelfViewModel
     }
 
     @NonNull
-    MenuHandler getViewBookHandler() {
-        if (viewBookHandler == null) {
-            viewBookHandler = new ViewBookOnWebsiteHandler();
-        }
-        return viewBookHandler;
-    }
-
-    @NonNull
-    MenuHandler getAmazonHandler() {
-        if (amazonMenuHandler == null) {
-            amazonMenuHandler = new AmazonMenuHandler();
-        }
-        return amazonMenuHandler;
+    List<MenuHandler> getMenuHandlers() {
+        return menuHandlers;
     }
 
     /**

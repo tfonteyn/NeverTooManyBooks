@@ -25,20 +25,19 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonMenuHandler;
+import com.hardbacknutter.nevertoomanybooks.searchengines.MenuHandlerFactory;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
 
 public class ShowBookDetailsActivityViewModel
         extends ViewModel {
 
-    private final List<MenuHandler> menuHandlers = new ArrayList<>();
+    private List<MenuHandler> menuHandlers;
 
     private boolean modified;
 
@@ -86,8 +85,7 @@ public class ShowBookDetailsActivityViewModel
             final String styleUuid = args.getString(Style.BKEY_UUID);
             style = ServiceLocator.getInstance().getStyles().getStyleOrDefault(context, styleUuid);
 
-            menuHandlers.add(new ViewBookOnWebsiteHandler());
-            menuHandlers.add(new AmazonMenuHandler());
+            menuHandlers = MenuHandlerFactory.create();
         }
     }
 

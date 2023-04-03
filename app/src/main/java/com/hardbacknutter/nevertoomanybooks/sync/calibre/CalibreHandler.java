@@ -91,7 +91,8 @@ public class CalibreHandler {
     /**
      * Constructor.
      *
-     * @param context Current context
+     * @param context             Current context
+     * @param viewModelStoreOwner the object which will own the internal ViewModel in this class.
      *
      * @throws CertificateException on failures related to a user installed CA.
      */
@@ -167,6 +168,12 @@ public class CalibreHandler {
         vm.onProgress().observe(lifecycleOwner, this::onProgress);
     }
 
+    /**
+     * Inflate/create the menu.
+     *
+     * @param menu     The Menu to inflate into
+     * @param inflater to use
+     */
     public void onCreateMenu(@NonNull final Menu menu,
                              @NonNull final MenuInflater inflater) {
         if (menu.findItem(R.id.SUBMENU_CALIBRE) == null) {

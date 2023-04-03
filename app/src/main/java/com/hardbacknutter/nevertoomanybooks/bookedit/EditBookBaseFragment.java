@@ -396,9 +396,11 @@ public abstract class EditBookBaseFragment
 
         @Override
         public void onPrepareMenu(@NonNull final Menu menu) {
+            final Context context = getContext();
             final Book book = vm.getBook();
 
-            vm.getMenuHandlers().forEach(h -> h.onPrepareMenu(menu, book));
+            //noinspection ConstantConditions
+            vm.getMenuHandlers().forEach(h -> h.onPrepareMenu(context, menu, book));
         }
 
         @Override

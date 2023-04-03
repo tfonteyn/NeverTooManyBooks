@@ -82,7 +82,8 @@ public class ViewBookOnWebsiteHandler
      * @param rowData the row data
      */
     @Override
-    public void onPrepareMenu(@NonNull final Menu menu,
+    public void onPrepareMenu(@NonNull final Context context,
+                              @NonNull final Menu menu,
                               @NonNull final DataHolder rowData) {
 
         final MenuItem subMenuItem = menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE);

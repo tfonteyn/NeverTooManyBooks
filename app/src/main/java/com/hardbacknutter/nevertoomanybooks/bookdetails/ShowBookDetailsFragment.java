@@ -597,8 +597,9 @@ public class ShowBookDetailsFragment
                 calibreHandler.onCreateMenu(menu, inflater);
             }
 
+            final Context context = getContext();
             //noinspection ConstantConditions
-            aVm.getMenuHandlers().forEach(h -> h.onCreateMenu(getContext(), menu, inflater));
+            aVm.getMenuHandlers().forEach(h -> h.onCreateMenu(context, menu, inflater));
         }
 
         @Override
@@ -606,14 +607,16 @@ public class ShowBookDetailsFragment
             updateMenuReadOptions(menu);
             updateMenuLendingOptions(menu);
 
+            final Context context = getContext();
             final Book book = vm.getBook();
 
             if (calibreHandler != null) {
                 //noinspection ConstantConditions
-                calibreHandler.onPrepareMenu(getContext(), menu, book);
+                calibreHandler.onPrepareMenu(context, menu, book);
             }
 
-            aVm.getMenuHandlers().forEach(h -> h.onPrepareMenu(menu, book));
+            //noinspection ConstantConditions
+            aVm.getMenuHandlers().forEach(h -> h.onPrepareMenu(context, menu, book));
         }
 
         @Override
