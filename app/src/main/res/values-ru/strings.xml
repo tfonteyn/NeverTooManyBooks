@@ -17,33 +17,28 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
-<!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) -->
-<!--suppress LongLine -->
-<resources>
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
+<!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">Книг на полке: %1$d</item>
         <item quantity="few">Книг на полке: %1$d</item>
         <item quantity="many">Книг на полке: %1$d</item>
         <item quantity="other">Книг на полке: %1$d</item>
     </plurals>
-
     <plurals name="n_books_found">
         <item quantity="one">%1$d книга найдена</item>
         <item quantity="few">%1$d книги найдено</item>
         <item quantity="many">%1$d книги найдено</item>
         <item quantity="other">%1$d книги найдено</item>
     </plurals>
-
     <plurals name="n_stars">
         <item quantity="one">%1$s звезда</item>
         <item quantity="few">%1$s звезд</item>
         <item quantity="many">%1$s звезд</item>
         <item quantity="other">%1$s звезд</item>
     </plurals>
-
     <string name="X_acra_resToastText">&APP_NAME;" завершилось с ошибкой. Пожалуйста, помогите нам сделать приложение лучше, отправив эту ошибку."</string>
     <string name="X_action_clear_credentials">Очистить учетные данные</string>
     <string name="X_action_execute">"Выполнить"</string>
@@ -186,7 +181,11 @@
     <string name="confirm_delete_book">Книга с названием «%1$s» будет полностью удалена %2$s.\n\n Вы уверены?</string>
     <string name="confirm_delete_bookshelf">Действительно удалить книжную полку «%1$s»? Сами книги удалены не будут. Они по-прежнему будут присутствовать на любых других полках или на полке «%2$s».</string>
     <string name="confirm_delete_publisher">Действительно удалить издателя «%1$s»?\n\nСами книги не будут удалены.\n\nРассмотрите возможность изменения издателя и изменения имени издателя на имя другого издателя, чтобы сохранить эти данные.</string>
-    <string name="confirm_delete_series">Действительно удалить серию «%1$s»?\n\nКниги этой серии не будут удалены.\n\nВместо удаления вы можете переименовать серию, чтобы сохранить существующую связь с книгами</string>
+    <string name="confirm_delete_series">Действительно удалить серию «%1$s»\?
+\n
+\nКниги этой серии не будут удалены.
+\n
+\nВместо удаления вы можете переименовать серию, чтобы сохранить существующую связь с книгами.</string>
     <string name="confirm_delete_style">Удалить стиль «%1$s»?</string>
     <string name="confirm_delete_toc_entry_everywhere">Действительно удалить запись «%1$s» (от %2$s)? Он будет удален из всех книг, в которых он указан. Сами книги не будут удалены.</string>
     <string name="confirm_duplicate_book_message">Книга, которую Вы пытаетесь добавить уже есть в базе. Вы уверены, что хотите добавить ещё одну копию этой книги?</string>
@@ -202,7 +201,13 @@
     <string name="confirm_registration_benefits">Эта функция имеет преимущества при регистрации в %1$s. Хотите увидеть больше информации или отключить это сообщение?\n Вы можете найти эту информацию позже в разделе «%2$s» в настройках.</string>
     <string name="confirm_registration_required">Эта функция требует регистрации в %1$s. Хотите увидеть больше информации?</string>
     <string name="confirm_remove_toc_entry">Удалить название «%1$s» пользователя %2$s из этой книги?</string>
-    <string name="confirm_scope_for_change">Вы изменили:\n «%1$s»\n на\n «%2$s»\n\nКак вы хотите применить это изменение?\n\nЗамечание: выбор «%3$s» будет применён немедленно. Если вы выберете «%4$s», будет создан новый %5$s.</string>
+    <string name="confirm_scope_for_change">Вы изменили:
+\n «%1$s»
+\n на
+\n «%2$s»
+\n
+\nКак вы хотите применить это изменение\?
+\nЗамечание: выбор «%3$s» будет применён немедленно. Если вы выберете «%4$s», будет создан новый %5$s.</string>
     <string name="confirm_scope_for_delete">Удалить заголовок «%1$s» пользователем %2$s.\n\nКак вы хотите применить это изменение? Примечание.\nВНИМАНИЕ «%3$s» нельзя отменить!</string>
     <string name="confirm_test_connection">Желательно проверить это соединение, чтобы избежать проблем в дальнейшем.</string>
     <string name="confirm_unsaved_edits">Если вы выйдете сейчас, не сохраненные изменения будут потеряны.</string>
