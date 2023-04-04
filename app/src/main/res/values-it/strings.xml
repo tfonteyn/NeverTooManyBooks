@@ -17,28 +17,22 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-<!DOCTYPE resources [
-    <!ENTITY APP_NAME "NeverTooManyBooks">
-    ]>
-<!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) -->
-<!--suppress LongLine -->
-<resources xmlns:tools="http://schemas.android.com/tools">
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
+<!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
     <plurals name="displaying_n_books">
         <item quantity="one">Visualizzati %1$d libro</item>
         <item quantity="other">Visualizzati %1$d libri</item>
     </plurals>
-
     <plurals name="n_books_found">
         <item quantity="one">%1$d libro trovato</item>
         <item quantity="other">%1$d libri trovati</item>
     </plurals>
-
     <plurals name="n_stars">
         <item quantity="one">%1$s stella</item>
         <item quantity="other">%1$s stelle</item>
     </plurals>
-
     <string name="X_acra_resToastText">&APP_NAME; si è bloccato in modo anomalo. Aiutaci a migliorare il programma informandoci del problema.</string>
     <string name="X_action_clear_credentials">Cancella credenziali</string>
     <string name="X_action_execute">Vykdyti</string>
