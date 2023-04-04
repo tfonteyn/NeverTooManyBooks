@@ -17,27 +17,22 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
-<!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») -->
-<!--suppress LongLine -->
-<resources>
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
+<!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d boek op deze plank</item>
         <item quantity="other">%1$d boeken op deze plank</item>
     </plurals>
-
     <plurals name="n_books_found">
         <item quantity="one">%1$d boek gevonden</item>
         <item quantity="other">%1$d boeken gevonden</item>
     </plurals>
-
     <plurals name="n_stars">
         <item quantity="one">%1$s ster</item>
         <item quantity="other">%1$s sterren</item>
     </plurals>
-
     <string name="X_acra_resToastText">&APP_NAME; is onverwacht gecrasht. Help ons aub de toepassing beter te maken door deze crash te melden.</string>
     <string name="X_action_clear_credentials">Certificaatgegevens wissen</string>
     <string name="X_action_execute">Uitvoeren</string>
@@ -469,7 +464,7 @@
     <string name="option_author_works_book">Alleen boeken</string>
     <string name="option_author_works_toc">Alleen inhouds titels</string>
     <string name="option_auto_updates">Laat automatische verbeteringen van het internet toe.</string>
-    <string name="option_barcode_scan">Scan barcode</string>
+    <string name="option_barcode_scan">Scan Barcode</string>
     <string name="option_barcode_scan_continuous">Scan continu</string>
     <string name="option_bob_filter_isbn_no">Zonder ISBN</string>
     <string name="option_bob_filter_isbn_yes">Met ISBN</string>
