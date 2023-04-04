@@ -86,7 +86,7 @@ public class EditBookSeriesListDialogFragment
     /** The adapter for the list itself. */
     private SeriesListAdapter adapter;
     private final EditParcelableLauncher<Series> editLauncher =
-            new EditParcelableLauncher<>(RK_EDIT_SERIES, EditBookSeriesListDialogFragment::new) {
+            new EditParcelableLauncher<>(RK_EDIT_SERIES, EditBookSeriesDialogFragment::new) {
                 @Override
                 public void onAdd(@NonNull final Series series) {
                     add(series);

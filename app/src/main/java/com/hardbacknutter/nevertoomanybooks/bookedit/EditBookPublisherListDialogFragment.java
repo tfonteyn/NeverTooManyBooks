@@ -86,8 +86,7 @@ public class EditBookPublisherListDialogFragment
     /** The adapter for the list itself. */
     private PublisherListAdapter adapter;
     private final EditParcelableLauncher<Publisher> editLauncher =
-            new EditParcelableLauncher<>(RK_EDIT_PUBLISHER,
-                                         EditBookPublisherListDialogFragment::new) {
+            new EditParcelableLauncher<>(RK_EDIT_PUBLISHER, EditBookPublisherDialogFragment::new) {
                 @Override
                 public void onAdd(@NonNull final Publisher publisher) {
                     add(publisher);
