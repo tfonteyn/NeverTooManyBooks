@@ -17,25 +17,22 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-<!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
-<!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») -->
-<!--suppress LongLine -->
-<resources>
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
+<!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">Wyświetlanie %1$d książki</item>
         <item quantity="few">Wyświetlanie %1$d książek</item>
         <item quantity="many">Wyświetlanie %1$d książek</item>
         <item quantity="other">Wyświetlanie %1$d książki</item>
     </plurals>
-
     <plurals name="n_books_found">
         <item quantity="one">Znaleziono %1$d książkę</item>
         <item quantity="few">%1$d książki znalezione</item>
         <item quantity="many">Znaleziono %1$d książek</item>
         <item quantity="other">Znaleziono 1%1$d książki</item>
     </plurals>
-
     <!-- Short text for "n stars" -->
     <plurals name="n_stars">
         <item quantity="one">%1$s gwiazdka</item>
@@ -43,7 +40,6 @@
         <item quantity="many">%1$s gwiazdek</item>
         <item quantity="other">%1$s gwiazdki</item>
     </plurals>
-
     <string name="X_acra_resToastText">&APP_NAME; niespodziewanie się zawiesił. Pomóż nam ulepszyć aplikację, zgłaszając tę awarię.</string>
     <string name="X_action_clear_credentials">Wyczyść dane o certyfikatach</string>
     <string name="X_action_execute">Wykonaj</string>
@@ -186,7 +182,11 @@
     <string name="confirm_delete_book">Zamierzasz usunąć książkę o tytule „%1$s” autora %2$s.\n\n Czy chcesz kontynuować?</string>
     <string name="confirm_delete_bookshelf">Naprawdę usunąć półkę „%1$s”? Same książki nie zostaną usunięte. Nadal będą obecne na innych półkach lub na półce „%2$s”.</string>
     <string name="confirm_delete_publisher">Naprawdę usunąć wydawcę „%1$s”?\n\nSame książki nie zostaną usunięte.\n\nRozważ edycję wydawcy i zmianę nazwy wydawcy na nazwę innego wydawcy, aby zachować te dane.</string>
-    <string name="confirm_delete_series">Czy na pewno usunąć serię „%1$s”?\n\nKsiążki nie będą usuwane.\n\nRozważ zmianę nazwy serii by zachować te dane</string>
+    <string name="confirm_delete_series">Czy na pewno usunąć serię „%1$s”\?
+\n
+\nKsiążki nie będą usuwane.
+\n
+\nRozważ zmianę nazwy serii by zachować te dane.</string>
     <string name="confirm_delete_style">Usunąć styl „%1$s”?</string>
     <string name="confirm_delete_toc_entry_everywhere">Naprawdę usuń wpis „%1$s” (przez %2$s)? Zostanie usunięty ze wszystkich książek, w których jest wymieniony. Same książki nie zostaną usunięte.</string>
     <string name="confirm_duplicate_book_message">Książka, którą próbujesz dodać już istnieje w katalogu, czy na pewno chcesz dodać jeszcze jeden egzemplarz?</string>
@@ -195,7 +195,9 @@
     <string name="confirm_merge_bookshelves">Półka o zmienionej nazwie już istnieje. Czy chcesz je połączyć?</string>
     <string name="confirm_merge_publishers">Wydawca o zmienionej nazwie już istnieje.. Czy chcesz je połączyć?</string>
     <string name="confirm_merge_series">Seria o zmienionej nazwie już istnieje. Czy chcesz je połączyć?</string>
-    <string name="confirm_overwrite_cover">Wybrane pola zostaną zaktualizowane, natomiast okładki mogą by opcjonalnie pobrane dla wszystkich książek.\n\nCzy chcesz zastąpić wszystkie istniejące okładki? Uwaga - może to zająć sporo czasu…</string>
+    <string name="confirm_overwrite_cover">Wybrane pola zostaną zaktualizowane, natomiast okładki mogą by opcjonalnie pobrane dla wszystkich książek.
+\n
+\nCzy chcesz zastąpić wszystkie istniejące okładki\? Uwaga - może to zająć sporo czasu.</string>
     <string name="confirm_rebuild_fts">Dane indeksu wyszukiwania zostaną odbudowane po ponownym uruchomieniu aplikacji. Jesteś pewien, że chcesz kontynuować ?</string>
     <string name="confirm_rebuild_index">Indeksy zostaną odbudowane po ponownym uruchomieniu aplikacji. Jesteś pewien, że chcesz kontynuować ?</string>
     <string name="confirm_rebuild_orderby_columns">Spowoduje to odbudowanie danych sortowania po ponownym uruchomieniu aplikacji. Jesteś pewien, że chcesz kontynuować ?</string>
