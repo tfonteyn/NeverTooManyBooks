@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -19,25 +18,22 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   --><!DOCTYPE resources [
-    <!ENTITY APP_NAME "NeverTooManyBooks">
-    ]>
-<!-- Quotes «…» - Regex to find wrong ones: ('|„|‘|’|“|”) -->
-<!--suppress LongLine -->
-<resources xmlns:tools="http://schemas.android.com/tools"
-           tools:locale="pt">
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
+<!-- Quotes «…» - Regex to find wrong ones: ('|„|‘|’|“|”) --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pt">
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d livro exibido</item>
         <item quantity="many"></item>
-        <item quantity="other">"A exibir  %1$d livros"</item>
+        <item quantity="other">A exibir %1$d livros</item>
     </plurals>
     <plurals name="n_books_found">
         <item quantity="one">%1$d livro encontrado</item>
-        <item quantity="many"></item>
+        <item quantity="many"/>
         <item quantity="other">%1$d livros encontrados</item>
     </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s estrela</item>
-        <item quantity="many"></item>
+        <item quantity="many"/>
         <item quantity="other">%1$s estrelas</item>
     </plurals>
     <string name="X_action_clear_credentials">Limpar credenciais</string>
@@ -81,7 +77,7 @@
     <string name="action_show_all">Mostrar tudo</string>
     <string name="action_skip">Pular</string>
     <string name="and_others">%1$s …</string>
-    <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
+    <string name="and_others_plus">%1$s … <small>[+%2$d]</small></string>
     <string name="bob_empty_field">(Vazio)</string>
     <string name="cancelled">Cancelado</string>
     <string name="debug_email_body">Por favor reserve algum tempo para descrever brevemente o problema que encontrou.</string>
@@ -93,7 +89,7 @@
     <string name="error_unexpected">Ocorreu um erro inesperado.</string>
     <string name="error_unexpected_long">Ocorreu um erro inesperado. Se o problema persistir, entre em contato com o suporte através da “%1$s” opção na parte inferior da página de configurações.</string>
     <string name="error_updates_aborted">Actualizações canceladas</string>
-    <string name="error_upgrade_not_supported">"Actualizar de versões anteriores à  %1$s não é suportado."</string>
+    <string name="error_upgrade_not_supported">Actualizar de versões anteriores à %1$s não é suportado.</string>
     <string name="fallback_currency_format">%1$s %2$.2f</string>
     <string name="httpError">Ocorreu um erro de rede.</string>
     <string name="httpErrorAuth">Não foi possível autenticar.</string>
