@@ -17,30 +17,26 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
---><!--suppress LongLine -->
-<resources xmlns:tools="http://schemas.android.com/tools">
+--><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
     <plurals name="displaying_n_books">
         <item quantity="one">Affichage de %1$d livre</item>
         <item quantity="other">Affichage de %1$d livres</item>
         <item quantity="many">Affichage de %1$d livres</item>
     </plurals>
-
     <plurals name="n_books_found">
         <item quantity="one">%1$d livre trouvé</item>
         <item quantity="other">%1$d livres trouvés</item>
         <item quantity="many">%1$d livres trouvés</item>
     </plurals>
-
     <plurals name="n_stars">
         <item quantity="one">%1$s étoile</item>
         <item quantity="other">%1$s étoiles</item>
         <item quantity="many">%1$s étoiles</item>
     </plurals>
-
     <string name="X_acra_resToastText">&APP_NAME; a planté. Merci de nous aider en reportant ce crash.</string>
     <string name="X_action_clear_credentials">Effacer les identifiants</string>
     <string name="X_action_execute">Exécuter</string>
@@ -181,10 +177,8 @@
     <string name="lbl_certificate_issued_by">Émis par : %1$s</string>
     <string name="lbl_certificate_issued_to">Délivré à : %1$s</string>
     <string name="confirm_delete_book">Cela effacera totalement le livre intitulé «%1$s» par %2$s.\n\nÊtes vous sûr de vouloir poursuivre ?</string>
-    <string name="confirm_delete_bookshelf"
-            tools:ignore="TypographyQuotes">Supprimer l\'étagère «%1$s» ? Les livres eux-mêmes ne seront pas supprimés. Ils seront toujours présents sur toutes les autres étagères, ou sur l\'étagère «%2$s».</string>
-    <string name="confirm_delete_publisher"
-            tools:ignore="TypographyQuotes">Supprimer l\'éditeur «%1$s» ?\n\nLes livres eux-mêmes ne seront pas supprimés.\n\nEnvisagez de modifier l\'éditeur et de remplacer le nom pour conserver ces données.</string>
+    <string name="confirm_delete_bookshelf" tools:ignore="TypographyQuotes">Supprimer l\'étagère «%1$s» ? Les livres eux-mêmes ne seront pas supprimés. Ils seront toujours présents sur toutes les autres étagères, ou sur l\'étagère «%2$s».</string>
+    <string name="confirm_delete_publisher" tools:ignore="TypographyQuotes">Supprimer l\'éditeur «%1$s» ?\n\nLes livres eux-mêmes ne seront pas supprimés.\n\nEnvisagez de modifier l\'éditeur et de remplacer le nom pour conserver ces données.</string>
     <string name="confirm_delete_series">Supprimer la série «%1$s» ?\n\nLes livres eux-mêmes ne seront pas supprimés.\n\n Envisagez de modifier la série et d\'en changer le nom pour conserver ces données.</string>
     <string name="confirm_delete_style">Supprimer le style «%1$s» ?</string>
     <string name="confirm_delete_toc_entry_everywhere">Vraiment supprimer le titre «%1$s» (par %2$s) ? Il sera supprimé de tous les livres dans lesquels il est répertorié. Les livres eux-mêmes ne seront pas supprimés.</string>
