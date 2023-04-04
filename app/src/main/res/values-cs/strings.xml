@@ -17,33 +17,28 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
-<!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») -->
-<!--suppress LongLine -->
-<resources>
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
+<!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">Zobrazuji %1$d knihu</item>
         <item quantity="few">Zobrazuji %1$d knihy</item>
         <item quantity="other">Zobrazeno %1$d knih</item>
         <item quantity="many">Zobrazeno %1$d knih</item>
     </plurals>
-
     <plurals name="n_books_found">
         <item quantity="one">Nalezena %1$d kniha</item>
         <item quantity="few">Nalezeno %1$d knih</item>
         <item quantity="other">Nalezeno %1$d knih</item>
         <item quantity="many">Nalezeno %1$d knih</item>
     </plurals>
-
     <plurals name="n_stars">
         <item quantity="one">%1$s hvězda</item>
         <item quantity="few">%1$s hvězdičky</item>
         <item quantity="other">%1$s hvězd</item>
         <item quantity="many">%1$s hvězd</item>
     </plurals>
-
     <string name="X_acra_resToastText">Došlo k neočekávanému pádu aplikace &APP_NAME;. Prosím pomozte nám zlepšit aplikaci a informujte nás o tomto problému.</string>
     <string name="X_action_clear_credentials">Vymazat pověření</string>
     <string name="X_action_execute">Spustit</string>
@@ -195,7 +190,9 @@
     <string name="confirm_merge_bookshelves">Knihovna, kterou přejmenujete, již existuje. Chcete je sloučit?</string>
     <string name="confirm_merge_publishers">Vydavatel, kterou přejmenujete, již existuje. Chcete je sloučit?</string>
     <string name="confirm_merge_series">Série, kterou přejmenujete, již existuje. Chcete je sloučit?</string>
-    <string name="confirm_overwrite_cover">Toto aktualizuje pouze vybraná pole, ale náhledy budou staženy pro VŠECHNY knihy.\n\nChcete přepsat všechny existující náhledy? Pozor, může to chvíli trvat…</string>
+    <string name="confirm_overwrite_cover">Toto aktualizuje pouze vybraná pole, ale náhledy budou staženy pro VŠECHNY knihy.
+\n
+\nChcete přepsat všechny existující náhledy\? Pozor, může to chvíli trvat.</string>
     <string name="confirm_rebuild_fts">Po restartování aplikace se data indexu vyhledávání znovu vytvoří. Jste si jistý, že chcete pokračovat ?</string>
     <string name="confirm_rebuild_index">Po restartování aplikace se indexy znovu sestaví. Jste si jistý, že chcete pokračovat ?</string>
     <string name="confirm_rebuild_orderby_columns">Po restartování aplikace dojde k opětovnému vytvoření třídicích dat. Jste si jistý, že chcete pokračovat ?</string>
@@ -233,7 +230,8 @@
     <string name="error_network_site_access_failed">Při přístupu k %1$s došlo k chybě v síti. Zkontrolujte, zda je web funkční, a pokud problém přetrvává, kontaktujte podporu.</string>
     <string name="error_no_image_editor">Nebyl nalezen žádný editor obrázků.</string>
     <string name="error_search_could_not_be_started">Vyhledávání knihy se nezdařilo.</string>
-    <string name="error_search_failed_network">Otevřete Nastavení a zkontrolujte předvolby sítě a vyhledávacího webu.\nZkontrolujte také nastavení sítě v zařízení</string>
+    <string name="error_search_failed_network">Otevřete Nastavení a zkontrolujte předvolby sítě a vyhledávacího webu.
+\nZkontrolujte také nastavení sítě v zařízení.</string>
     <string name="error_search_x_failed_y">Hledání na %1$s se nezdařilo: %2$s</string>
     <string name="error_site_authentication_failed">Ověření %1$s se nezdařilo</string>
     <string name="error_site_authorization_failed">%1$s autorizace skončila chybou.</string>
