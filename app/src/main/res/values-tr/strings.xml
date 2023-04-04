@@ -17,27 +17,22 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
-<!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») -->
-<!--suppress LongLine -->
-<resources>
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
+<!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d kitap görüntüleniyor</item>
         <item quantity="other">%1$d kitap görüntüleniyor</item>
     </plurals>
-
     <plurals name="n_books_found">
         <item quantity="one">%1$d kitap bulundu</item>
         <item quantity="other">%1$d kitap bulundu</item>
     </plurals>
-
     <plurals name="n_stars">
         <item quantity="one">%1$s yıldız</item>
         <item quantity="other">%1$s yıldız</item>
     </plurals>
-
     <string name="X_acra_resToastText">&APP_NAME; bilinmeyen bir nedenle çöktü. Uygulamanın kalitesini iyileştirebilmemiz için lütfen bu çökmeyi rapor edin.</string>
     <string name="X_action_clear_credentials">Kimlik bilgilerini temizle</string>
     <string name="X_action_execute">"Çalıştır"</string>
@@ -196,7 +191,13 @@
     <string name="confirm_registration_benefits">Bu özellik %1$s kayıt işleminden faydalanır. Daha fazla bilgi görmek veya bu mesajı devre dışı bırakmak ister misiniz?\n Bu bilgiyi daha sonra ayarlarda “%2$s” bölümünün altında bulabilirsiniz.</string>
     <string name="confirm_registration_required">Bu özellik %1$s ile kayıt gerektiriyor. Daha fazla bilgi görmek ister misiniz?</string>
     <string name="confirm_remove_toc_entry">“%1$s” başlığı %2$s tarafından bu kitaptan kaldırılsın mı?</string>
-    <string name="confirm_scope_for_change">Değiştirdiniz:\n “%1$s”,\n“%2$s”\n olarak.\n\nDeğişiklikleri nasıl uygulamak istersiniz?\n\nNot: “%3$s” seçimi anında uygulanacaktır. “%4$s” seçerseniz, yeni bir %5$s oluşturulacaktır.</string>
+    <string name="confirm_scope_for_change">Değiştirdiniz:
+\n “%1$s”,
+\n“%2$s”
+\n olarak.
+\n
+\nDeğişiklikleri nasıl uygulamak istersiniz\?
+\nNot: “%3$s” seçimi anında uygulanacaktır. “%4$s” seçerseniz, yeni bir %5$s oluşturulacaktır.</string>
     <string name="confirm_scope_for_delete">“%1$s” başlığını %2$s ile silin.\n\nBu değişikliği nasıl uygulamak istersiniz?\nUYARI: “%3$s” seçimi geri alınamaz!</string>
     <string name="confirm_test_connection">Daha sonra sorunları önlemek için bu bağlantıyı test etmeniz önerilir.</string>
     <string name="confirm_unsaved_edits">Saklanmamış değişiklikler var, şimdi çıkarsanız hepsi silinecektir.</string>
@@ -687,8 +688,11 @@
     <string name="warning_import_csv">Uyarı: Bilgileri içe aktarırken eğer içe aktardığınız dosyaların ID numarası var olan bir kitabın ID\'si ile aynı ise, varolan kitap verilerinin üstüne yazılmasına neden olabilir. Eğer dışa aktarılmış bir dosyada bir giriyi değiştirdiyseniz bu sorun değildir; ancak yeni bir kitap girişi oluşturuyorsanız ID bölümünün boş olduğundan emin olun.</string>
     <string name="warning_import_csv_unescaped_quote">%1$d. Satırda çıkış karakteri olmayan alıntı karakter, %2$d. konum</string>
     <string name="warning_import_failed_for_lines_lots">Ayrıştırma işlemi \n%1$s\n satırları ve diğerleri için başarısız oldu.</string>
-    <string name="warning_import_failed_for_lines_some">Ayrıştırma \n%1$s\n satırları için başarısız oldu.</string>
-    <string name="warning_no_editions">Ek yayın bilgisi yok</string>
+    <string name="warning_import_failed_for_lines_some">Ayrıştırma
+\n%1$s
+\n satırları için başarısız oldu.
+\n</string>
+    <string name="warning_no_editions">Ek yayın bilgisi yok.</string>
     <string name="warning_no_matching_book_found">Eşleşen kitap bulunamadı</string>
     <string name="warning_no_search_data_for_active_sites">Etkin siteler için geçerli arama verisi yok.</string>
     <string name="warning_no_site_supports_this_method">UYARI: Şu anda seçili sitelerin hiçbiri %1$s ile aramayı desteklemiyor. Alternatif siteleri etkinleştirmek için lütfen site menüsünü kullanın veya farklı bir arama yöntemi kullanın.</string>
