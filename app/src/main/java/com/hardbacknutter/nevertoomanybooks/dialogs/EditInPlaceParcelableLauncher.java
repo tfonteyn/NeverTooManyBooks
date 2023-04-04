@@ -50,6 +50,14 @@ public class EditInPlaceParcelableLauncher<T extends Parcelable>
     }
 
 
+    /**
+     * Set the result.
+     *
+     * @param fragment   the fragment returning a result
+     * @param requestKey as received in the constructor
+     * @param item       which was added
+     * @param <T>        type of the item
+     */
     public static <T extends Parcelable> void setResult(@NonNull final Fragment fragment,
                                                         @NonNull final String requestKey,
                                                         @NonNull final T item) {

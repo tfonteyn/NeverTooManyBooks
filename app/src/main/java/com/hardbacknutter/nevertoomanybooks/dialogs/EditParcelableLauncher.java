@@ -57,7 +57,10 @@ public abstract class EditParcelableLauncher<T extends Parcelable>
     /**
      * Set the result for an {@link EditAction#Add}.
      *
-     * @param item which was added
+     * @param fragment   the fragment returning a result
+     * @param requestKey as received in the constructor
+     * @param item       which was added
+     * @param <T>        type of the item
      */
     public static <T extends Parcelable> void setResult(@NonNull final Fragment fragment,
                                                         @NonNull final String requestKey,
@@ -71,8 +74,11 @@ public abstract class EditParcelableLauncher<T extends Parcelable>
     /**
      * Set the result for an {@link EditAction#Edit}.
      *
-     * @param original the original item
-     * @param modified the modified item
+     * @param fragment   the fragment returning a result
+     * @param requestKey as received in the constructor
+     * @param original   the original item
+     * @param modified   the modified item
+     * @param <T>        type of the item
      */
     public static <T extends Parcelable> void setResult(@NonNull final Fragment fragment,
                                                         @NonNull final String requestKey,
