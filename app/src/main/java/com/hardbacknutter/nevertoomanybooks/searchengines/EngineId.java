@@ -139,7 +139,7 @@ public enum EngineId
      * Shopping site from The Netherlands / Belgium.
      */
     Bol("bol",
-        R.string.site_bol,
+        R.string.site_bol_com,
         "https://www.bol.com",
         new Locale("nl", "NL"),
         BolSearchEngine.class,

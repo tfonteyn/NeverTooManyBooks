@@ -605,7 +605,7 @@
     <string name="pt_ui_language">Jazyk</string>
     <string name="pt_ui_system_locale">Národní prostředí systému</string>
     <string name="pt_ui_theme">Téma</string>
-    <string name="pt_website_search_order_and_enable">Změna pořadí, povolení a zakázání</string>
+    <string name="pt_website_search_order_and_enable">Priorita, povolení a zakázání</string>
     <string name="ps_author_name_family_first">tj. „Čapek, Karel“</string>
     <string name="ps_author_name_given_first">tj. „Karel Čapek“</string>
     <string name="ps_bob_books_under_multiple_each_author">Pod každým autor</string>
@@ -734,4 +734,6 @@
     <string name="info_purge_blns_item_name">Vymazat stav uzlu %1$s „%2$s“?</string>
     <string name="error_updates_aborted">Aktualizace přerušeny</string>
     <string name="lbl_country">Země</string>
+    <string name="pt_search_show_shopping_options">Zobrazit nákupní nabídky</string>
+    <string name="lbl_standardize">Standardizovat</string>
 </resources>

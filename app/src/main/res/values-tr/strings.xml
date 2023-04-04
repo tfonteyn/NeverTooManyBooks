@@ -599,7 +599,7 @@
     <string name="pt_ui_language">Dil</string>
     <string name="pt_ui_system_locale">Sistem Yerel Ayarı</string>
     <string name="pt_ui_theme">Tema</string>
-    <string name="pt_website_search_order_and_enable">Yeniden sırala, etkinleştir ve devre dışı bırak</string>
+    <string name="pt_website_search_order_and_enable">Öncelikli, etkinleştir ve devre dışı bırak</string>
     <string name="ps_author_name_family_first">Örneğin “Nesin, Aziz”</string>
     <string name="ps_author_name_given_first">Örneğin “Aziz Nesin”</string>
     <string name="ps_bob_books_under_multiple_each_author">Her yazar altında</string>
@@ -728,4 +728,6 @@
     <string name="info_purge_blns_item_name">%1$s “%2$s” düğüm durumu temizlensin mi?</string>
     <string name="error_updates_aborted">Güncellemeler iptal edildi</string>
     <string name="lbl_country">Ülke</string>
+    <string name="pt_search_show_shopping_options">Alışveriş menülerini göster</string>
+    <string name="lbl_standardize">Standardize et</string>
 </resources>

@@ -605,7 +605,7 @@
     <string name="pt_ui_language">Język</string>
     <string name="pt_ui_system_locale">Ustawienia regionalne systemu</string>
     <string name="pt_ui_theme">Motyw</string>
-    <string name="pt_website_search_order_and_enable">Zmień kolejność, włącz i wyłącz</string>
+    <string name="pt_website_search_order_and_enable">Priorytetowe, włącz i wyłącz</string>
     <string name="ps_author_name_family_first">np. „Lem, Stanisław”</string>
     <string name="ps_author_name_given_first">np. „Stanisław Lem”</string>
     <string name="ps_bob_books_under_multiple_each_author">Pod każdym autor</string>
@@ -734,4 +734,6 @@
     <string name="info_purge_blns_item_name">Wyczyścić stan węzła %1$s „%2$s”?</string>
     <string name="error_updates_aborted">Aktualizacje przerwane</string>
     <string name="lbl_country">Kraj</string>
+    <string name="pt_search_show_shopping_options">Pokaż menu zakupów</string>
+    <string name="lbl_standardize">Ujednolicić</string>
 </resources>

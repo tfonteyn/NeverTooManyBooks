@@ -602,7 +602,7 @@
     <string name="pt_ui_language">Lingua</string>
     <string name="pt_ui_system_locale">Impostazioni locali di sistema</string>
     <string name="pt_ui_theme">Tema</string>
-    <string name="pt_website_search_order_and_enable">Riordina, abilita e disabilita</string>
+    <string name="pt_website_search_order_and_enable">Priorità, abilita e disabilita</string>
     <string name="ps_author_name_family_first">es. «Alighieri, Dante»</string>
     <string name="ps_author_name_given_first">es. «Dante Alighieri»</string>
     <string name="ps_bob_books_under_multiple_each_author">Sotto ciascuno autore</string>
@@ -732,4 +732,6 @@
     <string name="info_purge_blns_item_name">Cancellare lo stato del nodo di %1$s “%2$s”?</string>
     <string name="error_updates_aborted">Aggiornamenti interrotti</string>
     <string name="lbl_country">Paese</string>
+    <string name="pt_search_show_shopping_options">Mostra i menu dello shopping</string>
+    <string name="lbl_standardize">Standardizzare</string>
 </resources>

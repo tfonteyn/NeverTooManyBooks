@@ -605,7 +605,7 @@
     <string name="pt_ui_language">язык</string>
     <string name="pt_ui_system_locale">Локаль системы</string>
     <string name="pt_ui_theme">тема</string>
-    <string name="pt_website_search_order_and_enable">Изменить порядок, включить и отключить</string>
+    <string name="pt_website_search_order_and_enable">Важные разговоры, включить и отключить</string>
     <string name="ps_author_name_family_first">например «Достоевский, Фёдор»</string>
     <string name="ps_author_name_given_first">например «Фёдор Достоевский»</string>
     <string name="ps_bob_books_under_multiple_each_author">Под каждым автор</string>
@@ -734,4 +734,6 @@
     <string name="info_purge_blns_item_name">Очистить состояние узла %1$s «%2$s»?</string>
     <string name="error_updates_aborted">Обновления прерваны</string>
     <string name="lbl_country">Страна</string>
+    <string name="pt_search_show_shopping_options">Показать меню покупок</string>
+    <string name="lbl_standardize">стандартизировать</string>
 </resources>

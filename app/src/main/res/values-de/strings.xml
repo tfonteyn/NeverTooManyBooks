@@ -601,7 +601,7 @@
     <string name="pt_ui_language">Sprache</string>
     <string name="pt_ui_system_locale">System Locale</string>
     <string name="pt_ui_theme">Thema</string>
-    <string name="pt_website_search_order_and_enable">Neu anordnen, aktivieren und deaktivieren</string>
+    <string name="pt_website_search_order_and_enable">Priorität, aktivieren und deaktivieren</string>
     <string name="ps_author_name_family_first">z.B. „Kafka, Franz“</string>
     <string name="ps_author_name_given_first">z.B. „Franz  Kafka“</string>
     <string name="ps_bob_books_under_multiple_each_author">Unter jedem Autor</string>
@@ -731,4 +731,6 @@
     <string name="info_purge_blns_item_name">Knotenstatus von %1$s „%2$s“ löschen?</string>
     <string name="error_updates_aborted">Aktualisierungen abgebrochen</string>
     <string name="lbl_country">Land</string>
+    <string name="pt_search_show_shopping_options">Standardisieren</string>
+    <string name="lbl_standardize">Einkaufsmenüs anzeigen</string>
 </resources>

@@ -601,7 +601,7 @@
     <string name="pt_ui_language">Γλώσσα</string>
     <string name="pt_ui_system_locale">Τοπικό σύστημα</string>
     <string name="pt_ui_theme">Θέμα</string>
-    <string name="pt_website_search_order_and_enable">Αναδιάταξη, ενεργοποίηση και απενεργοποίηση</string>
+    <string name="pt_website_search_order_and_enable">Προτεραιότητα, ενεργοποίηση και απενεργοποίηση</string>
     <string name="ps_author_name_family_first">για παράδειγμα «Παλαμάς, Κωστής»</string>
     <string name="ps_author_name_given_first">για παράδειγμα «Κωστής  Παλαμάς»</string>
     <string name="ps_bob_books_under_multiple_each_author">Κάτω από κάθε συντάκτης</string>
@@ -731,4 +731,6 @@
     <string name="info_purge_blns_item_name">Διαγραφή της κατάστασης κόμβου του %1$s «%2$s»;</string>
     <string name="error_updates_aborted">Οι ενημερώσεις ματαιώθηκαν</string>
     <string name="lbl_country">Χώρα</string>
+    <string name="pt_search_show_shopping_options">Εμφάνιση μενού αγορών</string>
+    <string name="lbl_standardize">Τυποποιώ</string>
 </resources>

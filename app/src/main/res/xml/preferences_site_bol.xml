@@ -24,7 +24,7 @@
                   xmlns:tools="http://schemas.android.com/tools">
 
     <PreferenceCategory
-        android:title="@string/site_bol">
+        android:title="@string/site_bol_com">
 
         <!-- values set from code -->
         <ListPreference
@@ -33,14 +33,6 @@
             android:title="@string/lbl_country"
             tools:summary="Belgium"
             />
-
-        <SwitchPreference
-            android:defaultValue="true"
-            android:icon="@drawable/ic_baseline_shop_24"
-            android:key="bol.search.shopping.menu"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/pt_search_show_shopping_options" />
 
         <SwitchPreference
             android:defaultValue="false"

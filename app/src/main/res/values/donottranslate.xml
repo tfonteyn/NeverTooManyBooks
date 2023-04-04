@@ -52,8 +52,8 @@
             translatable="false">StripInfo</string>
     <string name="site_bedetheque"
             translatable="false">Bedetheque</string>
-    <string name="site_bol"
-            translatable="false">BOL</string>
+    <string name="site_bol_com"
+            translatable="false">bol.com</string>
 
     <string name="site_calibre"
             translatable="false">Calibre</string>

@@ -642,7 +642,7 @@
     <string name="pt_ui_language">Taal</string>
     <string name="pt_ui_system_locale">Systeem taal</string>
     <string name="pt_ui_theme">Thema</string>
-    <string name="pt_website_search_order_and_enable">Herordenen, inschakelen &amp; uitschakelen</string>
+    <string name="pt_website_search_order_and_enable">Prioriteit, inschakelen &amp; uitschakelen</string>
     <string name="pv_bob_header_filters">Boekfilters</string>
     <string name="pv_bob_header_nr_of_books">Aantal boeken</string>
     <string name="pv_bob_header_style_name">Stijl naam</string>
@@ -731,4 +731,6 @@
     <string name="x_of_y">%1$d van %2$d</string>
     <string name="yes">Ja</string>
     <string name="lbl_country">Land</string>
+    <string name="pt_search_show_shopping_options">Toon shopping menu\'s</string>
+    <string name="lbl_standardize">Standaardiseren</string>
 </resources>

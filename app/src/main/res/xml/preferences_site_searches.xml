@@ -24,7 +24,7 @@
                   xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
-        android:title="@string/lbl_format">
+        android:title="@string/lbl_standardize">
         <SwitchPreference
             android:defaultValue="true"
             android:icon="@drawable/ic_baseline_edit_24"
@@ -41,6 +41,25 @@
             android:summaryOn="@string/yes"
             android:title="@string/pt_search_reformat_color" />
     </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pt_search_show_shopping_options">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_baseline_shop_24"
+            android:key="amazon.search.shopping.menu"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/site_amazon" />
+    </PreferenceCategory>
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:icon="@drawable/ic_baseline_shop_24"
+        android:key="bol.search.shopping.menu"
+        android:summaryOff="@string/no"
+        android:summaryOn="@string/yes"
+        android:title="@string/site_bol_com" />
 
     <!-- FIXME: orderingFromXml does not seem to work here ? -->
     <PreferenceCategory
@@ -62,7 +81,7 @@
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.searchengines.bol.BolPreferencesFragment"
             android:key="psk_search_site_bol"
-            android:title="@string/site_bol">
+            android:title="@string/site_bol_com">
         </Preference>
 
         <Preference

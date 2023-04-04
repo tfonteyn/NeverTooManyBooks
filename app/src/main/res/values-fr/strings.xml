@@ -606,7 +606,7 @@
     <string name="pt_ui_language">Langue</string>
     <string name="pt_ui_system_locale">Paramètres de langue du système</string>
     <string name="pt_ui_theme">Thema</string>
-    <string name="pt_website_search_order_and_enable">Réorganiser, activer et désactiver</string>
+    <string name="pt_website_search_order_and_enable">Priorité, activer et désactiver</string>
     <string name="ps_author_name_family_first">par exemple «Verne, Jules»</string>
     <string name="ps_author_name_given_first">par exemple «Jules Verne»</string>
     <string name="ps_bob_books_under_multiple_each_author">Sous chaque auteur</string>
@@ -736,4 +736,6 @@
     <string name="info_purge_blns_item_name">Effacer l\'état du nœud de %1$s «%2$s» ?</string>
     <string name="error_updates_aborted">Mises à jour annulées</string>
     <string name="lbl_country">Pays</string>
+    <string name="pt_search_show_shopping_options">Afficher les menus d\'achat</string>
+    <string name="lbl_standardize">Standardiser</string>
 </resources>

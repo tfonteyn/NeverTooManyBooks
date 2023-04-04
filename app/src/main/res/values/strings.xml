@@ -666,7 +666,7 @@
     <!-- whether an action will only apply to the current bookshelf. -->
     <string name="btn_just_this_shelf">This shelf only</string>
     <!-- Start the barcode scanner for a single scan (one book). -->
-    <string name="option_barcode_scan">Scan barcode</string>
+    <string name="option_barcode_scan">Scan Barcode</string>
     <!-- Start the barcode scanner for a continuous scanning (multiple books). -->
     <string name="option_barcode_scan_continuous">Scan continuously</string>
     <!-- Whether to enforce strict ISBN numbers when searching etc...  -->
@@ -1089,7 +1089,7 @@
     <!-- [VERIFIED] -->
     <string name="pc_camera">Camera</string>
     <!-- Opens a new screen with the related settings. -->
-    <string name="pt_website_search_order_and_enable">Reorder, enable &amp; disable</string>
+    <string name="pt_website_search_order_and_enable">Priority, enable &amp; disable</string>
     <string name="pt_covers"
             translatable="false">@string/lbl_covers_long</string>
     <!-- Preference Category -->
@@ -1514,6 +1514,7 @@
     <string name="lbl_strip_info_mapped_bookshelf_wishlist">Wishlist mapped bookshelf</string>
     <string name="lbl_strip_info_mapped_bookshelf_owned_books">Owned books mapped bookshelf</string>
     <string name="pt_search_show_shopping_options">Show shopping menus</string>
+    <string name="lbl_standardize">Standardize</string>
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
     <!-- Notification title when external media is missing [CHAR LIMIT=30] -->
     <!--    <string name="ext_media_missing_title">%s missing</string>-->

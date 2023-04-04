@@ -613,7 +613,7 @@
     <string name="pt_ui_language">Idioma</string>
     <string name="pt_ui_system_locale">Sistema local</string>
     <string name="pt_ui_theme">El tema</string>
-    <string name="pt_website_search_order_and_enable">Reordenar, habilitar y deshabilitar</string>
+    <string name="pt_website_search_order_and_enable">Prioridad, habilitar y deshabilitar</string>
     <string name="ps_author_name_family_first">por ejemplo «Pérez Galdós, Benito»</string>
     <string name="ps_author_name_given_first">por ejemplo «Benito Pérez Galdós»</string>
     <string name="ps_bob_books_under_multiple_each_author">Bajo cada autorр</string>
@@ -745,4 +745,6 @@
     <string name="lbl_strip_info_mapped_bookshelf_owned_books">Estantería mapeada con tus libros</string>
     <string name="lbl_strip_info_mapped_bookshelf_wishlist">Estantería asignada a la lista de deseos</string>
     <string name="lbl_country">País</string>
+    <string name="pt_search_show_shopping_options">Mostrar menús de compras</string>
+    <string name="lbl_standardize">Estandarizar</string>
 </resources>
