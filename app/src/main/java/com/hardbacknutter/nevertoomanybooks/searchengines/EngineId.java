@@ -124,7 +124,7 @@ public enum EngineId
            "https://www.amazon.com",
            Locale.US,
            AmazonSearchEngine.class,
-           true),
+           BuildConfig.ENABLE_AMAZON),
 
     /** French language (and to some extend other languages) comics. */
     Bedetheque("bedetheque",
@@ -135,7 +135,7 @@ public enum EngineId
                BuildConfig.ENABLE_BEDETHEQUE),
 
     /**
-     * All genres; dutch and english books.
+     * All genres; dutch and many other languages.
      * Shopping site from The Netherlands / Belgium.
      */
     Bol("bol",
@@ -145,15 +145,18 @@ public enum EngineId
         BolSearchEngine.class,
         BuildConfig.ENABLE_BOL),
 
-    /** All genres. */
+    /** Only used for {@link SearchEngine.ViewBookByExternalId}. */
     Goodreads("goodreads",
               R.string.site_goodreads,
               "https://www.goodreads.com",
               Locale.US,
               GoodreadsSearchEngine.class,
-              true),
+              BuildConfig.ENABLE_GOODREADS_BY_EXT_ID),
 
-    /** All genres. */
+    /**
+     * All genres.
+     * Uses old google api which theoretically can be disabled at any time by google.
+     */
     GoogleBooks("googlebooks",
                 R.string.site_google_books,
                 "https://books.google.com",
@@ -167,7 +170,7 @@ public enum EngineId
           "https://www.isfdb.org",
           Locale.US,
           IsfdbSearchEngine.class,
-          true),
+          BuildConfig.ENABLE_ISFDB),
 
 
     /** Dutch language books & comics. */
@@ -186,7 +189,10 @@ public enum EngineId
                LastDodoSearchEngine.class,
                BuildConfig.ENABLE_LAST_DODO),
 
-    /** All genres. */
+    /**
+     * Only used for {@link SearchEngine.ViewBookByExternalId}
+     * and {@link SearchEngine.AlternativeEditions}.
+     */
     LibraryThing("librarything",
                  R.string.site_library_thing,
                  "https://www.librarything.com",
@@ -200,7 +206,7 @@ public enum EngineId
                 "https://openlibrary.org",
                 Locale.US,
                 OpenLibrarySearchEngine.class,
-                true),
+                BuildConfig.ENABLE_OPEN_LIBRARY),
 
     /** Dutch language (and to some extend other languages) comics. */
     StripInfoBe("stripinfo",

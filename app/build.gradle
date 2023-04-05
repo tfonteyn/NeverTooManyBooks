@@ -84,19 +84,18 @@ android {
         // Add the build UTC DateTime; ISO formatted
         buildConfigField("String", "TIMESTAMP", "\"x\"")
 
-
-        // uses old google api which theoretically can be disabled at any time by google
-        buildConfigField("boolean", "ENABLE_GOOGLE_BOOKS", "true")
-
-        buildConfigField("boolean", "ENABLE_KB_NL", "true")
+        buildConfigField("boolean", "ENABLE_AMAZON", "true")
         buildConfigField("boolean", "ENABLE_BEDETHEQUE", "true")
+        buildConfigField("boolean", "ENABLE_BOL", "true")
+        buildConfigField("boolean", "ENABLE_GOOGLE_BOOKS", "true")
+        buildConfigField("boolean", "ENABLE_ISFDB", "true")
+        buildConfigField("boolean", "ENABLE_KB_NL", "true")
         buildConfigField("boolean", "ENABLE_LAST_DODO", "true")
+        buildConfigField("boolean", "ENABLE_OPEN_LIBRARY", "true")
         buildConfigField("boolean", "ENABLE_STRIP_INFO", "true")
 
+        buildConfigField("boolean", "ENABLE_GOODREADS_BY_EXT_ID", "true")
         buildConfigField("boolean", "ENABLE_LIBRARY_THING_ALT_ED", "true")
-
-        // under development
-        buildConfigField("boolean", "ENABLE_BOL", "false")
     }
 
     buildTypes {
@@ -117,8 +116,6 @@ android {
                     '"' + LocalDateTime.now(ZoneOffset.UTC)
                             .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + '"')
 
-            // under development
-            buildConfigField("boolean", "ENABLE_BOL", "false")
             // under development
             buildConfigField("boolean", "ENABLE_STRIP_INFO_LOGIN", "false")
             // under development
@@ -149,8 +146,6 @@ android {
             resValue("string", "fileProviderAuthority",
                     "${applicationId}.GenericFileProvider.debug")
 
-            // under development
-            buildConfigField("boolean", "ENABLE_BOL", "true")
             // under development
             buildConfigField("boolean", "ENABLE_STRIP_INFO_LOGIN", "true")
             // under development
