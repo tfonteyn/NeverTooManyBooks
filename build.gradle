@@ -49,7 +49,7 @@ ext {
     compileSdk = 33
 
     // https://github.com/google/desugar_jdk_libs
-    desugar_version = '2.0.2'
+    desugar_version = '2.0.3'
 
     kotlin_version = '1.8.0'
 
