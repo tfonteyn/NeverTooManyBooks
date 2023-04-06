@@ -39,6 +39,7 @@ import java.util.Locale;
 import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
@@ -58,6 +59,8 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.org.json.JSONArray;
+import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
 import org.jsoup.nodes.Document;
@@ -467,6 +470,17 @@ public class BolSearchEngine
         }
     }
 
+    /**
+     * Parse the document for cover images.
+     * <p>
+     * Will NOT throw if the JSON objects are messed up; we just won't have an image.
+     *
+     * @param document    to parse
+     * @param fetchCovers Set to {@code true} if we want to get covers
+     * @param book        to update
+     *
+     * @throws StorageException The covers directory is not available
+     */
     private void parseCovers(@NonNull final Document document,
                              @NonNull final boolean[] fetchCovers,
                              @NonNull final Book book)
@@ -477,34 +491,66 @@ public class BolSearchEngine
                 "section[data-group-name='product-images'] script");
         if (imageSlotConfig != null
             && imageSlotConfig.hasAttr("data-image-slot-config")) {
-            final String text = imageSlotConfig.data();
-            final JSONObject json = new JSONObject(text);
-            final JSONObject imageSlotSlider = json.optJSONObject("imageSlotSlider");
-            if (imageSlotSlider != null) {
-                final JSONObject currentItem = imageSlotSlider.optJSONObject("currentItem");
-                if (currentItem != null) {
-                    String coverImageUrl;
-                    // There is more than 1 possible key for the frontcover
-                    coverImageUrl = currentItem.optString("coverImageUrl");
-                    boolean gotFrontCover = false;
-                    if (coverImageUrl != null && !coverImageUrl.isEmpty()) {
-                        gotFrontCover = processCover(coverImageUrl, isbn, 0, book);
-                    }
-                    if (!gotFrontCover) {
-                        // try alternative key.
+
+            // The data of this element can contain a JSONArray or a JSONObject
+            final String text = imageSlotConfig.data().strip();
+
+            String coverImageUrl;
+            try {
+                // If it's a JSONArray, simply grab the first element.
+                if (text.startsWith("[") && text.endsWith("]")) {
+                    final JSONArray objects = new JSONArray(text);
+                    final JSONObject currentItem = objects.optJSONObject(0);
+                    if (currentItem != null) {
                         coverImageUrl = currentItem.optString("imageUrl");
+                        if (processCover(coverImageUrl, isbn, 0, book)) {
+                            // only attempt to get the back-cover if we got a frontcover
+                            // and (obv.) we want one.
+                            if (fetchCovers.length > 1 && fetchCovers[1]) {
+                                coverImageUrl = currentItem.optString("backImageUrl");
+                                processCover(coverImageUrl, isbn, 1, book);
+                            }
+                            // all done.
+                            return;
+                        }
+                    }
+                }
+
+                // it should be a single JSONObject of which we want a sub-JSONObject
+                final JSONObject imageSlotSlider = new JSONObject(text)
+                        .optJSONObject("imageSlotSlider");
+                if (imageSlotSlider != null) {
+                    final JSONObject currentItem = imageSlotSlider.optJSONObject("currentItem");
+                    if (currentItem != null) {
+                        boolean gotFrontCover = false;
+
+                        // There is more than 1 possible key for the frontcover
+                        coverImageUrl = currentItem.optString("coverImageUrl");
+
                         if (coverImageUrl != null && !coverImageUrl.isEmpty()) {
                             gotFrontCover = processCover(coverImageUrl, isbn, 0, book);
                         }
-                    }
+                        if (!gotFrontCover) {
+                            // try alternative key.
+                            coverImageUrl = currentItem.optString("imageUrl");
+                            if (coverImageUrl != null && !coverImageUrl.isEmpty()) {
+                                gotFrontCover = processCover(coverImageUrl, isbn, 0, book);
+                            }
+                        }
 
-                    // only attempt to get the back-cover if we got a frontcover
-                    // and (obv.) we want one.
-                    if (gotFrontCover && fetchCovers.length > 1 && fetchCovers[1]) {
-                        coverImageUrl = currentItem.optString("backImageUrl");
-                        processCover(coverImageUrl, isbn, 1, book);
+                        // only attempt to get the back-cover if we got a frontcover
+                        // and (obv.) we want one.
+                        if (gotFrontCover && fetchCovers.length > 1 && fetchCovers[1]) {
+                            coverImageUrl = currentItem.optString("backImageUrl");
+                            processCover(coverImageUrl, isbn, 1, book);
+                        }
                     }
                 }
+
+            } catch (@NonNull final JSONException e) {
+                // Log it so we can extend the above check if needed.
+                // There is more than one way of listing images...
+                LoggerFactory.getLogger().w(TAG, e, "text=`" + text + "`");
             }
         }
     }
