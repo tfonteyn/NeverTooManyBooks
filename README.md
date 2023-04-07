@@ -21,6 +21,8 @@
 This is a book collection application, to keep track of your books and comics.
 Books can be added either manually, by ISBN, or by barcode.
 
+Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyBooks/wiki)
+
 The UI is available in:
 
 - English, Dutch
@@ -30,8 +32,9 @@ The UI is available in:
 
 A translation to Portuguese has started but will take time.
 
-New 22-March-2023: translations are now integrated and editable
+Translations are now integrated and editable
 on [https://hosted.weblate.org/engage/nevertoomanybooks/](https://hosted.weblate.org/engage/nevertoomanybooks/)
+- everyone welcome
 
 Data is fetched on-demand from multiple internet sites.
 You can enable/disable and prioritize the sites in the settings.
@@ -59,8 +62,6 @@ Screen size support:
 - 4" works but will be very cramped.
 - 5" is the default aimed for.
 - 7" and 10" tablets fully supported with dedicated screen layouts.
-
-Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyBooks/wiki)
 
 In August 2018, this project was forked from:
 Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn.
