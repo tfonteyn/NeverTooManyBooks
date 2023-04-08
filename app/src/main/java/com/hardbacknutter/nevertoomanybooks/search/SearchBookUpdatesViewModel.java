@@ -488,8 +488,11 @@ public class SearchBookUpdatesViewModel
      * </ul>
      * <p>
      * Result message contains:
-     * - BKEY_LAST_BOOK_ID_PROCESSED for later resuming
-     * - DBKey.FK_BOOK: the first book in the list / the only book; not set if we did 'all' books
+     * <ul>
+     * <li>{@link EditBookOutput#BKEY_LAST_BOOK_ID_PROCESSED} for later resuming</li>
+     * <li>{@link DBKey#FK_BOOK}: the first book in the list / the only book;
+     *      not set if we did 'all' books</li>
+     * </ul>
      */
     private void postSearch(final boolean wasCancelled) {
         if (currentCursor != null) {
