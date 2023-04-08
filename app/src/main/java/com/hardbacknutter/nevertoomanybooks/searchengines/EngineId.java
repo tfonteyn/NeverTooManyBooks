@@ -95,6 +95,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  *      </li>
  *
  *      <li>Optional: Add a preference fragment for the user to configure the engine.
+ *          The class MUST be annotated with "@Keep".
  *          See the OpenLibrary engine for an simple example:
  *          a class, an xml file, and an entry in "src/main/res/xml/preferences_site_searches.xml"
  *          Look at the other engines for more complex examples.
