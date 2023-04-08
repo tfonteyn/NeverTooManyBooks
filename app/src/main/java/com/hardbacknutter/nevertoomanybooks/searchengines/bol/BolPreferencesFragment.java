@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.bol;
 
 import android.os.Bundle;
 
+import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 import androidx.preference.ListPreference;
 
@@ -30,6 +31,7 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 
+@Keep
 public class BolPreferencesFragment
         extends BasePreferenceFragment {
 
