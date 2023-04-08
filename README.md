@@ -19,7 +19,6 @@
   -->
 
 This is a book collection application, to keep track of your books and comics.
-Books can be added either manually, by ISBN, or by barcode.
 
 Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyBooks/wiki)
 
@@ -40,17 +39,18 @@ Data is fetched on-demand from multiple internet sites.
 You can enable/disable and prioritize the sites in the settings.
 
 - Amazon (see warning below)
-- Bedetheque (new in v4)
+- Bedetheque
+- BOL.com (_new_ in v4.2)
 - Google Books
 - ISFDB
-- KB.NL (new in v4)
+- KB.NL
 - LastDodo
 - OpenLibrary
 - StripInfo
 
 Please do not ask for GoodReads/LibraryThing to be added.
 
-WARNING: Amazon are increasingly blocking access - if you see any Amazon specific errors, I suggest
+WARNING: Amazon is increasingly blocking access - if you see any Amazon specific errors, I suggest
 you switch off Amazon in Settings/Search/Websites.
 
 Supports synchronizing with a Calibre Content Server.
