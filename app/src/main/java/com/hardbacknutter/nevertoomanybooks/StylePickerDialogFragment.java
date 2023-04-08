@@ -109,6 +109,8 @@ public class StylePickerDialogFragment
                                                   currentStyleUuid,
                                                   uuid -> currentStyleUuid = uuid);
         vb.stylesList.setAdapter(adapter);
+
+        workaroundRecyclerViewContent();
     }
 
     @Override

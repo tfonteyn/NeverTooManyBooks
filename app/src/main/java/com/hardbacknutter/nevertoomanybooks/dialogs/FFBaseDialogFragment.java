@@ -269,6 +269,25 @@ public abstract class FFBaseDialogFragment
     }
 
     /**
+     * FIXME: Workaround for dialogs with a RecyclerView.
+     * Should be called as the last thing from {@link #onViewCreated(View, Bundle)}.
+     * <p>
+     * Dev note: RecyclerView in a dialog is cursed... and should NOT be used.
+     */
+    protected void workaroundRecyclerViewContent() {
+        //noinspection ConstantConditions
+        final WindowSizeClass height = WindowSizeClass.getHeight(getContext());
+        if (height == WindowSizeClass.Compact || height == WindowSizeClass.Medium) {
+            if (getDialog() != null) {
+                if (getDialog().getWindow() != null) {
+                    getDialog().getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT,
+                                                      ViewGroup.LayoutParams.MATCH_PARENT);
+                }
+            }
+        }
+    }
+
+    /**
      * Set the title of the toolbar.
      *
      * @param resId Resource ID of a string to set as the title

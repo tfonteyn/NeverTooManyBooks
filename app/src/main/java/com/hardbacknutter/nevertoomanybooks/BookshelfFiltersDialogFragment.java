@@ -111,6 +111,8 @@ public class BookshelfFiltersDialogFragment
         vb.filterList.setAdapter(listAdapter);
         vb.filterList.addItemDecoration(
                 new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL));
+
+        workaroundRecyclerViewContent();
     }
 
     @Override
