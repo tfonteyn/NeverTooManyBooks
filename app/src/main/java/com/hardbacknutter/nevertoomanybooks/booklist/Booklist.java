@@ -139,6 +139,10 @@ public class Booklist
     @SuppressWarnings("FieldNotUsedInToString")
     private String sqlGetBookIdListForNodeKey;
 
+    /** {@link #getCurrentBookIdList()}. */
+    @SuppressWarnings("FieldNotUsedInToString")
+    private String sqlGetCurrentBookIdList;
+
     /** {@link #getNextBookWithoutCover(long)}. */
     @SuppressWarnings("FieldNotUsedInToString")
     private String sqlGetNextBookWithoutCover;
@@ -612,6 +616,35 @@ public class Booklist
         }
 
         try (Cursor cursor = db.rawQuery(sqlGetBookIdListForNodeKey, new String[]{nodeKey + "%"})) {
+            if (cursor.moveToFirst()) {
+                final ArrayList<Long> rows = new ArrayList<>(cursor.getCount());
+                do {
+                    final long id = cursor.getInt(0);
+                    rows.add(id);
+                } while (cursor.moveToNext());
+                return rows;
+            } else {
+                return new ArrayList<>();
+            }
+        }
+    }
+
+    /**
+     * Get the full list of all Books (their id only) which are currently in the list table.
+     *
+     * @return list of book ID's
+     */
+    @NonNull
+    public ArrayList<Long> getCurrentBookIdList() {
+        if (sqlGetCurrentBookIdList == null) {
+            sqlGetCurrentBookIdList =
+                    SELECT_ + DBKey.FK_BOOK
+                    + _FROM_ + listTable.getName()
+                    + _WHERE_ + DBKey.BL_NODE_GROUP + "=" + BooklistGroup.BOOK
+                    + _ORDER_BY_ + DBKey.FK_BOOK;
+        }
+
+        try (Cursor cursor = db.rawQuery(sqlGetCurrentBookIdList, null)) {
             if (cursor.moveToFirst()) {
                 final ArrayList<Long> rows = new ArrayList<>(cursor.getCount());
                 do {
