@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -24,7 +23,7 @@
 <!-- Quotes «…» - Regex to find wrong ones: ('|„|‘|’|“|”) --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pt">
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d livro exibido</item>
-        <item quantity="many"></item>
+        <item quantity="many"/>
         <item quantity="other">A exibir %1$d livros</item>
     </plurals>
     <plurals name="n_books_found">
@@ -156,4 +155,47 @@
     <string name="whichViewApplication">Abrir com</string>
     <string name="x_of_y">%1$d de %2$d</string>
     <string name="yes">Sim</string>
+    <string name="error_search_x_failed_y">Falha ao pesquisar em %1$s: %2$s</string>
+    <string name="error_search_could_not_be_started">A pesquisa do livro falhou.</string>
+    <string name="error_import_failed">Falha na importação.</string>
+    <string name="error_backup_failed">Falha na cópia de segurança.</string>
+    <string name="warning_book_not_always_found">Nem todos os sites devolveram dados válidos.</string>
+    <string name="warning_book_not_found">Não é possível localizar o livro especificado.</string>
+    <string name="X_error_network_site_has_problems">O site não está a funcionar conforme o esperado.</string>
+    <string name="error_authorization_failed">Falha na autorização</string>
+    <string name="X_error_authentication_failed">Falha na autenticação</string>
+    <string name="error_storage_not_accessible">Por favor verifique se o armazenamento está disponível.</string>
+    <string name="error_storage_no_space_left">Espaço de armazenamento insuficiente.</string>
+    <string name="error_email_failed">Falha ao enviar o e-mail.</string>
+    <string name="error_unsupported_version_v">Versão não suportada: %1$d</string>
+    <string name="error_import_csv_line_to_long">Linha muito longa (linha=%1$d, comprimento=%2$d)</string>
+    <string name="error_record_must_contain_column">O registro deve conter um campo chamado \"%1$s\".</string>
+    <string name="error_export_failed">Falha na exportação.</string>
+    <string name="warning_import_failed_for_lines_some">Falha na análise de linhas
+\n%1$s
+\n</string>
+    <string name="warning_import_failed_for_lines_lots">Falha na análise das linhas
+\n%1$s
+\n e outras.</string>
+    <string name="warning_export_contains_no_data">Não havia nada para exportar.</string>
+    <string name="error_network_site_access_failed">Ocorreu um problema de rede ao aceder a %1$s. Verifique se o site está no ar e, se o problema persistir, entre em contacto com o suporte.</string>
+    <string name="error_site_authorization_failed">A autorização %1$s resultou num erro.</string>
+    <string name="error_storage_not_writable">Por favor verifique se o armazenamento tem permissões de gravação e se tem espaço suficiente.</string>
+    <string name="error_search_failed_network">Abra as Configurações e verifique as preferências de rede e do Site de Pesquisa.
+\nVerifique também as configurações de rede do seu dispositivo.</string>
+    <string name="error_file_not_found">Ficheiro não encontrado: %1$s</string>
+    <string name="warning_import_csv_unescaped_quote">Citação sem escape na linha %1$d, posição %2$d</string>
+    <string name="error_site_authentication_failed">Falha na autenticação %1$s</string>
+    <string name="error_unknown_host">Ocorreu um problema de ligação ao serviço em \"%1$s\".</string>
+    <string name="error_auto_toc_population_failed">Falha no preenchimento automático de títulos.</string>
+    <string name="error_no_image_editor">Nenhum editor de imagens encontrado.</string>
+    <string name="error_import_file_not_supported">O ficheiro seleccionado não pode ser importado.</string>
+    <string name="error_file_not_recognized">O ficheiro seleccionado não é reconhecido.</string>
+    <string name="error_import_archive_invalid">O ficheiro arquivado está corrompido ou é inválido.</string>
+    <string name="error_import_failed_for_record">Falha na importação (%1$s).</string>
+    <string name="error_import_csv_line">Erro desconhecido na linha %1$d</string>
+    <string name="error_import_csv_missing_columns_x">O ficheiro deve conter uma coluna com um dos seguintes nomes: %1$s</string>
+    <string name="warning_immediate_global_changes">NOTA: Todas as alterações guardadas são aplicadas instantaneamente e globalmente.</string>
+    <string name="warning_no_search_data_for_active_sites">Não há dados de pesquisa válidos para os sites ativos.</string>
+    <string name="warning_x_already_exists">%1$s já existe.</string>
 </resources>
