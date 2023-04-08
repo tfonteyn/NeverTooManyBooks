@@ -79,6 +79,15 @@ public final class EditBookOutput {
         return intent;
     }
 
+    /**
+     * Create the result which {@link ActivityResultContract#parseResult(int, Intent)} will receive.
+     *
+     * @param repositionToBookId the book to which the list should reposition.
+     *                           Pass in {@code 0} to skip repositioning.
+     * @param modified           flag; whether ANY modifications were made
+     *
+     * @return Intent
+     */
     @NonNull
     public static Intent createResult(final long repositionToBookId,
                                       final boolean modified) {
