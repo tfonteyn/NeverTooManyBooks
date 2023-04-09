@@ -92,7 +92,7 @@ public class DbPrep {
             throws StorageException {
         final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
 
-        final long count = bookDao.count();
+        final int count = bookDao.count();
         if (count > 10) {
             return count;
         }

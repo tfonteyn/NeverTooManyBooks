@@ -1010,9 +1010,9 @@ public class BookDaoImpl
     }
 
     @Override
-    public long count() {
+    public int count() {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.Count.BOOKS)) {
-            return stmt.simpleQueryForLongOrZero();
+            return (int) stmt.simpleQueryForLongOrZero();
         }
     }
 

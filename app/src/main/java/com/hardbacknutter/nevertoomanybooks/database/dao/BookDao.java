@@ -294,7 +294,7 @@ public interface BookDao {
      *
      * @return number of books
      */
-    long count();
+    int count();
 
     /**
      * Return a Cursor with the Book for the given {@link Book} id.
