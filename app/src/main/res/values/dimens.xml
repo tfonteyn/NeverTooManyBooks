@@ -1,5 +1,5 @@
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -77,9 +77,8 @@
     <dimen name="popup_menu_x_offset">48dp</dimen>
     <!-- ExtPopupMenu: the elevation was taken from the android materials options menu layout -->
     <dimen name="popup_menu_elevation">8dp</dimen>
-    <!-- ExtPopupMenu: when a title is visible, we want some border. -->
-    <dimen name="popup_menu_title_padding">4dp</dimen>
-    <!-- ExtPopupMenu and similar dialogs: drawable padding. -->
+
+    <!-- Custom menus, e.g. list of radio buttons in a dialog: drawable padding. -->
     <dimen name="popup_menu_drawable_padding">20dp</dimen>
 
 
