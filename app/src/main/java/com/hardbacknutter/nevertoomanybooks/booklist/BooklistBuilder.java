@@ -591,9 +591,46 @@ class BooklistBuilder {
         /**
          * Build a collection of triggers on the list table designed to fill in the summary/header
          * records as the data records are added in sorted order.
+         * <p>
+         * <strong>IMPORTANT</strong>: when creating the VALUES clause for the next level up,
+         * the node key for the level 'up' will contain ALL levels.
+         * This is of course <strong>INCORRECT</strong>... but SQLite does not have
+         * enough string functions to split "NEW.node_key" and only store the actual
+         * amount of key=value pairs we need.
+         * When we need to get a list of books for a specific node, we manually split the
+         * node key down to the required level and use a trailing '%' to get what we need.
+         * <p>
+         * Example of actual list table content:
+         * <pre>{@code
+         *     key                          level   group
+         *     /a=58/s=/p=32/yrp=1990/          1   1 AUTHOR
+         *     /a=58/s=/p=32/yrp=1990/          2   2 SERIES (no series)
+         *     /a=58/s=/p=32/yrp=1990/          3   4 PUBLISHER
+         *     /a=58/s=/p=32/yrp=1990/          4   7 DATE_PUBLISHED_YEAR
+         *     /a=58/s=/p=32/yrp=1990/          5   0 434 book
+         * }
+         * </pre>
+         * <p>
+         * Ideally, it should be:
+         * <pre>{@code
+         *     key                          level   group
+         *     /a=58/                           1   1 AUTHOR
+         *     /a=58/s=/                        2   2 SERIES (no series)
+         *     /a=58/s=/p=32/                   3   4 PUBLISHER
+         *     /a=58/s=/p=32/yrp=1990/          4   7 DATE_PUBLISHED_YEAR
+         *     /a=58/s=/p=32/yrp=1990/b=434/    5   0 434 book
+         * }
+         * </pre>
+         * In other words, books should have their own key=value pair added when building
+         * the table content and the trigger for each level-up should cut off
+         * the last key=value pair.
          *
          * @param db Database Access
+         *
+         * @see Booklist#getBookIdsForNodeKey
+         * @see Booklist#ensureNodeIsVisible(BooklistNode)
          */
+        @SuppressWarnings("JavadocReference")
         private void createTriggers(@NonNull final SynchronizedDb db) {
 
             triggerHelperTable = new TableDefinition(listTable + "_th", "tht")
@@ -859,10 +896,7 @@ class BooklistBuilder {
         }
 
         /**
-         * Create the expression for the key column.
-         * Will contain one key-value pair for each each group level.
-         * "/key=value/key=value/key=value/..."
-         * A {@code null} value is reformatted as an empty string
+         * Create the expression for the {@link DBKey#BL_NODE_KEY} column of a Book.
          * <p>
          * <strong>Dev. note:</strong> this is an SQL expression, the "||" operator being
          * a string 'concat' during the SQL execution.
