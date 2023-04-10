@@ -1047,6 +1047,9 @@ public class BooklistGroup {
         /**
          * Create the expression for the node key column: "/key=value".
          * A {@code null} value is reformatted as an empty string.
+         * <p>
+         * <strong>Dev. note:</strong> the "value" part is an SQL expression,
+         * the "||" operator being a string 'concat' during the SQL execution.
          *
          * @return column expression
          */
