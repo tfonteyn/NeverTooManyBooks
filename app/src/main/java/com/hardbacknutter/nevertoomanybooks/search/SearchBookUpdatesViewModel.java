@@ -118,6 +118,7 @@ public class SearchBookUpdatesViewModel
 
     private int currentProgressCounter;
     private int currentCursorCount;
+    private int cachedSize;
 
     @NonNull
     LiveData<LiveDataEvent<TaskResult<Book>>> onAllDone() {
@@ -257,6 +258,17 @@ public class SearchBookUpdatesViewModel
     void setCoverSyncAction(@NonNull final SyncAction action) {
         syncProcessorBuilder.setSyncAction(DBKey.COVER[0], action);
         syncProcessorBuilder.setSyncAction(DBKey.COVER[1], action);
+    }
+
+    int getTotalBooks() {
+        if (bookIdList != null) {
+            return bookIdList.size();
+        } else {
+            if (cachedSize == 0) {
+                cachedSize = bookDao.count();
+            }
+            return cachedSize;
+        }
     }
 
     /**

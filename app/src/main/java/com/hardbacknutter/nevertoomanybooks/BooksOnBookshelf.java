@@ -2038,13 +2038,8 @@ public class BooksOnBookshelf
                 return true;
 
             } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-                // IMPORTANT: this is from an options menu selection.
-                // We pass the book ID's for the currently displayed list.
-                final String title = getString(R.string.name_colon_value,
-                                               getString(R.string.lbl_bookshelf),
-                                               vm.getCurrentBookshelf().getName());
-                updateBookListLauncher.launch(new UpdateBooklistContract.Input(
-                        vm.getBooklist().getCurrentBookIdList(), title, null));
+                updateBookListLauncher.launch(vm.createUpdateBooklistContractInput(
+                        BooksOnBookshelf.this));
                 return true;
             }
 

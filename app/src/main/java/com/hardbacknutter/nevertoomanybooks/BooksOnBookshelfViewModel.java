@@ -640,6 +640,24 @@ public class BooksOnBookshelfViewModel
     }
 
     /**
+     * Create the contract input object for the currently displayed book list.
+     *
+     * @param context Current context
+     *
+     * @return a fully initialized input object
+     */
+    @NonNull
+    UpdateBooklistContract.Input createUpdateBooklistContractInput(
+            @NonNull final Context context) {
+        final ArrayList<Long> books = getBooklist().getCurrentBookIdList();
+
+        final String title = context.getString(R.string.name_colon_value,
+                                               context.getString(R.string.lbl_bookshelf),
+                                               getCurrentBookshelf().getName());
+        return new UpdateBooklistContract.Input(books, title, null);
+    }
+
+    /**
      * Create the contract input object for one the groups in {@link #BLG_RECORD}.
      *
      * @param context       Current context
@@ -686,17 +704,18 @@ public class BooksOnBookshelfViewModel
             }
         }
 
-        final String text = id != 0 ? rowData.getString(blgRecord.labelKey)
-                                    : context.getString(blgRecord.emptyItemTextResId);
+        final String title;
+        if (id != 0) {
+            title = context.getString(R.string.name_colon_value,
+                                      context.getString(blgRecord.labelResId),
+                                      rowData.getString(blgRecord.labelKey));
+        } else {
+            title = context.getString(R.string.name_colon_value,
+                                      context.getString(blgRecord.labelResId),
+                                      context.getString(blgRecord.emptyItemTextResId));
+        }
 
-        return new UpdateBooklistContract.Input(
-                books,
-                context.getString(R.string.name_colon_value,
-                                  context.getString(blgRecord.labelResId),
-                                  text),
-                context.getString(R.string.name_colon_value,
-                                  context.getString(R.string.lbl_books),
-                                  String.valueOf(books.size())));
+        return new UpdateBooklistContract.Input(books, title, null);
     }
 
     /**
@@ -731,14 +750,10 @@ public class BooksOnBookshelfViewModel
             sj.add(text);
         }
 
-        return new UpdateBooklistContract.Input(
-                books,
-                context.getString(R.string.name_colon_value,
-                                  context.getString(blgRecord.labelResId),
-                                  sj.toString()),
-                context.getString(R.string.name_colon_value,
-                                  context.getString(R.string.lbl_books),
-                                  String.valueOf(books.size())));
+        final String title = context.getString(R.string.name_colon_value,
+                                               context.getString(blgRecord.labelResId),
+                                               sj.toString());
+        return new UpdateBooklistContract.Input(books, title, null);
     }
 
     /**

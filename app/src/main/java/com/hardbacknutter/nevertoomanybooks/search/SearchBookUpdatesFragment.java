@@ -135,6 +135,11 @@ public class SearchBookUpdatesFragment
         // optional activity subtitle
         if (args != null && args.containsKey(BKEY_SCREEN_SUBTITLE)) {
             toolbar.setSubtitle(args.getString(BKEY_SCREEN_SUBTITLE));
+        } else {
+            final int nrOfBooks = vm.getTotalBooks();
+            toolbar.setSubtitle(getString(R.string.name_colon_value,
+                                          getString(R.string.lbl_books),
+                                          String.valueOf(nrOfBooks)));
         }
 
         // Progress from individual searches AND overall progress
