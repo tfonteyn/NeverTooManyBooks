@@ -157,6 +157,16 @@ public interface BookshelfDao
     void purgeNodeStates(long bookshelfId);
 
     /**
+     * Get a list of book ID's for the given {@link Bookshelf}.
+     *
+     * @param itemId id of the item
+     *
+     * @return list with book ID's linked to this item
+     */
+    @NonNull
+    ArrayList<Long> getBookIds(long itemId);
+
+    /**
      * Get a list of all the bookshelves this book is on.
      *
      * @param bookId to use
