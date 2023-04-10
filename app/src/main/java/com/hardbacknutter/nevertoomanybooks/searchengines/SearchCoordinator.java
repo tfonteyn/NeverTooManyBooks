@@ -297,6 +297,11 @@ public class SearchCoordinator
         }
     }
 
+    /**
+     * Observable to receive progress.
+     *
+     * @return a {@link TaskProgress} with the progress counter, a text message, ...
+     */
     @NonNull
     public LiveData<LiveDataEvent<TaskProgress>> onProgress() {
         return searchCoordinatorProgress;
