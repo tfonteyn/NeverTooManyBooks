@@ -57,26 +57,20 @@ public class CacheDbHelper
     /** The resolved name if any. */
     public static final String BDT_AUTHOR_RESOLVED_NAME = "res_name";
     public static final String BDT_AUTHOR_RESOLVED_NAME_OB = "res_name_ob";
-
-    /** DB name. */
-    private static final String DATABASE_NAME = "cache.db";
-
-    private static final int DATABASE_VERSION = 1;
-
-    private static final Domain DOM_PK_ID;
-
-    /** {@link #TBL_IMAGE}. */
-    private static final Domain DOM_IMAGE_ID;
-
-    /** {@link #TBL_IMAGE}. */
-    private static final Domain DOM_IMAGE_BLOB;
-
-    /** {@link #TBL_IMAGE}. */
-    private static final Domain DOM_IMAGE_LAST_UPDATED__UTC;
     /** pre-scaled images. */
     public static final TableDefinition TBL_IMAGE;
     /** author page urls from Bedetheque. */
     public static final TableDefinition TBL_BDT_AUTHORS;
+    /** DB name. */
+    private static final String DATABASE_NAME = "cache.db";
+    private static final int DATABASE_VERSION = 1;
+    private static final Domain DOM_PK_ID;
+    /** {@link #TBL_IMAGE}. */
+    private static final Domain DOM_IMAGE_ID;
+    /** {@link #TBL_IMAGE}. */
+    private static final Domain DOM_IMAGE_BLOB;
+    /** {@link #TBL_IMAGE}. */
+    private static final Domain DOM_IMAGE_LAST_UPDATED__UTC;
     /** {@link #TBL_BDT_AUTHORS}. */
     private static final Domain DOM_BDT_AUTHOR_NAME;
     /** {@link #TBL_BDT_AUTHORS}. */
@@ -184,7 +178,8 @@ public class CacheDbHelper
     /**
      * Constructor.
      *
-     * @param context Current context
+     * @param context                Current context
+     * @param collationCaseSensitive flag; whether the database uses case-sensitive collation
      */
     public CacheDbHelper(@NonNull final Context context,
                          final boolean collationCaseSensitive) {
