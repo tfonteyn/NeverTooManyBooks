@@ -93,8 +93,9 @@ public class SynchronizedDb
     /**
      * Constructor.
      *
-     * @param synchronizer     Synchronizer to use
-     * @param sqLiteOpenHelper SQLiteOpenHelper to open the underlying database
+     * @param synchronizer           Synchronizer to use
+     * @param sqLiteOpenHelper       SQLiteOpenHelper to open the underlying database
+     * @param collationCaseSensitive flag; whether the database uses case-sensitive collation
      *
      * @throws SQLiteException if the database cannot be opened
      */
@@ -112,9 +113,10 @@ public class SynchronizedDb
      * android/database/sqlite/SQLiteDatabaseConfiguration.java: public int maxSqlCacheSize;
      * the default is in fact 25 as set in the constructor of that class.
      *
-     * @param synchronizer          Synchronizer to use
-     * @param sqLiteOpenHelper      SQLiteOpenHelper to open the underlying database
-     * @param preparedStmtCacheSize the number or prepared statements to cache.
+     * @param synchronizer           Synchronizer to use
+     * @param sqLiteOpenHelper       SQLiteOpenHelper to open the underlying database
+     * @param collationCaseSensitive flag; whether the database uses case-sensitive collation
+     * @param preparedStmtCacheSize  the number or prepared statements to cache.
      *
      * @throws SQLiteException if the database cannot be opened
      */

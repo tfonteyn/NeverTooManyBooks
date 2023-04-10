@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -115,6 +115,14 @@ public class Domain {
         return collationClause;
     }
 
+    /**
+     * Create the {@code ORDER BY} clause for this domain.
+     *
+     * @param sort                   flag
+     * @param collationCaseSensitive flag; whether the database uses case-sensitive collation
+     *
+     * @return column sort SQL fragment
+     */
     @NonNull
     public String getOrderByString(@NonNull final Sort sort,
                                    final boolean collationCaseSensitive) {
@@ -163,6 +171,11 @@ public class Domain {
     }
 
 
+    /**
+     * Check if this domain has a default set.
+     *
+     * @return {@code true} if is has.
+     */
     public boolean hasDefault() {
         return defaultClause != null;
     }

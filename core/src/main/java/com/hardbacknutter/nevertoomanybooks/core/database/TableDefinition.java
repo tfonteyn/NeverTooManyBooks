@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -104,8 +104,9 @@ public class TableDefinition {
      * This method is only called during
      * {@link android.database.sqlite.SQLiteOpenHelper#onCreate(SQLiteDatabase)}
      *
-     * @param db     SQLiteDatabase
-     * @param tables Table list
+     * @param db                     SQLiteDatabase
+     * @param collationCaseSensitive flag; whether the database uses case-sensitive collation
+     * @param tables                 Table list
      */
     public static void onCreate(@NonNull final SQLiteDatabase db,
                                 final boolean collationCaseSensitive,
@@ -131,7 +132,8 @@ public class TableDefinition {
     /**
      * Create all registered indexes for this table.
      *
-     * @param db Database Access
+     * @param db                     Database Access
+     * @param collationCaseSensitive flag; whether the database uses case-sensitive collation
      */
     public void createIndices(@NonNull final SQLiteDatabase db,
                               final boolean collationCaseSensitive) {
@@ -356,6 +358,15 @@ public class TableDefinition {
         return alias + '.' + domain;
     }
 
+    /**
+     * Return an SQL fragment. Use this for columns in the where, join, order, etc... clause.
+     * <p>
+     * format: [table-alias].[domain-name]
+     *
+     * @param domain Domain
+     *
+     * @return SQL fragment
+     */
     @NonNull
     public String dot(@NonNull final Domain domain) {
         return alias + '.' + domain.getName();
@@ -380,6 +391,18 @@ public class TableDefinition {
                      .collect(Collectors.joining(","));
     }
 
+    /**
+     * Return an SQL fragment. Use this for columns in the select-clause.
+     * <p>
+     * format: [table-alias].[domain-name] AS [domain_name] [,...]
+     * <p>
+     * Some SQLite versions make the alias part of the output column name which
+     * breaks the easy fetching by pure column name.
+     *
+     * @param domains list of domains
+     *
+     * @return SQL fragment
+     */
     @NonNull
     public String dotAs(@NonNull final List<Domain> domains) {
         return domains.stream()
@@ -506,6 +529,7 @@ public class TableDefinition {
      *
      * @return info object
      */
+    @SuppressWarnings("WeakerAccess")
     @NonNull
     public TableInfo getTableInfo(@NonNull final SQLiteDatabase db) {
         synchronized (this) {

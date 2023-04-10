@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -68,7 +68,8 @@ class IndexDefinition {
     /**
      * Create the index.
      *
-     * @param db Database Access
+     * @param db                     Database Access
+     * @param collationCaseSensitive flag; whether the database uses case-sensitive collation
      */
     public void create(@NonNull final SQLiteDatabase db,
                        final boolean collationCaseSensitive) {
@@ -77,6 +78,8 @@ class IndexDefinition {
 
     /**
      * Return the SQL used to define the index.
+     *
+     * @param collationCaseSensitive flag; whether the database uses case-sensitive collation
      *
      * @return SQL Fragment
      */
