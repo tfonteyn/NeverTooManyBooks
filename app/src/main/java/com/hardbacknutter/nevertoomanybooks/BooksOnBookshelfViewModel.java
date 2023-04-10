@@ -661,12 +661,16 @@ public class BooksOnBookshelfViewModel
         final ArrayList<Long> books;
 
         final long id = rowData.getLong(blgRecord.dbKey);
+        // the id should never be 0. But paranoia...
         if (onlyThisShelf || id == 0) {
+            // We're going to update all book under THIS node only (regardless of node type).
             final String nodeKey = rowData.getString(DBKey.BL_NODE_KEY);
 
             Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
             books = booklist.getBookIdsForNodeKey(nodeKey);
         } else {
+            // The 'id' represents a specific author, series, ...
+            // We're going to update ALL books referenced by that id, for ALL bookshelves.
             switch (groupId) {
                 case BooklistGroup.AUTHOR:
                     books = ServiceLocator.getInstance().getAuthorDao().getBookIds(id);
