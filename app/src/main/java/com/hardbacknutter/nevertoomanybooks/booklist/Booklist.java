@@ -436,7 +436,10 @@ public class Booklist
      * Ensure al nodes up to the root node for the given (book) node (inclusive) are visible.
      *
      * @param node we want to become visible
+     *
+     * @see BooklistBuilder.TableBuilder#createTriggers(SynchronizedDb)
      */
+    @SuppressWarnings("JavadocReference")
     private void ensureNodeIsVisible(@NonNull final BooklistNode node) {
 
         if (sqlEnsureNodeIsVisible == null) {
@@ -603,7 +606,10 @@ public class Booklist
      * @param nodeKey to use
      *
      * @return list of book ID's
+     *
+     * @see BooklistBuilder.TableBuilder#createTriggers(SynchronizedDb)
      */
+    @SuppressWarnings("JavadocReference")
     @NonNull
     public ArrayList<Long> getBookIdsForNodeKey(@NonNull final String nodeKey) {
         if (sqlGetBookIdListForNodeKey == null) {
