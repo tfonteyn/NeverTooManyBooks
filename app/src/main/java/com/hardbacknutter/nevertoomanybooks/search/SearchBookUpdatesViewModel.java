@@ -76,6 +76,8 @@ public class SearchBookUpdatesViewModel
 
     /** Prefix to store the settings. */
     private static final String SYNC_PROCESSOR_PREFIX = "fields.update.usage.";
+    /** Ask confirmation if the number of covers to download exceeds this number. */
+    private static final int WARN_FOR_NUMBER_OF_COVERS = 10;
 
     private final MutableLiveData<LiveDataEvent<TaskResult<Book>>> listFinished =
             new MutableLiveData<>();
@@ -234,18 +236,16 @@ public class SearchBookUpdatesViewModel
     /**
      * Whether the user needs to be warned about lengthy download of covers.
      *
-     * @return {@code true} if a dialog should be shown
+     * @return {@code true} if the user should be warned
      */
     boolean isShowWarningAboutCovers() {
-
-        // Less than (arbitrary) 10 books, don't check/warn needed.
-        if (bookIdList != null && bookIdList.size() < 10) {
+        // Less than set number of books: don't check/warn
+        if (bookIdList != null && bookIdList.size() < WARN_FOR_NUMBER_OF_COVERS) {
             return false;
         }
 
-        // More than 10 books, check if the user wants ALL covers
-        return syncProcessorBuilder.getSyncAction(DBKey.COVER[0])
-               == SyncAction.Overwrite;
+        // More than set number of books, ask the user if they really want to overwrite ALL covers
+        return syncProcessorBuilder.getSyncAction(DBKey.COVER[0]) == SyncAction.Overwrite;
     }
 
     /**
