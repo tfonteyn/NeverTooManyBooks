@@ -78,6 +78,11 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
         return metaDataTask.onFinished();
     }
 
+    /**
+     * Observable to receive progress.
+     *
+     * @return a {@link TaskProgress} with the progress counter, a text message, ...
+     */
     @NonNull
     public LiveData<LiveDataEvent<TaskProgress>> onProgress() {
         return readerTask.onProgress();
