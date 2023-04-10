@@ -903,6 +903,8 @@ public class BooksOnBookshelf
                 if (!rowData.getString(DBKey.FK_BOOKSHELF).isEmpty()) {
                     getMenuInflater().inflate(R.menu.bookshelf, menu);
                 }
+                // Note that a "(No Bookshelf)" does NOT exist.
+                // Books are always on a shelf.
                 break;
             }
             case BooklistGroup.LANGUAGE: {
@@ -2034,6 +2036,7 @@ public class BooksOnBookshelf
                 // position on the last-saved node
                 expandAllNodes(1, false);
                 return true;
+
             } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
                 // IMPORTANT: this is from an options menu selection.
                 // We pass the book ID's for the currently displayed list.
