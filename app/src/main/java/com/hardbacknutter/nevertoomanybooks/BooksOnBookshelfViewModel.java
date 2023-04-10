@@ -189,6 +189,11 @@ public class BooksOnBookshelfViewModel
 
     private List<MenuHandler> menuHandlers;
 
+    /**
+     * Observable to receive progress.
+     *
+     * @return a {@link TaskProgress} with the progress counter, a text message, ...
+     */
     @NonNull
     public LiveData<LiveDataEvent<TaskProgress>> onProgress() {
         return boBTask.onProgress();
@@ -210,6 +215,11 @@ public class BooksOnBookshelfViewModel
         return boBTask.onFailure();
     }
 
+    /**
+     * Observable to receive success.
+     *
+     * @return the {@link BoBTask.Outcome} which can be considered to be complete and correct.
+     */
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<BoBTask.Outcome>>> onFinished() {
         return boBTask.onFinished();
