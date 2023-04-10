@@ -229,7 +229,7 @@ public class SearchBookUpdatesFragment
             // check if the user really wants to overwrite all covers
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_baseline_warning_24)
-                    .setTitle(R.string.menu_update_fields)
+                    .setTitle(R.string.menu_update_books)
                     .setMessage(R.string.confirm_overwrite_cover)
                     .setNeutralButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .setNegativeButton(R.string.option_field_usage_copy_if_blank, (d, w) -> {
