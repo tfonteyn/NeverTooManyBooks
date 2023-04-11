@@ -1208,6 +1208,11 @@ public class BooksOnBookshelf
                         }
                     });
                     return true;
+
+                } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
+                    updateBookListLauncher.launch(vm.createUpdateBooklistContractInput(
+                            this, rowData, true));
+                    return true;
                 }
                 break;
             }
