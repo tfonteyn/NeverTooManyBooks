@@ -56,7 +56,7 @@ ext {
     // https://developer.android.com/jetpack/androidx/versions
 
     // 1.8 needs Android 14 !
-    androidx_activity_version = '1.7.0-beta02'
+    androidx_activity_version = '1.7.0'
 
     androidx_annotation_version = '1.6.0'
     androidx_appcompat_version = '1.7.0-alpha02'
@@ -82,7 +82,7 @@ ext {
     androidx_window_version = '1.1.0-beta01'
 
     // https://github.com/material-components/material-components-android/releases
-    google_material_version = '1.8.0'
+    google_material_version = '1.9.0-beta01'
 
     // https://jsoup.org/
     jsoup_version = '1.15.4'
