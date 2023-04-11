@@ -973,7 +973,7 @@ public class BooklistGroup {
         @NonNull
         private final String keyPrefix;
 
-        /** They key domain, which is by default also the display-domain. */
+        /** The key domain, which is by default also the display-domain. */
         @NonNull
         private final DomainExpression keyDomain;
 
