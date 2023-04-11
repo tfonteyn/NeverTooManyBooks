@@ -98,7 +98,13 @@ public class BooksOnBookshelfViewModel
                       new BLGRecord(DBKey.FK_PUBLISHER,
                                     R.string.lbl_publisher,
                                     DBKey.PUBLISHER_NAME,
-                                    R.string.bob_empty_publisher))
+                                    R.string.bob_empty_publisher)),
+            Map.entry(BooklistGroup.BOOKSHELF,
+                      new BLGRecord(DBKey.FK_BOOKSHELF,
+                                    R.string.lbl_bookshelf,
+                                    DBKey.BOOKSHELF_NAME,
+                                    // not used; Books are always on a shelf.
+                                    R.string.lbl_bookshelf))
     );
 
     private static final Map<Integer, BLGDateRecord> BLG_DATE_RECORD = Map.ofEntries(
@@ -698,6 +704,9 @@ public class BooksOnBookshelfViewModel
                     break;
                 case BooklistGroup.PUBLISHER:
                     books = ServiceLocator.getInstance().getPublisherDao().getBookIds(id);
+                    break;
+                case BooklistGroup.BOOKSHELF:
+                    books = ServiceLocator.getInstance().getBookshelfDao().getBookIds(id);
                     break;
                 default:
                     throw new IllegalArgumentException(String.valueOf(groupId));
