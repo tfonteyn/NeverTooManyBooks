@@ -605,6 +605,7 @@ public class Booklist
      * Get the ids of all Books for the given node key.
      *
      * @param nodeKey to use
+     * @param level   the level in the Booklist tree of this node
      *
      * @return list of book ID's
      *
@@ -612,7 +613,8 @@ public class Booklist
      */
     @SuppressWarnings("JavadocReference")
     @NonNull
-    public ArrayList<Long> getBookIdsForNodeKey(@NonNull final String nodeKey) {
+    public ArrayList<Long> getBookIdsForNodeKey(@NonNull final String nodeKey,
+                                                final int level) {
         if (sqlGetBookIdListForNodeKey == null) {
             sqlGetBookIdListForNodeKey =
                     SELECT_ + DBKey.FK_BOOK
