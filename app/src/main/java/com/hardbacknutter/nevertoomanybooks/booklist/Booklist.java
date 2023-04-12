@@ -115,6 +115,7 @@ public class Booklist
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final BooklistNodeDao nodeDao;
+
     /** {@link #getNodes}, {@link #getNodeByRowId}. */
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
@@ -464,7 +465,10 @@ public class Booklist
                     nodes.push(new Pair<>(rowId, level));
                 }
             }
-            nodeKey = nodeKey.substring(0, nodeKey.lastIndexOf('/'));
+            // the node key always must end with a /
+            // So find the previous-from-last '/' and create the
+            // new node key again with the '/' as last character
+            nodeKey = nodeKey.substring(0, nodeKey.lastIndexOf('/', nodeKey.length() - 2) + 1);
         }
 
         // Now process the collected nodes from the root downwards.
