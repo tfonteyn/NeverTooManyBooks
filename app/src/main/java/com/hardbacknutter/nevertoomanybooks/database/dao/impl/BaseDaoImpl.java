@@ -61,6 +61,7 @@ abstract class BaseDaoImpl {
 
     static final String _AND_ = " AND ";
     static final String _OR_ = " OR ";
+    static final String _IN_ = " IN ";
     static final String _NOT_IN_ = " NOT IN ";
 
     /** Log tag. */
