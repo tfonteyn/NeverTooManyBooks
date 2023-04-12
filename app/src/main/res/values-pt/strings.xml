@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…» - Regex to find wrong ones: ('|„|‘|’|“|”) --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pt">
@@ -56,6 +58,7 @@
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Os seus comentários (ou deixe em branco):</string>
     <string name="acra_resDialogText">Parece que &APP_NAME; encerrou inesperadamente. Se possível, descreva abaixo tudo o que acha poder ser relevante e prima “OK” para nos enviar um e-mail sobre este encerramento. Irá ver o e-mail antes de ser enviado.</string>
+    <string name="option_apply_to_all_related_books">Todos os livros relacionados</string>
     <string name="action_add">Adicionar</string>
     <string name="action_clear">Limpar</string>
     <string name="action_create">Criar</string>
@@ -133,7 +136,7 @@
     <string name="notification_channel_info">Informações</string>
     <string name="notification_channel_warn">Aviso</string>
     <string name="option_bug_report">Relatório de bug</string>
-    <string name="btn_this_node_only">Este nó apenas</string>
+    <string name="option_apply_to_this_node_only">Este nó apenas</string>
     <string name="option_cover_replace">Substituir…</string>
     <string name="password">Senha</string>
     <string name="pc_advanced_options">Avançado</string>

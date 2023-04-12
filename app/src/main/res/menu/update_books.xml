@@ -25,12 +25,11 @@
         android:id="@id/MENU_UPDATE_FROM_INTERNET_THIS_NODE_ONLY"
         android:icon="@drawable/ic_baseline_select_24"
         android:orderInCategory="@integer/MENU_ORDER_EDIT"
-        android:title="@string/btn_this_node_only" />
+        android:title="@string/option_apply_to_this_node_only" />
 
-    <!-- FIXME: update the string... "books MATCHING this node, everywhere" -->
     <item
         android:id="@id/MENU_UPDATE_FROM_INTERNET_ALL_SHELVES"
         android:icon="@drawable/ic_baseline_select_all_24"
         android:orderInCategory="@integer/MENU_ORDER_DELETE"
-        android:title="@string/lbl_all_bookshelves" />
+        android:title="@string/option_apply_to_all_related_books" />
 </menu>

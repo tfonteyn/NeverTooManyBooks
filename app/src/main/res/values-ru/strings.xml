@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -486,7 +488,8 @@
     <string name="option_author_works_book">Только книги</string>
     <string name="option_author_works_toc">Только заголовки контента</string>
     <string name="title_backup_and_export">Резервное копирование и экспорт</string>
-    <string name="btn_this_node_only">Только этот узел</string>
+    <string name="option_apply_to_this_node_only">Только этот узел</string>
+    <string name="option_apply_to_all_related_books">Все связанные книги</string>
     <string name="option_barcode_scan">Сканирование штрих-кода</string>
     <string name="option_barcode_scan_continuous">Сканирование непрерывно</string>
     <string name="option_book_sync_list_with_details">Синхронизировать/позиционировать список</string>

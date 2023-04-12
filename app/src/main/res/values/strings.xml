@@ -665,8 +665,12 @@
     <string name="lbl_all_bookshelves">All bookshelves</string>
     <!-- whether an action will only apply to the current bookshelf. -->
     <string name="btn_just_this_shelf">This shelf only</string>
-    <!-- whether an action will only apply to the current/selected booklist (tree) node. -->
-    <string name="btn_this_node_only">This node only</string>
+
+    <!-- whether an action will apply only to the selected booklist (tree) node. -->
+    <string name="option_apply_to_this_node_only">This node only</string>
+    <!-- whether an action will apply to all items related to the selected booklist (tree) node. -->
+    <string name="option_apply_to_all_related_books">All related books</string>
+
     <!-- Start the barcode scanner for a single scan (one book). -->
     <string name="option_barcode_scan">Scan Barcode</string>
     <!-- Start the barcode scanner for a continuous scanning (multiple books). -->
@@ -1518,8 +1522,4 @@
     <string name="pt_search_show_shopping_options">Show shopping menus</string>
     <string name="lbl_standardize">Standardize</string>
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
-    <!-- Notification title when external media is missing [CHAR LIMIT=30] -->
-    <!--    <string name="ext_media_missing_title">%s missing</string>-->
-    <!-- [VERIFIED] - Notification body when external media is missing [CHAR LIMIT=30] -->
-    <!--    <string name="ext_media_missing_message">Insert device again</string>-->
 </resources>

@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -470,7 +472,8 @@
     <string name="option_author_works_book">Solo libri</string>
     <string name="option_author_works_toc">Solo titoli di contenuti</string>
     <string name="title_backup_and_export">Backup ed esportazione</string>
-    <string name="btn_this_node_only">Solo questo nodo</string>
+    <string name="option_apply_to_this_node_only">Solo questo nodo</string>
+    <string name="option_apply_to_all_related_books">Tutti i libri correlati</string>
     <string name="option_barcode_scan">Scansione codice a barre</string>
     <string name="option_barcode_scan_continuous">Scansiona continuamente</string>
     <string name="option_book_sync_list_with_details">Sincronizza/posiziona la lista</string>

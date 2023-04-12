@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -465,7 +467,8 @@
     <string name="option_author_works_book">Alleen boeken</string>
     <string name="option_author_works_toc">Alleen inhouds titels</string>
     <string name="option_auto_updates">Laat automatische verbeteringen van het internet toe.</string>
-    <string name="btn_this_node_only">Alleen dit knooppunt</string>
+    <string name="option_apply_to_this_node_only">Alleen dit knooppunt</string>
+    <string name="option_apply_to_all_related_books">Alle gerelateerde boeken</string>
     <string name="option_barcode_scan">Scan Barcode</string>
     <string name="option_barcode_scan_continuous">Scan continu</string>
     <string name="option_bob_filter_isbn_no">Zonder ISBN</string>

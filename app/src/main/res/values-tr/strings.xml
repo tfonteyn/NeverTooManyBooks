@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -476,8 +478,8 @@
     <string name="option_author_works_book">Sadece kitaplar</string>
     <string name="option_author_works_toc">Yalnızca içerik başlıkları</string>
     <string name="title_backup_and_export">Yedekleme ve Dışa Aktarma</string>
-    <string name="btn_this_node_only">Bu düğüm sadece</string>
-    <string name="btn_this_node_only">Bu düğüm sadece</string>
+    <string name="option_apply_to_this_node_only">Bu düğüm sadece</string>
+    <string name="option_apply_to_all_related_books">Ilgili tüm kitaplar</string>
     <string name="option_barcode_scan">Barkod tara</string>
     <string name="option_barcode_scan_continuous">Sürekli tara</string>
     <string name="option_book_sync_list_with_details">Listeyi senkronize edin/konumlandırın</string>
