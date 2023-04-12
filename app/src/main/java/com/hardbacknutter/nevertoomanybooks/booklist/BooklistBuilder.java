@@ -898,8 +898,10 @@ class BooklistBuilder {
         /**
          * Create the expression for the {@link DBKey#BL_NODE_KEY} column of a Book.
          * <p>
-         * <strong>Dev. note:</strong> this is an SQL expression, the "||" operator being
-         * a string 'concat' during the SQL execution.
+         * This string value contains one key-value pair for each each group level, and
+         * ALWAYS ends with a '/'.
+         * <p>
+         * i.e: "/key=value/key=value/[key=value/]"
          *
          * @return column expression
          */
@@ -908,7 +910,8 @@ class BooklistBuilder {
             return style.getGroupList()
                         .stream()
                         .map(BooklistGroup::getNodeKeyExpression)
-                        .collect(Collectors.joining("||"));
+                        .collect(Collectors.joining("||"))
+                   + "||'/'";
         }
 
         /**
@@ -1050,6 +1053,8 @@ class BooklistBuilder {
 
         /**
          * Create the ORDER BY clause.
+         *
+         * @param collationCaseSensitive flag; whether the database uses case-sensitive collation
          *
          * @return ORDER BY clause
          */
