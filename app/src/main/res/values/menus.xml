@@ -102,7 +102,8 @@
 
     <item name="MENU_UPDATE_FROM_INTERNET" type="id" />
     <item name="MENU_UPDATE_FROM_INTERNET_SKIP_ALL" type="id" />
-    <item name="MENU_UPDATE_FROM_INTERNET_THIS_SHELF_ONLY" type="id" />
+    <item name="MENU_UPDATE_FROM_INTERNET_THIS_NODE_ONLY"
+          type="id" />
     <item name="MENU_UPDATE_FROM_INTERNET_ALL_SHELVES" type="id" />
 
     <item name="MENU_SYNC_LIST_WITH_DETAILS" type="id" />

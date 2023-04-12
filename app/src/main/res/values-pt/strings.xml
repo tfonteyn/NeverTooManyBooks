@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -132,6 +133,7 @@
     <string name="notification_channel_info">Informações</string>
     <string name="notification_channel_warn">Aviso</string>
     <string name="option_bug_report">Relatório de bug</string>
+    <string name="btn_this_node_only">Este nó apenas</string>
     <string name="option_cover_replace">Substituir…</string>
     <string name="password">Senha</string>
     <string name="pc_advanced_options">Avançado</string>

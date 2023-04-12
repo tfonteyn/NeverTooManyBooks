@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -469,6 +470,7 @@
     <string name="option_author_works_book">Nur Bücher</string>
     <string name="option_author_works_toc">Nur Inhaltstitel</string>
     <string name="title_backup_and_export">Sichern &amp; Exportieren</string>
+    <string name="btn_this_node_only">Nur dieser Knoten</string>
     <string name="option_barcode_scan">Barcode scannen</string>
     <string name="option_barcode_scan_continuous">Durchgehend scannen</string>
     <string name="option_book_sync_list_with_details">Liste synchronisieren/positionieren</string>

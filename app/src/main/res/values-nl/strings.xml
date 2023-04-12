@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -464,6 +465,7 @@
     <string name="option_author_works_book">Alleen boeken</string>
     <string name="option_author_works_toc">Alleen inhouds titels</string>
     <string name="option_auto_updates">Laat automatische verbeteringen van het internet toe.</string>
+    <string name="btn_this_node_only">Alleen dit knooppunt</string>
     <string name="option_barcode_scan">Scan Barcode</string>
     <string name="option_barcode_scan_continuous">Scan continu</string>
     <string name="option_bob_filter_isbn_no">Zonder ISBN</string>

@@ -665,6 +665,8 @@
     <string name="lbl_all_bookshelves">All bookshelves</string>
     <!-- whether an action will only apply to the current bookshelf. -->
     <string name="btn_just_this_shelf">This shelf only</string>
+    <!-- whether an action will only apply to the current/selected booklist (tree) node. -->
+    <string name="btn_this_node_only">This node only</string>
     <!-- Start the barcode scanner for a single scan (one book). -->
     <string name="option_barcode_scan">Scan Barcode</string>
     <!-- Start the barcode scanner for a continuous scanning (multiple books). -->
