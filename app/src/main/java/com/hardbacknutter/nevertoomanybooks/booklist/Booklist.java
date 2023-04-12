@@ -120,6 +120,10 @@ public class Booklist
     @NonNull
     private final String sqlSelectBooklistNodes;
 
+    /** {@link #getOffsetCursor(int, int)}. */
+    @SuppressWarnings("FieldNotUsedInToString")
+    private final String sqlGetOffsetCursor;
+
     /** Total number of books in current list. e.g. a book can be listed under 2 authors. */
     private int totalBooks = -1;
 
@@ -146,10 +150,6 @@ public class Booklist
     /** {@link #getNextBookWithoutCover(long)}. */
     @SuppressWarnings("FieldNotUsedInToString")
     private String sqlGetNextBookWithoutCover;
-
-    /** {@link #getOffsetCursor(int, int)}. */
-    @SuppressWarnings("FieldNotUsedInToString")
-    private String sqlGetOffsetCursor;
 
     /** {@link #updateAuthorComplete(long, boolean)}. */
     @SuppressWarnings("FieldNotUsedInToString")
@@ -182,6 +182,19 @@ public class Booklist
         sqlSelectBooklistNodes = SELECT_ + BooklistNode.getColumns(listTable)
                                  + _FROM_ + listTable.ref()
                                  + _WHERE_ + listTable.dot("%1s") + "=?";
+
+        sqlGetOffsetCursor = SELECT_
+                             // keep in sync with column list in #getListColumnNames() !
+                             + listTable.getDomains()
+                                        .stream()
+                                        .map(listTable::dot)
+                                        .collect(Collectors.joining(","))
+                             + ',' + (listTable.dot(DBKey.PK_ID)
+                                      + _AS_ + DBKey.BL_LIST_VIEW_NODE_ROW_ID)
+                             + _FROM_ + listTable.ref()
+                             + _WHERE_ + listTable.dot(DBKey.BL_NODE_VISIBLE) + "=1"
+                             + _ORDER_BY_ + listTable.dot(DBKey.PK_ID)
+                             + " LIMIT ? OFFSET ?";
     }
 
     @NonNull
@@ -265,22 +278,6 @@ public class Booklist
     @NonNull
     Cursor getOffsetCursor(final int offset,
                            @SuppressWarnings("SameParameterValue") final int pageSize) {
-
-        if (sqlGetOffsetCursor == null) {
-            sqlGetOffsetCursor =
-                    // keep in sync with column list in #getListColumnNames() !
-                    SELECT_ + listTable.getDomains()
-                                       .stream()
-                                       .map(listTable::dot)
-                                       .collect(Collectors.joining(","))
-                    + ',' + (listTable.dot(DBKey.PK_ID)
-                             + _AS_ + DBKey.BL_LIST_VIEW_NODE_ROW_ID)
-                    + _FROM_ + listTable.ref()
-                    + _WHERE_ + listTable.dot(DBKey.BL_NODE_VISIBLE) + "=1"
-                    + _ORDER_BY_ + listTable.dot(DBKey.PK_ID)
-                    + " LIMIT ? OFFSET ?";
-        }
-
         return db.rawQuery(sqlGetOffsetCursor, new String[]{
                 String.valueOf(pageSize),
                 String.valueOf(offset)});
