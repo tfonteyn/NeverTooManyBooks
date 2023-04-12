@@ -1379,7 +1379,7 @@ public class BooksOnBookshelf
                     final int itemId = menuItem.getItemId();
                     Boolean onlyThisShelf = null;
 
-                    if (itemId == R.id.MENU_UPDATE_FROM_INTERNET_THIS_SHELF_ONLY) {
+                    if (itemId == R.id.MENU_UPDATE_FROM_INTERNET_THIS_NODE_ONLY) {
                         onlyThisShelf = true;
                     } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET_ALL_SHELVES) {
                         onlyThisShelf = false;
