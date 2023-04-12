@@ -689,9 +689,10 @@ public class BooksOnBookshelfViewModel
         if (onlyThisShelf || id == 0) {
             // We're going to update all book under THIS node only (regardless of node type).
             final String nodeKey = rowData.getString(DBKey.BL_NODE_KEY);
+            final int level = rowData.getInt(DBKey.BL_NODE_LEVEL);
 
             Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
-            books = booklist.getBookIdsForNodeKey(nodeKey);
+            books = booklist.getBookIdsForNodeKey(nodeKey, level);
         } else {
             // The 'id' represents a specific author, series, ...
             // We're going to update ALL books referenced by that id, for ALL bookshelves.
@@ -741,9 +742,10 @@ public class BooksOnBookshelfViewModel
             @NonNull final DataHolder rowData) {
 
         final String nodeKey = rowData.getString(DBKey.BL_NODE_KEY);
+        final int level = rowData.getInt(DBKey.BL_NODE_LEVEL);
 
         Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
-        final ArrayList<Long> books = booklist.getBookIdsForNodeKey(nodeKey);
+        final ArrayList<Long> books = booklist.getBookIdsForNodeKey(nodeKey, level);
 
         final int groupId = rowData.getInt(DBKey.BL_NODE_GROUP);
 
