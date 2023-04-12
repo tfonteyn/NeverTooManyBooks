@@ -261,9 +261,9 @@ public class TocEntryDaoImpl
 
         /** All Book id's for a given {@link TocEntry}. */
         private static final String SELECT_BOOK_IDS_BY_TOC_ENTRY_ID =
-                SELECT_ + DBKey.FK_BOOK
-                + _FROM_ + TBL_BOOK_TOC_ENTRIES.getName()
-                + _WHERE_ + DBKey.FK_TOC_ENTRY + "=?";
+                SELECT_ + TBL_BOOK_TOC_ENTRIES.dotAs(DBKey.FK_BOOK)
+                + _FROM_ + TBL_BOOK_TOC_ENTRIES.ref()
+                + _WHERE_ + TBL_BOOK_TOC_ENTRIES.dot(DBKey.FK_TOC_ENTRY) + "=?";
 
         /** All Books as {@link BookLight} for a given {@link TocEntry}. */
         private static final String SELECT_BOOK_TITLES_BY_TOC_ENTRY_ID =

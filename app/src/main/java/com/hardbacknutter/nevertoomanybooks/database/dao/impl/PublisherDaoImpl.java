@@ -410,8 +410,8 @@ public class PublisherDaoImpl
 
         /** All Books (id only!) for a given Publisher. */
         private static final String SELECT_BOOK_IDS_BY_PUBLISHER_ID =
-                SELECT_ + TBL_BOOKS.dotAs(DBKey.PK_ID)
-                + _FROM_ + TBL_BOOK_PUBLISHER.startJoin(TBL_BOOKS)
+                SELECT_ + TBL_BOOK_PUBLISHER.dotAs(DBKey.FK_BOOK)
+                + _FROM_ + TBL_BOOK_PUBLISHER.ref()
                 + _WHERE_ + TBL_BOOK_PUBLISHER.dot(DBKey.FK_PUBLISHER) + "=?";
 
         /** All Books (id only!) for a given Publisher and Bookshelf. */

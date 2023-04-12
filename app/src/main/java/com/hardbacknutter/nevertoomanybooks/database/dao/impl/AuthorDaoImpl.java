@@ -765,8 +765,8 @@ public class AuthorDaoImpl
 
         /** All Books (id only!) for a given Author. */
         private static final String SELECT_BOOK_IDS_BY_AUTHOR_ID =
-                SELECT_ + TBL_BOOKS.dotAs(DBKey.PK_ID)
-                + _FROM_ + TBL_BOOK_AUTHOR.startJoin(TBL_BOOKS)
+                SELECT_ + TBL_BOOK_AUTHOR.dotAs(DBKey.FK_BOOK)
+                + _FROM_ + TBL_BOOK_AUTHOR.ref()
                 + _WHERE_ + TBL_BOOK_AUTHOR.dot(DBKey.FK_AUTHOR) + "=?";
 
         /** All Books (id only!) for a given Author and Bookshelf. */
