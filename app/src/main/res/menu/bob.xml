@@ -83,6 +83,6 @@
         android:id="@id/MENU_UPDATE_FROM_INTERNET"
         android:icon="@drawable/ic_baseline_cloud_download_24"
         android:orderInCategory="@integer/MENU_ORDER_UPDATE_FIELDS"
-        android:title="@string/menu_update_fields"
+        android:title="@string/menu_update_books"
         android:visible="false" />
 </menu>
