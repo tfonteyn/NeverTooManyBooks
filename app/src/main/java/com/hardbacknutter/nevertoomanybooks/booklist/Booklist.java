@@ -36,7 +36,6 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.StringJoiner;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -116,7 +115,6 @@ public class Booklist
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final BooklistNodeDao nodeDao;
-
     /** {@link #getNodes}, {@link #getNodeByRowId}. */
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
@@ -466,10 +464,7 @@ public class Booklist
                     nodes.push(new Pair<>(rowId, level));
                 }
             }
-            // the node key always must end with a /
-            // So find the previous-from-last '/' and create the
-            // new node key again with the '/' as last character
-            nodeKey = nodeKey.substring(0, nodeKey.lastIndexOf('/', nodeKey.length() - 2) + 1);
+            nodeKey = nodeKey.substring(0, nodeKey.lastIndexOf('/'));
         }
 
         // Now process the collected nodes from the root downwards.
@@ -606,7 +601,6 @@ public class Booklist
      * Get the ids of all Books for the given node key.
      *
      * @param nodeKey to use
-     * @param level   the level in the Booklist tree of this node
      *
      * @return list of book ID's
      *
@@ -614,8 +608,7 @@ public class Booklist
      */
     @SuppressWarnings("JavadocReference")
     @NonNull
-    public ArrayList<Long> getBookIdsForNodeKey(@NonNull final String nodeKey,
-                                                final int level) {
+    public ArrayList<Long> getBookIdsForNodeKey(@NonNull final String nodeKey) {
         if (sqlGetBookIdListForNodeKey == null) {
             sqlGetBookIdListForNodeKey =
                     SELECT_ + DBKey.FK_BOOK
@@ -625,22 +618,17 @@ public class Booklist
                     + _ORDER_BY_ + DBKey.FK_BOOK;
         }
 
-        // split and rejoin up to (and including) the level we need
-        final String[] split = nodeKey.split("/");
-        final StringJoiner sj = new StringJoiner("/");
-        for (int i = 0; i <= level; i++) {
-            sj.add(split[i]);
-        }
-        sj.add("%");
-
-        try (Cursor cursor = db.rawQuery(sqlGetBookIdListForNodeKey,
-                                         new String[]{sj.toString()})) {
-            final ArrayList<Long> rows = new ArrayList<>();
-            while (cursor.moveToNext()) {
-                final long id = cursor.getInt(0);
-                rows.add(id);
+        try (Cursor cursor = db.rawQuery(sqlGetBookIdListForNodeKey, new String[]{nodeKey + "%"})) {
+            if (cursor.moveToFirst()) {
+                final ArrayList<Long> rows = new ArrayList<>(cursor.getCount());
+                do {
+                    final long id = cursor.getInt(0);
+                    rows.add(id);
+                } while (cursor.moveToNext());
+                return rows;
+            } else {
+                return new ArrayList<>();
             }
-            return rows;
         }
     }
 
