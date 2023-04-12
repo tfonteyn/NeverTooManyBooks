@@ -36,6 +36,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -624,17 +625,22 @@ public class Booklist
                     + _ORDER_BY_ + DBKey.FK_BOOK;
         }
 
-        try (Cursor cursor = db.rawQuery(sqlGetBookIdListForNodeKey, new String[]{nodeKey + "%"})) {
-            if (cursor.moveToFirst()) {
-                final ArrayList<Long> rows = new ArrayList<>(cursor.getCount());
-                do {
-                    final long id = cursor.getInt(0);
-                    rows.add(id);
-                } while (cursor.moveToNext());
-                return rows;
-            } else {
-                return new ArrayList<>();
+        // split and rejoin up to (and including) the level we need
+        final String[] split = nodeKey.split("/");
+        final StringJoiner sj = new StringJoiner("/");
+        for (int i = 0; i <= level; i++) {
+            sj.add(split[i]);
+        }
+        sj.add("%");
+
+        try (Cursor cursor = db.rawQuery(sqlGetBookIdListForNodeKey,
+                                         new String[]{sj.toString()})) {
+            final ArrayList<Long> rows = new ArrayList<>();
+            while (cursor.moveToNext()) {
+                final long id = cursor.getInt(0);
+                rows.add(id);
             }
+            return rows;
         }
     }
 
