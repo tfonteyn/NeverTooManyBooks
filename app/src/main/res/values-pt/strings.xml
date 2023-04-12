@@ -26,17 +26,14 @@
 <!-- Quotes «…» - Regex to find wrong ones: ('|„|‘|’|“|”) --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pt">
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d livro exibido</item>
-        <item quantity="many"/>
         <item quantity="other">A exibir %1$d livros</item>
     </plurals>
     <plurals name="n_books_found">
         <item quantity="one">%1$d livro encontrado</item>
-        <item quantity="many"/>
         <item quantity="other">%1$d livros encontrados</item>
     </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s estrela</item>
-        <item quantity="many"/>
         <item quantity="other">%1$s estrelas</item>
     </plurals>
     <string name="X_action_clear_credentials">Limpar credenciais</string>
@@ -174,7 +171,7 @@
     <string name="error_email_failed">Falha ao enviar o e-mail.</string>
     <string name="error_unsupported_version_v">Versão não suportada: %1$d</string>
     <string name="error_import_csv_line_to_long">Linha muito longa (linha=%1$d, comprimento=%2$d)</string>
-    <string name="error_record_must_contain_column">O registro deve conter um campo chamado \"%1$s\".</string>
+    <string name="error_record_must_contain_column">O registro deve conter um campo chamado “%1$s”.</string>
     <string name="error_export_failed">Falha na exportação.</string>
     <string name="warning_import_failed_for_lines_some">Falha na análise de linhas
 \n%1$s
@@ -191,7 +188,7 @@
     <string name="error_file_not_found">Ficheiro não encontrado: %1$s</string>
     <string name="warning_import_csv_unescaped_quote">Citação sem escape na linha %1$d, posição %2$d</string>
     <string name="error_site_authentication_failed">Falha na autenticação %1$s</string>
-    <string name="error_unknown_host">Ocorreu um problema de ligação ao serviço em \"%1$s\".</string>
+    <string name="error_unknown_host">Ocorreu um problema de ligação ao serviço em “%1$s”.</string>
     <string name="error_auto_toc_population_failed">Falha no preenchimento automático de títulos.</string>
     <string name="error_no_image_editor">Nenhum editor de imagens encontrado.</string>
     <string name="error_import_file_not_supported">O ficheiro seleccionado não pode ser importado.</string>
@@ -235,7 +232,7 @@
     <string name="warning_toc_confirm">Por favor, confirme que estes títulos estão (maioritariamente) corretos.</string>
     <string name="warning_backup_request">Gostaria de fazer uma cópia de segurança da sua base de dados para o seu cartão SD\?</string>
     <string name="vldt_failure">Falha de validação</string>
-    <string name="vldt_boolean_expected_for_x">Esperado um valor booleano (0,1,t,f,true,false) para \"%1$s\"</string>
+    <string name="vldt_boolean_expected_for_x">Esperado um valor booleano (0,1,t,f,true,false) para “%1$s”</string>
     <string name="vldt_blank_required_for_x">Valor vazio necessário para “%1$s”</string>
     <string name="vldt_real_author_must_be_valid">Deve estar em branco ou ser um Autor existente</string>
     <string name="progress_msg_starting_up">A iniciar…</string>
@@ -247,14 +244,14 @@
     <string name="progress_msg_saving_image">A guardar imagem..</string>
     <string name="progress_msg_x_created_y_updated_z_skipped">%1$s: %2$d criado, %3$d atualizado, %4$d ignorado</string>
     <string name="info_authorized">Autorizado</string>
-    <string name="info_story_in_multiple_books">\"%1$s\" está presente em vários livros:
+    <string name="info_story_in_multiple_books">“%1$s” está presente em vários livros:
 \n
 \n%2$s</string>
-    <string name="info_story_in_single_book">\"%1$s\" está presente num único livro:
+    <string name="info_story_in_single_book">“%1$s” está presente num único livro:
 \n
 \n%2$s</string>
     <string name="info_all_books_have_covers">Todos os livros nesta prateleira têm capas</string>
-    <string name="info_share_book_im_reading">Estou a ler \"%1$s\" %2$s por %3$s %4$s</string>
+    <string name="info_share_book_im_reading">Estou a ler “%1$s” %2$s por %3$s %4$s</string>
     <string name="info_tap_on_thumbnail_to_zoom">Toque em uma miniatura para exibir uma imagem maior.</string>
     <string name="info_download_successful">Transferência bem-sucedida</string>
     <string name="cd_btn_drag_handle">Arraste para reordenar esta lista</string>
@@ -317,7 +314,7 @@
     <string name="option_barcode_scan_continuous">Ler continuamente</string>
     <string name="option_isbn_strict">Strict ISBN</string>
     <string name="confirm_remove_toc_entry">Remover o título “%1$s” por %2$s deste livro\?</string>
-    <string name="confirm_delete_style">Excluir o estilo \"%1$s\"\?</string>
+    <string name="confirm_delete_style">Excluir o estilo “%1$s”\?</string>
     <string name="confirm_merge_bookshelves">A prateleira que está a modificar já existe. Gostaria de uni-las\?</string>
     <string name="tip_reset_all">Repor dicas</string>
     <string name="tip_authors_book_may_appear_more_than_once">Se for mostrado para cada autor, um único livro pode aparecer mais de uma vez numa lista. Em tal caso a exclusão de um desses livros excluirá todas as instâncias da lista.</string>
@@ -339,7 +336,7 @@
     <string name="style_builtin_author_year">Autor, Ano</string>
     <string name="lbl_author_type_editor">editor</string>
     <string name="option_cover_rotate">Rodar…</string>
-    <string name="warning_x_is_not_a_valid_code">\"%1$s\" não é um código válido</string>
+    <string name="warning_x_is_not_a_valid_code">“%1$s” não é um código válido</string>
     <string name="warning_if_day_set_month_and_year_must_be">Se um dia for especificado, então o mês e o ano também devem ser especificados.</string>
     <string name="progress_msg_optimizing">A optimizar…</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d livros, em %2$d entradas</string>
@@ -359,30 +356,30 @@
     <string name="lbl_edition_limited">Limitada</string>
     <string name="lbl_author_type_contributor">contribuidor</string>
     <string name="lbl_condition_dust_cover_none">Nenhum</string>
-    <string name="option_storage_select">Usar \"%1$s\"</string>
+    <string name="option_storage_select">Usar “%1$s”</string>
     <string name="warning_import_csv">Aviso. A importação de dados pode atualizar registos de livros existentes com novas informações se a coluna uuid não estiver presente e o id no ficheiro de importação for o mesmo que um id existente. Isso geralmente é bom se alterou um campo num ficheiro exportado. Se criou um novo registo de livro ou está a importar livros de outra pessoa, assegure-se que o campo uuid está presente e que o campo id está em branco.</string>
     <string name="option_cover_edit">Iniciar editor</string>
-    <string name="confirm_delete_series">Excluir a série \"%1$s\"\?
+    <string name="confirm_delete_series">Excluir a série “%1$s”?
 \n
 \nOs livros em si não serão excluídos.
 \n
 \nConsidere editar a série e alterar o nome da série para o de outra série para preservar estes dados.</string>
-    <string name="confirm_delete_publisher">Excluir o editor \"%1$s\"\?
+    <string name="confirm_delete_publisher">Excluir o editor “%1$s”?
 \n
 \nOs livros em si não serão excluídos.
 \n
 \nConsidere editar o editor e alterar o nome do editor para o de outro editor para preservar estes dados.</string>
     <string name="X_warning_no_matching_book_found_long">O livro não foi encontrado. Às vezes, pode encontrar o código de barras correcto no interior da capa frontal. Caso contrário, insira os detalhes manualmente.</string>
     <string name="warning_image_copy_failed">A imagem não pôde ser copiada.</string>
-    <string name="vldt_integer_expected_for_x">Esperado um valor inteiro para \"%1$s\"</string>
-    <string name="vldt_real_expected_for_x">Espera-se um número real para \"%1$s\"</string>
-    <string name="vldt_date_expected_for_x">Espera-se uma data para \"%1$s\"</string>
+    <string name="vldt_integer_expected_for_x">Esperado um valor inteiro para “%1$s”</string>
+    <string name="vldt_real_expected_for_x">Espera-se um número real para “%1$s”</string>
+    <string name="vldt_date_expected_for_x">Espera-se uma data para “%1$s”</string>
     <string name="vldt_non_blank_required">Valor não vazio necessário</string>
     <string name="vldt_read_start_after_end">A data de início da leitura é posterior à data de término</string>
     <string name="progress_msg_loading_page">A carregar a página %1$d…</string>
     <string name="option_cover_rotate_automatic">Automático</string>
     <string name="option_select_all">Selecionar tudo</string>
-    <string name="confirm_delete_book">Isso excluirá completamente o livro intitulado \"%1$s\" por %2$s.
+    <string name="confirm_delete_book">Isso excluirá completamente o livro intitulado “%1$s” por %2$s.
 \n
 \nTem certeza de que deseja continuar\?</string>
     <string name="confirm_merge_authors">O autor que está a modificar já existe. Gostaria de uni-los\?</string>
@@ -392,8 +389,8 @@
     <string name="confirm_overwrite_cover">Isso atualizará os campos selecionados conforme mostrado, mas as imagens podem, opcionalmente, ser transferidas para TODOS os livros.
 \n
 \nDeseja substituir todas as imagens existentes\? Atenção, isso pode levar muito tempo.</string>
-    <string name="vldt_non_blank_required_for_x">Valor não vazio necessário para \"%1$s\"</string>
-    <string name="progress_msg_skip_s">A ignorar \"%1$s\"</string>
+    <string name="vldt_non_blank_required_for_x">Valor não vazio necessário para “%1$s”</string>
+    <string name="progress_msg_skip_s">A ignorar “%1$s”</string>
     <string name="progress_msg_cleaning_up">A limpar…</string>
     <string name="info_tap_on_image_to_select">Toque na imagem maior para seleccioná-la.</string>
     <string name="size_small">Pequeno</string>
