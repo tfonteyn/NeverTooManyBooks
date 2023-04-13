@@ -84,5 +84,6 @@
         android:icon="@drawable/ic_baseline_cloud_download_24"
         android:orderInCategory="@integer/MENU_ORDER_UPDATE_FIELDS"
         android:title="@string/menu_update_books"
-        android:visible="false" />
+        android:visible="false"
+        app:showAsAction="never" />
 </menu>
