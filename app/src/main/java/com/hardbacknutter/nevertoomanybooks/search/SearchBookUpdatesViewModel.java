@@ -284,13 +284,6 @@ public class SearchBookUpdatesViewModel
     }
 
     /**
-     * Write current settings to the user preferences.
-     */
-    void writePreferences() {
-        syncProcessorBuilder.writePreferences();
-    }
-
-    /**
      * Reset current usage back to defaults, and write to preferences.
      */
     void resetAll() {
@@ -309,6 +302,7 @@ public class SearchBookUpdatesViewModel
      * @return {@code true} if a search was started.
      */
     boolean startSearch(@NonNull final Context context) {
+        syncProcessorBuilder.writePreferences();
 
         syncProcessor = syncProcessorBuilder.build();
 

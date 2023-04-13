@@ -248,8 +248,6 @@ public class SearchBookUpdatesFragment
     }
 
     private void startUpdate() {
-        vm.writePreferences();
-
         //noinspection ConstantConditions
         if (!vm.startSearch(getContext())) {
             Snackbar.make(vb.getRoot(), R.string.warning_no_search_data_for_active_sites,
