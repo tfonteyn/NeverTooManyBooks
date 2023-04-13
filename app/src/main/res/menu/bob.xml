@@ -68,7 +68,7 @@
             android:icon="@drawable/ic_baseline_unfold_more_24"
             android:orderInCategory="@integer/MENU_ORDER_LEVEL_EXPAND"
             android:title="@string/option_level_expand"
-            app:showAsAction="never" />
+            app:showAsAction="ifRoom" />
 
     </group>
 
