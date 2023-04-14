@@ -58,6 +58,7 @@ public class DateRangePicker
      *
      * @param startDate current start-selection (a parsable date string), or {@code null} for none
      * @param endDate   current end-selection (a parsable date string), or {@code null} for none
+     * @param listener  which will receive the result
      */
     public void launch(@Nullable final String startDate,
                        @Nullable final String endDate,
