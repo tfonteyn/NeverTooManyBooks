@@ -98,19 +98,31 @@
           type="id" />
     <item name="MENU_SHOW_ALL"
           type="id" />
-    <item name="MENU_SEARCH" type="id" />
+    <item name="MENU_SEARCH"
+          type="id" />
 
-    <item name="MENU_UPDATE_FROM_INTERNET" type="id" />
-    <item name="MENU_UPDATE_FROM_INTERNET_SKIP_ALL" type="id" />
+    <!-- A list of books (which can be a single book) -->
+    <item name="MENU_UPDATE_FROM_INTERNET"
+          type="id" />
+    <!-- A SINGLE book; i.e. from the book-details screen. -->
+    <item name="MENU_UPDATE_FROM_INTERNET_SINGLE_BOOK"
+          type="id" />
+    <item name="MENU_UPDATE_FROM_INTERNET_SKIP_ALL"
+          type="id" />
     <item name="MENU_UPDATE_FROM_INTERNET_THIS_NODE_ONLY"
           type="id" />
-    <item name="MENU_UPDATE_FROM_INTERNET_ALL_SHELVES" type="id" />
+    <item name="MENU_UPDATE_FROM_INTERNET_ALL_SHELVES"
+          type="id" />
 
-    <item name="MENU_SYNC_LIST_WITH_DETAILS" type="id" />
+    <item name="MENU_SYNC_LIST_WITH_DETAILS"
+          type="id" />
 
-    <item name="MENU_GROUP_BOOK" type="id" />
-    <item name="MENU_BOOK_DELETE" type="id" />
-    <item name="MENU_BOOK_DUPLICATE" type="id" />
+    <item name="MENU_GROUP_BOOK"
+          type="id" />
+    <item name="MENU_BOOK_DELETE"
+          type="id" />
+    <item name="MENU_BOOK_DUPLICATE"
+          type="id" />
     <item name="MENU_BOOK_EDIT" type="id" />
 
     <item name="MENU_BOOK_LOAN_ADD" type="id" />
