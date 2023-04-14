@@ -665,7 +665,7 @@ public class ShowBookDetailsFragment
                              .commit();
                 return true;
 
-            } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
+            } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET_SINGLE_BOOK) {
                 updateBookLauncher.launch(book);
                 return true;
 

@@ -1092,7 +1092,7 @@ public class BooksOnBookshelf
                     });
                     return true;
 
-                } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
+                } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET_SINGLE_BOOK) {
                     final Book book = DataHolderUtils.requireBook(rowData);
                     updateBookLauncher.launch(book);
                     return true;
