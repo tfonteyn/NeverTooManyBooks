@@ -570,6 +570,26 @@ public class AuthorDaoImpl
         insertPseudonymLink(authorId, realAuthor.getId());
     }
 
+    // ENHANCE: allow delete of author if all books have another author
+    public boolean isDeletable(@NonNull final Author author) {
+
+        final String sql = SELECT_DISTINCT_ + 1
+                           + _FROM_ + TBL_BOOK_AUTHOR.getName()
+                           + _WHERE_ + DBKey.FK_BOOK
+                           + _IN_ + '(' + Sql.SELECT_BOOK_IDS_BY_AUTHOR_ID + ')'
+                           + _GROUP_BY_ + DBKey.FK_BOOK
+                           + " HAVING COUNT(" + DBKey.FK_AUTHOR + ")=1";
+
+        final long rows;
+        try (SynchronizedStatement stmt = db.compileStatement(sql)) {
+            stmt.bindLong(1, author.getId());
+            rows = stmt.simpleQueryForLongOrZero();
+        }
+
+        // no rows? then DELETE OK
+        return rows == 0;
+    }
+
     @Override
     public boolean delete(@NonNull final Context context,
                           @NonNull final Author author) {
