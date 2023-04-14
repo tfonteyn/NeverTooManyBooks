@@ -26,7 +26,7 @@ https://developer.android.com/training/appbar/up-action
 Known issues:
 
 The node-management, i.e. storing the tree-state of the nodes in the booklist
-is by design not foolproof. The nodes 'expanded' flag WILL get out of sync with
+ is by design not foolproof. The nodes 'expanded' flag WILL get out of sync with
  the display from time to time. There are no plans to fix this for now as the foolproof solution
  would take far to much disk space.
 
@@ -38,13 +38,14 @@ Prices: when importing books with a price field containing a value which cannot 
  FIXME: Solution would be to allow Money to have string (instead/aside-of double) values.
 
 ----------------------------------------------------------------------------------------------------
-4.2.0
+4.3.0
 
 NEW:
-
+- Portuguese translation contributed by @maverick74
+- context menu for Bookshelves now provides "Update books" for that shelf.
 
 FIXES:
-
+- 10" screen transitioning from landscape to portrait: the book options menu is cleaned up now
 
 REMOVED:
 
