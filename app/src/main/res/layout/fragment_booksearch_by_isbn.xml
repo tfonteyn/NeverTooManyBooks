@@ -54,7 +54,7 @@
             style="@style/IsbnKeyPad.BackspaceButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/lbl_isbn"
-            app:layout_constraintTop_toTopOf="@id/lbl_isbn"
+            app:layout_constraintBottom_toBottomOf="@id/lbl_isbn"
             />
 
         <androidx.constraintlayout.widget.Group
