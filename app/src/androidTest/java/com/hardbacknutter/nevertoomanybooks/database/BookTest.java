@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.DbPrep;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -215,7 +216,7 @@ public class BookTest {
         mustHaveTempCover(context, book, 1);
 
         assertEquals(EntityStage.Stage.Dirty, book.getStage());
-        bookDao.update(context, book);
+        bookDao.update(context, book, Set.of());
         book.setStage(EntityStage.Stage.Clean);
 
         /*
@@ -378,7 +379,7 @@ public class BookTest {
         mustHaveTempCover(context, book, 0);
 
         assertEquals(EntityStage.Stage.Dirty, book.getStage());
-        final long bookId = bookDao.insert(context, book);
+        final long bookId = bookDao.insert(context, book, Set.of());
         book.setStage(EntityStage.Stage.Clean);
 
         assertTrue(bookId > 0);

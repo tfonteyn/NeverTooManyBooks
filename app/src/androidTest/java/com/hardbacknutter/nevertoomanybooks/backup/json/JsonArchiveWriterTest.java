@@ -30,6 +30,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.DbPrep;
@@ -160,7 +161,7 @@ public class JsonArchiveWriterTest
         final Book book = Book.from(modifiedBookId);
         book.putString(DBKey.PERSONAL_NOTES,
                        "MODIFIED " + book.getString(DBKey.PERSONAL_NOTES, null));
-        bookDao.update(context, book);
+        bookDao.update(context, book, Set.of());
 
         final ImportHelper importHelper = new ImportHelper(context, systemLocale,
                                                            Uri.fromFile(file));

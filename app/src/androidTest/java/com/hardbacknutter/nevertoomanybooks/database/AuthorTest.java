@@ -23,6 +23,7 @@ import androidx.test.filters.MediumTest;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -141,14 +142,14 @@ public class AuthorTest
         initBookBookshelves(bookIdx, 0);
         initBookPublishers(bookIdx, 0);
         initBookAuthors(bookIdx, 2);
-        bookId[bookIdx] = bookDao.insert(context, book[bookIdx]);
+        bookId[bookIdx] = bookDao.insert(context, book[bookIdx], Set.of());
         book[bookIdx].setStage(EntityStage.Stage.Clean);
         bookIdx = 1;
         initBook(bookIdx);
         initBookBookshelves(bookIdx, 0);
         initBookPublishers(bookIdx, 0);
         initBookAuthors(bookIdx, 2);
-        bookId[bookIdx] = bookDao.insert(context, book[bookIdx]);
+        bookId[bookIdx] = bookDao.insert(context, book[bookIdx], Set.of());
         book[bookIdx].setStage(EntityStage.Stage.Clean);
         bookIdx = 4;
         initBook(bookIdx);
@@ -156,7 +157,7 @@ public class AuthorTest
         initBookPublishers(bookIdx, 0);
         initBookAuthors(bookIdx, 2);
         initBookToc(bookIdx, 2, 1, 0, 3);
-        bookId[bookIdx] = bookDao.insert(context, book[bookIdx]);
+        bookId[bookIdx] = bookDao.insert(context, book[bookIdx], Set.of());
         book[bookIdx].setStage(EntityStage.Stage.Clean);
 
         author[2].setName(RENAMED_FAMILY_NAME + "_a", RENAMED_GIVEN_NAMES + "_a");
@@ -213,14 +214,14 @@ public class AuthorTest
         initBookBookshelves(bookIdx, 0);
         initBookPublishers(bookIdx, 0);
         initBookAuthors(bookIdx, 2);
-        bookId[bookIdx] = bookDao.insert(context, book[bookIdx]);
+        bookId[bookIdx] = bookDao.insert(context, book[bookIdx], Set.of());
         book[bookIdx].setStage(EntityStage.Stage.Clean);
         bookIdx = 1;
         initBook(bookIdx);
         initBookBookshelves(bookIdx, 0);
         initBookPublishers(bookIdx, 0);
         initBookAuthors(bookIdx, 2);
-        bookId[bookIdx] = bookDao.insert(context, book[bookIdx]);
+        bookId[bookIdx] = bookDao.insert(context, book[bookIdx], Set.of());
         book[bookIdx].setStage(EntityStage.Stage.Clean);
         bookIdx = 4;
         initBook(bookIdx);
@@ -228,7 +229,7 @@ public class AuthorTest
         initBookPublishers(bookIdx, 0);
         initBookAuthors(bookIdx, 2);
         initBookToc(bookIdx, 2, 1, 0, 3);
-        bookId[bookIdx] = bookDao.insert(context, book[bookIdx]);
+        bookId[bookIdx] = bookDao.insert(context, book[bookIdx], Set.of());
         book[bookIdx].setStage(EntityStage.Stage.Clean);
 
         author[2].setName(RENAMED_FAMILY_NAME + "_b", RENAMED_GIVEN_NAMES + "_b");

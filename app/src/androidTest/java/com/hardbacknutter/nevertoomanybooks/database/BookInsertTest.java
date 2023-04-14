@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database;
 import androidx.test.filters.MediumTest;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -83,7 +84,7 @@ public class BookInsertTest
         initBookBookshelves(bookIdx, 0);
         initBookPublishers(bookIdx, 0);
         initBookAuthors(bookIdx, 0, 1);
-        bookId[bookIdx] = bookDao.insert(context, book[bookIdx]);
+        bookId[bookIdx] = bookDao.insert(context, book[bookIdx], Set.of());
         book[bookIdx].setStage(EntityStage.Stage.Clean);
 
         bookIdx = 1;
@@ -91,7 +92,7 @@ public class BookInsertTest
         initBookBookshelves(bookIdx, 0);
         initBookPublishers(bookIdx, 1);
         initBookAuthors(bookIdx, 1);
-        bookId[bookIdx] = bookDao.insert(context, book[bookIdx]);
+        bookId[bookIdx] = bookDao.insert(context, book[bookIdx], Set.of());
         book[bookIdx].setStage(EntityStage.Stage.Clean);
 
         bookIdx = 2;
@@ -99,7 +100,7 @@ public class BookInsertTest
         initBookBookshelves(bookIdx, 0);
         initBookPublishers(bookIdx, 2);
         initBookAuthors(bookIdx, 2);
-        bookId[bookIdx] = bookDao.insert(context, book[bookIdx]);
+        bookId[bookIdx] = bookDao.insert(context, book[bookIdx], Set.of());
         book[bookIdx].setStage(EntityStage.Stage.Clean);
 
         bookIdx = 3;
@@ -107,7 +108,7 @@ public class BookInsertTest
         initBookBookshelves(bookIdx, 0);
         initBookPublishers(bookIdx, 1, 3);
         initBookAuthors(bookIdx, 0, 2);
-        bookId[bookIdx] = bookDao.insert(context, book[bookIdx]);
+        bookId[bookIdx] = bookDao.insert(context, book[bookIdx], Set.of());
         book[bookIdx].setStage(EntityStage.Stage.Clean);
 
         bookIdx = 4;
@@ -116,7 +117,7 @@ public class BookInsertTest
         initBookPublishers(bookIdx, 1, 2);
         initBookAuthors(bookIdx, 1, 2);
         initBookToc(bookIdx, 2, 1, 0, 3);
-        bookId[bookIdx] = bookDao.insert(context, book[bookIdx]);
+        bookId[bookIdx] = bookDao.insert(context, book[bookIdx], Set.of());
         book[bookIdx].setStage(EntityStage.Stage.Clean);
 
 
