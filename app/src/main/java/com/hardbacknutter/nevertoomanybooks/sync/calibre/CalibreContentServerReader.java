@@ -404,6 +404,7 @@ public class CalibreContentServerReader
      * @param calibreBook the book data to import
      *
      * @throws StorageException The covers directory is not available
+     * @throws IOException      on generic/other IO failures
      */
     private void handleBook(@NonNull final Context context,
                             @NonNull final JSONObject calibreBook)
@@ -518,6 +519,7 @@ public class CalibreContentServerReader
      *
      * @throws StorageException The covers directory is not available
      * @throws JSONException    upon any parsing error
+     * @throws IOException      on generic/other IO failures
      */
     private void copyCalibreData(@NonNull final Context context,
                                  @NonNull final JSONObject calibreBook,

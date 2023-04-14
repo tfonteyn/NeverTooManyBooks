@@ -467,9 +467,10 @@ public class CoverBrowserDialogFragment
         /**
          * Constructor.
          *
-         * @param context      Current context
-         * @param editionsList a list with ISBN numbers
-         * @param executor     to use for loading images
+         * @param context         Current context
+         * @param editionsList    a list with ISBN numbers
+         * @param positionHandler Proxy between adapter and ViewModel
+         * @param executor        to use for loading images
          */
         @SuppressWarnings("SameParameterValue")
         GalleryAdapter(@NonNull final Context context,
