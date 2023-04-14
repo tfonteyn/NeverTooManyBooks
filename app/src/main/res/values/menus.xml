@@ -101,17 +101,25 @@
     <item name="MENU_SEARCH"
           type="id" />
 
-    <!-- A list of books (which can be a single book) -->
-    <item name="MENU_UPDATE_FROM_INTERNET"
-          type="id" />
-    <!-- A SINGLE book; i.e. from the book-details screen. -->
+    <!-- A SINGLE book; i.e. from the book-details screen.
+         The 10" landscape layout can display both 'node' and 'single' options
+         so we need to distinguish -->
     <item name="MENU_UPDATE_FROM_INTERNET_SINGLE_BOOK"
           type="id" />
-    <item name="MENU_UPDATE_FROM_INTERNET_SKIP_ALL"
+    <!-- A list of books (which can be a single book) specific to a node in the booklist.
+         When shown in the option menu for the BoB screen, it's implicitly for the current Bookshelf.
+    -->
+    <item name="MENU_UPDATE_FROM_INTERNET"
           type="id" />
+    <!-- Submenu option for "MENU_UPDATE_FROM_INTERNET" -->
     <item name="MENU_UPDATE_FROM_INTERNET_THIS_NODE_ONLY"
           type="id" />
+    <!-- Submenu option for "MENU_UPDATE_FROM_INTERNET" -->
     <item name="MENU_UPDATE_FROM_INTERNET_ALL_SHELVES"
+          type="id" />
+
+    <!-- An option of the SearchBookUpdatesFragment option menu to quickly flip all fields to "skip". -->
+    <item name="MENU_UPDATE_FROM_INTERNET_SKIP_ALL"
           type="id" />
 
     <item name="MENU_SYNC_LIST_WITH_DETAILS"
@@ -123,74 +131,120 @@
           type="id" />
     <item name="MENU_BOOK_DUPLICATE"
           type="id" />
-    <item name="MENU_BOOK_EDIT" type="id" />
+    <item name="MENU_BOOK_EDIT"
+          type="id" />
 
-    <item name="MENU_BOOK_LOAN_ADD" type="id" />
-    <item name="MENU_BOOK_LOAN_DELETE" type="id" />
+    <item name="MENU_BOOK_LOAN_ADD"
+          type="id" />
+    <item name="MENU_BOOK_LOAN_DELETE"
+          type="id" />
 
-    <item name="MENU_BOOK_SET_READ" type="id" />
-    <item name="MENU_BOOK_SET_UNREAD" type="id" />
+    <item name="MENU_BOOK_SET_READ"
+          type="id" />
+    <item name="MENU_BOOK_SET_UNREAD"
+          type="id" />
 
-    <item name="MENU_AUTHOR_EDIT" type="id" />
-    <item name="MENU_AUTHOR_SET_COMPLETE" type="id" />
-    <item name="MENU_AUTHOR_SET_INCOMPLETE" type="id" />
+    <item name="MENU_AUTHOR_EDIT"
+          type="id" />
+    <item name="MENU_AUTHOR_SET_COMPLETE"
+          type="id" />
+    <item name="MENU_AUTHOR_SET_INCOMPLETE"
+          type="id" />
 
-    <item name="MENU_GROUP_AUTHOR_WORKS_SORT" type="id" />
-    <item name="MENU_AUTHOR_WORKS_SORT_TITLE" type="id" />
-    <item name="MENU_AUTHOR_WORKS_SORT_FIRST_PUBLICATION_DATE" type="id" />
+    <item name="MENU_GROUP_AUTHOR_WORKS_SORT"
+          type="id" />
+    <item name="MENU_AUTHOR_WORKS_SORT_TITLE"
+          type="id" />
+    <item name="MENU_AUTHOR_WORKS_SORT_FIRST_PUBLICATION_DATE"
+          type="id" />
 
-    <item name="MENU_GROUP_AUTHOR_WORKS" type="id" />
-    <item name="MENU_AUTHOR_WORKS_FILTER" type="id" />
-    <item name="MENU_AUTHOR_WORKS_FILTER_ALL" type="id" />
-    <item name="MENU_AUTHOR_WORKS_FILTER_TOC" type="id" />
-    <item name="MENU_AUTHOR_WORKS_FILTER_BOOKS" type="id" />
+    <item name="MENU_GROUP_AUTHOR_WORKS"
+          type="id" />
+    <item name="MENU_AUTHOR_WORKS_FILTER"
+          type="id" />
+    <item name="MENU_AUTHOR_WORKS_FILTER_ALL"
+          type="id" />
+    <item name="MENU_AUTHOR_WORKS_FILTER_TOC"
+          type="id" />
+    <item name="MENU_AUTHOR_WORKS_FILTER_BOOKS"
+          type="id" />
 
-    <item name="MENU_GROUP_AUTHOR_WORKS_BOOKSHELVES" type="id" />
-    <item name="MENU_AUTHOR_WORKS_ALL_BOOKSHELVES" type="id" />
+    <item name="MENU_GROUP_AUTHOR_WORKS_BOOKSHELVES"
+          type="id" />
+    <item name="MENU_AUTHOR_WORKS_ALL_BOOKSHELVES"
+          type="id" />
 
-    <item name="MENU_SERIES_DELETE" type="id" />
-    <item name="MENU_SERIES_EDIT" type="id" />
-    <item name="MENU_SERIES_SET_COMPLETE" type="id" />
-    <item name="MENU_SERIES_SET_INCOMPLETE" type="id" />
+    <item name="MENU_SERIES_DELETE"
+          type="id" />
+    <item name="MENU_SERIES_EDIT"
+          type="id" />
+    <item name="MENU_SERIES_SET_COMPLETE"
+          type="id" />
+    <item name="MENU_SERIES_SET_INCOMPLETE"
+          type="id" />
 
-    <item name="MENU_PUBLISHER_DELETE" type="id" />
-    <item name="MENU_PUBLISHER_EDIT" type="id" />
+    <item name="MENU_PUBLISHER_DELETE"
+          type="id" />
+    <item name="MENU_PUBLISHER_EDIT"
+          type="id" />
 
-    <item name="MENU_BOOKSHELF_DELETE" type="id" />
-    <item name="MENU_BOOKSHELF_EDIT" type="id" />
+    <item name="MENU_BOOKSHELF_DELETE"
+          type="id" />
+    <item name="MENU_BOOKSHELF_EDIT"
+          type="id" />
 
-    <item name="MENU_FORMAT_EDIT" type="id" />
-    <item name="MENU_COLOR_EDIT" type="id" />
-    <item name="MENU_GENRE_EDIT" type="id" />
-    <item name="MENU_LANGUAGE_EDIT" type="id" />
-    <item name="MENU_LOCATION_EDIT" type="id" />
+    <item name="MENU_FORMAT_EDIT"
+          type="id" />
+    <item name="MENU_COLOR_EDIT"
+          type="id" />
+    <item name="MENU_GENRE_EDIT"
+          type="id" />
+    <item name="MENU_LANGUAGE_EDIT"
+          type="id" />
+    <item name="MENU_LOCATION_EDIT"
+          type="id" />
 
-    <item name="MENU_SHARE" type="id" />
+    <item name="MENU_SHARE"
+          type="id" />
 
-    <item name="MENU_POPULATE_TOC_FROM_ISFDB" type="id" />
+    <item name="MENU_POPULATE_TOC_FROM_ISFDB"
+          type="id" />
 
     <!-- standard Booklist options menu -->
-    <item name="MENU_GROUP_BOB_EXPANSION" type="id" />
-    <item name="MENU_LEVEL_PREFERRED_EXPANSION" type="id" />
-    <item name="MENU_LEVEL_EXPAND" type="id" />
-    <item name="MENU_LEVEL_COLLAPSE" type="id" />
+    <item name="MENU_GROUP_BOB_EXPANSION"
+          type="id" />
+    <item name="MENU_LEVEL_PREFERRED_EXPANSION"
+          type="id" />
+    <item name="MENU_LEVEL_EXPAND"
+          type="id" />
+    <item name="MENU_LEVEL_COLLAPSE"
+          type="id" />
 
-    <item name="MENU_FILTERS" type="id" />
+    <item name="MENU_FILTERS"
+          type="id" />
 
-    <item name="MENU_STYLE_PICKER" type="id" />
-    <item name="MENU_STYLE_LIST_TOGGLE" type="id" />
+    <item name="MENU_STYLE_PICKER"
+          type="id" />
+    <item name="MENU_STYLE_LIST_TOGGLE"
+          type="id" />
 
     <!-- Context menu on BoB list. Let the user skip to the next book without a cover. -->
-    <item name="MENU_NEXT_MISSING_COVER" type="id" />
+    <item name="MENU_NEXT_MISSING_COVER"
+          type="id" />
 
     <!-- Book - View a book at an external site.
      NEWTHINGS: adding a new search engine: optional: add a menu id
     -->
-    <item name="SUBMENU_VIEW_BOOK_AT_SITE" type="id" />
-    <item name="MENU_VIEW_BOOK_AT_AMAZON" type="id" />
-    <item name="MENU_VIEW_BOOK_AT_GOODREADS" type="id" />
-    <item name="MENU_VIEW_BOOK_AT_ISFDB" type="id" />
-    <item name="MENU_VIEW_BOOK_AT_LAST_DODO_NL" type="id" />
+    <item name="SUBMENU_VIEW_BOOK_AT_SITE"
+          type="id" />
+    <item name="MENU_VIEW_BOOK_AT_AMAZON"
+          type="id" />
+    <item name="MENU_VIEW_BOOK_AT_GOODREADS"
+          type="id" />
+    <item name="MENU_VIEW_BOOK_AT_ISFDB"
+          type="id" />
+    <item name="MENU_VIEW_BOOK_AT_LAST_DODO_NL"
+          type="id" />
     <item name="MENU_VIEW_BOOK_AT_LIBRARY_THING"
           type="id" />
     <item name="MENU_VIEW_BOOK_AT_OPEN_LIBRARY"
@@ -233,57 +287,92 @@
           type="id" />
 
     <!-- Navigation drawer menu -->
-    <item name="MENU_ADVANCED_SEARCH" type="id" />
-    <item name="MENU_MANAGE_BOOKSHELVES" type="id" />
-    <item name="MENU_MANAGE_LIST_STYLES" type="id" />
-    <item name="MENU_FILE_EXPORT" type="id" />
-    <item name="MENU_FILE_IMPORT" type="id" />
-    <item name="MENU_SETTINGS" type="id" />
-    <item name="MENU_ABOUT" type="id" />
+    <item name="MENU_ADVANCED_SEARCH"
+          type="id" />
+    <item name="MENU_MANAGE_BOOKSHELVES"
+          type="id" />
+    <item name="MENU_MANAGE_LIST_STYLES"
+          type="id" />
+    <item name="MENU_FILE_EXPORT"
+          type="id" />
+    <item name="MENU_FILE_IMPORT"
+          type="id" />
+    <item name="MENU_SETTINGS"
+          type="id" />
+    <item name="MENU_ABOUT"
+          type="id" />
 
-    <item name="SUBMENU_SYNC" type="id" />
-    <item name="MENU_SYNC_CALIBRE" type="id" />
-    <item name="MENU_SYNC_STRIP_INFO" type="id" />
+    <item name="SUBMENU_SYNC"
+          type="id" />
+    <item name="MENU_SYNC_CALIBRE"
+          type="id" />
+    <item name="MENU_SYNC_STRIP_INFO"
+          type="id" />
 
 
     <!-- Thumbnail context menu -->
-    <item name="SUBMENU_THUMB_REPLACE" type="id" />
-    <item name="MENU_THUMB_ADD_FROM_CAMERA" type="id" />
-    <item name="MENU_THUMB_ADD_FROM_FILE_SYSTEM" type="id" />
-    <item name="MENU_THUMB_ADD_FROM_ALT_EDITIONS" type="id" />
-    <item name="SUBMENU_THUMB_ROTATE" type="id" />
-    <item name="MENU_THUMB_ROTATE_CW" type="id" />
-    <item name="MENU_THUMB_ROTATE_CCW" type="id" />
-    <item name="MENU_THUMB_ROTATE_180" type="id" />
-    <item name="MENU_THUMB_CROP" type="id" />
+    <item name="SUBMENU_THUMB_REPLACE"
+          type="id" />
+    <item name="MENU_THUMB_ADD_FROM_CAMERA"
+          type="id" />
+    <item name="MENU_THUMB_ADD_FROM_FILE_SYSTEM"
+          type="id" />
+    <item name="MENU_THUMB_ADD_FROM_ALT_EDITIONS"
+          type="id" />
+    <item name="SUBMENU_THUMB_ROTATE"
+          type="id" />
+    <item name="MENU_THUMB_ROTATE_CW"
+          type="id" />
+    <item name="MENU_THUMB_ROTATE_CCW"
+          type="id" />
+    <item name="MENU_THUMB_ROTATE_180"
+          type="id" />
+    <item name="MENU_THUMB_CROP"
+          type="id" />
 
     <!-- Toolbar menu: on-the-fly access to setting search order -->
-    <item name="MENU_PREFS_SEARCH_SITES" type="id" />
+    <item name="MENU_PREFS_SEARCH_SITES"
+          type="id" />
     <!-- Toolbar menu: start a single scan, batch scan or file import of barcodes. -->
-    <item name="MENU_BARCODE_SCAN" type="id" />
-    <item name="MENU_BARCODE_SCAN_BATCH" type="id" />
-    <item name="MENU_BARCODE_IMPORT" type="id" />
+    <item name="MENU_BARCODE_SCAN"
+          type="id" />
+    <item name="MENU_BARCODE_SCAN_BATCH"
+          type="id" />
+    <item name="MENU_BARCODE_IMPORT"
+          type="id" />
 
     <!-- Toolbar menu: enforce ISBN validity checks during input -->
-    <item name="SUBMENU_ISBN_VALIDITY" type="id" />
-    <item name="MENU_ISBN_VALIDITY_NONE" type="id" />
-    <item name="MENU_ISBN_VALIDITY_LOOSE" type="id" />
-    <item name="MENU_ISBN_VALIDITY_STRICT" type="id" />
+    <item name="SUBMENU_ISBN_VALIDITY"
+          type="id" />
+    <item name="MENU_ISBN_VALIDITY_NONE"
+          type="id" />
+    <item name="MENU_ISBN_VALIDITY_LOOSE"
+          type="id" />
+    <item name="MENU_ISBN_VALIDITY_STRICT"
+          type="id" />
 
     <!-- Toolbar menu: on the FTS search activity -->
-    <item name="MENU_REBUILD_FTS" type="id" />
+    <item name="MENU_REBUILD_FTS"
+          type="id" />
 
-    <item name="MENU_GROUP_BLNS" type="id" />
-    <item name="MENU_PURGE_BLNS" type="id" />
+    <item name="MENU_GROUP_BLNS"
+          type="id" />
+    <item name="MENU_PURGE_BLNS"
+          type="id" />
 
     <!-- Toolbar menu -->
-    <item name="MENU_RESET" type="id" />
+    <item name="MENU_RESET"
+          type="id" />
     <!-- Toolbar menu with an "app:actionLayout" -->
-    <item name="MENU_ACTION_CONFIRM" type="id" />
+    <item name="MENU_ACTION_CONFIRM"
+          type="id" />
 
     <!-- debug options for the SQLite shell activity. -->
-    <item name="MENU_DEBUG_SQ_SHELL_RUN" type="id" />
-    <item name="MENU_DEBUG_SQ_SHELL_LIST_TABLES" type="id" />
-    <item name="MENU_DEBUG_SQ_SHELL_EDIT_MAX_LINES" type="id" />
+    <item name="MENU_DEBUG_SQ_SHELL_RUN"
+          type="id" />
+    <item name="MENU_DEBUG_SQ_SHELL_LIST_TABLES"
+          type="id" />
+    <item name="MENU_DEBUG_SQ_SHELL_EDIT_MAX_LINES"
+          type="id" />
 
 </resources>
