@@ -73,7 +73,7 @@ android {
 
         signingConfig signingConfigs.release
 
-        resourceConfigurations += ["en", "en_GB", "de", "fr", "nl", "es", "it", "el", "ru", "tr"]
+        resourceConfigurations += ["en", "en_GB", "de", "fr", "nl", "pt", "es", "it", "el", "ru", "tr"]
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["runnerBuilder"] =

@@ -92,9 +92,13 @@
         <item translatable="false">@string/pt_ui_system_locale</item>
         <item translatable="false">English Intl.</item>
         <item translatable="false">English US</item>
+        <!-- Primary languages - keep alphabetic -->
         <item translatable="false">Deutsch</item>
         <item translatable="false">Français</item>
         <item translatable="false">Nederlands</item>
+        <item translatable="false">Português</item>
+        <!-- secondary languages - keep alphabetic
+             These need checking by a native speaker -->
         <item translatable="false">Español</item>
         <item translatable="false">Italiano</item>
         <item translatable="false">ελληνικά</item>
@@ -110,6 +114,8 @@
         <item translatable="false">de</item>
         <item translatable="false">fr</item>
         <item translatable="false">nl</item>
+        <item translatable="false">pt</item>
+
         <item translatable="false">es</item>
         <item translatable="false">it</item>
         <item translatable="false">el</item>
