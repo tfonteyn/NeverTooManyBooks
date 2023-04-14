@@ -376,6 +376,17 @@ public class BooksOnBookshelf
         // setup the list related stuff; the actual list data is generated in onResume
         createBooklistView();
 
+        // After a transition from landscape to portrait,
+        // we need to remove the embedded fragment manually.
+        // Otherwise, even while not showing, it will be put in 'resumed' state by the system
+        if (!hasEmbeddedDetailsFrame()) {
+            final FragmentManager fm = getSupportFragmentManager();
+            final Fragment fragment = fm.findFragmentByTag(ShowBookDetailsFragment.TAG);
+            if (fragment != null) {
+                fm.beginTransaction().remove(fragment).commit();
+            }
+        }
+
         updateSyncMenuVisibility();
 
         // Popup the search widget when the user starts to type.
