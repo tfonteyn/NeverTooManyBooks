@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,9 +18,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
     <!ENTITY APP_NAME "NeverTooManyBooks">
     ]>
 <!-- Quotes «…» - Regex to find wrong ones: ('|„|‘|’|“|”) --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pt">
@@ -240,7 +239,7 @@
     <string name="progress_msg_searching_site">A pesquisar %1$s</string>
     <string name="progress_msg_searching_editions">À procura de outras edições…</string>
     <string name="progress_msg_downloading">A transferir…</string>
-    <string name="progress_msg_saving_image">A guardar imagem..</string>
+    <string name="progress_msg_saving_image">A guardar imagem…</string>
     <string name="progress_msg_x_created_y_updated_z_skipped">%1$s: %2$d criado, %3$d atualizado, %4$d ignorado</string>
     <string name="info_authorized">Autorizado</string>
     <string name="info_story_in_multiple_books">“%1$s” está presente em vários livros:
@@ -298,7 +297,7 @@
     <string name="option_author_details">Todas as obras deste autor</string>
     <string name="option_author_works_toc">Apenas títulos da Tabela de Conteúdos</string>
     <string name="option_cover_crop">Cortar</string>
-    <string name="option_cover_replace_from_gallery">Da Galeria..</string>
+    <string name="option_cover_replace_from_gallery">Da Galeria…</string>
     <string name="option_import">Importar</string>
     <string name="option_download_ebook_format">Transferir o eBook (%1$s)</string>
     <string name="option_enable_sync_options">Ativar opções de sincronização</string>
@@ -397,8 +396,8 @@
     <string name="option_shop_books_in_series">Livros desta série</string>
     <string name="option_shop_books_by_author">Livros deste autor</string>
     <string name="option_shop_books_by_author_in_series">Livros por autor/séries</string>
-    <string name="option_cover_replace_from_camera">De câmera..</string>
-    <string name="option_cover_replace_from_alt_editions">De outras edições..</string>
+    <string name="option_cover_replace_from_camera">De câmera…</string>
+    <string name="option_cover_replace_from_alt_editions">De outras edições…</string>
     <string name="option_cover_rotate_cw">No sentido horário</string>
     <string name="option_cover_rotate_ccw">Anti-Horário</string>
     <string name="option_fab_add_book_by_barcode_scan">Ler código de barras</string>
@@ -596,7 +595,7 @@
     <string name="enabled">Activado</string>
     <string name="lbl_local_search_long">Pesquisa Local Avançada</string>
     <string name="lbl_about_contact">Contacto:</string>
-    <string name="lbl_table_of_content_entry">Entrada de sumário</string>
+    <string name="lbl_table_of_content_entry">Entrada de conteúdo</string>
     <string name="lbl_owned">Propriedade</string>
     <string name="lbl_table_of_content">Tabela de conteúdos</string>
     <string name="lbl_websites">Sites</string>
