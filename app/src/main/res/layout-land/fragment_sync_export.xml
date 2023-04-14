@@ -92,7 +92,6 @@
             android:id="@+id/inf_export_new_and_updated"
             style="@style/Button.InfoPopup"
             android:contentDescription="@string/info_export_books_option_since_last_full_backup"
-            app:layout_constraintEnd_toEndOf="@id/middle"
             app:layout_constraintStart_toEndOf="@id/rb_export_new_and_updated"
             app:layout_constraintTop_toTopOf="@id/rb_export_new_and_updated"
             />
