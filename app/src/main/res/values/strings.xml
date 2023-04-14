@@ -1353,13 +1353,15 @@
     <string name="lbl_search_filtered_on_x">Filtered on: %1$s</string>
     <!-- endregion -->
     <!-- region ========== Automatic update book fields from the internet. -->
-    <!-- booklist screen - context menu - Update Fields from internet for a set of books -->
-    <string name="menu_update_books">Update books</string>
-    <!-- booklist screen - context menu - Update Fields from internet for a set of books -->
+    <!-- Booklist screen / Book details screen - context/options menu.
+         Update Fields from internet for a SINGLE book -->
     <string name="menu_update_fields">Update fields</string>
-    <!-- booklist screen - context menu - Update Fields from internet for a set of books -->
+    <!-- Booklist screen - context menu for NON-book rows.
+         Update Fields from internet for a set of books -->
+    <string name="menu_update_books">Update books</string>
+    <!-- Booklist screen - context menu - Update Fields from internet for a set of books -->
     <string name="info_select_fields_to_update">Selected fields will be updated from the internet. Unselected fields will remain unchanged.</string>
-    <!-- booklist screen - context menu - Update Fields from internet for a set of books -->
+    <!-- Booklist screen - context menu - Update Fields from internet for a set of books -->
     <string name="lbl_select_fields">Select Fields</string>
     <!-- Option: use downloaded info ONLY if there is no local info. -->
     <string name="option_field_usage_copy_if_blank">Copy if blank</string>
