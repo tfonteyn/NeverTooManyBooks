@@ -18,11 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+  --><!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d kitap görüntüleniyor</item>
@@ -285,9 +283,9 @@
     <string name="option_archive_type_json">JSON dışa aktarma (.json)</string>
     <string name="lbl_author">Yazar</string>
     <string name="lbl_author_type">Yazar tipi</string>
-    <string name="lbl_author_type_artist">çizimler</string>
+    <string name="lbl_author_type_artist">Cizimler</string>
     <string name="lbl_author_type_colorist">Renk</string>
-    <string name="lbl_author_type_contributor">iştirakçi</string>
+    <string name="lbl_author_type_contributor">Iştirakçi</string>
     <string name="lbl_author_type_cover_artist">Kapak resmi</string>
     <string name="lbl_author_type_cover_colorist">Kapak boyama</string>
     <string name="lbl_author_type_cover_inking">Kapak mürekkebi</string>
