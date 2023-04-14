@@ -97,8 +97,8 @@
             android:text="@string/option_fab_add_book_by_external_id"
             app:icon="@drawable/ic_baseline_find_in_page_24"
             app:layout_anchor="@id/fab"
-            tools:translationX="@dimen/fab_menu_translationX_4"
-            tools:translationY="@dimen/fab_menu_translationY_4"
+            tools:translationX="@dimen/fab_menu_translationX_5"
+            tools:translationY="@dimen/fab_menu_translationY_5"
             tools:visibility="visible"
             />
 
@@ -108,8 +108,8 @@
             android:text="@string/option_fab_add_book_manually"
             app:icon="@drawable/ic_baseline_keyboard_24"
             app:layout_anchor="@id/fab"
-            tools:translationX="@dimen/fab_menu_translationX_3"
-            tools:translationY="@dimen/fab_menu_translationY_3"
+            tools:translationX="@dimen/fab_menu_translationX_4"
+            tools:translationY="@dimen/fab_menu_translationY_4"
             tools:visibility="visible"
             />
 
@@ -119,8 +119,8 @@
             android:text="@string/option_fab_add_book_by_internet_search"
             app:icon="@drawable/ic_baseline_search_24"
             app:layout_anchor="@id/fab"
-            tools:translationX="@dimen/fab_menu_translationX_2"
-            tools:translationY="@dimen/fab_menu_translationY_2"
+            tools:translationX="@dimen/fab_menu_translationX_3"
+            tools:translationY="@dimen/fab_menu_translationY_3"
             tools:visibility="visible"
             />
 
@@ -130,8 +130,8 @@
             android:text="@string/option_fab_add_book_by_isbn"
             app:icon="@drawable/ic_baseline_apps_24"
             app:layout_anchor="@id/fab"
-            tools:translationX="@dimen/fab_menu_translationX_1"
-            tools:translationY="@dimen/fab_menu_translationY_1"
+            tools:translationX="@dimen/fab_menu_translationX_2"
+            tools:translationY="@dimen/fab_menu_translationY_2"
             tools:visibility="visible"
             />
 
@@ -145,8 +145,8 @@
             android:text="@string/option_fab_add_book_by_barcode_scan"
             app:icon="@drawable/ic_baseline_photo_camera_24"
             app:layout_anchor="@id/fab"
-            tools:translationX="@dimen/fab_menu_translationX_0"
-            tools:translationY="@dimen/fab_menu_translationY_0"
+            tools:translationX="@dimen/fab_menu_translationX_1"
+            tools:translationY="@dimen/fab_menu_translationY_1"
             tools:visibility="visible"
             />
 
