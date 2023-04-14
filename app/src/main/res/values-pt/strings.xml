@@ -304,17 +304,17 @@
     <string name="option_enable_sync_options">Ativar opções de sincronização</string>
     <string name="option_download_set_folder">Definir a pasta de transferências</string>
     <string name="confirm_unsaved_edits">Tem alterações não guardadas, se sair agora estas serão perdidas.</string>
-    <string name="confirm_delete_bookshelf">Excluir a prateleira“%1$s”\? Os livros em si não serão excluídos. Eles ainda estarão presentes em qualquer outra prateleira, ou na prateleira “%2$s”.</string>
-    <string name="confirm_delete_toc_entry_everywhere">Pretende realmente excluir o título “%1$s” por %2$s\? Ele será excluído de todos os livros em que estiver listado. Os próprios livros não serão excluídos.</string>
+    <string name="confirm_delete_bookshelf">Excluir a prateleira“%1$s” ? Os livros em si não serão excluídos. Eles ainda estarão presentes em qualquer outra prateleira, ou na prateleira “%2$s”.</string>
+    <string name="confirm_delete_toc_entry_everywhere">Pretende realmente excluir o título “%1$s” por %2$s ? Ele será excluído de todos os livros em que estiver listado. Os próprios livros não serão excluídos.</string>
     <string name="warning_nothing_selected">Nada selecionado</string>
     <string name="info_isfdb_warning_limited_to">(suportado apenas pelo site do ISFDB)</string>
     <string name="tip_import_isbn_list">Importar um ficheiro de texto com números ISBN. O ficheiro deve ter um único ISBN por cada linha. Os resultados serão colocados na fila.</string>
     <string name="option_storage_edit_settings">Editar configurações</string>
     <string name="option_barcode_scan_continuous">Ler continuamente</string>
-    <string name="option_isbn_strict">Strict ISBN</string>
-    <string name="confirm_remove_toc_entry">Remover o título “%1$s” por %2$s deste livro\?</string>
-    <string name="confirm_delete_style">Excluir o estilo “%1$s”\?</string>
-    <string name="confirm_merge_bookshelves">A prateleira que está a modificar já existe. Gostaria de uni-las\?</string>
+    <string name="option_isbn_strict">ISBN estrito</string>
+    <string name="confirm_remove_toc_entry">Remover o título “%1$s” por %2$s deste livro?</string>
+    <string name="confirm_delete_style">Excluir o estilo “%1$s” ?</string>
+    <string name="confirm_merge_bookshelves">A prateleira que está a modificar já existe. Gostaria de uni-las?</string>
     <string name="tip_reset_all">Repor dicas</string>
     <string name="tip_authors_book_may_appear_more_than_once">Se for mostrado para cada autor, um único livro pode aparecer mais de uma vez numa lista. Em tal caso a exclusão de um desses livros excluirá todas as instâncias da lista.</string>
     <string name="tip_view_only_help">Pode deslizar para a esquerda ou para a direita para navegar para outros livros.</string>
@@ -380,14 +380,14 @@
     <string name="option_select_all">Selecionar tudo</string>
     <string name="confirm_delete_book">Isso excluirá completamente o livro intitulado “%1$s” por %2$s.
 \n
-\nTem certeza de que deseja continuar\?</string>
-    <string name="confirm_merge_authors">O autor que está a modificar já existe. Gostaria de uni-los\?</string>
-    <string name="confirm_merge_series">A série que está a modificar já existe. Gostaria de uni-las\?</string>
-    <string name="confirm_merge_publishers">O editor que está a modificar já existe. Gostaria de uni-los\?</string>
-    <string name="confirm_duplicate_book_message">O livro que está a tentar adicionar já existe na base de dados, tem a certeza de que deseja adicionar outra cópia\?</string>
+\nTem certeza de que deseja continuar?</string>
+    <string name="confirm_merge_authors">O autor que está a modificar já existe. Gostaria de uni-los?</string>
+    <string name="confirm_merge_series">A série que está a modificar já existe. Gostaria de uni-las?</string>
+    <string name="confirm_merge_publishers">O editor que está a modificar já existe. Gostaria de uni-los?</string>
+    <string name="confirm_duplicate_book_message">O livro que está a tentar adicionar já existe na base de dados, tem a certeza de que deseja adicionar outra cópia?</string>
     <string name="confirm_overwrite_cover">Isso atualizará os campos selecionados conforme mostrado, mas as imagens podem, opcionalmente, ser transferidas para TODOS os livros.
 \n
-\nDeseja substituir todas as imagens existentes\? Atenção, isso pode levar muito tempo.</string>
+\nDeseja substituir todas as imagens existentes? Atenção, isso pode levar muito tempo.</string>
     <string name="vldt_non_blank_required_for_x">Valor não vazio necessário para “%1$s”</string>
     <string name="progress_msg_skip_s">A ignorar “%1$s”</string>
     <string name="progress_msg_cleaning_up">A limpar…</string>
@@ -411,7 +411,7 @@
     <string name="option_auto_updates">Permitir atualizações automáticas da internet.</string>
     <string name="confirm_scope_for_delete">Excluir o título “%1$s” por %2$s
 \n
-\nComo deseja aplicar essa alteração\?
+\nComo deseja aplicar essa alteração?
 \nNota: A escolha “%3$s” não pode ser desfeita!</string>
     <string name="tip_book_search_by_text">Adicionar livros por ISBN é muito mais preciso do que adicionar por autor e título e é geralmente preferido. Por favor, lembre-se que às vezes pode encontrar o código de barras correto na tampa frontal interna.</string>
     <string name="tip_autorotate_camera_images">Se estiver sempre a rodar as imagens da câmara na mesma direção, tente alterar as preferências da aplicação para especificar uma rotação a ser aplicada automaticamente.</string>
@@ -440,9 +440,9 @@
     <string name="book_format_softcover_oblong">Capa mole - Oblonga</string>
     <string name="book_format_digest">Selecções</string>
     <string name="style_type_builtin">Embutido</string>
-    <string name="confirm_rebuild_fts">Isto recriará os dados do índice de pesquisa quando a aplicação for reiniciada. Tem certeza de que deseja continuar\?</string>
+    <string name="confirm_rebuild_fts">Isto recriará os dados do índice de pesquisa quando a aplicação for reiniciada. Tem certeza de que deseja continuar?</string>
     <string name="lbl_add_book">Adicionar livro</string>
-    <string name="confirm_registration_required">Esta função requer registo com %1$s. Gostaria de ver mais informações\?</string>
+    <string name="confirm_registration_required">Esta função requer registo com %1$s. Gostaria de ver mais informações?</string>
     <string name="lbl_search_isbn">Pesquisa ISBN</string>
     <string name="lbl_author_pseudonym">Este é um pseudónimo de:</string>
     <string name="lbl_series_num">Nº</string>
@@ -501,7 +501,7 @@
     <string name="X_pt_site_settings">Configurações do site</string>
     <string name="lbl_strip_info_mapped_bookshelf_wishlist">Prateleira mapeada de lista de desejos</string>
     <string name="X_lbl_updated">Atualizado</string>
-    <string name="confirm_rebuild_index">Isto recriará os índices quando a aplicação for reiniciada. Tem certeza de que deseja continuar\?</string>
+    <string name="confirm_rebuild_index">Isto recriará os índices quando a aplicação for reiniciada. Tem certeza de que deseja continuar?</string>
     <string name="lbl_author">Autor</string>
     <string name="lbl_authors">Autores</string>
     <string name="lbl_series">Série</string>
@@ -511,14 +511,14 @@
     <string name="pt_field_visibility">Visibilidade do campo</string>
     <string name="pt_show_title_reordered">Mostrar títulos como</string>
     <string name="ps_show_titles_reordered_on">título, O</string>
-    <string name="ps_author_name_family_first">por exemplo, \"Willis, Connie\"</string>
+    <string name="ps_author_name_family_first">por exemplo, “Willis, Connie”</string>
     <string name="pt_bob_books_under_multiple_authors">Mostrar livros com vários autores</string>
     <string name="lbl_filter">Filtro</string>
     <string name="unknown_author">[Autor desconhecido]</string>
     <string name="lbl_library">Biblioteca</string>
     <string name="X_action_swap">Trocar</string>
     <string name="X_btn_customize">Personalizar…</string>
-    <string name="X_confirm_continue">Tem certeza de que deseja continuar\?</string>
+    <string name="X_confirm_continue">Tem certeza de que deseja continuar?</string>
     <string name="X_txt_thank_you">Obrigado!</string>
     <string name="X_txt_import_books_option_all_books">Novos livros serão adicionados. Os livros existentes serão atualizados.</string>
     <string name="lbl_sync_date">Desde</string>
@@ -549,7 +549,7 @@
     <string name="pe_ui_theme_day_night">Dia / Noite</string>
     <string name="lbl_search_filtered_on_x">Filtrado em: %1$s</string>
     <string name="lbl_strip_info_mapped_bookshelf_owned_books">Prateleira mapeada de livros possuídos</string>
-    <string name="confirm_email_file">Gostaria de enviar este ficheiro como um e-mail\?</string>
+    <string name="confirm_email_file">Gostaria de enviar este ficheiro como um e-mail?</string>
     <string name="X_action_validate">Validar</string>
     <string name="action_merge">Unir</string>
     <string name="action_duplicate">Repetido</string>
@@ -582,8 +582,8 @@
     <string name="pe_thumbnails_cache_resized_each_time">Redimensione as imagens sempre que forem necessárias (usa menos armazenamento, a deslocação será mais lenta)</string>
     <string name="pe_thumbnails_cache_resized_stored">Colocar as imagens redimensionadas em cache (a deslocação será mais rápida, usa mais armazenamento)</string>
     <string name="pt_cropper_frame_is_whole_image">A moldura de recorte padrão é a imagem inteira</string>
-    <string name="pt_search_reformat_color">Padronize nomes de \"cores de livros\"</string>
-    <string name="pt_search_reformat_format">Padronizar nomes de \"formatos de livros\"</string>
+    <string name="pt_search_reformat_color">Padronize nomes de “cores de livros”</string>
+    <string name="pt_search_reformat_format">Padronizar nomes de “formatos de livros”</string>
     <string name="pt_search_uses_publisher">A pesquisa usa o editor</string>
     <string name="pt_collect_series_info_from_toc">Recolher informações da série da tabela de conteúdo</string>
     <string name="lbl_read_timeout">Tempo limite de leitura (segundos)</string>
@@ -606,13 +606,13 @@
     <string name="X_info_not_authorized">Não Autorizado</string>
     <string name="X_lbl_select_style">Selecione Estilo</string>
     <string name="X_pg_general">Geral</string>
-    <string name="X_vldt_failed_for_x">Falha na validação de \"%1$s\"</string>
+    <string name="X_vldt_failed_for_x">Falha na validação de “%1$s”</string>
     <string name="X_use_default_setting">Usar valores padrão</string>
     <string name="lbl_location_long">Localização do livro</string>
     <string name="pt_ui_system_locale">Localização do sistema</string>
     <string name="pt_ui_theme">Tema da Interface</string>
     <string name="camera_next_action">Acção depois de tirar uma foto</string>
-    <string name="confirm_no_missing_covers_search_from_top">Todos os livros abaixo desta linha têm capas. Procurar outra vez do topo\?</string>
+    <string name="confirm_no_missing_covers_search_from_top">Todos os livros abaixo desta linha têm capas. Procurar outra vez do topo?</string>
     <string name="lbl_scope_of_change">Âmbito de Mudança</string>
     <string name="lbl_duplicate_book">Copiar este livro</string>
     <string name="lbl_details_have_changed">Os detalhes mudaram</string>
@@ -686,7 +686,7 @@
     <string name="option_bug_report_logfiles">Ficheiros de registo</string>
     <string name="option_bug_report_database_upgrade">Ficheiros de atualização da base de dados</string>
     <string name="lbl_sql_query">Consulta SQL</string>
-    <string name="ps_author_name_given_first">por exemplo, \"Connie Willis\"</string>
+    <string name="ps_author_name_given_first">por exemplo, “Connie Willis”</string>
     <string name="pt_bob_books_under_multiple_series">Mostrar livros em várias séries</string>
     <string name="pe_bob_row_menu_button">Mostre sempre um botão.</string>
     <string name="ps_bob_books_under_multiple_primary_series_only">apenas nas suas séries principais</string>
@@ -700,16 +700,16 @@
     <string name="lbl_personal_notes">Notas pessoais</string>
     <string name="warning_no_site_supports_this_method">AVISO: nenhum dos sites atualmente selecionados suporta pesquisar por %1$s. Por favor, use o menu do site para ativar sites alternativos ou use um método de pesquisa diferente.</string>
     <string name="tip_booklist_style_groups">Pode usar este ecrã para modificar a hierarquia de cabeçalhos para um estilo específico da lista de livros. Um “visto” indica que o cabeçalho será mostrado na lista, “não-visto” para escondê-lo e vice-versa. Pode reordenar a hierarquia arrastando o ícone na extrema direita de cada linha para cima ou para baixo.</string>
-    <string name="tip_update_fields_from_internet">Os links externos do site só são processados se o site for realmente contactado. Como resultado, o menu \"Exibir em...\" da mesma forma, mostrará apenas o que está disponível.</string>
+    <string name="tip_update_fields_from_internet">Os links externos do site só são processados se o site for realmente contactado. Como resultado, o menu “Exibir em…” da mesma forma, mostrará apenas o que está disponível.</string>
     <string name="confirm_scope_for_change">Mudou:
-\n\"%1$s\"
+\n“%1$s”
 \npara
-\n\"%2$s\"
+\n“%2$s”
 \n
-\nComo deseja aplicar esta mudança\?
+\nComo deseja aplicar esta mudança?
 \nNota: A escolha “%3$s” será aplicada instantaneamente. Se escolher “%4$s”, então um novo %5$s será criado.</string>
-    <string name="tip_booklist_styles_editor">Pode usar este ecrã para personalizar a lista de estilos que serão exibidos no seu menu de estilos padrão. Um \"visto\" indica que o estilo será mostrado na lista, \"não-visto\" para ocultá-lo e vice-versa. Se nenhum estilo estiver marcado, todos os estilos serão mostrados. Pode reordenar a hierarquia arrastando o ícone no extremo direito de cada linha para cima ou para baixo. Pressionar longamente em qualquer outro lugar numa linha permitirá que edite ou clone os detalhes de um estilo específico. Se clonou um estilo e mudou de ideia, precisará excluí-lo você mesmo.</string>
-    <string name="info_cleanup_files">Ficheiros que possam ser eliminados usam actualmente %1$s do cartão SD. Ficheiros de registo e outros dados são guardados no cartão SD a cada atualização, quando faz cópias de segurança da base de dados ou quando a aplicação falha. Prima o botão abaixo para limpar esses ficheiros do seu cartão SD. Se estiverem a ocorrer falhas ou outros erros, considere usar o botão \"%2$s\" primeiro.</string>
+    <string name="tip_booklist_styles_editor">Pode usar este ecrã para personalizar a lista de estilos que serão exibidos no seu menu de estilos padrão. Um “visto” indica que o estilo será mostrado na lista, “não-visto” para ocultá-lo e vice-versa. Se nenhum estilo estiver marcado, todos os estilos serão mostrados. Pode reordenar a hierarquia arrastando o ícone no extremo direito de cada linha para cima ou para baixo. Pressionar longamente em qualquer outro lugar numa linha permitirá que edite ou clone os detalhes de um estilo específico. Se clonou um estilo e mudou de ideia, precisará excluí-lo você mesmo.</string>
+    <string name="info_cleanup_files">Ficheiros que possam ser eliminados usam actualmente %1$s do cartão SD. Ficheiros de registo e outros dados são guardados no cartão SD a cada atualização, quando faz cópias de segurança da base de dados ou quando a aplicação falha. Prima o botão abaixo para limpar esses ficheiros do seu cartão SD. Se estiverem a ocorrer falhas ou outros erros, considere usar o botão “%2$s” primeiro.</string>
     <string name="X_tip_booklist_global_properties">Pode usar este ecrã para definir as características padrão de todos os estilos de lista de livros. A maioria das propriedades pode ser substituída por estilos individuais, mas os valores por defeito são definidos aqui. Pode alterar a forma como as listas são exibidas no arranque e ajustar uma variedade de outras preferências que serão aplicadas a todos os seus estilos quando possível.</string>
     <string name="lbl_genre">Género</string>
     <string name="lbl_barcode">Código de barras</string>
@@ -717,10 +717,10 @@
     <string name="pt_sort_title_reordered">Ordenar títulos por</string>
     <string name="lbl_website_address">Endereço do site (URL)</string>
     <string name="option_fab_add_book_by_external_id">ID do livro do site</string>
-    <string name="confirm_create_real_author">\"%1$s\" ainda não existe. Devem ser criados\?</string>
-    <string name="confirm_rebuild_orderby_columns">Isto recriará os dados de classificação quando a aplicação for reiniciada. Tem certeza de que deseja continuar\?</string>
-    <string name="confirm_registration_benefits">Esta função beneficia do registo em %1$s. Gostaria de ver mais informações, ou desativar esta mensagem\?
-\n Pode encontrar estas informações posteriormente na secção \"%2$s\" das configurações.</string>
+    <string name="confirm_create_real_author">“%1$s” ainda não existe. Devem ser criados?</string>
+    <string name="confirm_rebuild_orderby_columns">Isto recriará os dados de classificação quando a aplicação for reiniciada. Tem certeza de que deseja continuar?</string>
+    <string name="confirm_registration_benefits">Esta função beneficia do registo em %1$s. Gostaria de ver mais informações, ou desativar esta mensagem?
+\n Pode encontrar estas informações posteriormente na secção “%2$s” das configurações.</string>
     <string name="action_add_with_details">Adicionar com detalhes</string>
     <string name="lbl_importing">A importar…</string>
     <string name="lbl_backup">Cópia de segurança</string>
@@ -744,7 +744,7 @@
     <string name="pe_camera_back">Câmera traseira</string>
     <string name="option_purge_bedetheque_authors_cache">Limpar cache de autores do Bedetheque</string>
     <string name="option_rebuild_fts">Reconstruir o FTS</string>
-    <string name="info_purge_blns_item_name">Limpar o estado do nó para %1$s \"%2$s\" \?</string>
+    <string name="info_purge_blns_item_name">Limpar o estado do nó para %1$s “%2$s”?</string>
     <string name="option_bob_filter_read_no">Livros Não Lidos</string>
     <string name="option_bob_filter_signed_yes">Livros Assinados</string>
     <string name="option_bob_filter_signed_no">Livros não assinados</string>
