@@ -151,12 +151,16 @@ public interface BookDao {
      * <p>
      * <strong>Transaction:</strong> required
      *
-     * @param context   Current context
-     * @param bookId    of the book
-     * @param doUpdates set to {@code true} to force each Author to be updated.
-     *                  <strong>ONLY</strong> set this when actually needed.
-     *                  Do not set this during for example an import.
-     * @param list      the list of authors
+     * @param context      Current context
+     * @param bookId       of the book
+     * @param doUpdates    set to {@code true} to force each Author to be updated.
+     *                     <strong>ONLY</strong> set this when actually needed.
+     *                     Do not set this during for example an import.
+     * @param list         the list of authors
+     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
+     *                     This can be (relatively) slow, and hence should be {@code false}
+     *                     during for example an import.
+     * @param bookLocale   of the book, already resolved
      *
      * @throws DaoWriteException    on failure
      * @throws TransactionException a transaction must be started before calling this method
