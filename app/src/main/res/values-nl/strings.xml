@@ -278,7 +278,7 @@
     <string name="lbl_author">Auteur</string>
     <string name="lbl_author_pseudonym">Dit is een pseudoniem van:</string>
     <string name="lbl_author_type">Auteur type</string>
-    <string name="lbl_author_type_artist">illustraties</string>
+    <string name="lbl_author_type_artist">Illustraties</string>
     <string name="lbl_author_type_colorist">Inkleurder</string>
     <string name="lbl_author_type_contributor">Medewerker</string>
     <string name="lbl_author_type_cover_artist">Omslag</string>
@@ -289,7 +289,7 @@
     <string name="lbl_author_type_intro">Introductie etc.</string>
     <string name="lbl_author_type_narrator">Verteller</string>
     <string name="lbl_author_type_translator">Vertaler</string>
-    <string name="lbl_author_type_writer">schrijver</string>
+    <string name="lbl_author_type_writer">Schrijver</string>
     <string name="lbl_authors">Auteurs</string>
     <string name="lbl_available">Beschikbaar</string>
     <string name="lbl_backup">Back-up</string>

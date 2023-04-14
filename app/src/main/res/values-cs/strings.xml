@@ -288,10 +288,10 @@
     <string name="option_archive_type_json">Export JSON (.json)</string>
     <string name="lbl_author">Autor</string>
     <string name="lbl_author_type">Typ autora</string>
-    <string name="lbl_author_type_artist">ilustrace</string>
+    <string name="lbl_author_type_artist">Ilustrace</string>
     <string name="lbl_author_type_colorist">Barvivo</string>
     <string name="lbl_author_type_contributor">Spolupracovník</string>
-    <string name="lbl_author_type_cover_artist">ilustrace knihy</string>
+    <string name="lbl_author_type_cover_artist">Ilustrace knihy</string>
     <string name="lbl_author_type_cover_colorist">barva obálky knihy</string>
     <string name="lbl_author_type_cover_inking">Obal na inkoustové knihy</string>
     <string name="lbl_author_type_editor">Editor</string>
@@ -299,7 +299,7 @@
     <string name="lbl_author_type_intro">Úvod atd.</string>
     <string name="lbl_author_type_narrator">Vypravěč</string>
     <string name="lbl_author_type_translator">Překladatel</string>
-    <string name="lbl_author_type_writer">spisovatel</string>
+    <string name="lbl_author_type_writer">Spisovatel</string>
     <string name="lbl_authors">Autoři</string>
     <string name="option_auto_updates">Povolit automatické aktualizace z internetu.</string>
     <string name="lbl_available">Dostupná</string>

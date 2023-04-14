@@ -319,7 +319,7 @@
     <string name="lbl_condition_very_good">Muito bom</string>
     <string name="lbl_condition_fair">Aceitável</string>
     <string name="lbl_condition_reading_copy">Cópia de leitura</string>
-    <string name="lbl_author_type_translator">tradutor</string>
+    <string name="lbl_author_type_translator">Tradutor</string>
     <string name="lbl_author_type_inking">Pintura</string>
     <string name="lbl_author_type_colorist">Pintor</string>
     <string name="lbl_author_type_cover_artist">Arte da capa</string>
@@ -372,7 +372,7 @@
     <string name="book_color_support_color">Duas Cores</string>
     <string name="style_builtin_author_series">Autor, Série</string>
     <string name="style_builtin_author_year">Autor, Ano</string>
-    <string name="lbl_author_type_editor">editor</string>
+    <string name="lbl_author_type_editor">Editor</string>
     <string name="option_cover_rotate">Rodar…</string>
     <string name="warning_x_is_not_a_valid_code">“%1$s” não é um código válido</string>
     <string name="warning_if_day_set_month_and_year_must_be">Se um dia for especificado, então o mês e o ano também devem ser especificados.</string>
@@ -384,7 +384,7 @@
     <string name="bob_empty_read_status">(Estado de leitura desconhecido)</string>
     <string name="lbl_condition_good">Bom</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Desaparecido/Justo</string>
-    <string name="lbl_author_type_writer">escritor</string>
+    <string name="lbl_author_type_writer">Escritor</string>
     <string name="lbl_author_type_artist">Ilustrações</string>
     <string name="size_megabytes">%1$.2f MB</string>
     <string name="lbl_styles">Estilos</string>
@@ -392,7 +392,7 @@
     <string name="style_type_user_defined">Definido pelo utilizador</string>
     <string name="bookshelf_all_books">Todos os Livros</string>
     <string name="lbl_edition_limited">Limitada</string>
-    <string name="lbl_author_type_contributor">contribuidor</string>
+    <string name="lbl_author_type_contributor">Contribuidor</string>
     <string name="lbl_condition_dust_cover_none">Nenhum</string>
     <string name="option_storage_select">Usar “%1$s”</string>
     <string name="warning_import_csv">Aviso. A importação de dados pode atualizar registos de livros existentes com novas informações se a coluna uuid não estiver presente e o id no ficheiro de importação for o mesmo que um id existente. Isso geralmente é bom se alterou um campo num ficheiro exportado. Se criou um novo registo de livro ou está a importar livros de outra pessoa, assegure-se que o campo uuid está presente e que o campo id está em branco.</string>

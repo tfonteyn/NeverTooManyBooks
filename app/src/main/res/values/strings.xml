@@ -560,16 +560,16 @@
     <string name="lbl_condition_dust_cover_none">None</string>
     <!-- endregion -->
     <!-- region ========== Author types. -->
-    <string name="lbl_author_type_writer">writer</string>
-    <string name="lbl_author_type_translator">translator</string>
-    <string name="lbl_author_type_editor">editor</string>
-    <string name="lbl_author_type_contributor">contributor</string>
+    <string name="lbl_author_type_writer">Writer</string>
+    <string name="lbl_author_type_translator">Translator</string>
+    <string name="lbl_author_type_editor">Editor</string>
+    <string name="lbl_author_type_contributor">Contributor</string>
     <string name="lbl_author_type_intro">Introduction etc.</string>
     <string name="lbl_author_type_narrator">Narrator</string>
     <!-- Interior art / illustrations -->
-    <string name="lbl_author_type_artist">illustrations</string>
+    <string name="lbl_author_type_artist">Illustrations</string>
     <string name="lbl_author_type_inking">Inking</string>
-    <string name="lbl_author_type_colorist">colorist</string>
+    <string name="lbl_author_type_colorist">Colorist</string>
     <!-- Cover art / Cover illustration -->
     <string name="lbl_author_type_cover_artist">Cover art</string>
     <string name="lbl_author_type_cover_inking">Cover inking</string>

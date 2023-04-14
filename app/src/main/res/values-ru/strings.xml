@@ -306,7 +306,7 @@
     <string name="lbl_author_type_intro">Введение и т. Д.</string>
     <string name="lbl_author_type_narrator">рассказчик</string>
     <string name="lbl_author_type_translator">Переводчик</string>
-    <string name="lbl_author_type_writer">писатель</string>
+    <string name="lbl_author_type_writer">Писатель</string>
     <string name="lbl_authors">Авторы</string>
     <string name="option_auto_updates">Разрешить автоматические обновления из Интернета.</string>
     <string name="lbl_available">Доступен</string>
