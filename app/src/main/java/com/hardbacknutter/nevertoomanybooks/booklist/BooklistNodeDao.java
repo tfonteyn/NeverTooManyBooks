@@ -93,6 +93,8 @@ public class BooklistNodeDao {
 
     /**
      * Purge <strong>all</strong> Booklist node state data.
+     *
+     * @param db Database Access
      */
     public static void clearAll(@NonNull final SynchronizedDb db) {
         db.execSQL(Sql.DELETE_ALL);
@@ -714,7 +716,9 @@ public class BooklistNodeDao {
                 + _FROM_ + /* listTable.getName() */ "%s"
                 + _WHERE_ + "(" + DBKey.BL_NODE_EXPANDED + "=1 OR "
                 + DBKey.BL_NODE_VISIBLE + "=1)";
-
+        /** Insert statement for {@link #saveNodesBetween}. */
+        private static final String SAVE_NODES_BETWEEN =
+                SAVE_ALL_NODES + _AND_ + DBKey.PK_ID + ">=? AND " + DBKey.PK_ID + "<?";
         /** {@link #saveNodesBetween}. */
         private static final String DELETE_NODES_BETWEEN =
                 // delete the rows for the current bookshelf/style
@@ -727,12 +731,6 @@ public class BooklistNodeDao {
                 + SELECT_DISTINCT_ + DBKey.BL_NODE_KEY + _FROM_
                 + /* listTable.getName() */ "%s"
                 + _WHERE_ + DBKey.PK_ID + ">=? AND " + DBKey.PK_ID + "<? )";
-
-        /** Insert statement for {@link #saveNodesBetween}. */
-        private static final String SAVE_NODES_BETWEEN =
-                SAVE_ALL_NODES + _AND_ + DBKey.PK_ID + ">=? AND " + DBKey.PK_ID + "<?";
-
-
         /** {@link #findNextNode}. */
         private static final String FIND_NEXT_NODE =
                 SELECT_ + DBKey.PK_ID + _FROM_ + /* listTable.getName() */ "%s"
