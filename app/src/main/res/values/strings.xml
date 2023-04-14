@@ -1165,7 +1165,7 @@
     <string name="pt_search_prefer_isbn10">Use ISBN-10 when possible</string>
     <!-- SwitchPreference - search engines can collect Series information from the toc.
          This is not always desirable, and by default switched off. -->
-    <string name="pt_collect_series_info_from_toc">Collect Series info from TOC</string>
+    <string name="pt_collect_series_info_from_toc">Collect Series info from content table</string>
     <string name="pt_search_resolve_authors_bedetheque">Resolve author pen-names using the Bedetheque website</string>
     <string name="pt_bedetheque_search_resolve_formats">Preserve Bedetheque (french) format naming</string>
     <!-- MultiSelectListPreference -->
@@ -1446,8 +1446,8 @@
     <string name="lbl_owned">Owned</string>
     <string name="lbl_table_of_content">Table Of Content</string>
     <!-- Table Of Content abbreviation. Used for a button. -->
-    <string name="lbl_table_of_content_short">TOC</string>
-    <string name="lbl_table_of_content_entry">TOC Entry</string>
+    <string name="lbl_table_of_content_short">Content</string>
+    <string name="lbl_table_of_content_entry">Content Entry</string>
     <string name="lbl_websites">Websites</string>
     <!-- hint text for an input field -->
     <string name="lbl_site_book_id">Website book ID</string>
