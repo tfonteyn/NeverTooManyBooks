@@ -1408,6 +1408,8 @@ public class BooksOnBookshelf
     /**
      * Called from {@link StylePickerDialogFragment} when the user wants to edit
      * the selected style.
+     *
+     * @param style to edit
      */
     void editStyle(@NonNull final Style style) {
         editStyleLauncher.launch(EditStyleContract.edit(style, true));
@@ -1670,7 +1672,8 @@ public class BooksOnBookshelf
                 // There are no target nodes, just scroll to the saved position
                 final Pair<Integer, Integer> savedListPosition = vm.getSavedListPosition();
                 final int adapterPosition = savedListPosition.first;
-                positioningHelper.scrollTo(savedListPosition, adapter.getItemCount());
+                final int viewOffset = savedListPosition.second;
+                positioningHelper.scrollTo(adapterPosition, viewOffset, adapter.getItemCount());
                 // wait for layout cycle and display the book
                 vb.content.list.post(() -> showBookDetailsIfWeCan(adapterPosition,
                                                                   vm.getSelectedBookId()));
@@ -1686,7 +1689,9 @@ public class BooksOnBookshelf
                 // First scroll to the saved position which will serve as the starting point
                 // for finding the "best" node.
                 final Pair<Integer, Integer> savedListPosition = vm.getSavedListPosition();
-                positioningHelper.scrollTo(savedListPosition, adapter.getItemCount());
+                final int adapterPosition = savedListPosition.first;
+                final int viewOffset = savedListPosition.second;
+                positioningHelper.scrollTo(adapterPosition, viewOffset, adapter.getItemCount());
                 // wait for layout cycle
                 vb.content.list.post(() -> {
                     // Now find the "best" node and scroll to it
@@ -1796,6 +1801,8 @@ public class BooksOnBookshelf
 
         /**
          * Retrieve the current adapter position and view-offset of the top-most visible row.
+         *
+         * @return a {@link Pair} with (adapterPosition, viewOffset)
          */
         @NonNull
         Pair<Integer, Integer> getAdapterPositionAndViewOffset() {
@@ -1864,17 +1871,15 @@ public class BooksOnBookshelf
 
         /**
          * Scroll the list to the given adapter-position/view-offset.
+         *
+         * @param adapterPosition to scroll to
+         * @param offset          the view offset to apply
+         * @param maxPosition     the last/maximum position to which we can scroll
+         *                        (i.e. the length of the list)
          */
-        void scrollTo(@NonNull final Pair<Integer, Integer> adapterPositionAndViewOffset,
+        void scrollTo(final int adapterPosition,
+                      final int offset,
                       final int maxPosition) {
-            final int adapterPosition = adapterPositionAndViewOffset.first;
-            final int viewOffset = adapterPositionAndViewOffset.second;
-            scrollTo(adapterPosition, maxPosition, viewOffset);
-        }
-
-        private void scrollTo(final int adapterPosition,
-                              final int maxPosition,
-                              final int offset) {
             final int position = adapterPosition + HEADER_ROWS;
 
             // sanity check
