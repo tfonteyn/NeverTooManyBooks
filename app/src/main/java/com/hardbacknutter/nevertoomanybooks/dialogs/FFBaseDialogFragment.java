@@ -162,18 +162,6 @@ public abstract class FFBaseDialogFragment
                      && useFullscreenHeight.contains(WindowSizeClass.getHeight(getActivity()));
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
-        if (fullscreen) {
-            return inflater.inflate(fullscreenLayoutId, container, false);
-        } else {
-            return inflater.inflate(contentLayoutId, container, false);
-        }
-    }
-
     /**
      * Final. Override {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
      * and/or {@link #onViewCreated(View, Bundle)} instead.
@@ -191,6 +179,18 @@ public abstract class FFBaseDialogFragment
             dialog = new Dialog(getContext(), R.style.ThemeOverlay_App_CustomDialog);
         }
         return dialog;
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        if (fullscreen) {
+            return inflater.inflate(fullscreenLayoutId, container, false);
+        } else {
+            return inflater.inflate(contentLayoutId, container, false);
+        }
     }
 
     @Override
