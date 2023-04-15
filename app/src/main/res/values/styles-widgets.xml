@@ -141,17 +141,11 @@
         <item name="colorOutline">?attr/colorOnSurfaceVariant</item>
     </style>
 
-    <!--
-            parent="ThemeOverlay.Material3.Dialog.Alert"
-        or
-            parent="ThemeOverlay.Material3.MaterialAlertDialog"
-
-        Seems to behave the same??
-        Is this yet more Android duplication and semi-deliberate confusion?
-        TODO: android styles are a MESS....
+    <!-- Specific for floating {@link FFBaseDialogFragment} dialog.
+         We must add rounded corners manually.
      -->
     <style name="ThemeOverlay.App.CustomDialog"
-           parent="ThemeOverlay.Material3.MaterialAlertDialog">
+           parent="ThemeOverlay.App.MaterialAlertDialog">
         <item name="dialogCornerRadius">@dimen/floating_dialog_corner_radius</item>
     </style>
 
