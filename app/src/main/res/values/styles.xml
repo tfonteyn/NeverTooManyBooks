@@ -155,7 +155,15 @@
              See MaterialAlertDialogBuilder(Context) where the surface color is explicitly set
              as the shape 'fill' color.
 
-             material.io says to use "backgroundTint"... but that does not work!
+             Two options:
+             Only set:
+                <item name="android:background">?attr/colorSurface</item>
+                ==> ok, works fine
+             or
+                <item name="android:backgroundTint">?attr/colorSurface</item>
+                <item name="android:background">@drawable/bg_floating_dialog</item>
+                ==> the color is fine, but the bg_floating_dialog corner radius
+                do NOT map to the same corner radius of the dialog??? (despite being set identical)
          -->
         <item name="android:background">?attr/colorSurface</item>
 
