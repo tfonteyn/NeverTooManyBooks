@@ -46,6 +46,7 @@ NEW:
 
 FIXES:
 - 10" screen transitioning from landscape to portrait: the book options menu is cleaned up now
+- When using dark mode, dialogs now uniformely have a dark background as intended
 
 REMOVED:
 
