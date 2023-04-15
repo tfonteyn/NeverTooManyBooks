@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -151,6 +151,13 @@
            parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
+        <!-- needed to get Day/Night background.
+             See MaterialAlertDialogBuilder(Context) where the surface color is explicitly set
+             as the shape 'fill' color.
+
+             material.io says to use "backgroundTint"... but that does not work!
+         -->
+        <item name="android:background">?attr/colorSurface</item>
 
         <item name="android:paddingTop">@dimen/dialogPreferredPaddingTop</item>
         <item name="android:paddingBottom">@dimen/dialogPreferredPaddingBottom</item>
