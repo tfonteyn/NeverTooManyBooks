@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -141,14 +141,14 @@
         <item name="colorOutline">?attr/colorOnSurfaceVariant</item>
     </style>
 
-    <!-- WORKS -->
-    <!--    <style name="ThemeOverlay.App.CustomDialog"-->
-    <!--           parent="ThemeOverlay.Material3.Dialog.Alert">-->
-    <!--        <item name="dialogCornerRadius">@dimen/floating_dialog_corner_radius</item>-->
-    <!--    </style>-->
-    <!-- WORKS; I don't see a difference with the above...
-         is this yet more Android duplication and semi-deliberate confusion?
-         TODO: try to sort out the mess....
+    <!--
+            parent="ThemeOverlay.Material3.Dialog.Alert"
+        or
+            parent="ThemeOverlay.Material3.MaterialAlertDialog"
+
+        Seems to behave the same??
+        Is this yet more Android duplication and semi-deliberate confusion?
+        TODO: android styles are a MESS....
      -->
     <style name="ThemeOverlay.App.CustomDialog"
            parent="ThemeOverlay.Material3.MaterialAlertDialog">
