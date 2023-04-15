@@ -151,19 +151,21 @@
            parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
-        <!-- needed to get Day/Night background.
+        <!-- needed to get the correct day/night background.
              See MaterialAlertDialogBuilder(Context) where the surface color is explicitly set
              as the shape 'fill' color.
 
              Two options:
              Only set:
                 <item name="android:background">?attr/colorSurface</item>
-                ==> ok, works fine
+                ==> works ok, but is basically just a workaround.
+                    This seems to simply OVERLAPS the STILL 'light' background.
              or
                 <item name="android:backgroundTint">?attr/colorSurface</item>
                 <item name="android:background">@drawable/bg_floating_dialog</item>
                 ==> the color is fine, but the bg_floating_dialog corner radius
                 do NOT map to the same corner radius of the dialog??? (despite being set identical)
+                Otherwise same remark on overlapping the STILL 'light' background.
          -->
         <item name="android:background">?attr/colorSurface</item>
 
