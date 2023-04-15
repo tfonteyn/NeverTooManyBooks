@@ -1007,17 +1007,16 @@ public class BooksOnBookshelf
             if (menu.size() < 5 || WindowSizeClass.getWidth(this) == WindowSizeClass.Medium) {
                 // show it anchored
                 contextMenu.showAsDropDown(v, menuItem ->
-                        onRowContextMenuItemSelected(menuItem, adapterPosition));
+                        onRowContextMenuItemSelected(v, adapterPosition, menuItem));
 
             } else if (hasEmbeddedDetailsFrame()) {
                 contextMenu.show(v, Gravity.START, menuItem ->
-                        onRowContextMenuItemSelected(menuItem, adapterPosition));
+                        onRowContextMenuItemSelected(v, adapterPosition, menuItem));
             } else {
                 contextMenu.show(v, Gravity.CENTER, menuItem ->
-                        onRowContextMenuItemSelected(menuItem, adapterPosition));
+                        onRowContextMenuItemSelected(v, adapterPosition, menuItem));
             }
         }
-
     }
 
     /**
@@ -1027,13 +1026,15 @@ public class BooksOnBookshelf
      * but due to an R8 bug confusing it with "onMenuItemSelected(int, android.view.MenuItem)"
      * ended throwing a "java.lang.LinkageError" ... so the name had to be changed.
      *
-     * @param menuItem        that was selected
+     * @param v               View clicked; the anchor for a potential popup menu
      * @param adapterPosition The booklist adapter position
+     * @param menuItem        that was selected
      *
      * @return {@code true} if handled.
      */
-    private boolean onRowContextMenuItemSelected(@NonNull final MenuItem menuItem,
-                                                 final int adapterPosition) {
+    private boolean onRowContextMenuItemSelected(@NonNull final View v,
+                                                 final int adapterPosition,
+                                                 @NonNull final MenuItem menuItem) {
         //noinspection ConstantConditions
         final DataHolder rowData = adapter.readDataAt(adapterPosition);
         // Paranoia: if the user can click it, then the row exists.
@@ -1147,7 +1148,7 @@ public class BooksOnBookshelf
                     return true;
 
                 } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-                    updateBooksFromInternetData(adapterPosition, rowData, DBKey.AUTHOR_FORMATTED);
+                    updateBooksFromInternetData(v, rowData, DBKey.AUTHOR_FORMATTED);
                     return true;
                 }
                 break;
@@ -1177,7 +1178,7 @@ public class BooksOnBookshelf
                     return true;
 
                 } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-                    updateBooksFromInternetData(adapterPosition, rowData, DBKey.SERIES_TITLE);
+                    updateBooksFromInternetData(v, rowData, DBKey.SERIES_TITLE);
                     return true;
                 }
                 break;
@@ -1199,7 +1200,7 @@ public class BooksOnBookshelf
                     return true;
 
                 } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-                    updateBooksFromInternetData(adapterPosition, rowData, DBKey.PUBLISHER_NAME);
+                    updateBooksFromInternetData(v, rowData, DBKey.PUBLISHER_NAME);
                     return true;
                 }
                 break;
@@ -1372,21 +1373,19 @@ public class BooksOnBookshelf
      * Allow the user to decide between books on "this bookshelf only" or on all bookshelves
      * and then update all the selected books.
      *
-     * @param adapterPosition The booklist adapter position
-     * @param rowData         for the row which was selected
-     * @param labelKey        key into the rowData for the row-item text to show to the user.
+     * @param v        View clicked; the anchor for the popup menu
+     * @param rowData  for the row which was selected
+     * @param labelKey key into the rowData for the row-item text to show to the user.
      */
-    private void updateBooksFromInternetData(final int adapterPosition,
+    private void updateBooksFromInternetData(@NonNull final View v,
                                              @NonNull final DataHolder rowData,
                                              @NonNull final String labelKey) {
-        final View anchor = positioningHelper.findViewByAdapterPosition(adapterPosition);
         final String dialogTitle = rowData.getString(labelKey);
-        //noinspection ConstantConditions
         new ExtPopupMenu(this)
                 .inflate(R.menu.update_books)
                 .setTitle(dialogTitle)
                 .setMessage(getString(R.string.menu_update_books))
-                .showAsDropDown(anchor, menuItem -> {
+                .showAsDropDown(v, menuItem -> {
                     final int itemId = menuItem.getItemId();
                     Boolean onlyThisShelf = null;
 
