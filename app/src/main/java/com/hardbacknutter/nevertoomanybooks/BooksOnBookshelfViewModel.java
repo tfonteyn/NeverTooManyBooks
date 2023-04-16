@@ -120,6 +120,7 @@ public class BooksOnBookshelfViewModel
                                         BooklistGroup.BlgKey.ACQUIRED_YEAR,
                                         BooklistGroup.BlgKey.ACQUIRED_MONTH,
                                         BooklistGroup.BlgKey.ACQUIRED_DAY)),
+
             Map.entry(BooklistGroup.DATE_ADDED_YEAR,
                       new BLGDateRecord(R.string.lbl_date_added,
                                         BooklistGroup.BlgKey.ADDED_YEAR)),
@@ -132,13 +133,22 @@ public class BooksOnBookshelfViewModel
                                         BooklistGroup.BlgKey.ADDED_YEAR,
                                         BooklistGroup.BlgKey.ADDED_DAY,
                                         BooklistGroup.BlgKey.ADDED_MONTH)),
+
             Map.entry(BooklistGroup.DATE_PUBLISHED_YEAR,
                       new BLGDateRecord(R.string.lbl_date_published,
                                         BooklistGroup.BlgKey.PUB_YEAR)),
             Map.entry(BooklistGroup.DATE_PUBLISHED_MONTH,
                       new BLGDateRecord(R.string.lbl_date_published,
                                         BooklistGroup.BlgKey.PUB_YEAR,
-                                        BooklistGroup.BlgKey.PUB_MONTH))
+                                        BooklistGroup.BlgKey.PUB_MONTH)),
+
+            Map.entry(BooklistGroup.DATE_FIRST_PUBLICATION_YEAR,
+                      new BLGDateRecord(R.string.lbl_date_first_publication,
+                                        BooklistGroup.BlgKey.FIRST_PUB_YEAR)),
+            Map.entry(BooklistGroup.DATE_FIRST_PUBLICATION_MONTH,
+                      new BLGDateRecord(R.string.lbl_date_first_publication,
+                                        BooklistGroup.BlgKey.FIRST_PUB_YEAR,
+                                        BooklistGroup.BlgKey.FIRST_PUB_MONTH))
     );
 
     /** Cache for all bookshelves. */
