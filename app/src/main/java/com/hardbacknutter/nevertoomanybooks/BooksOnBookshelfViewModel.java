@@ -688,6 +688,7 @@ public class BooksOnBookshelfViewModel
             @NonNull final DataHolder rowData,
             final boolean onlyThisShelf) {
 
+        @BooklistGroup.Id
         final int groupId = rowData.getInt(DBKey.BL_NODE_GROUP);
         final BLGRecord blgRecord = Objects.requireNonNull(BLG_RECORD.get(groupId),
                                                            () -> GROUP_NOT_DEFINED + groupId);
@@ -757,6 +758,7 @@ public class BooksOnBookshelfViewModel
         Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
         final ArrayList<Long> books = booklist.getBookIdsForNodeKey(nodeKey, level);
 
+        @BooklistGroup.Id
         final int groupId = rowData.getInt(DBKey.BL_NODE_GROUP);
 
         final BLGDateRecord blgRecord = Objects.requireNonNull(BLG_DATE_RECORD.get(groupId),

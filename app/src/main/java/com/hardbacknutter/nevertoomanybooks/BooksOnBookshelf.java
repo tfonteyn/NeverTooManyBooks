@@ -831,6 +831,7 @@ public class BooksOnBookshelf
                 .setGroupDividerEnabled();
         final Menu menu = contextMenu.getMenu();
 
+        @BooklistGroup.Id
         final int rowGroupId = rowData.getInt(DBKey.BL_NODE_GROUP);
         switch (rowGroupId) {
             case BooklistGroup.BOOK: {
@@ -1072,6 +1073,7 @@ public class BooksOnBookshelf
 
         // Specific row-group options
 
+        @BooklistGroup.Id
         final int rowGroupId = rowData.getInt(DBKey.BL_NODE_GROUP);
         switch (rowGroupId) {
             case BooklistGroup.BOOK: {
