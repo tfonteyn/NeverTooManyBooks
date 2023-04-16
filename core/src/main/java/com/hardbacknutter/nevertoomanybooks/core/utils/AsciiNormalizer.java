@@ -25,24 +25,44 @@ import androidx.annotation.NonNull;
 import java.text.Normalizer;
 import java.util.regex.Pattern;
 
+/**
+ * Used to create {@code ORDER BY} suitable strings, FTS storage and similar.
+ * <p>
+ * TODO: In hindsight replacing non-ascii characters with a space might not have been
+ *  the best idea.
+ *  We should just use {@code Normalizer.normalize(text, Normalizer.Form.NFD)}
+ *  everywhere we now call {@link #normalize(CharSequence)}.
+ *  And ALSO call this on the text as entered by the user for doing a search.
+ *  Once implemented, schedule a rebuild for the ORDER BY and the FTS table.
+ */
 public final class AsciiNormalizer {
 
-    /** See {@link #toAscii}. */
+    /** See {@link #normalize}. */
     private static final Pattern ASCII_PATTERN = Pattern.compile("[^\\p{ASCII}]");
 
     private AsciiNormalizer() {
     }
 
     /**
-     * Normalize a given string to contain only ASCII characters for flexible text comparison.
+     * Normalize/clean the given string.
+     * <p>
+     * Latin alphabet strings will get normalized and cleansed of non-ascii characters.
+     * Non-latin strings are returned as-is.
      *
      * @param text to normalize
      *
-     * @return ascii text
+     * @return cleansed text
      */
     @NonNull
-    public static String toAscii(@NonNull final CharSequence text) {
-        return ASCII_PATTERN.matcher(Normalizer.normalize(text, Normalizer.Form.NFD))
-                            .replaceAll("");
+    public static String normalize(@NonNull final CharSequence text) {
+        final Character.UnicodeScript script = Character.UnicodeScript.of(
+                text.toString().strip().codePointAt(0));
+
+        if (script == Character.UnicodeScript.LATIN) {
+            final String normalized = Normalizer.normalize(text, Normalizer.Form.NFD);
+            return ASCII_PATTERN.matcher(normalized).replaceAll("");
+        } else {
+            return text.toString();
+        }
     }
 }
