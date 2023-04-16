@@ -42,7 +42,6 @@ Prices: when importing books with a price field containing a value which cannot 
 
 NEW:
 - Portuguese translation contributed by @maverick74
-- context menu for Bookshelves now provides "Update books" for that shelf.
 
 FIXES:
 - 10" screen transitioning from landscape to portrait: the book options menu is cleaned up now
