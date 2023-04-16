@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,13 +22,14 @@ package com.hardbacknutter.nevertoomanybooks.booklist.adapter;
 
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
 @FunctionalInterface
 public interface FormatFunction {
 
     @NonNull
-    CharSequence format(int groupId,
+    CharSequence format(@BooklistGroup.Id int groupId,
                         @NonNull DataHolder rowData,
                         @NonNull String key);
 }

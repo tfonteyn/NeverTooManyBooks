@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -269,7 +269,7 @@ public interface Style {
      * @throws NullPointerException on bug
      */
     @NonNull
-    default BooklistGroup requireGroupById(final int id)
+    default BooklistGroup requireGroupById(@BooklistGroup.Id final int id)
             throws NullPointerException {
         return getGroupById(id).orElseThrow(() -> new NullPointerException(
                 "Missing group: id=" + id + ", " + getUuid()));

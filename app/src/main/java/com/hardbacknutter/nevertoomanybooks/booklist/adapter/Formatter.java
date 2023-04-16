@@ -109,7 +109,7 @@ class Formatter
      */
     @NonNull
     @Override
-    public CharSequence format(final int groupId,
+    public CharSequence format(@BooklistGroup.Id final int groupId,
                                @NonNull final DataHolder rowData,
                                @NonNull final String key) {
         final String text = rowData.getString(key);
