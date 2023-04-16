@@ -18,10 +18,14 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
     <!ENTITY APP_NAME "NeverTooManyBooks">
     ]>
-<!-- Quotes «…» - Regex to find wrong ones: ('|„|‘|’|“|”) --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pt">
+<!-- Quotes “...”  (older «…» are no longer used as verified with a native speaker) - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine -->
+<resources xmlns:tools="http://schemas.android.com/tools"
+           tools:locale="pt">
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d livro exibido</item>
         <item quantity="other">A exibir %1$d livros</item>
@@ -510,7 +514,7 @@
     <string name="pt_field_visibility">Visibilidade do campo</string>
     <string name="pt_show_title_reordered">Mostrar títulos como</string>
     <string name="ps_show_titles_reordered_on">título, O</string>
-    <string name="ps_author_name_family_first">por exemplo, “Willis, Connie”</string>
+    <string name="ps_author_name_family_first">por exemplo, “de Camões, Luís”</string>
     <string name="pt_bob_books_under_multiple_authors">Mostrar livros com vários autores</string>
     <string name="lbl_filter">Filtro</string>
     <string name="unknown_author">[Autor desconhecido]</string>
@@ -617,7 +621,8 @@
     <string name="lbl_details_have_changed">Os detalhes mudaram</string>
     <string name="lbl_import">Importar</string>
     <string name="lbl_covers">Capas</string>
-    <string name="info_x_pages" tools:ignore="PluralsCandidate">%1$d páginas</string>
+    <string name="info_x_pages"
+            tools:ignore="PluralsCandidate">%1$d páginas</string>
     <string name="lbl_price_listed">Preço de tabela</string>
     <string name="lbl_condition">Condição</string>
     <string name="lbl_date_added_month">Mês de Adição</string>
@@ -685,7 +690,7 @@
     <string name="option_bug_report_logfiles">Ficheiros de registo</string>
     <string name="option_bug_report_database_upgrade">Ficheiros de atualização da base de dados</string>
     <string name="lbl_sql_query">Consulta SQL</string>
-    <string name="ps_author_name_given_first">por exemplo, “Connie Willis”</string>
+    <string name="ps_author_name_given_first">por exemplo, “Luís de Camões”</string>
     <string name="pt_bob_books_under_multiple_series">Mostrar livros em várias séries</string>
     <string name="pe_bob_row_menu_button">Mostre sempre um botão.</string>
     <string name="ps_bob_books_under_multiple_primary_series_only">apenas nas suas séries principais</string>
