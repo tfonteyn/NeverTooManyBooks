@@ -247,4 +247,33 @@ public class AuthorTest
         assertEquals("Philip José", author.getGivenNames());
         assertEquals(Author.TYPE_WRITER | Author.TYPE_AFTERWORD, author.getType());
     }
+
+    @Test
+    public void pruneGeorgianNames01() {
+        // Georgian / Georgia
+        final Locale bookLocale = new Locale("ka", "GE");
+
+        final AuthorDao authorDao = serviceLocator.getAuthorDao();
+
+        final List<Author> authorList = new ArrayList<>();
+        Author author;
+
+        // https://en.wikipedia.org/wiki/Alexander_Abasheli
+        author = Author.from("ალექსანდრე აბაშელი");
+        authorDao.fixId(context, author, () -> bookLocale);
+        authorList.add(author);
+
+        // https://en.wikipedia.org/wiki/Irakli_Abashidze
+        author = Author.from("ირაკლი აბაშიძე");
+        authorDao.fixId(context, author, () -> bookLocale);
+        authorList.add(author);
+
+        // https://en.wikipedia.org/wiki/Alexander_Amilakhvari
+        author = Author.from("ალექსანდრე ამილახვარი");
+        authorDao.fixId(context, author, () -> bookLocale);
+        authorList.add(author);
+
+        final boolean modified = authorDao.pruneList(context, authorList, item -> bookLocale);
+        assertFalse(modified);
+    }
 }

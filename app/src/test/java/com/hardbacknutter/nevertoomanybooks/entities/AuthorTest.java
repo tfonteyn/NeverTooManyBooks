@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -144,5 +144,18 @@ class AuthorTest {
         assertNotNull(author);
         assertEquals("Velter Jr. (Rob-vel,Bozz)", author.getFamilyName());
         assertEquals("Robert", author.getGivenNames());
+    }
+
+    /**
+     * https://en.wikipedia.org/wiki/List_of_Georgian_writers
+     * https://ka.wikipedia.org/wiki/%E1%83%A5%E1%83%90%E1%83%A0%E1%83%97%E1%83%95%E1%83%94%E1%83%9A%E1%83%98_%E1%83%9B%E1%83%AC%E1%83%94%E1%83%A0%E1%83%9A%E1%83%94%E1%83%91%E1%83%98%E1%83%A1_%E1%83%A1%E1%83%98%E1%83%90
+     */
+    @Test
+    void fromGeorgian50() {
+        // Alexander Abasheli
+        final Author author = Author.from("ალექსანდრე აბაშელი");
+        assertNotNull(author);
+        assertEquals("აბაშელი", author.getFamilyName());
+        assertEquals("ალექსანდრე", author.getGivenNames());
     }
 }
