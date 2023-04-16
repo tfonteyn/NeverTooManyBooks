@@ -972,13 +972,14 @@ public class BooksOnBookshelf
             case BooklistGroup.DATE_ADDED_DAY:
             case BooklistGroup.DATE_PUBLISHED_YEAR:
             case BooklistGroup.DATE_PUBLISHED_MONTH:
+            case BooklistGroup.DATE_FIRST_PUBLICATION_YEAR:
+            case BooklistGroup.DATE_FIRST_PUBLICATION_MONTH: {
                 menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
                          getResources().getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
                          R.string.menu_update_books)
                     .setIcon(R.drawable.ic_baseline_cloud_download_24);
                 break;
-
-
+            }
             default: {
                 break;
             }
@@ -1280,7 +1281,9 @@ public class BooksOnBookshelf
             case BooklistGroup.DATE_ADDED_MONTH:
             case BooklistGroup.DATE_ADDED_DAY:
             case BooklistGroup.DATE_PUBLISHED_YEAR:
-            case BooklistGroup.DATE_PUBLISHED_MONTH: {
+            case BooklistGroup.DATE_PUBLISHED_MONTH:
+            case BooklistGroup.DATE_FIRST_PUBLICATION_YEAR:
+            case BooklistGroup.DATE_FIRST_PUBLICATION_MONTH: {
                 if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
                     updateBookListLauncher.launch(
                             vm.createDateRowUpdateBooklistContractInput(this, rowData));
