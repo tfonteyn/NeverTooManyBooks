@@ -64,7 +64,7 @@ public final class SqlEncode {
     @NonNull
     public static String orderByColumn(@NonNull final CharSequence value,
                                        @NonNull final Locale locale) {
-        final String s = AsciiNormalizer.toAscii(value);
+        final String s = AsciiNormalizer.normalize(value);
         // remove all non-word characters. i.e. all characters not in [a-zA-Z_0-9]
         return NON_WORD_CHARACTER_PATTERN.matcher(s).replaceAll("").toLowerCase(locale);
     }

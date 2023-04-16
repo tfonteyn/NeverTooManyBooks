@@ -181,7 +181,7 @@ public class FtsDaoImpl
         if (text == null) {
             stmt.bindNull(position);
         } else {
-            stmt.bindString(position, AsciiNormalizer.toAscii(text));
+            stmt.bindString(position, AsciiNormalizer.normalize(text));
         }
     }
 

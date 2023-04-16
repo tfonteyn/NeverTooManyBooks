@@ -58,7 +58,7 @@ public interface FtsDao {
         }
 
         // Convert the text to pure ASCII. We'll use an array to loop over it.
-        final char[] chars = AsciiNormalizer.toAscii(searchText).toCharArray();
+        final char[] chars = AsciiNormalizer.normalize(searchText).toCharArray();
         // Cached length
         final int len = chars.length;
         // Initial position

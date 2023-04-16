@@ -45,7 +45,7 @@ public interface Mergeable {
         return Objects.hash(
                 x.getNameFields()
                  .stream()
-                 .map(AsciiNormalizer::toAscii)
+                 .map(AsciiNormalizer::normalize)
                  .collect(Collectors.toList()));
     }
 
