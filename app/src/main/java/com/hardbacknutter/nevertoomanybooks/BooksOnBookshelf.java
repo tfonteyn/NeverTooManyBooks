@@ -1149,7 +1149,8 @@ public class BooksOnBookshelf
                     return true;
 
                 } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-                    updateBooksFromInternetData(v, rowData, DBKey.AUTHOR_FORMATTED);
+                    final String dialogTitle = rowData.getString(DBKey.AUTHOR_FORMATTED);
+                    updateBooksFromInternetData(v, rowData, dialogTitle);
                     return true;
                 }
                 break;
@@ -1179,7 +1180,8 @@ public class BooksOnBookshelf
                     return true;
 
                 } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-                    updateBooksFromInternetData(v, rowData, DBKey.SERIES_TITLE);
+                    final String dialogTitle = rowData.getString(DBKey.SERIES_TITLE);
+                    updateBooksFromInternetData(v, rowData, dialogTitle);
                     return true;
                 }
                 break;
@@ -1201,7 +1203,8 @@ public class BooksOnBookshelf
                     return true;
 
                 } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-                    updateBooksFromInternetData(v, rowData, DBKey.PUBLISHER_NAME);
+                    final String dialogTitle = rowData.getString(DBKey.PUBLISHER_NAME);
+                    updateBooksFromInternetData(v, rowData, dialogTitle);
                     return true;
                 }
                 break;
@@ -1376,14 +1379,13 @@ public class BooksOnBookshelf
      * Allow the user to decide between books on "this bookshelf only" or on all bookshelves
      * and then update all the selected books.
      *
-     * @param v        View clicked; the anchor for the popup menu
-     * @param rowData  for the row which was selected
-     * @param labelKey key into the rowData for the row-item text to show to the user.
+     * @param v           View clicked; the anchor for the popup menu
+     * @param rowData     for the row which was selected
+     * @param dialogTitle text to show to the user.
      */
     private void updateBooksFromInternetData(@NonNull final View v,
                                              @NonNull final DataHolder rowData,
-                                             @NonNull final String labelKey) {
-        final String dialogTitle = rowData.getString(labelKey);
+                                             @NonNull final CharSequence dialogTitle) {
         new ExtPopupMenu(this)
                 .inflate(R.menu.update_books)
                 .setTitle(dialogTitle)
