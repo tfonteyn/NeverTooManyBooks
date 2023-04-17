@@ -41,11 +41,13 @@ Prices: when importing books with a price field containing a value which cannot 
 4.3.0
 
 NEW:
-- Portuguese translation contributed by @maverick74
+- Portuguese translation added.
 
 FIXES:
 - 10" screen transitioning from landscape to portrait: the book options menu is cleaned up now
-- When using dark mode, dialogs now uniformely have a dark background as intended
+- When using dark mode, dialogs now uniformly have a dark background as intended
+- Non-latin script languages (Georgian, Greek,...) no longer fail being compared in lists
+  (e.g. multiple authors for a book are now accepted)
 
 REMOVED:
 
