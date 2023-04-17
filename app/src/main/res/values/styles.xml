@@ -126,48 +126,11 @@
     <!-- Dialogs -->
     <!-- *************************************************************************************** -->
 
-    <!-- Special style for RecyclerView's embedded in a FFBaseDialogFragment -->
-    <style name="Dialog.Body.RecyclerView"
-           parent="">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">0dp</item>
-
-        <item name="android:paddingTop">@dimen/dialogPreferredPaddingTop</item>
-        <item name="android:paddingBottom">@dimen/dialogPreferredPaddingBottom</item>
-        <item name="android:paddingStart">?attr/dialogPreferredPadding</item>
-        <item name="android:paddingEnd">?attr/dialogPreferredPadding</item>
-
-        <item name="layout_constraintVertical_bias">0.0</item>
-
-        <item name="android:fadeScrollbars">false</item>
-        <item name="android:scrollbarAlwaysDrawVerticalTrack">true</item>
-        <item name="android:scrollbars">vertical</item>
-        <item name="layoutManager">androidx.recyclerview.widget.LinearLayoutManager</item>
-        <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
-    </style>
-
     <!-- The root view for the Dialog content. -->
     <style name="Dialog.Content"
            parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
-        <!-- needed to get the correct day/night background.
-             See MaterialAlertDialogBuilder(Context) where the surface color is explicitly set
-             as the shape 'fill' color.
-
-             Two options:
-             Only set:
-                <item name="android:background">?attr/colorSurface</item>
-                ==> works ok, but is basically just a workaround.
-                    This seems to simply OVERLAPS the STILL 'light' background.
-             or
-                <item name="android:backgroundTint">?attr/colorSurface</item>
-                <item name="android:background">@drawable/bg_floating_dialog</item>
-                ==> the color is fine, but the bg_floating_dialog corner radius
-                do NOT map to the same corner radius of the dialog??? (despite being set identical)
-                Otherwise same remark on overlapping the STILL 'light' background.
-         -->
-        <item name="android:background">?attr/colorSurface</item>
 
         <item name="android:paddingTop">@dimen/dialogPreferredPaddingTop</item>
         <item name="android:paddingBottom">@dimen/dialogPreferredPaddingBottom</item>

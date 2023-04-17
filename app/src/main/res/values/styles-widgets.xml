@@ -141,14 +141,6 @@
         <item name="colorOutline">?attr/colorOnSurfaceVariant</item>
     </style>
 
-    <!-- Specific for floating {@link FFBaseDialogFragment} dialog.
-         We must add rounded corners manually.
-     -->
-    <style name="ThemeOverlay.App.CustomDialog"
-           parent="ThemeOverlay.App.MaterialAlertDialog">
-        <item name="dialogCornerRadius">@dimen/floating_dialog_corner_radius</item>
-    </style>
-
     <!-- app wide ThemeOverlay -->
     <style name="ThemeOverlay.App.MaterialAlertDialog"
            parent="ThemeOverlay.Material3.MaterialAlertDialog">

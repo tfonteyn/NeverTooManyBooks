@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<!--
+    These are workarounds and hacks for {@link FFBaseDialogFragment}.
+    Android styles are an utter design mess.
+-->
+<resources>
+    <!-- Special style for RecyclerView's embedded in a FFBaseDialogFragment -->
+    <style name="Dialog.Body.RecyclerView"
+           parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0dp</item>
+
+        <item name="android:paddingTop">@dimen/dialogPreferredPaddingTop</item>
+        <item name="android:paddingBottom">@dimen/dialogPreferredPaddingBottom</item>
+        <item name="android:paddingStart">?attr/dialogPreferredPadding</item>
+        <item name="android:paddingEnd">?attr/dialogPreferredPadding</item>
+
+        <item name="layout_constraintVertical_bias">0.0</item>
+
+        <item name="android:fadeScrollbars">false</item>
+        <item name="android:scrollbarAlwaysDrawVerticalTrack">true</item>
+        <item name="android:scrollbars">vertical</item>
+        <item name="layoutManager">androidx.recyclerview.widget.LinearLayoutManager</item>
+        <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
+    </style>
+
+    <!-- use these instead of the app wide "ThemeOverlay.App.MaterialAlertDialog" -->
+    <style name="ThemeOverlay.App.CustomDialog"
+           parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <!-- using "?attr/dialogCornerRadius" does not work.... sigh...-->
+        <item name="dialogCornerRadius">@dimen/floating_dialog_corner_radius</item>
+
+        <!-- needed to get the correct day/night background.
+            See MaterialAlertDialogBuilder(Context) where the surface color is explicitly set
+            as the shape 'fill' color.
+        -->
+        <item name="android:backgroundTint">?attr/colorSurface</item>
+
+        <!-- needed to get the background of the buttons to use colorSurface -->
+        <item name="buttonBarButtonStyle">
+            @style/Widget.CustomDialog.DialogButtonBarButtons
+        </item>
+        <item name="buttonBarPositiveButtonStyle">
+            @style/Widget.CustomDialog.DialogButtonBarButtons
+        </item>
+        <item name="buttonBarNegativeButtonStyle">
+            @style/Widget.CustomDialog.DialogButtonBarButtons
+        </item>
+        <item name="buttonBarNeutralButtonStyle">
+            @style/Widget.CustomDialog.DialogButtonBarButtons.Flush
+        </item>
+
+    </style>
+
+    <!-- duplication due to the android style system... -->
+    <style name="Widget.CustomDialog.DialogButtonBarButtons"
+           parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="android:textColor">?attr/colorSecondary</item>
+        <item name="android:background">?attr/colorSurface</item>
+    </style>
+
+    <!-- yes, even more duplication due to the android style system... -->
+    <style name="Widget.CustomDialog.DialogButtonBarButtons.Flush"
+           parent="Widget.Material3.Button.TextButton.Dialog.Flush">
+        <item name="android:textColor">?attr/colorSecondary</item>
+        <item name="android:background">?attr/colorSurface</item>
+    </style>
+</resources>
