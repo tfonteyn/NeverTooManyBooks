@@ -55,6 +55,10 @@ public final class AsciiNormalizer {
      */
     @NonNull
     public static String normalize(@NonNull final CharSequence text) {
+        if (text.toString().isBlank()) {
+            return "";
+        }
+
         final Character.UnicodeScript script = Character.UnicodeScript.of(
                 text.toString().strip().codePointAt(0));
 

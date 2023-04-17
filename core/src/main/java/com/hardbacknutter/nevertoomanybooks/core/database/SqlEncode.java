@@ -73,6 +73,10 @@ public final class SqlEncode {
     @NonNull
     public static String orderByColumn(@NonNull final CharSequence text,
                                        @NonNull final Locale locale) {
+        if (text.toString().isBlank()) {
+            return "";
+        }
+
         final Character.UnicodeScript script = Character.UnicodeScript.of(
                 text.toString().strip().codePointAt(0));
 
