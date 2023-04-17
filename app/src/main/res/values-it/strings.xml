@@ -22,15 +22,18 @@
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
     <plurals name="displaying_n_books">
-        <item quantity="one">Visualizzati %1$d libro</item>
-        <item quantity="other">Visualizzati %1$d libri</item>
+        <item quantity="one">%1$d libro visualizzato</item>
+        <item quantity="many">%1$d libri visualizzati</item>
+        <item quantity="other">%1$d libri visualizzati</item>
     </plurals>
     <plurals name="n_books_found">
         <item quantity="one">%1$d libro trovato</item>
+        <item quantity="many">%1$d libri trovati</item>
         <item quantity="other">%1$d libri trovati</item>
     </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s stella</item>
+        <item quantity="many">%1$s stelle</item>
         <item quantity="other">%1$s stelle</item>
     </plurals>
     <string name="X_acra_resToastText">&APP_NAME; si è bloccato in modo anomalo. Aiutaci a migliorare il programma informandoci del problema.</string>
@@ -142,7 +145,7 @@
     <string name="book_format_dimensions">Dimensioni</string>
     <string name="book_format_ebook">eBook</string>
     <string name="book_format_hardcover">Rilegato</string>
-    <string name="book_format_paperback">Paperback</string>
+    <string name="book_format_paperback">Brossura</string>
     <string name="book_format_paperback_large">Grande tascabile</string>
     <string name="book_format_softcover">Copertina morbida</string>
     <string name="bookshelf_all_books">Tutti i libri</string>
@@ -353,8 +356,8 @@
     <string name="option_field_usage_copy_if_blank">Copia se vuoto</string>
     <string name="option_field_usage_overwrite">Sovrascrivi dati esistenti</string>
     <string name="lbl_filter">Filtro</string>
-    <string name="lbl_date_first_publication_month">Primo mese di pub.</string>
-    <string name="lbl_date_first_publication_year">Primo anno di pub.</string>
+    <string name="lbl_date_first_publication_month">Primo mese di pubblicazione</string>
+    <string name="lbl_date_first_publication_year">Primo anno di pubblicazione</string>
     <string name="lbl_date_first_publication">Prima pubblicazione</string>
     <string name="lbl_format">Formato</string>
     <string name="pc_formatting">Formattazione</string>
@@ -364,7 +367,7 @@
     <string name="lbl_import_books">Importa libri</string>
     <string name="option_import_books_option_all">Tutti i libri</string>
     <string name="option_import_books_option_new_and_updated">Libri nuovi e aggiornati</string>
-    <string name="option_header_import_books_option_new_and_updated_cutoff_date">Importa solo libri che sono stati \n modificati da questa data</string>
+    <string name="option_header_import_books_option_new_and_updated_cutoff_date">Importa solo libri che sono stati modificati dopo questa data</string>
     <string name="option_import_books_option_new_only">Solo nuovi libri</string>
     <string name="lbl_import_options">Seleziona cosa verrà importato.</string>
     <string name="lbl_importing">Importazione in corso…</string>
