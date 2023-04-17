@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -430,7 +431,7 @@
     <string name="lbl_tab_lbl_ext_id">Extern ID</string>
     <string name="lbl_tab_notes">Notities</string>
     <string name="lbl_tab_publication">Uitgave</string>
-    <string name="lbl_table_of_content">Inhouds tabel</string>
+    <string name="lbl_table_of_content">Inhoudsopgave</string>
     <string name="lbl_table_of_content_entry">Vermelding in de inhoudsopgave</string>
     <string name="lbl_table_of_content_short">Inhoud</string>
     <string name="lbl_test_connection">Test de verbinding</string>
