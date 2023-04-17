@@ -599,7 +599,7 @@
     <string name="enabled">Activado</string>
     <string name="lbl_local_search_long">Pesquisa Local Avançada</string>
     <string name="lbl_about_contact">Contacto:</string>
-    <string name="lbl_table_of_content_entry">Entrada de conteúdo</string>
+    <string name="lbl_table_of_content_entry">Entrada na tabela de conteúdos</string>
     <string name="lbl_owned">Propriedade</string>
     <string name="lbl_table_of_content">Tabela de conteúdos</string>
     <string name="lbl_websites">Sites</string>
