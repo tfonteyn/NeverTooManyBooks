@@ -30,12 +30,21 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.AsciiNormalizer;
 
 public final class SqlEncode {
 
-    /** See {@link #orderByColumn}. */
+    /**
+     * See {@link #orderByColumn}.
+     * <p>
+     * \w 	A word character: [a-zA-Z_0-9]
+     * \W 	A non-word character: [^\w]
+     * <p>
+     * URGENT: https://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html#sum
+     *  Classes for Unicode blocks and categories
+     */
     private static final Pattern NON_WORD_CHARACTER_PATTERN = Pattern.compile("\\W");
     /** See {@link #string}. */
     private static final Pattern SINGLE_QUOTE_LITERAL = Pattern.compile("'", Pattern.LITERAL);
     /** See {@link #date(LocalDateTime)}. */
     private static final Pattern T = Pattern.compile("T");
+    private static final Pattern REMOVE_SPACES = Pattern.compile(" ");
 
     private SqlEncode() {
     }
@@ -56,17 +65,28 @@ public final class SqlEncode {
      * Prepare a string to be inserted in the 'Order By' column.
      * e.g. Author names, the Title of a book: strip spaces etc, make lowercase,...
      *
-     * @param value  to encode
+     * @param text   to encode
      * @param locale to use for case manipulation
      *
-     * @return the encoded value
+     * @return the encoded text
      */
     @NonNull
-    public static String orderByColumn(@NonNull final CharSequence value,
+    public static String orderByColumn(@NonNull final CharSequence text,
                                        @NonNull final Locale locale) {
-        final String s = AsciiNormalizer.normalize(value);
-        // remove all non-word characters. i.e. all characters not in [a-zA-Z_0-9]
-        return NON_WORD_CHARACTER_PATTERN.matcher(s).replaceAll("").toLowerCase(locale);
+        final Character.UnicodeScript script = Character.UnicodeScript.of(
+                text.toString().strip().codePointAt(0));
+
+        final String normalized = AsciiNormalizer.normalize(text);
+
+        if (script == Character.UnicodeScript.LATIN) {
+            // remove all non-word characters.
+            return NON_WORD_CHARACTER_PATTERN.matcher(normalized)
+                                             .replaceAll("")
+                                             .toLowerCase(locale);
+        } else {
+            // URGENT: use Classes for Unicode blocks and categories
+            return REMOVE_SPACES.matcher(normalized).replaceAll("");
+        }
     }
 
     /**
