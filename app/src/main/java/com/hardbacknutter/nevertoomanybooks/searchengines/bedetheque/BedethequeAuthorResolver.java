@@ -32,7 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.AsciiNormalizer;
+import com.hardbacknutter.nevertoomanybooks.core.utils.AlphabeticNormalizer;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BedethequeCacheDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -100,9 +100,9 @@ public class BedethequeAuthorResolver
      * @return [0A-Z] of the first character
      */
     private char firstChar(@NonNull final CharSequence name) {
-        final char c1 = AsciiNormalizer.normalize(String.valueOf(name.charAt(0)))
-                                       .toUpperCase(locale)
-                                       .charAt(0);
+        final char c1 = AlphabeticNormalizer.normalize(String.valueOf(name.charAt(0)))
+                                            .toUpperCase(locale)
+                                            .charAt(0);
         return Character.isAlphabetic(c1) ? c1 : '0';
     }
 

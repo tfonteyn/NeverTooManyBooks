@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.AsciiNormalizer;
+import com.hardbacknutter.nevertoomanybooks.core.utils.AlphabeticNormalizer;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
 public interface FtsDao {
@@ -58,7 +58,7 @@ public interface FtsDao {
         }
 
         // Convert the text to pure ASCII. We'll use an array to loop over it.
-        final char[] chars = AsciiNormalizer.normalize(searchText).toCharArray();
+        final char[] chars = AlphabeticNormalizer.normalize(searchText).toCharArray();
         // Cached length
         final int len = chars.length;
         // Initial position

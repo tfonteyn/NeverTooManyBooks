@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -210,7 +210,21 @@ public final class DBDefinitions {
     public static final Domain DOM_AUTHOR_GIVEN_NAMES_OB;
     /** {@link #TBL_AUTHORS}. */
     public static final Domain DOM_AUTHOR_IS_COMPLETE;
-    /** {@link #TBL_PSEUDONYM_AUTHOR}. */
+    /**
+     * {@link #TBL_PSEUDONYM_AUTHOR}.
+     * <p>
+     * This is the Author of a book; i.e. the author name as printed on the book cover.
+     * It's a pseudonym and points to an entry in the {@link #TBL_PSEUDONYM_AUTHOR}.
+     * That entry, has a column {@link #DOM_AUTHOR_REAL_AUTHOR} which is the id
+     * for the real name of author.
+     * <p>
+     * e.g.
+     * "Paul French" is an author with id==123;
+     * Table {@link #TBL_PSEUDONYM_AUTHOR} contains a row with
+     * DOM_AUTHOR_PSEUDONYM==123;
+     * DOM_AUTHOR_REAL_AUTHOR==456;
+     * where 456 is "Isaac Asimov"
+     */
     public static final Domain DOM_AUTHOR_PSEUDONYM;
     public static final Domain DOM_AUTHOR_REAL_AUTHOR;
 
@@ -393,7 +407,6 @@ public final class DBDefinitions {
     public static final Domain DOM_STYLE_GROUPS_SERIES_SHOW_UNDER_EACH;
     public static final Domain DOM_STYLE_GROUPS_PUBLISHER_SHOW_UNDER_EACH;
     public static final Domain DOM_STYLE_GROUPS_BOOKSHELF_SHOW_UNDER_EACH;
-
 
 
     /** {@link #TBL_BOOK_SERIES}. */
@@ -1485,7 +1498,6 @@ public final class DBDefinitions {
                 .addReference(TBL_BOOKS, DOM_FK_BOOK)
                 .addIndex(DBKey.FK_BOOK, true, DOM_FK_BOOK);
         ALL_TABLES.put(TBL_BOOK_LOANEE.getName(), TBL_BOOK_LOANEE);
-
 
 
         TBL_CALIBRE_BOOKS
