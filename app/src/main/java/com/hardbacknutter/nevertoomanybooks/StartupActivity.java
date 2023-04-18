@@ -123,42 +123,47 @@ public class StartupActivity
      * Startup stages.
      */
     private void nextStage(@NonNull final Stage currentStage) {
-        switch (currentStage.next()) {
+        try {
+            switch (currentStage.next()) {
 
-            case InitStorage: {
-                initStorage();
-                break;
-            }
-            case InitDb: {
-                // create static self-reference for DBHelper callbacks.
-                sStartupActivity = new WeakReference<>(this);
-                initDb();
-                break;
-            }
-            case RunTasks: {
-                startTasks();
-                break;
-            }
-            case Done: {
-                // Remove the static self-reference
-                if (sStartupActivity != null) {
-                    sStartupActivity.clear();
+                case InitStorage: {
+                    initStorage();
+                    break;
                 }
-                // Any future hot start will skip the startup tasks
-                ((App) getApplication()).setHotStart();
-                // and hand over to the real main activity
-                final Intent intent = new Intent(this, BooksOnBookshelf.class);
-                if (vm.isProposeBackup()) {
-                    intent.putExtra(BooksOnBookshelfViewModel.BKEY_PROPOSE_BACKUP, true);
+                case InitDb: {
+                    // create static self-reference for DBHelper callbacks.
+                    sStartupActivity = new WeakReference<>(this);
+                    initDb();
+                    break;
                 }
-                startActivity(intent);
-                finish();
-                break;
-            }
+                case RunTasks: {
+                    startTasks();
+                    break;
+                }
+                case Done: {
+                    // Remove the static self-reference
+                    if (sStartupActivity != null) {
+                        sStartupActivity.clear();
+                    }
+                    // Any future hot start will skip the startup tasks
+                    ((App) getApplication()).setHotStart();
+                    // and hand over to the real main activity
+                    final Intent intent = new Intent(this, BooksOnBookshelf.class);
+                    if (vm.isProposeBackup()) {
+                        intent.putExtra(BooksOnBookshelfViewModel.BKEY_PROPOSE_BACKUP, true);
+                    }
+                    startActivity(intent);
+                    finish();
+                    break;
+                }
 
-            case Init:
-                // we'll never get here
-                break;
+                case Init:
+                    // we'll never get here
+                    break;
+            }
+        } catch (@NonNull final Exception e) {
+            // added due to a report of total startup-failure of a new install.
+            onFailure(e);
         }
     }
 
