@@ -25,11 +25,10 @@ Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyB
 The UI is available in:
 
 - English, Dutch
+- **NEW**: Portuguese.
 - German, French: quality should be very good but may lack in some places.
 - Italian, Spanish: should be usable, but certainly not perfect.
 - Greek, Czech, Polish, Turkish and Russian: mostly machine translated, no guarantees for quality.
-
-A translation to Portuguese has started but will take time.
 
 Translations are now integrated and editable
 on [https://hosted.weblate.org/engage/nevertoomanybooks/](https://hosted.weblate.org/engage/nevertoomanybooks/)
@@ -40,7 +39,7 @@ You can enable/disable and prioritize the sites in the settings.
 
 - Amazon (see warning below)
 - Bedetheque
-- BOL.com (_new_ in v4.2)
+- BOL.com
 - Google Books
 - ISFDB
 - KB.NL
