@@ -38,19 +38,16 @@ Prices: when importing books with a price field containing a value which cannot 
  FIXME: Solution would be to allow Money to have string (instead/aside-of double) values.
 
 ----------------------------------------------------------------------------------------------------
-4.3.0
+4.4.0
 
 NEW:
-- Portuguese translation added.
+- // ENHANCE: DBKey.AUTHOR_REAL_AUTHOR: add to field visibility switches
 
 FIXES:
-- 10" screen transitioning from landscape to portrait: the book options menu is cleaned up now
-- When using dark mode, dialogs now uniformly have a dark background as intended
-- Non-latin script languages (Georgian, Greek,...) no longer fail being compared in lists
-  (e.g. multiple authors for a book are now accepted)
 
 REMOVED:
 
+----------------------------------------------------------------------------------------------------
 
 ----------------------------------------------------------------------------------------------------
 Pseudonyms:
