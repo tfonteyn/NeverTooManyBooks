@@ -21,7 +21,7 @@
 
 <!-- Generic  7.0" (600 x 1024) - 160dpi - sw600 -->
 <resources>
-    <dimen name="app_logo">150dp</dimen>
+    <dimen name="app_logo">120dp</dimen>
 
     <dimen name="cover_list_padding">4dp</dimen>
     <dimen name="cover_details_0_padding">15dp</dimen>

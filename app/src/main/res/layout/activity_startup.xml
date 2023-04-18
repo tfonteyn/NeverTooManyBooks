@@ -26,8 +26,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:maxWidth="400dp"
-    android:minWidth="320dp"
+    android:maxWidth="340dp"
+    android:minWidth="300dp"
     android:padding="16dp"
     tools:context=".StartupActivity"
     >
@@ -36,8 +36,8 @@
         android:id="@+id/app_icon"
         android:layout_width="@dimen/app_logo"
         android:layout_height="@dimen/app_logo"
-        android:scaleX="2"
-        android:scaleY="2"
+        android:scaleX="1.5"
+        android:scaleY="1.5"
         android:src="@drawable/ic_launcher_foreground"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -79,7 +79,7 @@
         app:layout_constraintBottom_toTopOf="@id/progress_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/app_icon"
+        app:layout_constraintTop_toBottomOf="@id/version"
         />
 
     <com.google.android.material.progressindicator.LinearProgressIndicator
