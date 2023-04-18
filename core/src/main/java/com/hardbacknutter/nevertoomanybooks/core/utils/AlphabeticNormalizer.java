@@ -28,26 +28,18 @@ import java.util.regex.Pattern;
 /**
  * Used to create {@code ORDER BY} suitable strings, FTS storage and similar.
  */
-public final class AsciiNormalizer {
+public final class AlphabeticNormalizer {
 
-    /**
-     * See {@link #normalize}.
-     * <p>
-     * \p{ASCII} 	All ASCII:[\x00-\x7F]
-     * <p>
-     * URGENT: https://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html#sum
-     *  Classes for Unicode blocks and categories
-     */
-    private static final Pattern ASCII_PATTERN = Pattern.compile("[^\\p{ASCII}]");
+    // Normally we should use the flag: Pattern.UNICODE_CHARACTER_CLASS
+    // but android does not need/support it as it always uses unicode.
+    private static final Pattern ALFA_PATTERN = Pattern.compile("[^\\p{IsAlphabetic}]");
 
-    private AsciiNormalizer() {
+    private AlphabeticNormalizer() {
     }
 
     /**
-     * Normalize/clean the given string.
-     * <p>
-     * Latin alphabet strings will get normalized and cleansed of non-ascii characters.
-     * Non-latin strings are returned as-is.
+     * Normalize the given string and remove any non-alphabetic characters.
+     * The case is preserved.
      *
      * @param text to normalize
      *
@@ -55,21 +47,7 @@ public final class AsciiNormalizer {
      */
     @NonNull
     public static String normalize(@NonNull final CharSequence text) {
-        if (text.toString().isBlank()) {
-            return "";
-        }
-
-        final Character.UnicodeScript script = Character.UnicodeScript.of(
-                text.toString().strip().codePointAt(0));
-
         final String normalized = Normalizer.normalize(text, Normalizer.Form.NFD);
-
-        if (script == Character.UnicodeScript.LATIN) {
-            return ASCII_PATTERN.matcher(normalized)
-                                .replaceAll("");
-        } else {
-            // URGENT: use Classes for Unicode blocks and categories
-            return normalized;
-        }
+        return ALFA_PATTERN.matcher(normalized).replaceAll("");
     }
 }

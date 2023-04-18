@@ -26,25 +26,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.AsciiNormalizer;
+import com.hardbacknutter.nevertoomanybooks.core.utils.AlphabeticNormalizer;
 
 public final class SqlEncode {
 
-    /**
-     * See {@link #orderByColumn}.
-     * <p>
-     * \w 	A word character: [a-zA-Z_0-9]
-     * \W 	A non-word character: [^\w]
-     * <p>
-     * URGENT: https://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html#sum
-     *  Classes for Unicode blocks and categories
-     */
-    private static final Pattern NON_WORD_CHARACTER_PATTERN = Pattern.compile("\\W");
     /** See {@link #string}. */
     private static final Pattern SINGLE_QUOTE_LITERAL = Pattern.compile("'", Pattern.LITERAL);
     /** See {@link #date(LocalDateTime)}. */
     private static final Pattern T = Pattern.compile("T");
-    private static final Pattern REMOVE_SPACES = Pattern.compile(" ");
 
     private SqlEncode() {
     }
@@ -65,32 +54,15 @@ public final class SqlEncode {
      * Prepare a string to be inserted in the 'Order By' column.
      * e.g. Author names, the Title of a book: strip spaces etc, make lowercase,...
      *
-     * @param text   to encode
+     * @param text   to normalize
      * @param locale to use for case manipulation
      *
-     * @return the encoded text
+     * @return normalized text; always lowercase
      */
     @NonNull
     public static String orderByColumn(@NonNull final CharSequence text,
                                        @NonNull final Locale locale) {
-        if (text.toString().isBlank()) {
-            return "";
-        }
-
-        final Character.UnicodeScript script = Character.UnicodeScript.of(
-                text.toString().strip().codePointAt(0));
-
-        final String normalized = AsciiNormalizer.normalize(text);
-
-        if (script == Character.UnicodeScript.LATIN) {
-            // remove all non-word characters.
-            return NON_WORD_CHARACTER_PATTERN.matcher(normalized)
-                                             .replaceAll("")
-                                             .toLowerCase(locale);
-        } else {
-            // URGENT: use Classes for Unicode blocks and categories
-            return REMOVE_SPACES.matcher(normalized).replaceAll("");
-        }
+        return AlphabeticNormalizer.normalize(text).toLowerCase(locale);
     }
 
     /**
