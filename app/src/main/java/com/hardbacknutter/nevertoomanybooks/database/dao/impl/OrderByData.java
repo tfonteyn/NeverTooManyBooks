@@ -61,9 +61,10 @@ public final class OrderByData {
      * - tocEntry title is in a different language as compared to the book
      * -> we  always use the book language
      *
-     * @param context Current context
-     * @param title   to reorder
-     * @param locale  to use for reordering
+     * @param context       Current context
+     * @param reorderHelper to use for displaying labels
+     * @param title         to reorder
+     * @param locale        to use for reordering
      *
      * @return title and locale data which should be used to construct ORDER-BY columns
      */
