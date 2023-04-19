@@ -61,6 +61,8 @@ public class WildcardFilter
     @Override
     @NonNull
     public String getExpression(@NonNull final Context context) {
+        // We want to use the exact string, so do not normalize the value,
+        // but we do need to handle single quotes as we are concatenating.
         return '(' + table.dot(domain)
                + " LIKE '%" + SqlEncode.string(criteria) + "%'"
                + ')';
