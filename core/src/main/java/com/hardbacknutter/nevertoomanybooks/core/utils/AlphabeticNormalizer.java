@@ -31,8 +31,10 @@ import java.util.regex.Pattern;
 public final class AlphabeticNormalizer {
 
     // Normally we should use the flag: Pattern.UNICODE_CHARACTER_CLASS
-    // but android does not need/support it as it always uses unicode.
-    private static final Pattern ALFA_PATTERN = Pattern.compile("[^\\p{IsAlphabetic}]");
+    // but android does not need/support it as it always uses unicode (it says...)
+    // Do NOT use {Alnum} as contradicting the above, Android will NOT use unicode.
+    // Instead combine explicit unicode {IsAlphabetic} with 'd' for digits
+    private static final Pattern ALFA_PATTERN = Pattern.compile("[^\\p{IsAlphabetic}\\d]");
 
     private AlphabeticNormalizer() {
     }
