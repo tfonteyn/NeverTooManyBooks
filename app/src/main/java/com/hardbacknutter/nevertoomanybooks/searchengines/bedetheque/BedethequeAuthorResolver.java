@@ -100,9 +100,11 @@ public class BedethequeAuthorResolver
      * @return [0A-Z] of the first character
      */
     private char firstChar(@NonNull final CharSequence name) {
-        final char c1 = AlphabeticNormalizer.normalize(String.valueOf(name.charAt(0)))
-                                            .toUpperCase(locale)
-                                            .charAt(0);
+        final String normalized = AlphabeticNormalizer.normalize(String.valueOf(name.charAt(0)));
+        if (normalized.isEmpty()) {
+            return '0';
+        }
+        final char c1 = normalized.toUpperCase(locale).charAt(0);
         return Character.isAlphabetic(c1) ? c1 : '0';
     }
 
