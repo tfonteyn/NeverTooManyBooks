@@ -324,6 +324,8 @@ public class BoBTask
                     query -> builder.addFilter(new FtsMatchFilter(query)));
 
             // Add a filter to retrieve only books lend to the given person (exact name).
+            // We want to use the exact string, so do not normalize the value,
+            // but we do need to handle single quotes as we are concatenating.
             searchCriteria.getLoanee().ifPresent(loanee -> builder.addFilter(
                     c -> String.format(LOAN_FILTER, SqlEncode.string(loanee))));
 
