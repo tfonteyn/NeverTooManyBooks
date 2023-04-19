@@ -90,7 +90,7 @@ public class PStringEqualityFilter
         // We want to use the exact string, so do not normalize the value,
         // but we do need to handle single quotes as we are concatenating.
         //noinspection ConstantConditions
-        return table.dot(domain) + "='" + SqlEncode.string(value) + '\'';
+        return table.dot(domain) + "='" + SqlEncode.singleQuotes(value) + '\'';
     }
 
     @Override

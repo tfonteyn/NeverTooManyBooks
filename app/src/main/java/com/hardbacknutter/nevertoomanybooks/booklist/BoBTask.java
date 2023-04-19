@@ -327,7 +327,7 @@ public class BoBTask
             // We want to use the exact string, so do not normalize the value,
             // but we do need to handle single quotes as we are concatenating.
             searchCriteria.getLoanee().ifPresent(loanee -> builder.addFilter(
-                    c -> String.format(LOAN_FILTER, SqlEncode.string(loanee))));
+                    c -> String.format(LOAN_FILTER, SqlEncode.singleQuotes(loanee))));
 
         } else {
             // Add a where clause for: "AND books._id IN (list)".

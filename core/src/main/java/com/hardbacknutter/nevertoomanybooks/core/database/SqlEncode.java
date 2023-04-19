@@ -30,7 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.AlphabeticNormalizer;
 
 public final class SqlEncode {
 
-    /** See {@link #string}. */
+    /** See {@link #singleQuotes}. */
     private static final Pattern SINGLE_QUOTE_LITERAL = Pattern.compile("'", Pattern.LITERAL);
     /** See {@link #date(LocalDateTime)}. */
     private static final Pattern T = Pattern.compile("T");
@@ -46,7 +46,7 @@ public final class SqlEncode {
      * @return escaped value.
      */
     @NonNull
-    public static String string(@NonNull final CharSequence value) {
+    public static String singleQuotes(@NonNull final CharSequence value) {
         return SINGLE_QUOTE_LITERAL.matcher(value).replaceAll("''");
     }
 
