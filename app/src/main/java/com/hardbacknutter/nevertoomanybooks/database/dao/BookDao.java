@@ -346,7 +346,7 @@ public interface BookDao {
      * @throws IllegalArgumentException if the list is empty
      */
     @NonNull
-    TypedCursor fetchByIsbn(@NonNull List<String> isbnList);
+    TypedCursor fetchByIsbn(@NonNull List<ISBN> isbnList);
 
 
     /**

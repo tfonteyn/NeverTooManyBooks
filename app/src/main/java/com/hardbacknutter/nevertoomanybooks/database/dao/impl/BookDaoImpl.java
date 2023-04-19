@@ -1153,7 +1153,7 @@ public class BookDaoImpl
 
     @Override
     @NonNull
-    public TypedCursor fetchByIsbn(@NonNull final List<String> isbnList) {
+    public TypedCursor fetchByIsbn(@NonNull final List<ISBN> isbnList) {
         if (isbnList.isEmpty()) {
             throw new IllegalArgumentException("isbnList.isEmpty()");
         }
@@ -1161,13 +1161,12 @@ public class BookDaoImpl
         if (isbnList.size() == 1) {
             // optimize for single book
             return getBookCursor(TBL_BOOKS.dot(DBKey.BOOK_ISBN) + "=?",
-                                 new String[]{SqlEncode.string(isbnList.get(0))},
-                                 null);
+                                 new String[]{isbnList.get(0).asText()}, null);
         } else {
             return getBookCursor(TBL_BOOKS.dot(DBKey.BOOK_ISBN)
                                  + " IN ("
                                  + isbnList.stream()
-                                           .map(s -> '\'' + SqlEncode.string(s) + '\'')
+                                           .map(s -> '\'' + s.asText() + '\'')
                                            .collect(Collectors.joining(","))
                                  + ')',
                                  null,
