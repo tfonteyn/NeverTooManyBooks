@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -33,6 +35,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.lang.ref.WeakReference;
+import java.util.Arrays;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
@@ -228,10 +231,19 @@ public class StartupActivity
     private void onFailure(@NonNull final Throwable e) {
         LoggerFactory.getLogger().e(TAG, e);
 
-        final String msg = ExMsg
+        String msg = ExMsg
                 .map(this, e)
                 .orElseGet(() -> getString(R.string.error_unexpected_long,
                                            getString(R.string.pt_maintenance)));
+
+        if (BuildConfig.DEBUG /* always */) {
+            msg += "\n" + Arrays.toString(e.getStackTrace());
+        }
+
+        final ClipboardManager clipboard = (ClipboardManager)
+                getSystemService(Context.CLIPBOARD_SERVICE);
+        final ClipData clip = ClipData.newPlainText(getString(R.string.app_name), msg);
+        clipboard.setPrimaryClip(clip);
 
         new MaterialAlertDialogBuilder(this)
                 .setIcon(R.drawable.ic_baseline_error_24)
@@ -240,7 +252,7 @@ public class StartupActivity
                 .setCancelable(false)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> finishAndRemoveTask())
                 .setOnDismissListener(d -> finishAndRemoveTask())
-                .setPositiveButton(android.R.string.ok, (d, w) -> {
+                .setPositiveButton(R.string.pt_maintenance, (d, w) -> {
                     // We'll TRY to start the maintenance fragment
                     // which gives access to debug options
                     final Intent intent = FragmentHostActivity
