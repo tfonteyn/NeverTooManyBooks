@@ -591,7 +591,7 @@ public class BedethequeSearchEngine
 
     private void processAuthor(@NonNull final Context context,
                                @NonNull final String text,
-                               @Author.Type final int currentAuthorType,
+                               @Author.Type final int type,
                                @NonNull final Book book) {
 
         // REMOVE potential "<>" as we really don't want fake html tags
@@ -628,20 +628,6 @@ public class BedethequeSearchEngine
                 break;
         }
 
-        boolean add = true;
-        // check if already present
-        for (final Author author : book.getAuthors()) {
-            if (author.equals(currentAuthor)) {
-                // merge types.
-                author.addType(currentAuthorType);
-                add = false;
-                // keep looping
-            }
-        }
-
-        if (add) {
-            currentAuthor.setType(currentAuthorType);
-            book.add(currentAuthor);
-        }
+        processAuthor(currentAuthor, type, book);
     }
 }

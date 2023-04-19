@@ -855,7 +855,7 @@ public class IsfdbSearchEngine
                             for (final Element a : li.select("a")) {
                                 final Author author = Author.from(a.text());
                                 // author.setIsfDbId(stripNumber(a.attr("href"), '?'));
-                                book.add(author);
+                                processAuthor(author, Author.TYPE_UNKNOWN, book);
                             }
                             break;
                         }
@@ -993,9 +993,8 @@ public class IsfdbSearchEngine
                                 // Cover artist
                                 final Element a = as.get(1);
                                 final Author author = Author.from(a.text());
-                                author.setType(Author.TYPE_COVER_ARTIST);
                                 // author.setIsfDbId(stripNumber(a.attr("href"),'?'));
-                                book.add(author);
+                                processAuthor(author, Author.TYPE_COVER_ARTIST, book);
                             }
                             break;
                         }
@@ -1007,9 +1006,8 @@ public class IsfdbSearchEngine
                         case "Editors:": {
                             for (final Element a : li.select("a")) {
                                 final Author author = Author.from(a.text());
-                                author.setType(Author.TYPE_EDITOR);
                                 // author.setIsfDbId(stripNumber(a.attr("href"), '?'));
-                                book.add(author);
+                                processAuthor(author, Author.TYPE_EDITOR, book);
                             }
                             break;
                         }

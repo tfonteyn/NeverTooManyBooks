@@ -394,9 +394,7 @@ public class BolSearchEngine
                                @NonNull final Book book) {
         final Element a = value.selectFirst("a");
         if (a != null) {
-            final Author author = Author.from(a.text());
-            author.setType(type);
-            book.add(author);
+            processAuthor(Author.from(a.text()), type, book);
         }
     }
 

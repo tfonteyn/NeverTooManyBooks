@@ -371,7 +371,9 @@ class GoogleBooksEntryHandler
                 break;
 
             case XML_AUTHOR:
-                book.add(Author.from(builder.toString()));
+                searchEngine.processAuthor(Author.from(builder.toString()),
+                                           Author.TYPE_UNKNOWN,
+                                           book);
                 break;
 
             case XML_PUBLISHER:

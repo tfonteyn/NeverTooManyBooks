@@ -264,8 +264,9 @@ class IsfdbPublicationListHandler
                 }
                 case XML_AUTHOR: {
                     if (inAuthors) {
-                        final Author author = Author.from(builder.toString());
-                        publicationData.add(author);
+                        searchEngine.processAuthor(Author.from(builder.toString()),
+                                                   Author.TYPE_UNKNOWN,
+                                                   publicationData);
                     }
                     break;
                 }
@@ -359,9 +360,9 @@ class IsfdbPublicationListHandler
                 }
                 case XML_ARTIST: {
                     if (inCoverArtists) {
-                        final Author author = Author.from(builder.toString());
-                        author.setType(Author.TYPE_COVER_ARTIST);
-                        publicationData.add(author);
+                        searchEngine.processAuthor(Author.from(builder.toString()),
+                                                   Author.TYPE_COVER_ARTIST,
+                                                   publicationData);
                     }
                     break;
                 }

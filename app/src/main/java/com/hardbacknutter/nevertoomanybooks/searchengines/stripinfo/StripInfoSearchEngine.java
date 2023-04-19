@@ -843,14 +843,14 @@ public class StripInfoSearchEngine
     /**
      * Found an Author.
      *
-     * @param td                label td
-     * @param currentAuthorType of this entry
-     * @param book              Bundle to update
+     * @param td   label td
+     * @param type of this Author entry
+     * @param book Bundle to update
      *
      * @return 1 if we found a value td; 0 otherwise.
      */
     private int processAuthor(@NonNull final Element td,
-                              @Author.Type final int currentAuthorType,
+                              @Author.Type final int type,
                               @NonNull final Book book) {
         final Element dataElement = td.nextElementSibling();
         if (dataElement != null) {
@@ -858,21 +858,8 @@ public class StripInfoSearchEngine
             for (int i = 0; i < as.size(); i++) {
                 final String name = as.get(i).text();
                 final Author currentAuthor = Author.from(name);
-                boolean add = true;
-                // check if already present
-                for (final Author author : book.getAuthors()) {
-                    if (author.equals(currentAuthor)) {
-                        // merge types.
-                        author.addType(currentAuthorType);
-                        add = false;
-                        // keep looping
-                    }
-                }
 
-                if (add) {
-                    currentAuthor.setType(currentAuthorType);
-                    book.add(currentAuthor);
-                }
+                processAuthor(currentAuthor, type, book);
             }
             return 1;
         }

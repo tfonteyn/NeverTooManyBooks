@@ -549,23 +549,7 @@ public class LastDodoSearchEngine
                                @NonNull final Book book) {
 
         for (final Element a : td.select("a")) {
-            final String names = a.text();
-            final Author currentAuthor = Author.from(names);
-            boolean add = true;
-            // check if already present
-            for (final Author author : book.getAuthors()) {
-                if (author.equals(currentAuthor)) {
-                    // merge types.
-                    author.addType(type);
-                    add = false;
-                    // keep looping
-                }
-            }
-
-            if (add) {
-                currentAuthor.setType(type);
-                book.add(currentAuthor);
-            }
+            processAuthor(Author.from(a.text()), type, book);
         }
     }
 

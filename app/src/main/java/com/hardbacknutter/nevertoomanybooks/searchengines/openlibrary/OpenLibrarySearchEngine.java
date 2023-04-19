@@ -549,7 +549,7 @@ public class OpenLibrarySearchEngine
                 if (element != null) {
                     final String name = element.optString("name");
                     if (name != null && !name.isEmpty()) {
-                        book.add(Author.from(name));
+                        processAuthor(Author.from(name), Author.TYPE_UNKNOWN, book);
                     }
                 }
             }

@@ -477,6 +477,8 @@ public class AmazonSearchEngine
                     //FIXME: search our database twice with f/g and g/f
                     // this means parsing the 'a.text()' twice.. and french names... COMPLICATED
                     final Author author = Author.from(a.text());
+                    @Author.Type
+                    int type = Author.TYPE_UNKNOWN;
 
                     final Element typeElement = span.selectFirst("span.contribution");
                     if (typeElement != null) {
@@ -487,10 +489,11 @@ public class AmazonSearchEngine
                         }
 
                         if (data != null) {
-                            author.addType(authorTypeMapper.map(siteLocale, data));
+                            type = authorTypeMapper.map(siteLocale, data);
                         }
                     }
-                    book.add(author);
+
+                    processAuthor(author, type, book);
                 }
             }
         }

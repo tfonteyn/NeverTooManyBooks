@@ -152,7 +152,7 @@ public class KbNlSearchEngine
         futureHttpGet = createFutureGetRequest();
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
-        final DefaultHandler handler = new KbNlBookHandler(context, book);
+        final DefaultHandler handler = new KbNlBookHandler(context, this, book);
 
         try {
             final SAXParser parser = factory.newSAXParser();

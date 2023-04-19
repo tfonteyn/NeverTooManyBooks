@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -53,7 +53,7 @@ abstract class KbNlHandlerBase
     private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s{2,}");
     /** The final output will be written to this bundle as passed in to the constructor. */
     @NonNull
-    protected final Book data;
+    protected final Book book;
 
     /** XML content of a single element. */
     @SuppressWarnings("StringBufferField")
@@ -75,8 +75,8 @@ abstract class KbNlHandlerBase
     /** Are we parsing a list of records {@code true}; or a detail page {@code false}. */
     private boolean isList;
 
-    KbNlHandlerBase(@NonNull final Book data) {
-        this.data = data;
+    KbNlHandlerBase(@NonNull final Book book) {
+        this.book = book;
     }
 
     /**
@@ -110,7 +110,7 @@ abstract class KbNlHandlerBase
             throws SAXException {
         super.startDocument();
 
-        data.clearData();
+        book.clearData();
         builder.setLength(0);
         currentData.clear();
         currentLabel = null;
@@ -162,8 +162,8 @@ abstract class KbNlHandlerBase
             case PSI_TEXT:
                 inText = true;
                 // if in list-page mode, store the first reference found.
-                if (isList && inRecord && inLine && !data.contains(BKEY_SHOW_URL)) {
-                    data.putString(BKEY_SHOW_URL, attributes.getValue("href"));
+                if (isList && inRecord && inLine && !book.contains(BKEY_SHOW_URL)) {
+                    book.putString(BKEY_SHOW_URL, attributes.getValue("href"));
                 }
                 break;
 
@@ -187,10 +187,10 @@ abstract class KbNlHandlerBase
                 if (currentSessionVar != null) {
                     switch (currentSessionVar) {
                         case "DB":
-                            data.putString(BKEY_DB_VERSION, builder.toString());
+                            book.putString(BKEY_DB_VERSION, builder.toString());
                             break;
                         case "SET":
-                            data.putString(BKEY_SET_NUMBER, builder.toString());
+                            book.putString(BKEY_SET_NUMBER, builder.toString());
                             break;
                         default:
                             break;

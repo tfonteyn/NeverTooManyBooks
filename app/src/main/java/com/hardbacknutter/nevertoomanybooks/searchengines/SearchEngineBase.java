@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
@@ -301,6 +302,34 @@ public abstract class SearchEngineBase
             // We're counting on that condition to be caught elsewhere...
             // as handling it in each call here would become [bleep] fast.
             return null;
+        }
+    }
+
+    /**
+     * Add or merge the given Author with/to the list of Authors already present
+     * on the book.
+     *
+     * @param currentAuthor     to add
+     * @param currentAuthorType type
+     * @param book              Bundle to update
+     */
+    public void processAuthor(@NonNull final Author currentAuthor,
+                              @Author.Type final int currentAuthorType,
+                              @NonNull final Book book) {
+        boolean add = true;
+        // check if already present
+        for (final Author author : book.getAuthors()) {
+            if (author.equals(currentAuthor)) {
+                // merge types.
+                author.addType(currentAuthorType);
+                add = false;
+                // keep looping
+            }
+        }
+
+        if (add) {
+            currentAuthor.setType(currentAuthorType);
+            book.add(currentAuthor);
         }
     }
 }
