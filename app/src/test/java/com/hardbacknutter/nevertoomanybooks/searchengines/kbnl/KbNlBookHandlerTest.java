@@ -32,6 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,6 +53,7 @@ class KbNlBookHandlerTest
     private KbNlBookHandler bookHandler;
     private SAXParser saxParser;
     private Book book;
+
     @BeforeEach
     public void setup()
             throws Exception {
@@ -59,7 +61,10 @@ class KbNlBookHandlerTest
         book = new Book(BundleMock.create());
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
-        bookHandler = new KbNlBookHandler(context, book);
+
+        final KbNlSearchEngine engine = (KbNlSearchEngine)
+                EngineId.KbNl.createSearchEngine(context);
+        bookHandler = new KbNlBookHandler(context, engine, book);
         saxParser = factory.newSAXParser();
     }
 
