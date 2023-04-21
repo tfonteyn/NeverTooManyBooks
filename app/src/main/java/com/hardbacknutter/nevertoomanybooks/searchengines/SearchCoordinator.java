@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -403,10 +404,19 @@ public class SearchCoordinator
 
         final Book book = new Book();
 
-        final List<EngineId> activeEngines = allSites.stream()
-                                                     .filter(Site::isActive)
-                                                     .map(Site::getEngineId)
-                                                     .collect(Collectors.toList());
+        final Set<EngineId> activeEngines = allSites
+                .stream()
+                .filter(Site::isActive)
+                .map(Site::getEngineId)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        // 2023-04-21: bugfix: We MUST merge with engine keys for which results were found.
+        // We need to do this when the user was for example
+        // searching by native-web-id on a site which was NOT on the active list.
+        // We use this somewhat convoluted method to make sure the priority order is kept.
+        // Keep in mind that the results are NOT ordered by priority, but by first-ready.
+        activeEngines.addAll(searchResultsBySite.keySet());
+
         // This list will be the actual order of the result we apply, based on the
         // actual results and the site order as set by the user.
         final List<EngineId> sitesInOrder = new ArrayList<>();
