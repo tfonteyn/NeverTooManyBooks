@@ -57,6 +57,9 @@ public final class SyncReaderHelper
 
     /**
      * Constructor.
+     *
+     * @param syncServer   to use
+     * @param systemLocale to use for ISO date parsing
      */
     SyncReaderHelper(@NonNull final SyncServer syncServer,
                      @NonNull final Locale systemLocale) {
@@ -74,6 +77,8 @@ public final class SyncReaderHelper
 
     /**
      * Get the location to read from.
+     *
+     * @return the syncserver to use
      */
     @NonNull
     SyncServer getSyncServer() {
