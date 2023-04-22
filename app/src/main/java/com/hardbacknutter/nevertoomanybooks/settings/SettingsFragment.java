@@ -28,6 +28,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.storage.StorageManager;
 import android.os.storage.StorageVolume;
+import android.provider.Settings;
 import android.view.View;
 
 import androidx.activity.OnBackPressedCallback;
@@ -68,6 +69,12 @@ import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 /**
  * Global settings page.
+ * <p>
+ * TODO: add per-app locale:
+ *  https://developer.android.com/guide/topics/resources/app-languages
+ *  {@link Settings#ACTION_APP_LOCALE_SETTINGS}
+ * TODO: add link: {@link Settings#ACTION_APPLICATION_SETTINGS}
+ *  to allow access to storage etc...
  */
 public class SettingsFragment
         extends BasePreferenceFragment
