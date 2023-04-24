@@ -85,7 +85,7 @@ public class SeriesParserTest
                      @NonNull final String expected,
                      @Nullable final String lang) {
         book.clearData();
-        final Series series = searchEngine.processSeries(book, name);
+        final Series series = searchEngine.processSeries(name, book);
         assertEquals(expected, series.getTitle(), "for name=`" + name + '`');
         if (lang == null) {
             assertFalse(book.contains(DBKey.LANGUAGE), "for name=`" + name + '`');
