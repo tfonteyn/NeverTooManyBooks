@@ -83,6 +83,9 @@ public class BedethequeSearchEngine
                      Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
     private static final String COOKIE = "csrf_cookie_bel";
     private static final String COOKIE_DOMAIN = ".bedetheque.com";
+    /** A text indicating it's a softcover. Can occur in more than one field. */
+    private static final String FORMAT_COUVERTURE_SOUPLE = "Couverture souple";
+    private static final String SEARCH_URL = "/search";
     private final CookieManager cookieManager;
     private final Map<String, String> extraRequestProperties;
     @Nullable
@@ -100,7 +103,7 @@ public class BedethequeSearchEngine
         super(appContext, config);
 
         cookieManager = ServiceLocator.getInstance().getCookieManager();
-        extraRequestProperties = Map.of(HttpConstants.REFERER, getHostUrl() + "/search");
+        extraRequestProperties = Map.of(HttpConstants.REFERER, getHostUrl() + SEARCH_URL);
     }
 
     @NonNull
@@ -116,7 +119,7 @@ public class BedethequeSearchEngine
                 final FutureHttpGet<HttpCookie> head = createFutureHeadRequest();
                 // Reminder: the "request" will be connected and the response code will be OK,
                 // so just extract the cookie we need for the next request
-                csrfCookie = head.get(getHostUrl() + "/search", request -> cookieManager
+                csrfCookie = head.get(getHostUrl() + SEARCH_URL, request -> cookieManager
                         .getCookieStore()
                         .getCookies()
                         .stream()
@@ -251,7 +254,7 @@ public class BedethequeSearchEngine
                     case "Série :": {
                         final Node textNode = label.nextSibling();
                         if (textNode != null) {
-                            book.add(processSeries(book, textNode.toString().trim()));
+                            book.add(processSeries(textNode.toString().trim(), book));
                         }
                         break;
                     }
@@ -384,7 +387,7 @@ public class BedethequeSearchEngine
                         final Node textNode = label.nextSibling();
                         if (textNode != null) {
                             currentFormat = textNode.toString().trim();
-                            mapFormat(context, book, currentFormat, false);
+                            mapFormat(context, currentFormat, false, book);
                         }
                         break;
                     }
@@ -406,12 +409,12 @@ public class BedethequeSearchEngine
                         if (label.nextElementSiblings()
                                  .stream()
                                  .map(sib -> sib.attr("title"))
-                                 .anyMatch("Couverture souple"::equals)) {
+                                 .anyMatch(FORMAT_COUVERTURE_SOUPLE::equals)) {
                             // Sanity check, it should never be null at this point.
                             if (currentFormat == null) {
-                                currentFormat = "Couverture souple";
+                                currentFormat = FORMAT_COUVERTURE_SOUPLE;
                             }
-                            mapFormat(context, book, currentFormat, true);
+                            mapFormat(context, currentFormat, true, book);
                         }
                     }
                 }
@@ -447,14 +450,14 @@ public class BedethequeSearchEngine
      * Map Bedetheque specific formats to our generalized ones if allowed.
      *
      * @param context       Current context
-     * @param book          Bundle to update
      * @param currentFormat original french format string
      * @param softcover     {@code true} if the books is a softcover, {@code false} for hardcover
+     * @param book          Bundle to update
      */
     private void mapFormat(@NonNull final Context context,
-                           @NonNull final Book book,
                            @NonNull final String currentFormat,
-                           final boolean softcover) {
+                           final boolean softcover,
+                           @NonNull final Book book) {
         if (PreferenceManager.getDefaultSharedPreferences(context)
                              .getBoolean(PK_BEDETHEQUE_PRESERVE_FORMAT_NAMES, false)) {
             book.putString(DBKey.FORMAT, currentFormat
@@ -464,7 +467,7 @@ public class BedethequeSearchEngine
 
         final String format;
         switch (currentFormat) {
-            case "Couverture souple":
+            case FORMAT_COUVERTURE_SOUPLE:
                 format = context.getString(R.string.book_format_softcover);
                 break;
 
@@ -505,20 +508,25 @@ public class BedethequeSearchEngine
 
     /**
      * Parsing the series title is done <strong>locally</strong> to this search-engine.
+     *
+     * @param text to parse
+     * @param book Bundle to update
+     *
+     * @return the Series found
      */
     @VisibleForTesting
     @NonNull
-    Series processSeries(@NonNull final Book book,
-                         @NonNull final String name) {
+    Series processSeries(@NonNull final String text,
+                         @NonNull final Book book) {
         // Series names can be formatted in a LOT of ways.
         // We're not going to try and capture each and every special format
         // but stick to the most common ones.
-        String seriesName = name;
+        String seriesName = text;
 
         Matcher matcher;
 
         // Try extracting a language
-        matcher = SERIES_WITH_LANGUAGE.matcher(name);
+        matcher = SERIES_WITH_LANGUAGE.matcher(text);
         if (matcher.find()) {
             String maybeLanguage = matcher.group(2);
             if (maybeLanguage != null) {
@@ -538,7 +546,7 @@ public class BedethequeSearchEngine
         }
 
         // Find/move a simple "Le|La/Les|L'" prefix
-        matcher = SERIES_WITH_SIMPLE_PREFIX.matcher(name);
+        matcher = SERIES_WITH_SIMPLE_PREFIX.matcher(text);
         if (matcher.find()) {
             final String n = matcher.group(1);
             final String prefix = matcher.group(2);
@@ -589,6 +597,14 @@ public class BedethequeSearchEngine
         }
     }
 
+    /**
+     * Parse an Author. Handles Bedetheque specific hardcoded pseudo-names.
+     *
+     * @param context Current context
+     * @param text    to parse
+     * @param type    the Author type
+     * @param book    Bundle to update
+     */
     private void processAuthor(@NonNull final Context context,
                                @NonNull final String text,
                                @Author.Type final int type,
