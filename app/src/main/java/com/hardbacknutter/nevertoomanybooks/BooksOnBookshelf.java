@@ -139,6 +139,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 
+import org.intellij.lang.annotations.Language;
+
 /**
  * Activity that displays a flattened book hierarchy based on the Booklist* classes.
  * <p>
@@ -190,18 +192,23 @@ public class BooksOnBookshelf
     private final ActivityResultLauncher<Void> exportLauncher =
             registerForActivityResult(new ExportContract(), success -> {
             });
+
     /** Bring up the synchronization options. */
     @Nullable
     private ActivityResultLauncher<Void> stripInfoSyncLauncher;
+
     /** Bring up the synchronization options. */
     @Nullable
     private ActivityResultLauncher<Void> calibreSyncLauncher;
+
     /** Delegate to handle all interaction with a Calibre server. */
     @Nullable
     private CalibreHandler calibreHandler;
+
     /** Multi-type adapter to manage list connection to cursor. */
     @Nullable
     private BooklistAdapter adapter;
+
     /** The Activity ViewModel. */
     private BooksOnBookshelfViewModel vm;
 
@@ -770,6 +777,7 @@ public class BooksOnBookshelf
      *      <li>Not a book: expand/collapse the section as appropriate.</li>
      * </ul>
      *
+     * @param v               View clicked
      * @param adapterPosition The booklist adapter position.
      */
     private void onRowClicked(@NonNull final View v,
@@ -1022,7 +1030,7 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Using {@link ExtPopupMenu} for context menus.
+     * Handle the row/context menus.
      * <p>
      * <strong>Dev. note:</strong> this used to be simply "onMenuItemSelected",
      * but due to an R8 bug confusing it with "onMenuItemSelected(int, android.view.MenuItem)"
@@ -1044,16 +1052,17 @@ public class BooksOnBookshelf
             return false;
         }
 
-        final int itemId = menuItem.getItemId();
+        @IdRes
+        final int menuItemId = menuItem.getItemId();
 
         // Check for row-group independent options first.
 
-        if (itemId == R.id.MENU_NEXT_MISSING_COVER) {
+        if (menuItemId == R.id.MENU_NEXT_MISSING_COVER) {
             final long nodeRowId = rowData.getLong(DBKey.BL_LIST_VIEW_NODE_ROW_ID);
             searchMissingCover(nodeRowId);
             return true;
 
-        } else if (itemId == R.id.MENU_LEVEL_EXPAND) {
+        } else if (menuItemId == R.id.MENU_LEVEL_EXPAND) {
             saveListPosition();
 
             final long nodeRowId = rowData.getLong(DBKey.BL_LIST_VIEW_NODE_ROW_ID);
@@ -1064,7 +1073,7 @@ public class BooksOnBookshelf
             displayList(null);
             return true;
 
-        } else if (itemId == R.id.MENU_CALIBRE_SETTINGS) {
+        } else if (menuItemId == R.id.MENU_CALIBRE_SETTINGS) {
             final Intent intent = FragmentHostActivity
                     .createIntent(this, CalibrePreferencesFragment.class);
             startActivity(intent);
@@ -1077,203 +1086,64 @@ public class BooksOnBookshelf
         final int rowGroupId = rowData.getInt(DBKey.BL_NODE_GROUP);
         switch (rowGroupId) {
             case BooklistGroup.BOOK: {
-                if (itemId == R.id.MENU_BOOK_SET_READ
-                    || itemId == R.id.MENU_BOOK_SET_UNREAD) {
-                    final long bookId = rowData.getLong(DBKey.FK_BOOK);
-                    // toggle the read status
-                    final boolean status = !rowData.getBoolean(DBKey.READ__BOOL);
-                    vm.setBookRead(bookId, status);
-                    return true;
-
-                } else if (itemId == R.id.MENU_BOOK_EDIT) {
-                    final long bookId = rowData.getLong(DBKey.FK_BOOK);
-                    editByIdLauncher.launch(bookId);
-                    return true;
-
-                } else if (itemId == R.id.MENU_BOOK_DUPLICATE) {
-                    final Book book = DataHolderUtils.requireBook(rowData);
-                    duplicateLauncher.launch(book.duplicate(this));
-                    return true;
-
-                } else if (itemId == R.id.MENU_BOOK_DELETE) {
-                    final long bookId = rowData.getLong(DBKey.FK_BOOK);
-                    final String title = rowData.getString(DBKey.TITLE);
-                    final List<Author> authors = vm.getAuthorsByBookId(bookId);
-                    StandardDialogs.deleteBook(this, title, authors, () -> {
-                        if (vm.deleteBook(bookId)) {
-                            saveListPosition();
-                            buildBookList();
-                        }
-                    });
-                    return true;
-
-                } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET_SINGLE_BOOK) {
-                    final Book book = DataHolderUtils.requireBook(rowData);
-                    updateBookLauncher.launch(book);
-                    return true;
-
-                } else if (itemId == R.id.MENU_BOOK_LOAN_ADD) {
-                    final long bookId = rowData.getLong(DBKey.FK_BOOK);
-                    editLenderLauncher.launch(bookId, rowData.getString(DBKey.TITLE));
-                    return true;
-
-                } else if (itemId == R.id.MENU_BOOK_LOAN_DELETE) {
-                    final long bookId = rowData.getLong(DBKey.FK_BOOK);
-                    vm.lendBook(bookId, null);
-                    return true;
-
-                } else if (itemId == R.id.MENU_SHARE) {
-                    final Book book = DataHolderUtils.requireBook(rowData);
-                    startActivity(book.getShareIntent(this, vm.getStyle(this)));
+                if (onRowMenuForBook(rowData, menuItemId)) {
                     return true;
                 }
                 break;
             }
             case BooklistGroup.AUTHOR: {
-                if (itemId == R.id.MENU_AUTHOR_WORKS_FILTER) {
-                    authorWorksLauncher.launch(new AuthorWorksContract.Input(
-                            rowData.getLong(DBKey.FK_AUTHOR),
-                            vm.getCurrentBookshelf().getId(),
-                            vm.getStyle(this).getUuid()));
-                    return true;
-
-                } else if (itemId == R.id.MENU_AUTHOR_SET_COMPLETE
-                           || itemId == R.id.MENU_AUTHOR_SET_INCOMPLETE) {
-                    final Author author = DataHolderUtils.requireAuthor(rowData);
-                    // toggle the complete status
-                    final boolean status = !rowData.getBoolean(DBKey.AUTHOR_IS_COMPLETE);
-                    vm.setAuthorComplete(author, status);
-                    return true;
-
-                } else if (itemId == R.id.MENU_AUTHOR_EDIT) {
-                    final Author author = DataHolderUtils.requireAuthor(rowData);
-                    editAuthorLauncher.launch(author);
-                    return true;
-
-                } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-                    final String dialogTitle = rowData.getString(DBKey.AUTHOR_FORMATTED);
-                    updateBooksFromInternetData(v, rowData, dialogTitle);
+                if (onRowMenuForAuthor(v, rowData, menuItemId)) {
                     return true;
                 }
                 break;
             }
             case BooklistGroup.SERIES: {
-                if (itemId == R.id.MENU_SERIES_SET_COMPLETE
-                    || itemId == R.id.MENU_SERIES_SET_INCOMPLETE) {
-                    final Series series = DataHolderUtils.requireSeries(rowData);
-                    // toggle the complete status
-                    final boolean status = !rowData.getBoolean(DBKey.SERIES_IS_COMPLETE);
-                    vm.setSeriesComplete(series, status);
-                    return true;
-
-                } else if (itemId == R.id.MENU_SERIES_EDIT) {
-                    final Series series = DataHolderUtils.requireSeries(rowData);
-                    editSeriesLauncher.launch(series);
-                    return true;
-
-                } else if (itemId == R.id.MENU_SERIES_DELETE) {
-                    final Series series = DataHolderUtils.requireSeries(rowData);
-                    StandardDialogs.deleteSeries(this, series, () -> {
-                        if (vm.delete(this, series)) {
-                            saveListPosition();
-                            buildBookList();
-                        }
-                    });
-                    return true;
-
-                } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-                    final String dialogTitle = rowData.getString(DBKey.SERIES_TITLE);
-                    updateBooksFromInternetData(v, rowData, dialogTitle);
+                if (onRowMenuForSeries(v, rowData, menuItemId)) {
                     return true;
                 }
                 break;
             }
             case BooklistGroup.PUBLISHER: {
-                if (itemId == R.id.MENU_PUBLISHER_EDIT) {
-                    final Publisher publisher = DataHolderUtils.requirePublisher(rowData);
-                    editPublisherLauncher.launch(publisher);
-                    return true;
-
-                } else if (itemId == R.id.MENU_PUBLISHER_DELETE) {
-                    final Publisher publisher = DataHolderUtils.requirePublisher(rowData);
-                    StandardDialogs.deletePublisher(this, publisher, () -> {
-                        if (vm.delete(this, publisher)) {
-                            saveListPosition();
-                            buildBookList();
-                        }
-                    });
-                    return true;
-
-                } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-                    final String dialogTitle = rowData.getString(DBKey.PUBLISHER_NAME);
-                    updateBooksFromInternetData(v, rowData, dialogTitle);
+                if (onRowMenuForPublisher(v, rowData, menuItemId)) {
                     return true;
                 }
                 break;
             }
             case BooklistGroup.BOOKSHELF: {
-                if (itemId == R.id.MENU_BOOKSHELF_EDIT) {
-                    final Bookshelf bookshelf = DataHolderUtils.requireBookshelf(rowData);
-                    editBookshelfLauncher.launch(bookshelf);
-                    return true;
-
-                } else if (itemId == R.id.MENU_BOOKSHELF_DELETE) {
-                    final Bookshelf bookshelf = DataHolderUtils.requireBookshelf(rowData);
-                    StandardDialogs.deleteBookshelf(this, bookshelf, () -> {
-                        if (vm.delete(bookshelf)) {
-                            saveListPosition();
-                            buildBookList();
-                        }
-                    });
-                    return true;
-
-                } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-                    updateBookListLauncher.launch(vm.createUpdateBooklistContractInput(
-                            this, rowData, true));
+                if (onRowMenuForBookshelf(rowData, menuItemId)) {
                     return true;
                 }
                 break;
             }
             case BooklistGroup.LANGUAGE: {
-                if (itemId == R.id.MENU_LANGUAGE_EDIT) {
-                    final String text = rowData.getString(DBKey.LANGUAGE);
-                    final String editLang;
-                    if (text.length() > 3) {
-                        editLang = text;
-                    } else {
-                        editLang = ServiceLocator.getInstance().getAppLocale()
-                                                 .getLocale(this, text)
-                                                 .map(Locale::getDisplayLanguage)
-                                                 .orElse(text);
-                    }
-                    editLanguageLauncher.launch(editLang);
+                if (onRowMenuForLanguage(rowData, menuItemId)) {
                     return true;
                 }
                 break;
             }
             case BooklistGroup.LOCATION: {
-                if (itemId == R.id.MENU_LOCATION_EDIT) {
+                if (menuItemId == R.id.MENU_LOCATION_EDIT) {
                     editLocationLauncher.launch(rowData.getString(DBKey.LOCATION));
                     return true;
                 }
                 break;
             }
             case BooklistGroup.GENRE: {
-                if (itemId == R.id.MENU_GENRE_EDIT) {
+                if (menuItemId == R.id.MENU_GENRE_EDIT) {
                     editGenreLauncher.launch(rowData.getString(DBKey.GENRE));
                     return true;
                 }
                 break;
             }
             case BooklistGroup.FORMAT: {
-                if (itemId == R.id.MENU_FORMAT_EDIT) {
+                if (menuItemId == R.id.MENU_FORMAT_EDIT) {
                     editFormatLauncher.launch(rowData.getString(DBKey.FORMAT));
                     return true;
                 }
                 break;
             }
             case BooklistGroup.COLOR: {
-                if (itemId == R.id.MENU_COLOR_EDIT) {
+                if (menuItemId == R.id.MENU_COLOR_EDIT) {
                     editColorLauncher.launch(rowData.getString(DBKey.COLOR));
                     return true;
                 }
@@ -1289,7 +1159,7 @@ public class BooksOnBookshelf
             case BooklistGroup.DATE_PUBLISHED_MONTH:
             case BooklistGroup.DATE_FIRST_PUBLICATION_YEAR:
             case BooklistGroup.DATE_FIRST_PUBLICATION_MONTH: {
-                if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
+                if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET) {
                     updateBookListLauncher.launch(
                             vm.createDateRowUpdateBooklistContractInput(this, rowData));
                     return true;
@@ -1311,6 +1181,247 @@ public class BooksOnBookshelf
                  .anyMatch(h -> h.onMenuItemSelected(this, menuItem, rowData));
     }
 
+    /**
+     * Handle the row/context menu for a {@link Book}.
+     *
+     * @param rowData    the row data
+     * @param menuItemId selected menu item
+     *
+     * @return {@code true} if handled.
+     */
+    private boolean onRowMenuForBook(@NonNull final DataHolder rowData,
+                                     @IdRes final int menuItemId) {
+        if (menuItemId == R.id.MENU_BOOK_SET_READ
+            || menuItemId == R.id.MENU_BOOK_SET_UNREAD) {
+            final long bookId = rowData.getLong(DBKey.FK_BOOK);
+            // toggle the read status
+            final boolean status = !rowData.getBoolean(DBKey.READ__BOOL);
+            vm.setBookRead(bookId, status);
+            return true;
+
+        } else if (menuItemId == R.id.MENU_BOOK_EDIT) {
+            final long bookId = rowData.getLong(DBKey.FK_BOOK);
+            editByIdLauncher.launch(bookId);
+            return true;
+
+        } else if (menuItemId == R.id.MENU_BOOK_DUPLICATE) {
+            final Book book = DataHolderUtils.requireBook(rowData);
+            duplicateLauncher.launch(book.duplicate(this));
+            return true;
+
+        } else if (menuItemId == R.id.MENU_BOOK_DELETE) {
+            final long bookId = rowData.getLong(DBKey.FK_BOOK);
+            final String title = rowData.getString(DBKey.TITLE);
+            final List<Author> authors = vm.getAuthorsByBookId(bookId);
+            StandardDialogs.deleteBook(this, title, authors, () -> {
+                if (vm.deleteBook(bookId)) {
+                    saveListPosition();
+                    buildBookList();
+                }
+            });
+            return true;
+
+        } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET_SINGLE_BOOK) {
+            final Book book = DataHolderUtils.requireBook(rowData);
+            updateBookLauncher.launch(book);
+            return true;
+
+        } else if (menuItemId == R.id.MENU_BOOK_LOAN_ADD) {
+            final long bookId = rowData.getLong(DBKey.FK_BOOK);
+            editLenderLauncher.launch(bookId, rowData.getString(DBKey.TITLE));
+            return true;
+
+        } else if (menuItemId == R.id.MENU_BOOK_LOAN_DELETE) {
+            final long bookId = rowData.getLong(DBKey.FK_BOOK);
+            vm.lendBook(bookId, null);
+            return true;
+
+        } else if (menuItemId == R.id.MENU_SHARE) {
+            final Book book = DataHolderUtils.requireBook(rowData);
+            startActivity(book.getShareIntent(this, vm.getStyle(this)));
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Handle the row/context menu for an {@link Author}.
+     *
+     * @param v          View clicked; the anchor for a potential popup menu
+     * @param rowData    the row data
+     * @param menuItemId selected menu item
+     *
+     * @return {@code true} if handled.
+     */
+    private boolean onRowMenuForAuthor(@NonNull final View v,
+                                       @NonNull final DataHolder rowData,
+                                       @IdRes final int menuItemId) {
+        if (menuItemId == R.id.MENU_AUTHOR_WORKS_FILTER) {
+            authorWorksLauncher.launch(new AuthorWorksContract.Input(
+                    rowData.getLong(DBKey.FK_AUTHOR),
+                    vm.getCurrentBookshelf().getId(),
+                    vm.getStyle(this).getUuid()));
+            return true;
+
+        } else if (menuItemId == R.id.MENU_AUTHOR_SET_COMPLETE
+                   || menuItemId == R.id.MENU_AUTHOR_SET_INCOMPLETE) {
+            final Author author = DataHolderUtils.requireAuthor(rowData);
+            // toggle the complete status
+            final boolean status = !rowData.getBoolean(DBKey.AUTHOR_IS_COMPLETE);
+            vm.setAuthorComplete(author, status);
+            return true;
+
+        } else if (menuItemId == R.id.MENU_AUTHOR_EDIT) {
+            final Author author = DataHolderUtils.requireAuthor(rowData);
+            editAuthorLauncher.launch(author);
+            return true;
+
+        } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET) {
+            final String dialogTitle = rowData.getString(DBKey.AUTHOR_FORMATTED);
+            updateBooksFromInternetData(v, rowData, dialogTitle);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Handle the row/context menu for a {@link Series}.
+     *
+     * @param v          View clicked; the anchor for a potential popup menu
+     * @param rowData    the row data
+     * @param menuItemId selected menu item
+     *
+     * @return {@code true} if handled.
+     */
+    private boolean onRowMenuForSeries(@NonNull final View v,
+                                       @NonNull final DataHolder rowData,
+                                       @IdRes final int menuItemId) {
+        if (menuItemId == R.id.MENU_SERIES_SET_COMPLETE
+            || menuItemId == R.id.MENU_SERIES_SET_INCOMPLETE) {
+            final Series series = DataHolderUtils.requireSeries(rowData);
+            // toggle the complete status
+            final boolean status = !rowData.getBoolean(DBKey.SERIES_IS_COMPLETE);
+            vm.setSeriesComplete(series, status);
+            return true;
+
+        } else if (menuItemId == R.id.MENU_SERIES_EDIT) {
+            final Series series = DataHolderUtils.requireSeries(rowData);
+            editSeriesLauncher.launch(series);
+            return true;
+
+        } else if (menuItemId == R.id.MENU_SERIES_DELETE) {
+            final Series series = DataHolderUtils.requireSeries(rowData);
+            StandardDialogs.deleteSeries(this, series, () -> {
+                if (vm.delete(this, series)) {
+                    saveListPosition();
+                    buildBookList();
+                }
+            });
+            return true;
+
+        } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET) {
+            final String dialogTitle = rowData.getString(DBKey.SERIES_TITLE);
+            updateBooksFromInternetData(v, rowData, dialogTitle);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Handle the row/context menu for a {@link Publisher}.
+     *
+     * @param v          View clicked; the anchor for a potential popup menu
+     * @param rowData    the row data
+     * @param menuItemId selected menu item
+     *
+     * @return {@code true} if handled.
+     */
+    private boolean onRowMenuForPublisher(@NonNull final View v,
+                                          @NonNull final DataHolder rowData,
+                                          @IdRes final int menuItemId) {
+        if (menuItemId == R.id.MENU_PUBLISHER_EDIT) {
+            final Publisher publisher = DataHolderUtils.requirePublisher(rowData);
+            editPublisherLauncher.launch(publisher);
+            return true;
+
+        } else if (menuItemId == R.id.MENU_PUBLISHER_DELETE) {
+            final Publisher publisher = DataHolderUtils.requirePublisher(rowData);
+            StandardDialogs.deletePublisher(this, publisher, () -> {
+                if (vm.delete(this, publisher)) {
+                    saveListPosition();
+                    buildBookList();
+                }
+            });
+            return true;
+
+        } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET) {
+            final String dialogTitle = rowData.getString(DBKey.PUBLISHER_NAME);
+            updateBooksFromInternetData(v, rowData, dialogTitle);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Handle the row/context menu for a {@link Bookshelf}.
+     *
+     * @param rowData    the row data
+     * @param menuItemId selected menu item
+     *
+     * @return {@code true} if handled.
+     */
+    private boolean onRowMenuForBookshelf(@NonNull final DataHolder rowData,
+                                          @IdRes final int menuItemId) {
+        if (menuItemId == R.id.MENU_BOOKSHELF_EDIT) {
+            final Bookshelf bookshelf = DataHolderUtils.requireBookshelf(rowData);
+            editBookshelfLauncher.launch(bookshelf);
+            return true;
+
+        } else if (menuItemId == R.id.MENU_BOOKSHELF_DELETE) {
+            final Bookshelf bookshelf = DataHolderUtils.requireBookshelf(rowData);
+            StandardDialogs.deleteBookshelf(this, bookshelf, () -> {
+                if (vm.delete(bookshelf)) {
+                    saveListPosition();
+                    buildBookList();
+                }
+            });
+            return true;
+
+        } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET) {
+            updateBookListLauncher.launch(vm.createUpdateBooklistContractInput(
+                    this, rowData, true));
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Handle the row/context menu for a {@link Language}.
+     *
+     * @param rowData    the row data
+     * @param menuItemId selected menu item
+     *
+     * @return {@code true} if handled.
+     */
+    private boolean onRowMenuForLanguage(@NonNull final DataHolder rowData,
+                                         @IdRes final int menuItemId) {
+        if (menuItemId == R.id.MENU_LANGUAGE_EDIT) {
+            final String text = rowData.getString(DBKey.LANGUAGE);
+            final String editLang;
+            if (text.length() > 3) {
+                editLang = text;
+            } else {
+                editLang = ServiceLocator.getInstance().getAppLocale()
+                                         .getLocale(this, text)
+                                         .map(Locale::getDisplayLanguage)
+                                         .orElse(text);
+            }
+            editLanguageLauncher.launch(editLang);
+            return true;
+        }
+        return false;
+    }
+
     private void searchMissingCover(final long nodeRowId) {
         final Optional<BooklistNode> oNode = vm.getNextBookWithoutCover(nodeRowId);
         if (oNode.isPresent()) {
@@ -1330,28 +1441,28 @@ public class BooksOnBookshelf
         }
     }
 
-    private void onFabMenuItemSelected(@IdRes final int itemId) {
+    private void onFabMenuItemSelected(@IdRes final int menuItemId) {
 
-        if (itemId == R.id.fab0_scan_barcode) {
+        if (menuItemId == R.id.fab0_scan_barcode) {
             addBookBySearchLauncher.launch(AddBookBySearchContract.By.Scan);
 
-        } else if (itemId == R.id.fab0_scan_barcode_batch) {
+        } else if (menuItemId == R.id.fab0_scan_barcode_batch) {
             addBookBySearchLauncher.launch(AddBookBySearchContract.By.ScanBatch);
 
-        } else if (itemId == R.id.fab1_search_isbn) {
+        } else if (menuItemId == R.id.fab1_search_isbn) {
             addBookBySearchLauncher.launch(AddBookBySearchContract.By.Isbn);
 
-        } else if (itemId == R.id.fab2_search_text) {
+        } else if (menuItemId == R.id.fab2_search_text) {
             addBookBySearchLauncher.launch(AddBookBySearchContract.By.Text);
 
-        } else if (itemId == R.id.fab3_add_manually) {
+        } else if (menuItemId == R.id.fab3_add_manually) {
             editByIdLauncher.launch(0L);
 
-        } else if (itemId == R.id.fab4_search_external_id) {
+        } else if (menuItemId == R.id.fab4_search_external_id) {
             addBookBySearchLauncher.launch(AddBookBySearchContract.By.ExternalId);
 
         } else {
-            throw new IllegalArgumentException(String.valueOf(itemId));
+            throw new IllegalArgumentException(String.valueOf(menuItemId));
         }
     }
 
