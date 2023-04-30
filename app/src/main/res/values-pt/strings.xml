@@ -447,7 +447,7 @@
     <string name="lbl_add_book">Adicionar livro</string>
     <string name="confirm_registration_required">Esta função requer registo com %1$s. Gostaria de ver mais informações?</string>
     <string name="lbl_search_isbn">Pesquisa ISBN</string>
-    <string name="lbl_author_pseudonym">Este é um pseudónimo de:</string>
+    <string name="lbl_author_is_a_pen_name_of">Este é um pseudónimo de:</string>
     <string name="lbl_series_num">Nº</string>
     <string name="lbl_import_books">Importar Livros</string>
     <string name="lbl_covers_long">Imagens de capa</string>

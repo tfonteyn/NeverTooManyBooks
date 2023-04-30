@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -274,7 +276,7 @@
     <string name="lbl_all_bookshelves">Alle boekenplanken</string>
     <string name="lbl_archive_format">Formaat</string>
     <string name="lbl_author">Auteur</string>
-    <string name="lbl_author_pseudonym">Dit is een pseudoniem van:</string>
+    <string name="lbl_author_is_a_pen_name_of">Dit is een pseudoniem van:</string>
     <string name="lbl_author_type">Auteur type</string>
     <string name="lbl_author_type_artist">Illustraties</string>
     <string name="lbl_author_type_colorist">Inkleurder</string>

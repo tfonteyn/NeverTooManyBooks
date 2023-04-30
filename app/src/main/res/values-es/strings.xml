@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -726,7 +728,7 @@
     <string name="lbl_group_1st_char_series_title">1er carácter del título de la serie</string>
     <string name="lbl_group_1st_char_publisher_name">1er carácter del nombre del editor</string>
     <string name="lbl_group_1st_char_book_title">1er carácter del título del libro</string>
-    <string name="lbl_author_pseudonym">Este es un seudónimo de:</string>
+    <string name="lbl_author_is_a_pen_name_of">Este es un seudónimo de:</string>
     <string name="vldt_real_author_must_be_valid">Debe estar en blanco o ser un autor existente</string>
     <string name="confirm_create_real_author">«%1$s» aún no existe. ¿Deberían crearse?</string>
     <string name="pt_search_resolve_authors_bedetheque">Resuelva los seudónimos de los autores utilizando el sitio web Bedetheque</string>

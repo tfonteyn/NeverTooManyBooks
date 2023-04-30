@@ -878,7 +878,10 @@
     <!-- Author. Whether the user considers his collection of this Author to be complete. -->
     <string name="lbl_author_is_complete"
             translatable="false">@string/lbl_is_complete</string>
-    <string name="lbl_author_pseudonym">This is a pen-name of:</string>
+    <!-- Heading above an edit field. -->
+    <string name="lbl_author_is_a_pen_name_of">This is a pen-name of:</string>
+    <!-- Label -->
+    <string name="lbl_author_pseudonym">Author pseudonym</string>
     <!-- A single Series. -->
     <string name="lbl_series">Series</string>
     <!-- Multiple Series. -->

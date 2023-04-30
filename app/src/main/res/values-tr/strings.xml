@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
     <!ENTITY APP_NAME "NeverTooManyBooks">
     ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -721,7 +723,7 @@
     <string name="lbl_group_1st_char_series_title">Seri başlığının 1. karakteri</string>
     <string name="lbl_group_1st_char_publisher_name">Yayıncı adının 1. karakteri</string>
     <string name="lbl_group_1st_char_book_title">Kitap başlığının 1. karakteri</string>
-    <string name="lbl_author_pseudonym">Bu, takma adıdır:</string>
+    <string name="lbl_author_is_a_pen_name_of">Bu, takma adıdır:</string>
     <string name="vldt_real_author_must_be_valid">Boş veya mevcut bir Yazar olmalıdır</string>
     <string name="confirm_create_real_author">“%1$s” henüz mevcut değil. Yaratılmalılar mı?</string>
     <string name="pt_search_resolve_authors_bedetheque">Bedetheque web sitesini kullanarak yazar takma adlarını çözün</string>

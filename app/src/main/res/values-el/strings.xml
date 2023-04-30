@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -714,7 +715,7 @@
     <string name="lbl_group_1st_char_series_title">1ος χαρακτήρας του τίτλου της σειράς</string>
     <string name="lbl_group_1st_char_publisher_name">1ος χαρακτήρας του ονόματος του εκδότη</string>
     <string name="lbl_group_1st_char_book_title">1ος χαρακτήρας του τίτλου του βιβλίου</string>
-    <string name="lbl_author_pseudonym">Αυτό είναι ένα ψευδώνυμο του:</string>
+    <string name="lbl_author_is_a_pen_name_of">Αυτό είναι ένα ψευδώνυμο του:</string>
     <string name="vldt_real_author_must_be_valid">Πρέπει να είναι κενό ή υπάρχων Συγγραφέας</string>
     <string name="confirm_create_real_author">Το «%1$s» δεν υπάρχει ακόμα. Πρέπει να δημιουργηθούν;</string>
     <string name="pt_search_resolve_authors_bedetheque">Επιλύστε τα ψευδώνυμα των συγγραφέων χρησιμοποιώντας τον ιστότοπο Bedetheque</string>

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -718,7 +719,7 @@
     <string name="lbl_group_1st_char_publisher_name">1er caractère du nom de l\'éditeur</string>
     <string name="lbl_group_1st_char_book_title">1er caractère du titre du livre</string>
     <string name="debug_select_items">Sélectionnez ce que vous souhaitez inclure :</string>
-    <string name="lbl_author_pseudonym">C\'est un pseudonyme de :</string>
+    <string name="lbl_author_is_a_pen_name_of">C\'est un pseudonyme de :</string>
     <string name="vldt_real_author_must_be_valid">Doit être vide ou un auteur existant</string>
     <string name="confirm_create_real_author">«%1$s» n\'existe pas encore. Faut-il les créer ?</string>
     <string name="pt_search_resolve_authors_bedetheque">Résoudre les pseudonymes des auteurs à l\'aide du site Web Bedetheque</string>
