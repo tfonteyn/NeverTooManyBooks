@@ -120,7 +120,8 @@ public final class ExMsg {
             return context.getString(R.string.error_site_authentication_failed,
                                      context.getString(ce.getSiteResId()));
 
-        } else if (e instanceof com.hardbacknutter.org.json.JSONException) {
+        } else if (e instanceof com.hardbacknutter.org.json.JSONException
+                   || e instanceof org.json.JSONException) {
             //TODO: a JSONException is very generic, we'd need to look at the actual text.
             return context.getString(R.string.error_unexpected_long,
                                      context.getString(R.string.pt_maintenance));
