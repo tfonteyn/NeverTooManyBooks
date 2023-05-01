@@ -285,6 +285,8 @@ dependencies {
     implementation("ch.acra:acra-core:${acra_version}")
     implementation("ch.acra:acra-mail:${acra_version}")
     implementation("ch.acra:acra-dialog:${acra_version}")
+    //implementation("com.google.auto.service:auto-service-annotations:${google_auto_service_version}")
+    //annotationProcessor("com.google.auto.service:auto-service:${google_auto_service_version}")
 
     // local tests use JUnit5
     testImplementation("org.mockito:mockito-core:${mockito_version}")

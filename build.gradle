@@ -84,6 +84,8 @@ ext {
     // https://github.com/material-components/material-components-android/releases
     google_material_version = '1.9.0-beta01'
 
+    //google_auto_service_version = '1.0.1'
+
     // https://jsoup.org/
     jsoup_version = '1.15.4'
 
