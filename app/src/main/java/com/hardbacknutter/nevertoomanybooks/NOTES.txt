@@ -37,6 +37,10 @@ Prices: when importing books with a price field containing a value which cannot 
  get a crash when trying to display it using a MoneyFormatter (FieldFormatter)
  FIXME: Solution would be to allow Money to have string (instead/aside-of double) values.
 
+Booklist style sorting by date-read or date-added etc...:
+ samsung A520 with A8.0, month name not shown; we get the month number instead.
+ Does not happen on other devices/emulators. Won't pursue/fix.
+
 ----------------------------------------------------------------------------------------------------
 4.4.0
 
