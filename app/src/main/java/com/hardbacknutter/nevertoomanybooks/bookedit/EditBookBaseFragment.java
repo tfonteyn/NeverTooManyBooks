@@ -77,6 +77,7 @@ public abstract class EditBookBaseFragment
 
     /** The view model. */
     EditBookViewModel vm;
+
     /** MUST keep a strong reference. */
     private final DatePickerListener datePickerListener = this::onDateSet;
 
@@ -221,7 +222,11 @@ public abstract class EditBookBaseFragment
         }
     }
 
-    /** Listener for all field changes. */
+    /**
+     * Listener for all field changes.
+     *
+     * @param field which got changed
+     */
     @SuppressWarnings("WeakerAccess")
     @CallSuper
     void onAfterFieldChange(@NonNull final Field<?, ? extends View> field) {
