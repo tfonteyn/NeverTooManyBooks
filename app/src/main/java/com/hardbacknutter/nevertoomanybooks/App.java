@@ -108,6 +108,8 @@ public class App
                     } catch (@NonNull final IOException e) {
                         logger.e(TAG, e);
                     }
+                } else {
+                    ACRA.getErrorReporter().handleException(throwable, true);
                 }
             });
             final File logDir = new File(getFilesDir(), LoggerImpl.DIR_LOG);
