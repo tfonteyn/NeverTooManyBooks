@@ -61,7 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
-import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 
 public class EditBookFragment
         extends BaseFragment {
@@ -301,8 +300,7 @@ public class EditBookFragment
 
             // On tablets the notes fields are incorporated in the publication fragment
             // On small screens (i.e. phones) they get their own tab
-            if (WindowSizeClass.getWidth(container) == WindowSizeClass.Compact
-                || WindowSizeClass.getHeight(container) == WindowSizeClass.Compact) {
+            if (!container.getResources().getBoolean(R.bool.combine_book_edit_tabs)) {
                 tabList.add(new TabInfo(EditBookNotesFragment.class,
                                         R.string.lbl_tab_notes,
                                         R.string.lbl_personal_notes));
