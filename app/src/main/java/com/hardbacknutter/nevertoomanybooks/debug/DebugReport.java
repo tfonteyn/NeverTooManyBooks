@@ -78,6 +78,12 @@ public class DebugReport {
         dateTime = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
     }
 
+    /**
+     * Add the default message with device configuration data.
+     * Calling {@link #addCustomMessage(String)} will override this call.
+     *
+     * @return {@code this} (for chaining)
+     */
     @NonNull
     public DebugReport addDefaultMessage() {
         final PackageInfoWrapper info = PackageInfoWrapper.createWithSignatures(context);
@@ -101,6 +107,19 @@ public class DebugReport {
                   + "All Locales: " + LocaleListUtils.asList(context) + '\n'
 
                   + "Signed-By: " + info.getSignedBy() + '\n';
+        return this;
+    }
+
+    /**
+     * Add a custom message.
+     * Calling {@link #addDefaultMessage()} will override this call.
+     *
+     * @param message to use
+     *
+     * @return {@code this} (for chaining)
+     */
+    public DebugReport addCustomMessage(@NonNull final String message) {
+        this.message = message;
         return this;
     }
 
