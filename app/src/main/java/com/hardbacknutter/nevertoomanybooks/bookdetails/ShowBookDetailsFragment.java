@@ -389,18 +389,20 @@ public class ShowBookDetailsFragment
 
         final List<Field<?, ? extends View>> fields = vm.getFields();
 
+        final Context context = getContext();
         // do NOT call notifyIfChanged, as this is the initial load
         //noinspection ConstantConditions
         fields.stream()
               .filter(Field::isAutoPopulated)
-              .forEach(field -> field.setInitialValue(getContext(), book, realNumberParser));
+              .forEach(field -> field.setInitialValue(context, book, realNumberParser));
 
         bindCoverImages();
         bindLoanee(book);
         bindToc(book);
 
+        final View parentView = getView();
         //noinspection ConstantConditions
-        fields.forEach(field -> field.setVisibility(getView(), true, false));
+        fields.forEach(field -> field.setVisibility(parentView, true, false));
 
         // Hide the 'Edition' label if neither edition chips or print-run fields are shown
         setSectionVisibility(R.id.lbl_edition,
@@ -419,15 +421,17 @@ public class ShowBookDetailsFragment
 
         // All views should now have proper visibility set, so fix their focus order.
         //noinspection ConstantConditions
-        ViewFocusOrder.fix(getView());
+        ViewFocusOrder.fix(parentView);
     }
 
     private void bindCoverImages() {
+        final View parentView = getView();
+
         final TypedArray coverResIds = getResources().obtainTypedArray(R.array.cover_images);
         try {
             for (int cIdx = 0; cIdx < coverResIds.length(); cIdx++) {
                 //noinspection ConstantConditions
-                final ImageView view = getView().findViewById(coverResIds.getResourceId(cIdx, 0));
+                final ImageView view = parentView.findViewById(coverResIds.getResourceId(cIdx, 0));
                 if (coverHandler[cIdx] != null) {
                     coverHandler[cIdx].onBindView(view);
                     coverHandler[cIdx].attachOnClickListeners(getChildFragmentManager(), view);
@@ -462,8 +466,10 @@ public class ShowBookDetailsFragment
     }
 
     private void bindToc(@NonNull final Book book) {
+        final View parentView = getView();
+
         //noinspection ConstantConditions
-        final TextView lblAnthologyOrCollection = getView().findViewById(R.id.lbl_anthology);
+        final TextView lblAnthologyOrCollection = parentView.findViewById(R.id.lbl_anthology);
         switch (book.getContentType()) {
             case Collection:
                 lblAnthologyOrCollection.setVisibility(View.VISIBLE);
@@ -481,8 +487,8 @@ public class ShowBookDetailsFragment
                 break;
         }
 
-        final Button btnShowToc = getView().findViewById(R.id.btn_show_toc);
-        final FragmentContainerView tocFrame = getView().findViewById(R.id.toc_frame);
+        final Button btnShowToc = parentView.findViewById(R.id.btn_show_toc);
+        final FragmentContainerView tocFrame = parentView.findViewById(R.id.toc_frame);
         if (aVm.getStyle().isShowField(Style.Screen.List, DBKey.FK_TOC_ENTRY)) {
             if (btnShowToc != null) {
                 bindTocButton(btnShowToc, book);
