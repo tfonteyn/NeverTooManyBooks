@@ -35,7 +35,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.FieldGroup;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
-import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 
 public class EditBookPublicationFragment
         extends EditBookBaseFragment {
@@ -67,11 +66,11 @@ public class EditBookPublicationFragment
 
         //noinspection ConstantConditions
         vm.initFields(context, FragmentId.Publication, FieldGroup.Publication);
-        // On tablets the notes fields are incorporated in the publication fragment
+        // On tablets the notes fields (notes, read-flag, read-dates...)
+        // are incorporated in the publication fragment
         // On small screens (i.e. phones) they get their own tab
         //noinspection ConstantConditions
-        if (WindowSizeClass.getWidth(getActivity()) != WindowSizeClass.Compact
-            && WindowSizeClass.getHeight(getActivity()) != WindowSizeClass.Compact) {
+        if (vb.notes != null) {
             vm.initFields(context, FragmentId.Publication, FieldGroup.Notes);
         }
 
