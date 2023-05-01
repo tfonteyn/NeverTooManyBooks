@@ -138,7 +138,7 @@ public class EditBookFragment
         super.onResume();
 
         int currentTab = vm.getCurrentTab();
-        // can happen when rotating a small device where the width changes WindowsClass
+        // rotating a device can change the number of tabs shown (i.e. some tabs get combined)
         if (currentTab >= tabAdapter.getItemCount()) {
             currentTab = 0;
             vm.setCurrentTab(0);
