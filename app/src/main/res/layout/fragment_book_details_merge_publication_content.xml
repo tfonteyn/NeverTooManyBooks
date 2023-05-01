@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -161,6 +161,7 @@
     <TextView
         android:id="@+id/print_run"
         style="@style/Field.Generic"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/lbl_edition"
         app:layout_constraintTop_toBottomOf="@id/lbl_edition"
         tools:ignore="SelectableText"
@@ -170,6 +171,7 @@
     <TextView
         android:id="@+id/edition"
         style="@style/Field.Generic"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/lbl_edition"
         app:layout_constraintTop_toBottomOf="@id/print_run"
         tools:ignore="SelectableText"
