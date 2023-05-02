@@ -332,21 +332,26 @@ public class ShowBookDetailsViewModel
         // Personal fields
 
         fields.add(
-                new TextViewField<>(FragmentId.Main, R.id.bookshelves, Book.BKEY_BOOKSHELF_LIST,
+                new TextViewField<>(FragmentId.Main, R.id.bookshelves,
+                                    Book.BKEY_BOOKSHELF_LIST,
                                     DBKey.FK_BOOKSHELF,
                                     normalDetailListFormatter)
                         .addRelatedViews(R.id.lbl_bookshelves));
 
-        fields.add(new TextViewField<>(FragmentId.Main, R.id.date_acquired, DBKey.DATE_ACQUIRED,
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.date_acquired,
+                                       DBKey.DATE_ACQUIRED,
                                        dateFormatter)
                            .addRelatedViews(R.id.lbl_date_acquired));
 
-        fields.add(new TextViewField<>(FragmentId.Main, R.id.location, DBKey.LOCATION)
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.location,
+                                       DBKey.LOCATION)
                            .addRelatedViews(R.id.lbl_location, R.id.lbl_location_long));
 
-        fields.add(new RatingBarField(FragmentId.Main, R.id.rating, DBKey.RATING));
+        fields.add(new RatingBarField(FragmentId.Main, R.id.rating,
+                                      DBKey.RATING));
 
-        fields.add(new TextViewField<>(FragmentId.Main, R.id.condition, DBKey.BOOK_CONDITION,
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.condition,
+                                       DBKey.BOOK_CONDITION,
                                        new StringArrayResFormatter(
                                                context, R.array.conditions_book))
                            .addRelatedViews(R.id.lbl_condition));
@@ -357,24 +362,43 @@ public class ShowBookDetailsViewModel
                                                context, R.array.conditions_dust_cover))
                            .addRelatedViews(R.id.lbl_condition_cover));
 
-        fields.add(new TextViewField<>(FragmentId.Main, R.id.notes, DBKey.PERSONAL_NOTES,
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.notes,
+                                       DBKey.PERSONAL_NOTES,
                                        notesFormatter)
                            .addRelatedViews(R.id.lbl_notes));
 
-        fields.add(new BooleanIndicatorField(FragmentId.Main, R.id.read, DBKey.READ__BOOL));
+        fields.add(new BooleanIndicatorField(FragmentId.Main, R.id.read,
+                                             DBKey.READ__BOOL));
 
-        fields.add(new TextViewField<>(FragmentId.Main, R.id.read_start, DBKey.READ_START__DATE,
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.read_start,
+                                       DBKey.READ_START__DATE,
                                        dateFormatter)
                            .addRelatedViews(R.id.lbl_read_start));
 
-        fields.add(new TextViewField<>(FragmentId.Main, R.id.read_end, DBKey.READ_END__DATE,
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.read_end,
+                                       DBKey.READ_END__DATE,
                                        dateFormatter)
                            .addRelatedViews(R.id.lbl_read_end));
 
-        fields.add(new BooleanIndicatorField(FragmentId.Main, R.id.signed, DBKey.SIGNED__BOOL));
+        fields.add(new BooleanIndicatorField(FragmentId.Main, R.id.signed,
+                                             DBKey.SIGNED__BOOL));
 
-        fields.add(new TextViewField<>(FragmentId.Main, R.id.price_paid, DBKey.PRICE_PAID,
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.price_paid,
+                                       DBKey.PRICE_PAID,
                                        moneyFormatter)
                            .addRelatedViews(R.id.lbl_price_paid));
+
+
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.date_added,
+                                       DBKey.DATE_ADDED__UTC,
+                                       dateFormatter)
+                           .addRelatedViews(R.id.lbl_date_added));
+
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.date_last_updated,
+                                       DBKey.DATE_LAST_UPDATED__UTC,
+                                       dateFormatter)
+                           .addRelatedViews(R.id.lbl_date_last_updated));
+
+
     }
 }

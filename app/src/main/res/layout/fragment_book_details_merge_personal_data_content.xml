@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         app:barrierDirection="end"
         app:barrierMargin="@dimen/field_margin_inline"
-        app:constraint_referenced_ids="lbl_bookshelves,lbl_notes,lbl_date_acquired,lbl_price_paid,lbl_condition,lbl_condition_cover,lbl_read_start,lbl_read_end,lbl_location_long"
+        app:constraint_referenced_ids="lbl_bookshelves,lbl_notes,lbl_date_acquired,lbl_price_paid,lbl_condition,lbl_condition_cover,lbl_read_start,lbl_read_end,lbl_location_long,lbl_date_added,lbl_date_last_updated"
         />
 
     <TextView
@@ -214,5 +214,39 @@
         app:layout_constraintTop_toBottomOf="@id/read_end"
         tools:ignore="SelectableText"
         tools:text="@sample/data.json/location/name"
+        />
+
+    <TextView
+        android:id="@+id/lbl_date_added"
+        style="@style/Label"
+        android:text="@string/lbl_date_added"
+        app:layout_constraintBaseline_toBaselineOf="@id/date_added"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/date_added"
+        style="@style/Field.Generic"
+        app:layout_constraintStart_toEndOf="@id/col1"
+        app:layout_constraintTop_toBottomOf="@id/location"
+        tools:ignore="SelectableText"
+        tools:text="@sample/data.json/date/long"
+        />
+
+    <TextView
+        android:id="@+id/lbl_date_last_updated"
+        style="@style/Label"
+        android:text="@string/lbl_date_last_updated"
+        app:layout_constraintBaseline_toBaselineOf="@id/date_last_updated"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/date_last_updated"
+        style="@style/Field.Generic"
+        app:layout_constraintStart_toEndOf="@id/col1"
+        app:layout_constraintTop_toBottomOf="@id/date_added"
+        tools:ignore="SelectableText"
+        tools:text="@sample/data.json/date/long"
         />
 </merge>
