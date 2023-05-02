@@ -142,15 +142,26 @@ public abstract class FieldVisibility {
      * @param keys     the (sub)set of keys supported for this instance
      * @param defValue the bitmask with the defaults for this instance
      */
-    public FieldVisibility(@NonNull final Set<String> keys,
-                           final long defValue) {
+    FieldVisibility(@NonNull final Set<String> keys,
+                    final long defValue) {
         this.keys = keys;
         bits = defValue;
     }
 
+    /**
+     * Get the matching label for the given key.
+     *
+     * @param context Current context
+     * @param dbKey   to fetch
+     *
+     * @return human readable label
+     *
+     * @throws IllegalArgumentException if the key is invalid
+     */
     @NonNull
     public static String getLabel(@NonNull final Context context,
-                                  @NonNull final String dbKey) {
+                                  @NonNull final String dbKey)
+            throws IllegalArgumentException {
         final int index = DB_KEYS.indexOf(dbKey);
         if (index == -1) {
             throw new IllegalArgumentException(dbKey);
@@ -159,7 +170,17 @@ public abstract class FieldVisibility {
         }
     }
 
-    public static long getBitValue(@NonNull final String dbKey) {
+    /**
+     * Get the matching bit-value for the given key.
+     *
+     * @param dbKey to fetch
+     *
+     * @return bit value
+     *
+     * @throws IllegalArgumentException if the key is invalid
+     */
+    public static long getBitValue(@NonNull final String dbKey)
+            throws IllegalArgumentException {
         final int index = DB_KEYS.indexOf(dbKey);
         if (index == -1) {
             throw new IllegalArgumentException(dbKey);
@@ -168,7 +189,17 @@ public abstract class FieldVisibility {
         }
     }
 
-    static long getBitValue(@NonNull final Set<String> keys) {
+    /**
+     * Get the combined bit-value for the given set of keys.
+     *
+     * @param keys to fetch
+     *
+     * @return bitmask
+     *
+     * @throws IllegalArgumentException if any key is invalid
+     */
+    static long getBitValue(@NonNull final Set<String> keys)
+            throws IllegalArgumentException {
         return keys.stream()
                    .mapToLong(FieldVisibility::getBitValue)
                    .reduce(0, (a, b) -> a | b);
@@ -177,6 +208,8 @@ public abstract class FieldVisibility {
 
     /**
      * Check if the given field should be displayed.
+     * <p>
+     * An invalid key will return {@code Optional.empty()}
      *
      * @param dbKey to check - one of the {@link DBKey} constants.
      *
@@ -193,6 +226,14 @@ public abstract class FieldVisibility {
         return Optional.empty();
     }
 
+    /**
+     * Set/unset the bit-value for the given key.
+     * <p>
+     * An invalid key will be ignored.
+     *
+     * @param dbKey to set
+     * @param show  flag
+     */
     public void setShowField(@NonNull final String dbKey,
                              final boolean show) {
         if (keys.contains(dbKey)) {
@@ -208,10 +249,20 @@ public abstract class FieldVisibility {
         }
     }
 
+    /**
+     * Get the current configured combined bit-value.
+     *
+     * @return bitmask
+     */
     public long getValue() {
         return bits;
     }
 
+    /**
+     * Set the current configured combined bit-value.
+     *
+     * @param value bitmask
+     */
     public void setValue(final long value) {
         bits = value;
     }
