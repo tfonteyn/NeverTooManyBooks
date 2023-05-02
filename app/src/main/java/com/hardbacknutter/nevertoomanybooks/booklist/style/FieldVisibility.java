@@ -101,7 +101,7 @@ public abstract class FieldVisibility {
             R.string.lbl_series,
             R.string.lbl_publisher,
             R.string.lbl_table_of_content,
-            R.string.lbl_lending, // TODO: or use  R.string.lbl_lend_out ?
+            R.string.lbl_lending,
 
             R.string.lbl_author_type,
             R.string.lbl_condition,
