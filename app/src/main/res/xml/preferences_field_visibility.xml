@@ -21,7 +21,7 @@
 
 <!-- NEWTHINGS: new fields visibility.
      Third part of the key name **MUST** be equal to the DOM column name.
-     The list here must be kept in sync with {@link DBKey#UserSelectedDomain}
+     The list here must be kept in sync with {@link GlobalFieldVisibility#KEYS}
 
      Preferences are shown in LOCALE-alphabetical order.
 
