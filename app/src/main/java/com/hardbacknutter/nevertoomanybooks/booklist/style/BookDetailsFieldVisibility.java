@@ -25,7 +25,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
 /**
  * Encapsulate the Book fields which can be shown on the Book-details screen
- * as defined by the current style.
+ * as defined <strong>by the current style</strong>.
  */
 public class BookDetailsFieldVisibility
         extends FieldVisibility {
