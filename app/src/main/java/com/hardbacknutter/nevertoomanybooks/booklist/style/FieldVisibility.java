@@ -88,8 +88,12 @@ public abstract class FieldVisibility {
 
             // bit 28..31
             DBKey.READ_START__DATE,
-            DBKey.READ_END__DATE
-                                                       );
+            DBKey.READ_END__DATE,
+            DBKey.DATE_ADDED__UTC,
+            DBKey.DATE_LAST_UPDATED__UTC
+
+            // bit 32..35
+    );
 
     /** Simple mapping for {@link #DB_KEYS} to the label to show the user. */
     private static final List<Integer> LABELS = List.of(
@@ -129,8 +133,10 @@ public abstract class FieldVisibility {
             R.string.lbl_read,
 
             R.string.lbl_read_start,
-            R.string.lbl_read_end
-                                                       );
+            R.string.lbl_read_end,
+            R.string.lbl_date_added,
+            R.string.lbl_date_last_updated
+    );
 
     @NonNull
     private final Set<String> keys;

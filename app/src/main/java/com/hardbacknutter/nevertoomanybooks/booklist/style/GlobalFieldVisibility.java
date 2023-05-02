@@ -81,7 +81,9 @@ public class GlobalFieldVisibility
             DBKey.READ_END__DATE,
             DBKey.SIGNED__BOOL,
 
-            DBKey.FK_TOC_ENTRY);
+            DBKey.FK_TOC_ENTRY,
+            DBKey.DATE_ADDED__UTC,
+            DBKey.DATE_LAST_UPDATED__UTC);
 
     /** All visible by default. */
     public static final long DEFAULT = getBitValue(KEYS);

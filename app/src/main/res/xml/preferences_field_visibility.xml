@@ -208,6 +208,20 @@
             android:summaryOn="@string/yes"
             android:title="@string/lbl_read_end" />
 
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.date_added"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_date_added" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.last_update_date"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_date_last_updated" />
+
         <!-- Series name includes Series 'isComplete' and Series number. -->
         <SwitchPreference
             android:defaultValue="true"
