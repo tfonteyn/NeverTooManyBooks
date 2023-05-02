@@ -37,7 +37,8 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 public abstract class FieldVisibility {
 
     /**
-     * All keys; the position in the list represents their bit-number in the {@link #bits} value.
+     * All keys which support visibility configuration.
+     * The position in the list represents their bit-number in the {@link #bits} value.
      * <p>
      * <strong>NEVER CHANGE THE ORDER. NEW ENTRIES MUST BE ADDED AT THE END.</strong>
      */
