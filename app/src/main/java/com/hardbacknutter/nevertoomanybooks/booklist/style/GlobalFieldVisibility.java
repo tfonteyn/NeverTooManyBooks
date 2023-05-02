@@ -32,11 +32,17 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 // however.. we'd then need to implement a DataStore to use in the Preferences class,
 // to convert them into a single preference... and setting a DataStore
 // on individual preferences is permanently broken https://issuetracker.google.com/issues/232206237
+//
+// Direct usage of this class BYPASSES the style settings!
+// Normal usage is to ask the style, which can fallback to the global setting automatically.
+//
 public class GlobalFieldVisibility
         extends FieldVisibility {
 
     /**
      * NEWTHINGS: new fields visibility.
+     * <p>
+     * Must be kept in sync with R.xml.preferences_field_visibility
      */
     private static final Set<String> KEYS = Set.of(
             DBKey.COVER[0],
