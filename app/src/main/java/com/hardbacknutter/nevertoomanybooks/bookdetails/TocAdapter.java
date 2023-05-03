@@ -313,6 +313,7 @@ public class TocAdapter
 
             final Author primaryAuthor = work.getPrimaryAuthor();
             vb.author.setText(primaryAuthor != null
+                              // screen space is at a premium: use Details.Normal
                               ? primaryAuthor.getLabel(context, Details.Normal, style)
                               : null);
 
