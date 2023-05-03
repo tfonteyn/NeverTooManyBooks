@@ -687,6 +687,7 @@ public class Author
      *
      * <ul>
      *     <li>{@link Details#Full}: standard formatted name combined
+     *          (if enabled) with the real-author name.
      *          (if enabled) with the author type. The latter uses HTML formatting.
      *     </li>
      *     <li>{@link Details#Normal}, {@link Details#AutoSelect}: standard formatted name.</li>
@@ -708,6 +709,16 @@ public class Author
         switch (details) {
             case Full: {
                 label = getFormattedName(context, style);
+
+                if (GlobalFieldVisibility.isUsed(context, DBKey.AUTHOR_REAL_AUTHOR)) {
+                    final Author author = getRealAuthor();
+                    if (author != null) {
+                        label += " <small><i>"
+                                 + context.getString(R.string.lbl_author_pseudonym_of_X,
+                                                     author.getFormattedName(context, style))
+                                 + "</i></small>";
+                    }
+                }
 
                 if (GlobalFieldVisibility.isUsed(context, DBKey.AUTHOR_TYPE__BITMASK)) {
                     final String typeLabels = getTypeLabels(context);
