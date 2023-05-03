@@ -762,11 +762,13 @@ public class Author
     }
 
     /**
-     * TODO: try to unify this with the {@link #getLabel(Context, Details, Style)}
+     * TODO: try to unify this with {@link Entity#getLabel(Context, Details, Style)}
      *  using a either the Details object or a new style flag to decide whether
      *  to add the realAuthor name
      * <p>
-     * Return the <strong>styled and formatted</strong> version of the name.
+     * Syntax sugar for {@link #getStyledName(Context, Details, Style, CharSequence)}.
+     * <p>
+     * <strong>IMPORTANT:</strong> will only display correctly when used with a TextView.
      * <p>
      * Call this method if {@code this} is the pseudonym Author itself; otherwise call
      * {@link #getStyledName(Context, Details, Style, Author)} or
@@ -795,6 +797,8 @@ public class Author
 
     /**
      * Syntax sugar for {@link #getStyledName(Context, Details, Style, CharSequence)}.
+     * <p>
+     * <strong>IMPORTANT:</strong> will only display correctly when used with a TextView.
      *
      * @param context   Current context
      * @param details   the amount of details wanted
@@ -819,6 +823,8 @@ public class Author
     /**
      * Return the <strong>styled and formatted</strong> version of the name
      * combined with the given pseudonym.
+     * <p>
+     * <strong>IMPORTANT:</strong> will only display correctly when used with a TextView.
      * <p>
      * Call this method if {@code this} is the real Author; otherwise call
      * {@link #getStyledName(Context, Details, Style)}.
