@@ -340,8 +340,13 @@ public interface Style {
                                          @NonNull Screen screen);
 
 
+    /**
+     * Which visibility options to use from the user preferences/style.
+     */
     enum Screen {
+        /** Based on Style, for use in a list/adapter. */
         List,
+        /** Based on Style, for use on a details screen, dialog, ... */
         Detail
     }
 
