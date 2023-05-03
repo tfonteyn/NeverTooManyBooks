@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 public abstract class BaseStyle
         implements Style {
 
+    private static final String ERROR_UUID_IS_EMPTY = "uuid.isEmpty()";
     /** Configuration for the fields shown on the Book level in the book list. */
     @NonNull
     private final BooklistFieldVisibility listFieldVisibility;
@@ -121,11 +122,13 @@ public abstract class BaseStyle
      *
      * @param uuid style UUID string
      * @param id   style id; can be {@code 0} for new styles (e.g. when importing)
+     *
+     * @throws IllegalArgumentException if the given UUID is empty
      */
     BaseStyle(@NonNull final String uuid,
               @IntRange(from = 0) final long id) {
         if (uuid.isEmpty()) {
-            throw new IllegalArgumentException("uuid.isEmpty()");
+            throw new IllegalArgumentException(ERROR_UUID_IS_EMPTY);
         }
         this.uuid = uuid;
         this.id = id;
@@ -140,13 +143,15 @@ public abstract class BaseStyle
      * @param context Current context
      *
      * @return cloned/new instance
+     *
+     * @throws IllegalArgumentException if the given UUID is empty
      */
     @SuppressWarnings("ClassReferencesSubclass")
     @Override
     @NonNull
     public UserStyle clone(@NonNull final Context context) {
         if (uuid.isEmpty()) {
-            throw new IllegalArgumentException("uuid.isEmpty()");
+            throw new IllegalArgumentException(ERROR_UUID_IS_EMPTY);
         }
         // A cloned style is *always* a UserStyle/persistent regardless of the original
         // being a UserStyle or BuiltinStyle.
@@ -349,7 +354,7 @@ public abstract class BaseStyle
      * Should rows be shown using the system's preferred height or minimum height.
      *
      * @return {@code true} for "?attr/listPreferredItemHeightSmall"
-     * or {@code false} for {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT}
+     *         or {@code false} for {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT}
      *
      * @see #getGroupRowHeight(Context)
      */
