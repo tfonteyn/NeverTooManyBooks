@@ -41,6 +41,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 public class EditAuthorViewModel
         extends ViewModel {
 
+    private static final String TAG = "EditAuthorViewModel";
+
     /** FragmentResultListener request key to use for our response. */
     private String requestKey;
 
@@ -140,6 +142,8 @@ public class EditAuthorViewModel
             currentEdit.setRealAuthor(tmpRealAuthor);
             return true;
         } catch (@NonNull final DaoWriteException e) {
+            // log, but ignore - should never happen unless disk full
+            LoggerFactory.getLogger().e(TAG, e, tmpRealAuthor);
             return false;
         }
     }
