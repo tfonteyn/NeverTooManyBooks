@@ -297,7 +297,7 @@ public class Bookshelf
             ServiceLocator.getInstance().getBookshelfDao().update(context, this);
         } catch (@NonNull final DaoWriteException e) {
             // log, but ignore - should never happen unless disk full
-            LoggerFactory.getLogger().e(TAG, e);
+            LoggerFactory.getLogger().e(TAG, e, this);
         }
     }
 
@@ -401,7 +401,7 @@ public class Bookshelf
             ServiceLocator.getInstance().getBookshelfDao().update(context, this);
         } catch (@NonNull final DaoWriteException e) {
             // log, but ignore - should never happen unless disk full
-            LoggerFactory.getLogger().e(TAG, e);
+            LoggerFactory.getLogger().e(TAG, e, this);
         }
     }
 
@@ -418,7 +418,7 @@ public class Bookshelf
                 ServiceLocator.getInstance().getBookshelfDao().update(context, this);
             } catch (@NonNull final DaoWriteException e) {
                 // log, but ignore - should never happen unless disk full
-                LoggerFactory.getLogger().e(TAG, e);
+                LoggerFactory.getLogger().e(TAG, e, this);
             }
         }
     }
