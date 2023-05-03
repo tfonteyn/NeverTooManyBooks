@@ -248,6 +248,7 @@ public class BookHolder
         }
 
         if (use.author) {
+            //TODO: maybe add support for real-name
             showOrHide(vb.author, rowData.getString(DBKey.AUTHOR_FORMATTED));
         }
 
