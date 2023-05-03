@@ -34,6 +34,7 @@ import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
@@ -120,7 +121,8 @@ class Formatter
                 if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_author);
 
-                } else if (rowData.contains(DBKey.AUTHOR_REAL_AUTHOR)) {
+                } else if (GlobalFieldVisibility.isUsed(context, DBKey.AUTHOR_REAL_AUTHOR)
+                           && rowData.contains(DBKey.AUTHOR_REAL_AUTHOR)) {
                     // Specifically check for AUTHOR_REAL_AUTHOR as it will usually be 0
                     // and no lookup will be needed.
                     final long realAuthorId = rowData.getLong(DBKey.AUTHOR_REAL_AUTHOR);
