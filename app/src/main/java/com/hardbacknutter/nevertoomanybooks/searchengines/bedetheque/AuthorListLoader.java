@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -36,6 +37,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 class AuthorListLoader {
+
+    private static final String TAG = "AuthorListLoader";
 
     @NonNull
     private final Context context;
@@ -99,6 +102,8 @@ class AuthorListLoader {
                 return null;
             });
         } catch (@NonNull final DaoWriteException e) {
+            // log, but ignore - should never happen unless disk full
+            LoggerFactory.getLogger().e(TAG, e);
             return false;
         }
     }
