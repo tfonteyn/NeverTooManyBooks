@@ -33,6 +33,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.EntityBookLinksDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.MoveBooksDao;
@@ -63,6 +64,8 @@ final class SaveChangesHelper {
                 onSuccess.accept(item);
                 return true;
             } catch (@NonNull final DaoWriteException e) {
+                // log, but ignore - should never happen unless disk full
+                LoggerFactory.getLogger().e(TAG, e, item);
                 return false;
             }
         }
