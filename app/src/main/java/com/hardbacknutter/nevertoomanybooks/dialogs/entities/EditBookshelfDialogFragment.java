@@ -31,6 +31,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfContentBinding;
@@ -167,6 +168,8 @@ public class EditBookshelfDialogFragment
                 return true;
 
             } catch (@NonNull final DaoWriteException e) {
+                // log, but ignore - should never happen unless disk full
+                LoggerFactory.getLogger().e(TAG, e, bookshelf);
                 return false;
             }
         }
