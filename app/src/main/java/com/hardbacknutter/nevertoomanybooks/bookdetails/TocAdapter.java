@@ -77,6 +77,7 @@ public class TocAdapter
      * Constructor.
      *
      * @param context Current context
+     * @param style   to use
      * @param authors the author who 'owns' the works list
      * @param works   to show
      */
