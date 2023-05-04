@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -25,15 +24,18 @@
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
-        <item quantity="one">%1$d libro visualizado</item>
-        <item quantity="other">Visualizando %1$d libros</item>
+        <item quantity="one">%1$d libro mostrado</item>
+        <item quantity="many">Mostrando %1$d libros</item>
+        <item quantity="other">Mostrando %1$d libros</item>
     </plurals>
     <plurals name="n_books_found">
         <item quantity="one">%1$d libro encontrado</item>
+        <item quantity="many">%1$d libros encontrados</item>
         <item quantity="other">%1$d libros encontrados</item>
     </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s estrella</item>
+        <item quantity="many">%1$s estrellas</item>
         <item quantity="other">%1$s estrellas</item>
     </plurals>
     <string name="X_acra_resToastText">&APP_NAME; se ha detenido de forma inesperada. Por favor, ayúdenos a mejorar la aplicación reportando este problema.</string>
