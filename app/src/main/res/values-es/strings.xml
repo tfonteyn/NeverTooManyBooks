@@ -436,6 +436,7 @@
     <string name="lbl_select_fields">Seleccione campos</string>
     <string name="lbl_select_website">Selecciona un sitio web:</string>
     <string name="option_bug_report">Informe de error</string>
+    <string name="lbl_author_pseudonym">Seudónimo del autor</string>
     <string name="lbl_series">Serie</string>
     <string name="lbl_series_multiple">Serie</string>
     <string name="lbl_series_num">#</string>
@@ -748,4 +749,5 @@
     <string name="lbl_country">País</string>
     <string name="pt_search_show_shopping_options">Mostrar menús de compras</string>
     <string name="lbl_standardize">Estandarizar</string>
+    <string name="lbl_author_pseudonym_of_X">se. %1$s</string>
 </resources>

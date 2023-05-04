@@ -507,6 +507,7 @@
     <string name="confirm_rebuild_index">Isto recriará os índices quando a aplicação for reiniciada. Tem certeza de que deseja continuar?</string>
     <string name="lbl_author">Autor</string>
     <string name="lbl_authors">Autores</string>
+    <string name="lbl_author_pseudonym">Pseudônimo do autor</string>
     <string name="lbl_series">Série</string>
     <string name="lbl_series_multiple">Séries</string>
     <string name="lbl_read_end">Data de conclusão da leitura</string>
@@ -768,4 +769,5 @@
     <string name="X_lbl_queue">Fila</string>
     <string name="X_lbl_select_image">Selecione a imagem…</string>
     <string name="X_txt_import_books_option_new_and_changed">Importe apenas livros novos ou que tenham sido atualizados mais recentemente no ficheiro. Isso é útil para sincronizar dois dispositivos.</string>
+    <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
 </resources>

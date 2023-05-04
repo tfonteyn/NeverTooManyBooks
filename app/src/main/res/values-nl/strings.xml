@@ -414,6 +414,7 @@
     <string name="lbl_search_isbn">ISBN zoeken</string>
     <string name="lbl_select_fields">Selecteer velden</string>
     <string name="lbl_select_website">Selecteer een website:</string>
+    <string name="lbl_author_pseudonym">Auteur pseudoniem</string>
     <string name="lbl_series">Reeks</string>
     <string name="lbl_series_multiple">Reeksen</string>
     <string name="lbl_series_num">nr.</string>
@@ -733,4 +734,5 @@
     <string name="lbl_country">Land</string>
     <string name="pt_search_show_shopping_options">Toon shopping menu\'s</string>
     <string name="lbl_standardize">Standaardiseren</string>
+    <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
 </resources>

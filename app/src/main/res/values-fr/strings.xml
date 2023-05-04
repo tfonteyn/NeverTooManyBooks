@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -425,6 +427,7 @@
     <string name="lbl_select_fields">Sélection des champs</string>
     <string name="lbl_select_website">Sélectionnez un site web :</string>
     <string name="option_bug_report">Rapport de bug</string>
+    <string name="lbl_author_pseudonym">Pseudonyme de l\'auteur</string>
     <string name="lbl_series">Série</string>
     <string name="lbl_series_multiple">Séries</string>
     <string name="lbl_series_num">No</string>
@@ -735,4 +738,5 @@
     <string name="lbl_country">Pays</string>
     <string name="pt_search_show_shopping_options">Afficher les menus d\'achat</string>
     <string name="lbl_standardize">Standardiser</string>
+    <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
 </resources>
