@@ -38,12 +38,12 @@
         android:title="@string/pt_field_visibility">
 
         <!-- Authors are always visible, but the user can hide the type/pseudonym. -->
-        <!--        <SwitchPreference-->
-        <!--            android:defaultValue="true"-->
-        <!--            android:key="fields.visibility.real_author"-->
-        <!--            android:summaryOff="@string/no"-->
-        <!--            android:summaryOn="@string/yes"-->
-        <!--            android:title="@string/lbl_author_pseudonym" />-->
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.real_author"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_author_pseudonym" />
 
         <SwitchPreference
             android:defaultValue="true"

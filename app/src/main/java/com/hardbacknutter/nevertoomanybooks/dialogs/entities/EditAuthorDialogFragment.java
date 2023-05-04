@@ -76,7 +76,8 @@ public class EditAuthorDialogFragment
         super.onCreate(savedInstanceState);
 
         authorVm = new ViewModelProvider(this).get(EditAuthorViewModel.class);
-        authorVm.init(requireArguments());
+        //noinspection DataFlowIssue
+        authorVm.init(getContext(), requireArguments());
     }
 
     @Override
@@ -106,17 +107,31 @@ public class EditAuthorDialogFragment
         vb.givenNames.setText(currentEdit.getGivenNames());
         vb.givenNames.setAdapter(givenNameAdapter);
 
-        final ExtArrayAdapter<String> realNameAdapter = new ExtArrayAdapter<>(
-                context, R.layout.popup_dropdown_menu_item,
-                ExtArrayAdapter.FilterType.Diacritic,
-                authorDao.getNames(DBKey.AUTHOR_FORMATTED));
-        vb.realAuthor.setText(authorVm.getCurrentRealAuthorName(), false);
-        vb.realAuthor.setAdapter(realNameAdapter);
-        autoRemoveError(vb.realAuthor, vb.lblRealAuthor);
+        setupRealAuthorField(context, authorDao);
 
         vb.cbxIsComplete.setChecked(currentEdit.isComplete());
 
         vb.familyName.requestFocus();
+    }
+
+    private void setupRealAuthorField(@NonNull final Context context,
+                                      @NonNull final AuthorDao authorDao) {
+        if (authorVm.useRealAuthorName()) {
+            vb.lblRealAuthorHeader.setVisibility(View.VISIBLE);
+            vb.lblRealAuthor.setVisibility(View.VISIBLE);
+
+            final ExtArrayAdapter<String> realNameAdapter = new ExtArrayAdapter<>(
+                    context, R.layout.popup_dropdown_menu_item,
+                    ExtArrayAdapter.FilterType.Diacritic,
+                    authorDao.getNames(DBKey.AUTHOR_FORMATTED));
+            vb.realAuthor.setText(authorVm.getCurrentRealAuthorName(), false);
+            vb.realAuthor.setAdapter(realNameAdapter);
+            autoRemoveError(vb.realAuthor, vb.lblRealAuthor);
+
+        } else {
+            vb.lblRealAuthorHeader.setVisibility(View.GONE);
+            vb.lblRealAuthor.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -150,7 +165,9 @@ public class EditAuthorDialogFragment
         final Author originalAuthor = authorVm.getAuthor();
         final Author originalRealAuthor = originalAuthor.getRealAuthor();
 
-        //noinspection ConstantConditions
+        // We let this call go ahead even if real-author is switched off by the user
+        // so we can clean up as needed.
+        //noinspection DataFlowIssue
         if (!authorVm.validateAndSetRealAuthor(context, bookLocale, createRealAuthorIfNeeded)) {
             new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_baseline_warning_24)
@@ -196,7 +213,9 @@ public class EditAuthorDialogFragment
                             vb.givenNames.getText().toString().trim());
         currentEdit.setComplete(vb.cbxIsComplete.isChecked());
 
-        authorVm.setCurrentRealAuthorName(vb.realAuthor.getText().toString().trim());
+        if (authorVm.useRealAuthorName()) {
+            authorVm.setCurrentRealAuthorName(vb.realAuthor.getText().toString().trim());
+        }
     }
 
     @Override

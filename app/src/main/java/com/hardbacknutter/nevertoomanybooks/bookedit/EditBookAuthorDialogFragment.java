@@ -36,7 +36,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorContentBinding;
@@ -88,7 +87,8 @@ public class EditBookAuthorDialogFragment
         //noinspection ConstantConditions
         vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
         authorVm = new ViewModelProvider(this).get(EditAuthorViewModel.class);
-        authorVm.init(requireArguments());
+        //noinspection DataFlowIssue
+        authorVm.init(getContext(), requireArguments());
 
         final Bundle args = requireArguments();
         action = Objects.requireNonNull(args.getParcelable(EditAction.BKEY), EditAction.BKEY);
@@ -121,19 +121,35 @@ public class EditBookAuthorDialogFragment
         vb.givenNames.setText(currentEdit.getGivenNames());
         vb.givenNames.setAdapter(givenNameAdapter);
 
-        final ExtArrayAdapter<String> realNameAdapter = new ExtArrayAdapter<>(
-                context, R.layout.popup_dropdown_menu_item,
-                ExtArrayAdapter.FilterType.Diacritic,
-                vm.getAllAuthorNames());
-        vb.realAuthor.setText(authorVm.getCurrentRealAuthorName(), false);
-        vb.realAuthor.setAdapter(realNameAdapter);
-        autoRemoveError(vb.realAuthor, vb.lblRealAuthor);
+        setupRealAuthorField(context);
+        setupAuthorTypeField(currentEdit.getType());
 
         vb.cbxIsComplete.setChecked(currentEdit.isComplete());
 
-        final boolean useAuthorType = GlobalFieldVisibility
-                .isUsed(context, DBKey.AUTHOR_TYPE__BITMASK);
-        if (useAuthorType) {
+        vb.familyName.requestFocus();
+    }
+
+    private void setupRealAuthorField(final Context context) {
+        if (authorVm.useRealAuthorName()) {
+            vb.lblRealAuthorHeader.setVisibility(View.VISIBLE);
+            vb.lblRealAuthor.setVisibility(View.VISIBLE);
+
+            final ExtArrayAdapter<String> realNameAdapter = new ExtArrayAdapter<>(
+                    context, R.layout.popup_dropdown_menu_item,
+                    ExtArrayAdapter.FilterType.Diacritic,
+                    vm.getAllAuthorNames());
+            vb.realAuthor.setText(authorVm.getCurrentRealAuthorName(), false);
+            vb.realAuthor.setAdapter(realNameAdapter);
+            autoRemoveError(vb.realAuthor, vb.lblRealAuthor);
+
+        } else {
+            vb.lblRealAuthorHeader.setVisibility(View.GONE);
+            vb.lblRealAuthor.setVisibility(View.GONE);
+        }
+    }
+
+    private void setupAuthorTypeField(@Author.Type final int currentType) {
+        if (authorVm.useAuthorType()) {
             vb.btnUseAuthorType.setVisibility(View.VISIBLE);
             vb.btnUseAuthorType.setOnCheckedChangeListener((v, isChecked) -> {
                 setTypeEnabled(isChecked);
@@ -142,23 +158,20 @@ public class EditBookAuthorDialogFragment
 
             createTypeButtonList();
 
-            if (currentEdit.getType() == Author.TYPE_UNKNOWN) {
+            if (currentType == Author.TYPE_UNKNOWN) {
                 setTypeEnabled(false);
                 vb.authorTypeGroup.setVisibility(View.GONE);
             } else {
                 setTypeEnabled(true);
                 vb.authorTypeGroup.setVisibility(View.VISIBLE);
                 for (int i = 0; i < typeButtons.size(); i++) {
-                    typeButtons.valueAt(i).setChecked((currentEdit.getType()
-                                                       & typeButtons.keyAt(i)) != 0);
+                    typeButtons.valueAt(i).setChecked((currentType & typeButtons.keyAt(i)) != 0);
                 }
             }
         } else {
             vb.btnUseAuthorType.setVisibility(View.GONE);
             vb.authorTypeGroup.setVisibility(View.GONE);
         }
-
-        vb.familyName.requestFocus();
     }
 
     private void createTypeButtonList() {
@@ -228,6 +241,8 @@ public class EditBookAuthorDialogFragment
                 .getInstance().getLanguages()
                 .toLocale(context, vm.getBook().getString(DBKey.LANGUAGE));
 
+        // We let this call go ahead even if real-author is switched off by the user
+        // so we can clean up as needed.
         if (!authorVm.validateAndSetRealAuthor(context, bookLocale, createRealAuthorIfNeeded)) {
             new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_baseline_warning_24)
@@ -263,15 +278,19 @@ public class EditBookAuthorDialogFragment
                             vb.givenNames.getText().toString().trim());
         currentEdit.setComplete(vb.cbxIsComplete.isChecked());
 
-        authorVm.setCurrentRealAuthorName(vb.realAuthor.getText().toString().trim());
-
-        int type = Author.TYPE_UNKNOWN;
-        for (int i = 0; i < typeButtons.size(); i++) {
-            if (typeButtons.valueAt(i).isChecked()) {
-                type |= typeButtons.keyAt(i);
-            }
+        if (authorVm.useRealAuthorName()) {
+            authorVm.setCurrentRealAuthorName(vb.realAuthor.getText().toString().trim());
         }
-        currentEdit.setType(type);
+
+        if (authorVm.useAuthorType()) {
+            int type = Author.TYPE_UNKNOWN;
+            for (int i = 0; i < typeButtons.size(); i++) {
+                if (typeButtons.valueAt(i).isChecked()) {
+                    type |= typeButtons.keyAt(i);
+                }
+            }
+            currentEdit.setType(type);
+        }
     }
 
     @Override

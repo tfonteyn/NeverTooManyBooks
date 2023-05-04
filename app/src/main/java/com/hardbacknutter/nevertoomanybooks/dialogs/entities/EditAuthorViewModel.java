@@ -33,7 +33,10 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -49,29 +52,51 @@ public class EditAuthorViewModel
     /** The Author we're editing. */
     private Author author;
 
-    /** Current edit. */
+    /**
+     * Current edit. We don't use the real-author directly to avoid unneeded validation
+     * at each key-stroke from the user.
+     *
+     * @see #currentRealAuthorName
+     */
     private Author currentEdit;
     /** Current edit. */
     @Nullable
     private String currentRealAuthorName;
 
+    private boolean useRealAuthorName;
+    private boolean useAuthorType;
+
     /**
      * Pseudo constructor.
      *
-     * @param args {@link Fragment#getArguments()}
+     * @param context Current context
+     * @param args    {@link Fragment#getArguments()}
      */
-    public void init(@NonNull final Bundle args) {
+    public void init(@NonNull final Context context,
+                     @NonNull final Bundle args) {
         if (requestKey == null) {
-
             requestKey = Objects.requireNonNull(
                     args.getString(EditLauncher.BKEY_REQUEST_KEY), EditLauncher.BKEY_REQUEST_KEY);
             author = Objects.requireNonNull(
                     args.getParcelable(EditLauncher.BKEY_ITEM), EditLauncher.BKEY_ITEM);
 
+            useRealAuthorName = GlobalFieldVisibility
+                    .isUsed(context, DBKey.AUTHOR_REAL_AUTHOR);
+            useAuthorType = GlobalFieldVisibility
+                    .isUsed(context, DBKey.AUTHOR_TYPE__BITMASK);
+
             currentEdit = new Author(author);
             final Author tmp = currentEdit.getRealAuthor();
             currentRealAuthorName = tmp != null ? tmp.getFormattedName(false) : null;
         }
+    }
+
+    public boolean useRealAuthorName() {
+        return useRealAuthorName;
+    }
+
+    public boolean useAuthorType() {
+        return useAuthorType;
     }
 
     /**
@@ -104,6 +129,8 @@ public class EditAuthorViewModel
     }
 
     /**
+     * Check if there is a real-author set, and whether it is an existing one.
+     *
      * @param context    Current context
      * @param bookLocale Locale to use if the item has none set
      * @param create     {@code true} if a non-existent Author should be created
@@ -132,6 +159,14 @@ public class EditAuthorViewModel
             return true;
         }
 
+        // If for whatever reason we have a non-existing real-author set
+        // while the user has globally switched off support for real-author,
+        // we simply remove that real-author and return success.
+        if (!useRealAuthorName) {
+            currentEdit.setRealAuthor(null);
+            return true;
+        }
+
         if (!create) {
             // force the caller to ask the user to try again the 2nd time allowing creating.
             return false;
@@ -141,6 +176,7 @@ public class EditAuthorViewModel
             dao.insert(context, tmpRealAuthor, bookLocale);
             currentEdit.setRealAuthor(tmpRealAuthor);
             return true;
+
         } catch (@NonNull final DaoWriteException e) {
             // log, but ignore - should never happen unless disk full
             LoggerFactory.getLogger().e(TAG, e, tmpRealAuthor);
