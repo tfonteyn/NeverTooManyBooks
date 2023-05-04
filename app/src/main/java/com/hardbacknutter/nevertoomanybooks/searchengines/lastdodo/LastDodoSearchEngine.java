@@ -35,6 +35,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
@@ -67,7 +68,7 @@ public class LastDodoSearchEngine
                    SearchEngine.ByExternalId,
                    SearchEngine.ViewBookByExternalId {
 
-    private static final String PK_USE_BEDETHEQUE = "lastdodo.resolve.authors.bedetheque";
+    static final String PK_USE_BEDETHEQUE = "lastdodo.resolve.authors.bedetheque";
 
     /**
      * Param 1: external book ID; really a 'long'.
@@ -168,8 +169,9 @@ public class LastDodoSearchEngine
 
     @Nullable
     private AuthorResolver getAuthorResolver(@NonNull final Context context) {
-        if (PreferenceManager.getDefaultSharedPreferences(context)
-                             .getBoolean(PK_USE_BEDETHEQUE, false)) {
+        if (GlobalFieldVisibility.isUsed(context, DBKey.AUTHOR_REAL_AUTHOR)
+            && PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(PK_USE_BEDETHEQUE, false)) {
             return new BedethequeAuthorResolver(context, this);
         } else {
             return null;

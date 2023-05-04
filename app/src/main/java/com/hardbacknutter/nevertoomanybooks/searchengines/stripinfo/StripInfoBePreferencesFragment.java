@@ -35,6 +35,8 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.settings.ConnectionValidationBasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.BookshelfMapper;
@@ -55,6 +57,10 @@ public class StripInfoBePreferencesFragment
         super.onCreatePreferences(savedInstanceState, rootKey);
         init(R.string.site_stripinfo_be, StripInfoHandler.PK_ENABLED);
         setPreferencesFromResource(R.xml.preferences_site_stripinfo, rootKey);
+
+        //noinspection DataFlowIssue
+        findPreference(StripInfoSearchEngine.PK_USE_BEDETHEQUE)
+                .setEnabled(GlobalFieldVisibility.isUsed(getContext(), DBKey.AUTHOR_REAL_AUTHOR));
 
         //noinspection ConstantConditions
         findPreference(PSK_SYNC_OPTIONS)

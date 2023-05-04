@@ -48,6 +48,7 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -88,9 +89,9 @@ public class StripInfoSearchEngine
                    SearchEngine.ByBarcode {
 
     public static final String COLLECTION_FORM_URL = "/ajax_collectie.php";
+    static final String PK_USE_BEDETHEQUE = "stripinfo.resolve.authors.bedetheque";
     /** Log tag. */
     private static final String TAG = "StripInfoSearchEngine";
-    private static final String PK_USE_BEDETHEQUE = "stripinfo.resolve.authors.bedetheque";
     /** Color string values as used on the site. Complete 2019-10-29. */
     private static final String COLOR_STRINGS = "Kleur|Zwart/wit|Zwart/wit met steunkleur";
     /** Param 1: external book ID; really a 'long'. */
@@ -144,8 +145,9 @@ public class StripInfoSearchEngine
 
     @Nullable
     private AuthorResolver getAuthorResolver(@NonNull final Context context) {
-        if (PreferenceManager.getDefaultSharedPreferences(context)
-                             .getBoolean(PK_USE_BEDETHEQUE, false)) {
+        if (GlobalFieldVisibility.isUsed(context, DBKey.AUTHOR_REAL_AUTHOR)
+            && PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(PK_USE_BEDETHEQUE, false)) {
             return new BedethequeAuthorResolver(context, this);
         } else {
             return null;
