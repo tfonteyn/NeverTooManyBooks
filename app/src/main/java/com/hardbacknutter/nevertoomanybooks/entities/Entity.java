@@ -44,6 +44,7 @@ public interface Entity {
 
     /**
      * Get the label to use for <strong>displaying</strong>.
+     * Suitable for (and may contain) HTML output.
      * <p>
      * Convenience method to {@link #getLabel(Context, Details, Style)}.
      *
@@ -58,6 +59,7 @@ public interface Entity {
 
     /**
      * Get the label to use for <strong>displaying</strong>.
+     * Suitable for (and may contain) HTML output.
      *
      * @param context Current context
      * @param details the amount of details wanted
