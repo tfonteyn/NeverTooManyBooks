@@ -25,7 +25,18 @@ import androidx.annotation.NonNull;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
+@FunctionalInterface
 public interface AuthorResolver {
+
+    /**
+     * Update the given {@link Author} with any missing diacritics and resolve pen-names.
+     *
+     * @param author to lookup
+     *
+     * @return {@code true} if the {@link Author} was modified; {@code false} otherwise
+     *
+     * @throws CredentialsException on authentication/login failures
+     */
     boolean resolve(@NonNull Author author)
             throws SearchException, CredentialsException;
 }

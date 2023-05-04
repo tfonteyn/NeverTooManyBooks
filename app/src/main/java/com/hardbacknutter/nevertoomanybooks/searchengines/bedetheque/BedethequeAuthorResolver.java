@@ -108,13 +108,6 @@ public class BedethequeAuthorResolver
         return Character.isAlphabetic(c1) ? c1 : '0';
     }
 
-    /**
-     * Update the given {@link Author} with any missing diacritics and resolve pen-names.
-     *
-     * @param author to lookup
-     *
-     * @return {@code true} if the {@link Author} was modified; {@code false} otherwise
-     */
     @Override
     public boolean resolve(@NonNull final Author author)
             throws SearchException, CredentialsException {
