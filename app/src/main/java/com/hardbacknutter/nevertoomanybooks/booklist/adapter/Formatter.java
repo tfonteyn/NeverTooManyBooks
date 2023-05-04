@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
-import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
@@ -130,8 +129,7 @@ class Formatter
                         final Optional<Author> realAuthor = authorDaoSupplier
                                 .get().getById(realAuthorId);
                         if (realAuthor.isPresent()) {
-                            return realAuthor.get()
-                                             .getStyledName(context, Details.Normal, style, text);
+                            return realAuthor.get().getStyledName(context, style, text);
                         }
                     }
                 }

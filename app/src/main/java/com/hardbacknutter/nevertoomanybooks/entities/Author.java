@@ -762,92 +762,86 @@ public class Author
     }
 
     /**
-     * TODO: try to unify this with {@link Entity#getLabel(Context, Details, Style)}
-     *  using a either the Details object or a new style flag to decide whether
-     *  to add the realAuthor name
+     * Syntax sugar for {@link #getStyledName(Context, Style, CharSequence)}.
      * <p>
-     * Syntax sugar for {@link #getStyledName(Context, Details, Style, CharSequence)}.
-     * <p>
-     * <strong>IMPORTANT:</strong> will only display correctly when used with a TextView.
+     * <strong>IMPORTANT: will only display correctly when used with a TextView.</strong>
      * <p>
      * Call this method if {@code this} is the pseudonym Author itself; otherwise call
-     * {@link #getStyledName(Context, Details, Style, Author)} or
-     * {@link #getStyledName(Context, Details, Style, CharSequence)}.
+     * {@link #getStyledName(Context, Style, Author)} or
+     * {@link #getStyledName(Context, Style, CharSequence)}.
      * <p>
      * If this Author is a pseudonym, then the return value will be a 2-lines styled
      * {@link SpannableString} with both pen-name and real-name of this Author.
      *
      * @param context Current context
-     * @param details the amount of details wanted
      * @param style   (optional) to use
      *
      * @return styled and formatted name
      */
     @NonNull
     public CharSequence getStyledName(@NonNull final Context context,
-                                      @NonNull final Details details,
                                       @Nullable final Style style) {
-        final CharSequence name = getStyledName(context, details, style, (CharSequence) null);
+        final CharSequence name = getStyledName(context, style, (CharSequence) null);
         if (realAuthor == null) {
             return name;
         } else {
-            return realAuthor.getStyledName(context, details, style, name);
+            return realAuthor.getStyledName(context, style, name);
         }
     }
 
     /**
-     * Syntax sugar for {@link #getStyledName(Context, Details, Style, CharSequence)}.
+     * Syntax sugar for {@link #getStyledName(Context, Style, CharSequence)}.
      * <p>
-     * <strong>IMPORTANT:</strong> will only display correctly when used with a TextView.
+     * <strong>IMPORTANT: will only display correctly when used with a TextView.</strong>
      *
      * @param context   Current context
-     * @param details   the amount of details wanted
      * @param style     (optional) to use
      * @param pseudonym optional Author to combine with the actual name
      *
      * @return styled and formatted name
      *
-     * @see #getStyledName(Context, Details, Style, CharSequence)
+     * @see #getStyledName(Context, Style, CharSequence)
      */
     @NonNull
     public CharSequence getStyledName(@NonNull final Context context,
-                                      @NonNull final Details details,
                                       @Nullable final Style style,
                                       @Nullable final Author pseudonym) {
         final CharSequence penName =
-                pseudonym == null ? null : pseudonym.getStyledName(context, details, style,
+                pseudonym == null ? null : pseudonym.getStyledName(context, style,
                                                                    (CharSequence) null);
-        return getStyledName(context, details, style, penName);
+        return getStyledName(context, style, penName);
     }
 
     /**
+     * TODO: try to unify this with {@link Entity#getLabel(Context, Details, Style)}
+     *  using a either the Details object or a new style flag to decide whether
+     *  to add the realAuthor name
+     * <p>
      * Return the <strong>styled and formatted</strong> version of the name
      * combined with the given pseudonym.
      * <p>
-     * <strong>IMPORTANT:</strong> will only display correctly when used with a TextView.
+     * <strong>IMPORTANT: will only display correctly when used with a TextView.</strong>
      * <p>
      * Call this method if {@code this} is the real Author; otherwise call
-     * {@link #getStyledName(Context, Details, Style)}.
+     * {@link #getStyledName(Context, Style)}.
      * <p>
-     * If this Author has a pseudonym, then the return value will be a 2-lines styled
+     * If this Author has a pseudonym, then the return value will be a styled
      * {@link SpannableString} with both pseudonym and real name of this Author.
      *
      * @param context Current context
-     * @param details the amount of details wanted
      * @param style   (optional) to use
      * @param penName optional Author pen-name to combine with the actual name
      *
      * @return styled and formatted name
      *
-     * @see #getStyledName(Context, Details, Style, Author)
+     * @see #getStyledName(Context, Style, Author)
      */
     @NonNull
     public CharSequence getStyledName(@NonNull final Context context,
-                                      @NonNull final Details details,
                                       @Nullable final Style style,
                                       @Nullable final CharSequence penName) {
 
-        final String realName = getLabel(context, details, style);
+        final String realName = getFormattedName(context, style);
 
         if (penName == null) {
             return realName;
@@ -856,11 +850,12 @@ public class Author
             final String filteredPenName = filterLtG(penName.toString());
 
             // Display the pseudonym as the 'normal' Author, but add the real
-            // author ('this') name in a smaller font and slightly indented,
-            // as a second line underneath.
-            final String fullName = String.format("%1s\n   %2s", filteredPenName, realName);
-            final SpannableString span = new SpannableString(fullName);
+            // author ('this') name in a smaller italic font.
+            final String fullName =
+                    String.format("%1s %2s", filteredPenName,
+                                  context.getString(R.string.lbl_author_pseudonym_of_X, realName));
 
+            final SpannableString span = new SpannableString(fullName);
             final float relSize = ResourcesCompat
                     .getFloat(context.getResources(), R.dimen.bob_author_pseudonym_size);
             span.setSpan(new RelativeSizeSpan(relSize),
