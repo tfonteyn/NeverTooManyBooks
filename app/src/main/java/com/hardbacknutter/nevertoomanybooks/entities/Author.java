@@ -688,7 +688,7 @@ public class Author
      * <ul>
      *     <li>{@link Details#Full}: standard formatted name combined
      *          (if enabled) with the real-author name.
-     *          (if enabled) with the author type. The latter uses HTML formatting.
+     *          (if enabled) with the author type.
      *     </li>
      *     <li>{@link Details#Normal}, {@link Details#AutoSelect}: standard formatted name.</li>
      *     <li>{@link Details#Short}: initial + family-name</li>
