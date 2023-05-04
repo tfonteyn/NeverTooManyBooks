@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,24 +17,23 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
-    <!ENTITY APP_NAME "NeverTooManyBooks">
-    ]>
-<!-- Quotes “...”  (older «…» are no longer used as verified with a native speaker) - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine -->
-<resources xmlns:tools="http://schemas.android.com/tools"
-           tools:locale="pt">
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
+<!-- Quotes “...”  (older «…» are no longer used as verified with a native speaker) - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pt">
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d livro exibido</item>
+        <item quantity="many"></item>
         <item quantity="other">A exibir %1$d livros</item>
     </plurals>
     <plurals name="n_books_found">
         <item quantity="one">%1$d livro encontrado</item>
+        <item quantity="many"></item>
         <item quantity="other">%1$d livros encontrados</item>
     </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s estrela</item>
+        <item quantity="many"></item>
         <item quantity="other">%1$s estrelas</item>
     </plurals>
     <string name="X_action_clear_credentials">Limpar credenciais</string>
@@ -622,8 +620,7 @@
     <string name="lbl_details_have_changed">Os detalhes mudaram</string>
     <string name="lbl_import">Importar</string>
     <string name="lbl_covers">Capas</string>
-    <string name="info_x_pages"
-            tools:ignore="PluralsCandidate">%1$d páginas</string>
+    <string name="info_x_pages" tools:ignore="PluralsCandidate">%1$d páginas</string>
     <string name="lbl_price_listed">Preço de tabela</string>
     <string name="lbl_condition">Condição</string>
     <string name="lbl_date_added_month">Mês de Adição</string>
