@@ -367,8 +367,8 @@
     <string name="tip_booklist_style_groups">You can use this screen to modify the hierarchy of headings for a specific booklist style. A “tick” indicates the heading will be shown in the list, “un-tick” to hide it and vice versa.  You can re-order the hierarchy by dragging the icon at the extreme right of each row up or down.</string>
     <string name="tip_booklist_style_properties">You can use this screen to set the characteristics of a specific booklist style. You can change the name, edit the groupings to change the hierarchy, and adjust a variety of other preferences to build a style that you find useful.</string>
     <string name="tip_import_isbn_list">Import a text file with ISBN numbers. The file should have a single ISBN on each line. The results will be placed in the queue.</string>
-    <string name="tip_authors_book_may_appear_more_than_once">If shown for every author, a single book may appear more than once in a list. In such a case deleting one of those books will delete all instances from the list.</string>
-    <string name="tip_series_book_may_appear_more_than_once">If shown in every series, a single book may appear more than once in a list. In such a case deleting one of those books will delete all instances from the list.</string>
+    <string name="tip_authors_book_may_appear_more_than_once">If books are shown for every author of the book, they may appear multiple times in the list. Deleting one of those books has the effect of removing all copies from the list.</string>
+    <string name="tip_series_book_may_appear_more_than_once">If books are shown in all series to which the book belongs, they may appear multiple times in the list. Deleting one of those books has the effect of removing all copies from the list.</string>
     <string name="tip_autorotate_camera_images">If you find yourself always rotating camera images in the same direction, try changing the application preferences to specify a rotation to apply automatically.</string>
     <!-- Tip text displayed when user enters the 'read-only' book view -->
     <string name="tip_view_only_help">You can swipe left or right to navigate to other books.</string>
@@ -1040,8 +1040,8 @@
     <!-- progress final message - all data was exported. -->
     <string name="info_backup_successful">Backup successful</string>
     <string name="info_export_successful">Export successful</string>
-    <!-- progress final message - displayed when a Backup is done: 1: folder; 2: filename; 3: file size -->
-    <string name="info_export_report">A %3$s file called “%2$s” was created in the “%1$s” folder and you should manually copy it elsewhere to protect the data in case your device is damaged, lost, or stolen.</string>
+    <!-- progress final message - displayed when a Backup is done: 1: file size; 2: filename.  -->
+    <string name="info_export_report">A %1$s file called “%2$s” was created in the selected folder and you should manually copy it elsewhere to protect the data in case your device is damaged, lost, or stolen.</string>
     <string name="info_backup_email_subject"
             translatable="false">@string/lbl_backup</string>
     <!-- Dialog import all options. -->

@@ -195,7 +195,7 @@
     <string name="confirm_merge_series">Série, kterou přejmenujete, již existuje. Chcete je sloučit?</string>
     <string name="confirm_overwrite_cover">Toto aktualizuje pouze vybraná pole, ale náhledy budou staženy pro VŠECHNY knihy.
 \n
-\nChcete přepsat všechny existující náhledy\? Pozor, může to chvíli trvat.</string>
+\nChcete přepsat všechny existující náhledy ? Pozor, může to chvíli trvat.</string>
     <string name="confirm_rebuild_fts">Po restartování aplikace se data indexu vyhledávání znovu vytvoří. Jste si jistý, že chcete pokračovat ?</string>
     <string name="confirm_rebuild_index">Po restartování aplikace se indexy znovu sestaví. Jste si jistý, že chcete pokračovat ?</string>
     <string name="confirm_rebuild_orderby_columns">Po restartování aplikace dojde k opětovnému vytvoření třídicích dat. Jste si jistý, že chcete pokračovat ?</string>
@@ -551,7 +551,7 @@
     <string name="preference_not_set">Nenastaveno</string>
     <string name="info_backup_successful">Zálohování proběhlo úspěšně</string>
     <string name="info_download_successful">Stahování bylo úspěšné</string>
-    <string name="info_export_report">Soubor %3$s nazvaný „%2$s“ byl vytvořen v adresáři „%1$s“ a měli byste jej ručně zkopírovat jinam, aby byla data chráněna v případě poškození, ztráty nebo odcizení zařízení.</string>
+    <string name="info_export_report">Ve vybrané složce byl vytvořen soubor %1$s s názvem „%2$s“. Měli byste jej ručně zkopírovat jinam, abyste ochránili data pro případ poškození, ztráty nebo krádeže zařízení.</string>
     <string name="info_export_successful">Export byl úspěšný</string>
     <string name="info_import_complete">Import byl dokončen</string>
     <string name="info_import_partially_complete">Částečný import byl dokončen</string>
@@ -637,7 +637,7 @@
     <string name="style_type_user_defined">Definován uživatelem</string>
     <string name="X_lbl_system">(Systém)</string>
     <string name="lbl_system_default">(Výchozí nastavení systému)</string>
-    <string name="tip_authors_book_may_appear_more_than_once">Při zobrazení pod každým autorem se může stát, že jedna kniha se objeví v seznamu vícekrát - pokud však v takovém případě odstraníte kterýkoli z těchto záznamů, budou odstraněny všechny.</string>
+    <string name="tip_authors_book_may_appear_more_than_once">Pokud jsou knihy zobrazeny u každého autora knihy, mohou se v seznamu objevit vícekrát. Odstranění jedné z těchto knih má za následek odstranění všech kopií ze seznamu.</string>
     <string name="tip_authors_works">Použité ikony</string>
     <string name="tip_authors_works_book">Kniha.</string>
     <string name="tip_authors_works_multiple_books">Titul se vyskytuje ve více knihách.</string>
@@ -651,7 +651,7 @@
     <string name="tip_dialog_title">Rada</string>
     <string name="tip_reset_all">Obnovit rady</string>
     <string name="tip_reset_done">Rady byly obnoveny</string>
-    <string name="tip_series_book_may_appear_more_than_once">Při zobrazení pod každou sérií se může stát, že jedna kniha se objeví v seznamu vícekrát - pokud však v takovém případě odstraníte kterýkoli z těchto záznamů, budou odstraněny všechny.</string>
+    <string name="tip_series_book_may_appear_more_than_once">Pokud jsou knihy zobrazeny ve všech sériích, do kterých kniha patří, mohou se v seznamu objevit vícekrát. Odstranění jedné z těchto knih má za následek odstranění všech výtisků ze seznamu.</string>
     <string name="tip_update_fields_from_internet">Externí odkazy na stránky jsou zpracovány pouze v případě, že je web skutečně kontaktován. Výsledkem je, že nabídka „Výhled na…“ také ukáže pouze to, co je k dispozici.</string>
     <string name="tip_view_only_help">Můžete posouvat doleva nebo doprava a přejít k dalším knihám.</string>
     <string name="info_cleanup_files">Dočasné soubory momentálně zabírají %1$s na SD kartě. Logovací soubory a další data jsou ukládána na SD kartu při každé aktualizaci, při zálohování databáze, nebo při pádu aplikace. Stiskněte tlačítko níže pro odstranění těchto dat. Pokud jste se však v minulosti setkal s pádem aplikace, nebo dalšími problémy při jejím používání, uvažujte prosím nejprve o zaslání těchto informací prostřednictvím tlačítka „%2$s“.</string>
@@ -683,7 +683,7 @@
     <string name="vldt_read_start_after_end">Datum začátku čtení musí předcházet datu ukončení čtení</string>
     <string name="vldt_real_expected_for_x">Očekáváno reálné číslo pro „%1$s“</string>
     <string name="warning_already_in_list">Již v seznamu!</string>
-    <string name="warning_backup_request">Přejete si zálohovat Vaši databázi na SD kartu\?</string>
+    <string name="warning_backup_request">Přejete si zálohovat Vaši databázi na SD kartu ?</string>
     <string name="warning_book_not_always_found">Ne všechny weby vrátily platná data.</string>
     <string name="warning_book_not_found">Nepodařilo se nalézt zadanou knihu.</string>
     <string name="warning_cannot_delete_1st_bs">Nelze smazat defaultní knihovnu.</string>

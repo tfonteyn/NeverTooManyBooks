@@ -361,12 +361,11 @@ public class ExportFragment
                 final UriInfo uriInfo = new UriInfo(helper.getUri());
                 final long size = uriInfo.getSize(getContext());
 
-                // We cannot get the folder name for the file.
-                // FIXME: We need to change the descriptive string not to include the folder.
+                // Reminder: we can't get/display the folder name for the file.
                 msg.append("\n\n")
-                   .append(getString(R.string.info_export_report, "",
-                                     uriInfo.getDisplayName(getContext()),
-                                     FileSize.format(getContext(), size)));
+                   .append(getString(R.string.info_export_report,
+                                     FileSize.format(getContext(), size),
+                                     uriInfo.getDisplayName(getContext())));
 
                 if (size > 0 && size < MAX_FILE_SIZE_FOR_EMAIL) {
                     msg.append("\n\n").append(getString(R.string.confirm_email_file));

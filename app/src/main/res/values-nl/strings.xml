@@ -254,13 +254,13 @@
     <string name="info_download_successful">Download succesvol</string>
     <string name="info_export_backup_all">Alle boeken, afbeeldingen, instellingen en aangepaste stijlen zullen worden geëxporteerd naar het archief.</string>
     <string name="info_export_books_option_since_last_full_backup">Alle boeken die zijn toegevoegd of bijgewerkt sinds de laatste volledige back-up.</string>
-    <string name="info_export_report">Een %3$s bestand met de naam %2$s is aangemaakt in de „%1$s” folder. We raden aan dit bestand naar een ander plek te kopiëren om de gegevens veilig te stellen in geval uw apparaat wordt gestolen, beschadigd of verloren raakt.</string>
+    <string name="info_export_report">Een %1$s bestand genaamd „%2$s” werd aangemaakt in de geselecteerde map. U moet het handmatig naar elders kopiëren om de gegevens te beschermen in geval van beschadiging, verlies of diefstal van uw apparaat.</string>
     <string name="info_export_successful">Export succesvol</string>
     <string name="info_import_complete">Import Compleet</string>
     <string name="info_import_partially_complete">Gedeeltelijke import voltooid</string>
     <string name="info_isfdb_warning_limited_to">(alleen ondersteund door de ISFDB-website)</string>
     <string name="info_purge_blns_all">Wis de node status van alle lijsten</string>
-    <string name="info_purge_blns_item_name">Wis de node status van %1$s „%2$s” \?</string>
+    <string name="info_purge_blns_item_name">Wis de node status van %1$s „%2$s” ?</string>
     <string name="info_rebuild_scheduled">Herbouw gepland</string>
     <string name="info_select_fields_to_update">De geselecteerde velden zullen worden bijgewerkt vanaf het internet. Niet geselecteerde velden blijven onveranderd.</string>
     <string name="info_share_book_im_reading">Ik lees %1$s %2$s door %3$s %4$s</string>
@@ -268,7 +268,7 @@
     <string name="info_story_in_single_book">„%1$s” is present in één enkel book:\n\n%2$s</string>
     <string name="info_tap_on_image_to_select">Tik op de grotere afbeelding om deze te selecteren.</string>
     <string name="info_tap_on_thumbnail_to_zoom">Tik op een miniatuur om een grotere afbeelding weer te geven.</string>
-    <string name="info_x_pages">%1$d pagina\'s</string>
+    <string name="info_x_pages">%1$d pagina’s</string>
     <string name="lbl_about">Over deze App</string>
     <string name="lbl_about_contact">Contact:</string>
     <string name="lbl_add_book">Boek Toevoegen</string>
@@ -394,7 +394,7 @@
     <string name="lbl_name">Naam</string>
     <string name="lbl_number">Aantal</string>
     <string name="lbl_owned">In bezit</string>
-    <string name="lbl_pages">Pagina\'s</string>
+    <string name="lbl_pages">Pagina’s</string>
     <string name="lbl_personal_notes">Aantekeningen</string>
     <string name="lbl_price_listed">Lijstprijs</string>
     <string name="lbl_price_paid">Betaald</string>
@@ -663,7 +663,7 @@
     <string name="style_builtin_compact">Compact</string>
     <string name="style_type_builtin">Ingebouwd</string>
     <string name="style_type_user_defined">Gebruiker-gedefinieerd</string>
-    <string name="tip_authors_book_may_appear_more_than_once">Als boeken worden getoond met alle auteurs, kunnen ze meermalen voorkomen in de lijst. Het verwijderen van één van die boeken heeft tot gevolg dat alle exemplaren worden verwijderd uit de lijst.</string>
+    <string name="tip_authors_book_may_appear_more_than_once">Als boeken worden getoond onder alle auteurs van het boek, kunnen ze meerdere keren voorkomen in de lijst. Het verwijderen van één van die boeken heeft tot gevolg dat alle exemplaren worden verwijderd uit de lijst.</string>
     <string name="tip_authors_works">Gebruikte pictogrammen</string>
     <string name="tip_authors_works_book">Boek.</string>
     <string name="tip_authors_works_multiple_books">De titel komt in meerdere boeken voor.</string>
@@ -678,7 +678,7 @@
     <string name="tip_import_isbn_list">Importeer een tekstbestand met ISBN-nummers. Het bestand moet op elke regel één enkel ISBN-nummer hebben. De resultaten worden in de wachtrij geplaatst.</string>
     <string name="tip_reset_all">Herstel aanwijzingen</string>
     <string name="tip_reset_done">Aanwijzingen zijn hersteld</string>
-    <string name="tip_series_book_may_appear_more_than_once">Als boeken worden getoond in alle reeksen, kunnen ze meermalen voorkomen in de lijst. Het verwijderen van één van die boeken heeft tot gevolg dat alle exemplaren worden verwijderd uit de lijst.</string>
+    <string name="tip_series_book_may_appear_more_than_once">Als boeken worden getoond in alle series waartoe het boek behoort, kunnen ze meerdere keren voorkomen in de lijst. Het verwijderen van een van die boeken heeft tot gevolg dat alle exemplaren uit de lijst worden verwijderd.</string>
     <string name="tip_update_fields_from_internet">Externe sitekoppelingen worden alleen verwerkt als er daadwerkelijk contact met de site wordt gemaakt. Als gevolg hiervan zal het menu „Bekijk op…” eveneens alleen weergeven wat beschikbaar is.</string>
     <string name="tip_view_only_help">Je kan naar link en rechts vegen om naar andere boeken te gaan.</string>
     <string name="title_backup_and_export">Back-up en export</string>
@@ -698,7 +698,7 @@
     <string name="vldt_real_author_must_be_valid">Moet leeg zijn of een bestaande auteur zijn</string>
     <string name="vldt_real_expected_for_x">Verwachtte een echt nummer voor „%1$s”</string>
     <string name="warning_already_in_list">Al in de lijst!</string>
-    <string name="warning_backup_request">Wil je een back-up van uw database op uw SD kaart maken\?</string>
+    <string name="warning_backup_request">Wil je een back-up van uw database op uw SD kaart maken ?</string>
     <string name="warning_book_not_always_found">Niet alle sites hebben geldige gegevens geretourneerd.</string>
     <string name="warning_book_not_found">Kan gespecificeerd boek niet vinden.</string>
     <string name="warning_cannot_delete_1st_bs">De eerste boekenplank kan niet verwijderd worden.</string>
@@ -718,7 +718,7 @@
     <string name="warning_no_search_data_for_active_sites">Geen geldige zoekgegevens voor actieve sites.</string>
     <string name="warning_no_site_supports_this_method">WAARSCHUWING: geen van de momenteel geselecteerde sites ondersteunt zoeken op %1$s. Gebruik het sitemenu om alternatieve sites in te schakelen, of gebruik een andere zoekmethode.</string>
     <string name="warning_nothing_selected">Niets geselecteerd</string>
-    <string name="warning_requires_at_least_1_field">Er moet op z\'n minst een veld ingevuld zijn.</string>
+    <string name="warning_requires_at_least_1_field">Er moet op z’n minst één veld ingevuld zijn.</string>
     <string name="warning_requires_isbn">Voor deze actie is een geldig ISBN-nummer vereist.</string>
     <string name="warning_requires_site_and_id">Selecteer een website en voer een ID in.</string>
     <string name="warning_select_at_least_1_field">Selecteer tenminste één veld om te updaten.</string>
@@ -732,7 +732,7 @@
     <string name="x_of_y">%1$d van %2$d</string>
     <string name="yes">Ja</string>
     <string name="lbl_country">Land</string>
-    <string name="pt_search_show_shopping_options">Toon shopping menu\'s</string>
+    <string name="pt_search_show_shopping_options">Toon shopping menu’s</string>
     <string name="lbl_standardize">Standaardiseren</string>
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
 </resources>

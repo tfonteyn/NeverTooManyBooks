@@ -555,7 +555,7 @@
     <string name="preference_not_set">Sin definir</string>
     <string name="info_backup_successful">Copia de seguridad correcta</string>
     <string name="info_download_successful">Descarga exitosa</string>
-    <string name="info_export_report">Se ha creado un fichero de %3$s llamado %2$s en el directorio «%1$s». Debe copiarlo a otro lugar para proteger los datos en caso de que su dispositivo resulte dañado, se pierda o sea robado.</string>
+    <string name="info_export_report">Se ha creado un archivo %1$s llamado «%2$s» en la carpeta seleccionada. Deberías copiarlo manualmente en otro lugar para proteger los datos en caso de que tu dispositivo se dañe, se pierda o te lo roben.</string>
     <string name="info_export_successful">Exportación exitosa</string>
     <string name="info_import_complete">Importación finalizada</string>
     <string name="info_import_partially_complete">Importación parcial realizada</string>
@@ -644,7 +644,7 @@
     <string name="style_type_user_defined">Definido por el usuario</string>
     <string name="X_lbl_system">(Sistema)</string>
     <string name="lbl_system_default">(Predeterminados del sistema)</string>
-    <string name="tip_authors_book_may_appear_more_than_once">Si se muestra para cada autor, un mismo libro puede aparecer más de una vez en un listado. En ese caso, si se elimina uno de esos libros se eliminará de todas las posiciones del listado.</string>
+    <string name="tip_authors_book_may_appear_more_than_once">Si se muestran libros para cada autor del libro, pueden aparecer varias veces en la lista. Borrar uno de esos libros tiene el efecto de eliminar todas las copias de la lista.</string>
     <string name="tip_authors_works">Iconos utilizados</string>
     <string name="tip_authors_works_book">Libro.</string>
     <string name="tip_authors_works_multiple_books">El título está presente en varios libros.</string>
@@ -658,7 +658,7 @@
     <string name="tip_dialog_title">Sugerencia</string>
     <string name="tip_reset_all">Resetear sugerencias</string>
     <string name="tip_reset_done">Sugerencias reseteadas</string>
-    <string name="tip_series_book_may_appear_more_than_once">Si se muestra en cada serie, un mismo libro puede aparecer más de una vez en un listado. En ese caso, si se elimina uno de esos libros se eliminará de todas las posiciones del listado.</string>
+    <string name="tip_series_book_may_appear_more_than_once">Si los libros se muestran en todas las series a las que pertenece el libro, pueden aparecer varias veces en la lista. Borrar uno de esos libros tiene el efecto de eliminar todas las copias de la lista.</string>
     <string name="tip_update_fields_from_internet">Los enlaces externos del sitio solo se procesan si se contacta realmente con el sitio. Como resultado, el menú «Ver en…» solo mostrará lo que está disponible.</string>
     <string name="tip_view_only_help">Puede deslizar la pantalla a derecha o izquierda para ver otros libros.</string>
     <string name="info_cleanup_files">Los ficheros que se pueden eliminar ocupan %1$s en la tarjeta SD. Cada vez que se actualiza la versión de &APP_NAME;, al hacer una copia de seguridad o cuando falla la aplicación se crean ficheros de registro en la tarjeta SD. Pulse el botón siguiente para eliminarlos. Si ha detectado algún error, le agradeceremos que utilice primero la opción de «%2$s».</string>

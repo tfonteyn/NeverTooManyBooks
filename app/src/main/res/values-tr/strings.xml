@@ -227,12 +227,12 @@
     <string name="error_import_failed_for_record">İçe aktarma başarısız (%1$s).</string>
     <string name="error_import_file_not_supported">Seçilen dosya içe aktarılamaz.</string>
     <string name="error_network_failed_try_again">Bağlantıyı kontrol edip tekrar deneyin.</string>
-    <string name="error_network_please_connect">Lütfen İnternet\'e bağlanın.</string>
-    <string name="error_network_site_access_failed">%1$s\'e erişilirken bir ağ sorunu oluştu. Lütfen web sitesinin açık olup olmadığını kontrol edin ve sorun devam ederse lütfen destek ile iletişime geçin.</string>
+    <string name="error_network_please_connect">Lütfen İnternet’e bağlanın.</string>
+    <string name="error_network_site_access_failed">%1$s’e erişilirken bir ağ sorunu oluştu. Lütfen web sitesinin açık olup olmadığını kontrol edin ve sorun devam ederse lütfen destek ile iletişime geçin.</string>
     <string name="error_no_image_editor">Resim editörü bulunamadı.</string>
     <string name="error_search_could_not_be_started">Kitap araması başarısız oldu.</string>
-    <string name="error_search_failed_network">Lütfen Ayarlar\'ı açın ve ağ ve Arama Sitesi tercihlerinizi kontrol edin.\nAyrıca cihaz ağ ayarlarınızı da kontrol edin.</string>
-    <string name="error_search_x_failed_y">%1$s\'de arama başarısız oldu: %2$s</string>
+    <string name="error_search_failed_network">Lütfen Ayarlar’ı açın ve ağ ve Arama Sitesi tercihlerinizi kontrol edin.\nAyrıca cihaz ağ ayarlarınızı da kontrol edin.</string>
+    <string name="error_search_x_failed_y">%1$s’de arama başarısız oldu: %2$s</string>
     <string name="error_site_authentication_failed">%1$s kimlik doğrulaması başarısız oldu</string>
     <string name="error_site_authorization_failed">%1$s yetkilendirmesi bir hataya neden oldu.</string>
     <string name="error_storage_no_space_left">Mevcut depolama yetersiz.</string>
@@ -242,11 +242,11 @@
     <string name="error_unknown_host">“%1$s” adresindeki hizmetle bağlantı sorunu oluştu.</string>
     <string name="error_unexpected_long">Beklenmedik bir sorun oluştu. Sorun devam ederse, ayarlar sayfasının altındaki “%1$s” seçeneğini kullanarak desteğe başvurun.</string>
     <string name="error_unsupported_version_v">Desteklenmeyen sürüm: %1$d</string>
-    <string name="error_upgrade_not_supported">%1$s\'ten daha eski sürümlerden yükseltme desteklenmez.</string>
+    <string name="error_upgrade_not_supported">%1$s’ten daha eski sürümlerden yükseltme desteklenmez.</string>
     <string name="option_fab_add_book_by_barcode_scan">Barkod tara</string>
     <string name="option_fab_add_book_by_barcode_scan_batch">Barkodları toplu olarak tarayın</string>
     <string name="option_fab_add_book_by_external_id">Web sitesi kitap kimliği</string>
-    <string name="option_fab_add_book_by_internet_search">Genelağ\'da ara</string>
+    <string name="option_fab_add_book_by_internet_search">Genelağ’da ara</string>
     <string name="option_fab_add_book_by_isbn">ISBN gir</string>
     <string name="option_fab_add_book_manually">El ile ekle</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
@@ -257,7 +257,7 @@
     <string name="httpErrorFileNotFound">İstenen dosya bulunamadı.</string>
     <string name="httpErrorTimeout">Sunucuya bağlanma işlemi zaman aşımına uğradı.</string>
     <string name="info_authorized">Yetkilendirilmiş</string>
-    <string name="option_moving_covers_from_x_to_y">Tüm kapakları “%1$s”\'den “%2$s”\'ye taşıyın</string>
+    <string name="option_moving_covers_from_x_to_y">Tüm kapakları “%1$s”’den “%2$s”’ye taşıyın</string>
     <string name="option_isfdb_menu_populate_toc">Kitap adlarını kendiliğinden doldur (ISFDB)</string>
     <string name="info_isfdb_warning_limited_to">(yalnızca ISFDB web sitesi tarafından desteklenir)</string>
     <string name="size_kilobytes">%1$.2fkB</string>
@@ -501,7 +501,7 @@
     <string name="option_lend_out_book">Kitabı ödünç ver…</string>
     <string name="option_lend_return_book">Ödünç alınan kitap geri döndü</string>
     <string name="option_purge_bedetheque_authors_cache">Bedetheque Yazar önbelleğini temizle</string>
-    <string name="option_rebuild_fts">FTS\'yi yeniden yapıla</string>
+    <string name="option_rebuild_fts">FTS’yi yeniden yapıla</string>
     <string name="option_rebuild_index">Dizini yeniden oluştur</string>
     <string name="option_set_complete">“Tamamla” olarak ayarla</string>
     <string name="option_download_set_folder">İndirme klasörünü ayarlayın</string>
@@ -519,7 +519,7 @@
     <string name="notification_channel_info">Bilgi</string>
     <string name="notification_channel_warn">Uyarı</string>
     <string name="password">şifre</string>
-    <string name="option_bob_filter_isbn_no">ISBN\'siz</string>
+    <string name="option_bob_filter_isbn_no">ISBN’siz</string>
     <string name="option_bob_filter_isbn_yes">ISBN ile</string>
     <string name="option_bob_filter_lend_out_no">Mevcut kitaplar</string>
     <string name="option_bob_filter_lend_out_yes">Borç kitapları</string>
@@ -548,7 +548,7 @@
     <string name="preference_not_set">Ayarlanmadı</string>
     <string name="info_backup_successful">Yedekleme başarılı</string>
     <string name="info_download_successful">İndirme başarılı</string>
-    <string name="info_export_report">%2$s adında bir %3$s dosyası SD kartınızın “%1$s” dizininde oluşturuldu. Bu dosyayı el ile başka bir yere yedeklemeniz aygıtınızın hasar görmesi, kaybolması veya çalınması durumunda verilerinizin korunması için tavsiye edilir.</string>
+    <string name="info_export_report">Seçilen klasörde “%2$s” adında bir %1$s dosyası oluşturuldu. Cihazınızın hasar görmesi, kaybolması veya çalınması durumunda verileri korumak için elle başka bir yere kopyalamanız gerekir.</string>
     <string name="info_export_successful">İhracat başarılı</string>
     <string name="info_import_complete">İçe aktarma başarılı</string>
     <string name="info_import_partially_complete">Kısmi ithalat yapıldı</string>
@@ -634,7 +634,7 @@
     <string name="style_type_user_defined">Kullanıcı tanımlı</string>
     <string name="X_lbl_system">(Sistem)</string>
     <string name="lbl_system_default">(Sistem varsayılanı)</string>
-    <string name="tip_authors_book_may_appear_more_than_once">Eğer her yazar için gösteriliyorsa, tek bir kitap bir dizelgede birden fazla görünebilir. Böyle bir durumda bu kitaplardan birini silmek dizelgeden tüm girileri silecektir.</string>
+    <string name="tip_authors_book_may_appear_more_than_once">Kitaplar, kitabın her yazarı için gösteriliyorsa, listede birden çok kez görünebilirler. Bu kitaplardan birinin silinmesi, listedeki tüm kopyaların silinmesine neden olur.</string>
     <string name="tip_authors_works">Kullanılan simgeler</string>
     <string name="tip_authors_works_book">Kitap.</string>
     <string name="tip_authors_works_multiple_books">Başlık birden fazla kitapta mevcuttur.</string>
@@ -648,7 +648,7 @@
     <string name="tip_dialog_title">İpucu</string>
     <string name="tip_reset_all">İpuçlarını sıfırla</string>
     <string name="tip_reset_done">İpuçları sıfırlandı</string>
-    <string name="tip_series_book_may_appear_more_than_once">Eğer her bir seride gösteriliyorsa, tek bir kitap bir dizelgede birden fazla görünebilir. Böyle bir durumda bu kitaplardan birini silmek dizelgeden tüm girileri silecektir.</string>
+    <string name="tip_series_book_may_appear_more_than_once">Kitaplar, kitabın ait olduğu tüm serilerde gösteriliyorsa, listede birden fazla kez görünebilirler. Bu kitaplardan birinin silinmesi, listedeki tüm kopyaların silinmesine neden olur.</string>
     <string name="tip_update_fields_from_internet">Dış site bağlantıları yalnızca siteyle gerçekten iletişime geçildiyse işlenir. Sonuç olarak, “Üzerinde görüntülemek…” menüsü de aynı şekilde neyin uygun olduğunu gösterecektir.</string>
     <string name="tip_view_only_help">Sağa/sola kaydırarak diğer kitaplara geçebilir.</string>
     <string name="info_cleanup_files">Temizlenebilir dosyalar şu anda SD kartta %1$s kullanmaktadır. Her güncellemenizde, her veritabanı yedeklemenizde veya her uygulamanın çökmesinde günlük dosyaları ve diğer veriler SD kartta saklanır. Bu bilgileri temizlemek için aşağıdaki düğmeye dokunun. Eğer çökmeler veya başka sorunlar yaşıyorsanız öncelikle “%2$s” düğmesini kullanmayı deneyin.</string>
@@ -660,7 +660,7 @@
     <string name="option_info_import_books_option_new_only">Yalnızca yeni kitapları içe aktarın. Mevcut kitaplara yapılan herhangi bir güncelleme göz ardı edilecektir.</string>
     <string name="ps_manage_fields">Seçili alanlar kitap ekle/düzenle ekranlarında görünecektir. Seçilmeyen alanlar gizli kalacaktır.</string>
     <string name="info_rebuild_scheduled">Yeniden planlandı</string>
-    <string name="info_select_fields_to_update">Seçilen alanlar İnternet\'ten güncellenecektir. Seçilmeyen alanlar değiştirilmeden kalacaktır.</string>
+    <string name="info_select_fields_to_update">Seçilen alanlar İnternet’ten güncellenecektir. Seçilmeyen alanlar değiştirilmeden kalacaktır.</string>
     <string name="info_share_book_im_reading">“%1$s” %2$s yazısını %3$s %4$s okuyorum</string>
     <string name="info_tap_on_image_to_select">Seçmek için daha büyük resme dokunun.</string>
     <string name="info_tap_on_thumbnail_to_zoom">Daha büyük bir görüntü görüntülemek için bir küçük resme dokunun.</string>
@@ -691,7 +691,7 @@
     <string name="warning_image_copy_failed">Görüntü kopyalanamadı.</string>
     <string name="warning_image_not_found">Resim bulunamadı.</string>
     <string name="warning_immediate_global_changes">Not: Tüm kaydedilmiş değişiklikler anında ve genel olarak uygulanır.</string>
-    <string name="warning_import_csv">Uyarı: Bilgileri içe aktarırken eğer içe aktardığınız dosyaların ID numarası var olan bir kitabın ID\'si ile aynı ise, varolan kitap verilerinin üstüne yazılmasına neden olabilir. Eğer dışa aktarılmış bir dosyada bir giriyi değiştirdiyseniz bu sorun değildir; ancak yeni bir kitap girişi oluşturuyorsanız ID bölümünün boş olduğundan emin olun.</string>
+    <string name="warning_import_csv">Uyarı: Bilgileri içe aktarırken eğer içe aktardığınız dosyaların ID numarası var olan bir kitabın ID’si ile aynı ise, varolan kitap verilerinin üstüne yazılmasına neden olabilir. Eğer dışa aktarılmış bir dosyada bir giriyi değiştirdiyseniz bu sorun değildir; ancak yeni bir kitap girişi oluşturuyorsanız ID bölümünün boş olduğundan emin olun.</string>
     <string name="warning_import_csv_unescaped_quote">%1$d. Satırda çıkış karakteri olmayan alıntı karakter, %2$d. konum</string>
     <string name="warning_import_failed_for_lines_lots">Ayrıştırma işlemi \n%1$s\n satırları ve diğerleri için başarısız oldu.</string>
     <string name="warning_import_failed_for_lines_some">Ayrıştırma

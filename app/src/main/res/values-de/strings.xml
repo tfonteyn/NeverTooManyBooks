@@ -194,7 +194,7 @@
     <string name="confirm_registration_benefits">Diese Funktion profitiert von der Registrierung bei %1$s. Möchten Sie weitere Informationen sehen oder diese Nachricht deaktivieren?\n Sie finden diese Informationen zu einem späteren Zeitpunkt in den Einstellungen unter „%2$s“.</string>
     <string name="confirm_registration_required">Diese Funktion erfordert eine Registrierung bei %1$s. Möchten Sie weitere Informationen sehen?</string>
     <string name="confirm_remove_toc_entry">Den Titel „%1$s“ von %2$s aus diesem Buch entfernen?</string>
-    <string name="confirm_scope_for_change">Sie haben Folgendes geändert:\n „%1$s“\n in\n „%2$s“\n\nWie wollen Sie diese Änderung übernehmen\?\nHinweis: Die Auswahl „%3$s“ wird sofort übernommen. Wenn Sie „%4$s“ auswählen, wird ein neues %5$s erstellt.</string>
+    <string name="confirm_scope_for_change">Sie haben Folgendes geändert:\n „%1$s“\n in\n „%2$s“\n\nWie wollen Sie diese Änderung übernehmen?\nHinweis: Die Auswahl „%3$s“ wird sofort übernommen. Wenn Sie „%4$s“ auswählen, wird ein neues %5$s erstellt.</string>
     <string name="confirm_scope_for_delete">Lösche den Titel „%1$s“ von %2$s.\n\nWie möchten Sie diese Änderung anwenden?\nWARNUNG: Die Auswahl „%3$s“ kann nicht rückgängig gemacht werden!</string>
     <string name="confirm_test_connection">Es ist ratsam, diese Verbindung zu testen, um später Probleme zu vermeiden.</string>
     <string name="confirm_unsaved_edits">Einige Änderungen wurden noch nicht gespeichert. Beim Beenden gehen diese Änderungen verloren.</string>
@@ -542,7 +542,7 @@
     <string name="preference_not_set">Nicht festgelegt</string>
     <string name="info_backup_successful">Sicherungskopie erfolgreich erstellt</string>
     <string name="info_download_successful">Herunterladen erfolgreich</string>
-    <string name="info_export_report">Eine %3$s-Datei namens %2$s wurde im Verzeichnis „%1$s“ erzeugt.\nSie sollten diese Datei händisch an einen sicheren Ort kopieren, um Ihre Daten vor Beschädigung, Verlust oder Diebstahl zu schützen.</string>
+    <string name="info_export_report">Eine %1$s-Datei namens “%2$s” wurde im ausgewählten Ordner erstellt. Sie sollten sie manuell an einen anderen Ort kopieren, um die Daten zu schützen, falls Ihr Gerät beschädigt wird, verloren geht oder gestohlen wird.</string>
     <string name="info_export_successful">Export erfolgreich</string>
     <string name="info_import_complete">Import vollständig</string>
     <string name="info_import_partially_complete">Teilweise importiert</string>
@@ -559,7 +559,7 @@
     <string name="progress_msg_searching_editions">Suche Ausgaben…</string>
     <string name="progress_msg_searching_site">Suche bei %1$s</string>
     <string name="progress_msg_skip_s">Überspringe - %1$s</string>
-    <string name="progress_msg_starting_up">Gleich geht\'s los…</string>
+    <string name="progress_msg_starting_up">Gleich geht’s los…</string>
     <string name="progress_msg_upgrading">Upgrade läuft…</string>
     <string name="progress_msg_x_created_y_updated_z_skipped">%1$s: %2$d erzeugt, %3$d aktualisiert, %4$d übersprungen</string>
     <string name="pt_allow_editing_external_id">Bearbeitung der Website-Buch-ID zulassen</string>
@@ -631,7 +631,7 @@
     <string name="style_type_user_defined">Benutzerdefiniert</string>
     <string name="X_lbl_system">(System)</string>
     <string name="lbl_system_default">(Systemstandardeinstellung)</string>
-    <string name="tip_authors_book_may_appear_more_than_once">Ein Buch kann mehrfach in einer Liste erscheinen, wenn es bei jedem Autor angezeigt wird. In diesem Fall führt das Löschen eines Buchs zum Löschen aller Vorkommen von der Liste.</string>
+    <string name="tip_authors_book_may_appear_more_than_once">Wenn Bücher für jeden Autor des Buches angezeigt werden, können sie mehrfach in der Liste erscheinen. Das Löschen eines dieser Bücher hat zur Folge, dass alle Exemplare aus der Liste entfernt werden.</string>
     <string name="tip_authors_works">Verwendete Icons</string>
     <string name="tip_authors_works_book">Buch.</string>
     <string name="tip_authors_works_multiple_books">Der Titel ist in mehreren Büchern vorhanden.</string>
@@ -645,7 +645,7 @@
     <string name="tip_dialog_title">Hinweis</string>
     <string name="tip_reset_all">Hinweise zurücksetzen</string>
     <string name="tip_reset_done">Hinweise wurden zurückgesetzt</string>
-    <string name="tip_series_book_may_appear_more_than_once">Ein Buch kann mehrfach in einer Liste erscheinen, wenn es bei jeder Serie angezeigt wird. In diesem Fall führt das Löschen eines Buchs zum Löschen aller Vorkommen von der Liste.</string>
+    <string name="tip_series_book_may_appear_more_than_once">Wenn Bücher in allen Serien angezeigt werden, zu denen das Buch gehört, können sie mehrfach in der Liste erscheinen. Das Löschen eines dieser Bücher hat zur Folge, dass alle Exemplare aus der Liste entfernt werden.</string>
     <string name="tip_update_fields_from_internet">Externe Site-Links werden nur verarbeitet, wenn die Site tatsächlich kontaktiert wird. Infolgedessen zeigt das Menü „Anschauen auf…“ ebenfalls nur, was verfügbar ist.</string>
     <string name="tip_view_only_help">Sie können nach links oder rechts wischen, um zu anderen Büchern zu wechseln.</string>
     <string name="info_cleanup_files">Die Dateien belegen %1$s Speicherplatz auf der SD-Karte. Log-Dateien und andere Daten werden bei jeder App-Aktualisierung, Sicherungskopie oder wenn die App abstürzt auf der SD-Karte gespeichert. Klicken Sie den Knopf unten, um diese Dateien von der SD-Karte zu entfernen. Wenn Sie Abstürze oder andere Fehler erhalten, ziehen Sie bitte in Betracht, den „%2$s“ Knopf zuerst zu benutzen.</string>

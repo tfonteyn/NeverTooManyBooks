@@ -185,7 +185,7 @@
     <string name="confirm_delete_book">Zamierzasz usunąć książkę o tytule „%1$s” autora %2$s.\n\n Czy chcesz kontynuować?</string>
     <string name="confirm_delete_bookshelf">Naprawdę usunąć półkę „%1$s”? Same książki nie zostaną usunięte. Nadal będą obecne na innych półkach lub na półce „%2$s”.</string>
     <string name="confirm_delete_publisher">Naprawdę usunąć wydawcę „%1$s”?\n\nSame książki nie zostaną usunięte.\n\nRozważ edycję wydawcy i zmianę nazwy wydawcy na nazwę innego wydawcy, aby zachować te dane.</string>
-    <string name="confirm_delete_series">Czy na pewno usunąć serię „%1$s”\?
+    <string name="confirm_delete_series">Czy na pewno usunąć serię „%1$s”?
 \n
 \nKsiążki nie będą usuwane.
 \n
@@ -200,7 +200,7 @@
     <string name="confirm_merge_series">Seria o zmienionej nazwie już istnieje. Czy chcesz je połączyć?</string>
     <string name="confirm_overwrite_cover">Wybrane pola zostaną zaktualizowane, natomiast okładki mogą by opcjonalnie pobrane dla wszystkich książek.
 \n
-\nCzy chcesz zastąpić wszystkie istniejące okładki\? Uwaga - może to zająć sporo czasu.</string>
+\nCzy chcesz zastąpić wszystkie istniejące okładki? Uwaga - może to zająć sporo czasu.</string>
     <string name="confirm_rebuild_fts">Dane indeksu wyszukiwania zostaną odbudowane po ponownym uruchomieniu aplikacji. Jesteś pewien, że chcesz kontynuować ?</string>
     <string name="confirm_rebuild_index">Indeksy zostaną odbudowane po ponownym uruchomieniu aplikacji. Jesteś pewien, że chcesz kontynuować ?</string>
     <string name="confirm_rebuild_orderby_columns">Spowoduje to odbudowanie danych sortowania po ponownym uruchomieniu aplikacji. Jesteś pewien, że chcesz kontynuować ?</string>
@@ -555,7 +555,7 @@
     <string name="preference_not_set">Nie ustawiono</string>
     <string name="info_backup_successful">Резервное копирование выполнено успешно</string>
     <string name="info_download_successful">Pobieranie powiodło się</string>
-    <string name="info_export_report">Plik %3$s o nazwie „%2$s” został utworzony w katalogu „%1$s” i powinieneś ręcznie skopiować go gdzie indziej, aby chronić dane w przypadku uszkodzenia, utraty lub kradzieży.</string>
+    <string name="info_export_report">W wybranym folderze został utworzony plik %1$s o nazwie „%2$s”. Należy go ręcznie skopiować w inne miejsce, aby chronić dane w przypadku uszkodzenia, zgubienia lub kradzieży urządzenia.</string>
     <string name="info_export_successful">Eksport powiódł się</string>
     <string name="info_import_complete">Import zakończony</string>
     <string name="info_import_partially_complete">Wykonano częściowy import</string>
@@ -641,7 +641,7 @@
     <string name="style_type_user_defined">Określony przez użytkownika</string>
     <string name="X_lbl_system">(Systemowa)</string>
     <string name="lbl_system_default">(Domyślna aplikacja systemu)</string>
-    <string name="tip_authors_book_may_appear_more_than_once">Jeśli jest wyświetlana dla każdego autora, pojedyncza książka może pojawić się więcej niż raz na liście. W takim przypadku usunięcie jednej z tych książek spowoduje usunięcie wszystkich instancji z listy.</string>
+    <string name="tip_authors_book_may_appear_more_than_once">Jeśli książki są pokazywane dla każdego autora książki, mogą pojawić się na liście wielokrotnie. Usunięcie jednej z tych książek ma skutek usunięcia wszystkich egzemplarzy z listy.</string>
     <string name="tip_authors_works">Użyte ikony</string>
     <string name="tip_authors_works_book">Książka.</string>
     <string name="tip_authors_works_multiple_books">Tytuł jest obecny w wielu książkach.</string>
@@ -655,7 +655,7 @@
     <string name="tip_dialog_title">Wskazówka</string>
     <string name="tip_reset_all">Zresetuj wskazówki</string>
     <string name="tip_reset_done">Wskazówki zostały zresetowane</string>
-    <string name="tip_series_book_may_appear_more_than_once">Jeśli jest wyświetlana w każdej serii, pojedyncza książka może pojawić się więcej niż raz na liście. W takim przypadku usunięcie jednej z tych książek spowoduje usunięcie wszystkich instancji z listy.</string>
+    <string name="tip_series_book_may_appear_more_than_once">Jeśli książki są pokazywane we wszystkich seriach, do których należy dana książka, mogą pojawić się na liście wielokrotnie. Usunięcie jednej z tych książek ma skutek usunięcia wszystkich egzemplarzy z listy.</string>
     <string name="tip_update_fields_from_internet">Linki do zewnętrznych stron są przetwarzane tylko wtedy, gdy rzeczywiście nawiązano kontakt ze stroną. W rezultacie menu „Widok na……” pokaże tylko to, co jest dostępne.</string>
     <string name="tip_view_only_help">Możesz przesuwać palcem w lewo lub w prawo, aby przejść do innych książek.</string>
     <string name="info_cleanup_files">Pliki pomocnicze możliwe do usunięcia zajmują %1$s na karcie SD. Logi i inne dane są zapisywane przy każdej aktualizacji, kopii danych i gdy program odmówi posłuszeństwa. Kliknij w przycisk poniżej by usunąć te pliki z karty SD. Jeśli pojawiają się problemy i program działa nieprawidłowo, rozważ wysłanie informacji do programistów - kliknij „%2$s” najpierw.</string>
