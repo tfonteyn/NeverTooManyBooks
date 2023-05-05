@@ -285,6 +285,7 @@ public class OpenLibrarySearchEngine
      * @param book        Bundle to update
      *
      * @throws StorageException on storage related failures
+     * @throws SearchException  on generic exceptions (wrapped) during search
      */
     private void fetchBook(@NonNull final Context context,
                            @NonNull final String url,
@@ -467,6 +468,7 @@ public class OpenLibrarySearchEngine
      * @return {@code true} on success, {@code false} if we were cancelled.
      *
      * @throws StorageException on storage related failures
+     * @throws SearchException  on generic exceptions (wrapped) during search
      */
     @VisibleForTesting
     boolean handleResponse(@NonNull final Context context,

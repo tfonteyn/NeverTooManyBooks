@@ -229,6 +229,7 @@ public class AmazonSearchEngine
      * @param book        Bundle to update
      *
      * @throws StorageException     on storage related failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
      * @throws CredentialsException on authentication/login failures
      *                              This should only occur if the engine calls/relies on
      *                              secondary sites.

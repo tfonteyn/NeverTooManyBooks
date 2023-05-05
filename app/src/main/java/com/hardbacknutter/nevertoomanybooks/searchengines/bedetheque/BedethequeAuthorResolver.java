@@ -187,6 +187,9 @@ public class BedethequeAuthorResolver
      * @param bdtAuthor to lookup
      *
      * @return {@code true} on success
+     *
+     * @throws SearchException      on generic exceptions (wrapped) during search
+     * @throws CredentialsException on authentication/login failures
      */
     private boolean lookup(@NonNull final BdtAuthor bdtAuthor)
             throws SearchException, CredentialsException {

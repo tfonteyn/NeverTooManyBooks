@@ -232,6 +232,7 @@ public class LastDodoSearchEngine
      * @param book        Bundle to update
      *
      * @throws CredentialsException on authentication/login failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
      * @throws StorageException     on storage related failures
      */
     @WorkerThread
@@ -302,6 +303,7 @@ public class LastDodoSearchEngine
      * This is not practical in the scope of this application.
      *
      * @param sections to parse
+     * @param book     Bundle to update
      *
      * @return toc list with at least 2 entries
      */
@@ -352,6 +354,7 @@ public class LastDodoSearchEngine
      * @param authorResolver (optional) {@link AuthorResolver} to use
      *
      * @throws StorageException     on storage related failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
      * @throws CredentialsException on authentication/login failures
      *                              This should only occur if the engine calls/relies on
      *                              secondary sites.

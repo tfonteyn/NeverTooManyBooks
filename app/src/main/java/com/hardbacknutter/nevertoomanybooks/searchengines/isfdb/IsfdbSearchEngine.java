@@ -772,6 +772,7 @@ public class IsfdbSearchEngine
      * @param book        Bundle to update
      *
      * @throws StorageException     on storage related failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
      * @throws CredentialsException on authentication/login failures
      *                              This should only occur if the engine calls/relies on
      *                              secondary sites.
@@ -1170,6 +1171,7 @@ public class IsfdbSearchEngine
      *
      * @return list of editions found, can be empty, but never {@code null}
      *
+     * @throws SearchException      on generic exceptions (wrapped) during search
      * @throws CredentialsException on authentication/login failures
      */
     @WorkerThread
@@ -1287,6 +1289,7 @@ public class IsfdbSearchEngine
      *
      * @return list of editions found, can be empty, but never {@code null}
      *
+     * @throws SearchException      on generic exceptions (wrapped) during search
      * @throws CredentialsException on authentication/login failures
      */
     @WorkerThread
@@ -1477,6 +1480,7 @@ public class IsfdbSearchEngine
      * @param book        Bundle to update <em>(passed in to allow mocking)</em>
      *
      * @throws CredentialsException on authentication/login failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
      * @throws StorageException     on storage related failures
      */
     @WorkerThread
@@ -1527,6 +1531,7 @@ public class IsfdbSearchEngine
      * @param moneyParser shared parser
      *
      * @throws StorageException on storage related failures
+     * @throws SearchException  on generic exceptions (wrapped) during search
      */
     @NonNull
     private List<Book> fetchPublications(@NonNull final String url,

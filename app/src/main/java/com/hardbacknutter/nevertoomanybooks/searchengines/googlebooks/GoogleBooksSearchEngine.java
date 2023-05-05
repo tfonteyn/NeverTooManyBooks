@@ -135,6 +135,7 @@ public class GoogleBooksSearchEngine
      * @param book        Bundle to update <em>(passed in to allow mocking)</em>
      *
      * @throws StorageException on storage related failures
+     * @throws SearchException  on generic exceptions (wrapped) during search
      */
     private void fetchBook(@NonNull final Context context,
                            @NonNull final String url,
@@ -226,7 +227,7 @@ public class GoogleBooksSearchEngine
      */
     @NonNull
     private String encodeSpaces(@NonNull final CharSequence s) {
-//        return URLEncoder.encode(s, "UTF-8");
+        // return URLEncoder.encode(s, "UTF-8");
         return SPACE_LITERAL.matcher(s).replaceAll("%20");
     }
 }

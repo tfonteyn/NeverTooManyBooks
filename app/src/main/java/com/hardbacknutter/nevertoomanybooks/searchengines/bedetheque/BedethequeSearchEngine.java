@@ -185,6 +185,7 @@ public class BedethequeSearchEngine
      *
      * @throws CredentialsException on authentication/login failures
      * @throws StorageException     on storage related failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
      */
     @WorkerThread
     private void parseMultiResult(@NonNull final Context context,
@@ -221,6 +222,7 @@ public class BedethequeSearchEngine
      * @param authorResolver (optional) {@link AuthorResolver} to use
      *
      * @throws StorageException     on storage related failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
      * @throws CredentialsException on authentication/login failures
      *                              This should only occur if the engine calls/relies on
      *                              secondary sites.

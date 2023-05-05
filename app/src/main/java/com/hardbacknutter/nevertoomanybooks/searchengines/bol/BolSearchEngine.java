@@ -201,6 +201,7 @@ public class BolSearchEngine
      *
      * @throws CredentialsException on authentication/login failures
      * @throws StorageException     on storage related failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
      */
     @VisibleForTesting
     @WorkerThread
@@ -242,6 +243,7 @@ public class BolSearchEngine
      * @param book        Bundle to update
      *
      * @throws StorageException     on storage related failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
      * @throws CredentialsException on authentication/login failures
      *                              This should only occur if the engine calls/relies on
      *                              secondary sites.
@@ -562,6 +564,8 @@ public class BolSearchEngine
      * @param book Bundle to update
      *
      * @return {@code true} if an image was successfully saved.
+     *
+     * @throws StorageException The covers directory is not available
      */
     private boolean processCover(@Nullable final String url,
                                  @NonNull final String isbn,
