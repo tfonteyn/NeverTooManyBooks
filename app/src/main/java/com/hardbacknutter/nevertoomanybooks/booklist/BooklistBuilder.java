@@ -814,9 +814,6 @@ class BooklistBuilder {
          * @param domainExpression to add
          */
         private void addDomainExpression(@NonNull final DomainExpression domainExpression) {
-            //FIXME: DBKey.DATE_ADDED__UTC and similar (no expression) are being
-            // added to the listTable. I *think* we don't need to do that...
-
 
             final Domain domain = domainExpression.getDomain();
             // Add the domain itself to the table, if it's not already there
