@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -66,19 +67,22 @@ public interface TocEntryDao {
                @NonNull Supplier<Locale> localeSupplier);
 
     /**
-     * Return the {@link TocEntry} id. The incoming object is not modified.
+     * Find a {@link TocEntry} by using the <strong>name</strong> fields
+     * of the passed {@link TocEntry}.
+     * <p>
      * Note that the publication year is NOT used for comparing, under the assumption that
      * two search-sources can give different dates by mistake.
      *
-     * @param context  Current context
-     * @param tocEntry to search for
+     * @param context        Current context
+     * @param tocEntry       to search for
      * @param localeSupplier deferred supplier for a {@link Locale}.
      *
-     * @return the id, or 0 (i.e. 'new') when not found
+     * @return the {@link TocEntry}
      */
-    long find(@NonNull Context context,
-              @NonNull TocEntry tocEntry,
-              @NonNull Supplier<Locale> localeSupplier);
+    @NonNull
+    Optional<TocEntry> findByName(@NonNull Context context,
+                                  @NonNull TocEntry tocEntry,
+                                  @NonNull Supplier<Locale> localeSupplier);
 
     /**
      * Get all TOC entries; mainly for the purpose of backups.
