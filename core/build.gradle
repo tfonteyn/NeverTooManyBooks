@@ -48,7 +48,7 @@ android {
             includeAndroidResources = true
             // Can be enabled to make Log.x work. OR, use Logger.x
             returnDefaultValues = false
-            configureEach {
+            all {
                 reports {
                     junitXml.getRequired().set(true)
                     html.getRequired().set(false)
