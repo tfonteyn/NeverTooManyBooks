@@ -145,6 +145,19 @@ public class AuthorDaoImpl
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <strong>IMPORTANT:</strong> the query can return more than one row if the
+     * given-name of the author is empty. e.g. "Asimov" and "Asimov"+"Isaac"
+     * We only return the <strong>first entity found</strong>.
+     *
+     * @param context        Current context
+     * @param author         to find the id of
+     * @param localeSupplier deferred supplier for a {@link Locale}.
+     *
+     * @return the Author
+     */
     @Override
     @NonNull
     public Optional<Author> findByName(@NonNull final Context context,
