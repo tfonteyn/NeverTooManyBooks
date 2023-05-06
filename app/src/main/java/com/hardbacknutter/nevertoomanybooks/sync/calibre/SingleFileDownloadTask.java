@@ -60,6 +60,9 @@ class SingleFileDownloadTask
      *
      * @param book   to download
      * @param folder to save to
+     *
+     * @throws IllegalArgumentException <strong>DEBUG</strong>:
+     *                                  If the book is missing the Calibre keys
      */
     public void download(@NonNull final Book book,
                          @NonNull final Uri folder) {

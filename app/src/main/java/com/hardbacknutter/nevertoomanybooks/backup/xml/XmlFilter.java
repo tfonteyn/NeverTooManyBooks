@@ -76,6 +76,8 @@ final class XmlFilter {
      * @param filters Names of tags to add to tree, if not present.
      *
      * @return The filter matching the final tag name passed.
+     *
+     * @throws IllegalArgumentException <strong>DEBUG</strong>: if no filters are passed in
      */
     @NonNull
     XmlFilter addFilter(@NonNull final String... filters) {

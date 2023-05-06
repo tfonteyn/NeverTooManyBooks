@@ -35,6 +35,7 @@ public interface AuthorResolver {
      *
      * @return {@code true} if the {@link Author} was modified; {@code false} otherwise
      *
+     * @throws SearchException      on generic exceptions (wrapped) during search
      * @throws CredentialsException on authentication/login failures
      */
     boolean resolve(@NonNull Author author)

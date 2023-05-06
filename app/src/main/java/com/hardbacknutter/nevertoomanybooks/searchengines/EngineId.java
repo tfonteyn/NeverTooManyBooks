@@ -620,7 +620,7 @@ public enum EngineId
      * @return {@code true} if it is
      */
     public boolean supports(@NonNull final SearchEngine.SearchBy by) {
-        return by.clazz.isAssignableFrom(clazz);
+        return by.getSearchEngineClass().isAssignableFrom(clazz);
     }
 
     /**

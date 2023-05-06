@@ -81,6 +81,9 @@ public class AuthorWorksViewModel
      *
      * @param context Current context
      * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     *
+     * @throws IllegalArgumentException <strong>DEBUG</strong>:
+     *                                  if the args do not contain a valid Author
      */
     void init(@NonNull final Context context,
               @NonNull final Bundle args) {
@@ -176,6 +179,8 @@ public class AuthorWorksViewModel
      * @param work    to delete
      *
      * @return {@code true} if a row was deleted
+     *
+     * @throws IllegalArgumentException <strong>DEBUG</strong>: for an invalid AuthorWork type
      */
     @SuppressWarnings("UnusedReturnValue")
     boolean delete(@NonNull final Context context,

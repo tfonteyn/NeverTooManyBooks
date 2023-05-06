@@ -302,6 +302,8 @@ public class Book
      *
      * @param bookId     of book must be != 0
      * @param bookCursor an already positioned Cursor to read from
+     *
+     * @throws IllegalArgumentException <strong>DEBUG</strong>: for an invalid book id
      */
     public void load(@IntRange(from = 1) final long bookId,
                      @NonNull final Cursor bookCursor) {
@@ -1067,6 +1069,7 @@ public class Book
      *
      * @throws StorageException The covers directory is not available
      * @throws IOException      on generic/other IO failures
+     * @throws IllegalStateException <strong>DEBUG</strong>: if the UUID is missing
      */
     @SuppressWarnings("UnusedReturnValue")
     @Nullable

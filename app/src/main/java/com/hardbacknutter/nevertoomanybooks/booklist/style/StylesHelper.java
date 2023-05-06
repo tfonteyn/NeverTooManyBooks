@@ -257,6 +257,8 @@ public class StylesHelper {
      * @param style to save
      *
      * @return {@code true} on success
+     *
+     * @throws IllegalStateException <strong>DEBUG</strong>: if the UUID is missing
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean updateOrInsert(@NonNull final Style style) {
@@ -292,6 +294,8 @@ public class StylesHelper {
      * @param style to update
      *
      * @return {@code true} on success
+     *
+     * @throws IllegalStateException <strong>DEBUG</strong>: if the UUID is missing
      */
     public boolean update(@NonNull final Style style) {
         if (BuildConfig.DEBUG /* always */) {
@@ -319,6 +323,8 @@ public class StylesHelper {
      * @param style to delete
      *
      * @return {@code true} on success
+     *
+     * @throws IllegalStateException <strong>DEBUG</strong>: if the UUID is missing
      */
     public boolean delete(@NonNull final Style style) {
         if (BuildConfig.DEBUG /* always */) {

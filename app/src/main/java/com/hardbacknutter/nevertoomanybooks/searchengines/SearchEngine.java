@@ -133,6 +133,14 @@ public interface SearchEngine
      */
     void setCaller(@Nullable Cancellable caller);
 
+    /**
+     * Ping the website for this SearchEngine.
+     *
+     * @throws UnknownHostException   the IP address of a host could not be determined.
+     * @throws IOException            if we cannot reach the site
+     * @throws SocketTimeoutException on timeouts (both DNS and host itself)
+     * @throws MalformedURLException  if the URL does not start with {@code http} or {@code https}
+     */
     @WorkerThread
     void ping()
             throws UnknownHostException,
@@ -147,10 +155,15 @@ public interface SearchEngine
         Text(ByText.class);
 
         @NonNull
-        final Class<? extends SearchEngine> clazz;
+        private final Class<? extends SearchEngine> clazz;
 
         SearchBy(@NonNull final Class<? extends SearchEngine> clazz) {
             this.clazz = clazz;
+        }
+
+        @NonNull
+        Class<? extends SearchEngine> getSearchEngineClass() {
+            return clazz;
         }
     }
 
@@ -170,6 +183,7 @@ public interface SearchEngine
          *
          * @throws CredentialsException on authentication/login failures
          * @throws StorageException     on storage related failures
+         * @throws SearchException      on generic exceptions (wrapped) during search
          */
         @WorkerThread
         @NonNull
@@ -213,6 +227,7 @@ public interface SearchEngine
          *
          * @throws CredentialsException on authentication/login failures
          * @throws StorageException     on storage related failures
+         * @throws SearchException      on generic exceptions (wrapped) during search
          */
         @WorkerThread
         @NonNull
@@ -243,6 +258,7 @@ public interface SearchEngine
          *
          * @throws CredentialsException on authentication/login failures
          * @throws StorageException     on storage related failures
+         * @throws SearchException      on generic exceptions (wrapped) during search
          */
         @WorkerThread
         @NonNull
@@ -282,6 +298,7 @@ public interface SearchEngine
          *
          * @throws CredentialsException on authentication/login failures
          * @throws StorageException     on storage related failures
+         * @throws SearchException      on generic exceptions (wrapped) during search
          */
         @WorkerThread
         @NonNull
@@ -309,6 +326,7 @@ public interface SearchEngine
          * @return a list of isbn numbers for alternative editions of the original, can be empty.
          *
          * @throws CredentialsException on authentication/login failures
+         * @throws SearchException      on generic exceptions (wrapped) during search
          */
         @WorkerThread
         @NonNull
@@ -339,6 +357,7 @@ public interface SearchEngine
          *
          * @throws CredentialsException on authentication/login failures
          * @throws StorageException     on storage related failures
+         * @throws SearchException      on generic exceptions (wrapped) during search
          */
         @WorkerThread
         @Nullable
@@ -366,6 +385,7 @@ public interface SearchEngine
          *
          * @throws CredentialsException on authentication/login failures
          * @throws StorageException     on storage related failures
+         * @throws SearchException      on generic exceptions (wrapped) during search
          */
         @WorkerThread
         @NonNull

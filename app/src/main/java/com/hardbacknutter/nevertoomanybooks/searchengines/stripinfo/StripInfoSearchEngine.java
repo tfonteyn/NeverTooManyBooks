@@ -610,6 +610,8 @@ public class StripInfoSearchEngine
      * @param cIdx     0..n image index
      *
      * @return full url, or {@code null} when no image found
+     *
+     * @throws IndexOutOfBoundsException <strong>DEBUG</strong>: if the index is invalid
      */
     @AnyThread
     @Nullable
@@ -632,7 +634,7 @@ public class StripInfoSearchEngine
                 break;
             }
             default:
-                throw new IllegalArgumentException(String.valueOf(cIdx));
+                throw new IndexOutOfBoundsException(String.valueOf(cIdx));
         }
         return null;
     }

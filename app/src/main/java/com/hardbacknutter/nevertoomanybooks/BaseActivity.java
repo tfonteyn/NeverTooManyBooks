@@ -66,19 +66,16 @@ public abstract class BaseActivity
             registerForActivityResult(new EditBookshelvesContract(),
                                       bookshelfId -> {
                                       });
-
+    /** Optional - The side/navigation panel. */
+    @Nullable
+    DrawerLayout drawerLayout;
     private RecreateViewModel recreateVm;
-
     private final ActivityResultLauncher<String> editSettingsLauncher =
             registerForActivityResult(new SettingsContract(), recreateActivity -> {
                 if (recreateActivity) {
                     recreateVm.setRecreationRequired();
                 }
             });
-
-    /** Optional - The side/navigation panel. */
-    @Nullable
-    DrawerLayout drawerLayout;
     /** Optional - The side/navigation menu. */
     @Nullable
     private NavigationView navigationView;
@@ -136,6 +133,8 @@ public abstract class BaseActivity
      * @param containerViewId to receive the fragment
      * @param fragmentClass   the fragment; must be loadable with the current class loader.
      * @param fragmentTag     tag for the fragment
+     *
+     * @throws IllegalStateException <strong>DEBUG</strong>: if the Fragment cannot be instantiated
      */
     void addFirstFragment(@SuppressWarnings("SameParameterValue")
                           @IdRes final int containerViewId,

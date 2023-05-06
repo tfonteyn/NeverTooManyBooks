@@ -235,7 +235,7 @@ public class BooklistAdapter
      */
     public void requery(final int[] positions) {
         // Yes, requery() is deprecated but see BooklistCursor were we do the right thing.
-        //noinspection deprecation,ConstantConditions
+        //noinspection deprecation,DataFlowIssue
         cursor.requery();
 
         for (final int pos : positions) {
@@ -380,7 +380,7 @@ public class BooklistAdapter
         //noinspection ConstantConditions
         cursor.moveToPosition(position);
 
-        //noinspection unchecked,ConstantConditions
+        //noinspection unchecked,DataFlowIssue
         ((BindableViewHolder<DataHolder>) holder).onBind(rowData);
     }
 
@@ -465,6 +465,9 @@ public class BooklistAdapter
      * @param position to get the text for
      *
      * @return the text for that level, or {@code null} if none present.
+     *
+     * @throws IllegalArgumentException <strong>DEBUG</strong>:
+     *                                  if the level is higher than the group count
      */
     @Nullable
     public CharSequence getLevelText(@IntRange(from = 1) final int level,

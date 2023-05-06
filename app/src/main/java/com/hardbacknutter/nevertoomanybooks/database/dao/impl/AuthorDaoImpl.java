@@ -546,6 +546,8 @@ public class AuthorDaoImpl
      * @param author     the 'original' author; it's internal id will be ignored
      *                   (in case of an insert it's 0, in case of an update its the actual id)
      * @param authorId   the 'original' author id
+     *
+     * @throws DaoWriteException on failure
      */
     private void insertOrUpdateRealAuthor(@NonNull final Context context,
                                           @NonNull final Locale bookLocale,

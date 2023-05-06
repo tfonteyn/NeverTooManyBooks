@@ -122,6 +122,8 @@ public interface AuthorWork {
          * @param value to parse
          *
          * @return the type
+         *
+         * @throws IllegalArgumentException <strong>DEBUG</strong>: for an unknown value
          */
         @NonNull
         public static Type getType(final char value) {

@@ -345,6 +345,8 @@ public class Booklist
      * @param rowId to get
      *
      * @return the node
+     *
+     * @throws IllegalArgumentException <strong>DEBUG</strong>: for an invalid row id
      */
     @NonNull
     private BooklistNode getNodeByRowId(final long rowId) {

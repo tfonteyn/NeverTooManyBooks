@@ -112,6 +112,8 @@ public enum SyncServer
      * @param context Current context
      *
      * @return flag
+     *
+     * @throws IllegalArgumentException <strong>DEBUG</strong>: for invalid servers.
      */
     public boolean isEnabled(@NonNull final Context context) {
         switch (this) {
@@ -148,7 +150,9 @@ public enum SyncServer
      *
      * @return a new writer
      *
-     * @throws CertificateException on failures related to a user installed CA.
+     * @throws CertificateException     on failures related to a user installed CA.
+     * @throws IllegalArgumentException <strong>DEBUG</strong>: if there are no record types set
+     * @throws IllegalStateException    <strong>DEBUG</strong>: if there is no writer available
      */
     @NonNull
     DataWriter<SyncWriterResults> createWriter(@NonNull final Context context,
@@ -181,8 +185,10 @@ public enum SyncServer
      *
      * @return a new reader
      *
-     * @throws CredentialsException on authentication/login failures
-     * @throws IOException          on generic/other IO failures
+     * @throws CredentialsException     on authentication/login failures
+     * @throws IOException              on generic/other IO failures
+     * @throws IllegalArgumentException <strong>DEBUG</strong>: if there are no record types set
+     * @throws IllegalStateException    <strong>DEBUG</strong>: if there is no reader available
      * @see DataReader
      */
     @NonNull

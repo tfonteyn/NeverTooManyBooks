@@ -64,6 +64,9 @@ class AuthorListLoader {
      * @param c1 first character of the name
      *
      * @return {@code true} on success
+     *
+     * @throws SearchException      on generic exceptions (wrapped) during search
+     * @throws CredentialsException on authentication/login failures
      */
     boolean fetch(final char c1)
             throws SearchException, CredentialsException {

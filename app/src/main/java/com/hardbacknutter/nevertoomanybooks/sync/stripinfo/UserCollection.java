@@ -162,7 +162,8 @@ public class UserCollection {
      *
      * @return list with book-data Bundles
      *
-     * @throws IOException      on generic/other IO failures
+     * @throws IOException     on generic/other IO failures
+     * @throws SearchException on generic exceptions (wrapped) during search
      */
     @SuppressLint("DefaultLocale")
     @WorkerThread
