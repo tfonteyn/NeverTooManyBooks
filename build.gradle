@@ -26,7 +26,7 @@ plugins {
     id 'de.mannodermaus.android-junit5' version '1.8.2.1' apply false
 }
 
-task clean(type: Delete) {
+tasks.register('clean', Delete) {
     delete rootProject.buildDir
 }
 
@@ -87,7 +87,7 @@ ext {
     //google_auto_service_version = '1.0.1'
 
     // https://jsoup.org/
-    jsoup_version = '1.15.4'
+    jsoup_version = '1.16.1'
 
     // https://github.com/tfonteyn/TinyZXingWrapper
     tiny_zxing_wrapper_version = '1.0.0-rc01'
@@ -99,10 +99,10 @@ ext {
     acra_version = '5.9.7'
 
     // https://github.com/mockito/mockito
-    mockito_version = '5.3.0'
+    mockito_version = '5.3.1'
 
     // https://junit.org/junit5/docs/current/user-guide/#overview
-    jupiter_version = '5.9.2'
+    jupiter_version = '5.9.3'
 
     // https://developer.android.com/jetpack/androidx/releases/test
     androidx_test_core_version = '1.5.0'
