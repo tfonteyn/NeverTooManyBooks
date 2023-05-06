@@ -115,9 +115,9 @@ public class EditTocEntryDialogFragment
         super.onViewCreated(view, savedInstanceState);
 
         vb = DialogEditBookTocContentBinding.bind(view.findViewById(R.id.dialog_content));
-        setTitle(title);
-        setSubtitle(bookTitle);
+        setTitle(bookTitle);
 
+        vb.title.setText(title);
         autoRemoveError(vb.title, vb.lblTitle);
 
         firstPublicationDate.ifPresent(date -> vb.firstPublication.setText(
