@@ -331,8 +331,7 @@ public final class SyncReaderProcessor {
      *                   from the #book
      * @param key        into the incoming data
      *
-     * @throws IllegalArgumentException <strong>DEBUG</strong>:
-     *                                  if the key is not an appendable type
+     * @throws IllegalArgumentException if the key is not an appendable type
      */
     private void processList(@NonNull final Context context,
                              @NonNull final Book localeBook,
@@ -489,7 +488,7 @@ public final class SyncReaderProcessor {
          * @param label   Field label
          * @param keys    {Field key} OR {Preference key, Field key}
          *
-         * @throws IllegalArgumentException <strong>DEBUG</strong>: if there are more then 2 keys
+         * @throws IllegalArgumentException if there are more then 2 keys
          */
         public void add(@NonNull final Context context,
                         @NonNull final String label,

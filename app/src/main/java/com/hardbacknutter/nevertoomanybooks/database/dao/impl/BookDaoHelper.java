@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
@@ -118,7 +119,8 @@ public class BookDaoHelper {
 
     /**
      * Examine the values and make any changes necessary before writing the data.
-     * Called during {@link BookDaoImpl#insert} and {@link BookDaoImpl#update}.
+     * Called during {@link BookDaoImpl#insert(Context, Book, Set)}
+     * and {@link BookDaoImpl#update(Context, Book, Set)}.
      *
      * @param context Current context
      *
@@ -429,6 +431,8 @@ public class BookDaoHelper {
      * @param book      A collection with the columns to be set. May contain extra data.
      *
      * @return New and filtered ContentValues
+     *
+     * @throws IllegalArgumentException if a {@code null} is set for a not-nullable column
      */
     @SuppressWarnings("WeakerAccess")
     @NonNull
@@ -525,7 +529,8 @@ public class BookDaoHelper {
     }
 
     /**
-     * Called during {@link BookDaoImpl#insert} and {@link BookDaoImpl#update}.
+     * Called during {@link BookDaoImpl#insert(Context, Book, Set)}
+     * and {@link BookDaoImpl#update(Context, Book, Set)}.
      *
      * @throws StorageException The covers directory is not available
      * @throws IOException      on generic/other IO failures

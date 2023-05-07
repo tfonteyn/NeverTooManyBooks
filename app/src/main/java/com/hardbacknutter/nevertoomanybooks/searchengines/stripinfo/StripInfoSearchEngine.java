@@ -611,7 +611,7 @@ public class StripInfoSearchEngine
      *
      * @return full url, or {@code null} when no image found
      *
-     * @throws IndexOutOfBoundsException <strong>DEBUG</strong>: if the index is invalid
+     * @throws IndexOutOfBoundsException if the index is invalid
      */
     @AnyThread
     @Nullable

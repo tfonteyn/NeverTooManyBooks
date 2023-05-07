@@ -80,12 +80,15 @@ public class DataManager
 
     /**
      * Constructor. Loads the data <strong>without</strong> type checks.
+     *
+     * @param rawData to use as-is
      */
     protected DataManager(@NonNull final Bundle rawData) {
         this.rawData = rawData;
     }
 
     protected DataManager(@NonNull final Parcel in) {
+        //noinspection DataFlowIssue
         rawData = in.readBundle(getClass().getClassLoader());
     }
 
@@ -111,6 +114,11 @@ public class DataManager
         return rawData.isEmpty();
     }
 
+    /**
+     * Get the size of the raw data bundle.
+     *
+     * @return number of keys
+     */
     public int size() {
         return rawData.size();
     }
@@ -169,6 +177,8 @@ public class DataManager
      * </ul>
      *
      * @param cursor an already positioned Cursor to read from
+     *
+     * @throws IllegalArgumentException for unsupported types.
      */
     protected void putAll(@NonNull final Cursor cursor) {
         for (int i = 0; i < cursor.getColumnCount(); i++) {

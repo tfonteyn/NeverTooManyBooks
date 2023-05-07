@@ -192,6 +192,7 @@ public class Book
     public static final String[] BKEY_TMP_FILE_SPEC = {
             TAG + ":fileSpec:0",
             TAG + ":fileSpec:1"};
+    private static final String ERROR_INVALID_BOOK_ID = "bookId";
 
     /** the stage of the book entity. */
     private final EntityStage stage;
@@ -239,11 +240,13 @@ public class Book
      * @param bookId of book
      *
      * @return new instance; can be empty but never {@code null}.
+     *
+     * @throws IllegalArgumentException if the book id is not valid
      */
     @NonNull
     public static Book from(@IntRange(from = 1) final long bookId) {
         if (bookId <= 0) {
-            throw new IllegalArgumentException("bookId");
+            throw new IllegalArgumentException(ERROR_INVALID_BOOK_ID);
         }
 
         final Book book = new Book();
@@ -303,12 +306,12 @@ public class Book
      * @param bookId     of book must be != 0
      * @param bookCursor an already positioned Cursor to read from
      *
-     * @throws IllegalArgumentException <strong>DEBUG</strong>: for an invalid book id
+     * @throws IllegalArgumentException if the book id is not valid
      */
     public void load(@IntRange(from = 1) final long bookId,
                      @NonNull final Cursor bookCursor) {
         if (bookId <= 0) {
-            throw new IllegalArgumentException("bookId");
+            throw new IllegalArgumentException(ERROR_INVALID_BOOK_ID);
         }
 
         clearData();
@@ -1067,9 +1070,9 @@ public class Book
      *
      * @return the File after processing (either original, or a renamed/moved file)
      *
-     * @throws StorageException The covers directory is not available
-     * @throws IOException      on generic/other IO failures
-     * @throws IllegalStateException <strong>DEBUG</strong>: if the UUID is missing
+     * @throws StorageException      The covers directory is not available
+     * @throws IOException           on generic/other IO failures
+     * @throws IllegalStateException if the UUID is missing
      */
     @SuppressWarnings("UnusedReturnValue")
     @Nullable

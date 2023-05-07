@@ -466,8 +466,7 @@ public class BooklistAdapter
      *
      * @return the text for that level, or {@code null} if none present.
      *
-     * @throws IllegalArgumentException <strong>DEBUG</strong>:
-     *                                  if the level is higher than the group count
+     * @throws IllegalArgumentException if the level is higher than the group count
      */
     @Nullable
     public CharSequence getLevelText(@IntRange(from = 1) final int level,

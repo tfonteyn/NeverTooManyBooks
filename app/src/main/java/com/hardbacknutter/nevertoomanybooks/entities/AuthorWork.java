@@ -123,7 +123,7 @@ public interface AuthorWork {
          *
          * @return the type
          *
-         * @throws IllegalArgumentException <strong>DEBUG</strong>: for an unknown value
+         * @throws IllegalArgumentException for an unknown value
          */
         @NonNull
         public static Type getType(final char value) {

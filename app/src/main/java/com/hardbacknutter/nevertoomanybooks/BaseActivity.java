@@ -134,7 +134,7 @@ public abstract class BaseActivity
      * @param fragmentClass   the fragment; must be loadable with the current class loader.
      * @param fragmentTag     tag for the fragment
      *
-     * @throws IllegalStateException <strong>DEBUG</strong>: if the Fragment cannot be instantiated
+     * @throws IllegalStateException if the Fragment cannot be instantiated
      */
     void addFirstFragment(@SuppressWarnings("SameParameterValue")
                           @IdRes final int containerViewId,

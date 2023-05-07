@@ -167,8 +167,7 @@ class Transformation {
      *
      * @return the transformed bitmap
      *
-     * @throws IllegalArgumentException <strong>DEBUG</strong>:
-     *                                  if the file is not set / does not exist
+     * @throws IllegalArgumentException if the file is not set / does not exist
      */
     @WorkerThread
     @NonNull

@@ -77,7 +77,7 @@ final class XmlFilter {
      *
      * @return The filter matching the final tag name passed.
      *
-     * @throws IllegalArgumentException <strong>DEBUG</strong>: if no filters are passed in
+     * @throws IllegalArgumentException if no filters are passed in
      */
     @NonNull
     XmlFilter addFilter(@NonNull final String... filters) {
