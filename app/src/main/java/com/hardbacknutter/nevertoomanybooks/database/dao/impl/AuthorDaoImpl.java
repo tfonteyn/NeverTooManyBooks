@@ -36,16 +36,17 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
+import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorMergeHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
@@ -74,19 +75,14 @@ public class AuthorDaoImpl
     private static final String ERROR_UPDATE_FROM = "Update from\n";
 
     private static final String[] Z_ARRAY_STRING = new String[0];
-    @NonNull
-    private final Supplier<BookDao> bookDaoSupplier;
 
     /**
      * Constructor.
      *
-     * @param db              Underlying database
-     * @param bookDaoSupplier deferred supplier for the {@link BookDao}
+     * @param db Underlying database
      */
-    public AuthorDaoImpl(@NonNull final SynchronizedDb db,
-                         @NonNull final Supplier<BookDao> bookDaoSupplier) {
+    public AuthorDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);
-        this.bookDaoSupplier = bookDaoSupplier;
     }
 
     /**
@@ -452,6 +448,67 @@ public class AuthorDaoImpl
     }
 
     @Override
+    public void insertOrUpdate(@NonNull final Context context,
+                               @IntRange(from = 1) final long bookId,
+                               final boolean doUpdates,
+                               @NonNull final Collection<Author> list,
+                               final boolean lookupLocale,
+                               @NonNull final Locale bookLocale)
+            throws DaoWriteException {
+
+        if (BuildConfig.DEBUG /* always */) {
+            if (!db.inTransaction()) {
+                throw new TransactionException(TransactionException.REQUIRED);
+            }
+        }
+
+        final Function<Author, Locale> listLocaleSupplier = item -> {
+            if (lookupLocale) {
+                return item.getLocale(context).orElse(bookLocale);
+            } else {
+                return bookLocale;
+            }
+        };
+
+        pruneList(context, list, listLocaleSupplier);
+
+        // Just delete all current links; we'll re-insert them for easier positioning
+        try (SynchronizedStatement stmt1 = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
+            stmt1.bindLong(1, bookId);
+            stmt1.executeUpdateDelete();
+        }
+
+        // is there anything to insert ?
+        if (list.isEmpty()) {
+            return;
+        }
+
+        int position = 0;
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_BOOK_LINK)) {
+            for (final Author author : list) {
+                fixId(context, author, () -> listLocaleSupplier.apply(author));
+
+                // create if needed - do NOT do updates unless explicitly allowed
+                if (author.getId() == 0) {
+                    insert(context, author, bookLocale);
+                } else if (doUpdates) {
+                    update(context, author, bookLocale);
+                }
+
+                position++;
+
+                stmt.bindLong(1, bookId);
+                stmt.bindLong(2, author.getId());
+                stmt.bindLong(3, position);
+                stmt.bindLong(4, author.getType());
+                if (stmt.executeInsert() == -1) {
+                    throw new DaoWriteException("insert Book-Author");
+                }
+            }
+        }
+    }
+
+    @Override
     @IntRange(from = 1, to = Integer.MAX_VALUE)
     public long insert(@NonNull final Context context,
                        @NonNull final Author author,
@@ -665,7 +722,6 @@ public class AuthorDaoImpl
 
             // Relink books with the target Author,
             // respecting the position of the Author in the list for each book.
-            final BookDao bookDao = bookDaoSupplier.get();
             for (final long bookId : getBookIds(source.getId())) {
                 final Book book = Book.from(bookId);
 
@@ -687,8 +743,8 @@ public class AuthorDaoImpl
 
                 // delete old links and store all new links
                 // We KNOW there are no updates needed.
-                bookDao.insertAuthors(context, bookId, false, destList,
-                                      true, book.getLocaleOrUserLocale(context));
+                insertOrUpdate(context, bookId, false, destList,
+                               true, book.getLocaleOrUserLocale(context));
             }
 
             // delete the obsolete source.
@@ -722,7 +778,6 @@ public class AuthorDaoImpl
         if (!bookIds.isEmpty()) {
             // ENHANCE: we really should fetch each book individually
             final Locale bookLocale = context.getResources().getConfiguration().getLocales().get(0);
-            final BookDao bookDao = bookDaoSupplier.get();
 
             Synchronizer.SyncLock txLock = null;
             try {
@@ -733,7 +788,7 @@ public class AuthorDaoImpl
                 for (final long bookId : bookIds) {
                     final ArrayList<Author> list = getByBookId(bookId);
                     // We KNOW there are no updates needed.
-                    bookDao.insertAuthors(context, bookId, false, list, false, bookLocale);
+                    insertOrUpdate(context, bookId, false, list, false, bookLocale);
                 }
                 if (txLock != null) {
                     db.setTransactionSuccessful();
@@ -750,7 +805,7 @@ public class AuthorDaoImpl
         return bookIds.size();
     }
 
-    private static class Sql {
+    private static final class Sql {
 
         private static final String CASE_WHEN_ = "CASE WHEN ";
         private static final String _THEN_ = " THEN ";
@@ -902,6 +957,24 @@ public class AuthorDaoImpl
         private static final String DELETE_BY_ID =
                 DELETE_FROM_ + TBL_AUTHORS.getName()
                 + _WHERE_ + DBKey.PK_ID + "=?";
+
+        /**
+         * Delete the link between a {@link Book} and an {@link Author}.
+         * <p>
+         * This is done when a book is updated; first delete all links, then re-create them.
+         */
+        static final String DELETE_BOOK_LINKS_BY_BOOK_ID =
+                DELETE_FROM_ + TBL_BOOK_AUTHOR.getName() + _WHERE_ + DBKey.FK_BOOK + "=?";
+        /**
+         * Insert the link between a {@link Book} and an {@link Author}.
+         */
+        static final String INSERT_BOOK_LINK =
+                INSERT_INTO_ + TBL_BOOK_AUTHOR.getName()
+                + '(' + DBKey.FK_BOOK
+                + ',' + DBKey.FK_AUTHOR
+                + ',' + DBKey.BOOK_AUTHOR_POSITION
+                + ',' + DBKey.AUTHOR_TYPE__BITMASK
+                + ") VALUES(?,?,?,?)";
 
         /** Purge an {@link Author} if no longer in use. */
         private static final String PURGE =

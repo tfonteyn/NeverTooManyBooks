@@ -32,7 +32,9 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 @SuppressWarnings("UnusedReturnValue")
@@ -107,6 +109,26 @@ public interface BookshelfDao
      * @param bookshelf to update
      */
     void fixId(@NonNull Bookshelf bookshelf);
+
+    /**
+     * Insert or update a list of {@link Bookshelf}'s linked to a single {@link Book}.
+     * <p>
+     * The list is pruned before storage.
+     * New shelves are added, existing ones are NOT updated.
+     * <p>
+     * <strong>Transaction:</strong> required
+     *
+     * @param context Current context
+     * @param bookId  of the book
+     * @param list    the list of bookshelves
+     *
+     * @throws DaoWriteException    on failure
+     * @throws TransactionException a transaction must be started before calling this method
+     */
+    void insertOrUpdate(@NonNull Context context,
+                        @IntRange(from = 1) long bookId,
+                        @NonNull Collection<Bookshelf> list)
+            throws DaoWriteException;
 
     /**
      * Creates a new bookshelf in the database.

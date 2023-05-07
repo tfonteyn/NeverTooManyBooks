@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.FilterFactory;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
@@ -42,9 +43,12 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
+import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.BookshelfMergeHelper;
 
@@ -81,7 +85,7 @@ public class BookshelfDaoImpl
     public static void onPostCreate(@NonNull final Context context,
                                     @NonNull final SQLiteDatabase db) {
         // inserts a 'All Books' bookshelf with _id==-1, see {@link Bookshelf}.
-        db.execSQL("INSERT INTO " + TBL_BOOKSHELF
+        db.execSQL(INSERT_INTO_ + TBL_BOOKSHELF
                    + '(' + DBKey.PK_ID
                    + ',' + DBKey.BOOKSHELF_NAME
                    + ',' + DBKey.FK_STYLE
@@ -92,7 +96,7 @@ public class BookshelfDaoImpl
                    + ')');
 
         // inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf}.
-        db.execSQL("INSERT INTO " + TBL_BOOKSHELF
+        db.execSQL(INSERT_INTO_ + TBL_BOOKSHELF
                    + '(' + DBKey.PK_ID
                    + ',' + DBKey.BOOKSHELF_NAME
                    + ',' + DBKey.FK_STYLE
@@ -240,6 +244,64 @@ public class BookshelfDaoImpl
     @Override
     public void fixId(@NonNull final Bookshelf bookshelf) {
         bookshelf.setId(findByName(bookshelf).map(Bookshelf::getId).orElse(0L));
+    }
+
+    /**
+     * Create the link between {@link Book} and {@link Bookshelf}.
+     * {@link DBDefinitions#TBL_BOOK_BOOKSHELF}
+     * <p>
+     * The list is pruned before storage.
+     * New shelves are added, existing ones are NOT updated.
+     * <p>
+     * <strong>Transaction:</strong> required
+     *
+     * @param context Current context
+     * @param bookId  of the book
+     * @param list    the list of bookshelves
+     *
+     * @throws DaoWriteException    on failure
+     * @throws TransactionException a transaction must be started before calling this method
+     */
+    public void insertOrUpdate(@NonNull final Context context,
+                               @IntRange(from = 1) final long bookId,
+                               @NonNull final Collection<Bookshelf> list)
+            throws DaoWriteException {
+
+        if (BuildConfig.DEBUG /* always */) {
+            if (!db.inTransaction()) {
+                throw new TransactionException(TransactionException.REQUIRED);
+            }
+        }
+
+        // fix id's and remove duplicates; shelves don't use a Locale, hence no lookup done.
+        pruneList(context, list);
+
+        // Just delete all current links; we'll insert them from scratch.
+        try (SynchronizedStatement stmt1 = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
+            stmt1.bindLong(1, bookId);
+            stmt1.executeUpdateDelete();
+        }
+
+        // is there anything to insert ?
+        if (list.isEmpty()) {
+            return;
+        }
+
+
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_BOOK_LINK)) {
+            for (final Bookshelf bookshelf : list) {
+                // create if needed - do NOT do updates here
+                if (bookshelf.getId() == 0) {
+                    insert(context, bookshelf);
+                }
+
+                stmt.bindLong(1, bookId);
+                stmt.bindLong(2, bookshelf.getId());
+                if (stmt.executeInsert() == -1) {
+                    throw new DaoWriteException("insert Book-Bookshelf");
+                }
+            }
+        }
     }
 
     @Override
@@ -429,8 +491,23 @@ public class BookshelfDaoImpl
         }
     }
 
-    private static class Sql {
+    private static final class Sql {
 
+        /**
+         * Insert the link between a {@link Book} and a {@link Bookshelf}.
+         */
+        static final String INSERT_BOOK_LINK =
+                INSERT_INTO_ + TBL_BOOK_BOOKSHELF.getName()
+                + '(' + DBKey.FK_BOOK
+                + ',' + DBKey.FK_BOOKSHELF
+                + ") VALUES (?,?)";
+        /**
+         * Delete the link between a {@link Book} and a {@link Bookshelf}.
+         * <p>
+         * This is done when a book is updated; first delete all links, then re-create them.
+         */
+        static final String DELETE_BOOK_LINKS_BY_BOOK_ID =
+                DELETE_FROM_ + TBL_BOOK_BOOKSHELF.getName() + _WHERE_ + DBKey.FK_BOOK + "=?";
         private static final String INSERT =
                 INSERT_INTO_ + TBL_BOOKSHELF.getName()
                 + '(' + DBKey.BOOKSHELF_NAME

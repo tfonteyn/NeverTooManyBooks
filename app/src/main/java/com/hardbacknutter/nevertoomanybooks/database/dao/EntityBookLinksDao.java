@@ -33,6 +33,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
@@ -133,6 +135,38 @@ public interface EntityBookLinksDao<T extends Entity>
      */
     @NonNull
     ArrayList<T> getByBookId(@IntRange(from = 1) long bookId);
+
+    /**
+     * Insert or update a list of {@link T}'s linked to a single {@link Book}.
+     * <p>
+     * The list is pruned before storage.
+     * New {@link T}'s are added to the {@link T} table, existing ones are NOT updated
+     * unless explicitly allowed by the {@code doUpdates} parameter.
+     * <p>
+     * <strong>Transaction:</strong> required
+     *
+     * @param context      Current context
+     * @param bookId       of the book
+     * @param doUpdates    set to {@code true} to force each {@link T} to be updated.
+     *                     <strong>ONLY</strong> set this when actually needed.
+     *                     Do not set this during for example an import.
+     * @param list         the list of {@link T}'s
+     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
+     *                     This can be (relatively) slow, and hence should be {@code false}
+     *                     during for example an import.
+     * @param bookLocale   Locale to use if the item has none set,
+     *                     or if lookupLocale was {@code false}
+     *
+     * @throws DaoWriteException    on failure
+     * @throws TransactionException a transaction must be started before calling this method
+     */
+    void insertOrUpdate(@NonNull Context context,
+                        @IntRange(from = 1) long bookId,
+                        boolean doUpdates,
+                        @NonNull Collection<T> list,
+                        boolean lookupLocale,
+                        @NonNull Locale bookLocale)
+            throws DaoWriteException;
 
     /**
      * Insert a new {@link T}.

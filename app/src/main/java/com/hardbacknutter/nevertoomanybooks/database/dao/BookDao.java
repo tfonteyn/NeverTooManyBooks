@@ -28,24 +28,16 @@ import androidx.core.util.Pair;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.core.database.TypedCursor;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
-import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 public interface BookDao {
 
@@ -141,131 +133,6 @@ public interface BookDao {
      * @return {@code true} if a row was deleted
      */
     boolean delete(@IntRange(from = 1) long id);
-
-    /**
-     * Create the link between {@link Book} and {@link Author}.
-     * {@link DBDefinitions#TBL_BOOK_AUTHOR}
-     * <p>
-     * The list is pruned before storage.
-     * New authors are added to the Author table, existing ones are NOT updated.
-     * <p>
-     * <strong>Transaction:</strong> required
-     *
-     * @param context      Current context
-     * @param bookId       of the book
-     * @param doUpdates    set to {@code true} to force each Author to be updated.
-     *                     <strong>ONLY</strong> set this when actually needed.
-     *                     Do not set this during for example an import.
-     * @param list         the list of authors
-     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
-     *                     This can be (relatively) slow, and hence should be {@code false}
-     *                     during for example an import.
-     * @param bookLocale   of the book, already resolved
-     *
-     * @throws DaoWriteException    on failure
-     * @throws TransactionException a transaction must be started before calling this method
-     */
-    void insertAuthors(@NonNull Context context,
-                       @IntRange(from = 1) long bookId,
-                       boolean doUpdates,
-                       @NonNull Collection<Author> list,
-                       boolean lookupLocale,
-                       @NonNull Locale bookLocale)
-            throws DaoWriteException;
-
-    /**
-     * Create the link between {@link Book} and {@link Series}.
-     * {@link DBDefinitions#TBL_BOOK_SERIES}
-     * <p>
-     * The list is pruned before storage.
-     * New series are added to the Series table, existing ones are NOT updated.
-     * <p>
-     * <strong>Transaction:</strong> required
-     *
-     * @param context      Current context
-     * @param bookId       of the book
-     * @param doUpdates    set to {@code true} to force each Author to be updated.
-     *                     <strong>ONLY</strong> set this when actually needed.
-     *                     Do not set this during for example an import.
-     * @param list         the list of Series
-     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
-     *                     This can be (relatively) slow, and hence should be {@code false}
-     *                     during for example an import.
-     * @param bookLocale   Locale to use if the item has none set,
-     *                     or if lookupLocale was {@code false}
-     *
-     * @throws DaoWriteException    on failure
-     * @throws TransactionException a transaction must be started before calling this method
-     */
-    void insertSeries(@NonNull Context context,
-                      @IntRange(from = 1) long bookId,
-                      boolean doUpdates,
-                      @NonNull Collection<Series> list,
-                      boolean lookupLocale,
-                      @NonNull Locale bookLocale)
-            throws DaoWriteException;
-
-    /**
-     * Create the link between {@link Book} and {@link Publisher}.
-     * {@link DBDefinitions#TBL_BOOK_PUBLISHER}
-     * <p>
-     * The list is pruned before storage.
-     * New Publishers are added to the Publisher table, existing ones are NOT updated.
-     * <p>
-     * <strong>Transaction:</strong> required
-     *
-     * @param context      Current context
-     * @param bookId       of the book
-     * @param doUpdates    set to {@code true} to force each Author to be updated.
-     *                     <strong>ONLY</strong> set this when actually needed.
-     *                     Do not set this during for example an import.
-     * @param list         the list of Publishers
-     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
-     *                     This can be (relatively) slow, and hence should be {@code false}
-     *                     during for example an import.
-     * @param bookLocale   Locale to use if the item has none set,
-     *                     or if lookupLocale was {@code false}
-     *
-     * @throws DaoWriteException    on failure
-     * @throws TransactionException a transaction must be started before calling this method
-     */
-    void insertPublishers(@NonNull Context context,
-                          @IntRange(from = 1) long bookId,
-                          boolean doUpdates,
-                          @NonNull Collection<Publisher> list,
-                          boolean lookupLocale,
-                          @NonNull Locale bookLocale)
-            throws DaoWriteException;
-
-    /**
-     * Saves a list of {@link TocEntry} items.
-     * <ol>
-     *     <li>The list is pruned first.</li>
-     *     <li>New authors will be inserted. No updates.</li>
-     *     <li>TocEntry's existing in the database will be updated, new ones inserted.</li>
-     *     <li>Creates the links between {@link Book} and {@link TocEntry}
-     *         in {@link DBDefinitions#TBL_BOOK_TOC_ENTRIES}</li>
-     * </ol>
-     * <strong>Transaction:</strong> required
-     *
-     * @param context      Current context
-     * @param bookId       of the book
-     * @param list         the list of {@link TocEntry}
-     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
-     *                     This can be (relatively) slow, and hence should be {@code false}
-     *                     during for example an import.
-     * @param bookLocale   Locale to use if the item has none set,
-     *                     or if lookupLocale was {@code false}
-     *
-     * @throws DaoWriteException    on failure
-     * @throws TransactionException a transaction must be started before calling this method
-     */
-    void insertOrUpdateToc(@NonNull Context context,
-                           @IntRange(from = 1) long bookId,
-                           @NonNull Collection<TocEntry> list,
-                           boolean lookupLocale,
-                           @NonNull Locale bookLocale)
-            throws DaoWriteException;
 
     /**
      * Update the 'read' status and the 'read_end' date of the book.

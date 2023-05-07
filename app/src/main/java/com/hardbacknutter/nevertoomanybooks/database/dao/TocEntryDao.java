@@ -33,7 +33,11 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
@@ -127,6 +131,36 @@ public interface TocEntryDao {
      */
     @NonNull
     ArrayList<Long> getBookIds(long tocId);
+
+    /**
+     * Saves a list of {@link TocEntry} items.
+     * <ol>
+     *     <li>The list is pruned first.</li>
+     *     <li>New authors will be inserted. No updates.</li>
+     *     <li>TocEntry's existing in the database will be updated, new ones inserted.</li>
+     *     <li>Creates the links between {@link Book} and {@link TocEntry}
+     *         in {@link DBDefinitions#TBL_BOOK_TOC_ENTRIES}</li>
+     * </ol>
+     * <strong>Transaction:</strong> required
+     *
+     * @param context      Current context
+     * @param bookId       of the book
+     * @param list         the list of {@link TocEntry}
+     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
+     *                     This can be (relatively) slow, and hence should be {@code false}
+     *                     during for example an import.
+     * @param bookLocale   Locale to use if the item has none set,
+     *                     or if lookupLocale was {@code false}
+     *
+     * @throws DaoWriteException    on failure
+     * @throws TransactionException a transaction must be started before calling this method
+     */
+    void insertOrUpdate(@NonNull Context context,
+                        @IntRange(from = 1) long bookId,
+                        @NonNull Collection<TocEntry> list,
+                        boolean lookupLocale,
+                        @NonNull Locale bookLocale)
+            throws DaoWriteException;
 
     /**
      * Delete the passed {@link TocEntry}.

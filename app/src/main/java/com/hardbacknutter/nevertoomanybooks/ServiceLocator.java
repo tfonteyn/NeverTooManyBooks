@@ -430,7 +430,7 @@ public class ServiceLocator {
     public AuthorDao getAuthorDao() {
         synchronized (this) {
             if (authorDao == null) {
-                authorDao = new AuthorDaoImpl(getDb(), this::getBookDao);
+                authorDao = new AuthorDaoImpl(getDb());
             }
         }
         return authorDao;
@@ -597,7 +597,6 @@ public class ServiceLocator {
         synchronized (this) {
             if (publisherDao == null) {
                 publisherDao = new PublisherDaoImpl(getDb(),
-                                                    this::getBookDao,
                                                     this::getReorderHelper);
             }
         }
@@ -609,7 +608,6 @@ public class ServiceLocator {
         synchronized (this) {
             if (seriesDao == null) {
                 seriesDao = new SeriesDaoImpl(getDb(),
-                                              this::getBookDao,
                                               this::getReorderHelper);
             }
         }
@@ -646,9 +644,9 @@ public class ServiceLocator {
         synchronized (this) {
             if (tocEntryDao == null) {
                 tocEntryDao = new TocEntryDaoImpl(getDb(),
-                                                  this::getBookDao,
-                                                  this::getAuthorDao,
-                                                  this::getReorderHelper);
+                                                  this::getReorderHelper,
+                                                  this::getAuthorDao
+                );
             }
         }
         return tocEntryDao;
