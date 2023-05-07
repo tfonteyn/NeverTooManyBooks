@@ -115,7 +115,7 @@ public enum SqLiteDataType
      * @param typeName one of the {@link #MAP} keys
      *                 Must be lower-case
      *
-     * @throws IllegalArgumentException <strong>DEBUG</strong>: if the type name is unknown
+     * @throws IllegalArgumentException if the type name is unknown
      */
     @NonNull
     static SqLiteDataType getInstance(@NonNull final String typeName) {
