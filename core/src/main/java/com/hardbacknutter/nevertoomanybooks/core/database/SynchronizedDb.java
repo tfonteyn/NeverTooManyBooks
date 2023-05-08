@@ -244,6 +244,8 @@ public class SynchronizedDb
      *               column values
      *
      * @return the row id of the newly inserted row, or {@code -1} if an error occurred
+     *
+     * @throws TransactionException when currently inside a shared lock
      */
     public long insert(@NonNull final String table,
                        @NonNull final ContentValues values) {
@@ -277,7 +279,16 @@ public class SynchronizedDb
      * However, to avoid the Android code overhead,
      * loops should use {@link #compileStatement} instead.
      *
+     * @param table       the table to delete from
+     * @param values      a map from column names to new column values.
+     *                    {@code null} is a valid value that will be translated to NULL.
+     * @param whereClause the optional WHERE clause to apply when deleting.
+     *                    Passing null will delete all rows.
+     * @param whereArgs   the arguments to bind for the WHERE
+     *
      * @return the number of rows affected
+     *
+     * @throws TransactionException when currently inside a shared lock
      */
     public int update(@NonNull final String table,
                       @NonNull final ContentValues values,
@@ -312,9 +323,16 @@ public class SynchronizedDb
      * However, to avoid the Android code overhead,
      * loops should use {@link #compileStatement} instead.
      *
+     * @param table       the table to delete from
+     * @param whereClause the optional WHERE clause to apply when deleting.
+     *                    Passing null will delete all rows.
+     * @param whereArgs   the arguments to bind for the WHERE
+     *
      * @return the number of rows affected if a whereClause is passed in, 0
      *         otherwise. To remove all rows and get a count pass "1" as the
      *         whereClause.
+     *
+     * @throws TransactionException when currently inside a shared lock
      */
     @SuppressWarnings("UnusedReturnValue")
     public int delete(@NonNull final String table,
@@ -343,6 +361,14 @@ public class SynchronizedDb
 
     /**
      * Locking-aware wrapper for underlying database method.
+     * <p>
+     * Compiles an SQL statement into a reusable pre-compiled statement object.
+     *
+     * @param sql The raw SQL statement
+     *
+     * @return A pre-compiled <strong>NEW</strong> {@link SQLiteStatement} object
+     *
+     * @throws TransactionException when currently inside a shared lock
      */
     @NonNull
     public SynchronizedStatement compileStatement(@NonNull final String sql) {
@@ -374,6 +400,10 @@ public class SynchronizedDb
 
     /**
      * Locking-aware wrapper for underlying database method.
+     *
+     * @param sql The raw SQL statement
+     *
+     * @throws TransactionException when currently inside a shared lock
      */
     public void execSQL(@NonNull final String sql) {
         if (BuildConfig.DEBUG && LoggerFactory.DEBUG_EXEC_SQL) {
@@ -400,6 +430,8 @@ public class SynchronizedDb
 
     /**
      * Locking-aware wrapper for underlying database method.
+     *
+     * @param sql The raw SQL statement
      *
      * @return the cursor
      */
