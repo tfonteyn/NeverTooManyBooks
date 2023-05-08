@@ -299,7 +299,7 @@ public class SeriesDaoImpl
         }
 
 
-        final Function<Series, Locale> listLocaleSupplier = item -> {
+        final Function<Series, Locale> localeSupplier = item -> {
             if (lookupLocale) {
                 return item.getLocale(context).orElse(bookLocale);
             } else {
@@ -307,7 +307,7 @@ public class SeriesDaoImpl
             }
         };
 
-        pruneList(context, list, listLocaleSupplier);
+        pruneList(context, list, localeSupplier);
 
         // Just delete all current links; we'll re-insert them for easier positioning
         try (SynchronizedStatement stmt1 = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
@@ -323,7 +323,7 @@ public class SeriesDaoImpl
         int position = 0;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_BOOK_LINK)) {
             for (final Series series : list) {
-                fixId(context, series, () -> listLocaleSupplier.apply(series));
+                fixId(context, series, () -> localeSupplier.apply(series));
 
                 // create if needed - do NOT do updates unless explicitly allowed
                 if (series.getId() == 0) {
