@@ -64,6 +64,8 @@ public interface EntityBookLinksDao<T extends Entity>
     /**
      * Find a {@link T} by using the <strong>name</strong> fields.
      * If found, updates <strong>ONLY</strong> the id with the one found in the database.
+     * <p>
+     * If the item has 'sub' items, then implementations must propagate the call.
      *
      * @param context        Current context
      * @param item           to update

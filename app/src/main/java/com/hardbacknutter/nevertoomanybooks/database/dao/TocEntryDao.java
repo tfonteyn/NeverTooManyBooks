@@ -44,33 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 public interface TocEntryDao {
 
     /**
-     * Passed a list of Objects, remove duplicates.
-     *
-     * @param context        Current context
-     * @param list           List to clean up
-     * @param localeSupplier deferred supplier for a {@link Locale}
-     *
-     * @return {@code true} if the list was modified.
-     */
-    boolean pruneList(@NonNull Context context,
-                      @NonNull Collection<TocEntry> list,
-                      @NonNull Function<TocEntry, Locale> localeSupplier);
-
-    /**
-     * Tries to find the item in the database using all or some of its fields (except the id).
-     * If found, sets the item's id with the id found in the database.
-     * <p>
-     * If the item has 'sub' items, then it should call those as well.
-     *
-     * @param context        Current context
-     * @param tocEntry       to update
-     * @param localeSupplier deferred supplier for a {@link Locale}
-     */
-    void fixId(@NonNull Context context,
-               @NonNull TocEntry tocEntry,
-               @NonNull Supplier<Locale> localeSupplier);
-
-    /**
      * Find a {@link TocEntry} by using the <strong>name</strong> fields
      * of the passed {@link TocEntry}.
      * <p>
@@ -89,12 +62,39 @@ public interface TocEntryDao {
                                   @NonNull Supplier<Locale> localeSupplier);
 
     /**
-     * Get all TOC entries; mainly for the purpose of backups.
+     * Find a {@link TocEntry} by using the <strong>name</strong> fields.
+     * If found, updates <strong>ONLY</strong> the id with the one found in the database.
+     * <p>
+     * If the item has 'sub' items, then implementations must propagate the call.
      *
-     * @return Cursor over all TOC entries
+     * @param context        Current context
+     * @param tocEntry       to update
+     * @param localeSupplier deferred supplier for a {@link Locale}
+     */
+    void fixId(@NonNull Context context,
+               @NonNull TocEntry tocEntry,
+               @NonNull Supplier<Locale> localeSupplier);
+
+    /**
+     * Check for books which do not have a {@link TocEntry} at position 1.
+     * For those that don't, read their list, and re-save them.
+     *
+     * @param context Current context
+     *
+     * @return the number of books processed
+     */
+    int fixPositions(@NonNull Context context);
+
+    /**
+     * Get a list of book ID's (most often just the one) in which this {@link TocEntry}
+     * (story) is present.
+     *
+     * @param tocId id of the entry (story)
+     *
+     * @return list with book ID's
      */
     @NonNull
-    Cursor fetchAll();
+    ArrayList<Long> getBookIds(long tocId);
 
     /**
      * Return a list of paired book-id and book-title 's for the given TOC id.
@@ -120,17 +120,6 @@ public interface TocEntryDao {
      */
     @NonNull
     ArrayList<TocEntry> getByBookId(@IntRange(from = 1) long bookId);
-
-    /**
-     * Get a list of book ID's (most often just the one) in which this {@link TocEntry}
-     * (story) is present.
-     *
-     * @param tocId id of the entry (story)
-     *
-     * @return list with book ID's
-     */
-    @NonNull
-    ArrayList<Long> getBookIds(long tocId);
 
     /**
      * Saves a list of {@link TocEntry} items.
@@ -173,18 +162,30 @@ public interface TocEntryDao {
     boolean delete(@NonNull Context context,
                    @NonNull TocEntry tocEntry);
 
+
     /**
-     * Check for books which do not have a {@link TocEntry} at position 1.
-     * For those that don't, read their list, and re-save them.
+     * Passed a list of Objects, remove duplicates.
      *
-     * @param context Current context
+     * @param context        Current context
+     * @param list           List to clean up
+     * @param localeSupplier deferred supplier for a {@link Locale}
      *
-     * @return the number of books processed
+     * @return {@code true} if the list was modified.
      */
-    int fixPositions(@NonNull Context context);
+    boolean pruneList(@NonNull Context context,
+                      @NonNull Collection<TocEntry> list,
+                      @NonNull Function<TocEntry, Locale> localeSupplier);
 
     /**
      * Delete orphaned records.
      */
     void purge();
+
+    /**
+     * Get all TOC entries; mainly for the purpose of backups.
+     *
+     * @return Cursor over all TOC entries
+     */
+    @NonNull
+    Cursor fetchAll();
 }
