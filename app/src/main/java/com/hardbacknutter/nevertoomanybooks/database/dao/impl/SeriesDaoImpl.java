@@ -480,9 +480,6 @@ public class SeriesDaoImpl
 
         final ArrayList<Long> bookIds = getColumnAsLongArrayList(Sql.REPOSITION);
         if (!bookIds.isEmpty()) {
-            // ENHANCE: we really should fetch each book individually
-            final Locale bookLocale = context.getResources().getConfiguration().getLocales().get(0);
-
             Synchronizer.SyncLock txLock = null;
             try {
                 if (!db.inTransaction()) {
@@ -490,9 +487,11 @@ public class SeriesDaoImpl
                 }
 
                 for (final long bookId : bookIds) {
+                    final Book book = Book.from(bookId);
                     final ArrayList<Series> list = getByBookId(bookId);
                     // We KNOW there are no updates needed.
-                    insertOrUpdate(context, bookId, false, list, false, bookLocale);
+                    insertOrUpdate(context, bookId, false, list, false,
+                                   book.getLocaleOrUserLocale(context));
                 }
                 if (txLock != null) {
                     db.setTransactionSuccessful();
