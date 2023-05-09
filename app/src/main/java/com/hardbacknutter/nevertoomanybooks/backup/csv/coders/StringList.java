@@ -90,7 +90,7 @@ public class StringList<E> {
      * @param delimiter  delimiter to use
      * @param allowBlank Flag to allow adding empty (non-null) strings
      *
-     * @return Array of objects resulting from list
+     * @return list
      */
     @NonNull
     public ArrayList<E> decode(@Nullable final CharSequence stringList,
