@@ -43,6 +43,8 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 public class SyncWriterHelper
         extends DataWriterHelperBase<SyncWriterResults> {
 
+    private static final String ERROR_SYNC_SERVER_NULL = "syncServer";
+
     /** Extra arguments for specific writers. The writer must define them. */
     private final Bundle extraArgs = ServiceLocator.getInstance().newBundle();
     @SuppressWarnings("FieldNotUsedInToString")
@@ -72,7 +74,7 @@ public class SyncWriterHelper
 
     @NonNull
     SyncServer getSyncServer() {
-        return Objects.requireNonNull(syncServer, "syncServer");
+        return Objects.requireNonNull(syncServer, ERROR_SYNC_SERVER_NULL);
     }
 
     void setSyncServer(@NonNull final SyncServer syncServer) {
@@ -102,18 +104,13 @@ public class SyncWriterHelper
                    StorageException,
                    IOException {
 
-        Objects.requireNonNull(syncServer, "syncServer");
+        Objects.requireNonNull(syncServer, ERROR_SYNC_SERVER_NULL);
 
         try {
             dataWriter = syncServer.createWriter(context, this, systemLocale);
             return dataWriter.write(context, progressListener);
         } finally {
-            synchronized (this) {
-                if (dataWriter != null) {
-                    dataWriter.close();
-                    dataWriter = null;
-                }
-            }
+            close();
         }
     }
 

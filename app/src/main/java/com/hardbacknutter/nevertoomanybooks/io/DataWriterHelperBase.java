@@ -153,6 +153,16 @@ public abstract class DataWriterHelperBase<RESULTS> {
                    StorageException,
                    IOException;
 
+    public void close()
+            throws IOException {
+        synchronized (this) {
+            if (dataWriter != null) {
+                dataWriter.close();
+                dataWriter = null;
+            }
+        }
+    }
+
     public void cancel() {
         synchronized (this) {
             if (dataWriter != null) {

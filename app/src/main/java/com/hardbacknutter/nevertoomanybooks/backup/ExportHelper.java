@@ -222,12 +222,7 @@ public class ExportHelper
                 throw e;
             }
         } finally {
-            synchronized (this) {
-                if (dataWriter != null) {
-                    dataWriter.close();
-                    dataWriter = null;
-                }
-            }
+            close();
         }
 
         if (!progressListener.isCancelled()) {
