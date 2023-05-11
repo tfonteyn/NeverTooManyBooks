@@ -204,7 +204,8 @@ public abstract class ArchiveWriterAbstract
 
             // Always do the covers as the last step
             if (!progressListener.isCancelled() && writeCovers && results.has(RecordType.Cover)) {
-                ((SupportsCovers) this).writeCovers(context, progressListener);
+                final File dir = ServiceLocator.getInstance().getCoverStorage().getDir();
+                ((SupportsCovers) this).writeCovers(context, dir, progressListener);
             }
 
         } finally {
@@ -236,7 +237,7 @@ public abstract class ArchiveWriterAbstract
      * @return the temporary books file
      *
      * @throws DataWriterException on a decoding/parsing of data issue
-     * @throws IOException on generic/other IO failures
+     * @throws IOException         on generic/other IO failures
      */
     @NonNull
     private File prepareBooks(@NonNull final Context context,
@@ -276,7 +277,7 @@ public abstract class ArchiveWriterAbstract
      * @param data    to add to the header bundle
      *
      * @throws DataWriterException on a decoding/parsing of data issue
-     * @throws IOException on generic/other IO failures
+     * @throws IOException         on generic/other IO failures
      */
     private void writeMetaData(@NonNull final Context context,
                                @NonNull final ExportResults data)
@@ -316,7 +317,7 @@ public abstract class ArchiveWriterAbstract
      * @return results summary
      *
      * @throws DataWriterException on a decoding/parsing of data issue
-     * @throws IOException on generic/other IO failures
+     * @throws IOException         on generic/other IO failures
      */
     @NonNull
     private ExportResults writeRecord(@NonNull final Context context,
@@ -352,22 +353,21 @@ public abstract class ArchiveWriterAbstract
      * to the archive.
      *
      * @param context          Current context
+     * @param coverDir         root of the cover directory / destination to write
      * @param progressListener Progress and cancellation interface
      *
-     * @throws StorageException The covers directory is not available
-     * @throws IOException      on generic/other IO failures
+     * @throws IOException on generic/other IO failures
      */
     public void writeCovers(@NonNull final Context context,
+                            @NonNull final File coverDir,
                             @NonNull final ProgressListener progressListener)
-            throws StorageException, IOException {
+            throws IOException {
 
         progressListener.publishProgress(0, context.getString(R.string.lbl_covers_long));
 
         int exported = 0;
         int delta = 0;
         long lastUpdate = 0;
-
-        final File coverDir = ServiceLocator.getInstance().getCoverStorage().getDir();
 
         final String coverStr = context.getString(R.string.lbl_covers);
         for (final String filename : results.getCoverFileNames()) {
@@ -432,14 +432,16 @@ public abstract class ArchiveWriterAbstract
          * Write the covers.
          *
          * @param context          Current context
+         * @param coverDir         root of the cover directory / destination to write
          * @param progressListener Progress and cancellation interface
          *
-         * @throws IOException on generic/other IO failures
+         * @throws IOException      on generic/other IO failures
          * @throws StorageException on storage related failures
          */
         @WorkerThread
         void writeCovers(@NonNull Context context,
+                         @NonNull File coverDir,
                          @NonNull ProgressListener progressListener)
-                throws StorageException, IOException;
+        throws StorageException, IOException;
     }
 }
