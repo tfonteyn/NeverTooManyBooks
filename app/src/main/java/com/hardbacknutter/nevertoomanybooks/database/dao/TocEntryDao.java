@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -42,24 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 public interface TocEntryDao {
-
-    /**
-     * Find a {@link TocEntry} by using the <strong>name</strong> fields
-     * of the passed {@link TocEntry}.
-     * <p>
-     * Note that the publication year is NOT used for comparing, under the assumption that
-     * two search-sources can give different dates by mistake.
-     *
-     * @param context        Current context
-     * @param tocEntry       to search for
-     * @param localeSupplier deferred supplier for a {@link Locale}.
-     *
-     * @return the {@link TocEntry}
-     */
-    @NonNull
-    Optional<TocEntry> findByName(@NonNull Context context,
-                                  @NonNull TocEntry tocEntry,
-                                  @NonNull Supplier<Locale> localeSupplier);
 
     /**
      * Find a {@link TocEntry} by using the <strong>name</strong> fields.

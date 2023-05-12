@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -109,30 +108,22 @@ public class TocEntryDaoImpl
         final Author primaryAuthor = tocEntry.getPrimaryAuthor();
         authorDaoSupplier.get().fixId(context, primaryAuthor, localeSupplier);
 
-        final long id = findByName(context, tocEntry, localeSupplier)
-                .map(TocEntry::getId).orElse(0L);
+        final long id = find(context, tocEntry, localeSupplier);
         tocEntry.setId(id);
     }
 
-    @Override
-    @NonNull
-    public Optional<TocEntry> findByName(@NonNull final Context context,
-                                         @NonNull final TocEntry tocEntry,
-                                         @NonNull final Supplier<Locale> localeSupplier) {
+    private long find(@NonNull final Context context,
+                      @NonNull final TocEntry tocEntry,
+                      @NonNull final Supplier<Locale> localeSupplier) {
 
         final OrderByData obd = OrderByData.create(context, reorderHelperSupplier.get(),
                                                    tocEntry.getTitle(), localeSupplier.get());
 
-        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{
-                String.valueOf(tocEntry.getPrimaryAuthor().getId()),
-                SqlEncode.orderByColumn(tocEntry.getTitle(), obd.locale),
-                SqlEncode.orderByColumn(obd.title, obd.locale)})) {
-            if (cursor.moveToFirst()) {
-                final CursorRow rowData = new CursorRow(cursor);
-                return Optional.of(new TocEntry(rowData.getLong(DBKey.PK_ID), rowData));
-            } else {
-                return Optional.empty();
-            }
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.FIND_ID)) {
+            stmt.bindLong(1, tocEntry.getPrimaryAuthor().getId());
+            stmt.bindString(2, SqlEncode.orderByColumn(tocEntry.getTitle(), obd.locale));
+            stmt.bindString(3, SqlEncode.orderByColumn(obd.title, obd.locale));
+            return stmt.simpleQueryForLongOrZero();
         }
     }
 
@@ -448,12 +439,12 @@ public class TocEntryDaoImpl
                 + _ORDER_BY_ + TBL_BOOK_TOC_ENTRIES.dot(DBKey.BOOK_TOC_ENTRY_POSITION);
 
         /**
-         * Find a {@link TocEntry} by Title.
+         * Get the id of a {@link TocEntry} by Title.
          * The lookup is by EQUALITY and CASE-SENSITIVE.
-         * Searches TITLE_OB on both "The Title" and "Title, The"
+         * Search TITLE_OB on both "The Title" and "Title, The"
          */
-        private static final String FIND_BY_NAME =
-                SELECT_ALL
+        private static final String FIND_ID =
+                SELECT_ + DBKey.PK_ID + _FROM_ + TBL_TOC_ENTRIES.getName()
                 + _WHERE_ + DBKey.FK_AUTHOR + "=?"
                 + _AND_ + '(' + DBKey.TITLE_OB + "=? " + _COLLATION
                 + _OR_ + DBKey.TITLE_OB + "=?" + _COLLATION + ')';
