@@ -45,7 +45,6 @@ Booklist style sorting by date-read or date-added etc...:
 4.4.0
 
 NEW:
-- // ENHANCE: DBKey.AUTHOR_REAL_AUTHOR: add to field visibility switches
 
 FIXES:
 
