@@ -118,8 +118,15 @@ public final class AppLocaleImpl
         }
 
         // Recreate the user-locale list adding the preferred one at the start.
-        final ArrayList<Locale> list = new ArrayList<>(systemLocales);
-        list.add(0, preferredLocale);
+        // Github #3
+        // Older Android versions throw an exception if there are duplicates,
+        // while more recent ones will simply ignore the duplicate.
+        // Note to self: it never happened on my personal 8.0 due to it being
+        // a legacy/upgraded version. Morale of the story: do NOT trust Android upgrades...
+        final List<Locale> list = new ArrayList<>(systemLocales);
+        if (!list.contains(preferredLocale)) {
+            list.add(0, preferredLocale);
+        }
         final LocaleList updatedLocaleList = new LocaleList(list.toArray(Z_ARRAY));
 
         // Update the JDK usage of Locale.
