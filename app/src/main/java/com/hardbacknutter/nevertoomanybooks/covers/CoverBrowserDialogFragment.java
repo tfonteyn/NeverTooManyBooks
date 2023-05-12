@@ -132,7 +132,6 @@ public class CoverBrowserDialogFragment
      */
     public CoverBrowserDialogFragment() {
         super(R.layout.dialog_cover_browser, R.layout.dialog_cover_browser_content);
-        setFloatingDialogWidth(R.dimen.floating_dialog_cover_browser_width);
     }
 
     /**
@@ -192,6 +191,8 @@ public class CoverBrowserDialogFragment
                 dismiss();
             }
         });
+
+        adjustWindowSize(R.dimen.floating_dialog_cover_browser_width);
     }
 
     @Override

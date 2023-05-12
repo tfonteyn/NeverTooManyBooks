@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.dialogs;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -42,6 +41,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -49,9 +49,10 @@ import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 
 /**
@@ -60,11 +61,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
  * Why an action-view in the toolbar?
  * If we want an outline to be drawn AROUND the icon to make it better visible,
  * then we seem forced to use an "actionLayout" with an icon-Button using the outline style.
- * An alternative is to use an icon with outline builtin... but that makes the actual icon to small.
+ * An alternative is to use an icon with outline builtin... but then the actual icon is too small.
  * <p>
  * Reminder: dialogs with a RecyclerView
  * <ol>
- *     <li>add to the root layout:<br>
+ *     <li>add to the root layout of the _content.xml:<br>
  *         {@code android:minHeight="@dimen/floating_dialog_recycler_view_min_height"}
  *     </li>
  *     <li>add to the RecyclerView:<br>
@@ -73,15 +74,17 @@ import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
  *     <li>add to the RecyclerView:<br>
  *         {@code app:layout_constraintBottom_toTopOf="@id/button_panel_layout"}
  *     </li>
+ *     <li>
+ *         Call {@link #adjustWindowSize()} from {@link #onViewCreated(View, Bundle)}
+ *     </li>
  * </ol>
  * <p>
- * Special cases:
- * <p>
- * {@link #setFloatingDialogWidth(int)}: force the width to a 'dimen' setting to maximize it.
- * e.g. {@link CoverBrowserDialogFragment}
+ * Special cases see {@link #adjustWindowSize} methods.
  */
 public abstract class FFBaseDialogFragment
         extends DialogFragment {
+
+    private static final String TAG = "FFBaseDialogFragment";
 
     private final int fullscreenLayoutId;
     private final int contentLayoutId;
@@ -96,9 +99,6 @@ public abstract class FFBaseDialogFragment
     private Toolbar dialogToolbar;
     /** Show the dialog fullscreen (default) or as a floating dialog. */
     private boolean fullscreen;
-    /** FLOATING DIALOG mode only. Default set in {@link #onAttach(Context)}. */
-    @DimenRes
-    private int widthDimenResId;
 
     /**
      * Constructor.
@@ -134,32 +134,26 @@ public abstract class FFBaseDialogFragment
              EnumSet.of(WindowSizeClass.Compact));
     }
 
-    /**
-     * FLOATING DIALOG mode only. Has no effect in fullscreen mode.
-     * If required, this <strong>MUST</strong> be called from
-     * the <strong>constructor</strong> OR from <strong>{@code onCreate}</strong>.
-     * <p>
-     * Normally never needed unless a particular dialog needs to be extra-wide.
-     * <p>
-     * TODO: try to use minWidth instead
-     *
-     * @param dimenResId the width to use as an 'R.dimen.value'
-     */
-    protected void setFloatingDialogWidth(@SuppressWarnings("SameParameterValue")
-                                          @DimenRes final int dimenResId) {
-        widthDimenResId = dimenResId;
-    }
-
     @Override
     @CallSuper
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
-        // Must be here as needed by both onCreateDialog/onCreateView
-        //noinspection ConstantConditions
+        // fullscreen check must be done here as it's needed by both onCreateDialog/onCreateView
+        final FragmentActivity activity = requireActivity();
+        final WindowSizeClass width = WindowSizeClass.getWidth(activity);
+        final WindowSizeClass height = WindowSizeClass.getHeight(activity);
         fullscreen = forceFullscreen
                      ||
-                     useFullscreenWidth.contains(WindowSizeClass.getWidth(getActivity()))
-                     && useFullscreenHeight.contains(WindowSizeClass.getHeight(getActivity()));
+                     useFullscreenWidth.contains(width) && useFullscreenHeight.contains(height);
+
+        if (BuildConfig.DEBUG /* always */) {
+            LoggerFactory.getLogger().d(TAG, "onAttach",
+                                        getClass().getSimpleName(),
+                                        "forceFullscreen=" + forceFullscreen,
+                                        "width=" + width,
+                                        "height=" + height,
+                                        "fullscreen=" + fullscreen);
+        }
     }
 
     /**
@@ -173,10 +167,10 @@ public abstract class FFBaseDialogFragment
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         final Dialog dialog;
         if (fullscreen) {
-            dialog = new Dialog(getContext(), R.style.Theme_App_FullScreen);
+            dialog = new Dialog(requireContext(), R.style.Theme_App_FullScreen);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         } else {
-            dialog = new Dialog(getContext(), R.style.ThemeOverlay_App_CustomDialog);
+            dialog = new Dialog(requireContext(), R.style.ThemeOverlay_App_CustomDialog);
         }
         return dialog;
     }
@@ -230,16 +224,6 @@ public abstract class FFBaseDialogFragment
                     button.setOnClickListener(this::onToolbarButtonClick);
                 }
             }
-
-            final Resources res = getResources();
-
-            if (widthDimenResId != 0) {
-                // Set the fixed with on the WINDOW!
-                //noinspection ConstantConditions
-                final Window window = getDialog().getWindow();
-                final WindowManager.LayoutParams attributes = window.getAttributes();
-                window.setLayout(res.getDimensionPixelSize(widthDimenResId), attributes.height);
-            }
         }
 
         if (dialogToolbar != null) {
@@ -269,19 +253,57 @@ public abstract class FFBaseDialogFragment
     }
 
     /**
+     * FIXME: Workaround for dialogs which need to be extra-wide.
+     *  Maybe try to use minWidth instead?
+     * <strong>MUST</strong> be called as the last thing from {@link #onViewCreated(View, Bundle)}.
+     * <strong>ONLY ONE</strong> {@link #adjustWindowSize} method should be called.
+     *
+     * @param widthDimenResId the width to use as an 'R.dimen.value'
+     */
+    protected void adjustWindowSize(@DimenRes final int widthDimenResId) {
+        // Sanity check
+        if (getDialog() != null && getDialog().getWindow() != null) {
+            final Window window = getDialog().getWindow();
+            final WindowManager.LayoutParams attributes = window.getAttributes();
+            window.setLayout(getResources().getDimensionPixelSize(widthDimenResId),
+                             attributes.height);
+        }
+    }
+
+    /**
      * FIXME: Workaround for dialogs with a RecyclerView.
-     * Should be called as the last thing from {@link #onViewCreated(View, Bundle)}.
+     * <strong>MUST</strong> be called as the last thing from {@link #onViewCreated(View, Bundle)}.
+     * <strong>ONLY ONE</strong> {@link #adjustWindowSize} method should be called.
      * <p>
      * Dev note: RecyclerView in a dialog is cursed... and should NOT be used.
      */
-    protected void workaroundRecyclerViewContent() {
-        //noinspection ConstantConditions
-        final WindowSizeClass height = WindowSizeClass.getHeight(getContext());
-        if (height == WindowSizeClass.Compact || height == WindowSizeClass.Medium) {
-            if (getDialog() != null) {
-                if (getDialog().getWindow() != null) {
-                    getDialog().getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT,
-                                                      ViewGroup.LayoutParams.MATCH_PARENT);
+    protected void adjustWindowSize() {
+        // If we are NOT already in fullscreen mode:
+        // - phones: make the dialog match the entire screen size; i.e. force fullscreen
+        //   but keep the dialog UI.
+        // - tablets: make the dialog wrap the content width, but match the screen size
+        if (!fullscreen) {
+            // Sanity check
+            if (getDialog() != null && getDialog().getWindow() != null) {
+                //noinspection ConstantConditions
+                final WindowSizeClass height = WindowSizeClass.getHeight(getContext());
+                if (height == WindowSizeClass.Compact || height == WindowSizeClass.Medium) {
+
+                    if (BuildConfig.DEBUG /* always */) {
+                        LoggerFactory.getLogger().d(TAG, "workaroundRecyclerViewContent");
+                    }
+
+                    final WindowSizeClass width = WindowSizeClass.getWidth(getContext());
+                    final int lpWidth;
+                    if (width == WindowSizeClass.Compact || width == WindowSizeClass.Medium) {
+                        // Maximize the dialog width; i.e. make the Dialog match the full screen.
+                        lpWidth = ViewGroup.LayoutParams.MATCH_PARENT;
+                    } else {
+                        // WindowSizeClass.Expanded: keep the dialog width reasonable
+                        lpWidth = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    }
+                    // Either way, the height is always maximized.
+                    getDialog().getWindow().setLayout(lpWidth, ViewGroup.LayoutParams.MATCH_PARENT);
                 }
             }
         }

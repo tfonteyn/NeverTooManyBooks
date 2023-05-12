@@ -34,6 +34,7 @@ import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.LifecycleOwner;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 
@@ -43,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogStylesMenuContentBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RadioGroupRecyclerAdapter;
 
 public class StylePickerDialogFragment
@@ -74,7 +76,11 @@ public class StylePickerDialogFragment
      * No-arg constructor for OS use.
      */
     public StylePickerDialogFragment() {
-        super(R.layout.dialog_styles_menu, R.layout.dialog_styles_menu_content);
+        super(R.layout.dialog_styles_menu, R.layout.dialog_styles_menu_content,
+              // Fullscreen on Medium screens
+              // for consistency with BookshelfFiltersDialogFragment
+              EnumSet.of(WindowSizeClass.Compact, WindowSizeClass.Medium),
+              EnumSet.of(WindowSizeClass.Compact, WindowSizeClass.Medium));
     }
 
     @Override
@@ -110,7 +116,7 @@ public class StylePickerDialogFragment
                                                   uuid -> currentStyleUuid = uuid);
         vb.stylesList.setAdapter(adapter);
 
-        workaroundRecyclerViewContent();
+        adjustWindowSize();
     }
 
     @Override

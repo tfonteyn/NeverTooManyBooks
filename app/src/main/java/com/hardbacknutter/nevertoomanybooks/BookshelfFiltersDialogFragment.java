@@ -41,6 +41,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.divider.MaterialDividerItemDecoration;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -63,6 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceAlertDialogBuilder;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
+import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 
 public class BookshelfFiltersDialogFragment
@@ -87,7 +89,11 @@ public class BookshelfFiltersDialogFragment
      */
     public BookshelfFiltersDialogFragment() {
         super(R.layout.dialog_edit_bookshelf_filters,
-              R.layout.dialog_edit_bookshelf_filters_content);
+              R.layout.dialog_edit_bookshelf_filters_content,
+              // Fullscreen on Medium screens
+              // to avoid 3 buttons overlapping text on a UI in e.g. german
+              EnumSet.of(WindowSizeClass.Compact, WindowSizeClass.Medium),
+              EnumSet.of(WindowSizeClass.Compact, WindowSizeClass.Medium));
     }
 
     @Override
@@ -112,7 +118,7 @@ public class BookshelfFiltersDialogFragment
         vb.filterList.addItemDecoration(
                 new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL));
 
-        workaroundRecyclerViewContent();
+        adjustWindowSize();
     }
 
     @Override
