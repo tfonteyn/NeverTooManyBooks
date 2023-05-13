@@ -65,6 +65,7 @@ public class UncheckedDaoWriteException
      * @return the {@code DaoWriteException} which is the cause of this exception.
      */
     @Override
+    @Nullable
     public DaoWriteException getCause() {
         return (DaoWriteException) super.getCause();
     }

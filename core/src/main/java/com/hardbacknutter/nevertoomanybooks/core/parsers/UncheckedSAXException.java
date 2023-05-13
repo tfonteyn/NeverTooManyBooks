@@ -67,6 +67,7 @@ public class UncheckedSAXException
      * @return the {@code SAXException} which is the cause of this exception.
      */
     @Override
+    @Nullable
     public SAXException getCause() {
         return (SAXException) super.getCause();
     }

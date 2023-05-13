@@ -65,6 +65,7 @@ public class UncheckedCoverStorageException
      * @return the {@code CoverStorageException} which is the cause of this exception.
      */
     @Override
+    @Nullable
     public CoverStorageException getCause() {
         return (CoverStorageException) super.getCause();
     }
