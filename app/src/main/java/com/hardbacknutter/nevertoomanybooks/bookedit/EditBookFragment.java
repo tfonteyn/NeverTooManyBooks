@@ -44,6 +44,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -333,9 +334,10 @@ public class EditBookFragment
         @Override
         public Fragment createFragment(final int position) {
             try {
-                return tabList.get(position).clazz.newInstance();
+                return tabList.get(position).clazz.getConstructor().newInstance();
 
-            } catch (@NonNull final IllegalAccessException | java.lang.InstantiationException e) {
+            } catch (@NonNull final IllegalAccessException | java.lang.InstantiationException
+                                    | NoSuchMethodException | InvocationTargetException e) {
                 // We'll never get here...
                 throw new IllegalStateException(e);
             }

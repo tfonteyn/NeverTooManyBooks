@@ -43,6 +43,7 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
@@ -145,9 +146,11 @@ public abstract class BaseActivity
         if (fm.findFragmentByTag(fragmentTag) == null) {
             final Fragment fragment;
             try {
-                fragment = fragmentClass.newInstance();
+                fragment = fragmentClass.getConstructor().newInstance();
             } catch (@NonNull final IllegalAccessException | InstantiationException e) {
                 throw new IllegalStateException("Not a fragment: " + fragmentClass.getName());
+            } catch (final NoSuchMethodException | InvocationTargetException e) {
+                throw new IllegalStateException("Other failure: " + fragmentClass.getName());
             }
             fragment.setArguments(getIntent().getExtras());
 
