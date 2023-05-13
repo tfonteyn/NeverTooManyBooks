@@ -27,14 +27,33 @@ import java.util.regex.Pattern;
 
 /**
  * Used to create {@code ORDER BY} suitable strings, FTS storage and similar.
+ * <p>
+ * This class (and similar UNICODE handling classes) MUST be tested with "androidTest"
+ * as unit-testing will cause false positives/failures due to the lack/presence
+ * of the flag {@code use the flag: Pattern.UNICODE_CHARACTER_CLASS}.
+ * <p>
+ * See <a href="https://issuetracker.google.com/issues/181655428">Google bug 181655428</a>
+ * <pre>
+ *  1. Normally we should use the flag: Pattern.UNICODE_CHARACTER_CLASS
+ *     but android does not need/support it as it always uses unicode (it says...)
+ *     When using {Alnum} Android will NOT use unicode contradicting the above.
+ *
+ *  2. Combining explicit unicode {IsAlphabetic} with 'd' for digits
+ *     Pattern.compile("[^\\p{IsAlphabetic}\\d]");
+ *     and unit testing on JDK 17 (Windows) works fine, but fails with on-device test.
+ *     google bug: https://issuetracker.google.com/issues/181655428
+ *
+ *  3. Using as per google bug:
+ *     Pattern.compile("[^\\p{Alpha}\\d]");
+ *     unit testing fails on the hosting JDK 17 for non-latin (but works for latin),
+ *     but works with on-device test.
+ * </pre>
+ * <p>
+ * Passes "androidTest" on API 26,27,31,33
  */
 public final class AlphabeticNormalizer {
 
-    // Normally we should use the flag: Pattern.UNICODE_CHARACTER_CLASS
-    // but android does not need/support it as it always uses unicode (it says...)
-    // Do NOT use {Alnum} as contradicting the above, Android will NOT use unicode.
-    // Instead combine explicit unicode {IsAlphabetic} with 'd' for digits
-    private static final Pattern ALFA_PATTERN = Pattern.compile("[^\\p{IsAlphabetic}\\d]");
+    private static final Pattern ALFA_PATTERN = Pattern.compile("[^\\p{Alpha}\\d]");
 
     private AlphabeticNormalizer() {
     }

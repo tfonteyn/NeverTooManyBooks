@@ -26,11 +26,12 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.core.utils.AlphabeticNormalizer;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
-class SqlEncodeTest {
+
+public class SqlEncodeTest {
 
     private static String normalize(@NonNull final CharSequence text) {
         return AlphabeticNormalizer.normalize(text);
@@ -42,7 +43,7 @@ class SqlEncodeTest {
     }
 
     @Test
-    void latinFrench() {
+    public void latinFrench() {
         final Locale locale = new Locale("fr", "FR");
         assertEquals("France", locale.getDisplayCountry());
         assertEquals("French", locale.getDisplayLanguage());
@@ -67,7 +68,7 @@ class SqlEncodeTest {
     }
 
     @Test
-    void latinGerman() {
+    public void latinGerman() {
         final Locale locale = new Locale("de", "DE");
         assertEquals("Germany", locale.getDisplayCountry());
         assertEquals("German", locale.getDisplayLanguage());
@@ -88,7 +89,7 @@ class SqlEncodeTest {
     }
 
     @Test
-    void latinPortuguese() {
+    public void latinPortuguese() {
         final Locale locale = new Locale("pt", "PT");
         assertEquals("Portugal", locale.getDisplayCountry());
         assertEquals("Portuguese", locale.getDisplayLanguage());
@@ -106,7 +107,7 @@ class SqlEncodeTest {
 
     // https://en.wikipedia.org/wiki/Georgian_scripts
     @Test
-    void georgian() {
+    public void georgian() {
         final Locale locale = new Locale("ka", "GE");
         assertEquals("Georgia", locale.getDisplayCountry());
         assertEquals("Georgian", locale.getDisplayLanguage());
@@ -123,7 +124,7 @@ class SqlEncodeTest {
     }
 
     @Test
-    void greek() {
+    public void greek() {
         final Locale locale = new Locale("el", "GR");
         assertEquals("Greece", locale.getDisplayCountry());
         assertEquals("Greek", locale.getDisplayLanguage());
@@ -140,7 +141,7 @@ class SqlEncodeTest {
     }
 
     @Test
-    void russian() {
+    public void russian() {
         final Locale locale = new Locale("ru", "RU");
         assertEquals("Russia", locale.getDisplayCountry());
         assertEquals("Russian", locale.getDisplayLanguage());
