@@ -60,7 +60,6 @@ public class ArchiveMetaData
 
     /**
      * Constructor used while reading from an Archive.
-     * <p>
      *
      * @param args The (usually new/empty) bundle; will be returned by {@link #getData()}
      */
@@ -136,12 +135,12 @@ public class ArchiveMetaData
         // old archives used an Integer, newer use Long.
         final Object version = getData().get(INFO_APP_VERSION_CODE);
         if (version == null) {
-            return 0;
+            return 0L;
         } else {
             try {
                 return (long) version;
             } catch (@NonNull final ClassCastException e) {
-                return 0;
+                return 0L;
             }
         }
     }
