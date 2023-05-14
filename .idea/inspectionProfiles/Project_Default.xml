@@ -37,7 +37,6 @@
       </option>
     </inspection_tool>
     <inspection_tool class="BigDecimalEquals" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="BoundedWildcard" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="BreakStatement" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="BreakStatementWithLabel" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="BulkFileAttributesRead" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -177,7 +176,6 @@
     <inspection_tool class="NestedAssignment" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="NestedConditionalExpression" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="NestedSwitchStatement" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="NestedTryStatement" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="NewMethodNamingConvention" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="NonExceptionNameEndsWithException" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="NonFinalStaticVariableUsedInClassInitialization" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -198,11 +196,6 @@
     </inspection_tool>
     <inspection_tool class="OverriddenMethodCallDuringObjectConstruction" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="PackageDotHtmlMayBePackageInfo" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="ParameterNamingConvention" enabled="true" level="WARNING" enabled_by_default="true">
-      <option name="m_regex" value="[a-z][A-Za-z\d]*" />
-      <option name="m_minLength" value="1" />
-      <option name="m_maxLength" value="20" />
-    </inspection_tool>
     <inspection_tool class="PointlessIndexOfComparison" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ProblematicWhitespace" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="PublicConstructorInNonPublicClass" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -229,7 +222,6 @@
     <inspection_tool class="SimplifiableAnnotation" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="SimplifiableEqualsExpression" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="SizeReplaceableByIsEmpty" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="StaticImport" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="StaticMethodOnlyUsedInOneClass" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="StaticVariableInitialization" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="m_ignorePrimitives" value="false" />
@@ -263,7 +255,7 @@
       <option name="useParameterizedTypeForCollectionMethods" value="true" />
       <option name="doNotWeakenToJavaLangObject" value="true" />
       <option name="onlyWeakentoInterface" value="true" />
-      <stopClasses>java.util.Set</stopClasses>
+      <stopClasses>java.util.Set,com.hardbacknutter.nevertoomanybooks.bookedit.EditAction</stopClasses>
     </inspection_tool>
     <inspection_tool class="UnnecessarilyQualifiedStaticUsage" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="m_ignoreStaticFieldAccesses" value="false" />
