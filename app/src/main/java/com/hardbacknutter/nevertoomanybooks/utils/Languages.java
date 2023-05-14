@@ -21,19 +21,24 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.Set;
 import java.util.function.Supplier;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.BuildLanguageMappingsTask;
 
@@ -465,5 +470,33 @@ public class Languages {
                               .stream()
                               .map(Locale::getISO3Language)
                               .anyMatch(iso::equals);
+    }
+
+    /**
+     * Generate and return a list of language ISO codes consisting (in order)
+     * of the device language and the the supported app locales.
+     * <p>
+     * This can used as an initial list for new users when the database does not contain
+     * any languages yet.
+     *
+     * @param context Current context
+     *
+     * @return The list of ISO 639-2 codes
+     */
+    @NonNull
+    public List<String> getDefaultCodes(@NonNull final Context context) {
+        final Resources res = context.getResources();
+        // to make it easier for first time users, add some defaults.
+        // Split off the country and use a set to avoid duplicates.
+        final Set<String> set = new LinkedHashSet<>();
+        // the device language
+        set.add(res.getConfiguration().getLocales().get(0).getLanguage().split("_")[0]);
+        // and all supported locales.
+        Arrays.stream(res.getStringArray(R.array.pv_ui_language))
+              .filter(code -> !AppLocale.SYSTEM_LANGUAGE.equals(code))
+              .map(code -> code.split("_")[0])
+              .forEachOrdered(set::add);
+
+        return new ArrayList<>(set);
     }
 }
