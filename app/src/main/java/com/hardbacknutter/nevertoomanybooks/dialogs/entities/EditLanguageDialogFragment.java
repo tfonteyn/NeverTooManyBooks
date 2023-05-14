@@ -23,11 +23,9 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -60,15 +58,14 @@ public class EditLanguageDialogFragment
         // Convert the list of ISO codes to user readable strings.
         // We do NOT need a distinction here between different countries.
         // The codes are always unique, but code to name conversion can create duplicates
-        // (e.g. en_GB and en_US both result in "English"); eliminate them by using a Set.
-        final Set<String> set = new LinkedHashSet<>();
+        // (e.g. en_GB and en_US both result in "English"); eliminate them using distinct()
         //noinspection DataFlowIssue
-        for (final String code : languageDao.getList()) {
-            if (code != null && !code.isEmpty()) {
-                set.add(languages.getDisplayNameFromISO3(context, code));
-            }
-        }
-        return new ArrayList<>(set);
+        return languageDao.getList()
+                          .stream()
+                          .filter(code -> code != null && !code.isEmpty())
+                          .map(code -> languages.getDisplayNameFromISO3(context, code))
+                          .distinct()
+                          .collect(Collectors.toList());
     }
 
     @Override
