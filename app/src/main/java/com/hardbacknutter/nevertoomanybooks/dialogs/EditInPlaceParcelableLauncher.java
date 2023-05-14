@@ -30,9 +30,14 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
- * - used for direct/in-place editing of an existing item
- * - modifications ARE STORED in the database
- * - returns the modified item.
+ * Launcher to edit an in-place Parcelable object.
+ * <ul>
+ * <li>used for direct/in-place editing of an existing item</li>
+ * <li>modifications ARE STORED in the database</li>
+ * <li>returns the modified item.</li>
+ * </ul>
+ *
+ * @param <T> type of editable object
  */
 public class EditInPlaceParcelableLauncher<T extends Parcelable>
         extends EditLauncher {

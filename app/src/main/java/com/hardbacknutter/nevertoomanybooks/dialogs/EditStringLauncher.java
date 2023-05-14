@@ -30,9 +30,12 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
- * - used for direct/in-place editing of an inline field text
- * - modifications ARE STORED in the database
- * - returns the modified text (and the original)
+ * Launcher for one of the inline-string fields in the Books table.
+ * <ul>
+ * <li>used for direct/in-place editing of an inline field text</li>
+ * <li>modifications ARE STORED in the database</li>
+ * <li>returns the modified text (and the original)</li>
+ * </ul>
  */
 public class EditStringLauncher
         extends EditLauncher {
