@@ -37,13 +37,6 @@
       </option>
     </inspection_tool>
     <inspection_tool class="BigDecimalEquals" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="BooleanMethodNameMustStartWithQuestion" enabled="true" level="WARNING" enabled_by_default="true">
-      <option name="ignoreBooleanMethods" value="false" />
-      <option name="ignoreInAnnotationInterface" value="true" />
-      <option name="onlyWarnOnBaseMethods" value="true" />
-      <option name="questionString" value="are,can,check,contains,could,endsWith,equals,has,is,matches,must,shall,should,startsWith,was,were,will,would" />
-    </inspection_tool>
-    <inspection_tool class="BooleanParameter" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="BoundedWildcard" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="BreakStatement" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="BreakStatementWithLabel" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -77,10 +70,6 @@
     </inspection_tool>
     <inspection_tool class="DefaultNotLastCaseInSwitch" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="DollarSignInName" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="DuplicateStringLiteralInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <option name="MIN_STRING_LENGTH" value="5" />
-      <option name="IGNORE_PROPERTY_KEYS" value="false" />
-    </inspection_tool>
     <inspection_tool class="DynamicRegexReplaceableByCompiledPattern" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="EmptyDeclOrStmt" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="EnumerationCanBeIteration" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -101,11 +90,6 @@
     </inspection_tool>
     <inspection_tool class="HtmlTagCanBeJavadocTag" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ImplicitDefaultCharsetUsage" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="ImplicitNumericConversion" enabled="true" level="WARNING" enabled_by_default="true">
-      <option name="ignoreWideningConversions" value="false" />
-      <option name="ignoreCharConversions" value="false" />
-      <option name="ignoreConstantConversions" value="false" />
-    </inspection_tool>
     <inspection_tool class="InconsistentLineSeparators" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="IncorrectFormatting" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
     <inspection_tool class="InstanceVariableUninitializedUse" enabled="true" level="WARNING" enabled_by_default="true">
@@ -152,7 +136,29 @@
       <option name="onlyReportStaticMethods" value="false" />
     </inspection_tool>
     <inspection_tool class="MissingDeprecatedAnnotation" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="MissingJavadoc" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="MissingJavadoc" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="PACKAGE_SETTINGS">
+        <Options>
+          <option name="ENABLED" value="false" />
+        </Options>
+      </option>
+      <option name="MODULE_SETTINGS">
+        <Options>
+          <option name="ENABLED" value="false" />
+        </Options>
+      </option>
+      <option name="TOP_LEVEL_CLASS_SETTINGS">
+        <Options>
+          <option name="REQUIRED_TAGS" value="@param" />
+          <option name="ENABLED" value="false" />
+        </Options>
+      </option>
+      <option name="INNER_CLASS_SETTINGS">
+        <Options>
+          <option name="ENABLED" value="false" />
+        </Options>
+      </option>
+    </inspection_tool>
     <inspection_tool class="MissortedModifiers" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="m_requireAnnotationsFirst" value="true" />
     </inspection_tool>
@@ -173,11 +179,6 @@
     <inspection_tool class="NestedSwitchStatement" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="NestedTryStatement" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="NewMethodNamingConvention" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="NonBooleanMethodNameMayNotStartWithQuestion" enabled="true" level="WARNING" enabled_by_default="true">
-      <option name="questionString" value="are,can,check,contains,could,endsWith,equals,has,is,matches,must,shall,should,startsWith,was,were,will,would" />
-      <option name="ignoreBooleanMethods" value="false" />
-      <option name="onlyWarnOnBaseMethods" value="true" />
-    </inspection_tool>
     <inspection_tool class="NonExceptionNameEndsWithException" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="NonFinalStaticVariableUsedInClassInitialization" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="NonFinalUtilityClass" enabled="true" level="WARNING" enabled_by_default="true" />
