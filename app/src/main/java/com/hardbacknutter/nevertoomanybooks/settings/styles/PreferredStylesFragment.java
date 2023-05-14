@@ -82,7 +82,7 @@ public class PreferredStylesFragment
                     final Intent resultIntent = PreferredStylesContract
                             .createResult(uuid, vm.isDirty());
 
-                    //noinspection ConstantConditions
+                    //noinspection DataFlowIssue
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();
                 }
@@ -133,7 +133,7 @@ public class PreferredStylesFragment
             registerForActivityResult(new EditStyleContract(), o -> o.ifPresent(data -> {
                 if (data.isModified()) {
                     if (data.getUuid().isPresent()) {
-                        //noinspection ConstantConditions
+                        //noinspection DataFlowIssue
                         vm.getStyle(getContext(), data.getUuid().get())
                           .ifPresent(style -> vm.onStyleEdited(style, data.getTemplateUuid()));
                     }
@@ -151,7 +151,7 @@ public class PreferredStylesFragment
         super.onCreate(savedInstanceState);
 
         vm = new ViewModelProvider(this).get(PreferredStylesViewModel.class);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm.init(getContext(), requireArguments());
     }
 
@@ -173,11 +173,11 @@ public class PreferredStylesFragment
         toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
         toolbar.setTitle(R.string.lbl_styles_long);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         listAdapter = new StylesAdapter(getContext(), vm.getStyleList(), positionHandler,
                                         vh -> itemTouchHelper.startDrag(vh));
         listAdapter.setOnRowClickListener((v, position) -> {
@@ -276,7 +276,7 @@ public class PreferredStylesFragment
             return true;
 
         } else if (itemId == R.id.MENU_DELETE) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             StandardDialogs.deleteStyle(getContext(), style, () -> {
                 vm.deleteStyle(style);
                 listAdapter.notifyItemRemoved(position);
@@ -286,7 +286,7 @@ public class PreferredStylesFragment
 
         } else if (itemId == R.id.MENU_PURGE_BLNS) {
             final Context context = getContext();
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             StandardDialogs.purgeBLNS(context, R.string.lbl_style, style.getLabel(context),
                                       () -> vm.purgeBLNS(style.getId()));
             return true;
