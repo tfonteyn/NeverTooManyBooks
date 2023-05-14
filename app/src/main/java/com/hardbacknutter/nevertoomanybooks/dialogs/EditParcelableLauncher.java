@@ -107,6 +107,8 @@ public abstract class EditParcelableLauncher<T extends Parcelable>
      */
     public void launch(@NonNull final EditAction action,
                        @NonNull final T item) {
+        Objects.requireNonNull(fragmentManager, "fragmentManager");
+
         final Bundle args = new Bundle(3);
         args.putString(BKEY_REQUEST_KEY, requestKey);
         args.putParcelable(EditAction.BKEY, action);

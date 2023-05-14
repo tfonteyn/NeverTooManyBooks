@@ -71,6 +71,8 @@ public class EditStringLauncher
      * @param text to edit.
      */
     public void launch(@NonNull final String text) {
+        Objects.requireNonNull(fragmentManager, "fragmentManager");
+
         final Bundle args = new Bundle(2);
         args.putString(BKEY_REQUEST_KEY, requestKey);
         args.putString(BKEY_ITEM, text);

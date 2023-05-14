@@ -77,6 +77,8 @@ public class EditInPlaceParcelableLauncher<T extends Parcelable>
      * @param item to edit
      */
     public void launch(@NonNull final T item) {
+        Objects.requireNonNull(fragmentManager, "fragmentManager");
+
         final Bundle args = new Bundle(2);
         args.putString(BKEY_REQUEST_KEY, requestKey);
         args.putParcelable(BKEY_ITEM, item);
