@@ -135,7 +135,8 @@ public class PreferredStylesFragment
                     if (data.getUuid().isPresent()) {
                         //noinspection DataFlowIssue
                         vm.getStyle(getContext(), data.getUuid().get())
-                          .ifPresent(style -> vm.onStyleEdited(style, data.getTemplateUuid()));
+                          .ifPresent(style -> vm.onStyleEdited(getContext(), style,
+                                                               data.getTemplateUuid()));
                     }
                     // always update ALL rows as the order might have changed
                     listAdapter.notifyDataSetChanged();

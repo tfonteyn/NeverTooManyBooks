@@ -25,6 +25,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,7 +36,6 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
@@ -215,92 +215,76 @@ public class PreferredStylesViewModel
     }
 
     /**
+     * Find the style in the list using the uuid.
+     *
+     * @param style to find
+     *
+     * @return row/index where found, or {@code -1} if not found
+     */
+    @VisibleForTesting
+    public int findRow(@NonNull final Style style) {
+        //
+        return IntStream.range(0, styleList.size())
+                        .filter(i -> styleList.get(i).getUuid().equalsIgnoreCase(style.getUuid()))
+                        .findFirst()
+                        // -1 if not found, i.e. we're adding a new Style.
+                        .orElse(-1);
+    }
+
+    /**
      * Called after a style has been edited.
      * Calculates the new position in the list and sets it as selected.
      *
-     * @param style        the modified style
+     * @param context      Current context
+     * @param style        the modified (or newly created) style
      * @param templateUuid uuid of the original style we cloned (different from current)
      *                     or edited (same as current).
      */
-    void onStyleEdited(@NonNull final Style style,
+    void onStyleEdited(final Context context,
+                       @NonNull final Style style,
                        @NonNull final String templateUuid) {
         dirty = true;
 
         // Now (re)organise the list of styles.
+        final Style templateStyle = stylesHelper.getStyle(context, templateUuid).orElseThrow();
+        final int templateRow = findRow(templateStyle);
 
-        // Find the style in the list using the id.
-        // The incoming style object was parcelled along the way, which *might* have changed it.
-        int editedRow = IntStream.range(0, styleList.size())
-                                 .filter(i -> styleList.get(i).getId() == style.getId())
-                                 .findFirst()
-                                 // -1 if not found, i.e. we're adding a new Style.
-                                 .orElse(-1);
-
-        if (editedRow < 0) {
-            // Not in the list; we're adding a new Style.
-            // Put it at the top and set as user-preferred
-            styleList.add(0, style);
-            style.setPreferred(true);
-            // save the preferred state
-            stylesHelper.update(style);
-            editedRow = 0;
-
+        if (templateStyle.isUserDefined()) {
+            if (templateStyle.getUuid().equalsIgnoreCase(style.getUuid())) {
+                // Same UUID, it was an edit of a user-defined style,
+                // i.e. edit-in-place: replace the old object with the new one.
+                styleList.set(templateRow, style);
+            } else {
+                // It's a clone of a user-defined style
+                // Put it directly above the user-defined original
+                styleList.add(templateRow, style);
+            }
         } else {
-            // We edited an existing Style.
-            // Check if we edited in-place or cloned a style
-            final Style origStyle = styleList.get(editedRow);
-            // a cloned style will have a new UUID
-            if (origStyle.getUuid().equalsIgnoreCase(style.getUuid())) {
-                // We edited an existing style, update the list with the new object
-                styleList.set(editedRow, style);
+            // It's a clone of a builtin style
+            if (templateStyle.isPreferred()) {
+                // if the original style was a preferred style,
+
+                // replace the original row with the new one
+                styleList.set(templateRow, style);
+
+                // Make the new one preferred and update it
+                style.setPreferred(true);
+                stylesHelper.update(style);
+
+                // And demote the original and update it
+                templateStyle.setPreferred(false);
+                stylesHelper.update(templateStyle);
+
+                // Re-add the original at the very end of the list.
+                styleList.add(templateStyle);
 
             } else {
-                // Check the type of the ORIGINAL (i.e. template) style.
-                if (origStyle.isUserDefined()) {
-                    // It's a clone of an user-defined style.
-                    // Put it directly after the user-defined original
-                    styleList.add(editedRow, style);
-
-                } else {
-                    // It's a clone of a builtin style
-                    if (origStyle.isPreferred()) {
-                        // if the original style was a preferred style,
-                        // replace the original row with the new one
-                        styleList.set(editedRow, style);
-
-                        // Make the new one preferred and update it
-                        style.setPreferred(true);
-                        stylesHelper.update(style);
-
-                        // And demote the original and update it
-                        origStyle.setPreferred(false);
-                        stylesHelper.update(origStyle);
-
-                        styleList.add(origStyle);
-
-                    } else {
-                        // Put it directly after the original
-                        styleList.add(editedRow, style);
-                    }
-                }
+                // Put it directly above the original
+                styleList.add(templateRow, style);
             }
         }
 
-        // If the original style was builtin, then we're assuming the user wanted
-        // to 'replace' the builtin style, i.e. the cloned one will be preferred,
-        // hence the original builtin style is no longer preferred.
-        if (BuiltinStyle.isBuiltin(templateUuid)) {
-            styleList.stream()
-                     .filter(builtin -> builtin.getUuid().equalsIgnoreCase(templateUuid))
-                     .findFirst()
-                     .ifPresent(builtin -> {
-                         // demote the preferred state and update it
-                         builtin.setPreferred(false);
-                         stylesHelper.update(builtin);
-                     });
-        }
-
-        selectedPosition = editedRow;
+        selectedPosition = templateRow;
     }
 
     /**
