@@ -20,15 +20,12 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.Locale;
-import java.util.Set;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
