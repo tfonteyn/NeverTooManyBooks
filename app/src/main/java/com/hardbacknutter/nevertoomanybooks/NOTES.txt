@@ -45,6 +45,8 @@ Booklist style sorting by date-read or date-added etc...:
 4.3.4
 
 NEW:
+- When editing a book, the language, format, color drop-down fields
+  will now show a set of defaults if there are no values in the database yet.
 
 FIXES:
 - fixed an obscure bug in editing the styles where editing an existing style could
