@@ -32,136 +32,136 @@ public class WrappedArrayList<E>
         implements List<E> {
 
     @NonNull
-    private final ArrayList<E> m;
+    private final ArrayList<E> list;
 
-    protected WrappedArrayList(@NonNull final ArrayList<E> m) {
-        this.m = m;
+    protected WrappedArrayList(@NonNull final ArrayList<E> list) {
+        this.list = list;
     }
 
     @Override
     public int size() {
-        return m.size();
+        return list.size();
     }
 
     @Override
     public boolean isEmpty() {
-        return m.isEmpty();
+        return list.isEmpty();
     }
 
     @Override
     public boolean contains(@Nullable final Object o) {
-        return m.contains(o);
+        return list.contains(o);
     }
 
     @NonNull
     @Override
     public Iterator<E> iterator() {
-        return m.iterator();
+        return list.iterator();
     }
 
     @NonNull
     @Override
     public Object[] toArray() {
-        return m.toArray();
+        return list.toArray();
     }
 
     @NonNull
     @Override
     public <T> T[] toArray(@NonNull final T[] a) {
         //noinspection SuspiciousToArrayCall
-        return m.toArray(a);
+        return list.toArray(a);
     }
 
     @Override
     public boolean add(final E e) {
-        return m.add(e);
+        return list.add(e);
     }
 
     @Override
     public boolean remove(@Nullable final Object o) {
-        return m.remove(o);
+        return list.remove(o);
     }
 
     @Override
-    public boolean containsAll(@NonNull final Collection<?> c) {
-        return m.containsAll(c);
+    public boolean containsAll(@NonNull final Collection<?> collection) {
+        return list.containsAll(collection);
     }
 
     @Override
-    public boolean addAll(@NonNull final Collection<? extends E> c) {
-        return m.addAll(c);
+    public boolean addAll(@NonNull final Collection<? extends E> collection) {
+        return list.addAll(collection);
     }
 
     @Override
     public boolean addAll(final int index,
-                          @NonNull final Collection<? extends E> c) {
-        return m.addAll(index, c);
+                          @NonNull final Collection<? extends E> collection) {
+        return list.addAll(index, collection);
     }
 
     @Override
-    public boolean removeAll(@NonNull final Collection<?> c) {
-        return m.removeAll(c);
+    public boolean removeAll(@NonNull final Collection<?> collection) {
+        return list.removeAll(collection);
     }
 
     @Override
-    public boolean retainAll(@NonNull final Collection<?> c) {
-        return m.retainAll(c);
+    public boolean retainAll(@NonNull final Collection<?> collection) {
+        return list.retainAll(collection);
     }
 
     @Override
     public void clear() {
-        m.clear();
+        list.clear();
     }
 
     @Override
     @Nullable
     public E get(final int index) {
-        return m.get(index);
+        return list.get(index);
     }
 
     @Override
     public E set(final int index,
                  final E element) {
-        return m.set(index, element);
+        return list.set(index, element);
     }
 
     @Override
     public void add(final int index,
                     final E element) {
-        m.add(index, element);
+        list.add(index, element);
     }
 
     @Override
     public E remove(final int index) {
-        return m.remove(index);
+        return list.remove(index);
     }
 
     @Override
     public int indexOf(@Nullable final Object o) {
-        return m.indexOf(o);
+        return list.indexOf(o);
     }
 
     @Override
     public int lastIndexOf(@Nullable final Object o) {
-        return m.lastIndexOf(o);
+        return list.lastIndexOf(o);
     }
 
     @NonNull
     @Override
     public ListIterator<E> listIterator() {
-        return m.listIterator();
+        return list.listIterator();
     }
 
     @NonNull
     @Override
     public ListIterator<E> listIterator(final int index) {
-        return m.listIterator(index);
+        return list.listIterator(index);
     }
 
     @NonNull
     @Override
     public List<E> subList(final int fromIndex,
                            final int toIndex) {
-        return m.subList(fromIndex, toIndex);
+        return list.subList(fromIndex, toIndex);
     }
 }

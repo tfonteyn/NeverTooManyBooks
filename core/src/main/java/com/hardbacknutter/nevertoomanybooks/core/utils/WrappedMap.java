@@ -30,76 +30,76 @@ public class WrappedMap<K, V>
         implements Map<K, V> {
 
     @NonNull
-    private final Map<K, V> m;
+    private final Map<K, V> map;
 
-    WrappedMap(@NonNull final Map<K, V> m) {
-        this.m = m;
+    WrappedMap(@NonNull final Map<K, V> map) {
+        this.map = map;
     }
 
     @Override
     public int size() {
-        return m.size();
+        return map.size();
     }
 
     @Override
     public boolean isEmpty() {
-        return m.isEmpty();
+        return map.isEmpty();
     }
 
     @Override
     public boolean containsKey(@Nullable final Object key) {
-        return m.containsKey(key);
+        return map.containsKey(key);
     }
 
     @Override
     public boolean containsValue(@Nullable final Object value) {
-        return m.containsValue(value);
+        return map.containsValue(value);
     }
 
     @Nullable
     @Override
     public V get(@Nullable final Object key) {
-        return m.get(key);
+        return map.get(key);
     }
 
     @Nullable
     @Override
     public V put(final K key,
                  final V value) {
-        return m.put(key, value);
+        return map.put(key, value);
     }
 
     @Nullable
     @Override
     public V remove(@Nullable final Object key) {
-        return m.remove(key);
+        return map.remove(key);
     }
 
     @Override
-    public void putAll(@NonNull final Map<? extends K, ? extends V> m) {
-        this.m.putAll(m);
+    public void putAll(@NonNull final Map<? extends K, ? extends V> map) {
+        this.map.putAll(map);
     }
 
     @Override
     public void clear() {
-        m.clear();
+        map.clear();
     }
 
     @NonNull
     @Override
     public Set<K> keySet() {
-        return m.keySet();
+        return map.keySet();
     }
 
     @NonNull
     @Override
     public Collection<V> values() {
-        return m.values();
+        return map.values();
     }
 
     @NonNull
     @Override
     public Set<Entry<K, V>> entrySet() {
-        return m.entrySet();
+        return map.entrySet();
     }
 }
