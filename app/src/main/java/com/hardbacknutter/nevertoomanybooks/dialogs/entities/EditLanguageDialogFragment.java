@@ -75,11 +75,14 @@ public class EditLanguageDialogFragment
 
         final Locale userLocale = getResources().getConfiguration().getLocales().get(0);
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+
         //noinspection DataFlowIssue
-        final String iso = serviceLocator
+        final String fromIso = serviceLocator
+                .getLanguages().getISO3FromDisplayName(getContext(), userLocale, originalText);
+        final String toIso = serviceLocator
                 .getLanguages().getISO3FromDisplayName(getContext(), userLocale, currentText);
 
-        serviceLocator.getLanguageDao().rename(originalText, iso);
-        return iso;
+        serviceLocator.getLanguageDao().rename(fromIso, toIso);
+        return toIso;
     }
 }
