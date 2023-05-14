@@ -105,6 +105,7 @@ ext {
     jupiter_version = '5.9.3'
 
     // https://developer.android.com/jetpack/androidx/releases/test
+    androidx_arch_core_testing = '2.2.0'
     androidx_test_core_version = '1.5.0'
     androidx_test_runner_version = '1.5.2'
     androidx_test_rules_version = '1.5.0'

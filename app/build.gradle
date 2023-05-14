@@ -303,6 +303,10 @@ dependencies {
     androidTestImplementation("androidx.test:core:${androidx_test_core_version}")
     androidTestImplementation("androidx.test:runner:${androidx_test_runner_version}")
     androidTestImplementation("androidx.test:rules:${androidx_test_rules_version}")
+    // device tests with LiveData must add this class variable:
+    //    @Rule
+    //    public TestRule rule = new InstantTaskExecutorRule();
+    androidTestImplementation("androidx.arch.core:core-testing:${androidx_arch_core_testing}")
 
     androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:" +
             "${kotlinx_coroutines_core}")
