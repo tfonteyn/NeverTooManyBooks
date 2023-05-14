@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.UnderEachGroup;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LinkedMap;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 
@@ -486,7 +487,7 @@ public abstract class BaseStyle
 
                && Objects.equals(listFieldVisibility, style.listFieldVisibility)
                && Objects.equals(detailsFieldVisibility, style.detailsFieldVisibility)
-               && Objects.equals(groups, style.groups);
+               && LinkedMap.equals(groups, style.groups);
     }
 
     @Override
