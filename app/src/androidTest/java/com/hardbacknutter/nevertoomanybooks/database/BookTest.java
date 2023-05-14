@@ -23,6 +23,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.filters.MediumTest;
 
 import java.io.File;
@@ -54,7 +55,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -72,24 +75,24 @@ public class BookTest {
     private static final String NEED_A_PICTURES_DIRECTORY = "Need a pictures directory";
     private static final String NEED_A_TEMP_DIRECTORY = "Need a temp directory";
     private static final String EXT_JPG = ".jpg";
-
     private final Bookshelf[] bookshelf = new Bookshelf[5];
     private final long[] bookshelfId = new long[5];
     private final ArrayList<Bookshelf> bookshelfList = new ArrayList<>();
-
     private final Author[] author = new Author[5];
     private final long[] authorId = new long[5];
     private final ArrayList<Author> authorList = new ArrayList<>();
-
     private final Publisher[] publisher = new Publisher[5];
     private final long[] publisherId = new long[5];
     private final ArrayList<Publisher> publisherList = new ArrayList<>();
-
     private final ArrayList<TocEntry> tocEntryList = new ArrayList<>();
-
     private final String[] originalImageFileName = new String[2];
     private final long[] originalImageSize = new long[2];
     private final FileFilter jpgFilter = pathname -> pathname.getPath().endsWith(EXT_JPG);
+    /**
+     * LiveData requirement.
+     */
+    @Rule
+    public TestRule rule = new InstantTaskExecutorRule();
 
     /**
      * Clean the database.
