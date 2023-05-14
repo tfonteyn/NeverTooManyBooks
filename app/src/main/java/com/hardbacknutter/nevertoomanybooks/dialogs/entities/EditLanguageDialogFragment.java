@@ -19,13 +19,20 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.database.dao.LanguageDao;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**
  * Dialog to edit an <strong>in-line in Books table</strong> Language.
@@ -46,8 +53,22 @@ public class EditLanguageDialogFragment
     @NonNull
     @Override
     protected List<String> getList() {
-        //noinspection ConstantConditions
-        return ServiceLocator.getInstance().getLanguageDao().getNameList(getContext());
+        final Languages languages = ServiceLocator.getInstance().getLanguages();
+        final LanguageDao languageDao = ServiceLocator.getInstance().getLanguageDao();
+        final Context context = getContext();
+
+        // Convert the list of ISO codes to user readable strings.
+        // We do NOT need a distinction here between different countries.
+        // The codes are always unique, but code to name conversion can create duplicates
+        // (e.g. en_GB and en_US both result in "English"); eliminate them by using a Set.
+        final Set<String> set = new LinkedHashSet<>();
+        //noinspection DataFlowIssue
+        for (final String code : languageDao.getList()) {
+            if (code != null && !code.isEmpty()) {
+                set.add(languages.getDisplayNameFromISO3(context, code));
+            }
+        }
+        return new ArrayList<>(set);
     }
 
     @Override
@@ -57,7 +78,7 @@ public class EditLanguageDialogFragment
 
         final Locale userLocale = getResources().getConfiguration().getLocales().get(0);
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final String iso = serviceLocator
                 .getLanguages().getISO3FromDisplayName(getContext(), userLocale, currentText);
 

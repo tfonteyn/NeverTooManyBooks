@@ -80,24 +80,6 @@ public class LanguageDaoImpl
     }
 
     @Override
-    @NonNull
-    public ArrayList<String> getNameList(@NonNull final Context context) {
-        try (Cursor cursor = db.rawQuery(SELECT_ALL, null)) {
-            // Using a Set to avoid duplicates
-            // The cursor is distinct, but we need to make sure code->name does not create
-            // duplicates (very unlikely, but not impossible)
-            final Set<String> set = new LinkedHashSet<>();
-            while (cursor.moveToNext()) {
-                final String name = cursor.getString(0);
-                if (name != null && !name.isEmpty()) {
-                    set.add(languagesSupplier.get().getDisplayNameFromISO3(context, name));
-                }
-            }
-            return new ArrayList<>(set);
-        }
-    }
-
-    @Override
     public void bulkUpdate(@NonNull final Context context) {
         final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
 

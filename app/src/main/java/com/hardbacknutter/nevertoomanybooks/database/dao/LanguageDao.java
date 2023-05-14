@@ -24,23 +24,8 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import java.util.ArrayList;
-
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-
 public interface LanguageDao
         extends InlineStringDao {
-
-    /**
-     * Get a unique list of all resolved/localized language names.
-     * The list is ordered by {@link DBKey#DATE_LAST_UPDATED__UTC}.
-     *
-     * @param context Current context
-     *
-     * @return The list; may contain custom names.
-     */
-    @NonNull
-    ArrayList<String> getNameList(@NonNull Context context);
 
     /**
      * Do a bulk update of any languages not yet converted to ISO codes.
