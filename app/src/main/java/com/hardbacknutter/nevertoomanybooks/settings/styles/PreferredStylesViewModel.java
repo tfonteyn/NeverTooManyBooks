@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -228,12 +228,12 @@ public class PreferredStylesViewModel
 
         // Now (re)organise the list of styles.
 
-        // based on the uuid, find the style in the list.
-        // Don't use 'indexOf' (use id instead), as the incoming style object
-        // was parcelled along the way, which *might* have changed it.
+        // Find the style in the list using the id.
+        // The incoming style object was parcelled along the way, which *might* have changed it.
         int editedRow = IntStream.range(0, styleList.size())
                                  .filter(i -> styleList.get(i).getId() == style.getId())
                                  .findFirst()
+                                 // -1 if not found, i.e. we're adding a new Style.
                                  .orElse(-1);
 
         if (editedRow < 0) {
@@ -286,18 +286,17 @@ public class PreferredStylesViewModel
             }
         }
 
-        // Not sure if this check is really needed... or already covered above
-        // if the style was cloned from a builtin style,
+        // If the original style was builtin, then we're assuming the user wanted
+        // to 'replace' the builtin style, i.e. the cloned one will be preferred,
+        // hence the original builtin style is no longer preferred.
         if (BuiltinStyle.isBuiltin(templateUuid)) {
-            // then we're assuming the user wanted to 'replace' the builtin style,
-            // so remove the builtin style from the preferred styles.
             styleList.stream()
-                     .filter(s -> s.getUuid().equalsIgnoreCase(templateUuid))
+                     .filter(builtin -> builtin.getUuid().equalsIgnoreCase(templateUuid))
                      .findFirst()
-                     .ifPresent(s -> {
+                     .ifPresent(builtin -> {
                          // demote the preferred state and update it
-                         s.setPreferred(false);
-                         stylesHelper.update(s);
+                         builtin.setPreferred(false);
+                         stylesHelper.update(builtin);
                      });
         }
 
