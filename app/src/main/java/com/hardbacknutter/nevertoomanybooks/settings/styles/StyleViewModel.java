@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -113,7 +113,7 @@ public class StyleViewModel
     }
 
     public boolean isModified() {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         return styleDataStore.isModified();
     }
 
@@ -121,7 +121,7 @@ public class StyleViewModel
      * Called when the user leaves the fragment. Save any updates needed.
      */
     void updateOrInsertStyle() {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         if (styleDataStore.isModified()) {
             ServiceLocator.getInstance().getStyles().updateOrInsert(style);
         }
@@ -147,7 +147,7 @@ public class StyleViewModel
     }
 
     boolean hasGroupsSelected() {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         return wrappedGroupList.stream().anyMatch(WrappedGroup::isPresent);
     }
 
@@ -155,12 +155,12 @@ public class StyleViewModel
      * Collect the user selected groups, and update the style.
      */
     void updateStyleGroups() {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         style.setGroupList(wrappedGroupList.stream()
                                            .filter(WrappedGroup::isPresent)
                                            .map(WrappedGroup::getGroup)
                                            .collect(Collectors.toList()));
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         styleDataStore.setModified();
     }
 
