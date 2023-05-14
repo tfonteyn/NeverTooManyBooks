@@ -249,8 +249,9 @@ public class PreferredStylesViewModel
             // We edited an existing Style.
             // Check if we edited in-place or cloned a style
             final Style origStyle = styleList.get(editedRow);
-            if (origStyle.equals(style)) {
-                // just a style edited in-place, update the list with the new object
+            // a cloned style will have a new UUID
+            if (origStyle.getUuid().equalsIgnoreCase(style.getUuid())) {
+                // We edited an existing style, update the list with the new object
                 styleList.set(editedRow, style);
 
             } else {
