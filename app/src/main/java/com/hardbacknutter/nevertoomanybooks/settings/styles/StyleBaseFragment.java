@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,9 +44,9 @@ public abstract class StyleBaseFragment
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(StyleViewModel.class);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm.init(getContext(), requireArguments());
 
         // redirect storage to the database
@@ -68,7 +68,7 @@ public abstract class StyleBaseFragment
             toolbar.setTitle(R.string.lbl_edit_style);
         }
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         toolbar.setSubtitle(style.getLabel(getContext()));
     }
 }
