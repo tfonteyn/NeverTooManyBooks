@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
@@ -519,12 +520,19 @@ public class EditBookViewModel
      * Returns a unique list of all languages in the database.
      * The list is ordered by {@link DBKey#DATE_LAST_UPDATED__UTC}.
      *
+     * @param context Current context
+     *
      * @return The list of ISO 639-2 codes
      */
     @NonNull
-    private List<String> getAllLanguagesCodes() {
+    private List<String> getAllLanguagesCodes(@NonNull final Context context) {
         if (languagesCodes == null) {
             languagesCodes = ServiceLocator.getInstance().getLanguageDao().getList();
+        }
+        if (languagesCodes.isEmpty()) {
+            // Use defaults; the user can of course type whatever they want.
+            languagesCodes.addAll(ServiceLocator.getInstance().getLanguages()
+                                                .getDefaultCodes(context));
         }
         return languagesCodes;
     }
@@ -532,12 +540,19 @@ public class EditBookViewModel
     /**
      * Load a format list.
      *
+     * @param context Current context
+     *
      * @return List of formats
      */
     @NonNull
-    private List<String> getAllFormats() {
+    private List<String> getAllFormats(@NonNull final Context context) {
         if (formats == null) {
             formats = ServiceLocator.getInstance().getFormatDao().getList();
+        }
+        if (formats.isEmpty()) {
+            // Provide some defaults
+            formats.add(context.getString(R.string.book_format_softcover));
+            formats.add(context.getString(R.string.book_format_hardcover));
         }
         return formats;
     }
@@ -545,12 +560,18 @@ public class EditBookViewModel
     /**
      * Load a color list.
      *
+     * @param context Current context
+     *
      * @return List of colors
      */
     @NonNull
-    private List<String> getAllColors() {
+    private List<String> getAllColors(@NonNull final Context context) {
         if (colors == null) {
             colors = ServiceLocator.getInstance().getColorDao().getList();
+        }
+        if (colors.isEmpty()) {
+            colors.add(context.getString(R.string.book_color_black_and_white));
+            colors.add(context.getString(R.string.book_color_full_color));
         }
         return colors;
     }
@@ -592,7 +613,34 @@ public class EditBookViewModel
             listPriceCurrencies = ServiceLocator
                     .getInstance().getBookDao().getCurrencyCodes(DBKey.PRICE_LISTED);
         }
+        if (listPriceCurrencies.isEmpty()) {
+            listPriceCurrencies.addAll(getDefaultCurrencies());
+        }
         return listPriceCurrencies;
+    }
+
+    /**
+     * Load a currency list.
+     *
+     * @return List of ISO currency codes
+     */
+    @NonNull
+    private List<String> getAllPricePaidCurrencyCodes() {
+        if (pricePaidCurrencies == null) {
+            pricePaidCurrencies = ServiceLocator
+                    .getInstance().getBookDao().getCurrencyCodes(DBKey.PRICE_PAID);
+        }
+        if (pricePaidCurrencies.isEmpty()) {
+            pricePaidCurrencies.addAll(getDefaultCurrencies());
+        }
+        return pricePaidCurrencies;
+    }
+
+    @NonNull
+    private List<String> getDefaultCurrencies() {
+        // sure, this is very crude and discriminating.
+        // But it will only ever be used *once* per currency column
+        return List.of(MoneyParser.EUR, MoneyParser.GBP, MoneyParser.USD);
     }
 
     /**
@@ -831,20 +879,6 @@ public class EditBookViewModel
     }
 
     /**
-     * Load a currency list.
-     *
-     * @return List of ISO currency codes
-     */
-    @NonNull
-    private List<String> getAllPricePaidCurrencyCodes() {
-        if (pricePaidCurrencies == null) {
-            pricePaidCurrencies = ServiceLocator
-                    .getInstance().getBookDao().getCurrencyCodes(DBKey.PRICE_PAID);
-        }
-        return pricePaidCurrencies;
-    }
-
-    /**
      * Init all Fields, and add them to the fields collection.
      * <p>
      * Note that Field views are <strong>NOT AVAILABLE</strong> at this time.
@@ -869,7 +903,7 @@ public class EditBookViewModel
 
         switch (fieldGroup) {
             case Main:
-                initFieldsMain(fragmentId);
+                initFieldsMain(context, fragmentId);
                 break;
             case Publication:
                 initFieldsPublication(context, fragmentId);
@@ -886,7 +920,8 @@ public class EditBookViewModel
         }
     }
 
-    private void initFieldsMain(@NonNull final FragmentId fragmentId) {
+    private void initFieldsMain(@NonNull final Context context,
+                                @NonNull final FragmentId fragmentId) {
 
         fields.add(new TextViewField<>(fragmentId, R.id.author, Book.BKEY_AUTHOR_LIST,
                                        DBKey.FK_AUTHOR,
@@ -918,7 +953,7 @@ public class EditBookViewModel
 
         fields.add(new AutoCompleteTextField(fragmentId, R.id.language, DBKey.LANGUAGE,
                                              languageFormatter, true,
-                                             this::getAllLanguagesCodes)
+                                             () -> getAllLanguagesCodes(context))
                            .setTextInputLayoutId(R.id.lbl_language)
                            .setValidator(field -> field.setErrorIfEmpty(
                                    errStrNonBlankRequired)));
@@ -941,11 +976,11 @@ public class EditBookViewModel
                                        @NonNull final FragmentId fragmentId) {
 
         fields.add(new AutoCompleteTextField(fragmentId, R.id.format, DBKey.FORMAT,
-                                             this::getAllFormats)
+                                             () -> getAllFormats(context))
                            .setTextInputLayoutId(R.id.lbl_format));
 
         fields.add(new AutoCompleteTextField(fragmentId, R.id.color, DBKey.COLOR,
-                                             this::getAllColors)
+                                             () -> getAllColors(context))
                            .setTextInputLayoutId(R.id.lbl_color));
 
         fields.add(new TextViewField<>(fragmentId, R.id.publisher, Book.BKEY_PUBLISHER_LIST,
