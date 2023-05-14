@@ -330,7 +330,7 @@ public interface BookDao {
      * @return The list; values are always in uppercase.
      */
     @NonNull
-    ArrayList<String> getCurrencyCodes(@NonNull String key);
+    List<String> getCurrencyCodes(@NonNull String key);
 
 
     /**

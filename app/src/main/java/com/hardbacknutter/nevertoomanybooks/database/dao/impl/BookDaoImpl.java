@@ -49,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TypedCursor;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
@@ -100,12 +99,10 @@ public class BookDaoImpl
     /** Log tag. */
     private static final String TAG = "BookDaoImpl";
 
-    /** log error string. */
     private static final String ERROR_CREATING_BOOK_FROM = "Failed creating book from\n";
-    /** log error string. */
     private static final String ERROR_UPDATING_BOOK_FROM = "Failed updating book from\n";
-    /** log error string. */
     private static final String ERROR_STORING_COVERS = "Failed storing the covers for book from\n";
+    private static final String ERROR_UUID = "Invalid UUID";
 
     @NonNull
     private final DateParser dateParser;
@@ -282,7 +279,7 @@ public class BookDaoImpl
             // always lookup the UUID
             // (even if we inserted with a uuid... to protect against future changes)
             final String uuid = getBookUuid(newBookId);
-            SanityCheck.requireValue(uuid, "uuid");
+            SanityCheck.requireValue(uuid, ERROR_UUID);
             book.putString(DBKey.BOOK_UUID, uuid);
 
             // next we add the links to series, authors,...
@@ -365,7 +362,7 @@ public class BookDaoImpl
             if (success) {
                 // always lookup the UUID
                 final String uuid = getBookUuid(book.getId());
-                SanityCheck.requireValue(uuid, "uuid");
+                SanityCheck.requireValue(uuid, ERROR_UUID);
                 book.putString(DBKey.BOOK_UUID, uuid);
 
                 insertBookLinks(context, book, flags);
@@ -816,7 +813,7 @@ public class BookDaoImpl
 
     @Override
     @NonNull
-    public ArrayList<String> getCurrencyCodes(@NonNull final String key) {
+    public List<String> getCurrencyCodes(@NonNull final String key) {
         if (!DBKey.MONEY_KEYS.contains(key)) {
             throw new IllegalArgumentException(key);
         }
@@ -825,15 +822,7 @@ public class BookDaoImpl
                            + ") FROM " + TBL_BOOKS.getName()
                            + _ORDER_BY_ + key + DBKey.CURRENCY_SUFFIX + _COLLATION;
 
-        final ArrayList<String> list = getColumnAsStringArrayList(sql);
-        if (list.isEmpty()) {
-            // sure, this is very crude and discriminating.
-            // But it will only ever be used *once* per currency column
-            list.add(MoneyParser.EUR);
-            list.add(MoneyParser.GBP);
-            list.add(MoneyParser.USD);
-        }
-        return list;
+        return getColumnAsStringArrayList(sql);
     }
 
     @Nullable
