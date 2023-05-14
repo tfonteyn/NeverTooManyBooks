@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
@@ -31,13 +32,19 @@ import java.util.function.Supplier;
 public abstract class EditLauncher
         implements FragmentResultListener {
 
-    private static final String TAG = "EditParcelableLauncherB";
+    protected static final String TAG = "EditLauncher";
+
     public static final String BKEY_REQUEST_KEY = TAG + ":rk";
     public static final String BKEY_ITEM = TAG + ":item";
+
+    static final String ORIGINAL = TAG + ":o";
+    static final String MODIFIED = TAG + ":m";
+
     /** FragmentResultListener request key to use for our response. */
     protected final String requestKey;
     @NonNull
     final Supplier<DialogFragment> dialogFragmentSupplier;
+    @Nullable
     protected FragmentManager fragmentManager;
 
     EditLauncher(@NonNull final String requestKey,

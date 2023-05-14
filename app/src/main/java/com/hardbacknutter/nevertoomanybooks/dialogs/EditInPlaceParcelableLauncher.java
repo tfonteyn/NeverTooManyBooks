@@ -42,8 +42,6 @@ import java.util.function.Supplier;
 public class EditInPlaceParcelableLauncher<T extends Parcelable>
         extends EditLauncher {
 
-    private static final String TAG = "EditInPlaceParcelableLa";
-    private static final String MODIFIED = TAG + ":m";
     @NonNull
     private final OnModifiedCallback<T> onModifiedCallback;
 

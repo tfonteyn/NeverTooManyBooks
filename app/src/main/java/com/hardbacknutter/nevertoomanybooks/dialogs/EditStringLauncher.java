@@ -40,11 +40,6 @@ import java.util.function.Supplier;
 public class EditStringLauncher
         extends EditLauncher {
 
-    private static final String TAG = "EditStringLauncher";
-    public static final String BKEY_REQUEST_KEY = TAG + ":rk";
-
-    private static final String ORIGINAL = TAG + ":o";
-    private static final String MODIFIED = TAG + ":m";
     @NonNull
     private final OnModifiedCallback onModifiedCallback;
 
