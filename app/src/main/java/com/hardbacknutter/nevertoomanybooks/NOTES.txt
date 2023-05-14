@@ -42,11 +42,13 @@ Booklist style sorting by date-read or date-added etc...:
  Does not happen on other devices/emulators. Won't pursue/fix.
 
 ----------------------------------------------------------------------------------------------------
-4.4.0
+4.3.4
 
 NEW:
 
 FIXES:
+- fixed an obscure bug in editing the styles where editing an existing style could
+  result in creating a duplicate in error
 
 REMOVED:
 
