@@ -176,6 +176,7 @@ public final class FilterFactory {
                                                  .getLocales().get(0);
                 return FieldArrayAdapter.createStringDropDown(
                         context,
+                        // list of ISO codes as we need these for storage
                         serviceLocator.getLanguageDao().getList(),
                         new LanguageFormatter(userLocale, serviceLocator.getLanguages()));
             }
