@@ -37,10 +37,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -103,12 +105,13 @@ public class EditBookViewModel
     /** the list with all fields. */
     private final List<Field<?, ? extends View>> fields = new ArrayList<>();
 
+    private final Collection<FieldGroup> fieldGroups = EnumSet.noneOf(FieldGroup.class);
+
     /** The key is the fragment tag. */
     private final Collection<FragmentId> fragmentsWithUnfinishedEdits =
             EnumSet.noneOf(FragmentId.class);
 
     private List<MenuHandler> menuHandlers;
-    private final Collection<FieldGroup> fieldGroups = EnumSet.noneOf(FieldGroup.class);
 
     /**
      * The Book we're editing (creating/updating).
@@ -515,10 +518,9 @@ public class EditBookViewModel
     }
 
     /**
-     * Load a language list.
-     * <p>
-     * Returns a unique list of all languages in the database.
+     * Get a unique list of all languages (ISO codes) in the database.
      * The list is ordered by {@link DBKey#DATE_LAST_UPDATED__UTC}.
+     * It's extended with a set of defaults.
      *
      * @param context Current context
      *
@@ -527,18 +529,19 @@ public class EditBookViewModel
     @NonNull
     private List<String> getAllLanguagesCodes(@NonNull final Context context) {
         if (languagesCodes == null) {
-            languagesCodes = ServiceLocator.getInstance().getLanguageDao().getList();
-        }
-        if (languagesCodes.isEmpty()) {
-            // Use defaults; the user can of course type whatever they want.
-            languagesCodes.addAll(ServiceLocator.getInstance().getLanguages()
-                                                .getDefaultCodes(context));
+            final Set<String> set = new LinkedHashSet<>(
+                    ServiceLocator.getInstance().getLanguageDao().getList());
+            // Provide defaults: the device language + the set we explicitly support
+            set.addAll(ServiceLocator.getInstance().getLanguages()
+                                     .getDefaultCodes(context));
+            languagesCodes = new ArrayList<>(set);
         }
         return languagesCodes;
     }
 
     /**
-     * Load a format list.
+     * Get a unique list of all book-formats in the database, ordered alphabetically.
+     * It's extended with a set of defaults.
      *
      * @param context Current context
      *
@@ -547,18 +550,21 @@ public class EditBookViewModel
     @NonNull
     private List<String> getAllFormats(@NonNull final Context context) {
         if (formats == null) {
-            formats = ServiceLocator.getInstance().getFormatDao().getList();
-        }
-        if (formats.isEmpty()) {
+            final Set<String> set = new LinkedHashSet<>(
+                    ServiceLocator.getInstance().getFormatDao().getList());
             // Provide some defaults
-            formats.add(context.getString(R.string.book_format_softcover));
-            formats.add(context.getString(R.string.book_format_hardcover));
+            set.add(context.getString(R.string.book_format_paperback));
+            set.add(context.getString(R.string.book_format_paperback_large));
+            set.add(context.getString(R.string.book_format_softcover));
+            set.add(context.getString(R.string.book_format_hardcover));
+            formats = new ArrayList<>(set);
         }
         return formats;
     }
 
     /**
-     * Load a color list.
+     * Get a unique list of all book-colors in the database, ordered alphabetically.
+     * It's extended with a set of defaults.
      *
      * @param context Current context
      *
@@ -567,17 +573,18 @@ public class EditBookViewModel
     @NonNull
     private List<String> getAllColors(@NonNull final Context context) {
         if (colors == null) {
-            colors = ServiceLocator.getInstance().getColorDao().getList();
-        }
-        if (colors.isEmpty()) {
-            colors.add(context.getString(R.string.book_color_black_and_white));
-            colors.add(context.getString(R.string.book_color_full_color));
+            final Set<String> set = new LinkedHashSet<>(
+                    ServiceLocator.getInstance().getColorDao().getList());
+            // Provide some defaults
+            set.add(context.getString(R.string.book_color_black_and_white));
+            set.add(context.getString(R.string.book_color_full_color));
+            colors = new ArrayList<>(set);
         }
         return colors;
     }
 
     /**
-     * Load a genre list.
+     * Get a unique list of all book-genres in the database, ordered alphabetically.
      *
      * @return List of genres
      */
@@ -590,7 +597,7 @@ public class EditBookViewModel
     }
 
     /**
-     * Load a location list.
+     * Get a unique list of all locations in the database, ordered alphabetically.
      *
      * @return List of locations
      */
@@ -603,43 +610,46 @@ public class EditBookViewModel
     }
 
     /**
-     * Load a currency list.
+     * Get a unique list of all currencies (ISO codes) used for the list-price in the database,
+     * ordered alphabetically.
+     * It's extended with a set of defaults.
      *
      * @return List of ISO currency codes
      */
     @NonNull
     private List<String> getAllListPriceCurrencyCodes() {
         if (listPriceCurrencies == null) {
-            listPriceCurrencies = ServiceLocator
-                    .getInstance().getBookDao().getCurrencyCodes(DBKey.PRICE_LISTED);
-        }
-        if (listPriceCurrencies.isEmpty()) {
-            listPriceCurrencies.addAll(getDefaultCurrencies());
+            final Set<String> set = new LinkedHashSet<>(
+                    ServiceLocator.getInstance().getBookDao()
+                                  .getCurrencyCodes(DBKey.PRICE_LISTED));
+            set.addAll(getDefaultCurrencies());
+            listPriceCurrencies = new ArrayList<>(set);
         }
         return listPriceCurrencies;
     }
 
     /**
-     * Load a currency list.
+     * Get a unique list of all currencies (ISO codes) used for the paid-price in the database,
+     * ordered alphabetically.
+     * It's extended with a set of defaults.
      *
      * @return List of ISO currency codes
      */
     @NonNull
     private List<String> getAllPricePaidCurrencyCodes() {
         if (pricePaidCurrencies == null) {
-            pricePaidCurrencies = ServiceLocator
-                    .getInstance().getBookDao().getCurrencyCodes(DBKey.PRICE_PAID);
-        }
-        if (pricePaidCurrencies.isEmpty()) {
-            pricePaidCurrencies.addAll(getDefaultCurrencies());
+            final Set<String> set = new LinkedHashSet<>(
+                    ServiceLocator.getInstance().getBookDao()
+                                  .getCurrencyCodes(DBKey.PRICE_PAID));
+            set.addAll(getDefaultCurrencies());
+            pricePaidCurrencies = new ArrayList<>(set);
         }
         return pricePaidCurrencies;
     }
 
     @NonNull
     private List<String> getDefaultCurrencies() {
-        // sure, this is very crude and discriminating.
-        // But it will only ever be used *once* per currency column
+        // sure, this is very crude and discriminating - oh well
         return List.of(MoneyParser.EUR, MoneyParser.GBP, MoneyParser.USD);
     }
 
