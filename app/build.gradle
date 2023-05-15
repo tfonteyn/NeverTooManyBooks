@@ -50,37 +50,36 @@ if (project.hasProperty("NeverTooManyBooks.properties")) {
 }
 
 android {
-    namespace "com.hardbacknutter.nevertoomanybooks"
-
-    compileSdk rootProject.ext.compileSdk
+    namespace = "com.hardbacknutter.nevertoomanybooks"
+    compileSdk = rootProject.ext.compile_sdk_version
 
     signingConfigs {
         release {
-            storeFile file(props['sign.storeFile'])
-            storePassword props['sign.storePassword']
-            keyAlias props['sign.keyAlias']
-            keyPassword props['sign.keyPassword']
+            storeFile file(props["sign.storeFile"])
+            storePassword props["sign.storePassword"]
+            keyAlias props["sign.keyAlias"]
+            keyPassword props["sign.keyPassword"]
         }
     }
 
     defaultConfig {
-        applicationId rootProject.ext.applicationId
-        versionCode rootProject.ext.applicationVersionCode
+        applicationId = rootProject.ext.applicationId
+        versionCode = rootProject.ext.applicationVersionCode
         versionName = rootProject.ext.applicationVersionName
 
-        minSdk rootProject.ext.minSdkVersion
-        targetSdk rootProject.ext.targetSdkVersion
+        minSdk = rootProject.ext.min_sdk_version
+        targetSdk = rootProject.ext.target_sdk_version
 
         signingConfig signingConfigs.release
 
         resourceConfigurations += ["de", "en", "en_GB", "es", "fr", "it", "nl", "pt",
                                    "cs", "el", "pl", "ru", "tr"]
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner("androidx.test.runner.AndroidJUnitRunner")
         testInstrumentationRunnerArguments["runnerBuilder"] =
                 "de.mannodermaus.junit5.AndroidJUnit5Builder"
 
-        buildConfigField("String", "EMAIL_ACRA", '"' + props['email.acra'] + '"')
+        buildConfigField("String", "EMAIL_ACRA", "\"" + props["email.acra"] + "\"")
 
         // Add the build UTC DateTime; ISO formatted
         buildConfigField("String", "TIMESTAMP", "\"x\"")
@@ -101,11 +100,11 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled = true
+            shrinkResources = true
 
-            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"),
-                    "proguard-rules.pro"
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"),
+                    "proguard-rules.pro")
 
             resValue("string", "searchSuggestAuthority",
                     "${applicationId}.SearchSuggestionProvider")
@@ -114,8 +113,8 @@ android {
 
             // Add the build UTC DateTime; ISO formatted
             buildConfigField("String", "TIMESTAMP",
-                    '"' + LocalDateTime.now(ZoneOffset.UTC)
-                            .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + '"')
+                    "\"" + LocalDateTime.now(ZoneOffset.UTC)
+                            .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "\"")
 
             // under development
             buildConfigField("boolean", "ENABLE_STRIP_INFO_LOGIN", "false")
@@ -124,13 +123,13 @@ android {
         }
         beta {
             initWith release
-            versionNameSuffix "-beta"
+            versionNameSuffix = "-beta"
             // applicationIdSuffix: same as release to be able to update rel->beta
 
             // Add the build UTC DateTime; ISO formatted
             buildConfigField("String", "TIMESTAMP",
-                    '"' + LocalDateTime.now(ZoneOffset.UTC)
-                            .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + '"')
+                    "\"" + LocalDateTime.now(ZoneOffset.UTC)
+                            .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "\"")
 
             resValue("string", "searchSuggestAuthority",
                     "${applicationId}.SearchSuggestionProvider.beta")
@@ -138,9 +137,9 @@ android {
                     "${applicationId}.GenericFileProvider.beta")
         }
         debug {
-            debuggable true
-            versionNameSuffix "-debug"
-            applicationIdSuffix ".debug"
+            debuggable = true
+            versionNameSuffix = "-debug"
+            applicationIdSuffix = ".debug"
 
             resValue("string", "searchSuggestAuthority",
                     "${applicationId}.SearchSuggestionProvider.debug")
@@ -155,11 +154,11 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
 
         // https://developer.android.com/studio/releases/#4-0-0-desugar
-        coreLibraryDesugaringEnabled true
+        coreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
@@ -167,8 +166,8 @@ android {
     }
 
     buildFeatures {
-        viewBinding true
-        buildConfig true
+        viewBinding = true
+        buildConfig = true
     }
 
     testOptions {
@@ -187,24 +186,24 @@ android {
 
     packagingOptions {
         resources {
-            excludes += ['META-INF/LICENSE',
-                         'META-INF/LICENSE.md',
-                         'META-INF/LICENSE.txt',
-                         'META-INF/license.txt',
-                         'META-INF/LICENSE-notice.md',
-                         'META-INF/NOTICE',
-                         'META-INF/NOTICE.txt',
-                         'META-INF/notice.txt',
-                         'META-INF/ASL2.0',
-                         'META-INF/DEPENDENCIES',
-                         'META-INF/README.md',
-                         'META-INF/CHANGES']
+            excludes += ["META-INF/LICENSE",
+                         "META-INF/LICENSE.md",
+                         "META-INF/LICENSE.txt",
+                         "META-INF/license.txt",
+                         "META-INF/LICENSE-notice.md",
+                         "META-INF/NOTICE",
+                         "META-INF/NOTICE.txt",
+                         "META-INF/notice.txt",
+                         "META-INF/ASL2.0",
+                         "META-INF/DEPENDENCIES",
+                         "META-INF/README.md",
+                         "META-INF/CHANGES"]
         }
     }
 
     lint {
         // allow command line builds to complete
-        abortOnError false
+        abortOnError = false
     }
 
     // This configuration specifies how an app bundle should be split
@@ -226,7 +225,7 @@ android {
 dependencies {
     implementation project(path: ":core")
     implementation project(path: ":fastscroller")
-    // We're using an updated/repacked org.json, version 20220924
+    // We are using an updated/repacked org.json, version 20220924
     // https://github.com/stleary/JSON-java
     implementation project(path: ":repacked-org-json")
 

@@ -19,22 +19,21 @@
  */
 
 plugins {
-    id ("com.android.library")
+    id("com.android.library")
 }
 
 android {
-    namespace "com.hardbacknutter.org.json"
-
-    compileSdk rootProject.ext.compileSdk
+    namespace = "com.hardbacknutter.org.json"
+    compileSdk = rootProject.ext.compile_sdk_version
 
     defaultConfig {
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
+        minSdk = rootProject.ext.min_sdk_version
+        targetSdk = rootProject.ext.target_sdk_version
     }
 
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled = true
         }
         beta {
             initWith release
@@ -44,13 +43,13 @@ android {
         }
     }
 
-
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
+
     lint {
-        abortOnError false
+        abortOnError = false
     }
 }
 

@@ -5,34 +5,35 @@ plugins {
 }
 
 android {
-    namespace 'com.hardbacknutter.nevertoomanybooks.core'
-    compileSdk rootProject.ext.compileSdk
+    namespace = "com.hardbacknutter.nevertoomanybooks.core"
+    compileSdk = rootProject.ext.compile_sdk_version
 
     defaultConfig {
-        minSdk rootProject.ext.minSdkVersion
-        targetSdk rootProject.ext.targetSdkVersion
+        minSdk = rootProject.ext.min_sdk_version
+        targetSdk = rootProject.ext.target_sdk_version
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner("androidx.test.runner.AndroidJUnitRunner")
         testInstrumentationRunnerArguments["runnerBuilder"] =
                 "de.mannodermaus.junit5.AndroidJUnit5Builder"
     }
 
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
-                    'proguard-rules.pro'
+            minifyEnabled = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"),
+                    "proguard-rules.pro")
         }
         beta {
             initWith release
         }
     }
+
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
 
         // https://developer.android.com/studio/releases/#4-0-0-desugar
-        coreLibraryDesugaringEnabled true
+        coreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
@@ -40,7 +41,7 @@ android {
     }
 
     buildFeatures {
-        buildConfig true
+        buildConfig = true
     }
 
     testOptions {
@@ -59,7 +60,7 @@ android {
 
     lint {
         // allow command line builds to complete
-        abortOnError false
+        abortOnError = false
     }
 }
 
