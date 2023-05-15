@@ -40,10 +40,6 @@
     <inspection_tool class="BreakStatement" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="BreakStatementWithLabel" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="BulkFileAttributesRead" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="CallToSimpleGetterInClass" enabled="true" level="WARNING" enabled_by_default="true">
-      <option name="ignoreGetterCallsOnOtherObjects" value="false" />
-      <option name="onlyReportPrivateGetter" value="false" />
-    </inspection_tool>
     <inspection_tool class="CallToSimpleSetterInClass" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="ignoreSetterCallsOnOtherObjects" value="false" />
       <option name="onlyReportPrivateSetter" value="false" />
@@ -255,7 +251,7 @@
       <option name="useParameterizedTypeForCollectionMethods" value="true" />
       <option name="doNotWeakenToJavaLangObject" value="true" />
       <option name="onlyWeakentoInterface" value="true" />
-      <stopClasses>java.util.Set,com.hardbacknutter.nevertoomanybooks.bookedit.EditAction</stopClasses>
+      <stopClasses>java.util.Set,com.hardbacknutter.nevertoomanybooks.bookedit.EditAction,java.util.List</stopClasses>
     </inspection_tool>
     <inspection_tool class="UnnecessarilyQualifiedStaticUsage" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="m_ignoreStaticFieldAccesses" value="false" />
