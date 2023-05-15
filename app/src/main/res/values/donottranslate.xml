@@ -27,19 +27,27 @@
     <!-- == No translation required == -->
     <!-- ####################################################################################### -->
 
-    <string name="app_name" translatable="false">&APP_NAME;</string>
+    <string name="app_name"
+            translatable="false">&APP_NAME;</string>
 
-    <string name="lbl_sourcecode_url" translatable="false">github</string>
-    <string name="sourcecode_url" translatable="false">https://github.com/tfonteyn/NeverTooManyBooks</string>
+    <string name="lbl_sourcecode_url"
+            translatable="false">github</string>
+    <string name="sourcecode_url"
+            translatable="false">https://github.com/tfonteyn/NeverTooManyBooks</string>
 
     <!--  acronyms -->
-    <string name="lbl_isbn" translatable="false">ISBN</string>
+    <string name="lbl_isbn"
+            translatable="false">ISBN</string>
 
     <!-- External sites / trademarks  -->
-    <string name="site_amazon" translatable="false">Amazon</string>
-    <string name="site_goodreads" translatable="false">Goodreads</string>
-    <string name="site_google_books" translatable="false">Google Books</string>
-    <string name="site_isfdb" translatable="false">ISFDB</string>
+    <string name="site_amazon"
+            translatable="false">Amazon</string>
+    <string name="site_goodreads"
+            translatable="false">Goodreads</string>
+    <string name="site_google_books"
+            translatable="false">Google Books</string>
+    <string name="site_isfdb"
+            translatable="false">ISFDB</string>
     <string name="site_kb_nl"
             translatable="false">KBNL</string>
     <string name="site_lastdodo_nl"
@@ -76,12 +84,17 @@
     <!---->
 
     <!-- debug user visible strings, not normally seen; here to please lint. -->
-    <string name="debug" translatable="false">Debug</string>
+    <string name="debug"
+            translatable="false">Debug</string>
 
-    <string name="debug_sq_shell" translatable="false">SQLite Shell</string>
-    <string name="debug_sq_shell_run" translatable="false">Run</string>
-    <string name="debug_sq_shell_list_tables" translatable="false">List tables</string>
-    <string name="debug_sq_shell_max_rows" translatable="false">Max rows</string>
+    <string name="debug_sq_shell"
+            translatable="false">SQLite Shell</string>
+    <string name="debug_sq_shell_run"
+            translatable="false">Run</string>
+    <string name="debug_sq_shell_list_tables"
+            translatable="false">List tables</string>
+    <string name="debug_sq_shell_max_rows"
+            translatable="false">Max rows</string>
 
     <!-- The defaults for MultiSelect fields, i.e. select nothing -->
     <string-array name="empty_array" />
@@ -90,35 +103,47 @@
     <!-- each language listed here must be written in its own language and spelling. -->
     <string-array name="pe_ui_language">
         <item translatable="false">@string/pt_ui_system_locale</item>
-        <item translatable="false">English Intl.</item>
-        <item translatable="false">English US</item>
-        <!-- Primary languages - keep alphabetic -->
+
+        <!-- Primary translations - done by native speaker or pretty good. -->
         <item translatable="false">Deutsch</item>
+        <item translatable="false">English (GB)</item>
+        <item translatable="false">English (US)</item>
+        <item translatable="false">Español</item>
         <item translatable="false">Français</item>
+        <item translatable="false">Italiano</item>
         <item translatable="false">Nederlands</item>
         <item translatable="false">Português</item>
-        <!-- secondary languages - keep alphabetic
-             These need checking by a native speaker -->
-        <item translatable="false">Español</item>
-        <item translatable="false">Italiano</item>
+
+        <!-- Secondary translations - These really need checking by a native speaker -->
+        <!-- Czech -->
+        <item translatable="false">Česky</item>
+        <!-- Greek -->
         <item translatable="false">ελληνικά</item>
+        <!-- Polish -->
+        <item translatable="false">Polský</item>
+        <!-- Russian -->
         <item translatable="false">русский</item>
+        <!-- Turkish -->
         <item translatable="false">Türk</item>
     </string-array>
+
     <string-array name="pv_ui_language">
         <item translatable="false">system</item>
-        <!-- pretend UK == international. The main thing is the date format: day-month-year. -->
-        <item translatable="false">en_GB</item>
-        <!-- date format: month-day-year. -->
-        <item translatable="false">en_US</item>
+
+        <!-- Primary translations -->
         <item translatable="false">de</item>
+        <item translatable="false">en_GB</item>
+        <item translatable="false">en_US</item>
+        <item translatable="false">es</item>
         <item translatable="false">fr</item>
+        <item translatable="false">it</item>
         <item translatable="false">nl</item>
         <item translatable="false">pt</item>
 
-        <item translatable="false">es</item>
-        <item translatable="false">it</item>
+        <!-- Secondary translations -->
+        <item translatable="false">cs</item>
         <item translatable="false">el</item>
+        <item translatable="false">pl</item>
         <item translatable="false">ru</item>
         <item translatable="false">tr</item>
     </string-array>
