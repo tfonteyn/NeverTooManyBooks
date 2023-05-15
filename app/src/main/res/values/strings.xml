@@ -1119,9 +1119,9 @@
     <string name="pt_show_title_reordered">Show titles as</string>
     <!-- SwitchPreference - How to sort titles. -->
     <string name="pt_sort_title_reordered">Sort titles by</string>
-    <!-- example of 'original' title -->
+    <!-- example of 'original' title; must be translated in combination with "ps_show_titles_reordered_on" -->
     <string name="ps_show_titles_reordered_off">The title</string>
-    <!-- example of a reordered title -->
+    <!-- example of a reordered title; must be translated in combination with "ps_show_titles_reordered_off" -->
     <string name="ps_show_titles_reordered_on">title, The</string>
     <!--
      Not a preference as such.
