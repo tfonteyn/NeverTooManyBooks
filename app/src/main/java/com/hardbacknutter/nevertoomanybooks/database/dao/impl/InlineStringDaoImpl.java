@@ -21,7 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import androidx.annotation.NonNull;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -67,7 +67,7 @@ public abstract class InlineStringDaoImpl
 
     @Override
     @NonNull
-    public ArrayList<String> getList() {
+    public List<String> getList() {
         return getColumnAsStringArrayList(sqlSelectAll);
     }
 

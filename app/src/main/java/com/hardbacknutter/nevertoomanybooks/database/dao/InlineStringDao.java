@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,7 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao;
 
 import androidx.annotation.NonNull;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a String field 'inline' in a table.
@@ -34,7 +34,7 @@ public interface InlineStringDao {
      * @return The list
      */
     @NonNull
-    ArrayList<String> getList();
+    List<String> getList();
 
     /**
      * Rename an entry.

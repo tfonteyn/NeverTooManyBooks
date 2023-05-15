@@ -24,7 +24,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.function.Supplier;
 
@@ -72,7 +72,7 @@ public class LanguageDaoImpl
      */
     @Override
     @NonNull
-    public ArrayList<String> getList() {
+    public List<String> getList() {
         return getColumnAsStringArrayList(SELECT_ALL);
     }
 
