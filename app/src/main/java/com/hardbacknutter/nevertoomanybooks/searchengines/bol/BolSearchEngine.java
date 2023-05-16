@@ -277,9 +277,9 @@ public class BolSearchEngine
         final DateParser dateParser = new FullDateParser(systemLocale, locales);
         final RealNumberParser realNumberParser = new RealNumberParser(locales);
 
-        for (final Element spec_row : specs.select("div.specs__row")) {
-            final Element label = spec_row.selectFirst("dt.specs__title");
-            final Element value = spec_row.selectFirst("dd.specs__value");
+        for (final Element specRow : specs.select("div.specs__row")) {
+            final Element label = specRow.selectFirst("dt.specs__title");
+            final Element value = specRow.selectFirst("dd.specs__value");
             if (label != null && value != null) {
                 switch (label.text()) {
                     case "Taal":
