@@ -917,15 +917,24 @@ public class Book
 
     /**
      * Ensure the book has a bookshelf.
-     * If the book is not on any Bookshelf, add the preferred/current bookshelf
+     * If the book is not on any Bookshelf, add the current/default bookshelf
      *
      * @param context Current context
      */
     public void ensureBookshelf(@NonNull final Context context) {
         final List<Bookshelf> list = getParcelableArrayList(BKEY_BOOKSHELF_LIST);
         if (list.isEmpty()) {
-            list.add(Bookshelf.getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT)
-                              .orElseThrow());
+            Bookshelf bookshelf = Bookshelf
+                    .getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT)
+                    .orElseThrow();
+            if (bookshelf.isAllBooks()) {
+                // the user was "on" the "All Books" virtual shelf.
+                // For lack of anything better, set the default shelf instead.
+                bookshelf = Bookshelf
+                        .getBookshelf(context, Bookshelf.DEFAULT)
+                        .orElseThrow();
+            }
+            list.add(bookshelf);
         }
     }
 
@@ -1026,6 +1035,7 @@ public class Book
         if (contains(BKEY_TMP_FILE_SPEC[cIdx])) {
             // we have a previously set temporary cover, but it could be ""
             final String fileSpec = getString(BKEY_TMP_FILE_SPEC[cIdx]);
+            @Nullable
             File coverFile = null;
             if (!fileSpec.isEmpty()) {
                 coverFile = new File(fileSpec);
@@ -1228,7 +1238,7 @@ public class Book
      * @return {@code true} if all validations passed
      */
     public boolean validate(@NonNull final Context context) {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         return validatorConfig.validate(context, this);
     }
 
@@ -1241,15 +1251,25 @@ public class Book
      */
     @Nullable
     public String getValidationExceptionMessage(@NonNull final Context context) {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         return validatorConfig.getValidationExceptionMessage(context);
     }
 
+    /**
+     * Get the modification stage of this book.
+     *
+     * @return the stage
+     */
     @NonNull
     public EntityStage.Stage getStage() {
         return stage.getStage();
     }
 
+    /**
+     * Set the modification stage of this book.
+     *
+     * @param stage to set
+     */
     public void setStage(@NonNull final EntityStage.Stage stage) {
         this.stage.setStage(stage);
     }
