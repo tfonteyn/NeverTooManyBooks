@@ -47,7 +47,7 @@ public class LanguageDaoImpl
             SELECT_DISTINCT_ + DBKey.LANGUAGE
             + _FROM_ + DBDefinitions.TBL_BOOKS.getName()
             + _WHERE_ + DBKey.LANGUAGE + "<> ''"
-            + _ORDER_BY_ + DBKey.DATE_LAST_UPDATED__UTC;
+            + _ORDER_BY_ + DBKey.DATE_LAST_UPDATED__UTC + _DESC;
     @NonNull
     private final Supplier<Languages> languagesSupplier;
 

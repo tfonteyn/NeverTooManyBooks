@@ -55,6 +55,7 @@ abstract class BaseDaoImpl {
     static final String _FROM_ = " FROM ";
     static final String _WHERE_ = " WHERE ";
     static final String _ORDER_BY_ = " ORDER BY ";
+    static final String _DESC = " DESC";
     static final String _GROUP_BY_ = " GROUP BY ";
     static final String UPDATE_ = "UPDATE ";
     static final String _SET_ = " SET ";
