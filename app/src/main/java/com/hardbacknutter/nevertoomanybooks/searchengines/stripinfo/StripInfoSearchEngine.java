@@ -715,8 +715,6 @@ public class StripInfoSearchEngine
     private List<TocEntry> parseToc(@NonNull final Context context,
                                     @NonNull final Document document,
                                     @NonNull final Book book) {
-        final List<TocEntry> toc = new ArrayList<>();
-
         for (final Element section : document.select("div.c12")) {
             final Element divs = section.selectFirst("div");
             if (divs != null) {
@@ -728,6 +726,7 @@ public class StripInfoSearchEngine
                     final Node header = sectionContent.selectFirst("h4");
                     if (header != null && header.toString().contains("bundeling")) {
                         // the div elements inside 'row' should now contain the TOC.
+                        final List<TocEntry> toc = new ArrayList<>();
                         for (final Element entry : sectionContent.select("div div")) {
                             String number = null;
                             String title = null;
@@ -768,7 +767,7 @@ public class StripInfoSearchEngine
                 }
             }
         }
-        return toc;
+        return List.of();
     }
 
     /**
