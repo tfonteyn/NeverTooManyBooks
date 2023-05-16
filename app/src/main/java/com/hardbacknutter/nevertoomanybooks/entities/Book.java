@@ -931,16 +931,26 @@ public class Book
 
     /**
      * Ensure the book has a language.
-     * If the book does not, add the preferred/current language the user is using the app in.
+     * If the book does not:
+     * <ol>
+     *     <li>use the language of the last book the user added/updated</li>
+     *     <li>lacking that (i.e. at first use) the language the user is using the app in</li>
+     * </ol>
      *
      * @param context Current context
      */
     public void ensureLanguage(@NonNull final Context context) {
         if (getString(DBKey.LANGUAGE).isEmpty()) {
-            putString(DBKey.LANGUAGE,
-                      // user locale
-                      context.getResources().getConfiguration().getLocales().get(0)
-                             .getISO3Language());
+            final List<String> previouslyUsed = ServiceLocator.getInstance()
+                                                              .getLanguageDao().getList();
+            if (previouslyUsed.isEmpty()) {
+                putString(DBKey.LANGUAGE,
+                          // user locale
+                          context.getResources().getConfiguration().getLocales().get(0)
+                                 .getISO3Language());
+            } else {
+                putString(DBKey.LANGUAGE, previouslyUsed.get(0));
+            }
         }
     }
 
