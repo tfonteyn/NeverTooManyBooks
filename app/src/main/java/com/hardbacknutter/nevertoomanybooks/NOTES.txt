@@ -49,7 +49,6 @@ NEW:
   will now show a set of defaults in addition to the users previously used values.
 
 FIXES:
-- ix github #10 : when searching by Author/Title a search was quiting at the first "not-found".
 - fixed an obscure bug in editing the styles where editing an existing style could
   result in creating a duplicate in error.
 
