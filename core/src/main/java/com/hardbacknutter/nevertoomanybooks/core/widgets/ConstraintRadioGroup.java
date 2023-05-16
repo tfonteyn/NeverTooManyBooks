@@ -46,7 +46,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
  *         tools:ignore="MissingConstraints"
  *         />
  * }</pre>
- * <p>
  */
 public final class ConstraintRadioGroup
         extends ConstraintHelper {

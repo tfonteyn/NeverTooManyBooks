@@ -185,7 +185,6 @@ public class ISBN {
      *      <li>{@link Type#Ismn}</li>
      *      <li>generic {@link Type#UpcA}</li>
      * </ul>
-     * </p>
      *
      * <p>
      * With {@code strictIsbn == true}: accepts as valid:
@@ -201,7 +200,6 @@ public class ISBN {
      *      <li>{@link Type#Ismn}</li>
      *      <li>generic {@link Type#UpcA}</li>
      * </ul>
-     * </p>
      * <p>
      * Accepts {@code null} which results in {@code Type.Invalid}.
      * <p>

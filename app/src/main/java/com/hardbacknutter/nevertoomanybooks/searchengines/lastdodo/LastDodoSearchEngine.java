@@ -108,14 +108,13 @@ public class LastDodoSearchEngine
      *     // i.e. we should use "Rob-Vel" as the author,
      *     // and set "Robert Velter" as the realAuthor.
      * <p>
-     * <p>
      * Parse a name with potential pseudonyms.
-     * <p>
-     * 1. "Robert Velter (Rob-vel,Bozz)"
-     * 2. "Robert Velter (Rob Vel)"
-     * 3. "Ange (1/2)"
-     * 4. "Don (*3)"
-     * <p>
+     * <ol>
+     * <li>"Robert Velter (Rob-vel,Bozz)"</li>
+     * <li>"Robert Velter (Rob Vel)"</li>
+     * <li>"Ange (1/2)"</li>
+     * <li>"Don (*3)"</li>
+     * </ol>
      * 1+2: The () part are pseudonyms.
      * 3: there are 2 people with the same name "Ange"; 1/2 and 2/2 makes the distinction.
      * 4: presumably there are 3 Don's?

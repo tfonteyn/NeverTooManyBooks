@@ -59,7 +59,6 @@ import java.util.Objects;
  * It's used on the ISFDB web site. We convert it to GBP. See
  * <a href="https://en.wikipedia.org/wiki/Decimal_Day">Decimal_Day</a>
  * <p>
- * <p>
  * Dev. note: this class <strong>MUST</strong> extend {@link Number} as
  * it will be casted to one when editing.
  */

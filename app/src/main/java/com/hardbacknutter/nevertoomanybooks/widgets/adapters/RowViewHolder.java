@@ -37,8 +37,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
  * Base for all ViewHolder classes.
  * <p>
  * Provides unified handling of clicks, long-clicks and an optional context menu button.
- *
- * <ul>Uses pre-defined ID's:
+ * <p>
+ * Uses pre-defined ID's:
+ * <ul>
  *      <li>R.id.ROW_ONCLICK_TARGET</li>
  * </ul>
  */

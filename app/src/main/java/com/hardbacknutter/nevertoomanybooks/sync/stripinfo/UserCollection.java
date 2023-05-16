@@ -95,16 +95,18 @@ public class UserCollection {
 
     /**
      * Filters.
-     * <ul>Each flag can be:
-     * <li>0: don't care</li>
-     * <li>1: Yes</li>
-     * <li>2: No</li>
+     * <p>
+     * Each flag can be:
+     * <ul>
+     *      <li>0: don't care</li>
+     *      <li>1: Yes</li>
+     *      <li>2: No</li>
      * </ul>
      * <ul>
-     *     <li>1000: books I own ("in bezit")</li>
-     *     <li>0100: in wishlist ("verlanglijst")</li>
-     *     <li>0010: read ("gelezen")</li>
-     *     <li>0001: which I rated ("met score")</li>
+     *      <li>1000: books I own ("in bezit")</li>
+     *      <li>0100: in wishlist ("verlanglijst")</li>
+     *      <li>0010: read ("gelezen")</li>
+     *      <li>0001: which I rated ("met score")</li>
      * </ul>
      * <p>
      * Examples: 1020: all books I own but have not yet read. Don't care about wishlist/rating.

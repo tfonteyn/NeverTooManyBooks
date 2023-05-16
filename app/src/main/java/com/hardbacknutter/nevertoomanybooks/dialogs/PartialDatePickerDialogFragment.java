@@ -354,8 +354,9 @@ public class PartialDatePickerDialogFragment
      * Note we don't use {@link FullDateParser}
      * as we the current implementation always returns full dates.
      * Here, we explicitly need to support partial dates.
-     *
-     * <ul>Allowed formats:
+     * <p>
+     * Allowed formats:
+     * <ul>
      *      <li>yyyy-mm-dd time</li>
      *      <li>yyyy-mm-dd</li>
      *      <li>yyyy-mm</li>

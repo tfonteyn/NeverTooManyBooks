@@ -24,11 +24,9 @@
  * {@link com.hardbacknutter.nevertoomanybooks.tasks.LTask}
  * They use a {@link com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener}.
  * <p>
- * <p>
  * {@link com.hardbacknutter.nevertoomanybooks.tasks.MTask}
  * They use {@link androidx.lifecycle.MutableLiveData} and
  * {@link com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent}.
- * <p>
  * <p>
  * In some other places, we use {@link java.util.concurrent.Executor} and
  * {@link android.os.Handler} directly and the above is overkill.

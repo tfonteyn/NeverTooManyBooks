@@ -486,8 +486,9 @@ public class SearchBookUpdatesViewModel
 
     /**
      * Cleanup up and report the final outcome.
-     *
-     * <ul>Callers:
+     * <p>
+     * Callers:
+     * <ul>
      * <li>when we're all done; success==true</li>
      * <li>when we've not started a search (for whatever reason)</li>
      * <li>when we're cancelled</li>

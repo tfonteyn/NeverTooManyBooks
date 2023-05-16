@@ -80,10 +80,9 @@ import com.hardbacknutter.org.json.JSONObject;
  * <p>
  * Each remote book is compared to the local book 'last-modified' date to
  * decide to update it or not.
- *
  * <p>
- *
- * <ul>Supports custom columns:
+ * Supports custom columns:
+ * <ul>
  *     <li>read (boolean)</li>
  *     <li>read_start (datetime)</li>
  *     <li>read_end (datetime)</li>

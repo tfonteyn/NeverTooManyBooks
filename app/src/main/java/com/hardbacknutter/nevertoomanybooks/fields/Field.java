@@ -37,8 +37,9 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 /**
  * Field definition contains all information and methods necessary
  * to manage display and extraction of data in a view.
- *
- * <ul>Features provides are:
+ * <p>
+ * Features provides are:
+ * <ul>
  *      <li>Handling of visibility via preferences / 'mIsUsedKey' property of a field.</li>
  *      <li>Understanding of kinds of views (setting a Checkbox (Checkable) value to 'true'
  *          will work as expected as will setting the value of an ExposedDropDownMenu).
@@ -61,7 +62,8 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  * This way, other code can access {@link FieldFormatter#format(Context, Object)}
  * without side-effects.
  * <p>
- * <ul>Data flows to and from a view as follows:
+ * Data flows to and from a view as follows:
+ * <ul>
  *      <li>IN  (no formatter ):<br>
  *          {@link Field#setInitialValue(Context, DataManager, RealNumberParser)} ->
  *          {@link Field#setValue(Object)} ->

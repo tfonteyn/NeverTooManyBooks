@@ -67,7 +67,7 @@ public final class FieldArrayAdapter
 
     /**
      * Create an adapter suited for an AutoComplete field.
-     * A formatter is <string>required</string>.
+     * A formatter is <strong>required</strong>.
      *
      * @param context   Current context
      * @param labels    The labels to show in the list view

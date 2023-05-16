@@ -166,7 +166,7 @@ public class StringList<E> {
     public interface Coder<E> {
 
         /**
-         * Decode a <string>SINGLE</string> element.
+         * Decode a <strong>SINGLE</strong> element.
          *
          * @param element to decode
          *

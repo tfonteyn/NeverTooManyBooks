@@ -41,7 +41,6 @@
  * and reports back to the task... back to the user UI with:
  * {@link com.hardbacknutter.nevertoomanybooks.backup.ExportResults}.
  * <p>
- * <p>
  * *************************************************************************************
  * <p>
  * {@link com.hardbacknutter.nevertoomanybooks.backup.ImportHelper}
@@ -67,11 +66,10 @@
  * Uri -> Helper -> ArchiveEncoding -> Reader
  * -> LOOP(ArchiveReaderRecord -> RecordReader) -> Results
  * <p>
- * <p>
- * <p>
  * The import/export classes are really <strong>too</strong> flexible.
- *
- * <ul>Archives written:
+ * <p>
+ * Archives written:
+ * <ul>
  * <li>csv: books only</li>
  * <li>db: a copy of the internal database</li>
  * <li>json: all data except covers</li>
@@ -80,8 +78,9 @@
  * </ul>
  * zip can be forced (by changing the version number in the code + recompiling)
  * to contain csv encoded books
- *
- * <ul>Archives read:
+ * <p>
+ * Archives read:
+ * <ul>
  * <li>csv: books only</li>
  * <li>db: nothing actually implemented for now</li>
  * <li>json: all data (except covers)</li>

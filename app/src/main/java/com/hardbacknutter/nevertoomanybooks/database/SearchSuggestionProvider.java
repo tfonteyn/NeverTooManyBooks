@@ -40,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
  * We're using the default search action view and the standard "SUGGEST" Uri and MIME types.
  * <p>
  * Our query returns book titles as the {@link SearchManager#SUGGEST_COLUMN_INTENT_DATA}.
- * <p>
  * <pre>
  * gradle.build
  * {@code

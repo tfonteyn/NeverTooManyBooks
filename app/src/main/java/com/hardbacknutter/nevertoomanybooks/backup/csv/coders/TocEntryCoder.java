@@ -62,14 +62,17 @@ public class TocEntryCoder
 
     /**
      * Attempts to parse a single string into a {@link TocEntry}.
-     * <ul>The date *must* match a pattern of a (partial) ISO date string:
+     * <p>
+     * The date *must* match a pattern of a (partial) ISO date string:
+     * <ul>
      * <li>(YYYY)</li>
      * <li>(YYYY-MM)</li>
      * <li>(YYYY-MM-DD)</li>
      * <li>(YYYY-DD-MM) might work depending on the user's Locale. Not tested.</li>
      * </ul>
-     * BookCatalogue had no dates: Giants In The Sky * Blish, James
-     * <ul>We now also accept:
+     * BookCatalogue had no dates: Giants In The Sky * Blish, James.
+     * We now also accept:
+     * <ul>
      *      <li>Giants In The Sky (1952) * Blish, James</li>
      *      <li>Giants In The Sky (1952-03) * Blish, James</li>
      *      <li>Giants In The Sky (1952-03-22) * Blish, James</li>

@@ -31,7 +31,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * This is the glue class which hooks up the {@link RecyclerView} with the actual
- * {@link FastScrollerImpl} and an optional {@link OverlayProvider).
+ * {@link FastScrollerImpl} and an optional {@link OverlayProvider}.
  * <p>
  * Fast scroll drag bar height too short when there are lots of items in the recyclerview.
  * <a href="https://issuetracker.google.com/issues/64729576">64729576</a>
@@ -47,7 +47,6 @@ import androidx.recyclerview.widget.RecyclerView;
  *      <li>{@code android:scrollbarStyle} is ignored!
  *      Instead set {@code padding} sufficiently large to contain the scrollbar</li>
  *     </ul>
- * <p>
  * <p>
  * ENHANCE: move the dimen settings to a declarable style,
  * and read them from the xml definition of a RecyclerView

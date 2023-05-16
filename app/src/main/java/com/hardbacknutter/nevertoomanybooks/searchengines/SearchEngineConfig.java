@@ -120,11 +120,11 @@ public final class SearchEngineConfig {
     }
 
     /**
-     * Search for the {@link SearchEngineConfig} defined by the given viewId.
+     * Search for the configuration defined by the given viewId.
      *
      * @param viewId for the engine
      *
-     * @return Optional {@link SearchEngineConfig}
+     * @return Optional with the configuration
      */
     @NonNull
     public static Optional<SearchEngineConfig> getByViewId(@IdRes final int viewId) {
@@ -135,11 +135,11 @@ public final class SearchEngineConfig {
     }
 
     /**
-     * Search for the {@link SearchEngineConfig} defined by the given menuId.
+     * Search for the configuration defined by the given menuId.
      *
      * @param menuId to get
      *
-     * @return Optional {@link SearchEngineConfig}
+     * @return Optional with the configuration
      */
     @NonNull
     public static Optional<SearchEngineConfig> getByMenuId(@IdRes final int menuId) {

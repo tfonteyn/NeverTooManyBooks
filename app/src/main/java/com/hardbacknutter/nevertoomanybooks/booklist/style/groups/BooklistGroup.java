@@ -77,7 +77,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SE
  * the latter providing a lightweight (static final) object without user preferences.
  * The BooklistGroup encapsulates the {@link GroupKey}, adding user/temp stuff.
  * <p>
- * <p>
  * How to add a new Group:
  * <ol>
  *      <li>add it to {@link GroupKey} and update {@link #GROUP_KEY_MAX}</li>

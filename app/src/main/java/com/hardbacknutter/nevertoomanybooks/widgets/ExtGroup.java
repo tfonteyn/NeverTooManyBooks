@@ -43,8 +43,9 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * This replacement is based/tested on
  * 'androidx.constraintlayout:constraintlayout:2.1.3'
  * 'androidx.constraintlayout:constraintlayout-core:1.0.3'
- *
- * <ul>It allow and propagates:
+ * <p>
+ * It allow and propagates:
+ * <ul>
  * <li>visibility</li>
  * <li>setting tags</li>
  * <li>setting OnClickListener/OnLongClickListener</li>

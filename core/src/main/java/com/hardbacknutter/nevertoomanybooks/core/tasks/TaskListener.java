@@ -28,7 +28,9 @@ import androidx.annotation.Nullable;
  * <p>
  * The task implementations store only a WeakReference to the listener which is good.
  * We don't want them to store a strong reference, as that could/would lead to memory leaks.
- * <ul>This does mean that the creator of the task must:
+ * <p>
+ * This does mean that the creator of the task must:
+ * <ul>
  *      <li>implemented the interface on the caller itself, and pass the caller; i.e. 'this'</li>
  *      <li>or create an instance variable in the caller of the listener type, and pass that</li>
  * </ul>

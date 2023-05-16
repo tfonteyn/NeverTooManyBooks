@@ -100,7 +100,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
  *         <ul>
  *             <li>{@link RecordType#MetaData} :     {@link RecordEncoding#Xml}</li>
  *             <li>{@link RecordType#Books} :        {@link RecordEncoding#Csv}</li>
- *  *          <li>Multiple {@link RecordType#Cover}</li>
+ *             <li>Multiple {@link RecordType#Cover}</li>
  *         </ul>
  *     </li>
  * </ul>

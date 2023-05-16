@@ -99,7 +99,6 @@ public class FileManager {
      * We loop on {@link Size} first, and for each, loop again on {@link EngineId}.
      * The for() loop will break/return <strong>as soon as a cover file is found.</strong>
      * The first Site which has an image is accepted.
-     * <p>
      *
      * @param context          Current context
      * @param progressListener to check for any cancellations

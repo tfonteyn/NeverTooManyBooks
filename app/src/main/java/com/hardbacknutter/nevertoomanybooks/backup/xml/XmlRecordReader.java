@@ -545,7 +545,6 @@ public class XmlRecordReader
          * optional value attribute (e.g. int,boolean,...),
          * not used when the tag body is used (String,..).
          * <p>
-         * <p>
          * For convenience, also part of {@link #attrs}.
          */
         @Nullable

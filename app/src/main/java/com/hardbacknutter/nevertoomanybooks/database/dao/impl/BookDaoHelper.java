@@ -213,7 +213,6 @@ public class BookDaoHelper {
      * <p>
      * <strong>VERY IMPORTANT:</strong> SQLite date functions:
      * <a href="https://sqlite.org/lang_datefunc.html">https://sqlite.org/lang_datefunc.html</a>
-     * <p>
      * <pre>
      *      Function        Equivalent strftime()
      *      date(...)       strftime('%Y-%m-%d', ...)
@@ -375,8 +374,9 @@ public class BookDaoHelper {
 
     /**
      * Helper for {@link #process(Context)}.
-     *
-     * <ul>Fields in this Book, which have a default in the database and
+     * <p>
+     * Fields in this Book, which have a default in the database and
+     * <ul>
      *      <li>which are null but not allowed to be null</li>
      *      <li>which are null/empty (i.e. blank) but not allowed to be blank</li>
      * </ul>

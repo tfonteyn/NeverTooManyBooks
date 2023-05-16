@@ -54,7 +54,7 @@ public class BookLight
     /**
      * Constructor.
      *
-     * @param book to base the new {@link BookLight} on
+     * @param book to use
      */
     public BookLight(@NonNull final Book book) {
         this.id = book.getId();
@@ -93,6 +93,11 @@ public class BookLight
         return id;
     }
 
+    /**
+     * Set the database row id of the Entity.
+     *
+     * @param id to set
+     */
     public void setId(final long id) {
         this.id = id;
     }

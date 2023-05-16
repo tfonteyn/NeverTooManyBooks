@@ -68,7 +68,9 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
  * Implementation of {@link RecordReader} that reads a CSV file.
- * <ul>Supports:
+ * <p>
+ * Supports:
+ * <ul>
  *      <li>{@link RecordType#Books}</li>
  * </ul>
  * <p>
@@ -76,8 +78,9 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
  * characters:
  * <p>
  * <strong>DOUBLE escape the '*' character; i.e. '*' should be encoded as \\\\*</strong>
- *
- * <ul>Always <strong>escape:</strong>
+ * <p>
+ * Always <strong>escape:</strong>
+ * <ul>
  *      <li>"</li>
  *      <li>'</li>
  *      <li>\</li>
@@ -88,8 +91,9 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
  *      <li>(</li>
  *      <li>)</li>
  * </ul>
- *
- * <ul>Unescaped special characters:
+ * <p>
+ * Unescaped special characters:
+ * <ul>
  *      <li>',' is recognised/used in an Author name: "family, given-names",<br>
  *          and as a list separator in a list of Bookshelf names.</li>
  *      <li>'|' is used as an element separator for fields that take more than one value.<br>
@@ -161,7 +165,7 @@ public class CsvRecordReader
                     allLines = reader.lines().collect(Collectors.toList());
                 } catch (@NonNull final UncheckedIOException e) {
                     // caused by lines()
-                    //noinspection ConstantConditions
+                    //noinspection DataFlowIssue
                     throw e.getCause();
                 }
 

@@ -47,8 +47,9 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 /**
  * Provides an isolation of the logic and data needed to save and restore the tree structure
  * and a backend table to store enough information in the database to rebuild after an app restart.
- *
- * <ul>entry points:
+ * <p>
+ * Entry points:
+ * <ul>
  *      <li>{@link #setAllNodes(int, boolean)}: update ALL nodes starting from a set level.</li>
  *      <li>{@link #setNode(long, int, boolean, int)}: update a single node (and it's branch).</li>
  *      <li>{@link #restoreSavedState()}: restore the tree view for all nodes from storage.</li>

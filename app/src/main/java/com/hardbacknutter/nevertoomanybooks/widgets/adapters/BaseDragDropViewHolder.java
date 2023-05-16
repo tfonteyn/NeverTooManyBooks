@@ -39,12 +39,14 @@ import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 
 /**
  * Row ViewHolder for each editable row in a RecyclerView.
- *
- * <ul>Provides support for:
+ * <p>
+ * Provides support for:
+ * <ul>
  *      <li>{@link ItemTouchHelperViewHolder}</li>
  *      <li>a 'checkable' button</li>
  * </ul>
- * <ul>Uses pre-defined ID's:
+ * Uses pre-defined ID's:
+ * <ul>
  *      <li>R.id.ROW_CHECKABLE_BTN</li>
  *      <li>R.id.ROW_GRABBER_ICON</li>
  * </ul>
