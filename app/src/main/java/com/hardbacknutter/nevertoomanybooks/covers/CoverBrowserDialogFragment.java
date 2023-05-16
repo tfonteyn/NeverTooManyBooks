@@ -45,6 +45,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Executor;
@@ -58,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogCoverBrowserConten
 import com.hardbacknutter.nevertoomanybooks.databinding.RowCoverBrowserGalleryBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
+import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 
 /**
  * Displays and manages a cover image browser in a dialog, allowing the user to select
@@ -131,7 +133,11 @@ public class CoverBrowserDialogFragment
      * No-arg constructor for OS use.
      */
     public CoverBrowserDialogFragment() {
-        super(R.layout.dialog_cover_browser, R.layout.dialog_cover_browser_content);
+        super(R.layout.dialog_cover_browser,
+              R.layout.dialog_cover_browser_content,
+              // Fullscreen on Medium screens
+              EnumSet.of(WindowSizeClass.Compact, WindowSizeClass.Medium),
+              EnumSet.of(WindowSizeClass.Compact, WindowSizeClass.Medium));
     }
 
     /**
@@ -192,7 +198,7 @@ public class CoverBrowserDialogFragment
             }
         });
 
-        adjustWindowSize(R.dimen.floating_dialog_cover_browser_width);
+        adjustWindowSize();
     }
 
     @Override

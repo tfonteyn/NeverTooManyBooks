@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -23,17 +23,12 @@
     4WVGA (480 x 800; hdpi) - 240dpi - sw320dp
     port: w320dp h509dp
     land: w533dp h296dp
-
-    Floating dialogs are only used when the screen width is
-    WindowSizeClass.MEDIUM or WindowSizeClass.EXPANDED
-    i.e. only from "sw600" onwards!
 -->
 <resources>
 
     <!-- These base values will never get used as the dialogs will be fullscreen
          at this resolution. -->
     <dimen name="floating_dialog_recycler_view_min_height">100dp</dimen>
-    <dimen name="floating_dialog_cover_browser_width">100dp</dimen>
     <!-- Copied from Material 1.8 libs -->
     <dimen name="floating_dialog_corner_radius">28dp</dimen>
 </resources>
