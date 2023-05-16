@@ -922,7 +922,7 @@ public class Book
      * @param context Current context
      */
     public void ensureBookshelf(@NonNull final Context context) {
-        final ArrayList<Bookshelf> list = getParcelableArrayList(BKEY_BOOKSHELF_LIST);
+        final List<Bookshelf> list = getParcelableArrayList(BKEY_BOOKSHELF_LIST);
         if (list.isEmpty()) {
             list.add(Bookshelf.getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT)
                               .orElseThrow());
