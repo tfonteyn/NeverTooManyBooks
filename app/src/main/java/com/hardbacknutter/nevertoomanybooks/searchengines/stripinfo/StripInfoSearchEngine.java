@@ -42,7 +42,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -511,14 +510,15 @@ public class StripInfoSearchEngine
         }
 
         // We DON'T store a toc with a single entry (i.e. the book title itself).
-        parseToc(context, document, book).ifPresent(toc -> {
+        final List<TocEntry> toc = parseToc(context, document, book);
+        if (!toc.isEmpty()) {
             book.setToc(toc);
             if (TocEntry.hasMultipleAuthors(toc)) {
                 book.putLong(DBKey.TOC_TYPE__BITMASK, Book.ContentType.Anthology.getId());
             } else {
                 book.putLong(DBKey.TOC_TYPE__BITMASK, Book.ContentType.Collection.getId());
             }
-        });
+        }
 
         if (!book.getAuthors().isEmpty() && authorResolver != null) {
             for (final Author author : book.getAuthors()) {
@@ -709,12 +709,14 @@ public class StripInfoSearchEngine
      * @param document to parse
      * @param book     Bundle to update
      *
-     * @return the toc list with at least 2 entries
+     * @return the toc list with either {@code 0} or {@code 2} or more entries
      */
     @NonNull
-    private Optional<ArrayList<TocEntry>> parseToc(@NonNull final Context context,
-                                                   @NonNull final Document document,
-                                                   @NonNull final Book book) {
+    private List<TocEntry> parseToc(@NonNull final Context context,
+                                    @NonNull final Document document,
+                                    @NonNull final Book book) {
+        final List<TocEntry> toc = new ArrayList<>();
+
         for (final Element section : document.select("div.c12")) {
             final Element divs = section.selectFirst("div");
             if (divs != null) {
@@ -726,7 +728,6 @@ public class StripInfoSearchEngine
                     final Node header = sectionContent.selectFirst("h4");
                     if (header != null && header.toString().contains("bundeling")) {
                         // the div elements inside 'row' should now contain the TOC.
-                        final ArrayList<TocEntry> toc = new ArrayList<>();
                         for (final Element entry : sectionContent.select("div div")) {
                             String number = null;
                             String title = null;
@@ -761,13 +762,13 @@ public class StripInfoSearchEngine
                             }
                         }
                         if (toc.size() > 1) {
-                            return Optional.of(toc);
+                            return toc;
                         }
                     }
                 }
             }
         }
-        return Optional.empty();
+        return toc;
     }
 
     /**
@@ -1024,7 +1025,7 @@ public class StripInfoSearchEngine
         final long collectionId = jSoupHelper.getInt(document, "stripCollectie-" + externalId);
         if (collectionId > 0) {
             try {
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 collectionFormParser.parse(document, externalId, collectionId, book);
 
             } catch (@NonNull final IOException | StorageException e) {
