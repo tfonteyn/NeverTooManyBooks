@@ -45,8 +45,10 @@ import com.hardbacknutter.nevertoomanybooks.tasks.BuildLanguageMappingsTask;
 /**
  * Languages.
  * <ul>
- *      <li>ISO 639-1: two-letter codes, one per language</li>
- *      <li>ISO 639-2: three-letter codes, for the same languages as 639-1</li>
+ *      <li><a href="https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes">ISO 639-1</a>
+ *          two-letter codes, one per language</li>
+ *      <li><a href="https://en.wikipedia.org/wiki/ISO_639-2">ISO 639-2</a>
+ *          three-letter codes, for the same languages as 639-1</li>
  * </ul>
  * The JDK uses "ISO3" for the 3-character ISO 639-2 format (not to be confused with ISO 639-3)
  */
