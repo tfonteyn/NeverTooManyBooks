@@ -31,7 +31,6 @@ import androidx.preference.PreferenceManager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -304,11 +303,11 @@ public class LastDodoSearchEngine
      * @param sections to parse
      * @param book     Bundle to update
      *
-     * @return toc list with at least 2 entries
+     * @return the toc list with either {@code 0} or {@code 2} or more entries
      */
     @NonNull
-    private Optional<ArrayList<TocEntry>> parseToc(@NonNull final Collection<Element> sections,
-                                                   @NonNull final Book book) {
+    private List<TocEntry> parseToc(@NonNull final Collection<Element> sections,
+                                    @NonNull final Book book) {
 
         // section 0 was the "Catalogusgegevens"; normally section 3 is the one we need here...
         Element tocSection = null;
@@ -324,7 +323,7 @@ public class LastDodoSearchEngine
 
 
         if (tocSection != null) {
-            final ArrayList<TocEntry> toc = new ArrayList<>();
+            final List<TocEntry> toc = new ArrayList<>();
             for (final Element divRows : tocSection.select("div.row-information")) {
                 final Element th = divRows.selectFirst("div.label");
                 final Element td = divRows.selectFirst("div.value");
@@ -336,10 +335,10 @@ public class LastDodoSearchEngine
             }
 
             if (toc.size() > 1) {
-                return Optional.of(toc);
+                return toc;
             }
         }
-        return Optional.empty();
+        return List.of();
     }
 
     /**
@@ -510,14 +509,15 @@ public class LastDodoSearchEngine
         }
 
         // We DON'T store a toc with a single entry (i.e. the book title itself).
-        parseToc(sections, book).ifPresent(toc -> {
+        final List<TocEntry> toc = parseToc(sections, book);
+        if (!toc.isEmpty()) {
             book.setToc(toc);
             if (TocEntry.hasMultipleAuthors(toc)) {
                 book.putLong(DBKey.TOC_TYPE__BITMASK, Book.ContentType.Anthology.getId());
             } else {
                 book.putLong(DBKey.TOC_TYPE__BITMASK, Book.ContentType.Collection.getId());
             }
-        });
+        }
 
         if (!book.getAuthors().isEmpty() && authorResolver != null) {
             for (final Author author : book.getAuthors()) {
