@@ -44,6 +44,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -105,11 +106,9 @@ class UserCollectionTest
             assertNotNull(document);
             assertTrue(document.hasText());
 
-            final Optional<List<Book>> oCollection =
-                    uc.parseDocument(context, document, 1, logger);
-            assertTrue(oCollection.isPresent());
+            final List<Book> collection = uc.parseDocument(context, document, 1, logger);
+            assertFalse(collection.isEmpty());
 
-            final List<Book> collection = oCollection.get();
             assertEquals(3, uc.getMaxPages());
             assertNotNull(collection);
 
@@ -158,11 +157,9 @@ class UserCollectionTest
             assertNotNull(document);
             assertTrue(document.hasText());
 
-            final Optional<List<Book>> oCollection =
-                    uc.parseDocument(context, document, 3, logger);
-            assertTrue(oCollection.isPresent());
+            final List<Book> collection = uc.parseDocument(context, document, 3, logger);
+            assertFalse(collection.isEmpty());
 
-            final List<Book> collection = oCollection.get();
             assertNotNull(collection);
             assertEquals(1, collection.size());
         }

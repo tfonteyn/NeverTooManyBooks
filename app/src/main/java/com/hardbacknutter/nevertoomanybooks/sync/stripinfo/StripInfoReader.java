@@ -37,7 +37,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -241,15 +240,14 @@ public class StripInfoReader
                    && !searchEngine.isCancelled()) {
 
                 pageNr++;
-                final Optional<List<Book>> page = uc.fetchPage(context, pageNr,
-                                                               progressListener);
-                if (page.isPresent()) {
+                final List<Book> page = uc.fetchPage(context, pageNr, progressListener);
+                if (!page.isEmpty()) {
                     // We're committing by page.
                     Synchronizer.SyncLock txLock = null;
                     try {
                         txLock = db.beginTransaction(true);
 
-                        processPage(context, page.get(), progressListener);
+                        processPage(context, page, progressListener);
 
                         db.setTransactionSuccessful();
                     } finally {

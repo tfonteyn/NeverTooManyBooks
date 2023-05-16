@@ -32,7 +32,6 @@ import androidx.annotation.WorkerThread;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -170,9 +169,9 @@ public class UserCollection {
     @SuppressLint("DefaultLocale")
     @WorkerThread
     @NonNull
-    Optional<List<Book>> fetchPage(@NonNull final Context context,
-                                   final int pageNr,
-                                   @NonNull final ProgressListener progressListener)
+    List<Book> fetchPage(@NonNull final Context context,
+                         final int pageNr,
+                         @NonNull final ProgressListener progressListener)
             throws SearchException, IOException {
 
         if (!(pageNr == 0 || maxPages > pageNr)) {
@@ -214,17 +213,17 @@ public class UserCollection {
 
     @VisibleForTesting
     @NonNull
-    Optional<List<Book>> parseDocument(@NonNull final Context context,
-                                       @NonNull final Document document,
-                                       final int pageNr,
-                                       @NonNull final ProgressListener progressListener)
+    List<Book> parseDocument(@NonNull final Context context,
+                             @NonNull final Document document,
+                             final int pageNr,
+                             @NonNull final ProgressListener progressListener)
             throws SearchException {
         final Element root = document.getElementById("collectionContent");
         if (root != null) {
             if (pageNr == 1) {
                 maxPages = parseMaxPages(context, root, progressListener);
             }
-            return Optional.of(parsePage(root));
+            return parsePage(root);
         }
 
         if (BuildConfig.DEBUG /* always */) {
@@ -235,7 +234,7 @@ public class UserCollection {
 
         // The last page did not contain 'collectionContent'.
         // Assume we reached the end.
-        return Optional.empty();
+        return List.of();
     }
 
     /**
