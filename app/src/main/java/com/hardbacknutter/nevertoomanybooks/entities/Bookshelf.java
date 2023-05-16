@@ -80,7 +80,10 @@ public class Bookshelf
      * i.e. when the user creates a new shelf, it has id==0 before it's saved.
      */
     public static final int ALL_BOOKS = -1;
-    /** The user preferred shelf as stored in preferences. */
+    /**
+     * The user preferred shelf as stored in preferences.
+     * WARNING: this can be either a normal bookshelf, ot the "All Books" virtual shelf.
+     */
     public static final int PREFERRED = -2;
 
     /**
