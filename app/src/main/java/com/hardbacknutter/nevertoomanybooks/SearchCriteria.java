@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -245,10 +245,10 @@ public class SearchCriteria
     /**
      * Get a list with all search words, for displaying.
      *
-     * @return an Optional with the list of criteria
+     * @return the list of criteria; can be empty
      */
     @NonNull
-    public Optional<List<String>> getDisplayText() {
+    public List<String> getDisplayText() {
         final List<String> list = new ArrayList<>();
 
         if (ftsBookTitle != null && !ftsBookTitle.isEmpty()) {
@@ -270,11 +270,7 @@ public class SearchCriteria
             list.add(loanee);
         }
 
-        if (list.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(list);
-        }
+        return list;
     }
 
     public boolean isEmpty() {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -89,8 +89,10 @@ public class BooklistHeader {
 
         if (style.isShowHeaderField(SHOW_SEARCH_CRITERIA)) {
             if (searchCriteria != null) {
-                searchCriteria.getDisplayText().ifPresent(
-                        list -> searchText = String.join(", ", list));
+                final List<String> list = searchCriteria.getDisplayText();
+                if (!list.isEmpty()) {
+                    searchText = String.join(", ", list);
+                }
             }
         }
 
