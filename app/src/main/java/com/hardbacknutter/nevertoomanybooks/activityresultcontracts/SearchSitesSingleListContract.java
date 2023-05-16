@@ -39,6 +39,10 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminViewModel;
 
+/**
+ * We're sticking with the {@code Optional<ArrayList<Site>>} to maintain consistency with
+ * other contracts which all return an Optional.
+ */
 public class SearchSitesSingleListContract
         extends ActivityResultContract<ArrayList<Site>, Optional<ArrayList<Site>>> {
 
@@ -66,8 +70,8 @@ public class SearchSitesSingleListContract
                                                  @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             LoggerFactory.getLogger()
-                          .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent
-                                                 + "|listKey=" + listKey);
+                         .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent
+                                                + "|listKey=" + listKey);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
