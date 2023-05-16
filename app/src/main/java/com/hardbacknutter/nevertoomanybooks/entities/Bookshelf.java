@@ -203,7 +203,7 @@ public class Bookshelf
      */
     @NonNull
     public static Optional<Bookshelf> getBookshelf(@NonNull final Context context,
-                                                   final long... ids) {
+                                                   @NonNull final long... ids) {
         for (final long id : ids) {
             final Optional<Bookshelf> bookshelf = getBookshelf(context, id);
             if (bookshelf.isPresent()) {
@@ -268,11 +268,21 @@ public class Bookshelf
         return name;
     }
 
+    /**
+     * Get the unformatted name of this shelf.
+     *
+     * @return name
+     */
     @NonNull
     public String getName() {
         return name;
     }
 
+    /**
+     * Set the name of this shelf.
+     *
+     * @param name to set
+     */
     public void setName(@NonNull final String name) {
         this.name = name;
     }
@@ -329,6 +339,11 @@ public class Bookshelf
         return new ArrayList<>(filters);
     }
 
+    /**
+     * Set the list of filters.
+     *
+     * @param list to set
+     */
     public void setFilters(@Nullable final List<PFilter<?>> list) {
         filters.clear();
         if (list != null) {
