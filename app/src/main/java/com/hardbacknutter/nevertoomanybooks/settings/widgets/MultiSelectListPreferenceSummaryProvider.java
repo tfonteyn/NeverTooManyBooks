@@ -31,7 +31,8 @@ public final class MultiSelectListPreferenceSummaryProvider
 
     private static final String TAG = "MSLPSummaryProvider";
 
-    private static MultiSelectListPreferenceSummaryProvider sSimpleSummaryProvider;
+    private static final MultiSelectListPreferenceSummaryProvider INSTANCE =
+            new MultiSelectListPreferenceSummaryProvider();
 
     private MultiSelectListPreferenceSummaryProvider() {
     }
@@ -45,10 +46,7 @@ public final class MultiSelectListPreferenceSummaryProvider
      */
     @NonNull
     public static MultiSelectListPreferenceSummaryProvider getInstance() {
-        if (sSimpleSummaryProvider == null) {
-            sSimpleSummaryProvider = new MultiSelectListPreferenceSummaryProvider();
-        }
-        return sSimpleSummaryProvider;
+        return INSTANCE;
     }
 
     @Override
