@@ -79,6 +79,8 @@ public class Money
             return new Money[size];
         }
     };
+
+    /** Cached EURO currency. */
     public static final Currency EURO = Currency.getInstance("EUR");
     private static final Map<String, Double> EUROS = Map.ofEntries(
             // Austria
@@ -176,11 +178,21 @@ public class Money
         return 0;
     }
 
+    /**
+     * Get the value part.
+     *
+     * @return monetary value
+     */
     @NonNull
     public BigDecimal getValue() {
         return value;
     }
 
+    /**
+     * Get the currency part.
+     *
+     * @return monetary currency
+     */
     @Nullable
     public Currency getCurrency() {
         return currency;
@@ -245,7 +257,7 @@ public class Money
     }
 
     /**
-     * DEBUG!
+     * DEBUG.
      */
     @NonNull
     public String toDbgString() {
@@ -298,7 +310,7 @@ public class Money
         }
         final Money money = (Money) o;
         return Objects.equals(currency, money.currency)
-               && Objects.equals(value, money.value);
+               && value.compareTo(money.value) == 0;
     }
 
     @Override

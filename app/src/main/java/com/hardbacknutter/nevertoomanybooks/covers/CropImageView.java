@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -149,6 +149,7 @@ public class CropImageView
         final boolean wholeImage = global.getBoolean(Prefs.pk_image_cropper_frame_whole, false);
 
         setBitmapMatrix(bitmap);
+        //noinspection FloatingPointEquality
         if (getScale() == 1f) {
             center();
         }
@@ -287,6 +288,7 @@ public class CropImageView
 
                 // if we're not zoomed then there's no point in even allowing
                 // the user to move the image around.
+                //noinspection FloatingPointEquality
                 if (getScale() == 1f) {
                     // put it back to the normalized location.
                     center();
