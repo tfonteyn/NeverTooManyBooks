@@ -75,7 +75,7 @@ android {
         resourceConfigurations += ["de", "en", "en_GB", "es", "fr", "it", "nl", "pt",
                                    "cs", "el", "pl", "ru", "tr"]
 
-        testInstrumentationRunner("androidx.test.runner.AndroidJUnitRunner")
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["runnerBuilder"] =
                 "de.mannodermaus.junit5.AndroidJUnit5Builder"
 

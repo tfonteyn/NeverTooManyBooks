@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,7 +21,7 @@
 plugins {
     id("com.android.application") version "8.0.1" apply false
     id("com.android.library") version "8.0.1" apply false
-    id("org.jetbrains.kotlin.android") version "1.8.0" apply false
+    id("org.jetbrains.kotlin.android") version "1.8.10" apply false
     // https://github.com/mannodermaus/android-junit5
     id("de.mannodermaus.android-junit5") version "1.8.2.1" apply false
 }
@@ -50,8 +50,6 @@ ext {
 
     // https://github.com/google/desugar_jdk_libs
     desugar_version = "2.0.3"
-
-    kotlin_version = "1.8.0"
 
     // https://developer.android.com/jetpack/androidx/versions
 
