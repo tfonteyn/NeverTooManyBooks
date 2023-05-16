@@ -58,7 +58,12 @@ public class GenericStringHolder
         extends RowViewHolder
         implements BindableViewHolder<DataHolder> {
 
-    private static final int[] TEXT_APP_ATTR = {
+    /**
+     * Dev note: not static, as the R values are not static themselves.
+     *
+     * @noinspection FieldCanBeLocal
+     */
+    private final int[] textAppAttr = {
             com.google.android.material.R.attr.textAppearanceTitleLarge,
             com.google.android.material.R.attr.textAppearanceTitleMedium,
             com.google.android.material.R.attr.textAppearanceTitleSmall};
@@ -107,7 +112,7 @@ public class GenericStringHolder
 
         textView = itemView.findViewById(R.id.level_text);
         textView.setTextAppearance(AttrUtils.getResId(
-                context, TEXT_APP_ATTR[getLevelMultiplier(level)]));
+                context, textAppAttr[getLevelMultiplier(level)]));
         textView.setTypeface(null, Typeface.BOLD);
 
         drawBullet(context, level);
@@ -142,6 +147,7 @@ public class GenericStringHolder
         if (size > 0) {
             @SuppressLint("UseCompatLoadingForDrawables")
             final Drawable bullet = context.getDrawable(R.drawable.ic_baseline_lens_24);
+            //noinspection DataFlowIssue
             bullet.setBounds(0, 0, size, size);
             textView.setCompoundDrawablePadding(
                     res.getDimensionPixelSize(R.dimen.bob_group_level_bullet_padding));
@@ -161,7 +167,7 @@ public class GenericStringHolder
     private void dbgPosition(@NonNull final DataHolder rowData) {
         // Debugger help: color the row according to state
         if (DEBUG_SWITCHES.BOB_NODE_STATE) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             itemView.setBackgroundColor(
                     debugPosition.getDbgRowColor(rowData.getInt(DBKey.PK_ID)));
         }
