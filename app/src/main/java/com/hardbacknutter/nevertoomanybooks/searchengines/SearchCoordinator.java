@@ -826,7 +826,11 @@ public class SearchCoordinator
             // If the site has not been searched yet, search it
             synchronized (searchResultsBySite) {
                 if (!searchResultsBySite.containsKey(engineId)) {
-                    return startSearch(context, engineId);
+                    final boolean started = startSearch(context, engineId);
+                    if (started) {
+                        return true;
+                    }
+                    // else, loop to next site
                 }
             }
         }
