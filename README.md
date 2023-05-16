@@ -24,11 +24,10 @@ Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyB
 
 The UI is available in:
 
-- English, Dutch
-- **NEW**: Portuguese.
+- English, Dutch, Portuguese.
 - German, French: quality should be very good but may lack in some places.
 - Italian, Spanish: should be usable, but certainly not perfect.
-- Greek, Czech, Polish, Turkish and Russian: mostly machine translated, no guarantees for quality.
+- Czech, Greek, Polish, Russian, Turkish: mostly machine translated, no guarantees for quality.
 
 Translations are now integrated and editable
 on [https://hosted.weblate.org/engage/nevertoomanybooks/](https://hosted.weblate.org/engage/nevertoomanybooks/)
