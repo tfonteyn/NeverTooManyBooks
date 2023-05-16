@@ -487,14 +487,15 @@ public class Languages {
     public List<String> getDefaultCodes(@NonNull final Context context) {
         final Resources res = context.getResources();
         // to make it easier for first time users, add some defaults.
-        // Split off the country and use a set to avoid duplicates.
+        // Keep in mind all these are JDK language/locale codes which need converting to ISO 639-2
         final Set<String> set = new LinkedHashSet<>();
         // the device language
-        set.add(res.getConfiguration().getLocales().get(0).getLanguage().split("_")[0]);
+        set.add(getISO3FromCode(res.getConfiguration().getLocales().get(0).getLanguage()));
+
         // and all supported locales.
         Arrays.stream(res.getStringArray(R.array.pv_ui_language))
               .filter(code -> !AppLocale.SYSTEM_LANGUAGE.equals(code))
-              .map(code -> code.split("_")[0])
+              .map(this::getISO3FromCode)
               .forEachOrdered(set::add);
 
         return new ArrayList<>(set);
