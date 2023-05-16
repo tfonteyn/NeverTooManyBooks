@@ -65,6 +65,7 @@ public class ViewBookOnWebsiteHandler
                     .forEach(engineId -> {
                         final SearchEngineConfig config =
                                 Objects.requireNonNull(engineId.getConfig());
+                        //noinspection DataFlowIssue
                         subMenu.add(R.id.MENU_GROUP_BOOK,
                                     config.getDomainMenuResId(),
                                     res.getInteger(config.getDomainMenuOrderResId()),
@@ -93,7 +94,7 @@ public class ViewBookOnWebsiteHandler
 
         final SubMenu subMenu = subMenuItem.getSubMenu();
         boolean subMenuVisible = false;
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         for (int i = 0; i < subMenu.size(); i++) {
             final MenuItem menuItem = subMenu.getItem(i);
             final boolean visible =
