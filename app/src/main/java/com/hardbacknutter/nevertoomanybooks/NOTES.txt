@@ -42,15 +42,16 @@ Booklist style sorting by date-read or date-added etc...:
  Does not happen on other devices/emulators. Won't pursue/fix.
 
 ----------------------------------------------------------------------------------------------------
-4.3.4
+4.4.0
 
 NEW:
 - When editing a book, the language, format, color drop-down fields
-  will now show a set of defaults if there are no values in the database yet.
+  will now show a set of defaults in addition to the users previously used values.
 
 FIXES:
+- ix github #10 : when searching by Author/Title a search was quiting at the first "not-found".
 - fixed an obscure bug in editing the styles where editing an existing style could
-  result in creating a duplicate in error
+  result in creating a duplicate in error.
 
 REMOVED:
 
