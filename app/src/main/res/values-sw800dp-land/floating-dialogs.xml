@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -22,5 +22,4 @@
 <!-- Generic 10.1" (800 x 1280) - 160dpi - sw800 -->
 <resources>
     <dimen name="floating_dialog_recycler_view_min_height">600dp</dimen>
-    <dimen name="floating_dialog_cover_browser_width">1000dp</dimen>
 </resources>
