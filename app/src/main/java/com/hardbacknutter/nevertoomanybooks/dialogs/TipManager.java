@@ -54,7 +54,8 @@ public final class TipManager {
     private static final String PREF_PREFIX = "tips.";
     /** Preferences prefix for all tips. */
     private static final String PREF_TIP = PREF_PREFIX + "tip.";
-    private static TipManager sInstance;
+    private static final TipManager INSTANCE = new TipManager();
+
     /** Cache for all tips managed by this class. */
     private final SparseArray<Tip> cached = new SparseArray<>();
 
@@ -63,12 +64,7 @@ public final class TipManager {
 
     @NonNull
     public static TipManager getInstance() {
-        synchronized (TipManager.class) {
-            if (sInstance == null) {
-                sInstance = new TipManager();
-            }
-            return sInstance;
-        }
+        return INSTANCE;
     }
 
     @NonNull
