@@ -244,5 +244,12 @@
             android:summaryOn="@string/yes"
             android:title="@string/lbl_table_of_content" />
 
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.title_original_lang"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_original_title" />
+
     </com.hardbacknutter.nevertoomanybooks.settings.widgets.ExtPreferenceCategory>
 </PreferenceScreen>

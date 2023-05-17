@@ -246,13 +246,31 @@ public final class DBDefinitions {
     public static final Domain DOM_PUBLISHER_NAME_CSV;
 
 
-    /** {@link #TBL_BOOKS} + {@link #TBL_TOC_ENTRIES}. */
+    /**
+     * The actual title of the book as it appears on the cover.
+     * For translated book this will be the translated title.
+     * (or the title of a story/entry in the table of content).
+     *
+     * @see #TBL_BOOKS
+     * @see #TBL_TOC_ENTRIES
+     * @see #DOM_TITLE_OB
+     */
     public static final Domain DOM_TITLE;
     /**
-     * 'Order By' for the title. Lowercase, and stripped of spaces etc...
-     * {@link #TBL_BOOKS}  {@link #TBL_TOC_ENTRIES}.
+     * 'Order By' for the {@link #DOM_TITLE}. Lowercase, and stripped of spaces etc...
+     *
+     * @see #TBL_BOOKS
+     * @see #TBL_TOC_ENTRIES
+     * @see #DOM_TITLE
      */
     public static final Domain DOM_TITLE_OB;
+
+    /**
+     * For translated books, the title in the original language.
+     * ENHANCE: Currently there is no extra field to indicate the original language.
+     */
+    public static final Domain DOM_TITLE_ORIGINAL_LANG;
+
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_BOOK_ISBN;
     /** {@link #TBL_BOOKS}  {@link #TBL_TOC_ENTRIES}. */
@@ -573,6 +591,12 @@ public final class DBDefinitions {
                 new Domain.Builder(DBKey.TITLE_OB, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
+                        .build();
+
+        DOM_TITLE_ORIGINAL_LANG =
+                new Domain.Builder(DBKey.TITLE_ORIGINAL_LANG, SqLiteDataType.Text)
+                        .notNull()
+                        .localized()
                         .build();
 
         DOM_DATE_FIRST_PUBLICATION =
@@ -1296,6 +1320,7 @@ public final class DBDefinitions {
                             // book data
                             DOM_TITLE,
                             DOM_TITLE_OB,
+                            DOM_TITLE_ORIGINAL_LANG,
                             DOM_BOOK_ISBN,
                             DOM_BOOK_DATE_PUBLISHED,
                             DOM_DATE_FIRST_PUBLICATION,

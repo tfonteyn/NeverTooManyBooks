@@ -92,7 +92,7 @@ public class DBHelper
         extends SQLiteOpenHelper {
 
     /** Current version. */
-    public static final int DATABASE_VERSION = 23;
+    public static final int DATABASE_VERSION = 24;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -895,6 +895,9 @@ public class DBHelper
             TBL_PSEUDONYM_AUTHOR.create(db, true);
             // new search-engine added
             TBL_BOOKS.alterTableAddColumns(db, DBDefinitions.DOM_ESID_BEDETHEQUE);
+        }
+        if (oldVersion < 24) {
+            TBL_BOOKS.alterTableAddColumns(db, DBDefinitions.DOM_TITLE_ORIGINAL_LANG);
         }
 
         //TODO: if at a future time we make a change that requires to copy/reload the books table:

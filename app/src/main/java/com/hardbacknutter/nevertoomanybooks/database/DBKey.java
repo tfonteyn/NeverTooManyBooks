@@ -176,6 +176,8 @@ public final class DBKey {
 
     public static final String BOOK_UUID = "book_uuid";
     public static final String TITLE = "title";
+    public static final String TITLE_ORIGINAL_LANG = "title_original_lang";
+
     public static final String BOOK_ISBN = "isbn";
     public static final String FIRST_PUBLICATION__DATE = "first_publication";
     public static final String BOOK_PUBLICATION__DATE = "date_published";

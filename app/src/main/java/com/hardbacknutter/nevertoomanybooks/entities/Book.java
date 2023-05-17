@@ -369,8 +369,11 @@ public class Book
         // Do not copy these specific dates.
         // BOOK_DATE_ADDED
         // DATE_LAST_UPDATED
+        //
+        // //NEWTHINGS: new fields
 
         duplicate.putString(DBKey.TITLE, getTitle());
+        duplicate.putString(DBKey.TITLE_ORIGINAL_LANG, getString(DBKey.TITLE_ORIGINAL_LANG));
         duplicate.putString(DBKey.BOOK_ISBN, getString(DBKey.BOOK_ISBN));
 
         if (duplicate.contains(BKEY_AUTHOR_LIST)) {
@@ -714,7 +717,7 @@ public class Book
     public void pruneSeries(@NonNull final Context context,
                             final boolean lookupLocale) {
         if (contains(BKEY_SERIES_LIST)) {
-            final ArrayList<Series> series = getSeries();
+            final List<Series> series = getSeries();
             if (!series.isEmpty()) {
                 final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
 
@@ -797,7 +800,7 @@ public class Book
     public void prunePublishers(@NonNull final Context context,
                                 final boolean lookupLocale) {
         if (contains(BKEY_PUBLISHER_LIST)) {
-            final ArrayList<Publisher> publishers = getPublishers();
+            final List<Publisher> publishers = getPublishers();
             if (!publishers.isEmpty()) {
                 final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
 

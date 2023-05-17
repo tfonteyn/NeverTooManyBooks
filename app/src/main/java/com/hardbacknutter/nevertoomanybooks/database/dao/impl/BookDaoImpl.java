@@ -910,7 +910,8 @@ public class BookDaoImpl
                 // Nevertheless, listing the fields here gives a better understanding
 
                 SQL_BOOK = SELECT_ + TBL_BOOKS.dotAs(
-                        DBKey.PK_ID, DBKey.BOOK_UUID, DBKey.TITLE,
+                        DBKey.PK_ID, DBKey.BOOK_UUID,
+                        DBKey.TITLE, DBKey.TITLE_ORIGINAL_LANG,
                         DBKey.BOOK_ISBN, DBKey.TOC_TYPE__BITMASK,
                         DBKey.BOOK_PUBLICATION__DATE, DBKey.PRINT_RUN,
                         DBKey.PRICE_LISTED, DBKey.PRICE_LISTED_CURRENCY,

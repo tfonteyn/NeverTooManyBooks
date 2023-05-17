@@ -1530,6 +1530,7 @@
          Used to display "Author-pen-name (pseudonym for real-name)"
     -->
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
+    <string name="lbl_original_title">Original title</string>
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
 </resources>
