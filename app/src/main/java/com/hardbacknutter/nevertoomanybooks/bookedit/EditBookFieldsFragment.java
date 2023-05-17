@@ -85,7 +85,7 @@ public class EditBookFieldsFragment
             registerForActivityResult(new ScannerContract(), o -> o.ifPresent(
                     barCode -> {
                         vm.getBook().putString(DBKey.BOOK_ISBN, barCode);
-                        //noinspection ConstantConditions
+                        //noinspection DataFlowIssue
                         SoundManager.beepOnBarcodeFound(getContext());
                     }));
 
@@ -133,7 +133,7 @@ public class EditBookFieldsFragment
                                      Lifecycle.State.RESUMED);
 
         final Context context = getContext();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm.initFields(context, FragmentId.Main, FieldGroup.Main);
 
         createCoverDelegates();
@@ -173,12 +173,12 @@ public class EditBookFieldsFragment
         try {
             for (int cIdx = 0; cIdx < width.length(); cIdx++) {
                 // in edit mode, always show both covers unless globally disabled
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 if (GlobalFieldVisibility.isUsed(context, DBKey.COVER[cIdx])) {
                     final int maxWidth = width.getDimensionPixelSize(cIdx, 0);
                     final int maxHeight = height.getDimensionPixelSize(cIdx, 0);
 
-                    //noinspection ConstantConditions
+                    //noinspection DataFlowIssue
                     coverHandler[cIdx] = new CoverHandler(this, cIdx, maxWidth, maxHeight)
                             .setBookSupplier(() -> vm.getBook())
                             .setProgressView(vb.coverOperationProgressBar)
@@ -203,7 +203,7 @@ public class EditBookFieldsFragment
     @Override
     void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
                          @NonNull final Book book) {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm.getBook().pruneAuthors(getContext(), true);
         vm.getBook().pruneSeries(getContext(), true);
 
@@ -221,7 +221,7 @@ public class EditBookFieldsFragment
 
         getFab().setVisibility(View.INVISIBLE);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         fields.forEach(field -> field.setVisibility(getView(), false, false));
     }
 
@@ -242,7 +242,7 @@ public class EditBookFieldsFragment
     }
 
     private void editBookshelves() {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         editBookshelvesLauncher.launch(getContext(), getString(R.string.lbl_bookshelves),
                                        vm.getAllBookshelves(),
                                        vm.getBook().getBookshelves());
@@ -253,7 +253,7 @@ public class EditBookFieldsFragment
                 vm.requireField(R.id.bookshelves);
         final List<Bookshelf> previous = field.getValue();
 
-        final ArrayList<Bookshelf> selected =
+        final List<Bookshelf> selected =
                 vm.getAllBookshelves()
                   .stream()
                   .filter(bookshelf -> selectedIds.contains(bookshelf.getId()))
@@ -273,7 +273,7 @@ public class EditBookFieldsFragment
             MenuCompat.setGroupDividerEnabled(menu, true);
             menuInflater.inflate(R.menu.sm_isbn_validity, menu);
 
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             MenuUtils.customizeMenuGroupTitle(getContext(), menu, R.id.sm_title_isbn_validity);
         }
 
