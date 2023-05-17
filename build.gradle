@@ -32,7 +32,7 @@ tasks.register("clean", Delete) {
 
 ext {
     applicationId = "com.hardbacknutter.nevertoomanybooks"
-    applicationVersionCode = 51
+    applicationVersionCode = 52
     applicationVersionName = "4.4.0"
 
     // see NOTES.txt
