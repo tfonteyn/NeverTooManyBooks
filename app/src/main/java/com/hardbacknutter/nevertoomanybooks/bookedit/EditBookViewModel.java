@@ -206,7 +206,7 @@ public class EditBookViewModel
 
             realNumberParser = new RealNumberParser(LocaleListUtils.asList(context));
 
-            dateFormatter = new DateFieldFormatter(userLocale);
+            dateFormatter = new DateFieldFormatter(userLocale, false);
             languageFormatter = new LanguageFormatter(userLocale, languages);
             doubleNumberFormatter = new DoubleNumberFormatter(realNumberParser);
             listFormatterAutoDetails = new ListFormatter<>(Details.AutoSelect, null);

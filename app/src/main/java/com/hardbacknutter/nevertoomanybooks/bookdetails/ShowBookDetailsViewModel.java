@@ -255,7 +255,8 @@ public class ShowBookDetailsViewModel
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
         // These FieldFormatters are shared between multiple fields.
-        final FieldFormatter<String> dateFormatter = new DateFieldFormatter(userLocale);
+        final FieldFormatter<String> dateFormatter = new DateFieldFormatter(userLocale, false);
+        final FieldFormatter<String> dateUtcFormatter = new DateFieldFormatter(userLocale, true);
         final FieldFormatter<Money> moneyFormatter = new MoneyFormatter(userLocale);
         final FieldFormatter<String> notesFormatter =
                 new HtmlFormatter<>(true, true);
@@ -332,8 +333,7 @@ public class ShowBookDetailsViewModel
         // Personal fields
 
         fields.add(
-                new TextViewField<>(FragmentId.Main, R.id.bookshelves,
-                                    Book.BKEY_BOOKSHELF_LIST,
+                new TextViewField<>(FragmentId.Main, R.id.bookshelves, Book.BKEY_BOOKSHELF_LIST,
                                     DBKey.FK_BOOKSHELF,
                                     normalDetailListFormatter)
                         .addRelatedViews(R.id.lbl_bookshelves));
@@ -391,12 +391,12 @@ public class ShowBookDetailsViewModel
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.date_added,
                                        DBKey.DATE_ADDED__UTC,
-                                       dateFormatter)
+                                       dateUtcFormatter)
                            .addRelatedViews(R.id.lbl_date_added));
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.date_last_updated,
                                        DBKey.DATE_LAST_UPDATED__UTC,
-                                       dateFormatter)
+                                       dateUtcFormatter)
                            .addRelatedViews(R.id.lbl_date_last_updated));
 
 

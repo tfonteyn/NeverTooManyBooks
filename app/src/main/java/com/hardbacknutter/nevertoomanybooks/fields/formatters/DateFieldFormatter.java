@@ -52,14 +52,21 @@ public class DateFieldFormatter
 
     @NonNull
     private final Locale locale;
+    private final boolean isUtc;
 
     /**
      * Constructor.
      *
      * @param locale to use
+     * @param isUtc  set to {@code true} if dates are to be handled as UTC
+     *               with {@link #format(Context, String)}
+     *               This flag has no effect for {@link #extract(Context, String)}
+     *               as we drop the timestamp part after parsing.
      */
-    public DateFieldFormatter(@NonNull final Locale locale) {
+    public DateFieldFormatter(@NonNull final Locale locale,
+                              final boolean isUtc) {
         this.locale = locale;
+        this.isUtc = isUtc;
     }
 
     /**
@@ -74,7 +81,7 @@ public class DateFieldFormatter
         if (rawValue == null || rawValue.isEmpty()) {
             return "";
         } else {
-            return new PartialDate(rawValue).toDisplay(locale, rawValue);
+            return new PartialDate(rawValue, isUtc).toDisplay(locale, rawValue);
         }
     }
 
@@ -87,6 +94,6 @@ public class DateFieldFormatter
     @NonNull
     public String extract(@NonNull final Context context,
                           @NonNull final String text) {
-        return new PartialDate(text).getIsoString();
+        return new PartialDate(text, isUtc).getIsoString();
     }
 }
