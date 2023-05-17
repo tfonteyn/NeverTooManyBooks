@@ -49,7 +49,6 @@ NEW:
   will now show a set of defaults in addition to the users previously used values.
 
 FIXES:
-- cover browser dialog is now fullscreen on all small/medium devices.
 - date-added + date-last-updated are now displayed in the local timezone (these are stored in UTC)
 - fixed an obscure bug in editing the styles where editing an existing style could
   result in creating a duplicate in error.
