@@ -29,8 +29,11 @@ import androidx.annotation.Nullable;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Year;
 import java.time.YearMonth;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.FormatStyle;
@@ -39,11 +42,15 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 
 /**
+ * Provides storage for an partial/incomplete date.
+ * A partial date can consist of just a year, a year+mont, or year+month+day value.
+ * <p>
  * TEST: <a href="https://issuetracker.google.com/issues/158417777">DateTimeParseException</a>
  * seems to be fixed, but the bug was never closed?
  */
@@ -66,6 +73,9 @@ public class PartialDate
     };
     /** Log tag. */
     private static final String TAG = "PartialDate";
+
+    /** Used to transform SQL-ISO to Java-ISO datetime format for UTC conversions. */
+    private static final Pattern SPACE = Pattern.compile(" ");
     /** NonNull - the partial date; using '1' for not-set day,month,year fields. */
     private LocalDate localDate;
     private boolean yearSet;
@@ -79,9 +89,26 @@ public class PartialDate
      * be marked invalid / not-set.
      *
      * @param dateStr a valid ISO string (full or partial date), or {@code null}, or {@code ""}
+     *                The date is used as-is, i.e. in the current timezone.
      */
     public PartialDate(@Nullable final String dateStr) {
-        parse(dateStr);
+        this(dateStr, false);
+    }
+
+    /**
+     * Constructor.
+     * <p>
+     * Passing in an invalid ISO string will not throw any error, but the date will simply
+     * be marked invalid / not-set.
+     *
+     * @param dateStr a valid ISO string (full or partial date), or {@code null}, or {@code ""}
+     *                The date is used as-is, i.e. in the current timezone.
+     * @param isUtc   set to {@code true} if dates are to be converted from UTC
+     *                to the local timezone.
+     */
+    public PartialDate(@Nullable final String dateStr,
+                       final boolean isUtc) {
+        parse(dateStr, isUtc);
     }
 
     /**
@@ -168,7 +195,8 @@ public class PartialDate
         return 0;
     }
 
-    private void parse(@Nullable final String dateStr) {
+    private void parse(@Nullable final String dateStr,
+                       final boolean isUtc) {
         if (dateStr != null) {
             final int len = dateStr.length();
             try {
@@ -188,7 +216,16 @@ public class PartialDate
                     return;
                 } else if (len >= 10) {
                     // yyyy-MM-dd[...]
-                    localDate = LocalDate.parse(dateStr.substring(0, 10));
+                    if (isUtc) {
+                        localDate = LocalDateTime
+                                .parse(SPACE.matcher(dateStr).replaceFirst("T"))
+                                .atZone(ZoneOffset.UTC)
+                                .withZoneSameInstant(ZoneId.systemDefault())
+                                .toLocalDate();
+                    } else {
+                        // just cut off the time stamp
+                        localDate = LocalDate.parse(dateStr.substring(0, 10));
+                    }
                     yearSet = true;
                     monthSet = true;
                     daySet = true;
@@ -197,21 +234,12 @@ public class PartialDate
             } catch (@NonNull final DateTimeParseException e) {
                 if (BuildConfig.DEBUG /* always */) {
                     LoggerFactory.getLogger()
-                                  .e(TAG, e, "dateStr=" + dateStr);
+                                 .e(TAG, e, "dateStr=" + dateStr);
                 }
             }
         }
 
         unset();
-    }
-
-    @NonNull
-    public LocalDate getDate() {
-        return localDate;
-    }
-
-    public void setDate(@Nullable final String dateStr) {
-        parse(dateStr);
     }
 
     /**
