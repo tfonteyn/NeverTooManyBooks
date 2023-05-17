@@ -28,13 +28,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.DimenRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -253,27 +251,9 @@ public abstract class FFBaseDialogFragment
     }
 
     /**
-     * FIXME: Workaround for dialogs which need to be extra-wide.
-     *  Maybe try to use minWidth instead?
+     * Fixes the dialog size for smaller screens when the dialog is not already full-screen.
+     * <p>
      * <strong>MUST</strong> be called as the last thing from {@link #onViewCreated(View, Bundle)}.
-     * <strong>ONLY ONE</strong> {@link #adjustWindowSize} method should be called.
-     *
-     * @param widthDimenResId the width to use as an 'R.dimen.value'
-     */
-    protected void adjustWindowSize(@DimenRes final int widthDimenResId) {
-        // Sanity check
-        if (getDialog() != null && getDialog().getWindow() != null) {
-            final Window window = getDialog().getWindow();
-            final WindowManager.LayoutParams attributes = window.getAttributes();
-            window.setLayout(getResources().getDimensionPixelSize(widthDimenResId),
-                             attributes.height);
-        }
-    }
-
-    /**
-     * FIXME: Workaround for dialogs with a RecyclerView.
-     * <strong>MUST</strong> be called as the last thing from {@link #onViewCreated(View, Bundle)}.
-     * <strong>ONLY ONE</strong> {@link #adjustWindowSize} method should be called.
      * <p>
      * Dev note: RecyclerView in a dialog is cursed... and should NOT be used.
      */
@@ -285,12 +265,11 @@ public abstract class FFBaseDialogFragment
         if (!fullscreen) {
             // Sanity check
             if (getDialog() != null && getDialog().getWindow() != null) {
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 final WindowSizeClass height = WindowSizeClass.getHeight(getContext());
                 if (height == WindowSizeClass.Compact || height == WindowSizeClass.Medium) {
-
                     if (BuildConfig.DEBUG /* always */) {
-                        LoggerFactory.getLogger().d(TAG, "workaroundRecyclerViewContent");
+                        LoggerFactory.getLogger().d(TAG, "adjustWindowSize");
                     }
 
                     final WindowSizeClass width = WindowSizeClass.getWidth(getContext());
@@ -320,12 +299,22 @@ public abstract class FFBaseDialogFragment
         }
     }
 
+    /**
+     * Set the title of the toolbar.
+     *
+     * @param title a string to set as the title
+     */
     public void setTitle(@Nullable final CharSequence title) {
         if (dialogToolbar != null) {
             dialogToolbar.setTitle(title);
         }
     }
 
+    /**
+     * Set the subtitle of the toolbar.
+     *
+     * @param subtitle a string to set as the subtitle
+     */
     public void setSubtitle(@Nullable final CharSequence subtitle) {
         if (dialogToolbar != null) {
             dialogToolbar.setSubtitle(subtitle);
