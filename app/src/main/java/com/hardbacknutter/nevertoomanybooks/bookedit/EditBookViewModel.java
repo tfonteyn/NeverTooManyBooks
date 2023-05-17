@@ -951,6 +951,10 @@ public class EditBookViewModel
                            .setValidator(field -> field.setErrorIfEmpty(
                                    errStrNonBlankRequired)));
 
+        fields.add(new EditTextField<>(fragmentId, R.id.original_title, DBKey.TITLE_ORIGINAL_LANG)
+                           .setTextInputLayoutId(R.id.lbl_original_title)
+                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+
         fields.add(new EditTextField<>(fragmentId, R.id.description, DBKey.DESCRIPTION)
                            .setTextInputLayoutId(R.id.lbl_description)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
