@@ -249,7 +249,7 @@
       <option name="useParameterizedTypeForCollectionMethods" value="true" />
       <option name="doNotWeakenToJavaLangObject" value="true" />
       <option name="onlyWeakentoInterface" value="true" />
-      <stopClasses>java.util.Set,com.hardbacknutter.nevertoomanybooks.bookedit.EditAction,java.util.List,java.util.Collection</stopClasses>
+      <stopClasses>java.util.Set,com.hardbacknutter.nevertoomanybooks.bookedit.EditAction,java.util.List,java.util.Collection,java.time.LocalDateTime</stopClasses>
     </inspection_tool>
     <inspection_tool class="UnnecessarilyQualifiedStaticUsage" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="m_ignoreStaticFieldAccesses" value="false" />
