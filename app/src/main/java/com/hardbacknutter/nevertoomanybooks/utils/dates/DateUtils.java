@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -45,6 +45,7 @@ public final class DateUtils {
      *
      * @return local timezone DateTime
      */
+    @NonNull
     public static ZonedDateTime utcToZoned(@NonNull final LocalDateTime utc) {
         return utc.atZone(ZoneOffset.UTC).withZoneSameInstant(ZoneId.systemDefault());
     }
