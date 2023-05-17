@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -42,7 +42,9 @@
         <item name="layout_goneMarginStart">@dimen/field_margin_start</item>
     </style>
 
-    <style name="Field.BookTitle" parent="Base.Field">
+    <!-- textAppearanceBodyLarge: textSize is 16sp -->
+    <style name="Field.BookTitle"
+           parent="Base.Field">
         <item name="android:textStyle">italic</item>
         <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
         <item name="android:maxLines">2</item>
@@ -53,12 +55,19 @@
         <item name="android:textSize">22sp</item>
     </style>
 
-    <style name="Field.Isbn" parent="Base.Field">
+    <style name="Field.BookTitle.Small">
+        <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="Field.Isbn"
+           parent="Base.Field">
         <item name="android:textAppearance">?attr/textAppearanceBodyMedium</item>
     </style>
 
     <!-- Book personal notes. -->
-    <style name="Field.Notes" parent="Base.Field">
+    <style name="Field.Notes"
+           parent="Base.Field">
         <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
         <!-- A bigger text field just looks nicer with these start/end margins. -->
         <item name="android:layout_marginStart">@dimen/field_margin_inline</item>
