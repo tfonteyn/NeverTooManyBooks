@@ -133,21 +133,26 @@ public class ShowBookDetailsViewModel
         // all fragments in the ViewPager will be called, so only update
         // the toolbar and current book id if OUR book IS the current one
         if (book.getId() == bookId) {
-//            storeCurrentBookId(bookId);
+            // storeCurrentBookId(bookId);
             onUpdateToolbar.setValue(book);
         }
     }
 
     private void updateUI() {
         Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
-//        storeCurrentBookId(book.getId());
+        // storeCurrentBookId(book.getId());
         onBookLoaded.setValue(book);
     }
 
-//    private void storeCurrentBookId(final long bookId) {
-//
-//    }
+    //    private void storeCurrentBookId(final long bookId) {
+    //
+    //    }
 
+    /**
+     * Should the fragment run in embedded mode.
+     *
+     * @return flag
+     */
     public boolean isEmbedded() {
         return embedded;
     }
@@ -171,6 +176,11 @@ public class ShowBookDetailsViewModel
         updateUI();
     }
 
+    /**
+     * Get the currently displayed book.
+     *
+     * @return the book
+     */
     @NonNull
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public Book getBook() {
@@ -269,6 +279,8 @@ public class ShowBookDetailsViewModel
 
         // book fields
         fields.add(new TextViewField<>(FragmentId.Main, R.id.title, DBKey.TITLE));
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.original_title,
+                                       DBKey.TITLE_ORIGINAL_LANG));
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.author, Book.BKEY_AUTHOR_LIST,
                                        DBKey.FK_AUTHOR,
