@@ -596,6 +596,7 @@ public final class DBDefinitions {
         DOM_TITLE_ORIGINAL_LANG =
                 new Domain.Builder(DBKey.TITLE_ORIGINAL_LANG, SqLiteDataType.Text)
                         .notNull()
+                        .withDefaultEmptyString()
                         .localized()
                         .build();
 
