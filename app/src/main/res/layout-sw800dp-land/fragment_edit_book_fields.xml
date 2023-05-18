@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -134,12 +134,31 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_original_title"
+            style="@style/TIL.Text.Title"
+            android:hint="@string/lbl_original_title_long"
+            app:layout_constraintEnd_toEndOf="@id/lbl_title"
+            app:layout_constraintStart_toStartOf="@id/lbl_title"
+            app:layout_constraintTop_toBottomOf="@id/lbl_title"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/original_title"
+                style="@style/titleTextEntry"
+                android:imeOptions="actionNext"
+                tools:ignore="Autofill"
+                tools:text="@sample/data.json/book/title"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
         <androidx.constraintlayout.widget.Barrier
             android:id="@+id/barrier_covers_bottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="cover_image_0,cover_image_1,lbl_title,lbl_language"
+            app:constraint_referenced_ids="cover_image_0,cover_image_1,lbl_title,lbl_language,lbl_original_title"
             />
 
         <com.google.android.material.textfield.TextInputLayout
