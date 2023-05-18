@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -595,7 +596,7 @@
     <string name="pt_search_reformat_format">“Kitap formatı” adlarını standartlaştırın</string>
     <string name="pt_search_uses_publisher">Arama yayıncı kullanıyor</string>
     <string name="pt_show_author_name_given_first">Yazar adı biçimlendirme</string>
-    <string name="pt_show_title_reordered">Başlıkları farklı göster</string>
+    <string name="pt_show_title_reordered">Başlıkları farklı göster…</string>
     <string name="pt_sort_author_name_given_first">Yazar adı sıralama</string>
     <string name="pt_sort_title_reordered">Başlıkları sırala</string>
     <string name="pt_thumbnails_cache_resized">Önbellek yeniden boyutlandırılmış küçük resimler</string>

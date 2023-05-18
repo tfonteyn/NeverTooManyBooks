@@ -1095,9 +1095,9 @@
     <string name="pc_advanced_options">Advanced</string>
     <!-- Preference Category -->
     <string name="pc_image_cache">Image cache</string>
-    <!-- [VERIFIED] -->
+    <!-- [VERIFIED] Preference Category -->
     <string name="pc_camera">Camera</string>
-    <!-- Opens a new screen with the related settings. -->
+    <!-- Preference option title: search websites ordering -->
     <string name="pt_website_search_order_and_enable">Priority, enable &amp; disable</string>
     <string name="pt_covers"
             translatable="false">@string/lbl_covers_long</string>
@@ -1113,15 +1113,16 @@
             translatable="false">@string/action_more_ellipsis</string>
     <!-- Preference Category -->
     <string name="pt_field_visibility">Field Visibility</string>
-    <!-- screen where the user can select/deselect fields to be shown; e.g. user might want to hide fields they don't use. -->
+    <!-- Preference summary: screen where the user can select/deselect fields to be shown; e.g. user might want to hide fields they don't use. -->
     <string name="ps_manage_fields">Selected fields are visible in the add/edit book screens. Unselected fields are hidden.</string>
-    <!-- SwitchPreference - How to display titles. -->
-    <string name="pt_show_title_reordered">Show titles as</string>
-    <!-- SwitchPreference - How to sort titles. -->
+    <!-- SwitchPreference title: How to display titles -->
+    <string name="pt_show_title_reordered">Show titles as…</string>
+    <!-- SwitchPreference title: How to sort titles. -->
     <string name="pt_sort_title_reordered">Sort titles by</string>
-    <!-- example of 'original' title; must be translated in combination with "ps_show_titles_reordered_on" -->
+
+    <!-- Preference summary: example of an 'original' title; must be translated in combination with "ps_show_titles_reordered_on" -->
     <string name="ps_show_titles_reordered_off">The title</string>
-    <!-- example of a reordered title; must be translated in combination with "ps_show_titles_reordered_off" -->
+    <!-- Preference summary: example of a reordered title; must be translated in combination with "ps_show_titles_reordered_off" -->
     <string name="ps_show_titles_reordered_on">title, The</string>
     <!--
      Not a preference as such.
@@ -1133,100 +1134,101 @@
      with a lowercase character.
  . -->
     <string name="pv_reformat_titles_prefixes">a|A|an|An|the|The</string>
-    <!-- SwitchPreference - allow mobile network usage or limit to use wifi/ethernet only. -->
+    <!-- SwitchPreference title: allow mobile network usage or limit to use wifi/ethernet only. -->
     <string name="pt_allow_metered_network_data">Allow mobile data usage</string>
     <!-- SwitchPreference - Some web sites expose their website book id.
          Allow the user to lookup books using such an ID, and manually modify them. -->
     <string name="pt_allow_editing_external_id">Allow editing website book id</string>
-    <!-- SwitchPreference - Enable or disable all lending functionality. -->
+    <!-- SwitchPreference title: Enable or disable all lending functionality. -->
     <string name="pt_lending_enabled"
             translatable="false">@string/lbl_lending</string>
-    <!-- SwitchPreference - beep when the barcode scanner found a valid code -->
+    <!-- SwitchPreference title: beep when the barcode scanner found a valid code -->
     <string name="pt_scanning_beep_on_barcode_found">Beep when a barcode is found</string>
-    <!-- SwitchPreference -->
+    <!-- SwitchPreference title -->
     <string name="pt_scanning_beep_on_valid">Beep if scanned ISBN is valid</string>
-    <!-- SwitchPreference -->
+    <!-- SwitchPreference title -->
     <string name="pt_scanning_beep_on_invalid">Beep if scanned ISBN is invalid</string>
-    <!-- SwitchPreference - Thumbnails are cached in a database to avoid resizing all the time -->
+    <!-- SwitchPreference title: Thumbnails are cached in a database to avoid resizing all the time -->
     <string name="pt_thumbnails_cache_resized">Resized images are cached</string>
     <string name="pe_thumbnails_cache_resized_each_time">Resize images each time they are needed (uses less storage, scrolling will be slower)</string>
     <string name="pe_thumbnails_cache_resized_stored">Cache resized images (scrolling will be faster, uses more storage)</string>
-    <!-- SwitchPreference - start the cropper with the cropper frame set to the whole image -->
+    <!-- SwitchPreference title: start the image crop utility with the cropper frame set to the whole image -->
     <string name="pt_cropper_frame_is_whole_image">Default crop frame is whole image</string>
-    <!-- SwitchPreference -->
+    <!-- SwitchPreference title -->
     <string name="pt_search_reformat_format">Standardize “book format” names</string>
-    <!-- SwitchPreference -->
+    <!-- SwitchPreference title -->
     <string name="pt_search_reformat_color">Standardize “book color” names</string>
-    <!-- SwitchPreference - some search engines can add the publisher to the search terms.
+    <!-- SwitchPreference title: some search engines can add the publisher to the search terms.
          This is not always desirable, as they use "AND" to combine the terms.
          So by default this is switched off. -->
     <string name="pt_search_uses_publisher">Search uses publisher</string>
-    <!-- SwitchPreference - when an ISBN-13 number is entered for searching,
+    <!-- SwitchPreference title: when an ISBN-13 number is entered for searching,
          this option forces (if possible) the search to convert it to an ISBN-10
          for the actual search. The data itself will keep using what the user entered.
  . -->
     <string name="pt_search_prefer_isbn10">Use ISBN-10 when possible</string>
-    <!-- SwitchPreference - search engines can collect Series information from the toc.
+    <!-- SwitchPreference title: search engines can collect Series information from the toc.
          This is not always desirable, and by default switched off. -->
     <string name="pt_collect_series_info_from_toc">Collect Series info from content table</string>
     <string name="pt_search_resolve_authors_bedetheque">Resolve author pen-names using the Bedetheque website</string>
     <string name="pt_bedetheque_search_resolve_formats">Preserve Bedetheque (french) format naming</string>
-    <!-- MultiSelectListPreference -->
+    <!-- MultiSelectListPreference title -->
     <string name="pt_primary_author_type">Primary author type</string>
-    <!-- [VERIFIED] ListPreference - "UI Language" -->
+    <!-- [VERIFIED] ListPreference title: "UI Language" -->
     <string name="pt_ui_language">Language</string>
-    <!-- ListPreference - UI Language; option 1 in the list -->
+    <!-- ListPreference title: UI Language; option 1 in the list -->
     <string name="pt_ui_system_locale">System Locale</string>
-    <!-- ListPreference - UI Theme -->
+    <!-- ListPreference title: UI Theme -->
     <string name="pt_ui_theme">Interface Theme</string>
-    <!-- ListPreference - UI Theme -->
+    <!-- ListPreference value: UI Theme -->
     <string name="pe_ui_theme_day_night">Day / Night</string>
-    <!-- ListPreference - UI Theme -->
+    <!-- ListPreference value: UI Theme -->
     <string name="pe_ui_theme_dark">Dark</string>
-    <!-- ListPreference - UI Theme -->
+    <!-- ListPreference value: UI Theme -->
     <string name="pe_ui_theme_light">Light</string>
-    <!-- ListPreference - option title -->
+    <!-- ListPreference title: option title -->
     <string name="pt_edit_book_isbn_checks">ISBN validity checks</string>
-    <!-- ISBN checks are 'loose' i.e. not-strict. -->
+    <!-- ListPreference value: ISBN checks are 'loose' i.e. not-strict. -->
     <string name="pe_edit_book_isbn_checks_loose">Loose</string>
-    <!-- ListPreference - Booklist startup-state preferences -->
+    <!-- ListPreference title: Booklist startup-state preferences -->
     <string name="pt_bob_list_rebuild_state">Booklist startup state</string>
-    <!-- Booklist tree-view expansion -->
+    <!-- ListPreference value: Booklist tree-view expansion -->
     <string name="pe_bob_list_rebuild_state_preferred">Use preferred expansion</string>
-    <!-- Booklist tree-view expansion -->
+    <!-- ListPreference value: Booklist tree-view expansion -->
     <string name="pe_bob_list_rebuild_state_preserve">Preserve current state</string>
-    <!-- Booklist tree-view expansion -->
+    <!-- ListPreference value: Booklist tree-view expansion -->
     <string name="pe_bob_list_rebuild_state_expanded">Always start expanded</string>
-    <!-- Booklist tree-view expansion -->
+    <!-- ListPreference value: Booklist tree-view expansion -->
     <string name="pe_bob_list_rebuild_state_collapsed">Always start collapsed</string>
-    <!-- ListPreference: context menu on a row in the booklist. -->
+    <!-- ListPreference title: context menu on a row in the booklist. -->
     <string name="pt_bob_row_menu">Row context menu</string>
-    <!-- ListPreference: context menu on a row in the booklist. -->
+    <!-- ListPreference value: context menu on a row in the booklist. -->
     <string name="pe_bob_row_menu_button">Always show a button.</string>
-    <!-- ListPreference: context menu on a row in the booklist. -->
+    <!-- ListPreference value: context menu on a row in the booklist. -->
     <string name="pe_bob_row_menu_button_when_space">Show a button if there is space, otherwise use long-click.</string>
-    <!-- ListPreference: context menu on a row in the booklist. -->
+    <!-- ListPreference value: context menu on a row in the booklist. -->
     <string name="pe_bob_row_menu_long_click">Always use long-click.</string>
-    <!-- ListPreference: the popup bubble displayed while scrolling through a booklist. -->
+    <!-- ListPreference title: the popup bubble displayed while scrolling through a booklist. -->
     <string name="pt_fast_scroller_overlay">Text bubble while scrolling.</string>
+    <!-- ListPreference value: Type of Text bubble on the booklist scroller -->
     <string name="pe_fast_scroller_overlay_none"
             translatable="false">@string/none</string>
-    <!-- Text bubble used -->
+    <!-- ListPreference value: Type of Text bubble on the booklist scroller -->
     <string name="pe_fast_scroller_overlay_static">Static</string>
-    <!-- Text bubble used -->
+    <!-- ListPreference value: Type of Text bubble on the booklist scroller -->
     <string name="pe_fast_scroller_overlay_dynamic">Dynamic</string>
-    <!-- ListPreference - Degrees by which to rotate camera pictures automatically -->
+    <!-- ListPreference title: Degrees by which to rotate camera pictures automatically -->
     <string name="pt_thumbnails_rotate_auto">Rotate pictures</string>
-    <!-- ListPreference - the user can choose which action to take after taking a picture -->
+    <!-- ListPreference title: the user can choose which action to take after taking a picture -->
     <string name="camera_next_action">Action after taking a picture</string>
-    <!-- ListPreference - shows a list of cameras of the device by lens-facing -->
+    <!-- ListPreference title: shows a list of cameras of the device by lens-facing -->
     <string name="pt_camera_lens_facing"
             translatable="false">@string/pc_camera</string>
-    <!-- [VERIFIED] -->
+    <!-- [VERIFIED] ListPreference value -->
     <string name="pe_camera_front">Front Camera</string>
-    <!-- [VERIFIED] -->
+    <!-- [VERIFIED] ListPreference value -->
     <string name="pe_camera_back">Back Camera</string>
-    <!-- [VERIFIED] -->
+    <!-- [VERIFIED] ListPreference value -->
     <string name="pe_camera_other">Other</string>
     <!-- endregion -->
     <!-- region ========== Maintenance. -->
@@ -1524,13 +1526,18 @@
     <!-- ####################################################################################### -->
     <string name="lbl_strip_info_mapped_bookshelf_wishlist">Wishlist mapped bookshelf</string>
     <string name="lbl_strip_info_mapped_bookshelf_owned_books">Owned books mapped bookshelf</string>
+    <!-- Preference option title -->
     <string name="pt_search_show_shopping_options">Show shopping menus</string>
     <string name="lbl_standardize">Standardize</string>
+
     <!-- Abbreviated "pseudonym for [author]".
          Used to display "Author-pen-name (pseudonym for real-name)"
     -->
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
+    <!-- Field label: the original title of a translated book; Short version of the label "lbl_original_title_long" -->
     <string name="lbl_original_title">Original title</string>
+    <!-- Field label: the original title of a translated book; Long version of the label "lbl_original_title_long".-->
+    <string name="lbl_original_title_long">Original title if this book is a translation</string>
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
 </resources>

@@ -601,7 +601,7 @@
     <string name="pt_search_reformat_format">Standardizujte názvy „formát knihy“</string>
     <string name="pt_search_uses_publisher">Vyhledávání používá vydavatele</string>
     <string name="pt_show_author_name_given_first">Formátování jména autora</string>
-    <string name="pt_show_title_reordered">Zobrazit tituly jako</string>
+    <string name="pt_show_title_reordered">Zobrazit tituly jako…</string>
     <string name="pt_sort_author_name_given_first">Třídění autorských jmen</string>
     <string name="pt_sort_title_reordered">Seřadit tituly podle</string>
     <string name="pt_thumbnails_cache_resized">Změněné snímky jsou uloženy do mezipaměti</string>

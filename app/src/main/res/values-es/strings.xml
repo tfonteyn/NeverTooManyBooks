@@ -605,7 +605,7 @@
     <string name="pt_search_reformat_format">Estandarizar nombres de «formato de libro»</string>
     <string name="pt_search_uses_publisher">Búsqueda utiliza editor</string>
     <string name="pt_show_author_name_given_first">Formato de nombre de autor</string>
-    <string name="pt_show_title_reordered">Mostrar títulos como</string>
+    <string name="pt_show_title_reordered">Mostrar títulos como…</string>
     <string name="ps_show_titles_reordered_off">El título</string>
     <string name="ps_show_titles_reordered_on">título, El</string>
     <string name="pt_sort_author_name_given_first">Clasificación del nombre del autor</string>

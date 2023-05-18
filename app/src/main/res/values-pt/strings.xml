@@ -515,7 +515,7 @@
     <string name="lbl_read_end">Data de conclusão da leitura</string>
     <string name="info_export_successful">Exportação bem sucedida</string>
     <string name="pt_field_visibility">Visibilidade do campo</string>
-    <string name="pt_show_title_reordered">Mostrar títulos como</string>
+    <string name="pt_show_title_reordered">Mostrar títulos como…</string>
     <string name="ps_show_titles_reordered_on">título, O</string>
     <string name="ps_author_name_family_first">por exemplo, “de Camões, Luís”</string>
     <string name="pt_bob_books_under_multiple_authors">Mostrar livros com vários autores</string>

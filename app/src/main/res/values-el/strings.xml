@@ -592,7 +592,7 @@
     <string name="pt_search_reformat_format">Τυποποιήστε τα ονόματα «μορφής βιβλίου»</string>
     <string name="pt_search_uses_publisher">Η αναζήτηση χρησιμοποιεί εκδότη</string>
     <string name="pt_show_author_name_given_first">Μορφοποίηση ονόματος συντάκτη</string>
-    <string name="pt_show_title_reordered">Εμφάνιση τίτλων ως</string>
+    <string name="pt_show_title_reordered">Εμφάνιση τίτλων ως…</string>
     <string name="ps_show_titles_reordered_off">Ο τίτλος</string>
     <string name="ps_show_titles_reordered_on">τίτλος, Ο</string>
     <string name="pt_sort_author_name_given_first">Ταξινόμηση ονόματος συγγραφέα</string>

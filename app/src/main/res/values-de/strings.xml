@@ -592,7 +592,7 @@
     <string name="pt_search_reformat_format">Standardisieren Namen der Buchformate</string>
     <string name="pt_search_uses_publisher">Suche verwendet Verleger</string>
     <string name="pt_show_author_name_given_first">Formatierung des Autornamens</string>
-    <string name="pt_show_title_reordered">Titel anzeigen als</string>
+    <string name="pt_show_title_reordered">Titel anzeigen als…</string>
     <string name="ps_show_titles_reordered_off">Der Titel</string>
     <string name="ps_show_titles_reordered_on">Titel, Der</string>
     <string name="pt_sort_author_name_given_first">Autorennamen sortieren</string>

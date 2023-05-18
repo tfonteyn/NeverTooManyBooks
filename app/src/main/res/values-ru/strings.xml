@@ -608,7 +608,7 @@
     <string name="pt_search_reformat_format">Стандартизировать имена в формате книги</string>
     <string name="pt_search_uses_publisher">Поиск использует издатель</string>
     <string name="pt_show_author_name_given_first">Форматирование имени автора</string>
-    <string name="pt_show_title_reordered">Показать названия как</string>
+    <string name="pt_show_title_reordered">Показать названия как…</string>
     <string name="pt_sort_author_name_given_first">Сортировка имени автора</string>
     <string name="pt_sort_title_reordered">Сортировать названия по</string>
     <string name="pt_thumbnails_cache_resized">Миниатюры кэша с измененным размером</string>

@@ -598,7 +598,7 @@
     <string name="pt_search_reformat_format">Normaliser les noms de «format livre»</string>
     <string name="pt_search_uses_publisher">La recherche utilise l’éditeur</string>
     <string name="pt_show_author_name_given_first">Formatage du nom de l’auteur</string>
-    <string name="pt_show_title_reordered">Afficher les titres en tant que</string>
+    <string name="pt_show_title_reordered">Afficher les titres en tant que…</string>
     <string name="ps_show_titles_reordered_off">Le titre</string>
     <string name="ps_show_titles_reordered_on">titre, Le</string>
     <string name="pt_sort_author_name_given_first">Tri par nom d’auteur</string>
