@@ -123,6 +123,7 @@ public abstract class BaseActivity
         if (drawerLayout != null) {
             navigationView = drawerLayout.findViewById(R.id.nav_view);
             navigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
+            navigationView.setItemMaxLines(2);
         }
     }
 
