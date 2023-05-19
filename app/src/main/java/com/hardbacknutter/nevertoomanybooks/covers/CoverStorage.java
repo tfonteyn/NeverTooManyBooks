@@ -68,6 +68,7 @@ public class CoverStorage {
 
     /** The minimum size an image file on disk must be to be considered valid; in bytes. */
     private static final int MIN_VALID_IMAGE_FILE_SIZE = 2048;
+    private static final String EXT_JPG = ".jpg";
 
     @NonNull
     private final Supplier<Context> appContextSupplier;
@@ -216,9 +217,10 @@ public class CoverStorage {
             name = uuid;
         }
 
+        @Nullable
         File coverFile;
         // Try finding a jpg
-        coverFile = new File(coverDir, name + ".jpg");
+        coverFile = new File(coverDir, name + EXT_JPG);
         if (!coverFile.exists()) {
             // not found, try finding a png
             coverFile = new File(coverDir, name + ".png");
@@ -261,9 +263,9 @@ public class CoverStorage {
             throws IOException, CoverStorageException {
         final String name;
         if (cIdx > 0) {
-            name = uuid + "_" + cIdx + ".jpg";
+            name = uuid + "_" + cIdx + EXT_JPG;
         } else {
-            name = uuid + ".jpg";
+            name = uuid + EXT_JPG;
         }
 
         final File destination = new File(getDir(appContextSupplier.get()), name);
@@ -295,7 +297,7 @@ public class CoverStorage {
             throw new FileNotFoundException("InputStream was NULL");
         }
 
-        final File tmpFile = new File(getTempDir(), System.nanoTime() + ".jpg");
+        final File tmpFile = new File(getTempDir(), System.nanoTime() + EXT_JPG);
         try (OutputStream os = new FileOutputStream(tmpFile)) {
             FileUtils.copy(is, os);
             // rename to real output file
@@ -334,6 +336,11 @@ public class CoverStorage {
                                 .getBoolean(Prefs.pk_image_cache_resized, false);
     }
 
+    /**
+     * Enable or disable the image caching database.
+     *
+     * @param enable flag
+     */
     public void setImageCachingEnabled(final boolean enable) {
         PreferenceManager.getDefaultSharedPreferences(appContextSupplier.get())
                          .edit()
