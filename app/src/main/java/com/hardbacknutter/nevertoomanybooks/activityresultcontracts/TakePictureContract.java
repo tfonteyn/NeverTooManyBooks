@@ -69,10 +69,12 @@ public class TakePictureContract
                                       @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             LoggerFactory.getLogger()
-                          .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
+                         .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
-        if (intent == null || resultCode != Activity.RESULT_OK) {
+        // github #11: it seems some (most?) devices will return an empty Intent, while
+        // others will return a null. So we should ONLY test on the resultCode here.
+        if (resultCode != Activity.RESULT_OK) {
             return Optional.empty();
         }
 
