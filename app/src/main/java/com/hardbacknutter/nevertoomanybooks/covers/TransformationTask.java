@@ -30,6 +30,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Objects;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
@@ -44,6 +45,8 @@ import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
  *     Can be combined with input-rotation</li>
  * </ol>
  * before executing this task.
+ * <p>
+ * The transformation is done "in-place", i.e the srcFile is overwritten with the result.
  */
 public class TransformationTask
         extends MTask<TransformationTask.TransformedData> {
@@ -82,10 +85,12 @@ public class TransformationTask
     @Override
     @WorkerThread
     protected TransformedData doWork() {
-        if (transformation.transform().isPresent()) {
+        final Optional<Bitmap> optBitmap = transformation.transform();
+
+        if (optBitmap.isPresent()) {
             //noinspection OverlyBroadCatchBlock
             try {
-                final Bitmap bitmap = transformation.transform().get();
+                final Bitmap bitmap = optBitmap.get();
                 try (OutputStream os = new FileOutputStream(destFile.getAbsoluteFile())) {
                     if (bitmap.compress(Bitmap.CompressFormat.PNG, 100, os)) {
                         return new TransformedData(bitmap, destFile, nextAction);
