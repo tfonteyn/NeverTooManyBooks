@@ -62,6 +62,16 @@ public class TransformationTask
         super(R.id.TASK_ID_IMAGE_TRANSFORMATION, TAG);
     }
 
+    /**
+     * Process the {@link Transformation} data; i.e. the input file with the desired
+     * transformation settings.
+     *
+     * @param transformation to process
+     * @param destFile       to write the result to
+     * @param action         the action that should be taken <strong>after</strong> the result
+     *                       is send back. This will simply be passed into the
+     *                       {@link TransformedData} when returned.
+     */
     void transform(@NonNull final Transformation transformation,
                    @NonNull final File destFile,
                    @NonNull final CoverHandler.NextAction action) {
