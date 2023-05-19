@@ -45,8 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
  *     Can be combined with input-rotation</li>
  * </ol>
  * before executing this task.
- * <p>
- * The transformation is done "in-place", i.e the srcFile is overwritten with the result.
  */
 public class TransformationTask
         extends MTask<TransformationTask.TransformedData> {
