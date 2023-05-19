@@ -43,6 +43,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
  * {@link androidx.activity.result.contract.ActivityResultContracts.TakePicture}.
  * <p>
  * Allows us to handle the result transparently and use an Optional as the return type.
+ * <p>
+ * ENHANCE: support OpenCamera on Android 11+
+ * https://developer.android.com/about/versions/11/behavior-changes-11#media-capture
+ * https://www.opencamera.org.uk/
  */
 public class TakePictureContract
         extends ActivityResultContract<File, Optional<File>> {
@@ -72,8 +76,9 @@ public class TakePictureContract
                          .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
-        // github #11: it seems some (most?) devices will return an empty Intent, while
-        // others will return a null. So we should ONLY test on the resultCode here.
+        // github #11: the google camera app returns an empty Intent, while
+        // OpenCamera returns a null for the Intent.
+        // Hence ONLY test on the resultCode here.
         if (resultCode != Activity.RESULT_OK) {
             return Optional.empty();
         }
