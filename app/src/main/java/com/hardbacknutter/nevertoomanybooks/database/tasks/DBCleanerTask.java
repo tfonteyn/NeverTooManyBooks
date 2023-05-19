@@ -61,6 +61,7 @@ public class DBCleanerTask
 
     @WorkerThread
     @Override
+    @NonNull
     protected Boolean doWork() {
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         final Context context = serviceLocator.getLocalizedAppContext();
