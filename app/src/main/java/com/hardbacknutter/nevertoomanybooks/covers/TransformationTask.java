@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.covers;
 
 import android.graphics.Bitmap;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,9 +30,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Objects;
+import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 
 /**
@@ -75,18 +75,19 @@ public class TransformationTask
     @Override
     @WorkerThread
     protected TransformedData doWork() {
-        if (transformation.transform().isPresent()) {
+        final Optional<Bitmap> optBitmap = transformation.transform();
+
+        if (optBitmap.isPresent()) {
+            //noinspection OverlyBroadCatchBlock
             try {
-                final Bitmap bitmap = transformation.transform().get();
+                final Bitmap bitmap = optBitmap.get();
                 try (OutputStream os = new FileOutputStream(destFile.getAbsoluteFile())) {
                     if (bitmap.compress(Bitmap.CompressFormat.PNG, 100, os)) {
                         return new TransformedData(bitmap, destFile, nextAction);
                     }
                 }
             } catch (@NonNull final IOException e) {
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "Bitmap save FAILED", e);
-                }
+                LoggerFactory.getLogger().e(TAG, e);
             }
         }
 
