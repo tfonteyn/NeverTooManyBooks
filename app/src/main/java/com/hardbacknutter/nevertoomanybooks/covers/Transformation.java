@@ -81,6 +81,8 @@ class Transformation {
      * Set the source file.
      *
      * @param file to transform; The file will not be modified.
+     *
+     * @return {@code this} (for chaining)
      */
     @NonNull
     public Transformation setFile(@Nullable final File file) {
