@@ -164,6 +164,7 @@ public class CropImageView
      *
      * @return cropped bitmap, or {@code null} on any failure.
      */
+    @SuppressWarnings("WeakerAccess")
     @Nullable
     public Bitmap getCroppedBitmap() {
         if (highlightView == null || bitmap == null) {
@@ -319,6 +320,8 @@ public class CropImageView
     /**
      * Update the bitmap, prepare the base matrix according to the size
      * of the bitmap, reset the supplementary matrix and calculate the maximum zoom allowed.
+     *
+     * @param bitmap to use
      */
     private void setBitmapMatrix(@NonNull final Bitmap bitmap) {
         // postpone to run during layout pass if the View has not been measured yet.
@@ -337,7 +340,11 @@ public class CropImageView
                                              (float) bitmap.getHeight() / (float) height);
     }
 
-    /** Setup the base matrix so that the image is centered and scaled properly. */
+    /**
+     * Setup the base matrix so that the image is centered and scaled properly.
+     *
+     * @param bitmap to use
+     */
     private void setBaseMatrix(@NonNull final Bitmap bitmap) {
 
         baseMatrix.reset();
@@ -358,6 +365,8 @@ public class CropImageView
 
     /**
      * Combine the base matrix and the supp matrix to make the final matrix.
+     *
+     * @return the matrix to display
      */
     @NonNull
     private Matrix getImageViewMatrix() {
@@ -756,7 +765,11 @@ public class CropImageView
             imageView.invalidate();
         }
 
-        /** Maps the cropping rectangle from image space to screen space. */
+        /**
+         * Maps the cropping rectangle from image space to screen space.
+         *
+         * @return the rectangle to draw
+         */
         @NonNull
         private Rect computeLayout() {
             final RectF r = new RectF(cropRect.left, cropRect.top,
