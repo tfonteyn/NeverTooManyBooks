@@ -73,6 +73,12 @@ public class CropImageView
     /** 400% zoom regardless of screen or image orientation. */
     private static final int MAX_ZOOM_FACTOR = 4;
 
+    /**
+     * Factor by which a change in the cropping rectangle's size is considered significantly
+     * enough to rescale it.
+     */
+    private static final double TEN_PERCENT = 0.1;
+
     /** This is the base transformation which is used to show the image initially. */
     private final Matrix baseMatrix = new Matrix();
     /**
@@ -144,7 +150,7 @@ public class CropImageView
 
         setBitmapMatrix(bitmap);
         //noinspection FloatingPointEquality
-        if (getScale() == 1f) {
+        if (getScale() == 1.0f) {
             center();
         }
 
@@ -268,7 +274,7 @@ public class CropImageView
                 // if we're not zoomed then there's no point in even allowing
                 // the user to move the image around.
                 //noinspection FloatingPointEquality
-                if (getScale() == 1f) {
+                if (getScale() == 1.0f) {
                     // put it back to the normalized location.
                     center();
                 }
@@ -359,8 +365,8 @@ public class CropImageView
 
         final float bitmapWidth = (float) bitmap.getWidth() * scaleFactor;
         final float bitmapHeight = (float) bitmap.getHeight() * scaleFactor;
-        baseMatrix.postTranslate(((float) getWidth() - bitmapWidth) / 2f,
-                                 ((float) getHeight() - bitmapHeight) / 2f);
+        baseMatrix.postTranslate(((float) getWidth() - bitmapWidth) / 2.0f,
+                                 ((float) getHeight() - bitmapHeight) / 2.0f);
     }
 
     /**
@@ -386,9 +392,7 @@ public class CropImageView
             return;
         }
 
-        final RectF rect = new RectF(0, 0,
-                                     bitmap.getWidth(),
-                                     bitmap.getHeight());
+        final RectF rect = new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight());
 
         getImageViewMatrix().mapRect(rect);
 
@@ -433,7 +437,7 @@ public class CropImageView
                      * getScale();
         zoom = Math.max(1f, zoom);
 
-        if (Math.abs(zoom - getScale()) / zoom > 0.1) {
+        if (Math.abs(zoom - getScale()) / zoom > TEN_PERCENT) {
             final float[] coordinates = {hv.cropRect.centerX(), hv.cropRect.centerY()};
             getImageMatrix().mapPoints(coordinates);
             final float duration = 300f;
@@ -568,7 +572,7 @@ public class CropImageView
 
             focusPaint.setColor(res.getColor(R.color.cropper_focus, theme));
 
-            outlinePaint.setStrokeWidth(3F);
+            outlinePaint.setStrokeWidth(3.0f);
             outlinePaint.setStyle(Paint.Style.STROKE);
             outlinePaint.setAntiAlias(true);
             outlinePaint.setColor(res.getColor(R.color.cropper_outline_rectangle, theme));
@@ -727,37 +731,37 @@ public class CropImageView
             // Grow at most half of the difference between the image rectangle and
             // the cropping rectangle.
             final RectF rect = new RectF(cropRect);
-            if (dx > 0F && rect.width() + 2 * dx > imageRect.width()) {
+            if (dx > 0.0f && rect.width() + 2 * dx > imageRect.width()) {
                 // adjustment
-                dx = (imageRect.width() - rect.width()) / 2f;
+                dx = (imageRect.width() - rect.width()) / 2.0f;
             }
-            if (dy > 0F && rect.height() + 2 * dy > imageRect.height()) {
+            if (dy > 0.0f && rect.height() + 2 * dy > imageRect.height()) {
                 // adjustment
-                dy = (imageRect.height() - rect.height()) / 2f;
+                dy = (imageRect.height() - rect.height()) / 2.0f;
             }
 
             rect.inset(-dx, -dy);
 
             // Don't let the cropping rectangle shrink too fast.
-            final float widthCap = 25f;
+            final float widthCap = 25.0f;
             if (rect.width() < widthCap) {
-                rect.inset(-(widthCap - rect.width()) / 2F, 0F);
+                rect.inset(-(widthCap - rect.width()) / 2.0f, 0.0f);
             }
             if (rect.height() < widthCap) {
-                rect.inset(0F, -(widthCap - rect.height()) / 2F);
+                rect.inset(0.0f, -(widthCap - rect.height()) / 2.0f);
             }
 
             // Put the cropping rectangle inside the image rectangle.
             if (rect.left < imageRect.left) {
-                rect.offset(imageRect.left - rect.left, 0F);
+                rect.offset(imageRect.left - rect.left, 0.0f);
             } else if (rect.right > imageRect.right) {
-                rect.offset(-(rect.right - imageRect.right), 0);
+                rect.offset(-(rect.right - imageRect.right), 0.0f);
             }
 
             if (rect.top < imageRect.top) {
-                rect.offset(0F, imageRect.top - rect.top);
+                rect.offset(0.0f, imageRect.top - rect.top);
             } else if (rect.bottom > imageRect.bottom) {
-                rect.offset(0F, -(rect.bottom - imageRect.bottom));
+                rect.offset(0.0f, -(rect.bottom - imageRect.bottom));
             }
 
             cropRect.set(rect);
