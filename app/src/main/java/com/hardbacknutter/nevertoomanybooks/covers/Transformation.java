@@ -206,11 +206,7 @@ class Transformation {
     }
 
     private int determineRotationAngle(@NonNull final String pathName) {
-        if (explicitRotation != 0) {
-            // just use the explicit value, ignore device and source file rotation
-            return explicitRotation;
-
-        } else {
+        if (explicitRotation == 0) {
             // Try to adjust the rotation automatically:
             final int exifAngle = getExifAngle(pathName);
             final int angle = surfaceRotation - exifAngle;
@@ -222,6 +218,10 @@ class Transformation {
                            + "|(angle % 360)=" + angle % 360);
             }
             return angle;
+            
+        } else {
+            // just use the explicit value, ignore device and source file rotation
+            return explicitRotation;
         }
     }
 
