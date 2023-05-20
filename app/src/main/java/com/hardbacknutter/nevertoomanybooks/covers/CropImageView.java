@@ -71,7 +71,7 @@ public class CropImageView
         extends AppCompatImageView {
 
     /** 400% zoom regardless of screen or image orientation. */
-    private static final int ZOOM_FACTOR = 4;
+    private static final int MAX_ZOOM_FACTOR = 4;
 
     /** This is the base transformation which is used to show the image initially. */
     private final Matrix baseMatrix = new Matrix();
@@ -333,8 +333,8 @@ public class CropImageView
         setImageMatrix(getImageViewMatrix());
 
         // Set the maximum zoom, which is relative to the base matrix.
-        maxZoom = ZOOM_FACTOR * Math.max((float) bitmap.getWidth() / (float) width,
-                                         (float) bitmap.getHeight() / (float) height);
+        maxZoom = MAX_ZOOM_FACTOR * Math.max((float) bitmap.getWidth() / (float) width,
+                                             (float) bitmap.getHeight() / (float) height);
     }
 
     /** Setup the base matrix so that the image is centered and scaled properly. */
