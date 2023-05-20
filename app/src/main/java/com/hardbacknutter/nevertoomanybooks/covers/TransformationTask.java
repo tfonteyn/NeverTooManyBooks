@@ -54,6 +54,9 @@ public class TransformationTask
     /** Log tag. */
     private static final String TAG = "TransformationTask";
 
+    /** Compression percentage. */
+    private static final int QUALITY = 100;
+
     private Transformation transformation;
     private File destFile;
     private CoverHandler.NextAction nextAction;
@@ -92,7 +95,7 @@ public class TransformationTask
             try {
                 final Bitmap bitmap = optBitmap.get();
                 try (OutputStream os = new FileOutputStream(destFile.getAbsoluteFile())) {
-                    if (bitmap.compress(Bitmap.CompressFormat.PNG, 100, os)) {
+                    if (bitmap.compress(Bitmap.CompressFormat.PNG, QUALITY, os)) {
                         return new TransformedData(bitmap, destFile, nextAction);
                     }
                 }
