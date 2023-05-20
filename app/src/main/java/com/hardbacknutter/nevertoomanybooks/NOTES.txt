@@ -54,11 +54,14 @@ NEW:
   will now show a set of defaults in addition to the users previously used values.
 
 FIXES:
+- fix for #11: OpenCamera on Android 10 and lower will now work as expected.
+  The option to crop the image immediately after using the camera will now work as expected.
 - date-added + date-last-updated are now displayed in the local timezone (these are stored in UTC)
 - fixed an obscure bug in editing the styles where editing an existing style could
   result in creating a duplicate.
 
 REMOVED:
+- The crop option "whole picture" was removed and the behaviour is now always used.
 
 ----------------------------------------------------------------------------------------------------
 
