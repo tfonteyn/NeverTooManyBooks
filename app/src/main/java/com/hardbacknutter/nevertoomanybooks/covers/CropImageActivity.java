@@ -216,7 +216,7 @@ public class CropImageActivity
                                    @NonNull final ResultContract.Input input) {
 
             dstFile = input.dstFile;
-            FileUtils.delete(dstFile);
+            // do NOT delete the destination file in case source and destination was the same file
 
             return new Intent(context, CropImageActivity.class)
                     .putExtra(BKEY_SOURCE, input.srcFile.getAbsolutePath())
