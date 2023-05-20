@@ -78,6 +78,16 @@ class Transformation {
     }
 
     /**
+     * Get the source file.
+     *
+     * @return original source file or {@code null} if {@link #setFile(File)} was not called.
+     */
+    @Nullable
+    public File getFile() {
+        return srcFile;
+    }
+
+    /**
      * Set the source file.
      *
      * @param file to transform; The file will not be modified.
