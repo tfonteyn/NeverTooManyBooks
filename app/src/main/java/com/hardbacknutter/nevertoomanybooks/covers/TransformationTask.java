@@ -46,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
  * </ol>
  * before executing this task.
  * <p>
- * The transformation is done "in-place", i.e the srcFile is overwritten with the result.
+ * The result is compressed and written to a given destination file.
  */
 public class TransformationTask
         extends MTask<TransformationTask.TransformedData> {
@@ -104,7 +104,7 @@ public class TransformationTask
             }
         }
 
-        return new TransformedData(null, null, nextAction);
+        return new TransformedData(null, null, CoverHandler.NextAction.Done);
     }
 
     /**
