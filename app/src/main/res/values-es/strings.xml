@@ -17,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -750,4 +748,6 @@
     <string name="pt_search_show_shopping_options">Mostrar menús de compras</string>
     <string name="lbl_standardize">Estandarizar</string>
     <string name="lbl_author_pseudonym_of_X">se. %1$s</string>
+    <string name="lbl_original_title">Título original</string>
+    <string name="lbl_original_title_long">Título original si el libro es una traducción</string>
 </resources>
