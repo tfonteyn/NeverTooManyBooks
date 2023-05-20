@@ -92,13 +92,12 @@ public class CropImageActivity
     /** Log tag. */
     private static final String TAG = "CropImageActivity";
 
-    @SuppressWarnings("WeakerAccess")
-    public static final String BKEY_SOURCE = TAG + ":src";
-    @SuppressWarnings("WeakerAccess")
-    public static final String BKEY_DESTINATION = TAG + ":dst";
+    private static final String BKEY_SOURCE = TAG + ":src";
+    private static final String BKEY_DESTINATION = TAG + ":dst";
 
     /** used to calculate free space on Shared Storage, 100kb per picture is an overestimation. */
     private static final long ESTIMATED_PICTURE_SIZE = 100_000L;
+    private static final int QUALITY = 100;
 
     /** The destination URI where to write the result to. */
     private Uri destinationUri;
@@ -120,6 +119,7 @@ public class CropImageActivity
         setContentView(vb.getRoot());
 
         // make an educated guess how many pics we can store.
+        //noinspection OverlyBroadCatchBlock
         try {
             final File coverDir = ServiceLocator.getInstance().getCoverStorage().getDir();
             if (FileUtils.getFreeSpace(coverDir) / ESTIMATED_PICTURE_SIZE < 1) {
@@ -144,11 +144,12 @@ public class CropImageActivity
                                                    "getIntent().getExtras()");
 
         final String srcPath = Objects.requireNonNull(args.getString(BKEY_SOURCE),
-                                                      "srcPath");
-        final Uri uri = Uri.fromFile(new File(srcPath));
+                                                      BKEY_SOURCE);
+        final Uri srcUri = Uri.fromFile(new File(srcPath));
 
         Bitmap bitmap = null;
-        try (InputStream is = getContentResolver().openInputStream(uri)) {
+        //noinspection OverlyBroadCatchBlock
+        try (InputStream is = getContentResolver().openInputStream(srcUri)) {
             bitmap = BitmapFactory.decodeStream(is);
         } catch (@NonNull final IOException e) {
             if (BuildConfig.DEBUG /* always */) {
@@ -158,7 +159,7 @@ public class CropImageActivity
 
         if (bitmap != null) {
             final String dstPath = Objects.requireNonNull(args.getString(BKEY_DESTINATION),
-                                                          "dstPath");
+                                                          BKEY_DESTINATION);
             destinationUri = Uri.fromFile(new File(dstPath));
 
             vb.coverImage0.initCropView(bitmap);
@@ -175,11 +176,13 @@ public class CropImageActivity
         // prevent multiple saves (cropping the bitmap might take some time)
         vb.fab.setEnabled(false);
 
+        @Nullable
         Bitmap bitmap = vb.coverImage0.getCroppedBitmap();
         if (bitmap != null) {
+            //noinspection OverlyBroadCatchBlock
             try (OutputStream os = getContentResolver().openOutputStream(destinationUri)) {
                 if (os != null) {
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
+                    bitmap.compress(Bitmap.CompressFormat.PNG, QUALITY, os);
                     setResult(Activity.RESULT_OK, new Intent().setData(destinationUri));
                 }
             } catch (@NonNull final IOException e) {
@@ -225,9 +228,8 @@ public class CropImageActivity
         public final Optional<Uri> parseResult(final int resultCode,
                                                @Nullable final Intent intent) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                LoggerFactory.getLogger()
-                             .d(TAG, "parseResult",
-                                "|resultCode=" + resultCode + "|intent=" + intent);
+                LoggerFactory.getLogger().d(TAG, "parseResult",
+                                            "resultCode=" + resultCode, "intent=" + intent);
             }
 
             if (intent == null || resultCode != Activity.RESULT_OK) {
