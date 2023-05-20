@@ -53,8 +53,6 @@ public final class Prefs {
     public static final String pk_camera_lens_facing = "camera.lens.facing";
 
     public static final String pk_image_cache_resized = "image.cache.resized";
-    public static final String pk_image_cropper_frame_whole = "image.cropper.frame.whole";
-
     public static final String pk_storage_volume = "storage.volume.index";
 
     public static final String pk_booklist_rebuild_state = "booklist.rebuild.state";

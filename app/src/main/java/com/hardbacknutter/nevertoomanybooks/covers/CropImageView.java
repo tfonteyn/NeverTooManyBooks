@@ -37,7 +37,6 @@ package com.hardbacknutter.nevertoomanybooks.covers;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -57,13 +56,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.appcompat.widget.AppCompatImageView;
-import androidx.preference.PreferenceManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
  * Custom view to be used in the layout.
@@ -142,11 +139,6 @@ public class CropImageView
      */
     @UiThread
     void initCropView(@NonNull final Bitmap bitmap) {
-        final SharedPreferences global = PreferenceManager
-                .getDefaultSharedPreferences(getContext());
-
-        // Flag indicating if by default the crop rectangle should be the whole image.
-        final boolean wholeImage = global.getBoolean(Prefs.pk_image_cropper_frame_whole, false);
 
         setBitmapMatrix(bitmap);
         //noinspection FloatingPointEquality
@@ -158,23 +150,7 @@ public class CropImageView
         final int bitmapHeight = bitmap.getHeight();
 
         final Rect imageRect = new Rect(0, 0, bitmapWidth, bitmapHeight);
-
-        final int cropWidth;
-        final int cropHeight;
-        if (wholeImage) {
-            cropWidth = bitmapWidth;
-            cropHeight = bitmapHeight;
-        } else {
-            final int dv = Math.min(bitmapWidth, bitmapHeight);
-            cropWidth = dv;
-            cropHeight = dv;
-        }
-
-        final int cropLeft = (bitmapWidth - cropWidth) / 2;
-        final int cropTop = (bitmapHeight - cropHeight) / 2;
-
-        final RectF cropRect = new RectF(cropLeft, cropTop,
-                                         cropLeft + cropWidth, cropTop + cropHeight);
+        final RectF cropRect = new RectF(0, 0, bitmapWidth, bitmapHeight);
 
         highlightView = new HighlightView(this, imageRect, cropRect);
         invalidate();

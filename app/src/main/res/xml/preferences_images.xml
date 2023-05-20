@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -41,19 +41,6 @@
             android:icon="@drawable/ic_baseline_tune_24"
             android:key="camera.image.action"
             android:title="@string/camera_next_action" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="@string/option_cover_crop">
-
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_baseline_crop_original_24"
-            android:key="image.cropper.frame.whole"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/pt_cropper_frame_is_whole_image" />
 
     </PreferenceCategory>
 

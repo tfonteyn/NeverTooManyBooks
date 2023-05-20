@@ -247,6 +247,7 @@ public class DBHelper
               .remove("goodreads.search.collect.genre")
               .remove("goodreads.AccessToken.Token")
               .remove("goodreads.AccessToken.Secret")
+              .remove("image.cropper.frame.whole")
               .remove("librarything.dev_key")
               .remove("scanner.preferred")
               .remove("search.form.advanced")
