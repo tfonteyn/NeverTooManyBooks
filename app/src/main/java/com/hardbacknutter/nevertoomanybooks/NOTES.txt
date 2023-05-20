@@ -21,6 +21,9 @@ Look into using
 https://developer.android.com/guide/navigation/navigation-custom-back
 https://developer.android.com/training/appbar/up-action
 
+FIXME: check all cover logic where source and destination is allowed to be the same
+ We should ALWAYS use a temporary file to write to, and only on success rename it to
+ the actual destination file to prevent loss of original on failure.
 ----------------------------------------------------------------------------------------------------
 
 Known issues:
