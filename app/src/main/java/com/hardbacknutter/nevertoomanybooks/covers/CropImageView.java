@@ -104,6 +104,7 @@ public class CropImageView
     private HighlightView highlightView;
     @Nullable
     private HighlightView motionHighlightView;
+    /** Bitmask value: grow/move the edges of the image. */
     @HighlightView.MotionEdgeHit
     private int motionEdge;
 
@@ -125,6 +126,7 @@ public class CropImageView
      * Constructor used by the xml inflater.
      *
      * @param context This will be the hosting {@link CropImageActivity}
+     * @param attrs   The attributes of the XML tag that is inflating the view.
      */
     public CropImageView(@NonNull final Context context,
                          @Nullable final AttributeSet attrs) {
@@ -494,12 +496,12 @@ public class CropImageView
      */
     private static class HighlightView {
 
-        static final int MOVE = 1 << 5;
-        static final int GROW_NONE = 1;
+        private static final int GROW_NONE = 1;
         private static final int GROW_LEFT_EDGE = 1 << 1;
         private static final int GROW_RIGHT_EDGE = 1 << 2;
         private static final int GROW_TOP_EDGE = 1 << 3;
         private static final int GROW_BOTTOM_EDGE = 1 << 4;
+        private static final int MOVE = 1 << 5;
 
         /** Tolerance +- for determining a 'hit' of one or more of the edges. */
         private static final float HYSTERESIS = 40f;
@@ -509,8 +511,8 @@ public class CropImageView
         final RectF cropRect;
         @NonNull
         final Matrix matrix;
-        final Rect imageViewDrawingRect = new Rect();
-        final Path path = new Path();
+        private final Rect imageViewDrawingRect = new Rect();
+        private final Path path = new Path();
         /** The View displaying the image. */
         @NonNull
         private final CropImageView imageView;
@@ -769,13 +771,16 @@ public class CropImageView
         }
 
         enum ModifyMode {
-            None, Move, Grow
+            None,
+            Move,
+            Grow
         }
 
-        @IntDef(flag = true, value = {GROW_NONE,
-                                      GROW_LEFT_EDGE, GROW_RIGHT_EDGE,
-                                      GROW_TOP_EDGE, GROW_BOTTOM_EDGE,
-                                      MOVE})
+        @IntDef(flag = true, value = {
+                GROW_NONE,
+                GROW_LEFT_EDGE, GROW_RIGHT_EDGE,
+                GROW_TOP_EDGE, GROW_BOTTOM_EDGE,
+                MOVE})
         @Retention(RetentionPolicy.SOURCE)
         @interface MotionEdgeHit {
 
