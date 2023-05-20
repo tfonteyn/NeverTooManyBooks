@@ -21,7 +21,8 @@
 plugins {
     id("com.android.application") version "8.0.1" apply false
     id("com.android.library") version "8.0.1" apply false
-    id("org.jetbrains.kotlin.android") version "1.8.10" apply false
+    // https://plugins.gradle.org/plugin/org.jetbrains.kotlin.android
+    id("org.jetbrains.kotlin.android") version "1.8.21" apply false
     // https://github.com/mannodermaus/android-junit5
     id("de.mannodermaus.android-junit5") version "1.8.2.1" apply false
 }
