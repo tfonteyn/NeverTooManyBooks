@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.annotation.SuppressLint;
 import android.database.Cursor;
-import android.util.Log;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -261,8 +260,9 @@ public class FtsDaoImpl
         }
 
         if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG, "|rebuildFts|completed in "
-                       + (System.nanoTime() - t0) / NANO_TO_MILLIS + " ms");
+            LoggerFactory.getLogger().d(TAG, "rebuild",
+                                        "completed in "
+                                        + (System.nanoTime() - t0) / NANO_TO_MILLIS + " ms");
         }
     }
 
