@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -380,7 +377,7 @@
     <string name="lbl_import_books">Importuj książki</string>
     <string name="option_import_books_option_all">Wszystkie książki</string>
     <string name="option_import_books_option_new_and_updated">Nowe i zaktualizowane książki</string>
-    <string name="option_header_import_books_option_new_and_updated_cutoff_date">Importuj tylko książki, które \n zostały zmodyfikowane od tej daty</string>
+    <string name="option_header_import_books_option_new_and_updated_cutoff_date">Importuj tylko książki zmodyfikowane od</string>
     <string name="option_import_books_option_new_only">Tylko nowe książki</string>
     <string name="lbl_import_options">Wybierz, co zostanie zaimportowane.</string>
     <string name="lbl_importing">Importowanie…</string>
