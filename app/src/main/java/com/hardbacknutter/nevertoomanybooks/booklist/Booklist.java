@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.database.Cursor;
 import android.graphics.Color;
-import android.util.Log;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntRange;
@@ -44,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
@@ -727,7 +727,7 @@ public class Booklist
     @Override
     public void close() {
         if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG, "|close|instanceId=" + instanceId);
+            LoggerFactory.getLogger().d(TAG, "close", "instanceId=" + instanceId);
         }
 
         if (listCursor != null) {
@@ -736,7 +736,9 @@ public class Booklist
         db.drop(listTable.getName());
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-            Log.d(TAG, "close|instances left=" + DEBUG_INSTANCE_COUNTER.decrementAndGet());
+            LoggerFactory.getLogger().d(TAG, "close",
+                                        "instances left="
+                                        + DEBUG_INSTANCE_COUNTER.decrementAndGet());
         }
     }
 
