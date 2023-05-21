@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
@@ -42,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
@@ -186,11 +186,12 @@ class BooklistBuilder {
         this.db = db;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-            Log.d(TAG, "ENTER|BooklistBuilder"
-                       + "|style=" + style.getUuid()
-                       + "|bookshelf=`" + bookshelf.getName() + '`'
-                       + "|instances: " + Booklist.DEBUG_INSTANCE_COUNTER.incrementAndGet(),
-                  new Throwable());
+            LoggerFactory.getLogger().d(TAG, "BooklistBuilder",
+                                        "style=" + style.getUuid(),
+                                        "bookshelf=`" + bookshelf.getName() + '`',
+                                        "instances: "
+                                        + Booklist.DEBUG_INSTANCE_COUNTER.incrementAndGet(),
+                                        new Throwable());
         }
 
         this.style = style;
@@ -523,7 +524,8 @@ class BooklistBuilder {
                     + _ORDER_BY_ + buildOrderBy(db.isCollationCaseSensitive());
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-                Log.d(TAG, "build|sqlForInitialInsert=" + sqlForInitialInsert);
+                LoggerFactory.getLogger()
+                             .d(TAG, "build", "sqlForInitialInsert=" + sqlForInitialInsert);
 
                 if (!db.inTransaction()) {
                     throw new TransactionException(TransactionException.REQUIRED);
@@ -551,8 +553,9 @@ class BooklistBuilder {
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
                 // only measure the insert... all other operations are very fast compared to it
-                Log.d(TAG, "build|insert(" + initialInsertCount + "): "
-                           + ((System.nanoTime() - t0) / NANO_TO_MILLIS) + " ms");
+                LoggerFactory.getLogger().d(TAG, "build",
+                                            "insert(" + initialInsertCount + "): "
+                                            + ((System.nanoTime() - t0) / NANO_TO_MILLIS) + " ms");
             }
 
             if (!db.isCollationCaseSensitive()) {
