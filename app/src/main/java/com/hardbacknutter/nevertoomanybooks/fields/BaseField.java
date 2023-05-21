@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.fields;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -405,7 +404,9 @@ public abstract class BaseField<T, V extends View>
                     if (afterFieldChangeListener != null) {
                         // The REFERENT being dead is however not fine, so log this in debug.
                         // flw: this message should never be seen!
-                        Log.w(TAG, "onChanged|afterFieldChangeListener was dead");
+                        LoggerFactory.getLogger().d(TAG, "notifyIfChanged",
+                                                    "onChanged",
+                                                    "afterFieldChangeListener was dead");
                     }
                 }
             }
