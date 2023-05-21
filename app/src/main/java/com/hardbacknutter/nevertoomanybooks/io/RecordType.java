@@ -164,8 +164,7 @@ public enum RecordType {
         }
 
         if (BuildConfig.DEBUG /* always */) {
-            LoggerFactory.getLogger()
-                          .w(TAG, "getType|Unknown entry=" + entryName);
+            LoggerFactory.getLogger().d(TAG, "getType", "Unknown entry=" + entryName);
         }
         return Optional.empty();
     }
