@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDoneException;
-import android.util.Log;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -313,8 +312,8 @@ public class StripInfoReader
                             case Skip: {
                                 results.booksSkipped++;
                                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_STRIP_INFO_BOOKS) {
-                                    Log.d(TAG, "externalId=" + externalId
-                                               + "|" + updateOption);
+                                    LoggerFactory.getLogger().d(TAG, "processPage", updateOption,
+                                                                "externalId=" + externalId);
                                 }
                                 break;
                             }
@@ -384,9 +383,10 @@ public class StripInfoReader
             results.booksUpdated++;
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_STRIP_INFO_BOOKS) {
-                Log.d(TAG, "externalId=" + externalId
-                           + "|" + updateOption
-                           + "|UPDATE|book=" + book.getId() + "|" + book.getTitle());
+                LoggerFactory.getLogger().d(TAG, "updateBook", updateOption,
+                                            "externalId=" + externalId,
+                                            "book=" + book.getId(),
+                                            book.getTitle());
             }
         }
     }
@@ -408,9 +408,10 @@ public class StripInfoReader
         results.booksCreated++;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_STRIP_INFO_BOOKS) {
-            Log.d(TAG, "externalId=" + externalId
-                       + "|" + updateOption
-                       + "|INSERT|book=" + book.getId() + "|" + book.getTitle());
+            LoggerFactory.getLogger().d(TAG, "insertBook", updateOption,
+                                        "externalId=" + externalId,
+                                        "book=" + book.getId(),
+                                        book.getTitle());
         }
     }
 
