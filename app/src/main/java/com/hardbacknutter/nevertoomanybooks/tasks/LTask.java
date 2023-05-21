@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.tasks;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,6 +30,7 @@ import androidx.annotation.WorkerThread;
 import java.lang.ref.WeakReference;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 
@@ -75,7 +75,8 @@ public abstract class LTask<Result>
                 taskListener.get().onProgress(message);
             } else {
                 if (BuildConfig.DEBUG /* always */) {
-                    Log.d(getTaskName(), "publishProgress|" + LISTENER_WAS_DEAD);
+                    LoggerFactory.getLogger().d(getTaskName(), "publishProgress",
+                                                LISTENER_WAS_DEAD);
                 }
             }
         });
@@ -89,7 +90,8 @@ public abstract class LTask<Result>
                 taskListener.get().onFinished(getTaskId(), result);
             } else {
                 if (BuildConfig.DEBUG /* always */) {
-                    Log.d(getTaskName(), "onFinished|" + LISTENER_WAS_DEAD);
+                    LoggerFactory.getLogger().d(getTaskName(), "onFinished",
+                                                LISTENER_WAS_DEAD);
                 }
             }
         });
@@ -107,7 +109,8 @@ public abstract class LTask<Result>
                     // Will be shown on genuine bug,
                     // but also when the ViewModel onCleared() is called.
                     // The latter situation is normal and can be ignored.
-                    Log.d(getTaskName(), "onCancelled|" + LISTENER_WAS_DEAD);
+                    LoggerFactory.getLogger().d(getTaskName(), "onCancelled",
+                                                LISTENER_WAS_DEAD);
                 }
             }
         });
@@ -121,7 +124,8 @@ public abstract class LTask<Result>
                 taskListener.get().onFailure(getTaskId(), e);
             } else {
                 if (BuildConfig.DEBUG /* always */) {
-                    Log.d(getTaskName(), "onFailure|" + LISTENER_WAS_DEAD);
+                    LoggerFactory.getLogger().d(getTaskName(), "onFailure",
+                                                LISTENER_WAS_DEAD);
                 }
             }
         });
