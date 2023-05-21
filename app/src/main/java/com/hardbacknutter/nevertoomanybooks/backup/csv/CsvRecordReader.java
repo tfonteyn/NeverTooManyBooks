@@ -26,6 +26,7 @@ import android.util.Log;
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -52,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.backupbase.BaseRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -176,7 +178,7 @@ public class CsvRecordReader
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-            Log.d(TAG, "read|results=" + results);
+            LoggerFactory.getLogger().d(TAG, "read", "results=" + results);
         }
         return results;
     }
@@ -317,8 +319,9 @@ public class CsvRecordReader
                                                          BookDao.BookFlag.UseUpdateDateIfPresent));
                     results.booksUpdated++;
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                        Log.d(TAG, "importNumericId=" + importNumericId
-                                   + "|Overwrite|" + book.getTitle());
+                        LoggerFactory.getLogger().d(TAG, "importBookWithId", "Overwrite",
+                                                    "importNumericId=" + importNumericId,
+                                                    book.getTitle());
                     }
                     break;
                 }
@@ -335,8 +338,9 @@ public class CsvRecordReader
                                                   BookDao.BookFlag.UseUpdateDateIfPresent));
                             results.booksUpdated++;
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                                Log.d(TAG, "importNumericId=" + importNumericId
-                                           + "|update|" + book.getTitle());
+                                LoggerFactory.getLogger().d(TAG, "importBookWithId", "OnlyNewer",
+                                                            "importNumericId=" + importNumericId,
+                                                            book.getTitle());
                             }
                         }
                     }
@@ -345,8 +349,9 @@ public class CsvRecordReader
                 case Skip: {
                     results.booksSkipped++;
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                        Log.d(TAG, "importNumericId=" + importNumericId
-                                   + "|Skip|" + book.getTitle());
+                        LoggerFactory.getLogger().d(TAG, "importBookWithId", "Skip",
+                                                    "importNumericId=" + importNumericId,
+                                                    book.getTitle());
                     }
                     break;
                 }
@@ -360,9 +365,10 @@ public class CsvRecordReader
                                                      BookDao.BookFlag.UseIdIfPresent));
             results.booksCreated++;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                Log.d(TAG, "importNumericId=" + importNumericId
-                           + "|insert=" + insId
-                           + "|" + book.getTitle());
+                LoggerFactory.getLogger().d(TAG, "importBookWithId", "INSERT",
+                                            "importNumericId=" + importNumericId,
+                                            "insId=" + insId,
+                                            book.getTitle());
             }
 
         }
@@ -393,6 +399,7 @@ public class CsvRecordReader
      */
     private boolean handleUuid(@NonNull final Book book) {
 
+        @Nullable
         final String uuid;
 
         // Get the "book_uuid", and remove from book if null/blank
