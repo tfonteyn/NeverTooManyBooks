@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
-import android.util.Log;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -33,6 +32,7 @@ import java.util.Collection;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -192,11 +192,11 @@ public class BooklistNodeDao {
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
-            Log.d(TAG, "updateNodesForLevel"
-                       + "|level=" + levelOperand + nodeLevel
-                       + "|expand=" + expand
-                       + "|visible=" + visible
-                       + "|rowsUpdated=" + rowsUpdated);
+            LoggerFactory.getLogger().d(TAG, "updateNodesForLevel"
+                                             + "|level=" + levelOperand + nodeLevel
+                                             + "|expand=" + expand
+                                             + "|visible=" + visible
+                                             + "|rowsUpdated=" + rowsUpdated);
         }
     }
 
@@ -222,7 +222,8 @@ public class BooklistNodeDao {
                 rowsUpdated = stmt.executeUpdateDelete();
             }
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
-                Log.d(TAG, "saveAllNodes|rowsDeleted=" + rowsUpdated);
+                LoggerFactory.getLogger().d(TAG, "saveAllNodes", "delete",
+                                            "rowsUpdated=" + rowsUpdated);
             }
 
             // Read all visible nodes, and send them to the permanent table.
@@ -233,7 +234,8 @@ public class BooklistNodeDao {
                 rowsUpdated = stmt.executeUpdateDelete();
             }
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
-                Log.d(TAG, "saveAllNodes|rowsUpdated=" + rowsUpdated);
+                LoggerFactory.getLogger().d(TAG, "saveAllNodes", "insert",
+                                            "rowsUpdated=" + rowsUpdated);
             }
 
             if (txLock != null) {
@@ -340,10 +342,10 @@ public class BooklistNodeDao {
             rowsUpdated = stmt.executeUpdateDelete();
         }
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
-            Log.d(TAG, "updateNode"
-                       + "|rowId=" + rowId
-                       + "|expand=" + expand
-                       + "|rowsUpdated=" + rowsUpdated);
+            LoggerFactory.getLogger().d(TAG, "updateNode",
+                                        "rowId=" + rowId,
+                                        "expand=" + expand,
+                                        "rowsUpdated=" + rowsUpdated);
         }
     }
 
@@ -404,10 +406,10 @@ public class BooklistNodeDao {
         final int level = Math.min(nodeLevel + relativeChildLevel, style.getGroupCount() + 1);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
-            Log.d(TAG, "updateNodesBetween"
-                       + "|nodeLevel=" + nodeLevel
-                       + "|relativeChildLevel=" + relativeChildLevel
-                       + "|level=" + level);
+            LoggerFactory.getLogger().d(TAG, "showAndExpandNodesBetween",
+                                        "nodeLevel=" + nodeLevel,
+                                        "relativeChildLevel=" + relativeChildLevel,
+                                        "level=" + level);
         }
 
         int rowsUpdated;
@@ -421,10 +423,10 @@ public class BooklistNodeDao {
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
-            Log.d(TAG, "updateNodesBetween|step1"
-                       + "|startRowExcl=" + startRowExcl
-                       + "|endRowExcl=" + endRowExcl
-                       + "|rowsUpdated=" + rowsUpdated);
+            LoggerFactory.getLogger().d(TAG, "showAndExpandNodesBetween|step1",
+                                        "startRowExcl=" + startRowExcl,
+                                        "endRowExcl=" + endRowExcl,
+                                        "rowsUpdated=" + rowsUpdated);
         }
 
         try (SynchronizedStatement stmt = db.compileStatement(
@@ -436,10 +438,10 @@ public class BooklistNodeDao {
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
-            Log.d(TAG, "updateNodesBetween|step2"
-                       + "|startRowExcl=" + startRowExcl
-                       + "|endRowExcl=" + endRowExcl
-                       + "|rowsUpdated=" + rowsUpdated);
+            LoggerFactory.getLogger().d(TAG, "showAndExpandNodesBetween|step2",
+                                        "startRowExcl=" + startRowExcl,
+                                        "endRowExcl=" + endRowExcl,
+                                        "rowsUpdated=" + rowsUpdated);
         }
     }
 
@@ -468,10 +470,10 @@ public class BooklistNodeDao {
             rowsUpdated = stmt.executeUpdateDelete();
         }
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
-            Log.d(TAG, "collapseAndHideNodesBetween"
-                       + "|startRowExcl=" + startRowExcl
-                       + "|endRowExcl=" + endRowExcl
-                       + "|rowsUpdated=" + rowsUpdated);
+            LoggerFactory.getLogger().d(TAG, "collapseAndHideNodesBetween",
+                                        "startRowExcl=" + startRowExcl,
+                                        "endRowExcl=" + endRowExcl,
+                                        "rowsUpdated=" + rowsUpdated);
         }
     }
 
@@ -496,10 +498,10 @@ public class BooklistNodeDao {
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
-            Log.d(TAG, "saveNodesBetween"
-                       + "|fromRowId=" + startRowIncl
-                       + "|fromLevel=" + nodeLevel
-                       + "|endRowExcl=" + endRowExcl);
+            LoggerFactory.getLogger().d(TAG, "saveNodesBetween",
+                                        "fromRowId=" + startRowIncl,
+                                        "fromLevel=" + nodeLevel,
+                                        "endRowExcl=" + endRowExcl);
 
             DbDebugUtils.dumpTable(db, TBL_BOOK_LIST_NODE_STATE, 10, DBKey.PK_ID,
                                    "saveNodesBetween", "before delete");
@@ -523,7 +525,7 @@ public class BooklistNodeDao {
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
-            Log.d(TAG, "saveNodesBetween|rowsDeleted=" + rowsUpdated);
+            LoggerFactory.getLogger().d(TAG, "saveNodesBetween", "rowsDeleted=" + rowsUpdated);
             DbDebugUtils.dumpTable(db, TBL_BOOK_LIST_NODE_STATE, 10, DBKey.PK_ID,
                                    "saveNodesBetween", "delete done");
         }
@@ -542,7 +544,7 @@ public class BooklistNodeDao {
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
-            Log.d(TAG, "saveNodesBetween|rowsInserted=" + rowsUpdated);
+            LoggerFactory.getLogger().d(TAG, "saveNodesBetween", "rowsInserted=" + rowsUpdated);
             DbDebugUtils.dumpTable(db, TBL_BOOK_LIST_NODE_STATE, 10, DBKey.PK_ID,
                                    "saveNodesBetween", "insert done");
         }
@@ -612,12 +614,12 @@ public class BooklistNodeDao {
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
-            Log.d(TAG, "restoreSavedState"
-                       + "|bookshelfId=" + bookshelfId
-                       + "|style.getId()=" + style.getId()
-                       + "|columnName=" + columnName
-                       + "|rowsUpdated=" + rowsUpdated
-                       + "|sql=" + sql);
+            LoggerFactory.getLogger().d(TAG, "restoreSavedState",
+                                        "bookshelfId=" + bookshelfId,
+                                        "style.getId()=" + style.getId(),
+                                        "columnName=" + columnName,
+                                        "rowsUpdated=" + rowsUpdated,
+                                        "sql=" + sql);
         }
     }
 
@@ -665,7 +667,7 @@ public class BooklistNodeDao {
         }
 
         if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG, "adjustVisibility|rows=" + rows);
+            LoggerFactory.getLogger().d(TAG, "adjustVisibility", "rows=" + rows);
         }
     }
 
