@@ -145,6 +145,8 @@
     <string name="X_error_network_site_has_problems">The website is not working as expected.</string>
     <!-- [VERIFIED] -->
     <string name="error_network_failed_try_again">Check connection and try again.</string>
+    <!-- A website deliberately blocked us from accessing it. -->
+    <string name="error_site_access_blocked">Access was blocked by the website.</string>
     <!-- Generic Authorization failure. -->
     <string name="error_authorization_failed">Authorization failed</string>
     <!-- 'Site' Authorization failure. Param 1: the website name -->
@@ -535,6 +537,9 @@
     <!-- Predefined/proposed name for a bookshelf when synchronizing with
          a wishlist from some websites. -->
     <string name="bookshelf_my_wishlist">Wishlist</string>
+
+    <string name="lbl_strip_info_mapped_bookshelf_wishlist">Bookshelf assigned to your wish-list</string>
+    <string name="lbl_strip_info_mapped_bookshelf_owned_books">Bookshelf assigned to your owned books</string>
     <!-- endregion -->
     <!-- region ========== Book editions values NEWTHINGS: add book edition: add label here. -->
     <!-- Book edition -->
@@ -882,6 +887,10 @@
     <string name="lbl_author_is_a_pen_name_of">This is a pen-name of:</string>
     <!-- Label -->
     <string name="lbl_author_pseudonym">Author pseudonym</string>
+    <!-- Abbreviated "pseudonym for [author]".
+         Used to display "Author-pen-name (pseudonym for real-name)"
+    -->
+    <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
     <!-- A single Series. -->
     <string name="lbl_series">Series</string>
     <!-- Multiple Series. -->
@@ -948,6 +957,10 @@
     <string name="lbl_signed">Signed</string>
     <!-- Label for the title of a book, series, story, ... -->
     <string name="lbl_title">Title</string>
+    <!-- Field label: the original title of a translated book; Short version of the label "lbl_original_title_long" -->
+    <string name="lbl_original_title">Original title</string>
+    <!-- Field label: the original title of a translated book; Long version of the label "lbl_original_title_long".-->
+    <string name="lbl_original_title_long">Original title if this book is a translation</string>
     <string name="lbl_barcode">Barcode</string>
     <!-- Label for the description which the app fetches from internet sites -->
     <string name="lbl_description">Description</string>
@@ -1091,6 +1104,8 @@
     <string name="pc_bob">Booklists</string>
     <!-- Preference Category -->
     <string name="pc_lists">Lists</string>
+    <!-- Preference Category -->
+    <string name="lbl_standardize">Standardize</string>
     <!-- [VERIFIED] - Preference Category -->
     <string name="pc_advanced_options">Advanced</string>
     <!-- Preference Category -->
@@ -1230,6 +1245,8 @@
     <string name="pe_camera_back">Back Camera</string>
     <!-- [VERIFIED] ListPreference value -->
     <string name="pe_camera_other">Other</string>
+    <!-- Preference option title -->
+    <string name="pt_search_show_shopping_options">Show shopping menus</string>
     <!-- endregion -->
     <!-- region ========== Maintenance. -->
     <!-- Cleanup log and other temp files -->
@@ -1524,21 +1541,6 @@
     <!-- ####################################################################################### -->
     <!-- ========== likely to change still. -->
     <!-- ####################################################################################### -->
-    <string name="lbl_strip_info_mapped_bookshelf_wishlist">Bookshelf assigned to your wish-list</string>
-    <string name="lbl_strip_info_mapped_bookshelf_owned_books">Bookshelf assigned to your owned books</string>
-    <!-- Preference option title -->
-    <string name="pt_search_show_shopping_options">Show shopping menus</string>
-    <string name="lbl_standardize">Standardize</string>
-
-    <!-- Abbreviated "pseudonym for [author]".
-         Used to display "Author-pen-name (pseudonym for real-name)"
-    -->
-    <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
-    <!-- Field label: the original title of a translated book; Short version of the label "lbl_original_title_long" -->
-    <string name="lbl_original_title">Original title</string>
-    <!-- Field label: the original title of a translated book; Long version of the label "lbl_original_title_long".-->
-    <string name="lbl_original_title_long">Original title if this book is a translation</string>
-    <string name="error_site_access_blocked">Access was blocked by the website.</string>
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
 </resources>
