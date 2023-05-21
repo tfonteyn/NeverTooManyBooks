@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -45,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.PEntityListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
@@ -93,7 +93,7 @@ public class BoBTask
     public BoBTask() {
         super(R.id.TASK_ID_BOOKLIST_BUILDER, TAG);
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-            Log.d(TAG, "NEW TASK_ID_BOOKLIST_BUILDER");
+            LoggerFactory.getLogger().d(TAG, "NEW TASK_ID_BOOKLIST_BUILDER");
         }
     }
 
@@ -314,7 +314,7 @@ public class BoBTask
 
     private void addCriteria(@NonNull final BooklistBuilder builder) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-            Log.d(TAG, "searchCriteria=" + searchCriteria);
+            LoggerFactory.getLogger().d(TAG, "addCriteria", "searchCriteria=" + searchCriteria);
         }
 
         // if we have a list of ID's, we'll ignore other criteria
