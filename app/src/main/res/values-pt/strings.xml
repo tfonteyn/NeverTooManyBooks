@@ -504,7 +504,7 @@
     <string name="X_acra_resToastText">&APP_NAME; bloqueou inesperadamente. Por favor, ajude-nos a melhorar a aplicação reportando este erro.</string>
     <string name="X_lbl_virtual_library">Biblioteca Virtual</string>
     <string name="X_pt_site_settings">Configurações do site</string>
-    <string name="lbl_strip_info_mapped_bookshelf_wishlist">Prateleira mapeada de lista de desejos</string>
+    <string name="lbl_strip_info_mapped_bookshelf_wishlist">Prateleira atribuída à lista de desejos</string>
     <string name="X_lbl_updated">Atualizado</string>
     <string name="confirm_rebuild_index">Isto recriará os índices quando a aplicação for reiniciada. Tem certeza de que deseja continuar?</string>
     <string name="lbl_author">Autor</string>
