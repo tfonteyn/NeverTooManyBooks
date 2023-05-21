@@ -23,7 +23,6 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.LocaleList;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -44,6 +43,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
@@ -252,7 +252,7 @@ public final class AppLocaleImpl
 
         } catch (@NonNull final MissingResourceException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "isValid|e=" + e.getMessage());
+                LoggerFactory.getLogger().d(TAG, "isValid", "e=" + e.getMessage());
             }
             return false;
 
