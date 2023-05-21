@@ -24,7 +24,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogCoverBrowserContentBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowCoverBrowserGalleryBinding;
@@ -78,6 +78,7 @@ public class CoverBrowserDialogFragment
 
     /** Log tag. */
     public static final String TAG = "CoverBrowserFragment";
+    private static final String ERROR_GALLERY_ADAPTER = "galleryAdapter";
 
     /** The adapter for the horizontal scrolling covers list. */
     @Nullable
@@ -165,7 +166,7 @@ public class CoverBrowserDialogFragment
                 requireArguments().getString(DBKey.TITLE), DBKey.TITLE);
         setSubtitle(bookTitle);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         galleryAdapter = new GalleryAdapter(getContext(), vm.getEditions(),
                                             positionHandler,
                                             vm.getGalleryDisplayExecutor());
@@ -217,7 +218,8 @@ public class CoverBrowserDialogFragment
 
     private boolean saveChanges() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-            Log.d(TAG, "preview.onClick|filePath=" + vm.getSelectedFileAbsPath());
+            LoggerFactory.getLogger().d(TAG, "saveChanges",
+                                        "filePath=" + vm.getSelectedFileAbsPath());
         }
 
         if (vm.getSelectedFileAbsPath() != null) {
@@ -261,7 +263,7 @@ public class CoverBrowserDialogFragment
      */
     @SuppressLint("NotifyDataSetChanged")
     private void showGallery(@Nullable final Collection<String> editionsList) {
-        Objects.requireNonNull(galleryAdapter, "galleryAdapter");
+        Objects.requireNonNull(galleryAdapter, ERROR_GALLERY_ADAPTER);
 
         if (editionsList == null || editionsList.isEmpty()) {
             vb.progressBar.hide();
@@ -286,7 +288,7 @@ public class CoverBrowserDialogFragment
      * @param imageFileInfo to display
      */
     private void setGalleryImage(@Nullable final ImageFileInfo imageFileInfo) {
-        Objects.requireNonNull(galleryAdapter, "galleryAdapter");
+        Objects.requireNonNull(galleryAdapter, ERROR_GALLERY_ADAPTER);
 
         final int editionIndex;
         if (imageFileInfo != null) {
