@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.backup.bin;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -32,6 +31,7 @@ import java.util.function.Supplier;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
@@ -132,7 +132,7 @@ public class CoverRecordReader
                     }
                 } catch (@NonNull final IOException e) {
                     if (BuildConfig.DEBUG /* always */) {
-                        Log.d(TAG, "", e);
+                        LoggerFactory.getLogger().d(TAG, "read", e);
                     }
                     // we swallow IOExceptions, **EXCEPT** when the disk is full.
                     if (FileUtils.isDiskFull(e)) {
