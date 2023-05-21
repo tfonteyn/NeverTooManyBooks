@@ -736,7 +736,8 @@
     <string name="info_purge_blns_item_name">Cancellare lo stato del nodo di %1$s “%2$s”?</string>
     <string name="error_updates_aborted">Aggiornamenti interrotti</string>
     <string name="lbl_country">Paese</string>
-    <string name="lbl_strip_info_mapped_bookshelf_wishlist">Libreria assegnata alla lista dei desideri</string>
+    <string name="lbl_strip_info_mapped_bookshelf_wishlist">Libreria assegnata alla vostra lista dei desideri</string>
+    <string name="lbl_strip_info_mapped_bookshelf_owned_books">Libreria assegnato ai propri libri</string>
     <string name="pt_search_show_shopping_options">Mostra i menu dello shopping</string>
     <string name="lbl_standardize">Standardizzare</string>
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>

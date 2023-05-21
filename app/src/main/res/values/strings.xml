@@ -1524,8 +1524,8 @@
     <!-- ####################################################################################### -->
     <!-- ========== likely to change still. -->
     <!-- ####################################################################################### -->
-    <string name="lbl_strip_info_mapped_bookshelf_wishlist">Wishlist mapped bookshelf</string>
-    <string name="lbl_strip_info_mapped_bookshelf_owned_books">Owned books mapped bookshelf</string>
+    <string name="lbl_strip_info_mapped_bookshelf_wishlist">Bookshelf assigned to your wish-list</string>
+    <string name="lbl_strip_info_mapped_bookshelf_owned_books">Bookshelf assigned to your owned books</string>
     <!-- Preference option title -->
     <string name="pt_search_show_shopping_options">Show shopping menus</string>
     <string name="lbl_standardize">Standardize</string>
