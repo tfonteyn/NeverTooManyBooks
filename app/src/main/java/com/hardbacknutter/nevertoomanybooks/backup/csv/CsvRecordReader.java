@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.backup.csv;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDoneException;
-import android.util.Log;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
@@ -383,10 +382,10 @@ public class CsvRecordReader
         final long insId = bookDao.insert(context, book, Set.of(BookDao.BookFlag.RunInBatch));
         results.booksCreated++;
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-            Log.d(TAG, "UUID=''"
-                       + "|ID=0"
-                       + "|insert=" + insId
-                       + "|" + book.getTitle());
+            LoggerFactory.getLogger().d(TAG, "importBook",
+                                        "UUID=''", "ID=0",
+                                        "insId=" + insId,
+                                        book.getTitle());
         }
     }
 
@@ -591,7 +590,8 @@ public class CsvRecordReader
         } catch (@NonNull final StackOverflowError e) {
             // StackOverflowError has been seen when the StringBuilder overflows.
             // The stack at the time was 1040kb. Not reproduced as yet.
-            Log.e(TAG, "line.length=" + line.length() + "\n" + line, e);
+            LoggerFactory.getLogger().e(TAG, e, "line.length=" + line.length()
+                                                + "\n" + line);
             throw new DataReaderException(context.getString(R.string.error_import_csv_line_to_long,
                                                             row, line.length()), e);
         }
