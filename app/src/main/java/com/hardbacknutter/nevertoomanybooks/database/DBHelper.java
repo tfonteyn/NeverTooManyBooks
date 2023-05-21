@@ -28,7 +28,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
-import android.util.Log;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -305,9 +304,10 @@ public class DBHelper
             }
 
             if (cs) {
-                Log.e(TAG, "\n=============================================="
-                           + "\n========== CASE SENSITIVE COLLATION =========="
-                           + "\n==============================================");
+                LoggerFactory.getLogger()
+                             .w(TAG, "\n=============================================="
+                                     + "\n========== CASE SENSITIVE COLLATION =========="
+                                     + "\n==============================================");
             }
             return cs;
 
