@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
-import android.util.Log;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -289,10 +288,10 @@ public class TocEntryDaoImpl
                     position--;
 
                     if (BuildConfig.DEBUG /* always */) {
-                        Log.d(TAG, "updateOrInsertTOC"
-                                   + "|SQLiteConstraintException"
-                                   + "|tocEntry=" + tocEntry.getId()
-                                   + "|bookId=" + bookId);
+                        LoggerFactory.getLogger().d(TAG, "insertOrUpdate",
+                                                    "SQLiteConstraintException",
+                                                    "tocEntry=" + tocEntry.getId(),
+                                                    "bookId=" + bookId);
                     }
                 }
             }
@@ -320,7 +319,7 @@ public class TocEntryDaoImpl
     @Override
     public int fixPositions(@NonNull final Context context) {
 
-        final ArrayList<Long> bookIds = getColumnAsLongArrayList(Sql.REPOSITION);
+        final List<Long> bookIds = getColumnAsLongArrayList(Sql.REPOSITION);
         if (!bookIds.isEmpty()) {
             Synchronizer.SyncLock txLock = null;
             try {
@@ -330,7 +329,7 @@ public class TocEntryDaoImpl
 
                 for (final long bookId : bookIds) {
                     final Book book = Book.from(bookId);
-                    final ArrayList<TocEntry> list = getByBookId(bookId);
+                    final Collection<TocEntry> list = getByBookId(bookId);
                     // We KNOW there are no updates needed.
                     insertOrUpdate(context, bookId, list, false,
                                    book.getLocaleOrUserLocale(context));
