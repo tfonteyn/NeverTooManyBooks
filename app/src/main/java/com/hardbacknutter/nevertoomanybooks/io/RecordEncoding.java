@@ -91,7 +91,7 @@ public enum RecordEncoding {
 
         if (BuildConfig.DEBUG /* always */) {
             LoggerFactory.getLogger()
-                         .w(TAG, "getEncoding|Unknown entry=" + entryName);
+                         .d(TAG, "getEncoding", "Unknown entry=" + entryName);
         }
         return Optional.empty();
     }
