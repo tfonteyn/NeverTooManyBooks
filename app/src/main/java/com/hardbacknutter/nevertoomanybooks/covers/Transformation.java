@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.covers;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.util.Log;
 import android.view.Surface;
 
 import androidx.annotation.NonNull;
@@ -222,13 +221,14 @@ class Transformation {
             final int angle = surfaceRotation - exifAngle;
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                Log.d(TAG, "exif=" + exifAngle
-                           + "|surfaceRotation=" + surfaceRotation
-                           + "|angle=" + angle
-                           + "|(angle % 360)=" + angle % 360);
+                LoggerFactory.getLogger().d(TAG, "determineRotationAngle",
+                                            "exif=" + exifAngle,
+                                            "surfaceRotation=" + surfaceRotation,
+                                            "angle=" + angle,
+                                            "(angle % 360)=" + angle % 360);
             }
             return angle;
-            
+
         } else {
             // just use the explicit value, ignore device and source file rotation
             return explicitRotation;
