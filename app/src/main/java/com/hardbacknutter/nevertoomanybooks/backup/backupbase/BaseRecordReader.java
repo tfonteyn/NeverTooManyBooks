@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.backup.backupbase;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -34,6 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
@@ -116,9 +116,10 @@ public abstract class BaseRecordReader
                                                          BookDao.BookFlag.UseUpdateDateIfPresent));
                     results.booksUpdated++;
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                        Log.d(TAG, "UUID=" + uuid
-                                   + "|databaseBookId=" + databaseBookId
-                                   + "|Overwrite|" + book.getTitle());
+                        LoggerFactory.getLogger().d(TAG, "importBookWithUuid", "Overwrite",
+                                                    "UUID=" + uuid,
+                                                    "databaseBookId=" + databaseBookId,
+                                                    book.getTitle());
                     }
                     break;
                 }
@@ -135,9 +136,11 @@ public abstract class BaseRecordReader
                                                   BookDao.BookFlag.UseUpdateDateIfPresent));
                             results.booksUpdated++;
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                                Log.d(TAG, "UUID=" + uuid
-                                           + "|databaseBookId=" + databaseBookId
-                                           + "|OnlyNewer|" + book.getTitle());
+                                LoggerFactory.getLogger()
+                                             .d(TAG, "importBookWithUuid", "OnlyNewer",
+                                                "UUID=" + uuid,
+                                                "databaseBookId=" + databaseBookId,
+                                                book.getTitle());
                             }
                         }
                     }
@@ -146,9 +149,10 @@ public abstract class BaseRecordReader
                 case Skip: {
                     results.booksSkipped++;
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                        Log.d(TAG, "UUID=" + uuid
-                                   + "|databaseBookId=" + databaseBookId
-                                   + "|Skip|" + book.getTitle());
+                        LoggerFactory.getLogger().d(TAG, "importBookWithUuid", "Skip",
+                                                    "UUID=" + uuid,
+                                                    "databaseBookId=" + databaseBookId,
+                                                    book.getTitle());
                     }
                     break;
                 }
@@ -169,9 +173,11 @@ public abstract class BaseRecordReader
                                                  BookDao.BookFlag.UseIdIfPresent));
             results.booksCreated++;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                Log.d(TAG, "UUID=" + book.getString(DBKey.BOOK_UUID, null)
-                           + "|importNumericId=" + importNumericId
-                           + "|INSERT|book=" + book.getId() + "|" + book.getTitle());
+                LoggerFactory.getLogger().d(TAG, "importBookWithUuid", "INSERT",
+                                            "UUID=" + book.getString(DBKey.BOOK_UUID, null),
+                                            "importNumericId=" + importNumericId,
+                                            "book=" + book.getId(),
+                                            book.getTitle());
             }
         }
     }
