@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.database;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
@@ -224,7 +223,9 @@ public class DBCleaner {
     private void booleanCleanup(@NonNull final String table,
                                 @NonNull final String column) {
         if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG, "booleanCleanup|table=" + table + "|column=" + column);
+            LoggerFactory.getLogger().d(TAG, "booleanCleanup",
+                                        "table=" + table,
+                                        "column=" + column);
         }
 
         final String select = SELECT_DISTINCT_ + column + _FROM_ + table
@@ -240,7 +241,7 @@ public class DBCleaner {
             final int count = stmt.executeUpdateDelete();
             if (BuildConfig.DEBUG /* always */) {
                 if (count > 0) {
-                    Log.d(TAG, "booleanCleanup|true=" + count);
+                    LoggerFactory.getLogger().d(TAG, "booleanCleanup", "true=" + count);
                 }
             }
         }
@@ -251,7 +252,7 @@ public class DBCleaner {
             final int count = stmt.executeUpdateDelete();
             if (BuildConfig.DEBUG /* always */) {
                 if (count > 0) {
-                    Log.d(TAG, "booleanCleanup|false=" + count);
+                    LoggerFactory.getLogger().d(TAG, "booleanCleanup", "false=" + count);
                 }
             }
         }
@@ -317,12 +318,12 @@ public class DBCleaner {
                        @NonNull final String query) {
         if (BuildConfig.DEBUG /* always */) {
             try (SynchronizedCursor cursor = db.rawQuery(query, null)) {
-                Log.d(TAG, state + "|row count=" + cursor.getCount());
+                LoggerFactory.getLogger().d(TAG, state, "row count=" + cursor.getCount());
                 while (cursor.moveToNext()) {
                     final String field = cursor.getColumnName(0);
                     final String value = cursor.getString(0);
 
-                    Log.d(TAG, state + '|' + field + '=' + value);
+                    LoggerFactory.getLogger().d(TAG, state, field + '=' + value);
                 }
             }
         }
