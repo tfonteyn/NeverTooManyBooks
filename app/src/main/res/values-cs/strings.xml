@@ -738,6 +738,7 @@
     <string name="info_purge_blns_item_name">Vymazat stav uzlu %1$s „%2$s“?</string>
     <string name="error_updates_aborted">Aktualizace přerušeny</string>
     <string name="lbl_country">Země</string>
+    <string name="lbl_strip_info_mapped_bookshelf_wishlist">Knihovna zařazená do seznamu přání</string>
     <string name="pt_search_show_shopping_options">Zobrazit nákupní nabídky</string>
     <string name="lbl_standardize">Standardizovat</string>
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>

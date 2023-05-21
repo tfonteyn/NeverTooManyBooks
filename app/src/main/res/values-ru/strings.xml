@@ -745,6 +745,7 @@
     <string name="info_purge_blns_item_name">Очистить состояние узла %1$s «%2$s»?</string>
     <string name="error_updates_aborted">Обновления прерваны</string>
     <string name="lbl_country">Страна</string>
+    <string name="lbl_strip_info_mapped_bookshelf_wishlist">Книжная полка, внесенная в список желаний</string>
     <string name="pt_search_show_shopping_options">Показать меню покупок</string>
     <string name="lbl_standardize">стандартизировать</string>
     <string name="lbl_author_pseudonym_of_X">пс. %1$s</string>

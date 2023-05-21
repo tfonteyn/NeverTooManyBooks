@@ -742,6 +742,7 @@
     <string name="info_purge_blns_item_name">Effacer l’état du nœud de %1$s «%2$s» ?</string>
     <string name="error_updates_aborted">Mises à jour annulées</string>
     <string name="lbl_country">Pays</string>
+    <string name="lbl_strip_info_mapped_bookshelf_wishlist">Bibliothèque affectée à la liste de souhaits</string>
     <string name="pt_search_show_shopping_options">Afficher les menus d’achat</string>
     <string name="lbl_standardize">Standardiser</string>
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>

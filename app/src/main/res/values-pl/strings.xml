@@ -742,6 +742,7 @@
     <string name="info_purge_blns_item_name">Wyczyścić stan węzła %1$s „%2$s”?</string>
     <string name="error_updates_aborted">Aktualizacje przerwane</string>
     <string name="lbl_country">Kraj</string>
+    <string name="lbl_strip_info_mapped_bookshelf_wishlist">Półka z książkami przypisana do listy życzeń</string>
     <string name="pt_search_show_shopping_options">Pokaż menu zakupów</string>
     <string name="lbl_standardize">Ujednolicić</string>
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>

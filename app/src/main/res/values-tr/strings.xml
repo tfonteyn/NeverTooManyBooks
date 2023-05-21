@@ -738,6 +738,7 @@
     <string name="info_purge_blns_item_name">%1$s “%2$s” düğüm durumu temizlensin mi?</string>
     <string name="error_updates_aborted">Güncellemeler iptal edildi</string>
     <string name="lbl_country">Ülke</string>
+    <string name="lbl_strip_info_mapped_bookshelf_wishlist">Dilek listesine atanan kitaplık</string>
     <string name="pt_search_show_shopping_options">Alışveriş menülerini göster</string>
     <string name="lbl_standardize">Standardize et</string>
     <string name="lbl_author_pseudonym_of_X">ta. %1$s</string>
