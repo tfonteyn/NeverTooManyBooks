@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.covers;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
@@ -39,6 +38,7 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -161,11 +161,12 @@ public class FileManager {
                         }
 
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                            Log.d(TAG, "search|SEARCHING"
-                                       + "|searchEngine=" + searchEngine.getName(context)
-                                       + "|isbn=" + isbn
-                                       + "|cIdx=" + cIdx
-                                       + "|size=" + size);
+                            LoggerFactory.getLogger()
+                                         .d(TAG, "search|SEARCHING",
+                                            "searchEngine=" + searchEngine.getName(context),
+                                            "isbn=" + isbn,
+                                            "cIdx=" + cIdx,
+                                            "size=" + size);
                         }
 
                         String fileSpec = null;
@@ -179,10 +180,11 @@ public class FileManager {
                             currentSearch.remove(engineId);
 
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                                Log.d(TAG, "search|FAILED"
-                                           + "|searchEngine=" + searchEngine.getName(context)
-                                           + "|imageFileInfo=" + imageFileInfo,
-                                      e);
+                                LoggerFactory.getLogger()
+                                             .d(TAG, "search|FAILED",
+                                                "searchEngine=" + searchEngine.getName(context),
+                                                "imageFileInfo=" + imageFileInfo,
+                                                e);
                             }
 
                         }
@@ -194,20 +196,22 @@ public class FileManager {
                             files.put(isbn, imageFileInfo);
 
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                                Log.d(TAG, "search|SUCCESS"
-                                           + "|searchEngine=" + searchEngine.getName(context)
-                                           + "|imageFileInfo=" + imageFileInfo);
+                                LoggerFactory.getLogger()
+                                             .d(TAG, "search|SUCCESS",
+                                                "searchEngine=" + searchEngine.getName(context),
+                                                "imageFileInfo=" + imageFileInfo);
                             }
                             // abort search, we got an image
                             return imageFileInfo;
 
                         } else {
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                                Log.d(TAG, "search|NO FILE"
-                                           + "|searchEngine=" + searchEngine.getName(context)
-                                           + "|isbn=" + isbn
-                                           + "|cIdx=" + cIdx
-                                           + "|size=" + size);
+                                LoggerFactory.getLogger()
+                                             .d(TAG, "search|NO FILE",
+                                                "searchEngine=" + searchEngine.getName(context),
+                                                "isbn=" + isbn,
+                                                "cIdx=" + cIdx,
+                                                "size=" + size);
                             }
                         }
 
@@ -228,7 +232,7 @@ public class FileManager {
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-            Log.d(TAG, "search|FAILED|isbn=" + isbn);
+            LoggerFactory.getLogger().d(TAG, "search|FAILED|isbn=" + isbn);
         }
 
         // Failed to find any size on all sites, record the failure to prevent future attempt
