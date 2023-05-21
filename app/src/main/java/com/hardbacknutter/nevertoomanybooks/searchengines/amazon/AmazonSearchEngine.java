@@ -160,6 +160,20 @@ public class AmazonSearchEngine
                                @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
         final Document document = loadDocument(context, url, null);
+
+        checkCaptcha(context, url, document);
+
+        final Book book = new Book();
+        if (!isCancelled()) {
+            parse(context, document, fetchCovers, book);
+        }
+        return book;
+    }
+
+    private void checkCaptcha(@NonNull final Context context,
+                              @NonNull final String url,
+                              @NonNull final Document document)
+            throws SearchException {
         // FIXME: Amazon is blocking more and more... we'll have to stop supporting it soon.
         final Element block = document.selectFirst("form[action='/errors/validateCaptcha']");
         if (block != null) {
@@ -167,12 +181,6 @@ public class AmazonSearchEngine
             throw new SearchException(getEngineId(), "Amazon blocked url=" + url,
                                       context.getString(R.string.error_site_access_blocked));
         }
-
-        final Book book = new Book();
-        if (!isCancelled()) {
-            parse(context, document, fetchCovers, book);
-        }
-        return book;
     }
 
     @NonNull
@@ -216,6 +224,9 @@ public class AmazonSearchEngine
 
         final String url = getHostUrl() + String.format(BY_EXTERNAL_ID, validIsbn);
         final Document document = loadDocument(context, url, null);
+
+        checkCaptcha(context, url, document);
+
         if (!isCancelled()) {
             final ArrayList<String> imageList = parseCovers(document, validIsbn, 0);
             if (!imageList.isEmpty()) {
