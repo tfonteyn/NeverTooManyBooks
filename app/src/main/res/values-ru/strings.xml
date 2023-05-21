@@ -748,4 +748,7 @@
     <string name="pt_search_show_shopping_options">Показать меню покупок</string>
     <string name="lbl_standardize">стандартизировать</string>
     <string name="lbl_author_pseudonym_of_X">пс. %1$s</string>
+    <string name="lbl_original_title">Оригинальное название</string>
+    <string name="lbl_original_title_long">Оригинальное название, если эта книга является переводом</string>
+    <string name="error_site_access_blocked">Доступ был заблокирован сайтом.</string>
 </resources>

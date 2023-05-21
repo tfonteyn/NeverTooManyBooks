@@ -739,4 +739,7 @@
     <string name="pt_search_show_shopping_options">Mostra i menu dello shopping</string>
     <string name="lbl_standardize">Standardizzare</string>
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
+    <string name="lbl_original_title">Titolo originale</string>
+    <string name="lbl_original_title_long">Titolo originale se il libro è una traduzione</string>
+    <string name="error_site_access_blocked">L\'accesso è stato bloccato dal sito web.</string>
 </resources>

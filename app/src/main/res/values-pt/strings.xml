@@ -773,4 +773,7 @@
     <string name="X_lbl_select_image">Selecione a imagem…</string>
     <string name="X_txt_import_books_option_new_and_changed">Importe apenas livros novos ou que tenham sido atualizados mais recentemente no ficheiro. Isso é útil para sincronizar dois dispositivos.</string>
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
+    <string name="lbl_original_title">Título original</string>
+    <string name="lbl_original_title_long">Título original se este livro for uma tradução</string>
+    <string name="error_site_access_blocked">O acesso foi bloqueado pelo sítio Web.</string>
 </resources>

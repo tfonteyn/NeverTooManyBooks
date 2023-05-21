@@ -735,4 +735,7 @@
     <string name="pt_search_show_shopping_options">Εμφάνιση μενού αγορών</string>
     <string name="lbl_standardize">Τυποποιώ</string>
     <string name="lbl_author_pseudonym_of_X">ψε. %1$s</string>
+    <string name="lbl_original_title">Πρωτότυπος τίτλος</string>
+    <string name="lbl_original_title_long">Πρωτότυπος τίτλος αν το βιβλίο είναι μετάφραση</string>
+    <string name="error_site_access_blocked">Η πρόσβαση αποκλείστηκε από τον ιστότοπο.</string>
 </resources>
