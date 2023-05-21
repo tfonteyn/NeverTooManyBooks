@@ -28,7 +28,6 @@ import androidx.annotation.WorkerThread;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBCleaner;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
@@ -69,7 +68,7 @@ public class DBCleanerTask
         publishProgress(1, context.getString(R.string.progress_msg_optimizing));
 
         try {
-            final int modified = new DBCleaner(
+            new DBCleaner(
                     serviceLocator.getDb(),
                     serviceLocator::getAuthorDao,
                     serviceLocator::getSeriesDao,
@@ -79,9 +78,6 @@ public class DBCleanerTask
                     serviceLocator::getLanguageDao)
                     .clean(context);
 
-            if (modified > 0) {
-                LoggerFactory.getLogger().w(TAG, "reposition modified=" + modified);
-            }
             return true;
 
         } finally {

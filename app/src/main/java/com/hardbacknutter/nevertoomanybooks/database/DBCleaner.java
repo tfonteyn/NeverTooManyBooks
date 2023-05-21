@@ -113,7 +113,7 @@ public class DBCleaner {
         this.languageDaoSupplier = languageDaoSupplier;
     }
 
-    public int clean(@NonNull final Context context) {
+    public void clean(@NonNull final Context context) {
 
         // do a mass update of any languages not yet converted to ISO 639-2 codes
         languageDaoSupplier.get().bulkUpdate(context);
@@ -139,8 +139,9 @@ public class DBCleaner {
         modified += seriesDaoSupplier.get().fixPositions(context);
         modified += publisherDaoSupplier.get().fixPositions(context);
         modified += tocEntryDaoSupplier.get().fixPositions(context);
-
-        return modified;
+        if (modified > 0) {
+            LoggerFactory.getLogger().w(TAG, "reposition modified=" + modified);
+        }
     }
 
 
