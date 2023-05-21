@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -356,7 +353,7 @@
     <string name="lbl_edition_first_edition">První vydání</string>
     <string name="lbl_edition_first_impression">První tisk</string>
     <string name="lbl_edition_limited">Limitovaná edice</string>
-    <string name="lbl_edition_slipcase">Slipcase</string>
+    <string name="lbl_edition_slipcase">Rukáv</string>
     <string name="lbl_export_books_option_all">Všechny knihy</string>
     <string name="lbl_export_books_option_since_last_full_backup">Nové a aktualizované knihy</string>
     <string name="lbl_export_options">Vyberte, co bude exportováno.</string>
