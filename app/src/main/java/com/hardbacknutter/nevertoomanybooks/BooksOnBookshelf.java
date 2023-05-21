@@ -26,7 +26,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Debug;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -1648,9 +1647,10 @@ public class BooksOnBookshelf
      */
     private void buildBookList() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-            Log.d(TAG, "buildBookList"
-                       + "| isBuilding()=" + vm.isBuilding()
-                       + "|called from:", new Throwable());
+            LoggerFactory.getLogger().d(TAG, "buildBookList",
+                                        "vm.isBuilding()=" + vm.isBuilding(),
+                                        "called from:",
+                                        new Throwable());
         }
 
         if (!vm.isBuilding()) {
@@ -1764,9 +1764,10 @@ public class BooksOnBookshelf
      */
     private void displayList(@Nullable final List<BooklistNode> targetNodes) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-            Log.d(TAG + "|displayList-" + System.nanoTime(),
-                  targetNodes != null ? targetNodes.toString() : "null",
-                  new Throwable());
+            LoggerFactory.getLogger().d(TAG, "displayList",
+                                        System.nanoTime(),
+                                        targetNodes != null ? targetNodes.toString() : "null",
+                                        new Throwable());
         }
 
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
