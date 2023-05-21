@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.sync.calibre;
 import android.content.Context;
 import android.database.sqlite.SQLiteDoneException;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -300,7 +299,7 @@ public class CalibreContentServerReader
             // Don't assume we still have the same instance as when readMetaData was called.
             readLibraryMetaData(context);
 
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             final int totalNum = library.getTotalBooks();
 
             int num = 0;
@@ -441,9 +440,13 @@ public class CalibreContentServerReader
                         } else {
                             results.booksFailed++;
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
-                                Log.d(TAG, "calibreUuid=" + calibreBook.getString(CalibreBook.UUID)
-                                           + "|" + updateOption
-                                           + "|FAIL|book=" + book.getId() + "|" + book.getTitle());
+                                LoggerFactory.getLogger()
+                                             .d(TAG, "handleBook", updateOption,
+                                                "FAIL",
+                                                "calibreUuid=" + calibreBook.getString(
+                                                        CalibreBook.UUID),
+                                                "book=" + book.getId(),
+                                                book.getTitle());
                             }
                         }
                         break;
@@ -451,8 +454,10 @@ public class CalibreContentServerReader
                     case Skip: {
                         results.booksSkipped++;
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
-                            Log.d(TAG, "calibreUuid=" + calibreBook.getString(CalibreBook.UUID)
-                                       + "|" + updateOption);
+                            LoggerFactory.getLogger()
+                                         .d(TAG, "handleBook", updateOption,
+                                            "calibreUuid=" + calibreBook.getString(
+                                                    CalibreBook.UUID));
                         }
                         break;
                     }
@@ -480,9 +485,11 @@ public class CalibreContentServerReader
         results.booksUpdated++;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
-            Log.d(TAG, "calibreUuid=" + calibreBook.getString(CalibreBook.UUID)
-                       + "|" + updateOption
-                       + "|UPDATE|book=" + book.getId() + "|" + book.getTitle());
+            LoggerFactory.getLogger()
+                         .d(TAG, "updateBook", updateOption,
+                            "calibreUuid=" + calibreBook.getString(CalibreBook.UUID),
+                            "book=" + book.getId(),
+                            book.getTitle());
         }
     }
 
@@ -503,9 +510,11 @@ public class CalibreContentServerReader
         results.booksCreated++;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
-            Log.d(TAG, "calibreUuid=" + calibreBook.getString(CalibreBook.UUID)
-                       + "|" + updateOption
-                       + "|INSERT|book=" + book.getId() + "|" + book.getTitle());
+            LoggerFactory.getLogger()
+                         .d(TAG, "insertBook", updateOption,
+                            "calibreUuid=" + calibreBook.getString(CalibreBook.UUID),
+                            "book=" + book.getId(),
+                            book.getTitle());
         }
     }
 
@@ -684,8 +693,7 @@ public class CalibreContentServerReader
 
         if (!calibreBook.isNull(CalibreBook.USER_METADATA)) {
             final JSONObject userMetaData = calibreBook.optJSONObject(CalibreBook.USER_METADATA);
-            if (userMetaData != null) {
-                //noinspection ConstantConditions
+            if (userMetaData != null && library != null) {
                 for (final CalibreCustomField cf : library.getCustomFields()) {
                     final JSONObject data = userMetaData.optJSONObject(cf.getCalibreKey());
 
@@ -743,7 +751,7 @@ public class CalibreContentServerReader
         final List<Bookshelf> bookShelves = localBook.getBookshelves();
 
         // Add the physical library mapped Bookshelf
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final Bookshelf mappedBookshelf = Bookshelf.getBookshelf(context,
                                                                  library.getMappedBookshelfId(),
                                                                  Bookshelf.PREFERRED,
