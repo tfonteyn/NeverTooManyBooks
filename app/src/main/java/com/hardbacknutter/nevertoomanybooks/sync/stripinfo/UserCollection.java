@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
@@ -35,6 +34,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
@@ -228,7 +228,9 @@ public class UserCollection {
 
         if (BuildConfig.DEBUG /* always */) {
             if (pageNr != maxPages) {
-                Log.d(TAG, "No 'collectionContent' found for url=" + document.location());
+                LoggerFactory.getLogger().d(TAG, "parseDocument",
+                                            "No 'collectionContent' found for url="
+                                            + document.location());
             }
         }
 
