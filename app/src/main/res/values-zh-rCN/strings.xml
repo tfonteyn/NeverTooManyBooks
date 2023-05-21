@@ -115,4 +115,40 @@
     <string name="error_backup_failed">备份失败。</string>
     <string name="error_export_failed">导出失败。</string>
     <string name="warning_import_csv">警告。 如果 uuid 列不存在且导入文件中的 id 与现有 id 相同，则导入数据可能会使用新信息更新现有的书籍记录。 如果您更改了导出文件中的字段，这通常没问题。 如果您创建了新的图书记录，或者正在导入其他人的图书，请确保 uuid 字段存在或 id 字段为空。</string>
+    <string name="warning_import_csv_unescaped_quote">行 %1$d，位置 %2$d 的未转义引号</string>
+    <string name="warning_import_failed_for_lines_some">行解析失败
+\n %1$s
+\n</string>
+    <string name="warning_import_failed_for_lines_lots">行解析失败
+\n %1$s
+\n 和其他。</string>
+    <string name="warning_export_contains_no_data">没有内容可以导出。</string>
+    <string name="warning_book_not_found">找不到指定的书。</string>
+    <string name="warning_book_not_always_found">并非所有站点都返回有效数据。</string>
+    <string name="warning_no_search_data_for_active_sites">无有效搜索数据。</string>
+    <string name="warning_immediate_global_changes">注意：所有保存的更改都会立即全局应用。</string>
+    <string name="warning_enable_at_least_1_website">为每个类别启用至少一个网站。</string>
+    <string name="warning_select_at_least_1_group">至少选择一组。</string>
+    <string name="warning_nothing_selected">无选择</string>
+    <string name="warning_requires_isbn">此操作需要有效的 ISBN。</string>
+    <string name="warning_requires_at_least_1_field">至少有一个字段不能为空。</string>
+    <string name="warning_requires_site_and_id">选择一个站点并输入一个 ID。</string>
+    <string name="warning_already_in_list">已经在列表中！</string>
+    <string name="warning_backup_request">您想将数据库备份到内部储存吗？</string>
+    <string name="vldt_failure">验证失败</string>
+    <string name="vldt_integer_expected_for_x">应为“%1$s”的整数值</string>
+    <string name="warning_x_already_exists">%1$s已存在。</string>
+    <string name="warning_select_at_least_1_field">选择至少一个字段进行更新。</string>
+    <string name="warning_cannot_delete_1st_bs">无法删除第一个书架。</string>
+    <string name="warning_x_is_not_a_valid_code">“%1$s”不是有效代码</string>
+    <string name="warning_no_editions">没有可用的附加版本信息。</string>
+    <string name="warning_no_matching_book_found">找不到匹配的书</string>
+    <string name="X_warning_no_matching_book_found_long">找不到这本书。 您有时可以在扉页找到正确的条形码，否则请手动输入详细信息。</string>
+    <string name="warning_image_not_found">找不到图像。</string>
+    <string name="warning_image_copy_failed">无法复制图像。</string>
+    <string name="warning_if_day_set_month_and_year_must_be">如果指定了日期，则必须指定月份和年份。</string>
+    <string name="warning_if_month_set_year_must_be">如果指定了月份，则还必须指定年份。</string>
+    <string name="warning_toc_confirm">请确认这些标题（大部分）是正确的。</string>
+    <string name="warning_no_site_supports_this_method">警告：当前选定的站点均不支持按 %1$s 进行搜索。 请转到站点选择菜单启用替代站点，或使用不同的搜索方法。</string>
+    <string name="vldt_list_message">（%1$d） %2$s</string>
 </resources>
