@@ -24,7 +24,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -37,6 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -154,7 +154,8 @@ public class StyleDaoImpl
                 // after inserting the id '-1' debug logging will claim that the insert failed.
                 if (BuildConfig.DEBUG /* always */) {
                     if (styleDef.getId() == -1) {
-                        Log.d(TAG, "onPostCreate|Ignore debug message inserting -1 ^^^");
+                        LoggerFactory.getLogger().d(TAG, "onPostCreate",
+                                                    "Ignore debug message inserting -1 ^^^");
                     }
                 }
                 stmt.executeInsert();
