@@ -255,8 +255,7 @@ public class DataManager
 
         } else if (value == null) {
             if (BuildConfig.DEBUG /* always */) {
-                LoggerFactory.getLogger()
-                             .w(TAG, "put|key=`" + key + "`|value=<NULL>");
+                LoggerFactory.getLogger().d(TAG, "put|key=`" + key + "`|value=<NULL>");
             }
             putNull(key);
 
