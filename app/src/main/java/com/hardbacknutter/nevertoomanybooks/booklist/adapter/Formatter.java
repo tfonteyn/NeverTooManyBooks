@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.adapter;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -259,7 +258,9 @@ class Formatter
                         }
                     } catch (@NonNull final NumberFormatException e) {
                         if (BuildConfig.DEBUG /* always */) {
-                            Log.e(TAG, "|text=`" + text + '`', e);
+                            LoggerFactory.getLogger().d(TAG, "format",
+                                                        "text=`" + text + '`',
+                                                        e);
                         }
                     }
                     // Was invalid, just show the original
