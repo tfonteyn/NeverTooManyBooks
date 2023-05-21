@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.core.widgets.adapters;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -535,7 +534,6 @@ public class ExtArrayAdapter<T>
                 }
             }
         } catch (@NonNull final ClassCastException e) {
-            Log.e("ExtArrayAdapter", "You must supply a resource ID for a TextView");
             throw new IllegalStateException(
                     "ExtArrayAdapter requires the resource ID to be a TextView", e);
         }
