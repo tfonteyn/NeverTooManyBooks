@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.covers;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,6 +31,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 
 /**
@@ -165,21 +165,21 @@ public class ImageFileInfo
             if (this.size != null && this.size.compareTo(size) >= 0) {
                 // YES, use the file we already have
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                    Log.d(TAG, "search|PRESENT|SUCCESS|imageFileInfo=" + this);
+                    LoggerFactory.getLogger().d(TAG, "isUsable", "SUCCESS|imageFileInfo=" + this);
                 }
                 return true;
             }
 
             // else drop through and search for it.
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                Log.d(TAG, "search|PRESENT|TO SMALL|imageFileInfo=" + this);
+                LoggerFactory.getLogger().d(TAG, "isUsable", "TO SMALL|imageFileInfo=" + this);
             }
             return false;
 
         } else {
             // a previous search failed, there simply is NO file
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                Log.d(TAG, "search|PRESENT|NO FILE|imageFileInfo=" + this);
+                LoggerFactory.getLogger().d(TAG, "isUsable", "NO FILE|imageFileInfo=" + this);
             }
             return true;
         }
