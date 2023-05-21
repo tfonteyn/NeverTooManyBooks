@@ -1538,6 +1538,7 @@
     <string name="lbl_original_title">Original title</string>
     <!-- Field label: the original title of a translated book; Long version of the label "lbl_original_title_long".-->
     <string name="lbl_original_title_long">Original title if this book is a translation</string>
+    <string name="error_site_access_blocked">Access was blocked by the website.</string>
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
 </resources>

@@ -36,6 +36,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
@@ -56,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.sync.AuthorTypeMapper;
 import com.hardbacknutter.org.json.JSONException;
@@ -67,7 +69,7 @@ import org.jsoup.select.Elements;
 
 /**
  * This class supports parsing these Amazon websites:
- * www.amazon.com
+ * www.amazon.com: BLOCKED by captcha
  * www.amazon.co.uk
  * www.amazon.fr
  * www.amazon.de
@@ -157,9 +159,15 @@ public class AmazonSearchEngine
                                @NonNull final String url,
                                @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
-        // FIXME: Amazon ia blocking more and more... we'll have to stop supporting it soon.
-        //  it now starts to throw a 503 / SSLHandshake exception
         final Document document = loadDocument(context, url, null);
+        // FIXME: Amazon is blocking more and more... we'll have to stop supporting it soon.
+        final Element block = document.selectFirst("form[action='/errors/validateCaptcha']");
+        if (block != null) {
+            Site.Type.Data.getSite(getEngineId()).setActive(false);
+            throw new SearchException(getEngineId(), "Amazon blocked url=" + url,
+                                      context.getString(R.string.error_site_access_blocked));
+        }
+
         final Book book = new Book();
         if (!isCancelled()) {
             parse(context, document, fetchCovers, book);
