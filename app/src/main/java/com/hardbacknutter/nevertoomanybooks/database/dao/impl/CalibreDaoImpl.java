@@ -121,7 +121,7 @@ public class CalibreDaoImpl
                 // Log and bail out but do NOT throw an error!
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
                     LoggerFactory.getLogger()
-                                 .w(TAG, "CalibreLibrary invalid(1) for book=" + book.getId());
+                                 .d(TAG, "CalibreLibrary invalid(1) for book=" + book.getId());
                 }
                 return false;
             }
@@ -131,7 +131,7 @@ public class CalibreDaoImpl
             // Log and bail out but do NOT throw an error!
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
                 LoggerFactory.getLogger()
-                             .w(TAG, "CalibreLibrary invalid(2) for book=" + book.getId());
+                             .d(TAG, "CalibreLibrary invalid(2) for book=" + book.getId());
             }
             return false;
         }
