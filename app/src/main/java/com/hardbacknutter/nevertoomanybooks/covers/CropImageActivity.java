@@ -43,7 +43,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.CallSuper;
@@ -153,7 +152,7 @@ public class CropImageActivity
             bitmap = BitmapFactory.decodeStream(is);
         } catch (@NonNull final IOException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "", e);
+                LoggerFactory.getLogger().d(TAG, "onCreate", e);
             }
         }
 
