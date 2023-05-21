@@ -157,10 +157,13 @@ public class ImportResults
         }
         if (BuildConfig.DEBUG /* always */) {
             if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS && booksFailed > MAX_FAIL_LINES) {
-                logger.w(TAG, "Import failed for book " + row + "|e=" + e.getMessage());
+                logger.d(TAG, "handleRowException",
+                         "Import failed for book " + row,
+                         "e=" + e.getMessage());
             } else if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS_EXT) {
                 // logging with the full exception is VERY HEAVY
-                logger.e(TAG, e, "Import failed for book " + row);
+                logger.d(TAG, "handleRowException",
+                         "Import failed for book " + row, e);
             }
         }
     }
