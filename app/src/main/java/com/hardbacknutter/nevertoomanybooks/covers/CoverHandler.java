@@ -26,7 +26,6 @@ import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -181,7 +180,8 @@ public class CoverHandler {
 
         vm.onFinished().observe(lifecycleOwner, message -> {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                Log.d(TAG, "vm.onFinished()|event=" + message);
+                LoggerFactory.getLogger().d(TAG, "onFragmentViewCreated",
+                                            "vm.onFinished()|event=" + message);
             }
             hideProgress();
             message.getData().map(TaskResult::requireResult).ifPresent(this::onAfterTransform);
@@ -598,7 +598,7 @@ public class CoverHandler {
 
     private void onAfterTransform(@NonNull final TransformationTask.TransformedData result) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-            Log.d(TAG, "onAfterTransform: " + result);
+            LoggerFactory.getLogger().d(TAG, "onAfterTransform", result);
         }
 
         // The bitmap != null decides if the operation was successful.
