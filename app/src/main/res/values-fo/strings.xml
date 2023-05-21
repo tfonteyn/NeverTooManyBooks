@@ -17,10 +17,51 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
+  --><!--
+    Reference sites:
+    https://www.abbreviations.com/
 
-<!--suppress LongLine -->
-<resources>
+     Some linguists, especially in British English, believe that "loan" should only
+     be used as a noun, while the correct verb is only "lend."
+
+
+    ENTITY:
+    Define entities that can be used inside of other string (not possible with standard Android
+    resources e.g. the entities file define APP_NAME; use it in another string with: &APP_NAME;
+    cannot put these into an external file: https://issuetracker.google.com/issues/68434088
+
+    Each language string.xml file uses localized quotes as per
+    https://en.wikipedia.org/wiki/Quotation_mark#Summary_table
+    See top of each language resource file for the "quotes" comment.
+
+    Plurals:
+    http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
+        cardinal
+
+    en-rGB: https://issuetracker.google.com/issues/142590628
+    fixed in Studio 4.1
+--><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
+<!--
+  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  --><!--suppress LongLine --><resources>
     <string name="lbl_styles">Stílar</string>
     <string name="lbl_styles_long">Bóklistastílar</string>
     <string name="style_type_builtin">Innbygt</string>
@@ -79,4 +120,40 @@
     <string name="option_author_works_book">Bara bøkur</string>
     <string name="option_shop_books_by_author">Bøkur av hesum rithøvundi</string>
     <string name="option_shop_books_by_author_in_series">Bøkur eftir rithøvundi/rað</string>
+    <string name="and_others_plus">%1$s … <small>[+%2$d]</small></string>
+    <string name="name_hash_nr">%1$s #%2$d</string>
+    <plurals name="displaying_n_books">
+        <item quantity="one">Vísir %1$d bók</item>
+        <item quantity="other">Vísir %1$d bøkur</item>
+    </plurals>
+    <string name="list_element">• %s</string>
+    <string name="x_of_y">%1$d av %2$d</string>
+    <string name="and_others">%1$s …</string>
+    <string name="fallback_currency_format">%2$.2f %1$s</string>
+    <string name="notification_channel_error">Villa</string>
+    <string name="notification_channel_warn">Ávaring</string>
+    <string name="debug_email_subject">Samansavnað kembingarupplýsingar</string>
+    <string name="debug_email_body">Vinarliga greið frá trupulleikan upplivaði.</string>
+    <string name="httpErrorFailedSslHandshake">Kundi ikki sambinda trygt.</string>
+    <string name="httpErrorAuth">Kundi ikki vátta.</string>
+    <string name="httpError">Ein netvilla uppstóð.</string>
+    <plurals name="n_stars">
+        <item quantity="one">%1$s stjørna</item>
+        <item quantity="other">%1$s stjørnur</item>
+    </plurals>
+    <plurals name="n_books_found">
+        <item quantity="one">%1$d bók funnin</item>
+        <item quantity="other">%1$d bøkur funnin</item>
+    </plurals>
+    <string name="notification_channel_info">Upplýsingar</string>
+    <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
+    <string name="name_colon_value">%1$s: %2$s</string>
+    <string name="debug_select_items">Vel hvat tú vilt telja uppí:</string>
+    <string name="acra_resDialogText">Tað sær út til at &APP_NAME; hevur krasjað. Um møguligt, greið frá alt tú heldur kemur hetta við niðanfyri og trýst á „OK“, fyri at senda okkum ein teldupost um krasjið. Tú sært hana áðren hon verður send.</string>
+    <string name="acra_resDialogCommentPrompt">Tín viðmerking (ella skriva einki):</string>
+    <string name="X_httpErrorIO">Fekk ikki samband við ambætaran. Royn aftur seinni.</string>
+    <string name="httpErrorTimeout">Sambandið við ambætaran fór út um tíð.</string>
+    <string name="httpErrorFile">Fekk ikk atgongd til fíluna.</string>
+    <string name="httpErrorFileNotFound">Ynskti fílan varð ikki funnin.</string>
+    <string name="error_unexpected">Ein óvæntaður villa uppstóð.</string>
 </resources>
