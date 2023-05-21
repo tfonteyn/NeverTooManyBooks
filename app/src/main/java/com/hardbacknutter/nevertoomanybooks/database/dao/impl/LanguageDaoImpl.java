@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -29,6 +28,7 @@ import java.util.Locale;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -93,9 +93,9 @@ public class LanguageDaoImpl
                 }
 
                 if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "languages|Global language update"
-                               + "|from=" + lang
-                               + "|to=" + iso);
+                    LoggerFactory.getLogger().d(TAG, "bulkUpdate",
+                                                "|from=" + lang,
+                                                "to=" + iso);
                 }
                 if (!iso.equals(lang)) {
                     rename(lang, iso);
