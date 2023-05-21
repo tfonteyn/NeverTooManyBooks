@@ -122,7 +122,8 @@ public enum EngineId
     /** All genres. */
     Amazon("amazon",
            R.string.site_amazon,
-           "https://www.amazon.com",
+           // amazon.com, amazon.ca : blocked by captcha
+           "https://www.amazon.co.uk",
            Locale.US,
            AmazonSearchEngine.class,
            BuildConfig.ENABLE_AMAZON),
