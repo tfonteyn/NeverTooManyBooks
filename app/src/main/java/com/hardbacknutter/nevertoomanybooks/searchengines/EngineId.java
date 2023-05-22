@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bol.BolSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.bookfinder.BookfinderSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.bookfinder.BookFinderSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.googlebooks.GoogleBooksSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbSearchEngine;
@@ -152,7 +152,7 @@ public enum EngineId
                R.string.site_bookfinder,
                "https://www.bookfinder.com",
                Locale.US,
-               BookfinderSearchEngine.class,
+               BookFinderSearchEngine.class,
                BuildConfig.ENABLE_BOOKFINDER),
 
     /** Only used for {@link SearchEngine.ViewBookByExternalId}. */

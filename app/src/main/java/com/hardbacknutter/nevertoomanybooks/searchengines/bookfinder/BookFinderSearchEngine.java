@@ -52,7 +52,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
-public class BookfinderSearchEngine
+public class BookFinderSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn {
 
@@ -78,7 +78,7 @@ public class BookfinderSearchEngine
      * @param config     the search engine configuration
      */
     @Keep
-    public BookfinderSearchEngine(@NonNull final Context appContext,
+    public BookFinderSearchEngine(@NonNull final Context appContext,
                                   @NonNull final SearchEngineConfig config) {
         super(appContext, config);
     }

@@ -85,6 +85,12 @@
         </Preference>
 
         <Preference
+            android:fragment="com.hardbacknutter.nevertoomanybooks.searchengines.bookfinder.BookFinderPreferencesFragment"
+            android:key="psk_search_site_bookfinder"
+            android:title="@string/site_bookfinder">
+        </Preference>
+
+        <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.searchengines.googlebooks.GoogleBooksPreferencesFragment"
             android:key="psk_search_site_googlebooks"
             android:title="@string/site_google_books">
