@@ -142,7 +142,7 @@ public class KbNlSearchEngine
 
         futureHttpGet = createFutureHeadRequest();
         try {
-            futureHttpGet.get(getHostUrl() + "/cbs/", request -> true);
+            futureHttpGet.get(getHostUrl() + "/cbs/", response -> true);
         } catch (@NonNull final IOException e) {
             throw new SearchException(getEngineId(), e);
         }
@@ -160,7 +160,7 @@ public class KbNlSearchEngine
             // Do the search... we'll either get a parsed list-page back, or the parsed book page.
             String url = getHostUrl() + String.format(SEARCH_URL, dbVersion, setNr,
                                                       validIsbn);
-            futureHttpGet.get(url, request -> processRequest(request, handler, parser, book));
+            futureHttpGet.get(url, response -> processResponse(response, handler, parser, book));
 
             // If it was a list page, fetch and parse the 1st book found;
             // If it was a book page, we're already done and can skip this step.
@@ -168,7 +168,8 @@ public class KbNlSearchEngine
             if (show != null && !show.isEmpty()) {
                 book.clearData();
                 url = getHostUrl() + String.format(BOOK_URL, dbVersion, setNr, show);
-                futureHttpGet.get(url, request -> processRequest(request, handler, parser, book));
+                futureHttpGet.get(url,
+                                  response -> processResponse(response, handler, parser, book));
             }
         } catch (@NonNull final SAXException e) {
             // unwrap SAXException using getException() !
@@ -196,12 +197,12 @@ public class KbNlSearchEngine
         return book;
     }
 
-    private boolean processRequest(@NonNull final HttpURLConnection request,
-                                   @NonNull final DefaultHandler handler,
-                                   @NonNull final SAXParser parser,
-                                   @NonNull final Book book) {
+    private boolean processResponse(@NonNull final HttpURLConnection response,
+                                    @NonNull final DefaultHandler handler,
+                                    @NonNull final SAXParser parser,
+                                    @NonNull final Book book) {
 
-        try (BufferedInputStream bis = new BufferedInputStream(request.getInputStream())) {
+        try (BufferedInputStream bis = new BufferedInputStream(response.getInputStream())) {
             parser.parse(bis, handler);
             //noinspection ConstantConditions
             dbVersion = book.getString(KbNlHandlerBase.BKEY_DB_VERSION, DEFAULT_DB_VERSION);
