@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
@@ -80,7 +81,7 @@ public abstract class SearchEngineBase
         // only stored to use for preference etc lookups.
         this.appContext = appContext;
         this.config = config;
-        imageDownloader = new ImageDownloader(createFutureGetRequest(),
+        imageDownloader = new ImageDownloader(createFutureGetRequest(false),
                                               ServiceLocator.getInstance()::getCoverStorage);
     }
 
@@ -235,14 +236,28 @@ public abstract class SearchEngineBase
      * Convenience method which uses the engines specific network configuration
      * to create a suitable {@link FutureHttpGet#createGet(int)}.
      *
-     * @param <T> return type
+     * @param useCompression set to {@code true} to add the standard gzip request header.
+     * @param <T>            return type
      *
      * @return new {@link FutureHttpGet} instance
      */
     @NonNull
-    public <T> FutureHttpGet<T> createFutureGetRequest() {
+    public <T> FutureHttpGet<T> createFutureGetRequest(final boolean useCompression) {
         final FutureHttpGet<T> httpGet = FutureHttpGet
                 .createGet(config.getEngineId().getLabelResId());
+
+        // improve compatibility
+        httpGet.setRequestProperty(HttpConstants.ACCEPT,
+                                   HttpConstants.ACCEPT_KITCHEN_SINK);
+        httpGet.setRequestProperty(HttpConstants.CONNECTION,
+                                   HttpConstants.CONNECTION_KEEP_ALIVE);
+        httpGet.setRequestProperty(HttpConstants.UPGRADE_INSECURE_REQUESTS,
+                                   HttpConstants.UPGRADE_INSECURE_REQUESTS_TRUE);
+
+        if (useCompression) {
+            httpGet.setRequestProperty(HttpConstants.ACCEPT_ENCODING,
+                                       HttpConstants.ACCEPT_ENCODING_GZIP);
+        }
 
         httpGet.setConnectTimeout(config.getConnectTimeoutInMs(appContext))
                .setReadTimeout(config.getReadTimeoutInMs(appContext))
