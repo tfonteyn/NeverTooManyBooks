@@ -1554,8 +1554,8 @@ public class IsfdbSearchEngine
         try {
             final SAXParser parser = factory.newSAXParser();
 
-            futureHttpGet.get(url, request -> {
-                try (BufferedInputStream bis = new BufferedInputStream(request.getInputStream())) {
+            futureHttpGet.get(url, response -> {
+                try (BufferedInputStream bis = new BufferedInputStream(response.getInputStream())) {
                     parser.parse(bis, listHandler);
                     return true;
 
