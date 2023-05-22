@@ -28,8 +28,12 @@ import androidx.annotation.WorkerThread;
 import java.io.BufferedInputStream;
 import java.io.EOFException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.net.HttpURLConnection;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipException;
 import javax.net.ssl.SSLProtocolException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -39,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpNotFoundException;
+import com.hardbacknutter.nevertoomanybooks.core.network.NetworkException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 import org.jsoup.Jsoup;
@@ -71,6 +76,17 @@ public class JsoupLoader {
      */
     public JsoupLoader(@NonNull final FutureHttpGet<Document> futureHttpGet) {
         this.futureHttpGet = futureHttpGet;
+
+        this.futureHttpGet.setRequestProperty(HttpConstants.ACCEPT,
+                                              HttpConstants.ACCEPT_KITCHEN_SINK);
+        this.futureHttpGet.setRequestProperty(HttpConstants.CONNECTION,
+                                              HttpConstants.CONNECTION_KEEP_ALIVE);
+        this.futureHttpGet.setRequestProperty(HttpConstants.UPGRADE_INSECURE_REQUESTS,
+                                              HttpConstants.UPGRADE_INSECURE_REQUESTS_TRUE);
+
+        // loadDocument now accepts gzip streams
+        this.futureHttpGet.setRequestProperty(HttpConstants.ACCEPT_ENCODING,
+                                              HttpConstants.ACCEPT_ENCODING_GZIP);
     }
 
     /**
@@ -133,8 +149,8 @@ public class JsoupLoader {
         while (attemptsLeft > 0) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
                 LoggerFactory.getLogger()
-                              .d(TAG, "loadDocument",
-                                 "REQUESTED|mDocRequestUrl=\"" + docRequestUrl + '\"');
+                             .d(TAG, "loadDocument",
+                                "REQUESTED|docRequestUrl=\"" + docRequestUrl + '\"');
             }
 
             try {
@@ -145,59 +161,22 @@ public class JsoupLoader {
                     requestProperties.forEach(futureHttpGet::setRequestProperty);
                 }
 
-                document = futureHttpGet.get(docRequestUrl, request -> {
-                    try (BufferedInputStream is = new BufferedInputStream(
-                            request.getInputStream())) {
+                document = futureHttpGet.get(docRequestUrl, response -> {
 
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                            LoggerFactory.getLogger()
-                                          .d(TAG, "loadDocument",
-                                             "AFTER open"
-                                             + "\ncon.getURL=" + request.getURL()
-                                             + "\nlocation  =" + request.getHeaderField(
-                                                     HttpConstants.LOCATION));
-                        }
+                    try (BufferedInputStream bis = new BufferedInputStream(
+                            response.getInputStream())) {
 
-                        // the original url will change after a redirect.
-                        // We need the actual url for further processing.
-                        String locationHeader = request.getHeaderField(HttpConstants.LOCATION);
-                        if (locationHeader == null || locationHeader.isEmpty()) {
-                            locationHeader = request.getURL().toString();
-                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                                LoggerFactory.getLogger()
-                                              .d(TAG, "loadDocument",
-                                                 "location header not set, using url");
+                        if ("gzip".equals(response.getHeaderField("content-encoding"))) {
+                            try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
+                                return processResponse(response, gzs);
                             }
+                        } else {
+                            return processResponse(response, bis);
                         }
-
-                        /*
-                         VERY IMPORTANT: Explicitly set the baseUri to the location header.
-                         JSoup by default uses the absolute path from the inputStream
-                         and sets that as the document 'location'
-                         From JSoup docs:
-
-                         Get the URL this Document was parsed from.
-                         If the starting URL is a redirect, this will return the
-                         final URL from which the document was served from.
-
-                         @return location
-                         public String location() {
-                            return location;
-                         }
-
-                        However that is WRONG (org.jsoup:jsoup:1.11.3)
-                        It will NOT resolve the redirect itself and 'location' == 'baseUri'
-                        */
-                        final Document document = Jsoup.parse(is, charSetName, locationHeader);
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                            LoggerFactory.getLogger()
-                                         .d(TAG, "loadDocument",
-                                            "AFTER parsing|document.location()="
-                                            + document.location());
-                        }
-
-                        return document;
-
+                    } catch (@NonNull final ZipException e) {
+                        // a ZipException is very generic, replace it.
+                        throw new UncheckedIOException(
+                                new NetworkException("ZipException: " + e.getMessage()));
                     } catch (@NonNull final IOException e) {
                         throw new UncheckedIOException(e);
                     }
@@ -250,7 +229,7 @@ public class JsoupLoader {
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
                     LoggerFactory.getLogger()
-                                  .e(TAG, e, "docRequestUrl=" + docRequestUrl);
+                                 .e(TAG, e, "docRequestUrl=" + docRequestUrl);
                 }
                 throw e;
             }
@@ -258,6 +237,60 @@ public class JsoupLoader {
 
         // Shouldn't get here ... flw
         throw new IOException("Failed to get: " + docRequestUrl);
+    }
+
+    @NonNull
+    private Document processResponse(@NonNull final HttpURLConnection response,
+                                     @NonNull final InputStream is)
+            throws IOException {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
+            LoggerFactory.getLogger()
+                         .d(TAG, "loadDocument",
+                            "AFTER open"
+                            + "\nresponse.getURL()=" + response.getURL()
+                            + "\nlocation  =" + response.getHeaderField(
+                                    HttpConstants.LOCATION));
+        }
+
+        // the original url will change after a redirect.
+        // We need the actual url for further processing.
+        String locationHeader = response.getHeaderField(HttpConstants.LOCATION);
+        if (locationHeader == null || locationHeader.isEmpty()) {
+            locationHeader = response.getURL().toString();
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
+                LoggerFactory.getLogger()
+                             .d(TAG, "loadDocument",
+                                "location header not set, using url");
+            }
+        }
+
+        /*
+         VERY IMPORTANT: Explicitly set the baseUri to the location header.
+         JSoup by default uses the absolute path from the inputStream
+         and sets that as the document 'location'
+         From JSoup docs:
+
+         Get the URL this Document was parsed from.
+         If the starting URL is a redirect, this will return the
+         final URL from which the document was served from.
+
+         @return location
+         public String location() {
+            return location;
+         }
+
+        However that is WRONG (org.jsoup:jsoup:1.11.3)
+        It will NOT resolve the redirect itself and 'location' == 'baseUri'
+        */
+        final Document parsedDocument = Jsoup.parse(is, charSetName, locationHeader);
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
+            LoggerFactory.getLogger()
+                         .d(TAG, "loadDocument",
+                            "AFTER parsing|document.location()="
+                            + parsedDocument.location());
+        }
+
+        return parsedDocument;
     }
 
     public void cancel() {

@@ -42,7 +42,12 @@ public final class HttpConstants {
     public static final String ACCEPT_LANGUAGE = "Accept-Language";
     /** HTTP Request Header. */
     public static final String ACCEPT_ENCODING = "Accept-Encoding";
-    public static final String ACCEPT_ENCODING_GZIP_DEFLATE = "gzip, deflate";
+    /**
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Encoding">
+     * Accept-Encoding</a>
+     * Firefox sends (2023-05-22): "gzip, deflate, br"
+     */
+    public static final String ACCEPT_ENCODING_GZIP = "gzip";
     /** HTTP Request Header. */
     public static final String UPGRADE_INSECURE_REQUESTS = "Upgrade-Insecure-Requests";
     public static final String UPGRADE_INSECURE_REQUESTS_TRUE = "1";
