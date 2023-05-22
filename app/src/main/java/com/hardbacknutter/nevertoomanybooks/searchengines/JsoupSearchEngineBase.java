@@ -49,7 +49,8 @@ public abstract class JsoupSearchEngineBase
     protected JsoupSearchEngineBase(@NonNull final Context appContext,
                                     @NonNull final SearchEngineConfig config) {
         super(appContext, config);
-        jsoupLoader = new JsoupLoader(createFutureGetRequest());
+        // JsoupLoader now accepts gzip streams
+        jsoupLoader = new JsoupLoader(createFutureGetRequest(true));
     }
 
     /**

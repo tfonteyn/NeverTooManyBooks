@@ -76,17 +76,6 @@ public class JsoupLoader {
      */
     public JsoupLoader(@NonNull final FutureHttpGet<Document> futureHttpGet) {
         this.futureHttpGet = futureHttpGet;
-
-        this.futureHttpGet.setRequestProperty(HttpConstants.ACCEPT,
-                                              HttpConstants.ACCEPT_KITCHEN_SINK);
-        this.futureHttpGet.setRequestProperty(HttpConstants.CONNECTION,
-                                              HttpConstants.CONNECTION_KEEP_ALIVE);
-        this.futureHttpGet.setRequestProperty(HttpConstants.UPGRADE_INSECURE_REQUESTS,
-                                              HttpConstants.UPGRADE_INSECURE_REQUESTS_TRUE);
-
-        // loadDocument now accepts gzip streams
-        this.futureHttpGet.setRequestProperty(HttpConstants.ACCEPT_ENCODING,
-                                              HttpConstants.ACCEPT_ENCODING_GZIP);
     }
 
     /**
@@ -165,8 +154,7 @@ public class JsoupLoader {
 
                     try (BufferedInputStream bis = new BufferedInputStream(
                             response.getInputStream())) {
-
-                        if ("gzip".equals(response.getHeaderField("content-encoding"))) {
+                        if (HttpConstants.isZipped(response)) {
                             try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
                                 return processResponse(response, gzs);
                             }
