@@ -31,11 +31,13 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.UncheckedSAXException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -144,7 +146,7 @@ public class GoogleBooksSearchEngine
             throws StorageException,
                    SearchException {
 
-        futureHttpGet = createFutureGetRequest();
+        futureHttpGet = createFutureGetRequest(true);
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         // get the booklist, can return multiple books ('entry' elements)
@@ -155,7 +157,13 @@ public class GoogleBooksSearchEngine
             futureHttpGet.get(url, response -> {
                 try (BufferedInputStream bis = new BufferedInputStream(
                         response.getInputStream())) {
-                    parser.parse(bis, listHandler);
+                    if (HttpConstants.isZipped(response)) {
+                        try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
+                            parser.parse(gzs, listHandler);
+                        }
+                    } else {
+                        parser.parse(bis, listHandler);
+                    }
                     return true;
 
                 } catch (@NonNull final IOException e) {
