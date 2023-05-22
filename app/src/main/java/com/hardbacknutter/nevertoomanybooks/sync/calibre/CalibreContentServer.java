@@ -436,6 +436,7 @@ public class CalibreContentServer
     @NonNull
     private <FRT> FutureHttpGet<FRT> createFutureGetRequest() {
         final FutureHttpGet<FRT> httpGet = FutureHttpGet.createGet(R.string.site_calibre);
+        // Don't request gzip - we're presuming the server is low-power/low-performance
         httpGet.setConnectTimeout(connectTimeoutInMs)
                .setReadTimeout(readTimeoutInMs)
                .setRequestProperty(HttpConstants.AUTHORIZATION, authHeader)
