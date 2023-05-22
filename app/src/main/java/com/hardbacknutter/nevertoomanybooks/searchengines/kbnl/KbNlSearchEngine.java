@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
+import java.util.zip.GZIPInputStream;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -38,6 +39,7 @@ import javax.xml.parsers.SAXParserFactory;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.UncheckedSAXException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
@@ -141,6 +143,7 @@ public class KbNlSearchEngine
                    CredentialsException {
 
         futureHttpGet = createFutureHeadRequest();
+        //noinspection OverlyBroadCatchBlock
         try {
             futureHttpGet.get(getHostUrl() + "/cbs/", response -> true);
         } catch (@NonNull final IOException e) {
@@ -149,17 +152,17 @@ public class KbNlSearchEngine
 
         final Book book = new Book();
 
-        futureHttpGet = createFutureGetRequest();
+        futureHttpGet = createFutureGetRequest(true);
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final DefaultHandler handler = new KbNlBookHandler(context, this, book);
 
+        //noinspection OverlyBroadCatchBlock
         try {
             final SAXParser parser = factory.newSAXParser();
 
             // Do the search... we'll either get a parsed list-page back, or the parsed book page.
-            String url = getHostUrl() + String.format(SEARCH_URL, dbVersion, setNr,
-                                                      validIsbn);
+            String url = getHostUrl() + String.format(SEARCH_URL, dbVersion, setNr, validIsbn);
             futureHttpGet.get(url, response -> processResponse(response, handler, parser, book));
 
             // If it was a list page, fetch and parse the 1st book found;
@@ -168,8 +171,8 @@ public class KbNlSearchEngine
             if (show != null && !show.isEmpty()) {
                 book.clearData();
                 url = getHostUrl() + String.format(BOOK_URL, dbVersion, setNr, show);
-                futureHttpGet.get(url,
-                                  response -> processResponse(response, handler, parser, book));
+                futureHttpGet.get(url, response -> processResponse(response, handler, parser,
+                                                                   book));
             }
         } catch (@NonNull final SAXException e) {
             // unwrap SAXException using getException() !
@@ -203,10 +206,17 @@ public class KbNlSearchEngine
                                     @NonNull final Book book) {
 
         try (BufferedInputStream bis = new BufferedInputStream(response.getInputStream())) {
-            parser.parse(bis, handler);
-            //noinspection ConstantConditions
+            if (HttpConstants.isZipped(response)) {
+                try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
+                    parser.parse(gzs, handler);
+                }
+            } else {
+                parser.parse(bis, handler);
+            }
+
+            //noinspection DataFlowIssue
             dbVersion = book.getString(KbNlHandlerBase.BKEY_DB_VERSION, DEFAULT_DB_VERSION);
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             setNr = book.getString(KbNlHandlerBase.BKEY_SET_NUMBER, DEFAULT_SET_NUMBER);
             return true;
 
