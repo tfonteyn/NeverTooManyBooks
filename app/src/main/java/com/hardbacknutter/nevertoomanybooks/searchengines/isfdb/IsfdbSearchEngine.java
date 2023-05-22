@@ -47,6 +47,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.zip.GZIPInputStream;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -1543,7 +1544,7 @@ public class IsfdbSearchEngine
                                          @NonNull final MoneyParser moneyParser)
             throws StorageException, SearchException {
 
-        futureHttpGet = createFutureGetRequest();
+        futureHttpGet = createFutureGetRequest(true);
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
 
@@ -1555,8 +1556,15 @@ public class IsfdbSearchEngine
             final SAXParser parser = factory.newSAXParser();
 
             futureHttpGet.get(url, response -> {
-                try (BufferedInputStream bis = new BufferedInputStream(response.getInputStream())) {
-                    parser.parse(bis, listHandler);
+                try (BufferedInputStream bis = new BufferedInputStream(
+                        response.getInputStream())) {
+                    if (HttpConstants.isZipped(response)) {
+                        try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
+                            parser.parse(gzs, listHandler);
+                        }
+                    } else {
+                        parser.parse(bis, listHandler);
+                    }
                     return true;
 
                 } catch (@NonNull final IOException e) {
