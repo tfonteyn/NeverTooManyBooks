@@ -19,6 +19,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.core.network;
 
+import androidx.annotation.NonNull;
+
+import java.net.HttpURLConnection;
+
 @SuppressWarnings("WeakerAccess")
 public final class HttpConstants {
 
@@ -76,5 +80,16 @@ public final class HttpConstants {
     public static final String LOCATION = "location";
 
     private HttpConstants() {
+    }
+
+    /**
+     * Check if the response headers indicate the encoding is gzip.
+     *
+     * @param response connection to check
+     *
+     * @return {@code true} if the content-encoding was "gzip"
+     */
+    public static boolean isZipped(@NonNull final HttpURLConnection response) {
+        return "gzip".equals(response.getHeaderField("content-encoding"));
     }
 }
