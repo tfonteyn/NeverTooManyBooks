@@ -48,6 +48,7 @@ Booklist style sorting by date-read or date-added etc...:
 4.4.0
 
 NEW:
+- performance improvement: automatic support for compression when fetching data from the web.
 - New field to hold the original-title of a translated book.
   Displayed by default, but can be hidden via Settings/Field-Visibility.
 - When editing a book, the language, format, color drop-down fields
