@@ -66,6 +66,7 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.concurrent.CancellationException;
 import java.util.stream.Collectors;
+import java.util.zip.GZIPInputStream;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
@@ -434,9 +435,14 @@ public class CalibreContentServer
     }
 
     @NonNull
-    private <FRT> FutureHttpGet<FRT> createFutureGetRequest() {
+    private <FRT> FutureHttpGet<FRT> createFutureGetRequest(final boolean useCompression) {
         final FutureHttpGet<FRT> httpGet = FutureHttpGet.createGet(R.string.site_calibre);
-        // Don't request gzip - we're presuming the server is low-power/low-performance
+
+        if (useCompression) {
+            httpGet.setRequestProperty(HttpConstants.ACCEPT_ENCODING,
+                                       HttpConstants.ACCEPT_ENCODING_GZIP);
+        }
+
         httpGet.setConnectTimeout(connectTimeoutInMs)
                .setReadTimeout(readTimeoutInMs)
                .setRequestProperty(HttpConstants.AUTHORIZATION, authHeader)
@@ -1166,7 +1172,7 @@ public class CalibreContentServer
         synchronized (this) {
             if (imageDownloader == null) {
                 imageDownloader =
-                        new ImageDownloader(createFutureGetRequest(),
+                        new ImageDownloader(createFutureGetRequest(true),
                                             ServiceLocator.getInstance()::getCoverStorage);
             }
         }
@@ -1200,20 +1206,33 @@ public class CalibreContentServer
                    IOException {
         synchronized (this) {
             if (futureJsonFetchRequest == null) {
-                futureJsonFetchRequest = createFutureGetRequest();
+                futureJsonFetchRequest = createFutureGetRequest(true);
             }
         }
         return futureJsonFetchRequest.get(url, response -> {
-            try (BufferedInputStream bis = new BufferedInputStream(
-                    response.getInputStream());
-                 InputStreamReader isr = new InputStreamReader(bis, StandardCharsets.UTF_8);
-                 BufferedReader reader = new BufferedReader(isr, buffer)) {
+            try (BufferedInputStream bis = new BufferedInputStream(response.getInputStream())) {
+                if (HttpConstants.isZipped(response)) {
+                    try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
+                        return doRead(gzs, buffer);
+                    }
+                } else {
+                    return doRead(bis, buffer);
+                }
 
-                return reader.lines().collect(Collectors.joining());
             } catch (@NonNull final IOException e) {
                 throw new UncheckedIOException(e);
             }
         });
+    }
+
+    @NonNull
+    private String doRead(@NonNull final InputStream bis,
+                          final int buffer)
+            throws IOException {
+        try (InputStreamReader isr = new InputStreamReader(bis, StandardCharsets.UTF_8);
+             BufferedReader reader = new BufferedReader(isr, buffer)) {
+            return reader.lines().collect(Collectors.joining());
+        }
     }
 
     /**
@@ -1263,10 +1282,11 @@ public class CalibreContentServer
 
         synchronized (this) {
             if (futureFileFetchRequest == null) {
-                futureFileFetchRequest = createFutureGetRequest();
+                futureFileFetchRequest = createFutureGetRequest(true);
             }
         }
         return futureFileFetchRequest.get(url, response -> {
+            //noinspection OverlyBroadCatchBlock
             try (OutputStream os = context.getContentResolver().openOutputStream(destUri)) {
                 if (os != null) {
                     try (BufferedOutputStream bos = new BufferedOutputStream(os);
@@ -1275,7 +1295,14 @@ public class CalibreContentServer
 
                         progressListener.publishProgress(0, context.getString(
                                 R.string.progress_msg_loading));
-                        FileUtils.copy(bis, bos);
+
+                        if (HttpConstants.isZipped(response)) {
+                            try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
+                                FileUtils.copy(gzs, bos);
+                            }
+                        } else {
+                            FileUtils.copy(bis, bos);
+                        }
                     }
                 }
             } catch (@NonNull final IOException e) {
