@@ -42,9 +42,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
+import java.util.zip.GZIPInputStream;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -293,21 +295,27 @@ public class OpenLibrarySearchEngine
                            @NonNull final Book book)
             throws StorageException, SearchException {
 
-        futureHttpGet = createFutureGetRequest();
+        futureHttpGet = createFutureGetRequest(true);
 
+        //noinspection OverlyBroadCatchBlock
         try {
             // get and store the result into a string.
-            final String response = futureHttpGet.get(url, request -> {
+            final String json = futureHttpGet.get(url, response -> {
                 try (BufferedInputStream bis = new BufferedInputStream(
-                        request.getInputStream())) {
-                    return readResponseStream(bis);
-
+                        response.getInputStream())) {
+                    if (HttpConstants.isZipped(response)) {
+                        try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
+                            return readResponseStream(gzs);
+                        }
+                    } else {
+                        return readResponseStream(bis);
+                    }
                 } catch (@NonNull final IOException e) {
                     throw new UncheckedIOException(e);
                 }
             });
 
-            if (handleResponse(context, response, fetchCovers, book)) {
+            if (handleResponse(context, json, fetchCovers, book)) {
                 checkForSeriesNameInTitle(book);
             }
 
@@ -611,7 +619,7 @@ public class OpenLibrarySearchEngine
                 if (element != null) {
                     final String title = element.optString("title");
                     if (title != null && !title.isEmpty()) {
-                        //noinspection ConstantConditions
+                        //noinspection DataFlowIssue
                         toc.add(new TocEntry(primAuthor, title));
                     }
                 }
