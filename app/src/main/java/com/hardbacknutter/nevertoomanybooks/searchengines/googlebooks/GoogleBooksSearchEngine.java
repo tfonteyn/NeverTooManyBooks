@@ -152,8 +152,9 @@ public class GoogleBooksSearchEngine
 
         try {
             final SAXParser parser = factory.newSAXParser();
-            futureHttpGet.get(url, request -> {
-                try (BufferedInputStream bis = new BufferedInputStream(request.getInputStream())) {
+            futureHttpGet.get(url, response -> {
+                try (BufferedInputStream bis = new BufferedInputStream(
+                        response.getInputStream())) {
                     parser.parse(bis, listHandler);
                     return true;
 
@@ -176,9 +177,9 @@ public class GoogleBooksSearchEngine
                         this, fetchCovers, book, getLocale(context));
 
                 // only using the first one found, maybe future enhancement?
-                futureHttpGet.get(urlList.get(0), request -> {
+                futureHttpGet.get(urlList.get(0), response -> {
                     try (BufferedInputStream bis = new BufferedInputStream(
-                            request.getInputStream())) {
+                            response.getInputStream())) {
                         parser.parse(bis, handler);
                         checkForSeriesNameInTitle(book);
                         return true;
