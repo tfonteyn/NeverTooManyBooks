@@ -135,9 +135,9 @@ public class LibraryThingSearchEngine
 
         try {
             final SAXParser parser = factory.newSAXParser();
-            futureHttpGet.get(url, request -> {
+            futureHttpGet.get(url, response -> {
                 try (BufferedInputStream bis = new BufferedInputStream(
-                        request.getInputStream())) {
+                        response.getInputStream())) {
                     parser.parse(bis, handler);
                     return true;
 
