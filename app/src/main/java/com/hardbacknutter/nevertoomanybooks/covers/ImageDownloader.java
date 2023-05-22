@@ -140,9 +140,9 @@ public class ImageDownloader {
                 }
                 savedFile = destFile;
             } else {
-                savedFile = futureHttpGet.get(url, request -> {
+                savedFile = futureHttpGet.get(url, response -> {
                     try (BufferedInputStream bis = new BufferedInputStream(
-                            request.getInputStream())) {
+                            response.getInputStream())) {
                         return coverStorage.persist(bis, destFile);
                     } catch (@NonNull final CoverStorageException e) {
                         throw new UncheckedCoverStorageException(e);
