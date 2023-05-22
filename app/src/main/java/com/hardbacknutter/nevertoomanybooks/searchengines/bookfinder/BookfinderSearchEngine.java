@@ -194,6 +194,14 @@ public class BookfinderSearchEngine
             }
         }
 
+        final Element description = document.selectFirst("div#bookSummary > p");
+        if (description != null) {
+            final String text = description.html();
+            if (!text.isBlank()) {
+                book.putString(DBKey.DESCRIPTION, text.strip());
+            }
+        }
+
         if (isCancelled()) {
             return;
         }

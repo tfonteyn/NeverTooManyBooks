@@ -76,7 +76,7 @@ public class BookFinderTest
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
         searchEngine.parse(context, document, new boolean[]{true, false}, book);
-        // System.out.println(book);
+        //System.out.println(book);
 
         assertEquals("Rule 34", book.getString(DBKey.TITLE, null));
         assertEquals("9780441020348", book.getString(DBKey.BOOK_ISBN, null));
@@ -84,6 +84,16 @@ public class BookFinderTest
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("English", book.getString(DBKey.LANGUAGE, null));
         assertEquals(3.75f, book.getFloat(DBKey.RATING, realNumberParser));
+
+        assertEquals("<b>\"The most spectacular science fiction writer of recent years"
+                     + "\" (Vernor Vinge, author of <i>Rainbows End</i>)"
+                     + " presents a near-future thriller. <br><br>\n"
+                     + "  Detective Inspector Liz Kavanaugh is head of the Rule 34 Squad,"
+                     + " monitoring the Internet to determine whether people are engaging in"
+                     + " harmless fantasies or illegal activities."
+                     + " Three ex-con spammers have been murdered, and Liz must uncover the"
+                     + " link between them before these homicides go viral.<br><br></b>",
+                     book.getString(DBKey.DESCRIPTION));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
