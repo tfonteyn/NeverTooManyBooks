@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bol.BolSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.bookfinder.BookfinderSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.googlebooks.GoogleBooksSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbSearchEngine;
@@ -146,6 +147,13 @@ public enum EngineId
         new Locale("nl", "NL"),
         BolSearchEngine.class,
         BuildConfig.ENABLE_BOL),
+
+    BookFinder("bookfinder",
+               R.string.site_bookfinder,
+               "https://www.bookfinder.com",
+               Locale.US,
+               BookfinderSearchEngine.class,
+               BuildConfig.ENABLE_BOOKFINDER),
 
     /** Only used for {@link SearchEngine.ViewBookByExternalId}. */
     Goodreads("goodreads",
@@ -315,6 +323,10 @@ public enum EngineId
             Bol.createConfiguration()
                .build();
         }
+        if (BookFinder.isEnabled()) {
+            BookFinder.createConfiguration()
+                      .build();
+        }
         if (Goodreads.isEnabled()) {
             Goodreads.createConfiguration()
                      .setDomainKey(DBKey.SID_GOODREADS_BOOK)
@@ -420,6 +432,8 @@ public enum EngineId
                 type.addSite(Amazon, true);
                 type.addSite(GoogleBooks, true);
                 type.addSite(Isfdb, true);
+                type.addSite(BookFinder, true);
+
                 type.addSite(StripInfoBe, activateIfDutch);
                 type.addSite(LastDodoNl, activateIfDutch);
                 type.addSite(Bedetheque, activateIfFrench);

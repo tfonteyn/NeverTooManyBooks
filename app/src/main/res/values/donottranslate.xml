@@ -62,7 +62,8 @@
             translatable="false">Bedetheque</string>
     <string name="site_bol_com"
             translatable="false">bol.com</string>
-
+    <string name="site_bookfinder"
+            translatable="false">BookFinder</string>
     <string name="site_calibre"
             translatable="false">Calibre</string>
 
