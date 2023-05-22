@@ -124,7 +124,7 @@ public class BedethequeSearchEngine
                 final FutureHttpGet<HttpCookie> head = createFutureHeadRequest();
                 // Reminder: the "request" will be connected and the response code will be OK,
                 // so just extract the cookie we need for the next request
-                csrfCookie = head.get(getHostUrl() + SEARCH_URL, request -> cookieManager
+                csrfCookie = head.get(getHostUrl() + SEARCH_URL, response -> cookieManager
                         .getCookieStore()
                         .getCookies()
                         .stream()
