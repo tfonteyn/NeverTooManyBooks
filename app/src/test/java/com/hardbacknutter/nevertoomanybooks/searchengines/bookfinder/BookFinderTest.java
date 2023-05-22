@@ -53,7 +53,7 @@ public class BookFinderTest
 
     private static final String UTF_8 = "UTF-8";
 
-    private BookfinderSearchEngine searchEngine;
+    private BookFinderSearchEngine searchEngine;
     private Book book;
 
     @BeforeEach
@@ -61,7 +61,7 @@ public class BookFinderTest
             throws Exception {
         super.setup();
         book = new Book(BundleMock.create());
-        searchEngine = (BookfinderSearchEngine) EngineId.BookFinder.createSearchEngine(context);
+        searchEngine = (BookFinderSearchEngine) EngineId.BookFinder.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
     }
 
