@@ -33,11 +33,13 @@ import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.zip.GZIPInputStream;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.UncheckedSAXException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -126,21 +128,27 @@ public class LibraryThingSearchEngine
                                                   @NonNull final String validIsbn)
             throws SearchException {
 
-        futureHttpGet = createFutureGetRequest();
+        futureHttpGet = createFutureGetRequest(true);
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final LibraryThingEditionHandler handler = new LibraryThingEditionHandler();
 
         final String url = getHostUrl() + String.format("/api/thingISBN/%1$s", validIsbn);
 
+        //noinspection OverlyBroadCatchBlock
         try {
             final SAXParser parser = factory.newSAXParser();
             futureHttpGet.get(url, response -> {
                 try (BufferedInputStream bis = new BufferedInputStream(
                         response.getInputStream())) {
-                    parser.parse(bis, handler);
+                    if (HttpConstants.isZipped(response)) {
+                        try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
+                            parser.parse(gzs, handler);
+                        }
+                    } else {
+                        parser.parse(bis, handler);
+                    }
                     return true;
-
                 } catch (@NonNull final IOException e) {
                     throw new UncheckedIOException(e);
                 } catch (@NonNull final SAXException e) {
