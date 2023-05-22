@@ -36,11 +36,13 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.zip.GZIPInputStream;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.storage.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -130,6 +132,7 @@ public class ImageDownloader {
         @Nullable
         final File savedFile;
 
+        //noinspection OverlyBroadCatchBlock
         try {
             if (url.startsWith(DATA_IMAGE_JPEG_BASE_64)) {
                 try (OutputStream os = new FileOutputStream(destFile)) {
@@ -141,9 +144,16 @@ public class ImageDownloader {
                 savedFile = destFile;
             } else {
                 savedFile = futureHttpGet.get(url, response -> {
+                    //noinspection OverlyBroadCatchBlock
                     try (BufferedInputStream bis = new BufferedInputStream(
                             response.getInputStream())) {
-                        return coverStorage.persist(bis, destFile);
+                        if (HttpConstants.isZipped(response)) {
+                            try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
+                                return coverStorage.persist(gzs, destFile);
+                            }
+                        } else {
+                            return coverStorage.persist(bis, destFile);
+                        }
                     } catch (@NonNull final CoverStorageException e) {
                         throw new UncheckedCoverStorageException(e);
                     } catch (@NonNull final IOException e) {

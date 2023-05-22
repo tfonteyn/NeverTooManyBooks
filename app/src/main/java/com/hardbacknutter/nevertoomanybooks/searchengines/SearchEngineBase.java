@@ -81,7 +81,7 @@ public abstract class SearchEngineBase
         // only stored to use for preference etc lookups.
         this.appContext = appContext;
         this.config = config;
-        imageDownloader = new ImageDownloader(createFutureGetRequest(false),
+        imageDownloader = new ImageDownloader(createFutureGetRequest(true),
                                               ServiceLocator.getInstance()::getCoverStorage);
     }
 
