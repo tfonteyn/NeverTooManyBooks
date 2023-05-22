@@ -72,21 +72,27 @@ public class BolSearchEngine
         implements SearchEngine.ByIsbn,
                    SearchEngine.ByText {
 
-    /** one of {"","be","nl"} */
+    /** one of {"","be","nl"}. */
     static final String PK_BOL_COUNTRY = EngineId.Bol.getPreferenceKey() + ".country";
 
     /** Website character encoding. */
     static final String CHARSET = "UTF-8";
     /**
+     * Search using a text-string.
+     * <p>
      * param 1: the country "be" or "nl"
      * param 2: words, separated by spaces
      */
     static final String BY_TEXT = "/%1$s/nl/s/?searchtext=%2$s";
     /**
+     * Search using the ISBN.
+     * <p>
      * param 1: the country "be" or "nl"
      * param 2: the isbn
      */
     private static final String BY_ISBN = "/%1$s/nl/s/?searchtext=+%2$s+";
+    /** Front-covers can be given using either of these keys. We must try both. */
+    private static final List<String> FRONT_COVER_KEYS = List.of("coverImageUrl", "imageUrl");
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
@@ -494,63 +500,51 @@ public class BolSearchEngine
 
             // The data of this element can contain a JSONArray or a JSONObject
             final String text = imageSlotConfig.data().strip();
-
-            String coverImageUrl;
             try {
-                // If it's a JSONArray, simply grab the first element.
                 if (text.startsWith("[") && text.endsWith("]")) {
+                    // If it's a JSONArray, simply grab the first element.
                     final JSONArray objects = new JSONArray(text);
                     final JSONObject currentItem = objects.optJSONObject(0);
                     if (currentItem != null) {
-                        coverImageUrl = currentItem.optString("imageUrl");
-                        if (processCover(coverImageUrl, isbn, 0, book)) {
-                            // only attempt to get the back-cover if we got a frontcover
-                            // and (obv.) we want one.
-                            if (fetchCovers.length > 1 && fetchCovers[1]) {
-                                coverImageUrl = currentItem.optString("backImageUrl");
-                                processCover(coverImageUrl, isbn, 1, book);
-                            }
-                            // all done.
-                            return;
+                        parseCovers(currentItem, isbn, fetchCovers, book);
+                    }
+                } else {
+                    // it should be a single JSONObject of which we want a sub-JSONObject
+                    final JSONObject imageSlotSlider = new JSONObject(text)
+                            .optJSONObject("imageSlotSlider");
+                    if (imageSlotSlider != null) {
+                        final JSONObject currentItem = imageSlotSlider.optJSONObject("currentItem");
+                        if (currentItem != null) {
+                            parseCovers(currentItem, isbn, fetchCovers, book);
                         }
                     }
                 }
-
-                // it should be a single JSONObject of which we want a sub-JSONObject
-                final JSONObject imageSlotSlider = new JSONObject(text)
-                        .optJSONObject("imageSlotSlider");
-                if (imageSlotSlider != null) {
-                    final JSONObject currentItem = imageSlotSlider.optJSONObject("currentItem");
-                    if (currentItem != null) {
-                        boolean gotFrontCover = false;
-
-                        // There is more than 1 possible key for the frontcover
-                        coverImageUrl = currentItem.optString("coverImageUrl");
-
-                        if (coverImageUrl != null && !coverImageUrl.isEmpty()) {
-                            gotFrontCover = processCover(coverImageUrl, isbn, 0, book);
-                        }
-                        if (!gotFrontCover) {
-                            // try alternative key.
-                            coverImageUrl = currentItem.optString("imageUrl");
-                            if (coverImageUrl != null && !coverImageUrl.isEmpty()) {
-                                gotFrontCover = processCover(coverImageUrl, isbn, 0, book);
-                            }
-                        }
-
-                        // only attempt to get the back-cover if we got a frontcover
-                        // and (obv.) we want one.
-                        if (gotFrontCover && fetchCovers.length > 1 && fetchCovers[1]) {
-                            coverImageUrl = currentItem.optString("backImageUrl");
-                            processCover(coverImageUrl, isbn, 1, book);
-                        }
-                    }
-                }
-
             } catch (@NonNull final JSONException e) {
                 // Log it so we can extend the above check if needed.
                 // There is more than one way of listing images...
                 LoggerFactory.getLogger().w(TAG, e, "text=`" + text + "`");
+            }
+        }
+    }
+
+    private void parseCovers(@NonNull final JSONObject currentItem,
+                             @NonNull final String isbn,
+                             @NonNull final boolean[] fetchCovers,
+                             @NonNull final Book book)
+            throws StorageException {
+        for (final String key : FRONT_COVER_KEYS) {
+            String coverImageUrl = currentItem.optString(key);
+            if (coverImageUrl != null && !coverImageUrl.isBlank()) {
+                if (processCover(coverImageUrl, isbn, 0, book)) {
+                    // only attempt to get the back-cover if we got a front-cover
+                    // and (obv.) we want one.
+                    if (fetchCovers.length > 1 && fetchCovers[1]) {
+                        coverImageUrl = currentItem.optString("backImageUrl");
+                        processCover(coverImageUrl, isbn, 1, book);
+                    }
+                    // All done. We have a front-cover and maybe a back-cover.
+                    return;
+                }
             }
         }
     }
