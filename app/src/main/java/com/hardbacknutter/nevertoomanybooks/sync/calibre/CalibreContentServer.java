@@ -1202,9 +1202,9 @@ public class CalibreContentServer
                 futureJsonFetchRequest = createFutureGetRequest();
             }
         }
-        return futureJsonFetchRequest.get(url, request -> {
+        return futureJsonFetchRequest.get(url, response -> {
             try (BufferedInputStream bis = new BufferedInputStream(
-                    request.getInputStream());
+                    response.getInputStream());
                  InputStreamReader isr = new InputStreamReader(bis, StandardCharsets.UTF_8);
                  BufferedReader reader = new BufferedReader(isr, buffer)) {
 
@@ -1265,12 +1265,12 @@ public class CalibreContentServer
                 futureFileFetchRequest = createFutureGetRequest();
             }
         }
-        return futureFileFetchRequest.get(url, request -> {
+        return futureFileFetchRequest.get(url, response -> {
             try (OutputStream os = context.getContentResolver().openOutputStream(destUri)) {
                 if (os != null) {
                     try (BufferedOutputStream bos = new BufferedOutputStream(os);
                          BufferedInputStream bis = new BufferedInputStream(
-                                 request.getInputStream(), BUFFER_FILE)) {
+                                 response.getInputStream(), BUFFER_FILE)) {
 
                         progressListener.publishProgress(0, context.getString(
                                 R.string.progress_msg_loading));
