@@ -32,13 +32,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.snackbar.Snackbar;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -177,13 +174,8 @@ public class CalibreLibraryMappingFragment
             Optional<SyncReaderMetaData>>> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(data -> {
-            //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG)
-                    .show();
-            //noinspection ConstantConditions
-            getView().postDelayed(() -> getActivity().finish(), BaseActivity.DELAY_LONG_MS);
-        });
+        message.getData().ifPresent(
+                data -> showMessageAndFinishActivity(getString(R.string.cancelled)));
     }
 
     private void onMetaDataFailure(@NonNull final LiveDataEvent<TaskResult<Throwable>> message) {
