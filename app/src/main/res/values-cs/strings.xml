@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -200,7 +199,13 @@
     <string name="confirm_registration_benefits">Tato funkce těží z registrace u %1$s. Chcete zobrazit další informace nebo tuto zprávu deaktivovat?\nTyto informace najdete později v části „%2$s“ v nastavení.</string>
     <string name="confirm_registration_required">Tato funkce vyžaduje registraci s %1$s. Chtěli byste vidět více informací?</string>
     <string name="confirm_remove_toc_entry">Odebrat z této knihy titul „%1$s“ od autora %2$s?</string>
-    <string name="confirm_scope_for_change">Změnili jste:\n „%1$s“\n na\n „%2$s“\n\nJak si přejete aplikovat tuto změnu?\n\nUpozornění: Volba „%3$s“ bude aplikována okamžitě. Pokud zvolíte „%4$s“, vytvoří se nový %5$s.</string>
+    <string name="confirm_scope_for_change">Změnili jste:
+\n „%1$s“
+\n na
+\n „%2$s“
+\n
+\nJak si přejete aplikovat tuto změnu\?
+\nUpozornění: Volba „%3$s“ bude aplikována okamžitě. Pokud zvolíte „%4$s“, vytvoří se nový %5$s.</string>
     <string name="confirm_scope_for_delete">Smazat název „%1$s“ od %2$s.\n\nJak chcete tuto změnu uplatnit?\nVAROVÁNÍ: Volbu „%3$s“ nelze vrátit zpět!</string>
     <string name="confirm_test_connection">Doporučujeme toto připojení otestovat, abyste se později vyhnuli problémům.</string>
     <string name="confirm_unsaved_edits">Máte neuložené změny, pokud nyní ukončíte, budou ztraceny.</string>
