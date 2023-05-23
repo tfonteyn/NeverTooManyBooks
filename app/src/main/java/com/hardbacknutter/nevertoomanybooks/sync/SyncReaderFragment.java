@@ -267,13 +267,8 @@ public class SyncReaderFragment
             Optional<SyncReaderMetaData>>> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(data -> {
-            //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG)
-                    .show();
-            //noinspection ConstantConditions
-            getView().postDelayed(() -> getActivity().finish(), BaseActivity.DELAY_LONG_MS);
-        });
+        message.getData().ifPresent(
+                data -> showMessageAndFinishActivity(getString(R.string.cancelled)));
     }
 
     /**
@@ -419,10 +414,7 @@ public class SyncReaderFragment
             if (result != null) {
                 onImportFinished(R.string.info_import_partially_complete, result);
             } else {
-                //noinspection ConstantConditions
-                Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
-                //noinspection ConstantConditions
-                getView().postDelayed(() -> getActivity().finish(), BaseActivity.DELAY_LONG_MS);
+                showMessageAndFinishActivity(getString(R.string.cancelled));
             }
         });
     }
