@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -74,6 +74,9 @@ public class CalibreSyncFragment
         final Toolbar toolbar = getToolbar();
         toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
         toolbar.setTitle(R.string.action_synchronize);
+
+        // Make sure it's GONE, when returning from import/export to this screen
+        getFab().setVisibility(View.GONE);
 
         vb.btnLibMap.setOnClickListener(v -> {
             final String url = CalibreContentServer.getHostUrl(v.getContext());
