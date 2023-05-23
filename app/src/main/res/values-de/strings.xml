@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“  - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -143,7 +140,7 @@
     <string name="book_format_other">Andere</string>
     <string name="book_format_digest">Heft</string>
     <string name="book_format_dimensions">Abmessungen</string>
-    <string name="book_format_ebook">"Onlinebuch "</string>
+    <string name="book_format_ebook">Onlinebuch</string>
     <string name="book_format_hardcover">Gebundene Ausgabe</string>
     <string name="book_format_paperback">Taschenbuch</string>
     <string name="book_format_paperback_large">Paperback</string>
@@ -600,7 +597,7 @@
     <string name="pt_thumbnails_cache_resized">Größe der Buchumschläge zwischenspeichern</string>
     <string name="pt_thumbnails_rotate_auto">Bilder drehen</string>
     <string name="pt_ui_language">Sprache</string>
-    <string name="pt_ui_system_locale">System Locale</string>
+    <string name="pt_ui_system_locale">Systemsprache</string>
     <string name="pt_ui_theme">Thema</string>
     <string name="pt_website_search_order_and_enable">Priorität, aktivieren und deaktivieren</string>
     <string name="ps_author_name_family_first">z.B. „Kafka, Franz“</string>
