@@ -125,7 +125,7 @@ public class BedethequeAuthorResolver
 
         final BedethequeCacheDao cacheDao = ServiceLocator.getInstance().getBedethequeCacheDao();
         // Check if we have the author in the cache
-        BdtAuthor bdtAuthor = cacheDao.findByName(name, locale);
+        BdtAuthor bdtAuthor = cacheDao.findByName(name, locale).orElse(null);
         if (bdtAuthor == null) {
             // If not resolved / not found,
             final AuthorListLoader pageLoader = new AuthorListLoader(context, searchEngine);
@@ -135,7 +135,7 @@ public class BedethequeAuthorResolver
                 // go fetch the the list-page on which the author should/could be
                 if (pageLoader.fetch(c1)) {
                     // If the author was on the list page, we should find it in the cache now.
-                    bdtAuthor = cacheDao.findByName(name, locale);
+                    bdtAuthor = cacheDao.findByName(name, locale).orElse(null);
                 }
             }
         }

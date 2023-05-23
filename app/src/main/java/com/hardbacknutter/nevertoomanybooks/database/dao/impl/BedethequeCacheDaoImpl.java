@@ -22,11 +22,12 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
+import android.os.Build;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -36,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.CacheDbHelper;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BedethequeCacheDao;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BdtAuthor;
 
@@ -57,25 +59,37 @@ public class BedethequeCacheDaoImpl
     }
 
     @Override
-    @Nullable
-    public BdtAuthor findByName(@NonNull final String name,
-                                @NonNull final Locale locale) {
+    @NonNull
+    public Optional<BdtAuthor> findByName(@NonNull final String name,
+                                          @NonNull final Locale locale) {
         final String nameOb = SqlEncode.orderByColumn(name, locale);
 
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{nameOb, nameOb})) {
             if (cursor.moveToFirst()) {
                 final CursorRow rowData = new CursorRow(cursor);
-                return new BdtAuthor(rowData.getLong(CacheDbHelper.PK_ID), rowData);
+                return Optional.of(new BdtAuthor(rowData.getLong(CacheDbHelper.PK_ID), rowData));
             } else {
-                return null;
+                return Optional.empty();
             }
         }
+    }
+
+    @Override
+    public void fixId(@NonNull final BdtAuthor bdtAuthor,
+                      @NonNull final Locale locale) {
+        final long found = findByName(bdtAuthor.getName(), locale)
+                .map(BdtAuthor::getId).orElse(0L);
+        bdtAuthor.setId(found);
     }
 
     @Override
     public boolean insert(@NonNull final Locale locale,
                           @NonNull final Supplier<BdtAuthor> recordSupplier)
             throws DaoWriteException {
+
+        if (Build.VERSION.SDK_INT < 30) {
+            return insertApiPre30(locale, recordSupplier);
+        }
 
         BdtAuthor bdtAuthor = null;
 
@@ -96,6 +110,71 @@ public class BedethequeCacheDaoImpl
                         bdtAuthor.setId(id);
                     } else {
                         throw new DaoWriteException(ERROR_INSERT_FROM + bdtAuthor);
+                    }
+                }
+            }
+            if (txLock != null) {
+                db.setTransactionSuccessful();
+            }
+            return id > 0;
+
+        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+            throw new DaoWriteException(ERROR_INSERT_FROM + bdtAuthor, e);
+        } finally {
+            if (txLock != null) {
+                db.endTransaction(txLock);
+            }
+        }
+    }
+
+    private boolean insertApiPre30(@NonNull final Locale locale,
+                                   @NonNull final Supplier<BdtAuthor> recordSupplier)
+            throws DaoWriteException {
+
+        BdtAuthor bdtAuthor = null;
+
+        Synchronizer.SyncLock txLock = null;
+        try {
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
+            }
+
+            final String sqlInsert = INSERT_INTO_ + CacheDbHelper.TBL_BDT_AUTHORS.getName()
+                                     + '(' + CacheDbHelper.BDT_AUTHOR_NAME
+                                     + ',' + CacheDbHelper.BDT_AUTHOR_NAME_OB
+                                     + ',' + CacheDbHelper.BDT_AUTHOR_URL
+                                     + ") VALUES(?,?,?)";
+
+            final String sqlUpdate = UPDATE_ + CacheDbHelper.TBL_BDT_AUTHORS.getName()
+                                     + _SET_ + CacheDbHelper.BDT_AUTHOR_URL + "=?"
+                                     + _WHERE_ + DBKey.PK_ID + "=?";
+
+            long id = 0;
+            try (SynchronizedStatement stmtInsert = db.compileStatement(sqlInsert);
+                 SynchronizedStatement stmtUpdate = db.compileStatement(sqlUpdate)) {
+                while ((bdtAuthor = recordSupplier.get()) != null) {
+                    // check if we already have this one
+                    fixId(bdtAuthor, locale);
+
+                    if (bdtAuthor.getId() == 0) {
+                        stmtInsert.bindString(1, bdtAuthor.getName());
+                        stmtInsert.bindString(2, SqlEncode.orderByColumn(bdtAuthor.getName(),
+                                                                         locale));
+                        stmtInsert.bindString(3, bdtAuthor.getUrl());
+                        id = stmtInsert.executeInsert();
+                        if (id > 0) {
+                            bdtAuthor.setId(id);
+                        } else {
+                            throw new DaoWriteException(ERROR_INSERT_FROM + bdtAuthor);
+                        }
+                    } else {
+                        stmtUpdate.bindString(1, bdtAuthor.getUrl());
+                        stmtUpdate.bindLong(2, bdtAuthor.getId());
+                        if (stmtUpdate.executeUpdateDelete() > 0) {
+                            id = bdtAuthor.getId();
+                        } else {
+                            throw new DaoWriteException(ERROR_UPDATE_FROM + bdtAuthor);
+                        }
                     }
                 }
             }
@@ -181,6 +260,11 @@ public class BedethequeCacheDaoImpl
 
     private static final class Sql {
 
+        /**
+         * "ON CONFLICT" requires Android 11.
+         *
+         * @see #insertApiPre30(Locale, Supplier) for older versions.
+         */
         static final String INSERT =
                 INSERT_INTO_ + CacheDbHelper.TBL_BDT_AUTHORS.getName()
                 + '(' + CacheDbHelper.BDT_AUTHOR_NAME

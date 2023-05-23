@@ -21,9 +21,9 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -39,9 +39,21 @@ public interface BedethequeCacheDao {
      *
      * @return the {@link BdtAuthor}, or {@code null} if not found
      */
-    @Nullable
-    BdtAuthor findByName(@NonNull String name,
-                         @NonNull Locale locale);
+    @NonNull
+    Optional<BdtAuthor> findByName(@NonNull String name,
+                                   @NonNull Locale locale);
+
+    /**
+     * Find a {@link BdtAuthor} by using the <strong>name</strong> fields.
+     * If found, updates <strong>ONLY</strong> the id with the one found in the database.
+     * <p>
+     * If the item has 'sub' items, then implementations must propagate the call.
+     *
+     * @param bdtAuthor to update
+     * @param locale    to use
+     */
+    void fixId(@NonNull BdtAuthor bdtAuthor,
+               @NonNull Locale locale);
 
     /**
      * Create the {@link BdtAuthor}s as supplied into the database.
