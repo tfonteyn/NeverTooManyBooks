@@ -47,6 +47,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class PreferredStylesViewModelTest
         extends BaseDBTest {
@@ -240,9 +241,12 @@ public class PreferredStylesViewModelTest
         Style initialStyle;
         int initialPosition = 1;
         initialStyle = styleList.get(initialPosition);
-        // IndexOutOfBounds if none found
-        while (!initialStyle.isUserDefined()) {
-            initialStyle = styleList.get(++initialPosition);
+        try {
+            while (!initialStyle.isUserDefined()) {
+                initialStyle = styleList.get(++initialPosition);
+            }
+        } catch (@NonNull final IndexOutOfBoundsException e) {
+            fail("There were no user-defined styles. Create one and restart the test.");
         }
 
         // Prepare editing
