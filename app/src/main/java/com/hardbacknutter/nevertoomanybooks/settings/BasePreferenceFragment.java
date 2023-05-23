@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,13 +28,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.preference.EditTextPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
@@ -64,7 +68,7 @@ public abstract class BasePreferenceFragment
     @NonNull
     protected View getProgressFrame() {
         if (progressFrame == null) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             progressFrame = Objects.requireNonNull(getActivity().findViewById(R.id.progress_frame),
                                                    "R.id.progress_frame");
         }
@@ -74,7 +78,7 @@ public abstract class BasePreferenceFragment
     @NonNull
     protected Toolbar getToolbar() {
         if (toolbar == null) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             toolbar = Objects.requireNonNull(getActivity().findViewById(R.id.toolbar),
                                              "R.id.toolbar");
         }
@@ -111,8 +115,10 @@ public abstract class BasePreferenceFragment
         if (getParentFragmentManager().getBackStackEntryCount() > 0) {
             getParentFragmentManager().popBackStack();
         } else {
-            //noinspection ConstantConditions
-            getActivity().finish();
+            final FragmentActivity activity = getActivity();
+            if (activity != null) {
+                activity.finish();
+            }
         }
     }
 
@@ -138,7 +144,7 @@ public abstract class BasePreferenceFragment
          * -keep public class * extends androidx.preference.PreferenceFragmentCompat
          * or use @Keep annotation on individual fragments
          */
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final Fragment fragment =
                 fm.getFragmentFactory().instantiate(getContext().getClassLoader(),
                                                     pref.getFragment());
@@ -167,12 +173,34 @@ public abstract class BasePreferenceFragment
      */
     protected void initHostUrlPreference(@NonNull final CharSequence key) {
         final EditTextPreference etp = findPreference(key);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         etp.setOnBindEditTextListener(editText -> {
             editText.setInputType(InputType.TYPE_CLASS_TEXT
                                   | InputType.TYPE_TEXT_VARIATION_URI);
             editText.selectAll();
         });
         etp.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
+    }
+
+    /**
+     * Copied from {@link com.hardbacknutter.nevertoomanybooks.BaseFragment} - keep in sync.
+     *
+     * @param message to show
+     */
+    void showMessageAndFinishActivity(@NonNull final CharSequence message) {
+        final View view = getView();
+        // Can be null in race conditions.
+        if (view != null) {
+            Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
+            view.postDelayed(() -> {
+                // Can be null in race conditions.
+                // i.e. the user cancelled which got us here, and then very quickly taps 'back'
+                // before we get here.
+                final FragmentActivity activity = getActivity();
+                if (activity != null) {
+                    activity.finish();
+                }
+            }, BaseActivity.DELAY_LONG_MS);
+        }
     }
 }
