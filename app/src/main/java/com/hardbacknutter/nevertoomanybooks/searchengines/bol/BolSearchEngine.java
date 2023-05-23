@@ -480,6 +480,71 @@ public class BolSearchEngine
      * Parse the document for cover images.
      * <p>
      * Will NOT throw if the JSON objects are messed up; we just won't have an image.
+     * <p>
+     * Example of the text inside an "imageSlotConfig" if it's a JSONArray:
+     * <pre>
+     *     {@code
+     * [
+     *   {
+     *     "type": "book-flipper",
+     *     "coverImageUrl": "https://media.s-bol.com/gKE8jpMpWokY/VR6Nlz/550x766.jpg",
+     *     "backImageUrl": "https://media.s-bol.com/y802R6lV9MnV/550x556.jpg",
+     *     "hardcover": true,
+     *     "flipBookText": "Boek omdraaien",
+     *     "thickness": "medium",
+     *     "m2": {
+     *       "bltgiselecteditembookflippertemplate0": {
+     *         "bltgi": "hhyqGFF0fyCZv8ZiGQdMGg.2_9.10"
+     *       },
+     *       "bltghselecteditembookflippertemplate0FlipBookByBook": {
+     *         "bltgh": "hhyqGFF0fyCZv8ZiGQdMGg.2_9.10.FlipBookByBook"
+     *       },
+     *       "bltghselecteditembookflippertemplate1FlipBookByLink": {
+     *         "bltgh": "hhyqGFF0fyCZv8ZiGQdMGg.2_9.10.FlipBookByLink"
+     *       }
+     *     }
+     *   },
+     *   {
+     *     "type": "image",
+     *     "imageUrl": "https://media.s-bol.com/gKE8jpMpWokY/VR6Nlz/550x766.jpg",
+     *     "productTitle": "nijntjes voorleesfeest",
+     *     "zoomImageUrl": "https://media.s-bol.com/gKE8jpMpWokY/VR6Nlz/861x1200.jpg",
+     *     "isHighPriorityEnabled": true,
+     *     "m2": {
+     *       "bltgiselecteditemimagetemplate0": {
+     *         "bltgi": "hhyqGFF0fyCZv8ZiGQdMGg.2_9.11"
+     *       }
+     *     }
+     *   },
+     *   {
+     *     "type": "image",
+     *     "imageUrl": "https://media.s-bol.com/y802R6lV9MnV/550x556.jpg",
+     *     "productTitle": "nijntjes voorleesfeest",
+     *     "zoomImageUrl": "https://media.s-bol.com/y802R6lV9MnV/1186x1200.jpg",
+     *     "isHighPriorityEnabled": true,
+     *     "m2": {
+     *       "bltgiselecteditemimagetemplate0": {
+     *         "bltgi": "hhyqGFF0fyCZv8ZiGQdMGg.2_9.12"
+     *       }
+     *     }
+     *   },
+     *   {
+     *     "type": "video",
+     *     "imageUrl": "https://media.s-bol.com/mEW048AnXmQG/550x309.jpg",
+     *     "videoUrl": "/nl/rnwy/ajax/video/product?productId\u003d9200000122271922",
+     *     "srtText": "Video afspelen",
+     *     "m2": {
+     *       "bltghselecteditemvideotemplate0StartVideo": {
+     *         "bltgh": "hhyqGFF0fyCZv8ZiGQdMGg.2_9.13.StartVideo"
+     *       },
+     *       "bltgiselecteditemvideotemplate0": {
+     *         "bltgi": "hhyqGFF0fyCZv8ZiGQdMGg.2_9.13"
+     *       }
+     *     }
+     *   }
+     * ]
+     *     }
+     * </pre>
      *
      * @param document    to parse
      * @param fetchCovers Set to {@code true} if we want to get covers
@@ -503,13 +568,16 @@ public class BolSearchEngine
             try {
                 if (text.startsWith("[") && text.endsWith("]")) {
                     // If it's a JSONArray, simply grab the first element.
+                    // This will either be a "book-flipper" with both front- and back-cover
+                    // in the keys "coverImageUrl" and backImageUrl";
+                    // or an "image" (or "video") with the front-cover in the key "imageUrl"
                     final JSONArray objects = new JSONArray(text);
                     final JSONObject currentItem = objects.optJSONObject(0);
                     if (currentItem != null) {
                         parseCovers(currentItem, isbn, fetchCovers, book);
                     }
                 } else {
-                    // it should be a single JSONObject of which we want a sub-JSONObject
+                    // TEST: This 'else' branch can likely be removed.
                     final JSONObject imageSlotSlider = new JSONObject(text)
                             .optJSONObject("imageSlotSlider");
                     if (imageSlotSlider != null) {
