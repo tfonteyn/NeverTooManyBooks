@@ -191,7 +191,7 @@ public class ImportFragment
         });
 
         final FloatingActionButton fab = getFab();
-        fab.setImageResource(R.drawable.ic_baseline_cloud_download_24);
+        fab.setImageResource(R.drawable.ic_baseline_import);
         fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(v -> startImport());
 

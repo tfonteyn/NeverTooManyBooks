@@ -120,7 +120,7 @@ public class SyncWriterFragment
                 .getSyncWriterHelper().setDeleteLocalBooks(isChecked));
 
         final FloatingActionButton fab = getFab();
-        fab.setImageResource(R.drawable.ic_baseline_cloud_upload_24);
+        fab.setImageResource(R.drawable.ic_baseline_export);
         // GONE here; will be made visible in showOptions() together with the full UI.
         fab.setVisibility(View.GONE);
         fab.setOnClickListener(v -> startWriting());
@@ -181,8 +181,7 @@ public class SyncWriterFragment
             vm.startExport();
         } else {
             //noinspection DataFlowIssue
-            Snackbar.make(getView(), R.string.warning_nothing_selected,
-                          Snackbar.LENGTH_SHORT)
+            Snackbar.make(getView(), R.string.warning_nothing_selected, Snackbar.LENGTH_SHORT)
                     .show();
         }
     }

@@ -177,7 +177,7 @@ public class SyncReaderFragment
                 vm.getDataReaderHelper().getSyncDate(), this::onSyncDateSet));
 
         final FloatingActionButton fab = getFab();
-        fab.setImageResource(R.drawable.ic_baseline_cloud_download_24);
+        fab.setImageResource(R.drawable.ic_baseline_import);
         fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(v -> startReading());
 
@@ -241,8 +241,7 @@ public class SyncReaderFragment
             vm.readData();
         } else {
             //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.warning_nothing_selected,
-                          Snackbar.LENGTH_SHORT)
+            Snackbar.make(getView(), R.string.warning_nothing_selected, Snackbar.LENGTH_SHORT)
                     .show();
         }
     }

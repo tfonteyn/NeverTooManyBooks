@@ -135,7 +135,7 @@ public class ExportFragment
         vb.infExportNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
 
         final FloatingActionButton fab = getFab();
-        fab.setImageResource(R.drawable.ic_baseline_cloud_upload_24);
+        fab.setImageResource(R.drawable.ic_baseline_export);
         // GONE here; will be made visible in showOptions() together with the full UI.
         fab.setVisibility(View.GONE);
         fab.setOnClickListener(v -> startExport());
