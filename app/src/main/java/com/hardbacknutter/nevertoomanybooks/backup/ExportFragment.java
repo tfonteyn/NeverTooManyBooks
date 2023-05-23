@@ -93,7 +93,7 @@ public class ExportFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(ExportViewModel.class);
         vm.init(ServiceLocator.getInstance().getSystemLocaleList().get(0));
     }
@@ -154,7 +154,7 @@ public class ExportFragment
         // set the default; a backup to archive
         helper.setEncoding(ArchiveEncoding.Zip);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         new MaterialAlertDialogBuilder(getContext())
                 .setTitle(R.string.lbl_backup)
                 .setMessage(R.string.info_export_backup_all)
@@ -185,7 +185,7 @@ public class ExportFragment
         vb.rbExportAll.setChecked(!incremental);
         vb.rbExportNewAndUpdated.setChecked(incremental);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final Pair<Integer, ArrayList<String>> fo = vm.getFormatOptions(getContext());
         final int initialPos = fo.first;
         final ArrayList<String> list = fo.second;
@@ -270,9 +270,8 @@ public class ExportFragment
         if (vm.isReadyToGo()) {
             exportPickUri();
         } else {
-            //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.warning_nothing_selected,
-                          Snackbar.LENGTH_SHORT)
+            //noinspection DataFlowIssue
+            Snackbar.make(getView(), R.string.warning_nothing_selected, Snackbar.LENGTH_SHORT)
                     .show();
         }
     }
@@ -294,19 +293,15 @@ public class ExportFragment
             @NonNull final LiveDataEvent<TaskResult<ExportResults>> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(data -> {
-            //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
-            //noinspection ConstantConditions
-            getView().postDelayed(() -> getActivity().finish(), BaseActivity.DELAY_LONG_MS);
-        });
+        message.getData().ifPresent(
+                data -> showMessageAndFinishActivity(getString(R.string.cancelled)));
     }
 
     private void onExportFailure(@NonNull final LiveDataEvent<TaskResult<Throwable>> message) {
         closeProgressDialog();
 
         message.getData().map(TaskResult::getResult).filter(Objects::nonNull).ifPresent(e -> {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             ErrorDialog.show(getContext(), e, getString(vm.getExportHelper().isBackup()
                                                         ? R.string.error_backup_failed
                                                         : R.string.error_export_failed),
@@ -325,7 +320,7 @@ public class ExportFragment
         message.getData().map(TaskResult::requireResult).ifPresent(result -> {
             final List<String> items = extractExportedItems(result);
             if (items.isEmpty()) {
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 new MaterialAlertDialogBuilder(getContext())
                         .setIcon(R.drawable.ic_baseline_info_24)
                         .setTitle(R.string.title_backup_and_export)
@@ -348,7 +343,7 @@ public class ExportFragment
                 final int title = helper.isBackup() ? R.string.info_backup_successful
                                                     : R.string.info_export_successful;
 
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 final MaterialAlertDialogBuilder dialogBuilder =
                         new MaterialAlertDialogBuilder(getContext())
                                 .setIcon(R.drawable.ic_baseline_info_24)
@@ -428,7 +423,7 @@ public class ExportFragment
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         message.getData().ifPresent(data -> {
             if (progressDelegate == null) {
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 progressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.title_backup_and_export)
                         .setPreventSleep(true)
@@ -458,12 +453,12 @@ public class ExportFragment
                     .putExtra(Intent.EXTRA_TEXT, report)
                     .putExtra(Intent.EXTRA_STREAM, uri);
             startActivity(intent);
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             getActivity().finish();
 
         } catch (@NonNull final ActivityNotFoundException e) {
             LoggerFactory.getLogger().e(TAG, e);
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_baseline_error_24)
                     .setTitle(R.string.error_email_failed)
@@ -475,7 +470,7 @@ public class ExportFragment
 
     private void closeProgressDialog() {
         if (progressDelegate != null) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             progressDelegate.dismiss(getActivity().getWindow());
             progressDelegate = null;
         }
