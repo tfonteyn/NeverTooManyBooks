@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,8 +24,10 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
 
@@ -39,7 +41,7 @@ public abstract class BaseFragment
     @NonNull
     protected View getProgressFrame() {
         if (progressFrame == null) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             progressFrame = Objects.requireNonNull(getActivity().findViewById(R.id.progress_frame),
                                                    "R.id.progress_frame");
         }
@@ -49,7 +51,7 @@ public abstract class BaseFragment
     @NonNull
     protected Toolbar getToolbar() {
         if (toolbar == null) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             toolbar = Objects.requireNonNull(getActivity().findViewById(R.id.toolbar),
                                              "R.id.toolbar");
         }
@@ -59,10 +61,32 @@ public abstract class BaseFragment
     @NonNull
     protected FloatingActionButton getFab() {
         if (fab == null) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             fab = Objects.requireNonNull(getActivity().findViewById(R.id.fab),
                                          "R.id.fab");
         }
         return fab;
+    }
+
+    /**
+     * Show a Snackbar message and after a delay, finish the Activity.
+     *
+     * @param message to show
+     */
+    protected void showMessageAndFinishActivity(@NonNull final CharSequence message) {
+        final View view = getView();
+        // Can be null in race conditions.
+        if (view != null) {
+            Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
+            view.postDelayed(() -> {
+                // Can be null in race conditions.
+                // i.e. the user cancelled which got us here, and then very quickly taps 'back'
+                // before we get here.
+                final FragmentActivity activity = getActivity();
+                if (activity != null) {
+                    activity.finish();
+                }
+            }, BaseActivity.DELAY_LONG_MS);
+        }
     }
 }
