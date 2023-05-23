@@ -3,12 +3,11 @@ Supported Android versions:
 * v2.1.0 requires Android 8.0 (API 26)
 
 ----------------------------------------------------------------------------------------------------
-Amazon...
- * Goodreads is owned by Amazon and is shutting their API down.
- * LibraryThing is 40% owned by AbeBooks which is owned by Amazon and the API is already shut down.
+Amazon... or "why are these sites not supported?"
+ * Goodreads is owned by Amazon and has shut their API down.
+ * LibraryThing is 40% owned by AbeBooks which is owned by Amazon and the API is shut down.
+ * Amazon and the above are now using Captcha to blocks app access.
 ----------------------------------------------------------------------------------------------------
-
-ENHANCE: add field for translated title
 
 ENHANCE: ISSN (serials) lookups?
 
@@ -56,10 +55,13 @@ NEW:
 
 FIXES:
 - fix for #11: OpenCamera on Android 10 and lower will now work as expected.
-  The option to crop the image immediately after using the camera will now work as expected.
-- date-added + date-last-updated are now displayed in the local timezone (these are stored in UTC)
+- The option to crop the image immediately after using the camera will now work as expected.
+- date-added + date-last-updated are now displayed in the local timezone (previously shown in UTC)
 - fixed an obscure bug in editing the styles where editing an existing style could
   result in creating a duplicate.
+- Amazon captcha blocking now reported to the user + Amazon disabled as needed.
+- Bedetheque author resolution was broken on Android 10 or lower
+- Bol.COM more reliable cover image download
 
 REMOVED:
 - The crop option "whole picture" was removed and the behaviour is now always used.
