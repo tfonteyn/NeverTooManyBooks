@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -110,7 +111,7 @@
     <string name="action_duplicate">Dupliceer</string>
     <string name="action_edit">Bewerken</string>
     <string name="action_edit_ellipsis">Bewerken…</string>
-    <string name="action_email">E-mailen</string>
+    <string name="action_email">e-mail</string>
     <string name="action_export">Exporteren</string>
     <string name="action_help">Help</string>
     <string name="action_import">Importeren</string>

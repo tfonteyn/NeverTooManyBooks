@@ -159,7 +159,7 @@
     <string name="btn_all_books">Все книги</string>
     <string name="action_clear_queue">Очистить очередь</string>
     <string name="action_disable_message">Отключить сообщение</string>
-    <string name="action_email">Написать письмо</string>
+    <string name="action_email">электронная почта</string>
     <string name="btn_just_this_shelf">Только эта книжная полка</string>
     <string name="action_learn_more">Подробнее</string>
     <string name="action_less_ellipsis">Меньше…</string>

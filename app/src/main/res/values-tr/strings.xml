@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -140,7 +141,7 @@
     <string name="book_format_other">Diğer</string>
     <string name="book_format_digest">Küçük</string>
     <string name="book_format_dimensions">Boyutlar</string>
-    <string name="book_format_ebook">E-kitap</string>
+    <string name="book_format_ebook">dijital kitap</string>
     <string name="book_format_hardcover">Ciltli</string>
     <string name="book_format_paperback">Ciltsiz</string>
     <string name="book_format_paperback_large">Ciltsiz / Iri</string>

@@ -146,7 +146,7 @@
     <string name="book_format_other">Otro</string>
     <string name="book_format_digest">Pequeño</string>
     <string name="book_format_dimensions">Dimensiones</string>
-    <string name="book_format_ebook">Libro electronico</string>
+    <string name="book_format_ebook">libro electrónico</string>
     <string name="book_format_hardcover">Tapa dura</string>
     <string name="book_format_paperback">Rústica fresada</string>
     <string name="book_format_paperback_large">Rústica PUR</string>
@@ -156,7 +156,7 @@
     <string name="btn_all_books">Todos los libros</string>
     <string name="action_clear_queue">Borrar cola</string>
     <string name="action_disable_message">Deshabilitar mensaje</string>
-    <string name="action_email">Enviar correo</string>
+    <string name="action_email">Correo electrónico</string>
     <string name="btn_just_this_shelf">Esta estantería solamente</string>
     <string name="action_learn_more">Más información</string>
     <string name="action_less_ellipsis">Menos…</string>

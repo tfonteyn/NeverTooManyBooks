@@ -274,7 +274,7 @@
     <string name="book_format_paperback">Papel</string>
     <string name="book_format_comic">Banda Desenhada</string>
     <string name="book_format_other">Outro</string>
-    <string name="book_format_ebook">e-book</string>
+    <string name="book_format_ebook">livro eletrónico</string>
     <string name="lbl_style">Estilo</string>
     <string name="lbl_styles_long">Estilos de lista de livros</string>
     <string name="lbl_group_1st_char_publisher_name">1º caracter do nome da Editora</string>

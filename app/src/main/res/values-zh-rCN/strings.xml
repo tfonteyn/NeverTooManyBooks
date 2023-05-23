@@ -17,7 +17,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!--
+  -->
+
+<!--
     Reference sites:
     https://www.abbreviations.com/
 
@@ -151,4 +153,5 @@
     <string name="warning_toc_confirm">请确认这些标题（大部分）是正确的。</string>
     <string name="warning_no_site_supports_this_method">警告：当前选定的站点均不支持按 %1$s 进行搜索。 请转到站点选择菜单启用替代站点，或使用不同的搜索方法。</string>
     <string name="vldt_list_message">（%1$d） %2$s</string>
+    <string name="book_format_ebook">电子书籍</string>
 </resources>

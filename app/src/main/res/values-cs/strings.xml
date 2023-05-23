@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -146,7 +147,7 @@
     <string name="book_format_other">jiný</string>
     <string name="book_format_digest">Malý</string>
     <string name="book_format_dimensions">Rozměry</string>
-    <string name="book_format_ebook">ebook</string>
+    <string name="book_format_ebook">elektronická kniha</string>
     <string name="book_format_hardcover">Tvrdý obal</string>
     <string name="book_format_paperback">Brožovaná kniha</string>
     <string name="book_format_paperback_large">Velká brožovaná vazba</string>
@@ -156,7 +157,7 @@
     <string name="btn_all_books">Všechny knihy</string>
     <string name="action_clear_queue">Vymazat frontu</string>
     <string name="action_disable_message">Zakázat zprávu</string>
-    <string name="action_email">Poslat e-mail</string>
+    <string name="action_email">email</string>
     <string name="btn_just_this_shelf">Pouze tato knihovna</string>
     <string name="action_learn_more">Další informace</string>
     <string name="action_less_ellipsis">Méně…</string>

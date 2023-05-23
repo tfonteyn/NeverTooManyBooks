@@ -147,7 +147,7 @@
     <string name="book_format_other">Autre</string>
     <string name="book_format_digest">Petit</string>
     <string name="book_format_dimensions">Dimensions</string>
-    <string name="book_format_ebook">eBook</string>
+    <string name="book_format_ebook">" livre électronique"</string>
     <string name="book_format_hardcover">Relié</string>
     <string name="book_format_paperback">Livre de poche</string>
     <string name="book_format_paperback_large">Grand livre de poche</string>
@@ -157,7 +157,7 @@
     <string name="btn_all_books">Tous les livres</string>
     <string name="action_clear_queue">Effacer la file d’attente</string>
     <string name="action_disable_message">Désactiver ce message</string>
-    <string name="action_email">Envoyer un e-mail</string>
+    <string name="action_email">e-mail</string>
     <string name="btn_just_this_shelf">Cette bibliothèque uniquement</string>
     <string name="action_learn_more">En savoir plus</string>
     <string name="action_less_ellipsis">Moins…</string>

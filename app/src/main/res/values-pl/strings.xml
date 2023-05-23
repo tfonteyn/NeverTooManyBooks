@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -147,7 +148,7 @@
     <string name="book_format_other">Inny</string>
     <string name="book_format_digest">Mały</string>
     <string name="book_format_dimensions">Wymiary</string>
-    <string name="book_format_ebook">ebook</string>
+    <string name="book_format_ebook">e-książka</string>
     <string name="book_format_hardcover">Twarda</string>
     <string name="book_format_paperback">Miękka</string>
     <string name="book_format_paperback_large">Miękki / duży</string>
@@ -157,7 +158,7 @@
     <string name="btn_all_books">Wszystkie książki</string>
     <string name="action_clear_queue">Wyczyść kolejkę</string>
     <string name="action_disable_message">Wyłącz komunikat</string>
-    <string name="action_email">Wyślij e-maila</string>
+    <string name="action_email">Poczta elektroniczna</string>
     <string name="btn_just_this_shelf">Tylko ta półka</string>
     <string name="action_learn_more">Więcej informacji</string>
     <string name="action_less_ellipsis">Mniej…</string>
