@@ -65,7 +65,6 @@ public class SyncWriterFragment
     @Nullable
     private ProgressDelegate progressDelegate;
 
-    @SuppressWarnings("TypeMayBeWeakened")
     @NonNull
     public static Fragment create(@NonNull final SyncServer syncServer) {
         final Fragment fragment = new SyncWriterFragment();
@@ -79,7 +78,7 @@ public class SyncWriterFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(SyncWriterViewModel.class);
         vm.init(requireArguments());
     }
@@ -136,7 +135,7 @@ public class SyncWriterFragment
     private void showQuickOptions() {
         vm.setQuickOptionsAlreadyShown();
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         new MaterialAlertDialogBuilder(getContext())
                 .setTitle(vm.getSyncWriterHelper().getSyncServer().getLabelResId())
                 .setMessage(R.string.action_synchronize)
@@ -173,7 +172,7 @@ public class SyncWriterFragment
         if (vm.isReadyToGo()) {
             vm.startExport();
         } else {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             Snackbar.make(getView(), R.string.warning_nothing_selected,
                           Snackbar.LENGTH_SHORT)
                     .show();
@@ -184,19 +183,15 @@ public class SyncWriterFragment
             @NonNull final LiveDataEvent<TaskResult<SyncWriterResults>> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(data -> {
-            //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
-            //noinspection ConstantConditions
-            getView().postDelayed(() -> getActivity().finish(), BaseActivity.DELAY_LONG_MS);
-        });
+        message.getData().ifPresent(
+                data -> showMessageAndFinishActivity(getString(R.string.cancelled)));
     }
 
     private void onExportFailure(@NonNull final LiveDataEvent<TaskResult<Throwable>> message) {
         closeProgressDialog();
 
         message.getData().map(TaskResult::getResult).filter(Objects::nonNull).ifPresent(e -> {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             ErrorDialog.show(getContext(), e, getString(R.string.error_export_failed),
                              (d, w) -> getActivity().finish());
         });
@@ -214,13 +209,13 @@ public class SyncWriterFragment
         message.getData().map(TaskResult::requireResult).ifPresent(results -> {
             final List<String> items = extractExportedItems(results);
             if (items.isEmpty()) {
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 new MaterialAlertDialogBuilder(getContext())
                         .setIcon(R.drawable.ic_baseline_info_24)
                         .setTitle(R.string.title_backup_and_export)
                         .setMessage(R.string.warning_no_matching_book_found)
                         .setPositiveButton(R.string.action_done, (d, w) -> {
-                            //noinspection ConstantConditions
+                            //noinspection DataFlowIssue
                             getActivity().setResult(Activity.RESULT_OK);
                             getActivity().finish();
                         })
@@ -232,7 +227,7 @@ public class SyncWriterFragment
                         .map(s -> getString(R.string.list_element, s))
                         .collect(Collectors.joining("\n"));
 
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 new MaterialAlertDialogBuilder(getContext())
                         .setIcon(R.drawable.ic_baseline_info_24)
                         .setTitle(R.string.info_export_successful)
@@ -240,7 +235,7 @@ public class SyncWriterFragment
                         .setPositiveButton(R.string.action_done, (d, w) -> {
                             final Intent resultIntent = SyncContractBase
                                     .createResult(SyncContractBase.Outcome.Write);
-                            //noinspection ConstantConditions
+                            //noinspection DataFlowIssue
                             getActivity().setResult(Activity.RESULT_OK, resultIntent);
                             getActivity().finish();
                         })
@@ -270,7 +265,7 @@ public class SyncWriterFragment
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         message.getData().ifPresent(data -> {
             if (progressDelegate == null) {
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 progressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.title_backup_and_export)
                         .setPreventSleep(true)
@@ -283,7 +278,7 @@ public class SyncWriterFragment
 
     private void closeProgressDialog() {
         if (progressDelegate != null) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             progressDelegate.dismiss(getActivity().getWindow());
             progressDelegate = null;
         }
