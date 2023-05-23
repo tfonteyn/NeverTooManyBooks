@@ -32,6 +32,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -40,7 +41,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SyncContractBase;
@@ -119,7 +119,14 @@ public class SyncWriterFragment
         vb.cbxDeleteRemovedBooks.setOnCheckedChangeListener((v, isChecked) -> vm
                 .getSyncWriterHelper().setDeleteLocalBooks(isChecked));
 
-        vb.btnStart.setOnClickListener(v -> startWriting());
+        final FloatingActionButton fab = getFab();
+        fab.setImageResource(R.drawable.ic_baseline_cloud_upload_24);
+        // GONE here; will be made visible in showOptions() together with the full UI.
+        fab.setVisibility(View.GONE);
+        fab.setOnClickListener(v -> startWriting());
+
+        vb.btnStart.setVisibility(View.GONE);
+        //vb.btnStart.setOnClickListener(v -> startWriting());
 
         if (!vm.isRunning()) {
             // The task is NOT yet running.
@@ -165,6 +172,7 @@ public class SyncWriterFragment
         vb.rbExportAll.setChecked(!incremental);
         vb.rbExportNewAndUpdated.setChecked(incremental);
 
+        getFab().setVisibility(View.VISIBLE);
         vb.getRoot().setVisibility(View.VISIBLE);
     }
 

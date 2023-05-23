@@ -34,6 +34,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.time.Instant;
@@ -47,7 +48,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -176,7 +176,13 @@ public class SyncReaderFragment
         vb.syncDate.setOnClickListener(v -> syncDatePicker.launch(
                 vm.getDataReaderHelper().getSyncDate(), this::onSyncDateSet));
 
-        vb.btnStart.setOnClickListener(v -> startReading());
+        final FloatingActionButton fab = getFab();
+        fab.setImageResource(R.drawable.ic_baseline_cloud_download_24);
+        fab.setVisibility(View.VISIBLE);
+        fab.setOnClickListener(v -> startReading());
+
+        vb.btnStart.setVisibility(View.GONE);
+        //vb.btnStart.setOnClickListener(v -> startReading());
 
         if (!vm.isRunning()) {
             showOptions();

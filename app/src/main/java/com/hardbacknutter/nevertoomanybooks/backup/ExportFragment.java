@@ -35,6 +35,7 @@ import androidx.core.util.Pair;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.time.LocalDate;
@@ -46,7 +47,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -134,7 +134,14 @@ public class ExportFragment
 
         vb.infExportNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
 
-        vb.btnStart.setOnClickListener(v -> startExport());
+        final FloatingActionButton fab = getFab();
+        fab.setImageResource(R.drawable.ic_baseline_cloud_upload_24);
+        // GONE here; will be made visible in showOptions() together with the full UI.
+        fab.setVisibility(View.GONE);
+        fab.setOnClickListener(v -> startExport());
+
+        vb.btnStart.setVisibility(View.GONE);
+        //vb.btnStart.setOnClickListener(v -> startExport());
 
         if (!vm.isRunning()) {
             // The task is NOT yet running.
@@ -197,6 +204,7 @@ public class ExportFragment
         vb.archiveFormat.setText(list.get(initialPos), false);
         updateFormatSelection(helper.getEncoding());
 
+        getFab().setVisibility(View.VISIBLE);
         vb.getRoot().setVisibility(View.VISIBLE);
     }
 

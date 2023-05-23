@@ -35,6 +35,7 @@ import androidx.annotation.StringRes;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.FileNotFoundException;
@@ -48,7 +49,6 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -190,7 +190,13 @@ public class ImportFragment
             }
         });
 
-        vb.btnStart.setOnClickListener(v -> startImport());
+        final FloatingActionButton fab = getFab();
+        fab.setImageResource(R.drawable.ic_baseline_cloud_download_24);
+        fab.setVisibility(View.VISIBLE);
+        fab.setOnClickListener(v -> startImport());
+
+        vb.btnStart.setVisibility(View.GONE);
+        //vb.btnStart.setOnClickListener(v -> startImport());
 
         if (!vm.isRunning()) {
             if (vm.hasUri()) {
