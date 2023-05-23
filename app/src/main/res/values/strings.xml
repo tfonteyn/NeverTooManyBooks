@@ -112,19 +112,19 @@
     <!-- region ========== HTTP(S) error messages. -->
     <!-- copied from: "https://github.com/aosp-mirror/platform_frameworks_base/blob/master/core/res/res/values/strings.xml" -->
     <!-- [VERIFIED] - Displayed when a web request failed because there was an input or output error. -->
-    <string name="X_httpErrorIO">Couldn\'t communicate with the server. Try again later.</string>
+    <string name="X_httpErrorIO">Couldn’t communicate with the server. Try again later.</string>
     <!-- [VERIFIED] - Displayed when a web request failed because the request timed out -->
     <string name="httpErrorTimeout">The connection to the server timed out.</string>
     <!-- [VERIFIED] - Displayed when a web request failed because the a secure connection couldn't be made to the server.-->
-    <string name="httpErrorFailedSslHandshake">Couldn\'t establish a secure connection.</string>
+    <string name="httpErrorFailedSslHandshake">Couldn’t establish a secure connection.</string>
     <!-- [VERIFIED] - Displayed when a web request failed because the authentication failed. -->
-    <string name="httpErrorAuth">Couldn\'t authenticate.</string>
+    <string name="httpErrorAuth">Couldn’t authenticate.</string>
     <!-- [VERIFIED] - Displayed when a web request failed with a generic network error. -->
     <string name="httpError">There was a network error.</string>
     <!-- [VERIFIED] - Displayed when a request failed because we failed to open the file. -->
-    <string name="httpErrorFile">Couldn\'t access the file.</string>
+    <string name="httpErrorFile">Couldn’t access the file.</string>
     <!-- [VERIFIED] - Displayed when a request failed because the file wasn't found. -->
-    <string name="httpErrorFileNotFound">Couldn\'t find the requested file.</string>
+    <string name="httpErrorFileNotFound">Couldn’t find the requested file.</string>
     <!-- endregion -->
     <!-- region ========== General error messages. -->
     <string name="error_unexpected">An unexpected error occurred.</string>
@@ -208,7 +208,7 @@
     <string name="error_export_failed">Export failed.</string>
     <!-- endregion -->
     <!-- region ========== Warning messages. -->
-    <string name="warning_import_csv">Warning. Importing data may update existing book records with new information if the uuid column is not present and the id in the import file is the same as an existing id. This is usually fine if you changed a field in an exported file. If you created a new book record, or are importing someone else\'s books, ensure the uuid field is present or the id field is blank.</string>
+    <string name="warning_import_csv">Warning. Importing data may update existing book records with new information if the uuid column is not present and the id in the import file is the same as an existing id. This is usually fine if you changed a field in an exported file. If you created a new book record, or are importing someone else’s books, ensure the uuid field is present or the id field is blank.</string>
     <!-- Importing a CSV book list; individual lines can fail. Report the exact position.
      This is a warning only; import will continue. -->
     <string name="warning_import_csv_unescaped_quote">Unescaped quote at row %1$d, position %2$d</string>
@@ -343,7 +343,7 @@
         Param 3: author.
         Param 4: rating; e.g. "4/5"
     -->
-    <string name="info_share_book_im_reading">I\'m reading “%1$s” %2$s by %3$s %4$s</string>
+    <string name="info_share_book_im_reading">I’m reading “%1$s” %2$s by %3$s %4$s</string>
     <!--Shown when browsing alternative edition book covers. -->
     <string name="info_tap_on_thumbnail_to_zoom">Tap on a thumbnail to display a larger image.</string>
     <!--Shown when browsing alternative edition book covers. -->
