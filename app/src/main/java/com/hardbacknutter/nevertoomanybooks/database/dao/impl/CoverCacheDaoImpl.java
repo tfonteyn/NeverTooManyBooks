@@ -89,7 +89,7 @@ public class CoverCacheDaoImpl
             "SELECT COUNT(*) FROM " + CacheDbHelper.TBL_IMAGE.getName();
 
     /** Compresses images to 80% to store in the cache. */
-    private static final int IMAGE_QUALITY_PERCENTAGE = 80;
+    private static final int QUALITY = 80;
     /** Used to prevent trying to read from the cache while we're writing to it. */
     private static final AtomicInteger RUNNING_TASKS = new AtomicInteger();
 
@@ -230,7 +230,7 @@ public class CoverCacheDaoImpl
                 final ByteArrayOutputStream out = new ByteArrayOutputStream();
                 // Rapid scrolling of view could already have recycled the bitmap.
                 if (!bitmap.isRecycled()) {
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, IMAGE_QUALITY_PERCENTAGE, out);
+                    bitmap.compress(Bitmap.CompressFormat.PNG, QUALITY, out);
 
                     final String cacheId = constructCacheId(uuid, cIdx, width, height);
 
