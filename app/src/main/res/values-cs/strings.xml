@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -22,10 +23,10 @@
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
-        <item quantity="one">Zobrazuji %1$d knihu</item>
-        <item quantity="few">Zobrazuji %1$d knihy</item>
-        <item quantity="other">Zobrazeno %1$d knih</item>
-        <item quantity="many">Zobrazeno %1$d knih</item>
+        <item quantity="one">%1$d kniha</item>
+        <item quantity="few">%1$d knihy</item>
+        <item quantity="other">%1$d knih</item>
+        <item quantity="many">%1$d knih</item>
     </plurals>
     <plurals name="n_books_found">
         <item quantity="one">Nalezena %1$d kniha</item>

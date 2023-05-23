@@ -17,7 +17,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!--
+  -->
+
+<!--
     Reference sites:
     https://www.abbreviations.com/
 
@@ -43,25 +45,7 @@
 --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
-<!--
-  ~ @Copyright 2018-2023 HardBackNutter
-  ~ @License GNU General Public License
-  ~
-  ~ This file is part of NeverTooManyBooks.
-  ~
-  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU General Public License as published by
-  ~ the Free Software Foundation, either version 3 of the License, or
-  ~ (at your option) any later version.
-  ~
-  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-  ~ See the GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!--suppress LongLine --><resources>
+<!--suppress LongLine --><resources>
     <string name="lbl_styles">Stílar</string>
     <string name="lbl_styles_long">Bóklistastílar</string>
     <string name="style_type_builtin">Innbygt</string>
@@ -123,8 +107,8 @@
     <string name="and_others_plus">%1$s … <small>[+%2$d]</small></string>
     <string name="name_hash_nr">%1$s #%2$d</string>
     <plurals name="displaying_n_books">
-        <item quantity="one">Vísir %1$d bók</item>
-        <item quantity="other">Vísir %1$d bøkur</item>
+        <item quantity="one">%1$d bók</item>
+        <item quantity="other">%1$d bøkur</item>
     </plurals>
     <string name="list_element">• %s</string>
     <string name="x_of_y">%1$d av %2$d</string>

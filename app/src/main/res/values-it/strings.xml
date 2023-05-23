@@ -18,14 +18,16 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
     <plurals name="displaying_n_books">
-        <item quantity="one">%1$d libro visualizzato</item>
-        <item quantity="many">%1$d libri visualizzati</item>
-        <item quantity="other">%1$d libri visualizzati</item>
+        <item quantity="one">%1$d libro</item>
+        <item quantity="many">%1$d libri</item>
+        <item quantity="other">%1$d libri</item>
     </plurals>
     <plurals name="n_books_found">
         <item quantity="one">%1$d libro trovato</item>

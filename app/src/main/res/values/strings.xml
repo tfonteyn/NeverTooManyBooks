@@ -53,8 +53,8 @@
     <!-- region ========== Plurals. -->
     <!-- displayed in the header of booklist -->
     <plurals name="displaying_n_books">
-        <item quantity="one">%1$d book displayed</item>
-        <item quantity="other">Displaying %1$d books</item>
+        <item quantity="one">%1$d book</item>
+        <item quantity="other">%1$d books</item>
     </plurals>
 
     <plurals name="n_books_found">

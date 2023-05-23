@@ -26,9 +26,9 @@
 <resources xmlns:tools="http://schemas.android.com/tools"
            tools:locale="pt">
     <plurals name="displaying_n_books">
-        <item quantity="one">%1$d livro exibido</item>
-        <item quantity="many">A exibir %1$d livros</item>
-        <item quantity="other">A exibir %1$d livros</item>
+        <item quantity="one">%1$d livro</item>
+        <item quantity="many">%1$d livros</item>
+        <item quantity="other">%1$d livros</item>
     </plurals>
     <plurals name="n_books_found">
         <item quantity="one">%1$d livro encontrado</item>

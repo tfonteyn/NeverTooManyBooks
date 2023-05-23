@@ -25,10 +25,10 @@
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
-        <item quantity="one">Книг на полке: %1$d</item>
-        <item quantity="few">Книг на полке: %1$d</item>
-        <item quantity="many">Книг на полке: %1$d</item>
-        <item quantity="other">Книг на полке: %1$d</item>
+        <item quantity="one">%1$d книга</item>
+        <item quantity="few">%1$d книги</item>
+        <item quantity="many">%1$d книг</item>
+        <item quantity="other">%1$d книг</item>
     </plurals>
     <plurals name="n_books_found">
         <item quantity="one">%1$d книга найдена</item>

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -22,10 +23,10 @@
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
-        <item quantity="one">Wyświetlanie %1$d książki</item>
-        <item quantity="few">Wyświetlanie %1$d książek</item>
-        <item quantity="many">Wyświetlanie %1$d książek</item>
-        <item quantity="other">Wyświetlanie %1$d książki</item>
+        <item quantity="one">%1$d książka</item>
+        <item quantity="few">%1$d książki</item>
+        <item quantity="many">%1$d książek</item>
+        <item quantity="other">%1$d książek</item>
     </plurals>
     <plurals name="n_books_found">
         <item quantity="one">Znaleziono %1$d książkę</item>
