@@ -94,7 +94,7 @@ public class ImportFragment
                 @Override
                 public void handleOnBackPressed() {
                     // no result as we didn't do anything
-                    //noinspection ConstantConditions
+                    //noinspection DataFlowIssue
                     getActivity().setResult(Activity.RESULT_OK);
                     getActivity().finish();
                 }
@@ -114,7 +114,7 @@ public class ImportFragment
                     onOpenUri(o.get());
                 } else {
                     // nothing selected, just quit
-                    //noinspection ConstantConditions
+                    //noinspection DataFlowIssue
                     getActivity().finish();
                 }
             });
@@ -123,7 +123,7 @@ public class ImportFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(ImportViewModel.class);
         // no init
     }
@@ -144,7 +144,7 @@ public class ImportFragment
 
         getToolbar().setTitle(R.string.lbl_import);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
@@ -214,13 +214,13 @@ public class ImportFragment
     private void onOpenUri(@NonNull final Uri uri) {
         final ImportHelper importHelper;
         try {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             importHelper = vm.createDataReaderHelper(getContext(), uri,
                                                      ServiceLocator.getInstance()
                                                                    .getSystemLocaleList().get(0));
 
         } catch (@NonNull final DataReaderException e) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_baseline_error_24)
                     .setTitle(R.string.error_import_failed)
@@ -231,7 +231,7 @@ public class ImportFragment
             return;
 
         } catch (@NonNull final FileNotFoundException e) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_baseline_error_24)
                     .setTitle(R.string.error_import_failed)
@@ -245,7 +245,7 @@ public class ImportFragment
         switch (importHelper.getEncoding()) {
             case Csv:
                 // CsvArchiveReader will make a database backup before importing.
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 new MaterialAlertDialogBuilder(getContext())
                         .setIcon(R.drawable.ic_baseline_warning_24)
                         .setTitle(R.string.lbl_import_books)
@@ -264,7 +264,7 @@ public class ImportFragment
                 break;
 
             default:
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 new MaterialAlertDialogBuilder(getContext())
                         .setIcon(R.drawable.ic_baseline_error_24)
                         .setTitle(R.string.error_import_failed)
@@ -282,7 +282,7 @@ public class ImportFragment
     private void showOptions() {
         final ImportHelper helper = vm.getDataReaderHelper();
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vb.archiveName.setText(helper.getUriInfo().getDisplayName(getContext()));
 
         final Optional<ArchiveMetaData> metaData = helper.getMetaData();
@@ -346,7 +346,7 @@ public class ImportFragment
                     .setIndeterminate(true)
                     .setOnCancelListener(v -> vm.cancelTask(R.id.TASK_ID_READ_META_DATA));
         }
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         progressDelegate.show(() -> getActivity().getWindow());
         vm.readMetaData();
     }
@@ -362,13 +362,8 @@ public class ImportFragment
             Optional<ArchiveMetaData>>> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(data -> {
-            //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG)
-                    .show();
-            //noinspection ConstantConditions
-            getView().postDelayed(() -> getActivity().finish(), BaseActivity.DELAY_LONG_MS);
-        });
+        message.getData().ifPresent(
+                data -> showMessageAndFinishActivity(getString(R.string.cancelled)));
     }
 
     /**
@@ -384,7 +379,7 @@ public class ImportFragment
             final StringJoiner stats = new StringJoiner("\n");
 
             final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             metaData.getCreatedLocalDate(systemLocale).ifPresent(date -> stats
                     .add(DateUtils.displayDateTime(getContext(), date)));
 
@@ -411,13 +406,12 @@ public class ImportFragment
                         .setPreventSleep(true)
                         .setOnCancelListener(v -> vm.cancelTask(R.id.TASK_ID_IMPORT));
             }
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             progressDelegate.show(() -> getActivity().getWindow());
             vm.readData();
         } else {
-            //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.warning_nothing_selected,
-                          Snackbar.LENGTH_SHORT)
+            //noinspection DataFlowIssue
+            Snackbar.make(getView(), R.string.warning_nothing_selected, Snackbar.LENGTH_SHORT)
                     .show();
         }
     }
@@ -425,7 +419,7 @@ public class ImportFragment
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         message.getData().ifPresent(data -> {
             if (progressDelegate == null) {
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 progressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.lbl_importing)
                         .setPreventSleep(true)
@@ -440,7 +434,7 @@ public class ImportFragment
         closeProgressDialog();
 
         message.getData().map(TaskResult::getResult).filter(Objects::nonNull).ifPresent(e -> {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             ErrorDialog.show(getContext(), e, getString(R.string.error_import_failed),
                              (d, w) -> getActivity().finish());
         });
@@ -456,11 +450,7 @@ public class ImportFragment
             if (result != null) {
                 onImportFinished(R.string.info_import_partially_complete, result);
             } else {
-                //noinspection ConstantConditions
-                Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG)
-                        .show();
-                //noinspection ConstantConditions
-                getView().postDelayed(() -> getActivity().finish(), BaseActivity.DELAY_LONG_MS);
+                showMessageAndFinishActivity(getString(R.string.cancelled));
             }
         });
     }
@@ -488,18 +478,18 @@ public class ImportFragment
                                   @NonNull final ImportResults result) {
 
         if (result.styles > 0) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             ServiceLocator.getInstance().getStyles().updateMenuOrder(getContext());
         }
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         new MaterialAlertDialogBuilder(getContext())
                 .setIcon(R.drawable.ic_baseline_info_24)
                 .setTitle(titleId)
                 .setMessage(createReport(result))
                 .setPositiveButton(R.string.action_done, (d, w) -> {
                     final Intent resultIntent = ImportContract.createResult(result);
-                    //noinspection ConstantConditions
+                    //noinspection DataFlowIssue
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();
                 })
@@ -582,7 +572,7 @@ public class ImportFragment
 
     private void closeProgressDialog() {
         if (progressDelegate != null) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             progressDelegate.dismiss(getActivity().getWindow());
             progressDelegate = null;
         }
