@@ -49,7 +49,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchSitesAllListsContract;
@@ -117,7 +116,7 @@ public class SettingsFragment
                 public void handleOnBackPressed() {
                     final Intent resultIntent = SettingsContract.createResult(
                             vm.getRequiresActivityRecreation());
-                    //noinspection ConstantConditions
+                    //noinspection DataFlowIssue
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();
                 }
@@ -132,7 +131,7 @@ public class SettingsFragment
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
 
         setPreferencesFromResource(R.xml.preferences, rootKey);
@@ -142,7 +141,7 @@ public class SettingsFragment
 
 
         final Preference pUiLocale = findPreference(Prefs.pk_ui_locale);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         pUiLocale.setSummaryProvider(listSummaryProvider);
         pUiLocale.setOnPreferenceChangeListener((preference, newValue) -> {
             // Set the activity result so our caller will recreate itself
@@ -153,7 +152,7 @@ public class SettingsFragment
 
 
         final Preference pUiTheme = findPreference(Prefs.pk_ui_theme);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         pUiTheme.setSummaryProvider(listSummaryProvider);
         pUiTheme.setOnPreferenceChangeListener((preference, newValue) -> {
             // we should never have an invalid setting in the prefs... flw
@@ -169,30 +168,29 @@ public class SettingsFragment
 
 
         final Preference pFastscroller = findPreference(Prefs.pk_booklist_fastscroller_overlay);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         pFastscroller.setSummaryProvider(listSummaryProvider);
         pFastscroller.setOnPreferenceChangeListener((preference, newValue) -> {
             vm.setOnBackRequiresActivityRecreation();
             return true;
         });
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         findPreference(ISBN.PK_EDIT_BOOK_ISBN_CHECKS).setSummaryProvider(listSummaryProvider);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         findPreference(Prefs.pk_booklist_rebuild_state).setSummaryProvider(listSummaryProvider);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         findPreference(Prefs.pk_booklist_context_menu).setSummaryProvider(listSummaryProvider);
 
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         findPreference(PSK_SEARCH_SITE_ORDER).setOnPreferenceClickListener(p -> {
             editSitesLauncher.launch(null);
             return true;
         });
 
-        //noinspection ConstantConditions
         titleOrderByPref = findPreference(ReorderHelper.PK_SORT_TITLE_REORDERED);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         setVisualIndicator(titleOrderByPref, StartupViewModel.PK_REBUILD_TITLE_OB);
         titleOrderByPref.setOnPreferenceChangeListener(this::onTitleOrderByChange);
 
@@ -201,7 +199,7 @@ public class SettingsFragment
             storageWasMissing = args.getBoolean(BKEY_STORAGE_WAS_MISSING);
         }
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final StorageManager storage = (StorageManager)
                 getContext().getSystemService(Context.STORAGE_SERVICE);
 
@@ -221,9 +219,8 @@ public class SettingsFragment
             entryValues[i] = String.valueOf(i);
         }
 
-        //noinspection ConstantConditions
         storageVolumePref = findPreference(Prefs.pk_storage_volume);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         storageVolumePref.setSummaryProvider(listSummaryProvider);
         storageVolumePref.setEntries(entries);
         storageVolumePref.setEntryValues(entryValues);
@@ -235,7 +232,7 @@ public class SettingsFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
@@ -262,7 +259,7 @@ public class SettingsFragment
                                          @NonNull final Object newValue) {
         final boolean checked = (Boolean) newValue;
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         new MaterialAlertDialogBuilder(getContext())
                 .setIcon(R.drawable.ic_baseline_warning_24)
                 .setMessage(R.string.confirm_rebuild_orderby_columns)
@@ -296,7 +293,7 @@ public class SettingsFragment
         if (storageWasMissing) {
             // The originally used volume is not available; there is nothing to move.
             // Handle this as a simple 'select'
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_baseline_warning_24)
                     .setTitle(R.string.lbl_storage_settings)
@@ -317,7 +314,7 @@ public class SettingsFragment
                     getString(R.string.option_moving_covers_from_x_to_y,
                               oldVolumeDesc, newVolumeDesc)};
 
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_baseline_warning_24)
                     .setTitle(R.string.lbl_storage_settings)
@@ -344,9 +341,9 @@ public class SettingsFragment
             }
             case 1: {
                 // check space and start the task
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 if (!vm.moveData(getContext(), oldVolumeIndex, newVolumeIndex)) {
-                    //noinspection ConstantConditions
+                    //noinspection DataFlowIssue
                     Snackbar.make(getView(), R.string.error_storage_not_writable,
                                   Snackbar.LENGTH_LONG).show();
                 }
@@ -361,11 +358,11 @@ public class SettingsFragment
     public void onResume() {
         super.onResume();
         final SharedPreferences global = getPreferenceScreen().getSharedPreferences();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         global.registerOnSharedPreferenceChangeListener(this);
 
         final boolean enabled = global.getBoolean(CalibreHandler.PK_ENABLED, false);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         findPreference(PSK_CALIBRE).setSummary(enabled ? R.string.enabled : R.string.disabled);
     }
 
@@ -378,7 +375,7 @@ public class SettingsFragment
 
     @Override
     public void onPause() {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         getPreferenceScreen().getSharedPreferences()
                              .unregisterOnSharedPreferenceChangeListener(this);
 
@@ -417,16 +414,16 @@ public class SettingsFragment
         @AttrRes
         final int attr;
         //careful: we use the pref to get SharedPreferences... but we need the 'schedulerKey' !
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         if (preference.getSharedPreferences().getBoolean(schedulerKey, false)) {
             attr = R.attr.appPreferenceAlertColor;
         } else {
             attr = com.google.android.material.R.attr.colorControlNormal;
         }
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final Drawable icon = preference.getIcon().mutate();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         icon.setTint(AttrUtils.getColorInt(getContext(), attr));
         preference.setIcon(icon);
     }
@@ -434,7 +431,7 @@ public class SettingsFragment
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         message.getData().ifPresent(data -> {
             if (progressDelegate == null) {
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 progressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.lbl_moving_data)
                         .setPreventSleep(true)
@@ -448,7 +445,7 @@ public class SettingsFragment
 
     private void closeProgressDialog() {
         if (progressDelegate != null) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             progressDelegate.dismiss(getActivity().getWindow());
             progressDelegate = null;
         }
@@ -459,7 +456,7 @@ public class SettingsFragment
 
         message.getData().map(TaskResult::requireResult).ifPresent(result -> {
             if (setStorageVolume(result)) {
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 Snackbar.make(getView(), R.string.action_done, Snackbar.LENGTH_LONG).show();
             }
         });
@@ -467,8 +464,9 @@ public class SettingsFragment
 
     private boolean setStorageVolume(final int volume) {
         storageVolumePref.setValue(String.valueOf(volume));
+        //noinspection OverlyBroadCatchBlock
         try {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             CoverVolume.initVolume(getContext(), volume);
             return true;
 
@@ -483,7 +481,7 @@ public class SettingsFragment
         closeProgressDialog();
 
         message.getData().map(TaskResult::getResult).filter(Objects::nonNull).ifPresent(e -> {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             ErrorDialog.show(getContext(), e,
                              getString(R.string.lbl_moving_data),
                              getString(R.string.error_storage_not_accessible));
@@ -495,10 +493,7 @@ public class SettingsFragment
 
         message.getData().ifPresent(data -> {
             // FIXME: need better msg + tell user to clean up the destination
-            //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
-            //noinspection ConstantConditions
-            getView().postDelayed(() -> getActivity().finish(), BaseActivity.DELAY_LONG_MS);
+            showMessageAndFinishActivity(getString(R.string.cancelled));
         });
     }
 }
