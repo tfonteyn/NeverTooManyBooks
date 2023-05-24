@@ -17,14 +17,10 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
-    <!ENTITY APP_NAME "NeverTooManyBooks">
-    ]>
-<!-- Quotes “...”  (older «…» are no longer used as verified with a native speaker) - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine -->
-<resources xmlns:tools="http://schemas.android.com/tools"
-           tools:locale="pt">
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
+<!-- Quotes “...”  (older «…» are no longer used as verified with a native speaker) - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pt">
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d livro</item>
         <item quantity="many">%1$d livros</item>
@@ -625,8 +621,7 @@
     <string name="lbl_details_have_changed">Os detalhes mudaram</string>
     <string name="lbl_import">Importar</string>
     <string name="lbl_covers">Capas</string>
-    <string name="info_x_pages"
-            tools:ignore="PluralsCandidate">%1$d páginas</string>
+    <string name="info_x_pages" tools:ignore="PluralsCandidate">%1$d páginas</string>
     <string name="lbl_price_listed">Preço de tabela</string>
     <string name="lbl_condition">Condição</string>
     <string name="lbl_date_added_month">Mês de Adição</string>
