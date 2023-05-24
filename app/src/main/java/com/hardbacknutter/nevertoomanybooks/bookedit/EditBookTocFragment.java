@@ -47,7 +47,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.divider.MaterialDividerItemDecoration;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -184,17 +184,16 @@ public class EditBookTocFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final FloatingActionButton fab = getFab();
-        fab.setImageResource(R.drawable.ic_baseline_add_24);
-
-        //noinspection ConstantConditions
+        final ExtendedFloatingActionButton fab = getFab();
+        fab.setIconResource(R.drawable.ic_baseline_add_24);
+        //noinspection DataFlowIssue
         fab.setOnClickListener(v -> editEntry(
                 new TocEntry(vm.getPrimaryAuthor(getContext()), ""), POS_NEW_ENTRY));
 
         getToolbar().addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner(),
                                      Lifecycle.State.RESUMED);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm.initFields(getContext(), FragmentId.Toc, FieldGroup.Toc);
 
         initEditTocViewModel();
@@ -237,7 +236,7 @@ public class EditBookTocFragment
 
         tocEntryList = vm.getBook().getToc();
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         adapter = new TocListEditAdapter(context, tocEntryList,
                                          vh -> itemTouchHelper.startDrag(vh));
 
@@ -267,7 +266,7 @@ public class EditBookTocFragment
                                 final int position) {
         if (position == POS_NEW_ENTRY) {
             // see if it already exists
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             vm.fixId(getContext(), tocEntry);
             // and check it's not already in the list.
             if (tocEntryList.contains(tocEntry)) {
@@ -296,7 +295,7 @@ public class EditBookTocFragment
 
         getFab().setVisibility(View.VISIBLE);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         fields.forEach(field -> field.setVisibility(getView(), false, false));
     }
 
@@ -345,7 +344,7 @@ public class EditBookTocFragment
             final Context context = getContext();
             if (tocEntry.getBookCount() == 1) {
                 // The entry is saved, but only occurs in this single book.
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 new MaterialAlertDialogBuilder(context)
                         .setIcon(R.drawable.ic_baseline_warning_24)
                         .setTitle(R.string.action_delete)
@@ -367,7 +366,7 @@ public class EditBookTocFragment
                 // The entry is saved and occurs in multiple books.
                 // Offer deleting from this book only (i.e. 'remove') or an actual delete from
                 // all books.
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 new MaterialAlertDialogBuilder(context)
                         .setIcon(R.drawable.ic_baseline_warning_24)
                         .setTitle(R.string.action_delete)

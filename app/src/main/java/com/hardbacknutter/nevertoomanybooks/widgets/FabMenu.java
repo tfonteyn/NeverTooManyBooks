@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,7 +29,6 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -40,13 +39,13 @@ public class FabMenu {
 
     /** The normal FAB button; opens or closes the FAB menu. */
     @NonNull
-    private final FloatingActionButton fabButton;
+    private final ExtendedFloatingActionButton fabButton;
 
     /** Overlay enabled while the FAB menu is shown to intercept clicks and close the FAB menu. */
     @NonNull
     private final View fabOverlay;
 
-    /** Array with the submenu FAB buttons. Element 0 shows at the bottom. */
+    /** Array with the submenu FAB buttons. Element {@code 0} shows at the bottom. */
     private ExtendedFloatingActionButton[] fabMenuItems;
 
     /** Define a scroller to show, or collapse/hide the FAB. */
@@ -83,7 +82,7 @@ public class FabMenu {
      * @param fabOverlay the overlay view
      * @param items      the fab menu items
      */
-    public FabMenu(@NonNull final FloatingActionButton fabButton,
+    public FabMenu(@NonNull final ExtendedFloatingActionButton fabButton,
                    @NonNull final View fabOverlay,
                    @Nullable final ExtendedFloatingActionButton... items) {
         this.fabButton = fabButton;
@@ -91,26 +90,49 @@ public class FabMenu {
         this.fabOverlay = fabOverlay;
 
         if (items != null && items.length > 0) {
+            // Create a new empty array and copy the actual item references to that.
             fabMenuItems = new ExtendedFloatingActionButton[items.length];
             System.arraycopy(items, 0, fabMenuItems, 0, items.length);
         }
     }
 
+    /**
+     * Set a listener on all the fab-menu items.
+     *
+     * @param listener to set
+     */
     public void setOnClickListener(@NonNull final View.OnClickListener listener) {
         for (final ExtendedFloatingActionButton fabMenuItem : fabMenuItems) {
             fabMenuItem.setOnClickListener(listener);
         }
     }
 
+    /**
+     * Get the fab-menu item with the given id.
+     *
+     * @param id to lookup
+     *
+     * @return the fab-menu item
+     */
     @NonNull
     public Optional<ExtendedFloatingActionButton> getItem(@IdRes final int id) {
         return Arrays.stream(fabMenuItems).filter(item -> item.getId() == id).findFirst();
     }
 
+    /**
+     * Hook up the {@code RecyclerView} to update the FAB as scrolling takes place.
+     *
+     * @param recyclerView to hookup
+     */
     public void attach(@NonNull final RecyclerView recyclerView) {
         recyclerView.addOnScrollListener(updateFabVisibility);
     }
 
+    /**
+     * Check if the menu is showing.
+     *
+     * @return {code true} if it is.
+     */
     public boolean isShown() {
         return fabMenuItems[0].isShown();
     }
@@ -135,13 +157,13 @@ public class FabMenu {
      */
     public void show(final boolean show) {
         if (show) {
-            fabButton.setImageResource(R.drawable.ic_baseline_close_24);
+            fabButton.setIconResource(R.drawable.ic_baseline_close_24);
             // mFabOverlay overlaps the whole screen and intercepts clicks.
             // This does not include the ToolBar.
             fabOverlay.setVisibility(View.VISIBLE);
             fabOverlay.setOnClickListener(v -> hideMenu());
         } else {
-            fabButton.setImageResource(R.drawable.ic_baseline_add_24);
+            fabButton.setIconResource(R.drawable.ic_baseline_add_24);
             fabOverlay.setVisibility(View.GONE);
             fabOverlay.setOnClickListener(null);
         }

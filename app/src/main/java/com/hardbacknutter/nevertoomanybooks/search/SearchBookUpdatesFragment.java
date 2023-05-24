@@ -40,7 +40,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -161,8 +161,8 @@ public class SearchBookUpdatesFragment
         // Something really bad happened and we're aborting
         vm.onAbort().observe(getViewLifecycleOwner(), this::onAbort);
 
-        final FloatingActionButton fab = getFab();
-        fab.setImageResource(R.drawable.ic_baseline_cloud_download_24);
+        final ExtendedFloatingActionButton fab = getFab();
+        fab.setIconResource(R.drawable.ic_baseline_cloud_download_24);
         fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(v -> prepareUpdate());
 

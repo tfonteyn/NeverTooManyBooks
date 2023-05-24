@@ -22,11 +22,12 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
@@ -34,9 +35,12 @@ import java.util.Objects;
 public abstract class BaseFragment
         extends Fragment {
 
+    @Nullable
     private View progressFrame;
+    @Nullable
     private Toolbar toolbar;
-    private FloatingActionButton fab;
+    @Nullable
+    private ExtendedFloatingActionButton fab;
 
     @NonNull
     protected View getProgressFrame() {
@@ -59,7 +63,7 @@ public abstract class BaseFragment
     }
 
     @NonNull
-    protected FloatingActionButton getFab() {
+    protected ExtendedFloatingActionButton getFab() {
         if (fab == null) {
             //noinspection DataFlowIssue
             fab = Objects.requireNonNull(getActivity().findViewById(R.id.fab),

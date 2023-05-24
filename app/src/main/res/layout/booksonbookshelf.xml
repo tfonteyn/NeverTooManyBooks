@@ -93,7 +93,7 @@
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/fab4_search_external_id"
-            style="@style/Widget.App.ExtendedFloatingActionButton"
+            style="@style/FAB.Menu"
             android:text="@string/option_fab_add_book_by_external_id"
             app:icon="@drawable/ic_baseline_find_in_page_24"
             app:layout_anchor="@id/fab"
@@ -104,7 +104,7 @@
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/fab3_add_manually"
-            style="@style/Widget.App.ExtendedFloatingActionButton"
+            style="@style/FAB.Menu"
             android:text="@string/option_fab_add_book_manually"
             app:icon="@drawable/ic_baseline_keyboard_24"
             app:layout_anchor="@id/fab"
@@ -115,7 +115,7 @@
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/fab2_search_text"
-            style="@style/Widget.App.ExtendedFloatingActionButton"
+            style="@style/FAB.Menu"
             android:text="@string/option_fab_add_book_by_internet_search"
             app:icon="@drawable/ic_baseline_search_24"
             app:layout_anchor="@id/fab"
@@ -126,7 +126,7 @@
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/fab1_search_isbn"
-            style="@style/Widget.App.ExtendedFloatingActionButton"
+            style="@style/FAB.Menu"
             android:text="@string/option_fab_add_book_by_isbn"
             app:icon="@drawable/ic_baseline_apps_24"
             app:layout_anchor="@id/fab"
@@ -141,7 +141,7 @@
         -->
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/fab0_scan_barcode"
-            style="@style/Widget.App.ExtendedFloatingActionButton"
+            style="@style/FAB.Menu"
             android:text="@string/option_fab_add_book_by_barcode_scan"
             app:icon="@drawable/ic_baseline_photo_camera_24"
             app:layout_anchor="@id/fab"
@@ -152,7 +152,7 @@
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/fab0_scan_barcode_batch"
-            style="@style/Widget.App.ExtendedFloatingActionButton"
+            style="@style/FAB.Menu"
             android:text="@string/option_fab_add_book_by_barcode_scan_batch"
             app:icon="@drawable/ic_baseline_photo_camera_24"
             app:layout_anchor="@id/fab"
@@ -163,9 +163,9 @@
 
         <com.hardbacknutter.nevertoomanybooks.core.widgets.MovableFloatingActionButton
             android:id="@+id/fab"
-            style="@style/Widget.App.FloatingActionButton"
+            style="@style/FAB.Main"
             android:contentDescription="@string/lbl_add_book"
-            android:src="@drawable/ic_baseline_add_24"
+            app:icon="@drawable/ic_baseline_add_24"
             app:layout_anchor="@id/list"
             app:layout_anchorGravity="bottom|end"
             />

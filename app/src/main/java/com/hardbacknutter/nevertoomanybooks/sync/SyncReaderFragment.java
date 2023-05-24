@@ -34,7 +34,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.time.Instant;
@@ -176,8 +176,8 @@ public class SyncReaderFragment
         vb.syncDate.setOnClickListener(v -> syncDatePicker.launch(
                 vm.getDataReaderHelper().getSyncDate(), this::onSyncDateSet));
 
-        final FloatingActionButton fab = getFab();
-        fab.setImageResource(R.drawable.ic_baseline_import);
+        final ExtendedFloatingActionButton fab = getFab();
+        fab.setIconResource(R.drawable.ic_baseline_import);
         fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(v -> startReading());
 
