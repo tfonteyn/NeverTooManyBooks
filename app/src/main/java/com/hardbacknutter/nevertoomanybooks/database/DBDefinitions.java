@@ -298,7 +298,7 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_BOOK_EDITION;
     /** {@link #TBL_BOOKS}. See {@link Book.ContentType}. */
-    public static final Domain DOM_BOOK_TOC_TYPE;
+    public static final Domain DOM_BOOK_CONTENT_TYPE;
     /**
      * {@link #TBL_BOOKS}.
      * String typed. We cannot rely on prices fetched from the internet to be 100% parsable.
@@ -814,8 +814,8 @@ public final class DBDefinitions {
                         .withDefaultEmptyString()
                         .build();
 
-        DOM_BOOK_TOC_TYPE =
-                new Domain.Builder(DBKey.TOC_TYPE__BITMASK, SqLiteDataType.Integer)
+        DOM_BOOK_CONTENT_TYPE =
+                new Domain.Builder(DBKey.BOOK_CONTENT_TYPE, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(Book.ContentType.Book.getId())
                         .build();
@@ -1330,7 +1330,7 @@ public final class DBDefinitions {
                             DOM_BOOK_PRICE_LISTED,
                             DOM_BOOK_PRICE_LISTED_CURRENCY,
 
-                            DOM_BOOK_TOC_TYPE,
+                            DOM_BOOK_CONTENT_TYPE,
                             DOM_BOOK_FORMAT,
                             DOM_BOOK_COLOR,
                             DOM_BOOK_GENRE,

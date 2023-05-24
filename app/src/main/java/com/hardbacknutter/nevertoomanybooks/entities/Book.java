@@ -391,7 +391,7 @@ public class Book
 
         // publication data
         duplicate.putString(DBKey.PRINT_RUN, getString(DBKey.PRINT_RUN));
-        duplicate.putLong(DBKey.TOC_TYPE__BITMASK, getLong(DBKey.TOC_TYPE__BITMASK));
+        duplicate.putLong(DBKey.BOOK_CONTENT_TYPE, getLong(DBKey.BOOK_CONTENT_TYPE));
         duplicate.putString(DBKey.BOOK_PUBLICATION__DATE, getString(DBKey.BOOK_PUBLICATION__DATE));
         duplicate.putDouble(DBKey.PRICE_LISTED, getDouble(DBKey.PRICE_LISTED, realNumberParser));
         duplicate.putString(DBKey.PRICE_LISTED_CURRENCY, getString(DBKey.PRICE_LISTED_CURRENCY));
@@ -867,11 +867,11 @@ public class Book
 
     @NonNull
     public ContentType getContentType() {
-        return ContentType.getType(getLong(DBKey.TOC_TYPE__BITMASK));
+        return ContentType.getType(getLong(DBKey.BOOK_CONTENT_TYPE));
     }
 
     public void setContentType(@NonNull final ContentType type) {
-        putLong(DBKey.TOC_TYPE__BITMASK, type.getId());
+        putLong(DBKey.BOOK_CONTENT_TYPE, type.getId());
     }
 
     /**
@@ -1207,7 +1207,7 @@ public class Book
 
         validatorConfig.addValidator(DBKey.EDITION__BITMASK,
                                      longValidator, R.string.lbl_edition);
-        validatorConfig.addValidator(DBKey.TOC_TYPE__BITMASK,
+        validatorConfig.addValidator(DBKey.BOOK_CONTENT_TYPE,
                                      longValidator, R.string.lbl_table_of_content);
 
         validatorConfig.addValidator(DBKey.PRICE_LISTED,
@@ -1346,7 +1346,7 @@ public class Book
 
 
     /**
-     * Database representation of column {@link DBKey#TOC_TYPE__BITMASK}.
+     * Database representation of column {@link DBKey#BOOK_CONTENT_TYPE}.
      */
     public enum ContentType
             implements Entity {

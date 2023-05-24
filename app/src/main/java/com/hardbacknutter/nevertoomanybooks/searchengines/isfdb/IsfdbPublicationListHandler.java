@@ -330,7 +330,7 @@ class IsfdbPublicationListHandler
                     addIfNotPresent(IsfdbSearchEngine.SiteField.BOOK_TYPE, tmpString);
                     final Book.ContentType type = IsfdbSearchEngine.TYPE_MAP.get(tmpString);
                     if (type != null) {
-                        publicationData.putLong(DBKey.TOC_TYPE__BITMASK, type.getId());
+                        publicationData.putLong(DBKey.BOOK_CONTENT_TYPE, type.getId());
                     }
                     break;
                 }

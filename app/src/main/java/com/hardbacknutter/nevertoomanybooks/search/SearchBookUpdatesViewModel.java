@@ -204,7 +204,7 @@ public class SearchBookUpdatesViewModel
         map.put(context.getString(R.string.lbl_series_multiple),
                 new String[]{DBKey.FK_SERIES, Book.BKEY_SERIES_LIST});
         map.put(context.getString(R.string.lbl_table_of_content),
-                new String[]{DBKey.TOC_TYPE__BITMASK, Book.BKEY_TOC_LIST});
+                new String[]{DBKey.BOOK_CONTENT_TYPE, Book.BKEY_TOC_LIST});
         map.put(context.getString(R.string.lbl_publishers),
                 new String[]{DBKey.FK_PUBLISHER, Book.BKEY_PUBLISHER_LIST});
 

@@ -1159,7 +1159,7 @@ public class EditBookViewModel
     private void initFieldsToc(@NonNull final Context context,
                                @NonNull final FragmentId fragmentId) {
         fields.add(new EntityListDropDownMenuField<>(fragmentId, R.id.book_type,
-                                                     DBKey.TOC_TYPE__BITMASK,
+                                                     DBKey.BOOK_CONTENT_TYPE,
                                                      context,
                                                      Book.ContentType.getAll())
                            .setTextInputLayoutId(R.id.lbl_book_type));

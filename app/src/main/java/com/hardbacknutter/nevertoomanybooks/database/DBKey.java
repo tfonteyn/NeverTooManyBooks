@@ -192,7 +192,7 @@ public final class DBKey {
     public static final String DESCRIPTION = "description";
 
     public static final String EDITION__BITMASK = "edition_bm";
-    public static final String TOC_TYPE__BITMASK = "anthology";
+    public static final String BOOK_CONTENT_TYPE = "anthology";
 
 
     /** {@link DBDefinitions#TBL_BOOKS} Personal data. */

@@ -462,7 +462,7 @@ public class EditBookTocFragment
             // finally the TOC itself:  display it for the user to approve
             // If there are more editions, the neutral button will allow to fetch the next one.
             confirmTocResultsLauncher.launch(result.getToc(),
-                                             result.getLong(DBKey.TOC_TYPE__BITMASK),
+                                             result.getLong(DBKey.BOOK_CONTENT_TYPE),
                                              !isfdbEditions.isEmpty());
         });
     }
@@ -523,7 +523,7 @@ public class EditBookTocFragment
             tocEntries = Objects.requireNonNull(args.getParcelableArrayList(Book.BKEY_TOC_LIST),
                                                 Book.BKEY_TOC_LIST);
 
-            bookContentType = Book.ContentType.getType(args.getLong(DBKey.TOC_TYPE__BITMASK));
+            bookContentType = Book.ContentType.getType(args.getLong(DBKey.BOOK_CONTENT_TYPE));
             hasOtherEditions = args.getBoolean(BKEY_HAS_OTHER_EDITIONS, false);
         }
 
@@ -617,7 +617,7 @@ public class EditBookTocFragment
                 final Bundle args = new Bundle(4);
                 args.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
                 args.putString(BKEY_REQUEST_KEY, requestKey);
-                args.putLong(DBKey.TOC_TYPE__BITMASK, bookContentType);
+                args.putLong(DBKey.BOOK_CONTENT_TYPE, bookContentType);
                 args.putBoolean(BKEY_HAS_OTHER_EDITIONS, hasOtherEditions);
 
                 final DialogFragment fragment = new ConfirmTocDialogFragment();

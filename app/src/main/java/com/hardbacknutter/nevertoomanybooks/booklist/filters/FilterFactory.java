@@ -36,13 +36,13 @@ import com.hardbacknutter.nevertoomanybooks.fields.FieldArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.LanguageFormatter;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_COLOR;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_CONTENT_TYPE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_EDITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_FORMAT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_ISBN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_LANGUAGE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_READ;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_SIGNED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_TOC_TYPE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -140,7 +140,7 @@ public final class FilterFactory {
             case DBKey.FK_TOC_ENTRY: {
                 return new PEntityListFilter<>(
                         dbKey, R.string.lbl_book_type,
-                        TBL_BOOKS, DOM_BOOK_TOC_TYPE,
+                        TBL_BOOKS, DOM_BOOK_CONTENT_TYPE,
                         Book.ContentType::getAll);
             }
 

@@ -319,7 +319,7 @@ public class BookCoder {
      * <p>
      * Database access is strictly limited to fetching ID's.
      * <p>
-     * Ignores the actual value of the {@link DBDefinitions#DOM_BOOK_TOC_TYPE}.
+     * Ignores the actual value of the {@link DBDefinitions#DOM_BOOK_CONTENT_TYPE}.
      * It will be computed when storing the book data.
      *
      * @param context    Current context

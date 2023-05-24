@@ -142,7 +142,7 @@ public class BookDaoHelper {
         }
 
         // store only valid bits. The 'get' will normalise any incorrect 'long' value
-        if (book.contains(DBKey.TOC_TYPE__BITMASK)) {
+        if (book.contains(DBKey.BOOK_CONTENT_TYPE)) {
             book.setContentType(book.getContentType());
         }
 
