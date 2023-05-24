@@ -410,6 +410,8 @@ public class EditBookTocFragment
      * We got one or more editions from ISFDB.
      * <p>
      * Stores the urls locally as the user might want to try the next in line.
+     *
+     * @param message list of editions
      */
     private void onIsfdbEditions(@NonNull final LiveDataEvent<TaskResult<List<Edition>>> message) {
         message.getData().ifPresent(data -> {
@@ -508,7 +510,7 @@ public class EditBookTocFragment
         /** FragmentResultListener request key to use for our response. */
         private String requestKey;
         private boolean hasOtherEditions;
-        private Book.ContentType bookTocType;
+        private Book.ContentType bookContentType;
         private ArrayList<TocEntry> tocEntries;
 
         @Override
@@ -521,7 +523,7 @@ public class EditBookTocFragment
             tocEntries = Objects.requireNonNull(args.getParcelableArrayList(Book.BKEY_TOC_LIST),
                                                 Book.BKEY_TOC_LIST);
 
-            bookTocType = Book.ContentType.getType(args.getLong(DBKey.TOC_TYPE__BITMASK));
+            bookContentType = Book.ContentType.getType(args.getLong(DBKey.TOC_TYPE__BITMASK));
             hasOtherEditions = args.getBoolean(BKEY_HAS_OTHER_EDITIONS, false);
         }
 
@@ -534,7 +536,7 @@ public class EditBookTocFragment
 
             final boolean hasToc = tocEntries != null && !tocEntries.isEmpty();
             if (hasToc) {
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 final StringBuilder message =
                         new StringBuilder(getString(R.string.warning_toc_confirm))
                                 .append("\n\n")
@@ -547,7 +549,7 @@ public class EditBookTocFragment
                 contentView.setText(R.string.error_auto_toc_population_failed);
             }
 
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             final AlertDialog dialog =
                     new MaterialAlertDialogBuilder(getContext())
                             .setIcon(R.drawable.ic_baseline_warning_24)
@@ -558,7 +560,7 @@ public class EditBookTocFragment
             if (hasToc) {
                 dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),
                                  (d, which) -> Launcher.setResult(this, requestKey,
-                                                                  bookTocType, tocEntries));
+                                                                  bookContentType, tocEntries));
             }
 
             // if we found multiple editions, allow a re-try with the next edition
@@ -586,10 +588,10 @@ public class EditBookTocFragment
 
             static void setResult(@NonNull final Fragment fragment,
                                   @NonNull final String requestKey,
-                                  @NonNull final Book.ContentType tocBitMask,
+                                  @NonNull final Book.ContentType bookContentType,
                                   @NonNull final ArrayList<TocEntry> tocEntries) {
                 final Bundle result = new Bundle(2);
-                result.putLong(TOC_BIT_MASK, tocBitMask.getId());
+                result.putLong(TOC_BIT_MASK, bookContentType.getId());
                 result.putParcelableArrayList(TOC_LIST, tocEntries);
                 fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
             }
@@ -604,16 +606,18 @@ public class EditBookTocFragment
             /**
              * Launch the dialog.
              *
+             * @param toc              the list of TocEntry's
+             * @param bookContentType  the {@link Book.ContentType} ordinal
              * @param hasOtherEditions flag
              */
             public void launch(@NonNull final ArrayList<TocEntry> toc,
-                               final long tocTypeBitmask,
+                               final long bookContentType,
                                final boolean hasOtherEditions) {
 
                 final Bundle args = new Bundle(4);
                 args.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
                 args.putString(BKEY_REQUEST_KEY, requestKey);
-                args.putLong(DBKey.TOC_TYPE__BITMASK, tocTypeBitmask);
+                args.putLong(DBKey.TOC_TYPE__BITMASK, bookContentType);
                 args.putBoolean(BKEY_HAS_OTHER_EDITIONS, hasOtherEditions);
 
                 final DialogFragment fragment = new ConfirmTocDialogFragment();
