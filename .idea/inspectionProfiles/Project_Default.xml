@@ -232,7 +232,7 @@
       <option name="onlyWarnOnLoop" value="true" />
     </inspection_tool>
     <inspection_tool class="StringToUpperWithoutLocale" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="SuppressionAnnotation" enabled="false" level="WARNING" enabled_by_default="false">
+    <inspection_tool class="SuppressionAnnotation" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="myAllowedSuppressions">
         <list>
           <option value="SameParameterValue" />
@@ -255,7 +255,7 @@
       <option name="useParameterizedTypeForCollectionMethods" value="true" />
       <option name="doNotWeakenToJavaLangObject" value="true" />
       <option name="onlyWeakentoInterface" value="true" />
-      <stopClasses>java.util.Set,com.hardbacknutter.nevertoomanybooks.bookedit.EditAction,java.util.List,java.util.Collection,java.time.LocalDateTime,android.net.Uri,com.hardbacknutter.nevertoomanybooks.sync.SyncServer</stopClasses>
+      <stopClasses>java.util.Set,com.hardbacknutter.nevertoomanybooks.bookedit.EditAction,java.util.List,java.util.Collection,java.time.LocalDateTime,android.net.Uri,com.hardbacknutter.nevertoomanybooks.sync.SyncServer,com.hardbacknutter.nevertoomanybooks.entities.Book.ContentType</stopClasses>
     </inspection_tool>
     <inspection_tool class="UnnecessarilyQualifiedStaticUsage" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="m_ignoreStaticFieldAccesses" value="false" />
