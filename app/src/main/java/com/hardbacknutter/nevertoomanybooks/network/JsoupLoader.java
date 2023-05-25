@@ -82,10 +82,9 @@ public class JsoupLoader {
      * Optionally override the website character set.
      * Used when the html page contains an incorrect header charset.
      *
-     * @param charSetName to use
+     * @param charSetName to use; or {@code null} to auto-select.
      */
-    public void setCharSetName(@SuppressWarnings("SameParameterValue")
-                               @NonNull final String charSetName) {
+    public void setCharSetName(@Nullable final String charSetName) {
         this.charSetName = charSetName;
     }
 
