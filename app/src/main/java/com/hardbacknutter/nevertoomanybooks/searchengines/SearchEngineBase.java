@@ -33,8 +33,11 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 
@@ -63,6 +66,9 @@ public abstract class SearchEngineBase
      * It's a <strong>request</strong> to cancel while running.
      */
     private final AtomicBoolean cancelRequested = new AtomicBoolean();
+    /** Helper to randomize some urls to avoid fingerprinting by the servers. */
+    @NonNull
+    private final Random random;
     @Nullable
     private ImageDownloader imageDownloader;
     @Nullable
@@ -75,9 +81,11 @@ public abstract class SearchEngineBase
      *                   NOT stored.
      * @param config     the search engine configuration
      */
-    public SearchEngineBase(@NonNull final Context appContext,
-                            @NonNull final SearchEngineConfig config) {
+    protected SearchEngineBase(@NonNull final Context appContext,
+                               @NonNull final SearchEngineConfig config) {
         this.config = config;
+
+        random = new Random();
     }
 
     /**
@@ -244,9 +252,14 @@ public abstract class SearchEngineBase
         final FutureHttpGet<T> httpGet = FutureHttpGet
                 .createGet(config.getEngineId().getLabelResId());
 
-        // improve compatibility
+        // Improve compatibility by sending standard headers.
+        // Some headers are overridden in the ImageDownloader as needed.
+
+        httpGet.setRequestProperty(HttpConstants.ACCEPT_LANGUAGE,
+                                   createAcceptLanguageHeader(context));
         httpGet.setRequestProperty(HttpConstants.ACCEPT,
                                    HttpConstants.ACCEPT_KITCHEN_SINK);
+
         httpGet.setRequestProperty(HttpConstants.CONNECTION,
                                    HttpConstants.CONNECTION_KEEP_ALIVE);
         httpGet.setRequestProperty(HttpConstants.UPGRADE_INSECURE_REQUESTS,
@@ -257,6 +270,7 @@ public abstract class SearchEngineBase
         httpGet.setRequestProperty(HttpConstants.SEC_FETCH_SITE, "none");
         httpGet.setRequestProperty(HttpConstants.SEC_FETCH_USER, "?1");
 
+        // TODO: could add Platform in combo with the Randomizer
         // "Android", "Chrome OS", "Chromium OS", "iOS", "Linux", "macOS", "Windows", or "Unknown".
         // httpGet.setRequestProperty("Sec-CH-UA-Platform", "Windows");
 
@@ -271,6 +285,68 @@ public abstract class SearchEngineBase
                .setReadTimeout(config.getReadTimeoutInMs(context))
                .setThrottler(config.getThrottler());
         return httpGet;
+    }
+
+    /**
+     * Create a suitable "Accept-Language" with user and site language.
+     * The priorities will be a little randomized to help prevent fingerprinting
+     *
+     * @param context Current context
+     *
+     * @return header string
+     */
+    @NonNull
+    private String createAcceptLanguageHeader(@NonNull final Context context) {
+        final Set<String> noDups = new HashSet<>();
+        boolean addQ;
+
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        final String userLanguage = userLocale.getLanguage();
+        final String languageTag = userLocale.toLanguageTag();
+
+        final Locale siteLocale = getLocale(context);
+        final String siteLanguageTag = siteLocale.toLanguageTag();
+        final String siteLanguage = siteLocale.getLanguage();
+
+        final StringBuilder accept = new StringBuilder(languageTag);
+        noDups.add(languageTag);
+
+        if (!noDups.contains(userLanguage)) {
+            accept.append(',').append(userLanguage);
+            noDups.add(userLanguage);
+        }
+        // use 0.8 or 0.7
+        //noinspection CheckStyle
+        accept.append(";q=0.").append(8 + random.nextInt(2));
+
+
+        addQ = false;
+        if (!noDups.contains(siteLanguageTag)) {
+            accept.append(',').append(siteLanguageTag);
+            noDups.add(siteLanguageTag);
+            addQ = true;
+        }
+        if (!noDups.contains(siteLanguage)) {
+            accept.append(',').append(siteLanguage);
+            noDups.add(siteLanguage);
+            addQ = true;
+        }
+        // only add q if we actually added a value.
+        if (addQ) {
+            // use 0.5 or 0.4
+            //noinspection CheckStyle
+            accept.append(";q=0.").append(4 + random.nextInt(2));
+        }
+
+        // Always add english if not there already.
+        //noinspection CheckStyle
+        if (!noDups.contains("en")) {
+            accept.append(',').append("en");
+            // use 0.3 or 0.2
+            accept.append(";q=0.").append(2 + random.nextInt(2));
+        }
+
+        return accept.toString();
     }
 
     /**
