@@ -18,9 +18,12 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
     <!ENTITY APP_NAME "NeverTooManyBooks">
     ]>
+<!--suppress LongLine -->
 <resources>
     <string name="a_bracket_b_bracket">%1$s（%2$s）</string>
     <string name="list_element">• %s</string>
@@ -78,7 +81,7 @@
     <string name="debug_email_body">请简述您遇到的问题。</string>
     <string name="acra_resDialogText">&APP_NAME;出错了。请在下面描述您认为可能相关的任何内容，然后按“确定”向我们发送有关崩溃的电子邮件。 您可以在发送前确认电子邮件的内容。</string>
     <string name="httpError">出现网络错误。</string>
-    <string name="error_unexpected_long">发生了一个意外的错误。如果问题仍然存在，请通过设置页面底部的\"%1$s \"选项联系支持。</string>
+    <string name="error_unexpected_long">发生了一个意外的错误。如果问题仍然存在，请通过设置页面底部的 “%1$s” 选项联系支持。</string>
     <string name="error_certificate_invalid">证书无效或不可访问。</string>
     <string name="error_storage_not_writable">请检查存储是否可写，并且有足够的空间。</string>
     <string name="error_search_x_failed_y">搜索%1$s失败：%2$s</string>
