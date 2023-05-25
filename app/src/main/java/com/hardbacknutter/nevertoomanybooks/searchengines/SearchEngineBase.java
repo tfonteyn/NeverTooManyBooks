@@ -78,8 +78,6 @@ public abstract class SearchEngineBase
     public SearchEngineBase(@NonNull final Context appContext,
                             @NonNull final SearchEngineConfig config) {
         this.config = config;
-        imageDownloader = new ImageDownloader(createFutureGetRequest(true),
-                                              ServiceLocator.getInstance()::getCoverStorage);
     }
 
     /**
@@ -129,8 +127,8 @@ public abstract class SearchEngineBase
 
     @NonNull
     @Override
-    public String getHostUrl() {
-        return config.getHostUrl(appContext);
+    public String getHostUrl(@NonNull final Context context) {
+        return config.getHostUrl(context);
     }
 
     @Override
@@ -205,8 +203,10 @@ public abstract class SearchEngineBase
     @CallSuper
     public void cancel() {
         cancelRequested.set(true);
-        synchronized (imageDownloader) {
-            imageDownloader.cancel();
+        synchronized (this) {
+            if (imageDownloader != null) {
+                imageDownloader.cancel();
+            }
         }
     }
 
