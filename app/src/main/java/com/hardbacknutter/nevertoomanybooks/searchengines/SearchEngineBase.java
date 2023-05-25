@@ -56,8 +56,6 @@ public abstract class SearchEngineBase
         implements SearchEngine {
 
     @NonNull
-    protected final Context appContext;
-    @NonNull
     private final SearchEngineConfig config;
 
     /**
@@ -65,21 +63,20 @@ public abstract class SearchEngineBase
      * It's a <strong>request</strong> to cancel while running.
      */
     private final AtomicBoolean cancelRequested = new AtomicBoolean();
-    @NonNull
-    private final ImageDownloader imageDownloader;
+    @Nullable
+    private ImageDownloader imageDownloader;
     @Nullable
     private Cancellable caller;
 
     /**
      * Constructor.
      *
-     * @param appContext The <strong>application</strong> context
+     * @param appContext The <strong>application</strong> context.
+     *                   NOT stored.
      * @param config     the search engine configuration
      */
     public SearchEngineBase(@NonNull final Context appContext,
                             @NonNull final SearchEngineConfig config) {
-        // only stored to use for preference etc lookups.
-        this.appContext = appContext;
         this.config = config;
         imageDownloader = new ImageDownloader(createFutureGetRequest(true),
                                               ServiceLocator.getInstance()::getCoverStorage);
@@ -203,7 +200,6 @@ public abstract class SearchEngineBase
     }
 
 
-    //FIXME: Potentially unsafe 'if != null then cancel'
     @AnyThread
     @Override
     @CallSuper
@@ -236,13 +232,15 @@ public abstract class SearchEngineBase
      * Convenience method which uses the engines specific network configuration
      * to create a suitable {@link FutureHttpGet#createGet(int)}.
      *
+     * @param context        Current context
      * @param useCompression set to {@code true} to add the standard gzip request header.
      * @param <T>            return type
      *
      * @return new {@link FutureHttpGet} instance
      */
     @NonNull
-    public <T> FutureHttpGet<T> createFutureGetRequest(final boolean useCompression) {
+    public <T> FutureHttpGet<T> createFutureGetRequest(@NonNull final Context context,
+                                                       final boolean useCompression) {
         final FutureHttpGet<T> httpGet = FutureHttpGet
                 .createGet(config.getEngineId().getLabelResId());
 
@@ -269,8 +267,8 @@ public abstract class SearchEngineBase
                                        HttpConstants.ACCEPT_ENCODING_GZIP);
         }
 
-        httpGet.setConnectTimeout(config.getConnectTimeoutInMs(appContext))
-               .setReadTimeout(config.getReadTimeoutInMs(appContext))
+        httpGet.setConnectTimeout(config.getConnectTimeoutInMs(context))
+               .setReadTimeout(config.getReadTimeoutInMs(context))
                .setThrottler(config.getThrottler());
         return httpGet;
     }
@@ -279,18 +277,19 @@ public abstract class SearchEngineBase
      * Convenience method which uses the engines specific network configuration
      * to create a suitable {@link FutureHttpGet#createHead(int)}.
      *
-     * @param <T> return type
+     * @param context Current context
+     * @param <T>     return type
      *
      * @return new {@link FutureHttpGet} instance
      */
     @SuppressWarnings("WeakerAccess")
     @NonNull
-    public <T> FutureHttpGet<T> createFutureHeadRequest() {
+    public <T> FutureHttpGet<T> createFutureHeadRequest(@NonNull final Context context) {
         final FutureHttpGet<T> httpGet = FutureHttpGet
                 .createHead(config.getEngineId().getLabelResId());
 
-        httpGet.setConnectTimeout(config.getConnectTimeoutInMs(appContext))
-               .setReadTimeout(config.getReadTimeoutInMs(appContext))
+        httpGet.setConnectTimeout(config.getConnectTimeoutInMs(context))
+               .setReadTimeout(config.getReadTimeoutInMs(context))
                .setThrottler(config.getThrottler());
         return httpGet;
     }
@@ -298,10 +297,11 @@ public abstract class SearchEngineBase
     /**
      * Convenience method to save an image using the engines specific network configuration.
      *
-     * @param url    Image file URL
-     * @param bookId more or less unique id; e.g. isbn or website native id, etc...
-     * @param cIdx   0..n image index
-     * @param size   (optional) size parameter for engines/sites which support one
+     * @param context Current context
+     * @param url     Image file URL
+     * @param bookId  more or less unique id; e.g. isbn or website native id, etc...
+     * @param cIdx    0..n image index
+     * @param size    (optional) size parameter for engines/sites which support one
      *
      * @return File fileSpec, or {@code null} on failure
      *
@@ -309,12 +309,20 @@ public abstract class SearchEngineBase
      */
     @WorkerThread
     @Nullable
-    public String saveImage(@NonNull final String url,
+    public String saveImage(@NonNull final Context context,
+                            @NonNull final String url,
                             @Nullable final String bookId,
                             @IntRange(from = 0, to = 1) final int cIdx,
                             @Nullable final Size size)
             throws StorageException {
 
+        synchronized (this) {
+            if (imageDownloader == null) {
+                imageDownloader = new ImageDownloader(
+                        createFutureGetRequest(context, true),
+                        ServiceLocator.getInstance()::getCoverStorage);
+            }
+        }
         final String tempFilename = ImageDownloader.getTempFilename(
                 getEngineId().getPreferenceKey(), bookId, cIdx, size);
 

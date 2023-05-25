@@ -719,7 +719,7 @@ public enum EngineId
         }
 
         if (showAlert) {
-            final String siteName = createSearchEngine(context).getHostUrl();
+            final String siteName = createSearchEngine(context).getHostUrl(context);
 
             final AlertDialog.Builder dialogBuilder = new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_baseline_warning_24)

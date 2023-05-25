@@ -92,13 +92,14 @@ public class LibraryThingSearchEngine
     @Override
     public Locale getLocale(@NonNull final Context context) {
         // Derive the Locale from the user configured url.
-        return getLocale(context, getHostUrl());
+        return getLocale(context, getHostUrl(context));
     }
 
     @NonNull
     @Override
-    public String createBrowserUrl(@NonNull final String externalId) {
-        return getHostUrl() + String.format("/work/%1$s", externalId);
+    public String createBrowserUrl(@NonNull final Context context,
+                                   @NonNull final String externalId) {
+        return getHostUrl(context) + String.format("/work/%1$s", externalId);
     }
 
     @Override
@@ -128,12 +129,12 @@ public class LibraryThingSearchEngine
                                                   @NonNull final String validIsbn)
             throws SearchException {
 
-        futureHttpGet = createFutureGetRequest(true);
+        futureHttpGet = createFutureGetRequest(context, true);
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final LibraryThingEditionHandler handler = new LibraryThingEditionHandler();
 
-        final String url = getHostUrl() + String.format("/api/thingISBN/%1$s", validIsbn);
+        final String url = getHostUrl(context) + String.format("/api/thingISBN/%1$s", validIsbn);
 
         //noinspection OverlyBroadCatchBlock
         try {

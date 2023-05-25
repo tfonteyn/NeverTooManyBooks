@@ -96,7 +96,7 @@ public class GoogleBooksSearchEngine
         final Book book = new Book();
 
         // %3A  :
-        final String url = getHostUrl() + "/books/feeds/volumes?q=ISBN%3A" + validIsbn;
+        final String url = getHostUrl(context) + "/books/feeds/volumes?q=ISBN%3A" + validIsbn;
         fetchBook(context, url, fetchCovers, book);
         return book;
     }
@@ -118,7 +118,7 @@ public class GoogleBooksSearchEngine
         // %3A  :
         if (author != null && !author.isEmpty()
             && title != null && !title.isEmpty()) {
-            final String url = getHostUrl() + "/books/feeds/volumes?q="
+            final String url = getHostUrl(context) + "/books/feeds/volumes?q="
                                + "intitle%3A" + encodeSpaces(title)
                                + "%2B"
                                + "inauthor%3A" + encodeSpaces(author);
@@ -134,7 +134,7 @@ public class GoogleBooksSearchEngine
      * @param url         to fetch
      * @param fetchCovers Set to {@code true} if we want to get covers
      *                    The array is guaranteed to have at least one element.
-     * @param book        Bundle to update <em>(passed in to allow mocking)</em>
+     * @param book        Bundle to update
      *
      * @throws StorageException on storage related failures
      * @throws SearchException  on generic exceptions (wrapped) during search
@@ -146,7 +146,7 @@ public class GoogleBooksSearchEngine
             throws StorageException,
                    SearchException {
 
-        futureHttpGet = createFutureGetRequest(true);
+        futureHttpGet = createFutureGetRequest(context, true);
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         // get the booklist, can return multiple books ('entry' elements)
@@ -182,7 +182,7 @@ public class GoogleBooksSearchEngine
             if (!urlList.isEmpty()) {
                 // The entry handler takes care of an individual book ('entry')
                 final GoogleBooksEntryHandler handler = new GoogleBooksEntryHandler(
-                        this, fetchCovers, book, getLocale(context));
+                        context, this, fetchCovers, book, getLocale(context));
 
                 // only using the first one found, maybe future enhancement?
                 futureHttpGet.get(urlList.get(0), response -> {

@@ -168,7 +168,7 @@ public class BolSearchEngine
             words.add(code);
         }
 
-        final String url = getHostUrl() + String.format(BY_TEXT, getCountry(context), words);
+        final String url = getHostUrl(context) + String.format(BY_TEXT, getCountry(context), words);
         final Document document = loadDocument(context, url, null);
         final Book book = new Book();
         if (!isCancelled()) {
@@ -185,7 +185,8 @@ public class BolSearchEngine
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final String url = getHostUrl() + String.format(BY_ISBN, getCountry(context), validIsbn);
+        final String url = getHostUrl(context) + String.format(BY_ISBN, getCountry(context),
+                                                               validIsbn);
         final Document document = loadDocument(context, url, null);
         final Book book = new Book();
         if (!isCancelled()) {
@@ -226,7 +227,7 @@ public class BolSearchEngine
                 String url = urlElement.attr("href");
                 // sanity check - it normally does NOT have the protocol/site part
                 if (url.startsWith("/")) {
-                    url = getHostUrl() + url;
+                    url = getHostUrl(context) + url;
                 }
                 final Document redirected = loadDocument(context, url, null);
                 if (!isCancelled()) {
@@ -393,7 +394,7 @@ public class BolSearchEngine
         parsePrice(document, book, realNumberParser);
 
         if (fetchCovers[0]) {
-            parseCovers(document, fetchCovers, book);
+            parseCovers(context, document, fetchCovers, book);
         }
     }
 
@@ -546,13 +547,15 @@ public class BolSearchEngine
      *     }
      * </pre>
      *
+     * @param context           Current context
      * @param document    to parse
      * @param fetchCovers Set to {@code true} if we want to get covers
      * @param book        to update
      *
      * @throws StorageException The covers directory is not available
      */
-    private void parseCovers(@NonNull final Document document,
+    private void parseCovers(@NonNull final Context context,
+                             @NonNull final Document document,
                              @NonNull final boolean[] fetchCovers,
                              @NonNull final Book book)
             throws StorageException {
@@ -574,7 +577,7 @@ public class BolSearchEngine
                     final JSONArray objects = new JSONArray(text);
                     final JSONObject currentItem = objects.optJSONObject(0);
                     if (currentItem != null) {
-                        parseCovers(currentItem, isbn, fetchCovers, book);
+                        parseCovers(context, currentItem, isbn, fetchCovers, book);
                     }
                 } else {
                     // TEST: This 'else' branch can likely be removed.
@@ -583,7 +586,7 @@ public class BolSearchEngine
                     if (imageSlotSlider != null) {
                         final JSONObject currentItem = imageSlotSlider.optJSONObject("currentItem");
                         if (currentItem != null) {
-                            parseCovers(currentItem, isbn, fetchCovers, book);
+                            parseCovers(context, currentItem, isbn, fetchCovers, book);
                         }
                     }
                 }
@@ -595,7 +598,8 @@ public class BolSearchEngine
         }
     }
 
-    private void parseCovers(@NonNull final JSONObject currentItem,
+    private void parseCovers(@NonNull final Context context,
+                             @NonNull final JSONObject currentItem,
                              @NonNull final String isbn,
                              @NonNull final boolean[] fetchCovers,
                              @NonNull final Book book)
@@ -603,12 +607,12 @@ public class BolSearchEngine
         for (final String key : FRONT_COVER_KEYS) {
             String coverImageUrl = currentItem.optString(key);
             if (coverImageUrl != null && !coverImageUrl.isBlank()) {
-                if (processCover(coverImageUrl, isbn, 0, book)) {
+                if (processCover(context, coverImageUrl, isbn, 0, book)) {
                     // only attempt to get the back-cover if we got a front-cover
                     // and (obv.) we want one.
                     if (fetchCovers.length > 1 && fetchCovers[1]) {
                         coverImageUrl = currentItem.optString("backImageUrl");
-                        processCover(coverImageUrl, isbn, 1, book);
+                        processCover(context, coverImageUrl, isbn, 1, book);
                     }
                     // All done. We have a front-cover and maybe a back-cover.
                     return;
@@ -620,23 +624,25 @@ public class BolSearchEngine
     /**
      * Fetch the given cover url if possible.
      *
-     * @param url  to fetch
-     * @param isbn of the book
-     * @param cIdx 0..n image index
-     * @param book Bundle to update
+     * @param context Current context
+     * @param url     to fetch
+     * @param isbn    of the book
+     * @param cIdx    0..n image index
+     * @param book    Bundle to update
      *
      * @return {@code true} if an image was successfully saved.
      *
      * @throws StorageException The covers directory is not available
      */
-    private boolean processCover(@Nullable final String url,
+    private boolean processCover(@NonNull final Context context,
+                                 @Nullable final String url,
                                  @NonNull final String isbn,
                                  @IntRange(from = 0, to = 1) final int cIdx,
                                  @NonNull final Book book)
             throws StorageException {
 
         if (url != null && !url.isEmpty()) {
-            final String fileSpec = saveImage(url, isbn, cIdx, null);
+            final String fileSpec = saveImage(context, url, isbn, cIdx, null);
             if (fileSpec != null && !fileSpec.isEmpty()) {
                 final ArrayList<String> list = new ArrayList<>();
                 list.add(fileSpec);

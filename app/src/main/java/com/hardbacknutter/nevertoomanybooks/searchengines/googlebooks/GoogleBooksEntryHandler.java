@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.googlebooks;
 
+import android.content.Context;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
@@ -231,6 +233,8 @@ class GoogleBooksEntryHandler
     @NonNull
     private final Locale siteLocale;
     @NonNull
+    private final Context context;
+    @NonNull
     private final GoogleBooksSearchEngine searchEngine;
     private boolean inSuggestedRetailPriceTag;
     private boolean inRetailPriceTag;
@@ -238,15 +242,19 @@ class GoogleBooksEntryHandler
     /**
      * Constructor.
      *
+     * @param context      Current context
      * @param searchEngine to use
      * @param fetchCovers  Set to {@code true} if we want to get covers
      *                     The array is guaranteed to have at least one element.
-     * @param book         Bundle to update <em>(passed in to allow mocking)</em>
+     * @param book         Bundle to update
+     * @param siteLocale   for parsing
      */
-    GoogleBooksEntryHandler(@NonNull final GoogleBooksSearchEngine searchEngine,
+    GoogleBooksEntryHandler(@NonNull final Context context,
+                            @NonNull final GoogleBooksSearchEngine searchEngine,
                             @NonNull final boolean[] fetchCovers,
                             @NonNull final Book book,
                             @NonNull final Locale siteLocale) {
+        this.context = context;
         this.searchEngine = searchEngine;
         this.fetchCovers = fetchCovers;
         this.book = book;
@@ -277,7 +285,7 @@ class GoogleBooksEntryHandler
 
                 final String fileSpec;
                 try {
-                    fileSpec = searchEngine.saveImage(url, book.getString(DBKey.BOOK_ISBN),
+                    fileSpec = searchEngine.saveImage(context, url, book.getString(DBKey.BOOK_ISBN),
                                                       0, null);
                 } catch (@NonNull final StorageException e) {
                     throw new SAXException(e);
@@ -418,7 +426,7 @@ class GoogleBooksEntryHandler
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
                     // see what we are missing.
                     LoggerFactory.getLogger()
-                                  .d(TAG, "endElement|Skipping", localName + "->`" + builder + '`');
+                                 .d(TAG, "endElement|Skipping", localName + "->`" + builder + '`');
                 }
                 break;
 

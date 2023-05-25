@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
+import android.content.Context;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -120,6 +122,8 @@ class IsfdbPublicationListHandler
     private static final String XML_ID_VALUE = "IDvalue";
 
     @NonNull
+    private final Context context;
+    @NonNull
     private final IsfdbSearchEngine searchEngine;
     @NonNull
     private final boolean[] fetchCovers;
@@ -128,7 +132,9 @@ class IsfdbPublicationListHandler
     private final StringBuilder builder = new StringBuilder();
     @NonNull
     private final List<Book> bookList = new ArrayList<>();
-    private int maxBooks;
+    @NonNull
+    private final MoneyParser moneyParser;
+    private int maxRecords;
     private boolean inPublication;
     private Book publicationData;
     private boolean inAuthors;
@@ -141,17 +147,26 @@ class IsfdbPublicationListHandler
     @Nullable
     private String externalId;
 
-    @NonNull
-    private final MoneyParser moneyParser;
-
-    IsfdbPublicationListHandler(@NonNull final IsfdbSearchEngine isfdbApiSearchEngine,
+    /**
+     * Constructor.
+     *
+     * @param context      Current context
+     * @param searchEngine to use
+     * @param fetchCovers  Set to {@code true} if we want to get covers
+     *                     The array is guaranteed to have at least one element.
+     * @param maxRecords   the maximum number of "Publication" records to fetch
+     * @param moneyParser  for parsing
+     */
+    IsfdbPublicationListHandler(@NonNull final Context context,
+                                @NonNull final IsfdbSearchEngine searchEngine,
                                 @NonNull final boolean[] fetchCovers,
-                                final int maxBooks,
+                                final int maxRecords,
                                 @NonNull final MoneyParser moneyParser) {
-        searchEngine = isfdbApiSearchEngine;
+        this.context = context;
+        this.searchEngine = searchEngine;
 
         this.fetchCovers = fetchCovers;
-        this.maxBooks = maxBooks;
+        this.maxRecords = maxRecords;
         this.moneyParser = moneyParser;
     }
 
@@ -220,8 +235,8 @@ class IsfdbPublicationListHandler
             final String tmpString = builder.toString().trim();
             try {
                 final int n = Integer.parseInt(tmpString);
-                if (n < maxBooks) {
-                    maxBooks = n;
+                if (n < maxRecords) {
+                    maxRecords = n;
                 }
             } catch (@NonNull final NumberFormatException e) {
                 throw new SAXException(new EOFException());
@@ -234,7 +249,7 @@ class IsfdbPublicationListHandler
 
             inPublication = false;
             bookList.add(publicationData);
-            if (bookList.size() == maxBooks) {
+            if (bookList.size() == maxRecords) {
                 // we're done
                 throw new SAXException(new EOFException());
             }
@@ -344,7 +359,7 @@ class IsfdbPublicationListHandler
                         try {
                             final String isbn = publicationData.getString(DBKey.BOOK_ISBN);
                             final String fileSpec =
-                                    searchEngine.saveImage(tmpString, isbn, 0, null);
+                                    searchEngine.saveImage(context, tmpString, isbn, 0, null);
                             if (fileSpec != null) {
                                 final ArrayList<String> list = new ArrayList<>();
                                 list.add(fileSpec);

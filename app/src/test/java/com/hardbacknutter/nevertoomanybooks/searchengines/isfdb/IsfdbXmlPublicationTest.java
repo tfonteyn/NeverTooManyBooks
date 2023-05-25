@@ -75,7 +75,7 @@ class IsfdbXmlPublicationTest
         final MoneyParser moneyParser = new MoneyParser(locales.get(0), realNumberParser);
 
         final IsfdbPublicationListHandler listHandler =
-                new IsfdbPublicationListHandler(searchEngine,
+                new IsfdbPublicationListHandler(context, searchEngine,
                                                 new boolean[]{false, false},
                                                 1, moneyParser);
 

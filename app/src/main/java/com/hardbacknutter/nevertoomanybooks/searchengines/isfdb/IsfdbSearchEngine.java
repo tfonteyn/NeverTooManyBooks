@@ -256,8 +256,9 @@ public class IsfdbSearchEngine
 
     @NonNull
     @Override
-    public String createBrowserUrl(@NonNull final String externalId) {
-        return getHostUrl() + CGI_BROWSER + externalId;
+    public String createBrowserUrl(@NonNull final Context context,
+                                   @NonNull final String externalId) {
+        return getHostUrl(context) + CGI_BROWSER + externalId;
     }
 
     @NonNull
@@ -269,7 +270,7 @@ public class IsfdbSearchEngine
 
         final Book book = new Book();
 
-        final String url = getHostUrl() + String.format(CGI_BY_EXTERNAL_ID, externalId);
+        final String url = getHostUrl(context) + String.format(CGI_BY_EXTERNAL_ID, externalId);
 
         // added due to https://github.com/square/okhttp/issues/1517
         // it's a server issue, this is a workaround.
@@ -316,7 +317,7 @@ public class IsfdbSearchEngine
                        @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final String url = getHostUrl() + CGI_ADV_SEARCH_PREFIX;
+        final String url = getHostUrl(context) + CGI_ADV_SEARCH_PREFIX;
 
         int index = 0;
         String args = "";
@@ -409,7 +410,8 @@ public class IsfdbSearchEngine
             final Edition edition = editions.get(0);
             final Document document = loadDocumentByEdition(context, edition);
             if (!isCancelled()) {
-                final ArrayList<String> imageList = parseCovers(document, edition.getIsbn(), 0);
+                final ArrayList<String> imageList = parseCovers(context, document,
+                                                                edition.getIsbn(), 0);
                 if (!imageList.isEmpty()) {
                     // let the system resolve any path variations
                     return new File(imageList.get(0)).getAbsolutePath();
@@ -1098,7 +1100,7 @@ public class IsfdbSearchEngine
 
         if (fetchCovers[0]) {
             final String isbn = book.getString(DBKey.BOOK_ISBN);
-            final ArrayList<String> list = parseCovers(document, isbn, 0);
+            final ArrayList<String> list = parseCovers(context, document, isbn, 0);
             if (!list.isEmpty()) {
                 book.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
             }
@@ -1108,6 +1110,7 @@ public class IsfdbSearchEngine
     /**
      * Parses the downloaded {@link Document} for the cover and fetches it when present.
      *
+     * @param context  Current context
      * @param document to parse
      * @param isbn     (optional) ISBN of the book, will be used for the cover filename
      * @param cIdx     0..n image index
@@ -1119,7 +1122,8 @@ public class IsfdbSearchEngine
     @WorkerThread
     @VisibleForTesting
     @NonNull
-    private ArrayList<String> parseCovers(@NonNull final Document document,
+    private ArrayList<String> parseCovers(@NonNull final Context context,
+                                          @NonNull final Document document,
                                           @Nullable final String isbn,
                                           @SuppressWarnings("SameParameterValue")
                                           @IntRange(from = 0, to = 1) final int cIdx)
@@ -1158,7 +1162,7 @@ public class IsfdbSearchEngine
             final Element img = contentBox.selectFirst("img");
             if (img != null) {
                 final String url = img.attr("src");
-                final String fileSpec = saveImage(url, isbn, cIdx, null);
+                final String fileSpec = saveImage(context, url, isbn, cIdx, null);
                 if (fileSpec != null) {
                     imageList.add(fileSpec);
                 }
@@ -1185,7 +1189,7 @@ public class IsfdbSearchEngine
             throws SearchException, CredentialsException {
         searchForIsbn = validIsbn;
 
-        final String url = getHostUrl() + String.format(CGI_EDITIONS, validIsbn);
+        final String url = getHostUrl(context) + String.format(CGI_EDITIONS, validIsbn);
         return fetchEditions(context, url);
     }
 
@@ -1322,8 +1326,8 @@ public class IsfdbSearchEngine
         }
 
         // go get it.
-        final String url = getHostUrl() + String.format(CGI_BY_EXTERNAL_ID,
-                                                        edition.getIsfdbId());
+        final String url = getHostUrl(context) + String.format(CGI_BY_EXTERNAL_ID,
+                                                               edition.getIsfdbId());
         // added due to https://github.com/square/okhttp/issues/1517
         // it's a server issue, this is a workaround.
         return loadDocument(context, url, Map.of(HttpConstants.CONNECTION,
@@ -1457,7 +1461,7 @@ public class IsfdbSearchEngine
         //    return pub[0]
         //  else:
         //    return 0
-        final String url = getHostUrl() + String.format(REST_BY_EXTERNAL_ID, externalId);
+        final String url = getHostUrl(context) + String.format(REST_BY_EXTERNAL_ID, externalId);
 
         // Use the site locale for all parsing!
         final Locale siteLocale = getLocale(context);
@@ -1465,7 +1469,7 @@ public class IsfdbSearchEngine
         final RealNumberParser realNumberParser = new RealNumberParser(locales);
         final MoneyParser moneyParser = new MoneyParser(siteLocale, realNumberParser);
 
-        final List<Book> publicationsList = fetchPublications(url, fetchCovers, 1,
+        final List<Book> publicationsList = fetchPublications(context, url, fetchCovers, 1,
                                                               moneyParser);
         if (publicationsList.isEmpty()) {
             return new Book();
@@ -1481,7 +1485,7 @@ public class IsfdbSearchEngine
      * @param edition     to get
      * @param fetchCovers Set to {@code true} if we want to get covers
      *                    The array is guaranteed to have at least one element.
-     * @param book        Bundle to update <em>(passed in to allow mocking)</em>
+     * @param book        Bundle to update
      *
      * @throws CredentialsException on authentication/login failures
      * @throws SearchException      on generic exceptions (wrapped) during search
@@ -1528,6 +1532,7 @@ public class IsfdbSearchEngine
     /**
      * Fetch a (list of) publications by REST-url which returns an xml doc.
      *
+     * @param context     Current context
      * @param url         to fetch
      * @param fetchCovers Set to {@code true} if we want to get covers
      *                    The array is guaranteed to have at least one element.
@@ -1538,19 +1543,20 @@ public class IsfdbSearchEngine
      * @throws SearchException  on generic exceptions (wrapped) during search
      */
     @NonNull
-    private List<Book> fetchPublications(@NonNull final String url,
+    private List<Book> fetchPublications(@NonNull final Context context,
+                                         @NonNull final String url,
                                          @NonNull final boolean[] fetchCovers,
                                          @SuppressWarnings("SameParameterValue") final int maxRecords,
                                          @NonNull final MoneyParser moneyParser)
             throws StorageException, SearchException {
 
-        futureHttpGet = createFutureGetRequest(true);
+        futureHttpGet = createFutureGetRequest(context, true);
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
 
         final IsfdbPublicationListHandler listHandler =
-                new IsfdbPublicationListHandler(this, fetchCovers, maxRecords,
-                                                moneyParser);
+                new IsfdbPublicationListHandler(context, this, fetchCovers,
+                                                maxRecords, moneyParser);
 
         try {
             final SAXParser parser = factory.newSAXParser();

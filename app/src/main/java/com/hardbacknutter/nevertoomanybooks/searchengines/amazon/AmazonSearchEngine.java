@@ -151,7 +151,7 @@ public class AmazonSearchEngine
     @Override
     public Locale getLocale(@NonNull final Context context) {
         // Derive the Locale from the user configured url.
-        return getLocale(context, getHostUrl());
+        return getLocale(context, getHostUrl(context));
     }
 
     @NonNull
@@ -194,7 +194,7 @@ public class AmazonSearchEngine
         final ISBN tmp = new ISBN(validIsbn, true);
         final String asin = tmp.isIsbn10Compat() ? tmp.asText(ISBN.Type.Isbn10) : validIsbn;
 
-        return genericSearch(context, getHostUrl() + String.format(BY_EXTERNAL_ID, asin),
+        return genericSearch(context, getHostUrl(context) + String.format(BY_EXTERNAL_ID, asin),
                              fetchCovers);
     }
 
@@ -206,7 +206,8 @@ public class AmazonSearchEngine
             throws StorageException, SearchException, CredentialsException {
 
         if (ASIN.isValidAsin(barcode)) {
-            return genericSearch(context, getHostUrl() + String.format(BY_EXTERNAL_ID, barcode),
+            return genericSearch(context,
+                                 getHostUrl(context) + String.format(BY_EXTERNAL_ID, barcode),
                                  fetchCovers);
         } else {
             // not supported
@@ -222,13 +223,13 @@ public class AmazonSearchEngine
                                     @Nullable final Size size)
             throws StorageException, SearchException, CredentialsException {
 
-        final String url = getHostUrl() + String.format(BY_EXTERNAL_ID, validIsbn);
+        final String url = getHostUrl(context) + String.format(BY_EXTERNAL_ID, validIsbn);
         final Document document = loadDocument(context, url, null);
 
         checkCaptcha(context, url, document);
 
         if (!isCancelled()) {
-            final ArrayList<String> imageList = parseCovers(document, validIsbn, 0);
+            final ArrayList<String> imageList = parseCovers(context, document, validIsbn, 0);
             if (!imageList.isEmpty()) {
                 // let the system resolve any path variations
                 return new File(imageList.get(0)).getAbsolutePath();
@@ -290,7 +291,7 @@ public class AmazonSearchEngine
             return;
         }
 
-        parseDetails(document, book, siteLocale);
+        parseDetails(context, document, book, siteLocale);
         parseASIN(document, book);
 
         checkForSeriesNameInTitle(book);
@@ -301,7 +302,7 @@ public class AmazonSearchEngine
 
         if (fetchCovers[0]) {
             final String isbn = book.getString(DBKey.BOOK_ISBN);
-            final ArrayList<String> list = parseCovers(document, isbn, 0);
+            final ArrayList<String> list = parseCovers(context, document, isbn, 0);
             if (!list.isEmpty()) {
                 book.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
             }
@@ -359,11 +360,15 @@ public class AmazonSearchEngine
     }
 
     /**
+     * Parse fields.
+     *
+     * @param context    Current context
      * @param document   to parse
      * @param book       to update
      * @param siteLocale to use for case manipulation
      */
-    private void parseDetails(@NonNull final Document document,
+    private void parseDetails(@NonNull final Context context,
+                              @NonNull final Document document,
                               @NonNull final Book book,
                               @NonNull final Locale siteLocale) {
         final Elements lis = document
@@ -397,7 +402,7 @@ public class AmazonSearchEngine
                 case "taschenbuch":
                 case "gebundene ausgabe":
                     book.putString(DBKey.FORMAT, label);
-                    book.putString(DBKey.PAGE_COUNT, extractPages(data));
+                    book.putString(DBKey.PAGE_COUNT, extractPages(context, data));
                     break;
 
                 case "language":
@@ -473,6 +478,8 @@ public class AmazonSearchEngine
     }
 
     /**
+     * Parse the Author list.
+     *
      * @param document   to parse
      * @param book       to update
      * @param siteLocale to use for case manipulation
@@ -522,6 +529,7 @@ public class AmazonSearchEngine
     /**
      * Parses the downloaded {@link Document} for the cover and fetches it when present.
      *
+     * @param context  Current context
      * @param document to parse
      * @param isbn     (optional) ISBN of the book, will be used for the cover filename
      * @param cIdx     0..n image index
@@ -533,7 +541,8 @@ public class AmazonSearchEngine
     @WorkerThread
     @VisibleForTesting
     @NonNull
-    private ArrayList<String> parseCovers(@NonNull final Document document,
+    private ArrayList<String> parseCovers(@NonNull final Context context,
+                                          @NonNull final Document document,
                                           @Nullable final String isbn,
                                           @SuppressWarnings("SameParameterValue")
                                           @IntRange(from = 0, to = 1) final int cIdx)
@@ -564,7 +573,7 @@ public class AmazonSearchEngine
             url = srcUrl;
         }
 
-        final String fileSpec = saveImage(url, isbn, cIdx, null);
+        final String fileSpec = saveImage(context, url, isbn, cIdx, null);
         if (fileSpec != null) {
             imageList.add(fileSpec);
         }
@@ -572,12 +581,14 @@ public class AmazonSearchEngine
     }
 
     @NonNull
-    private String extractPages(@NonNull final CharSequence data) {
+    private String extractPages(@NonNull final Context context,
+                                @NonNull final CharSequence data) {
         if (pagesPattern == null) {
-            final String baseUrl = getHostUrl();
+            final String baseUrl = getHostUrl(context);
             // check the domain name to determine the language of the site
             final String root = baseUrl.substring(baseUrl.lastIndexOf('.') + 1);
             final String pagesStr;
+            // These are string from the actual website; hence not from resources
             switch (root) {
                 case "de":
                     pagesStr = "Seiten";

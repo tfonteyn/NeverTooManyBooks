@@ -87,7 +87,7 @@ public class BookFinderSearchEngine
     @Override
     public Locale getLocale(@NonNull final Context context) {
         // Derive the Locale from the user configured url.
-        return getLocale(context, getHostUrl());
+        return getLocale(context, getHostUrl(context));
     }
 
     @NonNull
@@ -96,7 +96,7 @@ public class BookFinderSearchEngine
                              @NonNull final String validIsbn,
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
-        final String url = getHostUrl() + String.format(BY_ISBN, validIsbn);
+        final String url = getHostUrl(context) + String.format(BY_ISBN, validIsbn);
         final Document document = loadDocument(context, url, null);
 
         final Book book = new Book();
@@ -207,7 +207,7 @@ public class BookFinderSearchEngine
         }
 
         if (fetchCovers[0]) {
-            final ArrayList<String> list = parseCovers(document, book);
+            final ArrayList<String> list = parseCovers(context, document, book);
             if (!list.isEmpty()) {
                 book.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
             }
@@ -217,7 +217,8 @@ public class BookFinderSearchEngine
     @WorkerThread
     @VisibleForTesting
     @NonNull
-    private ArrayList<String> parseCovers(@NonNull final Document document,
+    private ArrayList<String> parseCovers(@NonNull final Context context,
+                                          @NonNull final Document document,
                                           @NonNull final Book book)
             throws StorageException {
 
@@ -227,7 +228,7 @@ public class BookFinderSearchEngine
         if (img != null) {
             final String url = img.attr("src");
             final String isbn = book.getString(DBKey.BOOK_ISBN);
-            final String fileSpec = saveImage(url, isbn, 0, null);
+            final String fileSpec = saveImage(context, url, isbn, 0, null);
             if (fileSpec != null) {
                 imageList.add(fileSpec);
             }

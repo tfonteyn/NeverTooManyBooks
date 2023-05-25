@@ -104,7 +104,7 @@ public class BedethequeSearchEngine
         super(appContext, config);
 
         cookieManager = ServiceLocator.getInstance().getCookieManager();
-        extraRequestProperties = Map.of(HttpConstants.REFERER, getHostUrl() + SEARCH_URL);
+        extraRequestProperties = Map.of(HttpConstants.REFERER, getHostUrl(appContext) + SEARCH_URL);
     }
 
     @Nullable
@@ -121,10 +121,10 @@ public class BedethequeSearchEngine
             throws SearchException {
         if (csrfCookie == null || csrfCookie.hasExpired()) {
             try {
-                final FutureHttpGet<HttpCookie> head = createFutureHeadRequest();
+                final FutureHttpGet<HttpCookie> head = createFutureHeadRequest(context);
                 // Reminder: the "request" will be connected and the response code will be OK,
                 // so just extract the cookie we need for the next request
-                csrfCookie = head.get(getHostUrl() + SEARCH_URL, response -> cookieManager
+                csrfCookie = head.get(getHostUrl(context) + SEARCH_URL, response -> cookieManager
                         .getCookieStore()
                         .getCookies()
                         .stream()
@@ -154,7 +154,7 @@ public class BedethequeSearchEngine
         final Book book = new Book();
 
         //The site is very "defensive". We must specify the full url and set the "Referer".
-        final String url = getHostUrl() + "/search/albums?RechIdSerie=&RechIdAuteur="
+        final String url = getHostUrl(context) + "/search/albums?RechIdSerie=&RechIdAuteur="
                            + '&' + requireCookieNameValueString(context)
                            + "&RechSerie=&RechTitre=&RechEditeur=&RechCollection="
                            + "&RechStyle=&RechAuteur="
@@ -448,7 +448,7 @@ public class BedethequeSearchEngine
             }
 
             if (fetchCovers[0] || fetchCovers[1]) {
-                parseCovers(document, fetchCovers, book);
+                parseCovers(context, document, fetchCovers, book);
             }
         }
     }
@@ -570,7 +570,8 @@ public class BedethequeSearchEngine
         return new Series(seriesName);
     }
 
-    private void parseCovers(@NonNull final Document document,
+    private void parseCovers(@NonNull final Context context,
+                             @NonNull final Document document,
                              @NonNull final boolean[] fetchCovers,
                              @NonNull final Book book)
             throws StorageException {
@@ -578,24 +579,25 @@ public class BedethequeSearchEngine
         if (fetchCovers[0]) {
             final Element a = document.selectFirst(
                     "div.bandeau-principal > div.bandeau-image > a");
-            processCover(a, 0, book);
+            processCover(context, a, 0, book);
         }
 
         if (fetchCovers[1]) {
             // bandeau-vignette contains a list, each "li" contains an "a"
             final Elements as = document.select("div.bandeau-vignette a");
-            processCover(as.last(), 1, book);
+            processCover(context, as.last(), 1, book);
         }
     }
 
-    private void processCover(@Nullable final Element a,
+    private void processCover(@NonNull final Context context,
+                              @Nullable final Element a,
                               final int cIdx,
                               @NonNull final Book book)
             throws StorageException {
         if (a != null) {
             final String url = a.attr("href");
             final String isbn = book.getString(DBKey.BOOK_ISBN);
-            final String fileSpec = saveImage(url, isbn, cIdx, null);
+            final String fileSpec = saveImage(context, url, isbn, cIdx, null);
             if (fileSpec != null) {
                 final ArrayList<String> list = new ArrayList<>();
                 list.add(fileSpec);

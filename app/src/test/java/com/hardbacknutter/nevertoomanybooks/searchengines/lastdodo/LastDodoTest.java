@@ -70,7 +70,8 @@ class LastDodoTest
         final String filename = "/lastdodo/7323911-de-37ste-parallel.html";
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
-        searchEngine.parse(document, new boolean[]{false, false}, book, mockAuthorResolver);
+        searchEngine.parse(context, document, new boolean[]{false, false}, book,
+                           mockAuthorResolver);
         // System.out.println(rawData);
 
         assertEquals("De 37ste parallel", book.getString(DBKey.TITLE, null));

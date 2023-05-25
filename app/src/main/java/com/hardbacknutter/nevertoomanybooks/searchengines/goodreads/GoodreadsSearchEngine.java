@@ -52,8 +52,9 @@ public class GoodreadsSearchEngine
 
     @NonNull
     @Override
-    public String createBrowserUrl(@NonNull final String externalId) {
-        return getHostUrl() + "/book/show/" + externalId;
+    public String createBrowserUrl(@NonNull final Context context,
+                                   @NonNull final String externalId) {
+        return getHostUrl(context) + "/book/show/" + externalId;
     }
 }
 

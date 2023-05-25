@@ -187,8 +187,9 @@ public class OpenLibrarySearchEngine
 
     @NonNull
     @Override
-    public String createBrowserUrl(@NonNull final String externalId) {
-        return getHostUrl() + "/books/" + externalId;
+    public String createBrowserUrl(@NonNull final Context context,
+                                   @NonNull final String externalId) {
+        return getHostUrl(context) + "/books/" + externalId;
     }
 
     @NonNull
@@ -200,7 +201,7 @@ public class OpenLibrarySearchEngine
 
         final Book book = new Book();
 
-        final String url = getHostUrl() + String.format(BASE_BOOK_URL, "OLID", externalId);
+        final String url = getHostUrl(context) + String.format(BASE_BOOK_URL, "OLID", externalId);
 
         fetchBook(context, url, fetchCovers, book);
         return book;
@@ -220,7 +221,7 @@ public class OpenLibrarySearchEngine
 
         final Book book = new Book();
 
-        final String url = getHostUrl() + String.format(BASE_BOOK_URL, "ISBN", validIsbn);
+        final String url = getHostUrl(context) + String.format(BASE_BOOK_URL, "ISBN", validIsbn);
 
         fetchBook(context, url, fetchCovers, book);
         return book;
@@ -264,7 +265,7 @@ public class OpenLibrarySearchEngine
         }
 
         final String url = String.format(BASE_COVER_URL, "isbn", validIsbn, sizeParam);
-        return saveImage(url, validIsbn, cIdx, size);
+        return saveImage(context, url, validIsbn, cIdx, size);
     }
 
     @Override
@@ -295,7 +296,7 @@ public class OpenLibrarySearchEngine
                            @NonNull final Book book)
             throws StorageException, SearchException {
 
-        futureHttpGet = createFutureGetRequest(true);
+        futureHttpGet = createFutureGetRequest(context, true);
 
         //noinspection OverlyBroadCatchBlock
         try {
@@ -639,7 +640,7 @@ public class OpenLibrarySearchEngine
         }
 
         if (fetchCovers[0]) {
-            final ArrayList<String> list = parseCovers(document, validIsbn, 0);
+            final ArrayList<String> list = parseCovers(context, document, validIsbn, 0);
             if (!list.isEmpty()) {
                 book.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
             }
@@ -706,7 +707,8 @@ public class OpenLibrarySearchEngine
     }
 
     @NonNull
-    private ArrayList<String> parseCovers(@NonNull final JSONObject element,
+    private ArrayList<String> parseCovers(@NonNull final Context context,
+                                          @NonNull final JSONObject element,
                                           @NonNull final String validIsbn,
                                           @SuppressWarnings("SameParameterValue")
                                           @IntRange(from = 0, to = 1) final int cIdx)
@@ -730,7 +732,7 @@ public class OpenLibrarySearchEngine
 
             // we assume that the download will work if there is a url.
             if (coverUrl != null && !coverUrl.isEmpty()) {
-                final String fileSpec = saveImage(coverUrl, validIsbn, cIdx, size);
+                final String fileSpec = saveImage(context, coverUrl, validIsbn, cIdx, size);
                 if (fileSpec != null) {
                     list.add(fileSpec);
                 }

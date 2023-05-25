@@ -155,8 +155,9 @@ public class StripInfoSearchEngine
 
     @NonNull
     @Override
-    public String createBrowserUrl(@NonNull final String externalId) {
-        return getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
+    public String createBrowserUrl(@NonNull final Context context,
+                                   @NonNull final String externalId) {
+        return getHostUrl(context) + String.format(BY_EXTERNAL_ID, externalId);
     }
 
     public void setLoginHelper(@NonNull final StripInfoAuth loginHelper) {
@@ -214,7 +215,7 @@ public class StripInfoSearchEngine
 
         final Book book = new Book();
 
-        final String url = getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
+        final String url = getHostUrl(context) + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             parse(context, document, fetchCovers, book, getAuthorResolver(context));
@@ -236,7 +237,7 @@ public class StripInfoSearchEngine
 
         final Book book = new Book();
 
-        final String url = getHostUrl() + String.format(BY_ISBN, validIsbn);
+        final String url = getHostUrl(context) + String.format(BY_ISBN, validIsbn);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             processDocument(context, validIsbn, document, fetchCovers, book);
@@ -537,7 +538,7 @@ public class StripInfoSearchEngine
 
         // front cover
         if (fetchCovers[0]) {
-            processCover(document, 0, book);
+            processCover(context, document, 0, book);
         }
 
         if (isCancelled()) {
@@ -546,7 +547,7 @@ public class StripInfoSearchEngine
 
         // back cover
         if (fetchCovers.length > 1 && fetchCovers[1]) {
-            processCover(document, 1, book);
+            processCover(context, document, 1, book);
         }
     }
 
@@ -579,6 +580,7 @@ public class StripInfoSearchEngine
      * Parses the downloaded {@link Document} for the given cover index and saves/stores
      * the found file.
      *
+     * @param context  Current context
      * @param document to parse
      * @param cIdx     0..n image index
      * @param book     Bundle to update
@@ -586,7 +588,8 @@ public class StripInfoSearchEngine
      * @throws StorageException on storage related failures
      */
     @WorkerThread
-    private void processCover(@NonNull final Document document,
+    private void processCover(@NonNull final Context context,
+                              @NonNull final Document document,
                               @IntRange(from = 0, to = 1) final int cIdx,
                               @NonNull final Book book)
             throws StorageException {
@@ -594,7 +597,7 @@ public class StripInfoSearchEngine
         final String isbn = book.getString(DBKey.BOOK_ISBN);
         final String url = parseCover(document, cIdx);
         if (url != null) {
-            final String fileSpec = saveCover(isbn, cIdx, url);
+            final String fileSpec = saveCover(context, isbn, cIdx, url);
             if (fileSpec != null && !fileSpec.isEmpty()) {
                 final ArrayList<String> list = new ArrayList<>();
                 list.add(fileSpec);
@@ -642,9 +645,10 @@ public class StripInfoSearchEngine
     /**
      * Download the given cover index.
      *
-     * @param isbn (optional) ISBN of the book, will be used for the tmp cover filename
-     * @param cIdx 0..n image index
-     * @param url  location
+     * @param context           Current context
+     * @param isbn    (optional) ISBN of the book, will be used for the tmp cover filename
+     * @param cIdx    0..n image index
+     * @param url     location
      *
      * @return fileSpec, or {@code null} when not found
      *
@@ -652,7 +656,8 @@ public class StripInfoSearchEngine
      */
     @WorkerThread
     @Nullable
-    private String saveCover(@Nullable final String isbn,
+    private String saveCover(@NonNull final Context context,
+                             @Nullable final String isbn,
                              @IntRange(from = 0, to = 1) final int cIdx,
                              @NonNull final String url)
             throws StorageException {
@@ -663,7 +668,7 @@ public class StripInfoSearchEngine
         // in place to guard against website changes.
         if (!url.isEmpty() && !url.endsWith("i=0") && !url.endsWith("mature.png")) {
 
-            final String fileSpec = saveImage(url, isbn, cIdx, null);
+            final String fileSpec = saveImage(context, url, isbn, cIdx, null);
             if (fileSpec != null) {
                 // Some back covers will return the "no cover available" image regardless.
                 // Sadly, we need to check explicitly after the download.

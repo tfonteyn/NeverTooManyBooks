@@ -56,7 +56,7 @@ class KbNlBookHandler
      *
      * @param context          Current context
      * @param kbNlSearchEngine engine
-     * @param data             Bundle to update <em>(passed in to allow mocking)</em>
+     * @param data             Bundle to update
      */
     KbNlBookHandler(@NonNull final Context context,
                     @NonNull final KbNlSearchEngine kbNlSearchEngine,

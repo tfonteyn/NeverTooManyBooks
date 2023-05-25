@@ -368,7 +368,7 @@ public class StripInfoReader
             dataToMerge = colBook;
             // we don't need the back cover, but might need the front cover
             if (coversWanted[0]) {
-                downloadFrontCover(externalId, dataToMerge);
+                downloadFrontCover(context, externalId, dataToMerge);
             }
         }
 
@@ -416,13 +416,14 @@ public class StripInfoReader
     }
 
     @WorkerThread
-    private void downloadFrontCover(@IntRange(from = 1) final long externalId,
+    private void downloadFrontCover(@NonNull final Context context,
+                                    @IntRange(from = 1) final long externalId,
                                     @NonNull final Book cData)
             throws StorageException {
         final String url = cData.getString(UserCollection.BKEY_FRONT_COVER_URL, null);
         if (url != null && !url.isEmpty()) {
             final String fileSpec = searchEngine
-                    .saveImage(url, String.valueOf(externalId), 0, null);
+                    .saveImage(context, url, String.valueOf(externalId), 0, null);
             if (fileSpec != null) {
                 cData.putString(Book.BKEY_TMP_FILE_SPEC[0], fileSpec);
             }

@@ -142,17 +142,17 @@ public class KbNlSearchEngine
                    SearchException,
                    CredentialsException {
 
-        futureHttpGet = createFutureHeadRequest();
+        futureHttpGet = createFutureHeadRequest(context);
         //noinspection OverlyBroadCatchBlock
         try {
-            futureHttpGet.get(getHostUrl() + "/cbs/", response -> true);
+            futureHttpGet.get(getHostUrl(context) + "/cbs/", response -> true);
         } catch (@NonNull final IOException e) {
             throw new SearchException(getEngineId(), e);
         }
 
         final Book book = new Book();
 
-        futureHttpGet = createFutureGetRequest(true);
+        futureHttpGet = createFutureGetRequest(context, true);
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final DefaultHandler handler = new KbNlBookHandler(context, this, book);
@@ -162,7 +162,8 @@ public class KbNlSearchEngine
             final SAXParser parser = factory.newSAXParser();
 
             // Do the search... we'll either get a parsed list-page back, or the parsed book page.
-            String url = getHostUrl() + String.format(SEARCH_URL, dbVersion, setNr, validIsbn);
+            String url = getHostUrl(context) + String.format(SEARCH_URL, dbVersion, setNr,
+                                                             validIsbn);
             futureHttpGet.get(url, response -> processResponse(response, handler, parser, book));
 
             // If it was a list page, fetch and parse the 1st book found;
@@ -170,7 +171,7 @@ public class KbNlSearchEngine
             final String show = book.getString(KbNlHandlerBase.BKEY_SHOW_URL, null);
             if (show != null && !show.isEmpty()) {
                 book.clearData();
-                url = getHostUrl() + String.format(BOOK_URL, dbVersion, setNr, show);
+                url = getHostUrl(context) + String.format(BOOK_URL, dbVersion, setNr, show);
                 futureHttpGet.get(url, response -> processResponse(response, handler, parser,
                                                                    book));
             }
@@ -260,6 +261,6 @@ public class KbNlSearchEngine
         }
 
         final String url = String.format(BASE_URL_COVERS, validIsbn, sizeParam);
-        return saveImage(url, validIsbn, cIdx, size);
+        return saveImage(context, url, validIsbn, cIdx, size);
     }
 }
