@@ -23,57 +23,102 @@ import androidx.annotation.NonNull;
 
 import java.net.HttpURLConnection;
 
+/** @noinspection LongLine */
 @SuppressWarnings("WeakerAccess")
 public final class HttpConstants {
 
-    /** HTTP Request Header. */
+    /**
+     * HTTP Request Header.
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization">
+     * Authorization</a>
+     */
     public static final String AUTHORIZATION = "Authorization";
 
-    /** HTTP Request Header. */
+    /**
+     * HTTP Request Header.
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referer">
+     * Referer</a>
+     */
     public static final String REFERER = "Referer";
 
-    /** HTTP Request Header. */
+    /**
+     * HTTP Request Header.
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Connection">
+     * Connection</a>
+     */
     public static final String CONNECTION = "Connection";
     public static final String CONNECTION_CLOSE = "close";
     public static final String CONNECTION_KEEP_ALIVE = "keep-alive";
 
-    /** HTTP Request Header. */
+    /**
+     * HTTP Request Header.
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control">
+     * Cache-Control</a>
+     */
+    public static final String CACHE_CONTROL = "Cache-Control";
+    public static final String CACHE_CONTROL_0 = "max-age=0";
+
+    /**
+     * HTTP Request Header.
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept">
+     * Accept</a>
+     */
     public static final String ACCEPT = "Accept";
+    /** Firefox sends (2023-05-22) this default. */
     public static final String ACCEPT_KITCHEN_SINK =
             "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8";
 
-    /** HTTP Request Header. */
-    public static final String ACCEPT_LANGUAGE = "Accept-Language";
-    /** HTTP Request Header. */
-    public static final String ACCEPT_ENCODING = "Accept-Encoding";
     /**
+     * HTTP Request Header.
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Language">
+     * Accept-Language</a>
+     * <p>
+     * Example values:
+     * "en-GB,en;q=0.8,nl;q=0.6,de;q=0.3"
+     * "en-GB,en;q=0.9,nl-BE;q=0.8,nl;q=0.7,de-DE;q=0.6,de;q=0.5,fr-BE;q=0.4,fr;q=0.3,en-US;q=0.2"
+     */
+    public static final String ACCEPT_LANGUAGE = "Accept-Language";
+
+    /**
+     * HTTP Request Header.
      * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Encoding">
      * Accept-Encoding</a>
-     * Firefox sends (2023-05-22): "gzip, deflate, br"
      */
+    public static final String ACCEPT_ENCODING = "Accept-Encoding";
+    /** Firefox sends (2023-05-22): "gzip, deflate, br". */
     public static final String ACCEPT_ENCODING_GZIP = "gzip";
-    /** HTTP Request Header. */
+
+    /**
+     * HTTP Request Header.
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Upgrade-Insecure-Requests">
+     * Upgrade-Insecure-Requests</a>
+     */
     public static final String UPGRADE_INSECURE_REQUESTS = "Upgrade-Insecure-Requests";
     public static final String UPGRADE_INSECURE_REQUESTS_TRUE = "1";
 
-
-    /** HTTP Request Header. */
+    /**
+     * HTTP Request Header.
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type">
+     * Content-Type</a>
+     */
     public static final String CONTENT_TYPE = "Content-Type";
     public static final String CONTENT_TYPE_JSON = "application/json;charset=UTF-8";
     public static final String CONTENT_TYPE_FORM_URL_ENCODED =
             "application/x-www-form-urlencoded; charset=UTF-8";
 
-    /** HTTP Request Header. */
+    /**
+     * HTTP Request Header.
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent">
+     * User-Agent</a>
+     */
     public static final String USER_AGENT = "User-Agent";
     /**
-     * RELEASE: 2023-03-26. Continuously update to latest version. Now set to Firefox.
+     * RELEASE: 2023-05-26. Continuously update to latest version. Now set to Firefox.
      * Some sites don't return full data unless the user agent is set to a valid browser.
      */
     public static final String USER_AGENT_VALUE =
-//            "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-//            + " AppleWebKit/537.36 (KHTML, like Gecko)"
-//            + " Chrome/108.0.0.0 Safari/537.36";
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/111.0";
+            // "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36";
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0";
 
 
     /** HTTP Response Header. */
