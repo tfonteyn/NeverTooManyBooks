@@ -137,13 +137,13 @@ public abstract class SearchEngineBase
     }
 
     @Override
-    public void ping()
+    public void ping(@NonNull final Context context)
             throws UnknownHostException,
                    IOException,
                    SocketTimeoutException,
                    MalformedURLException {
         ServiceLocator.getInstance().getNetworkChecker().ping(
-                getHostUrl(), config.getConnectTimeoutInMs(appContext));
+                getHostUrl(context), config.getConnectTimeoutInMs(context));
     }
 
     @Override

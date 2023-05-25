@@ -201,7 +201,7 @@ public class SearchTask
         }
 
         // can we reach the site ?
-        searchEngine.ping();
+        searchEngine.ping(context);
 
         final String isbnStr;
         if (isbn != null) {

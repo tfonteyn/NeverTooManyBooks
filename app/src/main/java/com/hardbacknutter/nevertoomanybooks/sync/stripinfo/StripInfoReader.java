@@ -212,7 +212,7 @@ public class StripInfoReader
         }
 
         // can we reach the site ?
-        searchEngine.ping();
+        searchEngine.ping(context);
 
         progressListener.setIndeterminate(true);
         progressListener.publishProgress(0, context.getString(R.string.progress_msg_connecting));

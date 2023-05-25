@@ -136,13 +136,15 @@ public interface SearchEngine
     /**
      * Ping the website for this SearchEngine.
      *
+     * @param context Current context
+     *
      * @throws UnknownHostException   the IP address of a host could not be determined.
      * @throws IOException            if we cannot reach the site
      * @throws SocketTimeoutException on timeouts (both DNS and host itself)
      * @throws MalformedURLException  if the URL does not start with {@code http} or {@code https}
      */
     @WorkerThread
-    void ping()
+    void ping(@NonNull Context context)
             throws UnknownHostException,
                    IOException,
                    SocketTimeoutException,
