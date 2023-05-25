@@ -36,9 +36,11 @@ import org.jsoup.nodes.Document;
 public abstract class JsoupSearchEngineBase
         extends SearchEngineBase {
 
+    @Nullable
+    private final String charSetName;
     /** Responsible for loading and parsing the web page. */
-    @NonNull
-    private final JsoupLoader jsoupLoader;
+    @Nullable
+    private JsoupLoader jsoupLoader;
 
     /**
      * Constructor.
@@ -48,9 +50,8 @@ public abstract class JsoupSearchEngineBase
      */
     protected JsoupSearchEngineBase(@NonNull final Context appContext,
                                     @NonNull final SearchEngineConfig config) {
-        super(appContext, config);
-        // JsoupLoader now accepts gzip streams
-        jsoupLoader = new JsoupLoader(createFutureGetRequest(true));
+        this(appContext, config, null);
+
     }
 
     /**
@@ -58,13 +59,13 @@ public abstract class JsoupSearchEngineBase
      *
      * @param appContext  The <strong>application</strong> context
      * @param config      the search engine configuration
-     * @param charSetName to use
+     * @param charSetName to use; or {@code null} to auto-select.
      */
     protected JsoupSearchEngineBase(@NonNull final Context appContext,
                                     @NonNull final SearchEngineConfig config,
-                                    @NonNull final String charSetName) {
-        this(appContext, config);
-        jsoupLoader.setCharSetName(charSetName);
+                                    @Nullable final String charSetName) {
+        super(appContext, config);
+        this.charSetName = charSetName;
     }
 
     /**
@@ -86,6 +87,10 @@ public abstract class JsoupSearchEngineBase
                                  @Nullable final Map<String, String> requestProperties)
             throws SearchException, CredentialsException {
         try {
+            if (jsoupLoader == null) {
+                jsoupLoader = new JsoupLoader(createFutureGetRequest(context, true));
+                jsoupLoader.setCharSetName(charSetName);
+            }
             return jsoupLoader.loadDocument(context, url, requestProperties);
 
         } catch (@NonNull final IOException e) {
@@ -96,8 +101,10 @@ public abstract class JsoupSearchEngineBase
     @Override
     public void cancel() {
         super.cancel();
-        synchronized (jsoupLoader) {
-            jsoupLoader.cancel();
+        synchronized (this) {
+            if (jsoupLoader != null) {
+                jsoupLoader.cancel();
+            }
         }
     }
 }
