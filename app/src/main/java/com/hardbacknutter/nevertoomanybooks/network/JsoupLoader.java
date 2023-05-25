@@ -237,12 +237,12 @@ public class JsoupLoader {
                             "AFTER open"
                             + "\nresponse.getURL()=" + response.getURL()
                             + "\nlocation  =" + response.getHeaderField(
-                                    HttpConstants.LOCATION));
+                                    HttpConstants.RESPONSE_HEADER_LOCATION));
         }
 
         // the original url will change after a redirect.
         // We need the actual url for further processing.
-        String locationHeader = response.getHeaderField(HttpConstants.LOCATION);
+        String locationHeader = response.getHeaderField(HttpConstants.RESPONSE_HEADER_LOCATION);
         if (locationHeader == null || locationHeader.isEmpty()) {
             locationHeader = response.getURL().toString();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {

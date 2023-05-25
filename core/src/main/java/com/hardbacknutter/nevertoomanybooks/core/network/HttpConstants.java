@@ -77,7 +77,7 @@ public final class HttpConstants {
 
 
     /** HTTP Response Header. */
-    public static final String LOCATION = "location";
+    public static final String RESPONSE_HEADER_LOCATION = "location";
 
     private HttpConstants() {
     }
