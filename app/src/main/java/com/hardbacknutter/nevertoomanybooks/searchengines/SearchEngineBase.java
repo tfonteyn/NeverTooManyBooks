@@ -254,21 +254,15 @@ public abstract class SearchEngineBase
         httpGet.setRequestProperty(HttpConstants.UPGRADE_INSECURE_REQUESTS,
                                    HttpConstants.UPGRADE_INSECURE_REQUESTS_TRUE);
 
-        // URGENT: enable these request properties once fine-tuned
-        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-Fetch-Dest
-        // "document" or "image"
-//        httpGet.setRequestProperty("Sec-Fetch-Dest", "document");
-        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-Fetch-Mode
-//        httpGet.setRequestProperty("Sec-Fetch-Mode", "navigate");
-        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-Fetch-Site
-//        httpGet.setRequestProperty("Sec-Fetch-Site", "none");
-        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-Fetch-User
-//        httpGet.setRequestProperty("Sec-Fetch-User", "?1");
+        httpGet.setRequestProperty(HttpConstants.SEC_FETCH_DEST, "document");
+        httpGet.setRequestProperty(HttpConstants.SEC_FETCH_MODE, "navigate");
+        httpGet.setRequestProperty(HttpConstants.SEC_FETCH_SITE, "none");
+        httpGet.setRequestProperty(HttpConstants.SEC_FETCH_USER, "?1");
 
         // "Android", "Chrome OS", "Chromium OS", "iOS", "Linux", "macOS", "Windows", or "Unknown".
-        //httpGet.setRequestProperty("Sec-CH-UA-Platform", "Windows");
+        // httpGet.setRequestProperty("Sec-CH-UA-Platform", "Windows");
 
-        //httpGet.setRequestProperty("Cache-Control:", "max-age=0");
+        // httpGet.setRequestProperty(HttpConstants.CACHE_CONTROL, HttpConstants.CACHE_CONTROL_0);
 
         if (useCompression) {
             httpGet.setRequestProperty(HttpConstants.ACCEPT_ENCODING,

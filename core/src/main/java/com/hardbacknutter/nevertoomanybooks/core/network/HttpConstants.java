@@ -68,6 +68,9 @@ public final class HttpConstants {
     public static final String ACCEPT_KITCHEN_SINK =
             "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8";
 
+    /** Specify images only. */
+    public static final String ACCEPT_IMAGE = "image/avif,image/webp,*/*";
+
     /**
      * HTTP Request Header.
      * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Language">
@@ -105,6 +108,42 @@ public final class HttpConstants {
     public static final String CONTENT_TYPE_JSON = "application/json;charset=UTF-8";
     public static final String CONTENT_TYPE_FORM_URL_ENCODED =
             "application/x-www-form-urlencoded; charset=UTF-8";
+
+    /**
+     * HTTP Request Header.
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-Fetch-Dest">
+     * Sec-Fetch-Dest</a>
+     * <p>
+     * "document" or "image"
+     */
+    public static final String SEC_FETCH_DEST = "Sec-Fetch-Dest";
+
+    /**
+     * HTTP Request Header.
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-Fetch-Mode">
+     * Sec-Fetch-Mode</a>
+     * <p>
+     * "navigate" or "no-cors"
+     */
+    public static final String SEC_FETCH_MODE = "Sec-Fetch-Mode";
+
+    /**
+     * HTTP Request Header.
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-Fetch-Site">
+     * Sec-Fetch-Site</a>
+     * <p>
+     * "none" or "same-origin"
+     */
+    public static final String SEC_FETCH_SITE = "Sec-Fetch-Site";
+
+    /**
+     * HTTP Request Header.
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-Fetch-User">
+     * Sec-Fetch-User</a>
+     * <p>
+     * "?1" or {@code null}
+     */
+    public static final String SEC_FETCH_USER = "Sec-Fetch-User";
 
     /**
      * HTTP Request Header.

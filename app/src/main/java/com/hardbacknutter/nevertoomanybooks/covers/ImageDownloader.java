@@ -75,10 +75,23 @@ public class ImageDownloader {
     @NonNull
     private final Supplier<CoverStorage> coverStorageSupplier;
 
+    /**
+     * Constructor.
+     *
+     * @param futureHttpGet        to use
+     * @param coverStorageSupplier deferred supplier for the {@link CoverStorage}
+     */
     public ImageDownloader(@NonNull final FutureHttpGet<File> futureHttpGet,
                            @NonNull final Supplier<CoverStorage> coverStorageSupplier) {
         this.futureHttpGet = futureHttpGet;
         this.coverStorageSupplier = coverStorageSupplier;
+
+        this.futureHttpGet.setRequestProperty(HttpConstants.ACCEPT, HttpConstants.ACCEPT_IMAGE);
+
+        this.futureHttpGet.setRequestProperty(HttpConstants.SEC_FETCH_DEST, "image");
+        this.futureHttpGet.setRequestProperty(HttpConstants.SEC_FETCH_MODE, "no-cors");
+        this.futureHttpGet.setRequestProperty(HttpConstants.SEC_FETCH_SITE, "same-origin");
+        this.futureHttpGet.setRequestProperty(HttpConstants.SEC_FETCH_USER, null);
     }
 
     /**
