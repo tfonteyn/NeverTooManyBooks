@@ -59,12 +59,13 @@ FIXES:
 - date-added + date-last-updated are now displayed in the local timezone (previously shown in UTC)
 - fixed an obscure bug in editing the styles where editing an existing style could
   result in creating a duplicate.
-- Amazon captcha blocking now reported to the user + Amazon disabled as needed.
+- Amazon captcha blocking now reported to the user + Amazon disabled when needed.
+  It can still be re-enabled by the user to try again.
 - Bedetheque author resolution was broken on Android 10 or lower
 - Bol.COM more reliable cover image download
 
 REMOVED:
-- The crop option "whole picture" was removed and the behaviour is now always used.
+- The crop option "whole picture" was removed and this behaviour is now always on.
 
 ----------------------------------------------------------------------------------------------------
 
