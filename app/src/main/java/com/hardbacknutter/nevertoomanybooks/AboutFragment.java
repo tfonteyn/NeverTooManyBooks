@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -57,15 +57,17 @@ public class AboutFragment
         final Toolbar toolbar = getToolbar();
         toolbar.setTitle(R.string.lbl_about);
 
-        //noinspection ConstantConditions
-        final PackageInfoWrapper packageInfoWrapper = PackageInfoWrapper.create(getContext());
+        //noinspection DataFlowIssue
+        final PackageInfoWrapper packageInfoWrapper =
+                PackageInfoWrapper.createWithSignatures(getContext());
         // show the version in the header
         vb.version.setText(packageInfoWrapper.getVersionName());
 
         // show the full version + build date in the bottom corner
         final String code = "a" + packageInfoWrapper.getVersionCode()
                             + " d" + DBHelper.DATABASE_VERSION
-                            + " b" + BuildConfig.TIMESTAMP;
+                            + " b" + BuildConfig.TIMESTAMP
+                            + (packageInfoWrapper.getSignedBy().isPresent() ? " s" : "");
         vb.debugVersion.setText(code);
 
         vb.btnSourcecodeUrl.setOnClickListener(v -> startActivity(

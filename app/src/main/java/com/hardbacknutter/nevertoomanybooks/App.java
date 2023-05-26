@@ -193,7 +193,8 @@ public class App
                  );
 
         ACRA.getErrorReporter().putCustomData("Signed-By", PackageInfoWrapper
-                .createWithSignatures(this).getSignedBy());
+                .createWithSignatures(this)
+                .getSignedBy()
+                .orElse("Not signed"));
     }
-
 }

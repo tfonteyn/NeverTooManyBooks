@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,13 +30,18 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.StringJoiner;
+
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 
 /**
  * A trivial wrapper for {@link PackageInfoWrapper} to hide the different API versions
  * from the rest of the application.
  */
 public final class PackageInfoWrapper {
+
+    private static final String TAG = "PackageInfoWrapper";
 
     @NonNull
     private final PackageInfo info;
@@ -121,8 +126,7 @@ public final class PackageInfoWrapper {
     }
 
     /**
-     * Return the SHA256 hash of the public key that signed this app, or a useful
-     * text message if an error or other problem occurred.
+     * Return the SHA256 hash of the public part of the key that signed this app.
      *
      * <pre>
      *     {@code
@@ -134,12 +138,12 @@ public final class PackageInfoWrapper {
      *     }
      * </pre>
      *
-     * @return human readable hash-code or error-message
+     * @return human readable hash-code
      */
     @NonNull
-    public String getSignedBy() {
+    public Optional<String> getSignedBy() {
         if (info.signatures == null) {
-            return "Not signed, likely development version";
+            return Optional.empty();
         }
 
         final StringJoiner signedBy = new StringJoiner("/");
@@ -160,8 +164,9 @@ public final class PackageInfoWrapper {
                   });
 
         } catch (@NonNull final NoSuchAlgorithmException | RuntimeException e) {
-            return e.toString();
+            LoggerFactory.getLogger().e(TAG, e);
+            return Optional.empty();
         }
-        return signedBy.toString();
+        return Optional.of(signedBy.toString());
     }
 }

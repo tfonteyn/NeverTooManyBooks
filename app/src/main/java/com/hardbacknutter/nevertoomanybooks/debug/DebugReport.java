@@ -72,6 +72,11 @@ public class DebugReport {
     @Nullable
     private String preferences;
 
+    /**
+     * Constructor.
+     *
+     * @param context Current context
+     */
     public DebugReport(@NonNull final Context context) {
         this.context = context;
         // User local zone - it's for THEIR reference.
@@ -106,7 +111,7 @@ public class DebugReport {
                   + "User language: " + locale.getLanguage() + '\n'
                   + "All Locales: " + LocaleListUtils.asList(context) + '\n'
 
-                  + "Signed-By: " + info.getSignedBy() + '\n';
+                  + "Signed-By: " + info.getSignedBy().orElse("Not signed") + '\n';
         return this;
     }
 
@@ -145,8 +150,7 @@ public class DebugReport {
         files.addAll(collectFiles(LoggerFactory.getLogger().getLogDir(), maxFiles));
     }
 
-    public void addPreferences()
-            throws FileNotFoundException {
+    public void addPreferences() {
         final Map<String, ?> map = PreferenceManager
                 .getDefaultSharedPreferences(context).getAll();
 
