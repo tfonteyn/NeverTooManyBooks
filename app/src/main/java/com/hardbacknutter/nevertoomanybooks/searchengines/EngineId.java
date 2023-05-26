@@ -148,6 +148,11 @@ public enum EngineId
         BolSearchEngine.class,
         BuildConfig.ENABLE_BOL),
 
+    /**
+     * All genres. This is a portal site to other shopping sites.
+     * Can find books which are harder to find on other sites,
+     * but will only show minimal information.
+     */
     BookFinder("bookfinder",
                R.string.site_bookfinder,
                "https://www.bookfinder.com",
@@ -511,7 +516,7 @@ public enum EngineId
                                          @Nullable final Runnable onFinished) {
         while (!engineIds.isEmpty()) {
             final EngineId engineId = engineIds.poll();
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             if (engineId.promptToRegister(context, false, callerIdString, action -> {
                 switch (action) {
                     case Register:
@@ -703,6 +708,7 @@ public enum EngineId
                                    @Nullable final String callerIdString,
                                    @NonNull final Consumer<RegistrationAction> onResult) {
 
+        @Nullable
         final String showAlertPrefKey;
         if (callerIdString != null) {
             showAlertPrefKey = getPreferenceKey() + ".hide_alert." + callerIdString;
