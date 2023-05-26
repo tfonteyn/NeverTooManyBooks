@@ -18,9 +18,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
     <!ENTITY APP_NAME "NeverTooManyBooks">
     ]>
 <!--suppress LongLine -->
@@ -72,7 +70,7 @@
         <item quantity="other">找到%1$d本</item>
     </plurals>
     <plurals name="displaying_n_books">
-        <item quantity="other">共%1$d本</item>
+        <item quantity="other">%1$d本书</item>
     </plurals>
     <string name="name_colon_value">%1$s：%2$s</string>
     <string name="and_others_plus">%1$s … <small>[+%2$d]</small></string>
@@ -133,4 +131,14 @@
     <string name="warning_no_site_supports_this_method">警告：当前选定的站点均不支持按 %1$s 进行搜索。 请转到站点选择菜单启用替代站点，或使用不同的搜索方法。</string>
     <string name="vldt_list_message">（%1$d） %2$s</string>
     <string name="book_format_ebook">电子书籍</string>
+    <string name="vldt_date_expected_for_x">需要“%1$s”的日期</string>
+    <string name="vldt_real_expected_for_x">“%1$s”需要一个真实的数字</string>
+    <string name="progress_msg_please_wait">请稍等…</string>
+    <string name="vldt_read_start_after_end">阅读开始日期，在结束日期之后</string>
+    <string name="vldt_real_author_must_be_valid">必须为空或现有作者</string>
+    <string name="error_site_access_blocked">访问被该网站阻止。</string>
+    <string name="vldt_non_blank_required">需要非空值</string>
+    <string name="vldt_non_blank_required_for_x">“%1$s”需要非空值</string>
+    <string name="vldt_blank_required_for_x">“%1$s”需要空值</string>
+    <string name="vldt_boolean_expected_for_x">“%1$s” 应为布尔值 (0,1,t,f,true,false)</string>
 </resources>
