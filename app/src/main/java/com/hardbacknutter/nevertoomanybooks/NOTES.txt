@@ -44,39 +44,13 @@ Booklist style sorting by date-read or date-added etc...:
  Does not happen on other devices/emulators. Won't pursue/fix.
 
 ----------------------------------------------------------------------------------------------------
-4.4.0
+4.5.0
 
 NEW:
-- performance improvement: automatic support for compression when fetching data from the web.
-
-- improved compatibility with web sites.
-
-- New field to hold the original-title of a translated book.
-  Displayed by default, but can be hidden via Settings/Field-Visibility.
-
-- When editing a book, the language, format, color drop-down fields
-  will now show a set of defaults in addition to the users previously used values.
 
 FIXES:
-- fixes for #11:
-  - OpenCamera on Android 10 and lower will now work as expected.
-    Android 11+ prevents any non-standard camera apps to be used automatically however.
-  - The option to crop the image immediately after using the camera will now work as expected.
-
-- date-added + date-last-updated are now displayed in the local timezone (previously shown in UTC)
-
-- fixed an obscure bug in editing the styles where editing an existing style could
-  result in creating a duplicate.
-
-- Amazon captcha blocking now reported to the user + Amazon disabled when needed.
-  It can still be re-enabled by the user to try again.
-
-- Bedetheque author resolution was broken on Android 10 or lower
-
-- Bol.COM more reliable cover image download
 
 REMOVED:
-- The crop option "whole picture" was removed and this behaviour is now always on.
 
 ----------------------------------------------------------------------------------------------------
 
