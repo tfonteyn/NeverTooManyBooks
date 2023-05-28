@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 public abstract class SearchBookBaseFragment
         extends BaseFragment {
 
+    /** After a successful scan/search, the book is offered for editing. */
     private final ActivityResultLauncher<Book> editBookFoundLauncher = registerForActivityResult(
             new EditBookContract(), o -> o.ifPresent(this::onBookEditingDone));
 
@@ -69,7 +70,7 @@ public abstract class SearchBookBaseFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    //noinspection ConstantConditions
+                    //noinspection DataFlowIssue
                     getActivity().setResult(Activity.RESULT_OK, createResultIntent());
                     getActivity().finish();
                 }
@@ -93,15 +94,20 @@ public abstract class SearchBookBaseFragment
     @NonNull
     abstract Intent createResultIntent();
 
+    /**
+     * The user finished editing a book.
+     *
+     * @param data from the edit
+     */
     abstract void onBookEditingDone(@NonNull EditBookOutput data);
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         coordinator = new ViewModelProvider(getActivity()).get(SearchCoordinator.class);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         coordinator.init(getContext(), requireArguments());
     }
 
@@ -110,7 +116,7 @@ public abstract class SearchBookBaseFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
@@ -120,58 +126,17 @@ public abstract class SearchBookBaseFragment
         coordinator.onSearchCancelled().observe(getViewLifecycleOwner(), this::onSearchCancelled);
 
         // Warn the user, but don't abort.
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable(getContext())) {
             Snackbar.make(view, R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();
         }
     }
 
-    private void onSearchFinished(@NonNull final LiveDataEvent<TaskResult<Book>> message) {
-        closeProgressDialog();
-        message.getData().map(TaskResult::requireResult).ifPresent(result -> {
-            final String searchErrors = result.getString(SearchCoordinator.BKEY_SEARCH_ERROR, null);
-            result.remove(SearchCoordinator.BKEY_SEARCH_ERROR);
-            final boolean hasData = !result.isEmpty();
-
-            if (searchErrors != null && !searchErrors.isEmpty()) {
-                //noinspection ConstantConditions
-                new MaterialAlertDialogBuilder(getContext())
-                        .setIcon(R.drawable.ic_baseline_warning_24)
-                        .setTitle(hasData ? R.string.warning_book_not_always_found
-                                          : R.string.warning_book_not_found)
-                        .setMessage(searchErrors)
-                        .setPositiveButton(android.R.string.ok, (d, w) -> {
-                            d.dismiss();
-                            if (hasData) {
-                                onSearchResults(result);
-                            }
-                        })
-                        .create()
-                        .show();
-
-            } else if (hasData) {
-                onSearchResults(result);
-
-            } else {
-                //noinspection ConstantConditions
-                Snackbar.make(getView(), R.string.warning_no_matching_book_found,
-                              Snackbar.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    @CallSuper
-    void onSearchCancelled(@NonNull final LiveDataEvent<TaskResult<Book>> message) {
-        closeProgressDialog();
-        //noinspection ConstantConditions
-        Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
-    }
-
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         message.getData().ifPresent(data -> {
             if (progressDelegate == null) {
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 progressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.progress_msg_searching)
                         .setIndeterminate(true)
@@ -184,7 +149,7 @@ public abstract class SearchBookBaseFragment
 
     private void closeProgressDialog() {
         if (progressDelegate != null) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             progressDelegate.dismiss(getActivity().getWindow());
             progressDelegate = null;
         }
@@ -220,9 +185,9 @@ public abstract class SearchBookBaseFragment
         }
 
         // Warn the user, AND abort.
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable(getContext())) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             Snackbar.make(getView(), R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();
             return;
@@ -230,7 +195,7 @@ public abstract class SearchBookBaseFragment
 
         // Start the lookup in a background search task.
         if (!onSearch()) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             Snackbar.make(getView(), R.string.error_search_could_not_be_started,
                           Snackbar.LENGTH_LONG).show();
         }
@@ -254,6 +219,47 @@ public abstract class SearchBookBaseFragment
      */
     boolean onSearch() {
         return coordinator.search();
+    }
+
+    @CallSuper
+    void onSearchCancelled(@NonNull final LiveDataEvent<TaskResult<Book>> message) {
+        closeProgressDialog();
+        //noinspection DataFlowIssue
+        Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
+    }
+
+    private void onSearchFinished(@NonNull final LiveDataEvent<TaskResult<Book>> message) {
+        closeProgressDialog();
+        message.getData().map(TaskResult::requireResult).ifPresent(result -> {
+            final String searchErrors = result.getString(SearchCoordinator.BKEY_SEARCH_ERROR, null);
+            result.remove(SearchCoordinator.BKEY_SEARCH_ERROR);
+            final boolean hasData = !result.isEmpty();
+
+            if (searchErrors != null && !searchErrors.isEmpty()) {
+                //noinspection DataFlowIssue
+                new MaterialAlertDialogBuilder(getContext())
+                        .setIcon(R.drawable.ic_baseline_warning_24)
+                        .setTitle(hasData ? R.string.warning_book_not_always_found
+                                          : R.string.warning_book_not_found)
+                        .setMessage(searchErrors)
+                        .setPositiveButton(android.R.string.ok, (d, w) -> {
+                            d.dismiss();
+                            if (hasData) {
+                                onSearchResults(result);
+                            }
+                        })
+                        .create()
+                        .show();
+
+            } else if (hasData) {
+                onSearchResults(result);
+
+            } else {
+                //noinspection DataFlowIssue
+                Snackbar.make(getView(), R.string.warning_no_matching_book_found,
+                              Snackbar.LENGTH_LONG).show();
+            }
+        });
     }
 
     /**
