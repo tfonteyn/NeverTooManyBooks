@@ -42,6 +42,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -87,7 +88,7 @@ public abstract class SearchBookBaseFragment
     @Nullable
     private ProgressDelegate progressDelegate;
 
-    protected void explainSitesSupport(@Nullable final ArrayList<Site> sites) {
+    protected void explainSitesSupport(@Nullable final List<Site> sites) {
         // override as needed, e.g. SearchBookByTextFragment
     }
 

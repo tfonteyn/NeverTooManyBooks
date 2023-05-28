@@ -35,7 +35,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -78,7 +78,7 @@ public class SearchBookByTextFragment
         super.onCreate(savedInstanceState);
 
         vm = new ViewModelProvider(this).get(SearchBookByTextViewModel.class);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm.init(getContext());
     }
 
@@ -127,14 +127,14 @@ public class SearchBookByTextFragment
         explainSitesSupport(coordinator.getSiteList());
 
         if (savedInstanceState == null) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             TipManager.getInstance().display(getContext(), R.string.tip_book_search_by_text, () ->
                     EngineId.promptToRegister(getContext(), coordinator.getSiteList(),
                                               "searchByText", null));
         }
     }
 
-    protected void explainSitesSupport(@Nullable final ArrayList<Site> sites) {
+    protected void explainSitesSupport(@Nullable final List<Site> sites) {
         if (sites != null
             && sites.stream()
                     .filter(Site::isActive)
@@ -170,7 +170,7 @@ public class SearchBookByTextFragment
 
     private void viewToModel() {
         coordinator.setAuthorSearchText(vb.author.getText().toString().trim());
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         coordinator.setTitleSearchText(vb.title.getText().toString().trim());
         coordinator.setPublisherSearchText(vb.publisher.getText().toString().trim());
     }
@@ -179,7 +179,7 @@ public class SearchBookByTextFragment
      * Setup the adapter for the Author AutoCompleteTextView field.
      */
     private void populateAuthorList() {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         authorAdapter = new ExtArrayAdapter<>(
                 getContext(), R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic, vm.getAuthorNames(getContext()));
@@ -190,7 +190,7 @@ public class SearchBookByTextFragment
      * Setup the adapter for the Publisher AutoCompleteTextView field.
      */
     private void populatePublisherList() {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         publisherAdapter = new ExtArrayAdapter<>(
                 getContext(), R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic, vm.getPublisherNames(getContext()));
@@ -247,14 +247,14 @@ public class SearchBookByTextFragment
             book.putString(DBKey.TITLE, coordinator.getTitleSearchText());
         }
 
-        final ArrayList<Author> authors = book.getAuthors();
+        final List<Author> authors = book.getAuthors();
         if (authors.isEmpty()) {
             // do NOT use the array, that's reserved for verified names.
             book.putString(SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR,
                            coordinator.getAuthorSearchText());
         }
 
-        final ArrayList<Publisher> publishers = book.getPublishers();
+        final List<Publisher> publishers = book.getPublishers();
         if (publishers.isEmpty()) {
             // do NOT use the array, that's reserved for verified names.
             book.putString(SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER,
@@ -273,6 +273,11 @@ public class SearchBookByTextFragment
         vb.publisher.setText("");
     }
 
+    /**
+     * The user finished editing a book. Store results and refresh the dropdown lists.
+     *
+     * @param data from the edit
+     */
     @Override
     void onBookEditingDone(@NonNull final EditBookOutput data) {
         vm.onBookEditingDone(data);
