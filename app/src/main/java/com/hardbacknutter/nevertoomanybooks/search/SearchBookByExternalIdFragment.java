@@ -79,6 +79,11 @@ public class SearchBookByExternalIdFragment
         return vm.createResultIntent();
     }
 
+    /**
+     * The user finished editing a book. Store results.
+     *
+     * @param data from the edit
+     */
     @Override
     void onBookEditingDone(@NonNull final EditBookOutput data) {
         vm.onBookEditingDone(data);
