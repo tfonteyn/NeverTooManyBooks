@@ -103,7 +103,7 @@ public class SearchBookUpdatesFragment
         super.onCreate(savedInstanceState);
 
         vm = new ViewModelProvider(this).get(SearchBookUpdatesViewModel.class);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm.init(getContext(), getArguments());
     }
 
@@ -166,7 +166,7 @@ public class SearchBookUpdatesFragment
         fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(v -> prepareUpdate());
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final GridDividerItemDecoration columnDivider =
                 new GridDividerItemDecoration(getContext(), false, true);
         vb.fieldList.addItemDecoration(columnDivider);
@@ -186,14 +186,14 @@ public class SearchBookUpdatesFragment
 
     private void initAdapter() {
         final GridLayoutManager layoutManager = (GridLayoutManager) vb.fieldList.getLayoutManager();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vb.fieldList.setAdapter(new SyncFieldAdapter(getContext(), vm.getSyncFields(),
                                                      layoutManager.getSpanCount()));
     }
 
     private void afterOnViewCreated() {
         // Warn the user, but don't abort.
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable(getContext())) {
             Snackbar.make(vb.getRoot(), R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();
@@ -217,7 +217,7 @@ public class SearchBookUpdatesFragment
         }
 
         // Warn the user, AND abort.
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable(getContext())) {
             Snackbar.make(vb.getRoot(), R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();
@@ -248,7 +248,7 @@ public class SearchBookUpdatesFragment
     }
 
     private void startUpdate() {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         if (!vm.startSearch(getContext())) {
             Snackbar.make(vb.getRoot(), R.string.warning_no_search_data_for_active_sites,
                           Snackbar.LENGTH_LONG).show();
@@ -256,7 +256,7 @@ public class SearchBookUpdatesFragment
     }
 
     private void onOneDone(@NonNull final LiveDataEvent<TaskResult<Book>> message) {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         message.getData().ifPresent(data -> vm.processOne(getContext(), data.getResult()));
     }
 
@@ -266,11 +266,12 @@ public class SearchBookUpdatesFragment
         message.getData().ifPresent(data -> {
             final DataHolder result = data.getResult();
             if (result != null) {
-                //noinspection ConstantConditions
-                getActivity().setResult(Activity.RESULT_OK, EditBookOutput.createResult(result));
+                //noinspection DataFlowIssue
+                getActivity().setResult(Activity.RESULT_OK,
+                                        EditBookOutput.createResultIntent(result));
             }
 
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             getActivity().finish();
         });
     }
@@ -279,11 +280,11 @@ public class SearchBookUpdatesFragment
         closeProgressDialog();
 
         message.getData().map(TaskResult::getResult).filter(Objects::nonNull).ifPresent(e -> {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             ErrorDialog.show(getContext(), e, getString(R.string.error_updates_aborted),
                              (d, w) -> {
                                  d.dismiss();
-                                 //noinspection ConstantConditions
+                                 //noinspection DataFlowIssue
                                  getActivity().finish();
                              });
         });
@@ -292,7 +293,7 @@ public class SearchBookUpdatesFragment
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         message.getData().ifPresent(data -> {
             if (progressDelegate == null) {
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 progressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.progress_msg_searching)
                         .setIndeterminate(true)
@@ -306,7 +307,7 @@ public class SearchBookUpdatesFragment
 
     private void closeProgressDialog() {
         if (progressDelegate != null) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             progressDelegate.dismiss(getActivity().getWindow());
             progressDelegate = null;
         }
@@ -350,8 +351,9 @@ public class SearchBookUpdatesFragment
         /**
          * Constructor.
          *
-         * @param context    Current context.
-         * @param syncFields to show
+         * @param context     Current context.
+         * @param syncFields  to show
+         * @param columnCount the number of columns to be used
          */
         SyncFieldAdapter(@NonNull final Context context,
                          @NonNull final Collection<SyncField> syncFields,

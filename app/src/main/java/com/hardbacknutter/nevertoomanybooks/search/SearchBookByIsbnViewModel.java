@@ -66,6 +66,8 @@ public class SearchBookByIsbnViewModel
     private final List<ISBN> scanQueue = new ArrayList<>();
 
     private final MutableLiveData<List<ISBN>> scanQueueUpdate = new MutableLiveData<>();
+    @NonNull
+    private final EditBookOutput resultData = new EditBookOutput();
     /** Database Access. */
     private BookDao bookDao;
 
@@ -75,24 +77,13 @@ public class SearchBookByIsbnViewModel
     /** Only start the scanner automatically upon the very first start of the fragment. */
     private boolean firstStart = true;
 
-    @Nullable
-    private EditBookOutput resultData;
-
     @NonNull
     Intent createResultIntent() {
-        if (resultData == null) {
-            return new Intent();
-        }
-        return resultData.createResult();
+        return resultData.createResultIntent();
     }
 
     void onBookEditingDone(@NonNull final EditBookOutput data) {
-        resultData = data;
-    }
-
-    @Override
-    protected void onCleared() {
-        super.onCleared();
+        resultData.update(data);
     }
 
     /**
@@ -201,6 +192,7 @@ public class SearchBookByIsbnViewModel
                       final boolean strictIsbn) {
         //TODO: should be run as background task, and use LiveData to update the view...
         // ... but it's so fast for any reasonable length list....
+        //noinspection OverlyBroadCatchBlock
         try (InputStream is = context.getContentResolver().openInputStream(uri)) {
             if (is != null) {
                 try (Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
@@ -245,7 +237,7 @@ public class SearchBookByIsbnViewModel
     }
 
     @NonNull
-    ArrayList<Pair<Long, String>> getBookIdAndTitlesByIsbn(@NonNull final ISBN code) {
+    List<Pair<Long, String>> getBookIdAndTitlesByIsbn(@NonNull final ISBN code) {
         return bookDao.getBookIdAndTitleByIsbn(code);
     }
 

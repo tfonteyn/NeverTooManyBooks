@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,7 +23,6 @@ import android.content.Context;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
 import androidx.preference.PreferenceManager;
 
@@ -52,23 +51,19 @@ public class SearchBookByTextViewModel
      */
     @NonNull
     private final Collection<String> recentPublisherNames = new ArrayList<>();
+    @NonNull
+    private final EditBookOutput resultData = new EditBookOutput();
 
     /** Flag: allow/provide searching by publisher. */
     private Boolean usePublisher;
 
-    @Nullable
-    private EditBookOutput resultData;
-
     @NonNull
     Intent createResultIntent() {
-        if (resultData == null) {
-            return new Intent();
-        }
-        return resultData.createResult();
+        return resultData.createResultIntent();
     }
 
     void onBookEditingDone(@NonNull final EditBookOutput data) {
-        resultData = data;
+        resultData.update(data);
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -58,8 +58,8 @@ public class ShowBookPagerFragment
                     // always set the *current* book, so BoB can reposition more accurately.
                     final long bookId = vm.getBookIdAtPosition(viewPager.getCurrentItem());
                     final Intent resultIntent = EditBookOutput
-                            .createResult(bookId, aVm.isModified());
-                    //noinspection ConstantConditions
+                            .createResultIntent(aVm.isModified(), bookId);
+                    //noinspection DataFlowIssue
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();
                 }
@@ -78,9 +78,9 @@ public class ShowBookPagerFragment
 
         final Bundle args = requireArguments();
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         aVm = new ViewModelProvider(getActivity()).get(ShowBookDetailsActivityViewModel.class);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         aVm.init(getContext(), args);
 
         vm = new ViewModelProvider(getActivity()).get(ShowBookPagerViewModel.class);
@@ -104,7 +104,7 @@ public class ShowBookPagerFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
@@ -116,7 +116,7 @@ public class ShowBookPagerFragment
         viewPager.registerOnPageChangeCallback(pageChange);
 
         if (savedInstanceState == null) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             TipManager.getInstance().display(getContext(), R.string.tip_view_only_help, null);
         }
     }

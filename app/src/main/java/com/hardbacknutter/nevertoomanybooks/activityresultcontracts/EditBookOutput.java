@@ -36,19 +36,36 @@ public final class EditBookOutput {
     public static final String BKEY_LAST_BOOK_ID_PROCESSED = TAG + ":lastId";
 
     /** The BoB should reposition on this book. Can be {@code 0}. */
-    private final long repositionToBookId;
+    private long repositionToBookId;
 
     /** SOMETHING was modified. This normally means that BoB will need to rebuild. */
-    private final boolean modified;
+    private boolean modified;
 
     /**
-     * If we processed a <strong>list</strong>> of books
+     * If we processed a <strong>list</strong> of books
      * than this is the last book id we processed.
+     * Can be {@code 0}.
      */
-    private final long lastBookIdProcessed;
+    private long lastBookIdProcessed;
 
-    private EditBookOutput(final long repositionToBookId,
-                           final boolean modified,
+    /**
+     * Constructor.
+     */
+    public EditBookOutput() {
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param modified            flag; whether ANY modifications were made
+     * @param repositionToBookId  the book to which the list should reposition.
+     *                            Pass in {@code 0} to skip repositioning.
+     * @param lastBookIdProcessed optional, if a <strong>list</strong>> of books was
+     *                            processed, this is the last book id we processed.
+     *                            Pass in {@code 0} when not applicable.
+     */
+    private EditBookOutput(final boolean modified,
+                           final long repositionToBookId,
                            final long lastBookIdProcessed) {
         this.repositionToBookId = repositionToBookId;
         this.modified = modified;
@@ -58,65 +75,39 @@ public final class EditBookOutput {
     /**
      * Create the result which {@link ActivityResultContract#parseResult(int, Intent)} will receive.
      *
-     * @param repositionToBookId  the book to which the list should reposition.
-     *                            Pass in {@code 0} to skip repositioning.
-     * @param modified            flag; whether ANY modifications were made
-     * @param lastBookIdProcessed optional, if a <strong>list</strong>> of books was
-     *                            processed, this is the last book id we processed.
-     *                            Pass in {@code 0} when not applicable.
+     * @param modified           flag; whether ANY modifications were made
+     * @param repositionToBookId the book to which the list should reposition.
+     *                           Pass in {@code 0} to skip repositioning.
      *
      * @return Intent
      */
     @NonNull
-    public static Intent createResult(final long repositionToBookId,
-                                      final boolean modified,
-                                      final long lastBookIdProcessed) {
-        final Intent intent = new Intent().putExtra(DBKey.FK_BOOK, repositionToBookId)
-                                          .putExtra(BKEY_MODIFIED, modified);
-        if (repositionToBookId > 0) {
-            intent.putExtra(BKEY_LAST_BOOK_ID_PROCESSED, lastBookIdProcessed);
-        }
-        return intent;
+    public static Intent createResultIntent(final boolean modified,
+                                            final long repositionToBookId) {
+        return new EditBookOutput(modified, repositionToBookId, 0)
+                .createResultIntent();
     }
 
     /**
      * Create the result which {@link ActivityResultContract#parseResult(int, Intent)} will receive.
-     *
-     * @param repositionToBookId the book to which the list should reposition.
-     *                           Pass in {@code 0} to skip repositioning.
-     * @param modified           flag; whether ANY modifications were made
-     *
-     * @return Intent
-     */
-    @NonNull
-    public static Intent createResult(final long repositionToBookId,
-                                      final boolean modified) {
-        return createResult(repositionToBookId, modified, 0);
-    }
-
-    /**
-     * Repack the result after processing a list of books.
-     * <p>
-     * See {@link com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesViewModel}
-     * as to why we need to do this.
      *
      * @param dataHolder to repack
      *
      * @return intent
      */
     @NonNull
-    public static Intent createResult(@NonNull final DataHolder dataHolder) {
+    public static Intent createResultIntent(@NonNull final DataHolder dataHolder) {
 
         final long firstBook = dataHolder.getLong(DBKey.FK_BOOK);
         final boolean modified = dataHolder.getBoolean(BKEY_MODIFIED);
         final long lastProcessed = dataHolder.getLong(BKEY_LAST_BOOK_ID_PROCESSED);
 
-        return createResult(firstBook, modified, lastProcessed);
+        return new EditBookOutput(modified, firstBook, lastProcessed)
+                .createResultIntent();
     }
 
     /**
-     * Parse the intent according to {@link #createResult(long, boolean, long)}
-     * and {@link #createResult(DataHolder)}.
+     * Parse the intent according to {@link #createResultIntent()}.
      *
      * @param intent to parse
      *
@@ -124,11 +115,11 @@ public final class EditBookOutput {
      */
     @NonNull
     public static EditBookOutput parseResult(@NonNull final Intent intent) {
-        final long repositionToBookId = intent.getLongExtra(DBKey.FK_BOOK, 0);
         final boolean modified = intent.getBooleanExtra(BKEY_MODIFIED, false);
+        final long repositionToBookId = intent.getLongExtra(DBKey.FK_BOOK, 0);
         final long lastBookIdProcessed = intent.getLongExtra(BKEY_LAST_BOOK_ID_PROCESSED, 0);
 
-        return new EditBookOutput(repositionToBookId, modified, lastBookIdProcessed);
+        return new EditBookOutput(modified, repositionToBookId, lastBookIdProcessed);
     }
 
     /**
@@ -137,8 +128,42 @@ public final class EditBookOutput {
      * @return Intent
      */
     @NonNull
-    public Intent createResult() {
-        return createResult(repositionToBookId, modified, lastBookIdProcessed);
+    public Intent createResultIntent() {
+        final Intent intent = new Intent().putExtra(BKEY_MODIFIED, modified);
+        if (repositionToBookId > 0) {
+            intent.putExtra(DBKey.FK_BOOK, repositionToBookId);
+        }
+        if (lastBookIdProcessed > 0) {
+            intent.putExtra(BKEY_LAST_BOOK_ID_PROCESSED, lastBookIdProcessed);
+        }
+        return intent;
+    }
+
+    /**
+     * Overwrite the current result with the new data <strong>if</strong> the new
+     * data contains <i>more</i> information.
+     *
+     * @param data add/set
+     */
+    public void update(@NonNull final EditBookOutput data) {
+        if (data.isModified()) {
+            this.modified = true;
+        }
+        if (data.getRepositionToBookId() > 0) {
+            this.repositionToBookId = data.getRepositionToBookId();
+        }
+        if (data.getLastBookIdProcessed() > 0) {
+            this.lastBookIdProcessed = data.getLastBookIdProcessed();
+        }
+    }
+
+    /**
+     * Whether <strong>something</strong> was modified.
+     *
+     * @return flag
+     */
+    public boolean isModified() {
+        return modified;
     }
 
     /**
@@ -152,14 +177,11 @@ public final class EditBookOutput {
     }
 
     /**
-     * Whether <strong>something</strong> was modified.
+     * Get the last book id processed (i.e. when a <strong>list</strong> of books was done).
      *
-     * @return flag
+     * @return the <strong>last</strong> book id which was processed
      */
-    public boolean isModified() {
-        return modified;
-    }
-
+    @SuppressWarnings("WeakerAccess")
     public long getLastBookIdProcessed() {
         return lastBookIdProcessed;
     }

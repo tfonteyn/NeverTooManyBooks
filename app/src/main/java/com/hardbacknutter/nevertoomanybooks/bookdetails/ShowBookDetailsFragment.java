@@ -185,9 +185,9 @@ public class ShowBookDetailsFragment
 
         final Bundle args = requireArguments();
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         aVm = new ViewModelProvider(getActivity()).get(ShowBookDetailsActivityViewModel.class);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         aVm.init(getContext(), args);
 
         vm = new ViewModelProvider(this).get(ShowBookDetailsViewModel.class);
@@ -222,7 +222,7 @@ public class ShowBookDetailsFragment
         vm.getFields().forEach(field -> field.setParentView(view));
 
         // Popup the search widget when the user starts to type.
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         getActivity().setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
 
         createCoverDelegates();
@@ -248,8 +248,7 @@ public class ShowBookDetailsFragment
      * Create the optional sync delegates.
      */
     private void createSyncDelegates() {
-
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         if (SyncServer.CalibreCS.isEnabled(getContext())) {
             try {
                 calibreHandler = new CalibreHandler(getContext(), this)
@@ -260,13 +259,13 @@ public class ShowBookDetailsFragment
             }
         }
 
-//        if (SyncServer.StripInfo.isEnabled()) {
-//
-//        }
+        //  if (SyncServer.StripInfo.isEnabled()) {
+        //
+        //  }
     }
 
     private void createCoverDelegates() {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final CircularProgressIndicator progressView =
                 getView().findViewById(R.id.cover_operation_progress_bar);
 
@@ -348,7 +347,7 @@ public class ShowBookDetailsFragment
 
         vm.getField(R.id.read_end).ifPresent(field -> {
             field.setValue(book.getString(DBKey.READ_END__DATE));
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             field.setVisibility(getView(), true, false);
         });
 
@@ -362,7 +361,7 @@ public class ShowBookDetailsFragment
     private void onUpdateToolbar(@NonNull final Book book) {
         final Toolbar toolbar = getToolbar();
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         toolbar.setTitle(Author.getLabel(getContext(), book.getAuthors()));
 
         String bookTitle = book.getTitle();
@@ -391,7 +390,7 @@ public class ShowBookDetailsFragment
 
         final Context context = getContext();
         // do NOT call notifyIfChanged, as this is the initial load
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         fields.stream()
               .filter(Field::isAutoPopulated)
               .forEach(field -> field.setInitialValue(context, book, realNumberParser));
@@ -401,7 +400,7 @@ public class ShowBookDetailsFragment
         bindToc(book);
 
         final View parentView = getView();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         fields.forEach(field -> field.setVisibility(parentView, true, false));
 
         // Hide the 'Edition' label if neither edition chips or print-run fields are shown
@@ -420,7 +419,7 @@ public class ShowBookDetailsFragment
                              R.id.pages);
 
         // All views should now have proper visibility set, so fix their focus order.
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         ViewFocusOrder.fix(parentView);
     }
 
@@ -430,7 +429,7 @@ public class ShowBookDetailsFragment
         final TypedArray coverResIds = getResources().obtainTypedArray(R.array.cover_images);
         try {
             for (int cIdx = 0; cIdx < coverResIds.length(); cIdx++) {
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 final ImageView view = parentView.findViewById(coverResIds.getResourceId(cIdx, 0));
                 if (coverHandler[cIdx] != null) {
                     coverHandler[cIdx].onBindView(view);
@@ -450,7 +449,7 @@ public class ShowBookDetailsFragment
      * @param book to load
      */
     private void bindLoanee(@NonNull final Book book) {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final TextView lendTo = getView().findViewById(R.id.lend_to);
         if (aVm.getStyle().isShowField(Style.Screen.List, DBKey.LOANEE_NAME)) {
             final Optional<String> loanee =
@@ -468,7 +467,7 @@ public class ShowBookDetailsFragment
     private void bindToc(@NonNull final Book book) {
         final View parentView = getView();
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final TextView lblAnthologyOrCollection = parentView.findViewById(R.id.lbl_anthology);
         switch (book.getContentType()) {
             case Collection:
@@ -521,7 +520,7 @@ public class ShowBookDetailsFragment
                 final Fragment fragment = TocFragment.create(book, false, aVm.getStyle());
                 // yes, it must be the Activity FragmentManager,
                 // as that is where the R.id.main_fragment View is located.
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 final FragmentManager fm = getActivity().getSupportFragmentManager();
                 fm.beginTransaction()
                   .setReorderingAllowed(true)
@@ -570,13 +569,13 @@ public class ShowBookDetailsFragment
     private void setSectionVisibility(final int sectionLabel,
                                       @NonNull final Integer... fieldViews) {
 
-        final View parent = getView();
-        //noinspection ConstantConditions
+        final View parentView = getView();
+        //noinspection DataFlowIssue
         final boolean visible = Arrays.stream(fieldViews)
-                                      .map(parent::findViewById)
+                                      .map(parentView::findViewById)
                                       .map(v -> ((View) v).getVisibility())
                                       .anyMatch(vis -> vis != View.GONE);
-        parent.findViewById(sectionLabel).setVisibility(visible ? View.VISIBLE : View.GONE);
+        parentView.findViewById(sectionLabel).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
 
@@ -595,7 +594,7 @@ public class ShowBookDetailsFragment
             if (vm.isEmbedded()) {
                 MenuCompat.setGroupDividerEnabled(menu, true);
             } else {
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 MenuUtils.setupSearchActionView(getActivity(), inflater, menu);
             }
 
@@ -604,7 +603,7 @@ public class ShowBookDetailsFragment
             }
 
             final Context context = getContext();
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             aVm.getMenuHandlers().forEach(h -> h.onCreateMenu(context, menu, inflater));
         }
 
@@ -617,11 +616,11 @@ public class ShowBookDetailsFragment
             final Book book = vm.getBook();
 
             if (calibreHandler != null) {
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 calibreHandler.onPrepareMenu(context, menu, book);
             }
 
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             aVm.getMenuHandlers().forEach(h -> h.onPrepareMenu(context, menu, book));
         }
 
@@ -653,14 +652,14 @@ public class ShowBookDetailsFragment
                 return true;
 
             } else if (itemId == R.id.MENU_SHARE) {
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 startActivity(book.getShareIntent(context, aVm.getStyle()));
                 return true;
 
             } else if (itemId == R.id.MENU_CALIBRE_SETTINGS) {
                 // Must use the Activity fm as the current fragment could be hosted by
                 // ShowBookPagerFragment or embedded inside the BoB
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 getActivity().getSupportFragmentManager()
                              .beginTransaction()
                              .setReorderingAllowed(true)
@@ -682,13 +681,13 @@ public class ShowBookDetailsFragment
                 return true;
             }
 
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             if (calibreHandler != null
                 && calibreHandler.onMenuItemSelected(context, menuItem, book)) {
                 return true;
             }
 
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             return aVm.getMenuHandlers()
                       .stream()
                       .anyMatch(h -> h.onMenuItemSelected(context, menuItem, book));
@@ -711,7 +710,7 @@ public class ShowBookDetailsFragment
         private void deleteBook(@NonNull final Book book) {
             final String title = book.getTitle();
             final List<Author> authors = book.getAuthors();
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             StandardDialogs.deleteBook(getContext(), title, authors, () -> {
                 final long bookIdDeleted = book.getId();
                 vm.deleteBook();
@@ -723,9 +722,8 @@ public class ShowBookDetailsFragment
 
                 } else {
                     // set 0 as the repositionToBookId
-                    final Intent resultIntent = EditBookOutput
-                            .createResult(0, true);
-                    //noinspection ConstantConditions
+                    final Intent resultIntent = EditBookOutput.createResultIntent(true, 0);
+                    //noinspection DataFlowIssue
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();
                 }

@@ -249,7 +249,7 @@ public class AuthorWorksViewModel
 
     @NonNull
     Intent createResultIntent() {
-        return EditBookOutput.createResult(0, dataModified);
+        return EditBookOutput.createResultIntent(dataModified, 0);
     }
 
     void setDataModified(@NonNull final EditBookOutput data) {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.search;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
@@ -31,18 +30,15 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutp
 public class SearchBookByExternalIdViewModel
         extends ViewModel {
 
-    @Nullable
-    private EditBookOutput resultData;
+    @NonNull
+    private final EditBookOutput resultData = new EditBookOutput();
 
     @NonNull
     Intent createResultIntent() {
-        if (resultData == null) {
-            return new Intent();
-        }
-        return resultData.createResult();
+        return resultData.createResultIntent();
     }
 
     void onBookEditingDone(@NonNull final EditBookOutput data) {
-        resultData = data;
+        resultData.update(data);
     }
 }
