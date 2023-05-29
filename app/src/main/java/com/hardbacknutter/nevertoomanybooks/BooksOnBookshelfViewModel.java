@@ -826,7 +826,7 @@ public class BooksOnBookshelfViewModel
     void setBookRead(@IntRange(from = 1) final long id,
                      final boolean read) {
         final Book book = Book.from(id);
-        if (bookDao.setRead(book.getId(), read)) {
+        if (bookDao.setRead(book, read)) {
             updateBooklistOnBookRead(book.getId(), book.getBoolean(DBKey.READ__BOOL));
         }
     }

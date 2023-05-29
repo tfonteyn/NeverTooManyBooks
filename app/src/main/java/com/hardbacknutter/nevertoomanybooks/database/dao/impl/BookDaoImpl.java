@@ -536,19 +536,6 @@ public class BookDaoImpl
     }
 
     @Override
-    public boolean setRead(@IntRange(from = 1) final long id,
-                           final boolean read) {
-        final String now = read ? SqlEncode.date(LocalDateTime.now()) : "";
-
-        try (SynchronizedStatement stmt = db.compileStatement(Sql.Update.READ)) {
-            stmt.bindBoolean(1, read);
-            stmt.bindString(2, now);
-            stmt.bindLong(3, id);
-            return 0 < stmt.executeUpdateDelete();
-        }
-    }
-
-    @Override
     public boolean setRead(@NonNull final Book book,
                            final boolean read) {
         final String now = read ? SqlEncode.date(LocalDateTime.now()) : "";
