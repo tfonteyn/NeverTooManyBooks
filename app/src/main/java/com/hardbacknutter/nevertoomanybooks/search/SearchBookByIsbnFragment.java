@@ -230,7 +230,7 @@ public class SearchBookByIsbnFragment
     }
 
     /**
-     * Start the embedded (in this Fragment) scanner view.
+     * ENHANCE: Start the embedded (in this Fragment) scanner view.
      * <p>
      * UNDER DEVELOPMENT.
      * - need to double check the stop-logic: when is scanner.stop() needed?
