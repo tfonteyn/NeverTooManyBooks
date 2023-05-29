@@ -1658,6 +1658,9 @@ public class BooksOnBookshelf
             // Invisible... theoretically this means the page should not re-layout
             vb.content.list.setVisibility(View.INVISIBLE);
 
+            // prevent quick users on slow devices to switch while building
+            vb.bookshelfSpinner.setEnabled(false);
+
             // If the book details frame and fragment is present, remove the fragment
             if (hasEmbeddedDetailsFrame()) {
                 final Fragment fragment = vb.content.detailsFrame.getFragment();
@@ -1795,6 +1798,7 @@ public class BooksOnBookshelf
 
         vb.content.list.setAdapter(concatAdapter);
         vb.content.list.setVisibility(View.VISIBLE);
+        vb.bookshelfSpinner.setEnabled(true);
 
         if (adapter.getItemCount() > 0) {
             if (targetNodes == null || targetNodes.isEmpty()) {
