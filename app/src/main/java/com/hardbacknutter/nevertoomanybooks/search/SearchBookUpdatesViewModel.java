@@ -290,6 +290,11 @@ public class SearchBookUpdatesViewModel
         syncProcessorBuilder.resetPreferences();
     }
 
+    /**
+     * Update the {@link SyncAction} for all keys.
+     *
+     * @param action to set
+     */
     public void setAll(@NonNull final SyncAction action) {
         syncProcessorBuilder.setSyncAction(action);
     }
@@ -308,6 +313,7 @@ public class SearchBookUpdatesViewModel
 
         currentProgressCounter = 0;
 
+        //noinspection OverlyBroadCatchBlock,CheckStyle
         try {
             if (bookIdList == null || bookIdList.isEmpty()) {
                 currentCursor = bookDao.fetchForAutoUpdateFromIdOnwards(lastBookIdProcessed);
@@ -318,11 +324,13 @@ public class SearchBookUpdatesViewModel
 
         } catch (@NonNull final Exception e) {
             postSearch(e);
+            // quit searching
             return false;
         }
 
         if (currentCursorCount == 0) {
-            postSearch(false);
+            postSearch(true);
+            // we're done searching
             return false;
         }
 
@@ -338,6 +346,7 @@ public class SearchBookUpdatesViewModel
      * @return {@code true} if a search was started.
      */
     private boolean nextBook(@NonNull final Context context) {
+        //noinspection OverlyBroadCatchBlock,CheckStyle
         try {
             final int idCol = currentCursor.getColumnIndex(DBKey.PK_ID);
 
@@ -353,7 +362,7 @@ public class SearchBookUpdatesViewModel
                 currentBook.load(currentBookId, currentCursor);
 
                 // Check which fields this book needs.
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 currentFieldsWanted = syncProcessor.filter(currentBook);
 
                 final String title = currentBook.getTitle();
@@ -432,10 +441,12 @@ public class SearchBookUpdatesViewModel
             }
         } catch (@NonNull final Exception e) {
             postSearch(e);
+            // quit searching
             return false;
         }
 
-        postSearch(false);
+        postSearch(true);
+        // we're done searching
         return false;
     }
 
@@ -451,11 +462,12 @@ public class SearchBookUpdatesViewModel
     boolean processOne(@NonNull final Context context,
                        @Nullable final Book remoteBook) {
 
+        //noinspection CheckStyle,OverlyBroadCatchBlock
         try {
             if (!isCancelled() && remoteBook != null && !remoteBook.isEmpty()) {
                 final RealNumberParser realNumberParser =
                         new RealNumberParser(LocaleListUtils.asList(context));
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 final Book delta = syncProcessor.process(context, currentBookId, currentBook,
                                                          currentFieldsWanted, remoteBook,
                                                          realNumberParser);
@@ -500,8 +512,11 @@ public class SearchBookUpdatesViewModel
      * <li>{@link DBKey#FK_BOOK}: the first book in the list / the only book;
      *      not set if we did 'all' books</li>
      * </ul>
+     *
+     * @param success {@code true} if the search was successful
+     *                or {@code false} if it was cancelled.
      */
-    private void postSearch(final boolean wasCancelled) {
+    private void postSearch(final boolean success) {
         if (currentCursor != null) {
             currentCursor.close();
         }
@@ -531,10 +546,10 @@ public class SearchBookUpdatesViewModel
 
         final LiveDataEvent<TaskResult<Book>> message =
                 new LiveDataEvent<>(new TaskResult<>(R.id.TASK_ID_UPDATE_FIELDS, book));
-        if (wasCancelled) {
-            searchCoordinatorCancelled.setValue(message);
-        } else {
+        if (success) {
             listFinished.setValue(message);
+        } else {
+            searchCoordinatorCancelled.setValue(message);
         }
     }
 
@@ -558,13 +573,13 @@ public class SearchBookUpdatesViewModel
         // the last book id which was handled; can be used to restart the update.
         lastBookIdProcessed = currentBookId;
 
-//        final Bundle results = ServiceLocator.newBundle();
-//        results.putLong(BKEY_LAST_BOOK_ID_PROCESSED, lastBookIdProcessed);
-//
-//        // if applicable, pass the first book for repositioning the list on screen
-//        if (bookIdList != null && !bookIdList.isEmpty()) {
-//            results.putLong(DBKey.FK_BOOK, bookIdList.get(0));
-//        }
+        //        final Bundle results = ServiceLocator.newBundle();
+        //        results.putLong(BKEY_LAST_BOOK_ID_PROCESSED, lastBookIdProcessed);
+        //
+        //        // if applicable, pass the first book for repositioning the list on screen
+        //        if (bookIdList != null && !bookIdList.isEmpty()) {
+        //            results.putLong(DBKey.FK_BOOK, bookIdList.get(0));
+        //        }
 
         final LiveDataEvent<TaskResult<Throwable>> message =
                 new LiveDataEvent<>(new TaskResult<>(R.id.TASK_ID_UPDATE_FIELDS, e));
@@ -574,6 +589,6 @@ public class SearchBookUpdatesViewModel
     @Override
     public void cancel() {
         super.cancel();
-        postSearch(true);
+        postSearch(false);
     }
 }
