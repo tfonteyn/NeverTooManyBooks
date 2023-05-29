@@ -240,6 +240,7 @@
         <list>
           <option value="SameParameterValue" />
           <option value="DataFlowIssue" />
+          <option value="WeakerAccess" />
         </list>
       </option>
     </inspection_tool>
