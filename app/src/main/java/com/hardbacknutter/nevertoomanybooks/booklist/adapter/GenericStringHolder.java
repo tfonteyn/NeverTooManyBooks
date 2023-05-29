@@ -60,9 +60,8 @@ public class GenericStringHolder
 
     /**
      * Dev note: not static, as the R values are not static themselves.
-     *
-     * @noinspection FieldCanBeLocal
      */
+    @SuppressWarnings("FieldCanBeLocal")
     private final int[] textAppAttr = {
             com.google.android.material.R.attr.textAppearanceTitleLarge,
             com.google.android.material.R.attr.textAppearanceTitleMedium,
