@@ -23,8 +23,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -241,43 +239,5 @@ public class SearchBookByIsbnViewModel
     @NonNull
     List<Pair<Long, String>> getBookIdAndTitlesByIsbn(@NonNull final ISBN code) {
         return bookDao.getBookIdAndTitleByIsbn(code);
-    }
-
-    public enum ScanMode
-            implements Parcelable {
-        /** Manual entry by user. */
-        Off,
-        /** Scan, search and edit the found book. Than wait for the user. */
-        Single,
-        /** Same as 'Single' but start the scanner again after editing finished. */
-        Continuous,
-        /** Scan and queue the code, until scanning is cancelled. */
-        Batch;
-
-        /** {@link Parcelable}. */
-        public static final Creator<ScanMode> CREATOR = new Creator<>() {
-            @Override
-            @NonNull
-            public ScanMode createFromParcel(@NonNull final Parcel in) {
-                return values()[in.readInt()];
-            }
-
-            @Override
-            @NonNull
-            public ScanMode[] newArray(final int size) {
-                return new ScanMode[size];
-            }
-        };
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(@NonNull final Parcel dest,
-                                  final int flags) {
-            dest.writeInt(ordinal());
-        }
     }
 }

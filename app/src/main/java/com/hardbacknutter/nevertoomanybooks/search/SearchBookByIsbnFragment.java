@@ -288,7 +288,7 @@ public class SearchBookByIsbnFragment
     @Override
     void onBookEditingDone(@NonNull final EditBookOutput data) {
         vm.onBookEditingDone(data);
-        if (vm.getScannerMode() == SearchBookByIsbnViewModel.ScanMode.Continuous) {
+        if (vm.getScannerMode() == ScanMode.Continuous) {
             // scan another book until the user cancels
             startScanner();
         }
@@ -318,7 +318,7 @@ public class SearchBookByIsbnFragment
             }
             vb.barcodeScannerGroup.setVisibility(View.GONE);
         }
-        vm.setScannerMode(SearchBookByIsbnViewModel.ScanMode.Off);
+        vm.setScannerMode(ScanMode.Off);
     }
 
 
@@ -399,7 +399,7 @@ public class SearchBookByIsbnFragment
                 SoundManager.beepOnBarcodeFound(context);
             }
 
-            if (vm.getScannerMode() == SearchBookByIsbnViewModel.ScanMode.Batch) {
+            if (vm.getScannerMode() == ScanMode.Batch) {
                 // batch mode, queue the code, go scan next book
                 vm.addToQueue(context, code);
                 startScanner();
@@ -409,7 +409,7 @@ public class SearchBookByIsbnFragment
                 // Single: quit scanning after the search/edit.
                 // Continuous: leave the scanner on, it will start scanning again
                 // when the edit is done.
-                if (vm.getScannerMode() == SearchBookByIsbnViewModel.ScanMode.Single) {
+                if (vm.getScannerMode() == ScanMode.Single) {
                     switchOffScanner();
                 }
                 // Put the code in the field; if the search fails, the user can manually edit it
@@ -422,7 +422,7 @@ public class SearchBookByIsbnFragment
             vb.lblIsbn.setError(getString(R.string.warning_x_is_not_a_valid_code,
                                           code.asText()));
 
-            if (vm.getScannerMode() == SearchBookByIsbnViewModel.ScanMode.Batch) {
+            if (vm.getScannerMode() == ScanMode.Batch) {
                 // invalid code but we're in batch mode.
                 // Just ignore the bad code and scan the next book.
                 startScanner();
@@ -538,12 +538,12 @@ public class SearchBookByIsbnFragment
             final int itemId = menuItem.getItemId();
 
             if (itemId == R.id.MENU_BARCODE_SCAN) {
-                vm.setScannerMode(SearchBookByIsbnViewModel.ScanMode.Single);
+                vm.setScannerMode(ScanMode.Single);
                 startScanner();
                 return true;
 
             } else if (itemId == R.id.MENU_BARCODE_SCAN_BATCH) {
-                vm.setScannerMode(SearchBookByIsbnViewModel.ScanMode.Batch);
+                vm.setScannerMode(ScanMode.Batch);
                 startScanner();
                 return true;
 
