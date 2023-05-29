@@ -634,6 +634,7 @@ public class Author
 
     @Nullable
     private Author resolveRealAuthor(@Nullable final Author author) {
+        @Nullable
         Author a = author;
         if (a != null) {
             // resolve any nested reference

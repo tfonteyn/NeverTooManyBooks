@@ -529,6 +529,7 @@ public class CalibreContentServer
 
             // read the extended info if present
             final String uuid;
+            @Nullable
             final JSONObject vlibs;
             if (libraryDetails != null && !libraryDetails.isNull(libraryId)) {
                 final JSONObject details = libraryDetails.getJSONObject(libraryId);

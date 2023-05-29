@@ -147,6 +147,7 @@ public class CalibreContentServerWriter
                                                                .getCalibreLibraryDao();
             for (final CalibreLibrary library : server.getLibraries()) {
 
+                @Nullable
                 final LocalDateTime dateSince;
                 if (helper.isIncremental()) {
                     dateSince = dateParser.parse(library.getLastSyncDateAsString());

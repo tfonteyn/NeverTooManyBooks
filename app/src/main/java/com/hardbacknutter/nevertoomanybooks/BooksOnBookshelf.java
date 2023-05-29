@@ -573,7 +573,7 @@ public class BooksOnBookshelf
                 ||
                 SyncServer.StripInfo.isEnabled(this) && stripInfoSyncLauncher != null;
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         getNavigationMenuItem(R.id.SUBMENU_SYNC).setVisible(enable);
     }
 
@@ -614,6 +614,7 @@ public class BooksOnBookshelf
      * @param intent potentially containing the action
      */
     private void handleStandardSearchIntent(@NonNull final Intent intent) {
+        @Nullable
         final String query;
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             // Handle the standard search intent.
@@ -781,7 +782,7 @@ public class BooksOnBookshelf
      */
     private void onRowClicked(@NonNull final View v,
                               final int adapterPosition) {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final DataHolder rowData = adapter.readDataAt(adapterPosition);
         // Paranoia: if the user can click it, then the row exists.
         if (rowData == null) {
@@ -827,7 +828,7 @@ public class BooksOnBookshelf
      */
     private void onCreateContextMenu(@NonNull final View v,
                                      final int adapterPosition) {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final DataHolder rowData = adapter.readDataAt(adapterPosition);
         // Paranoia: if the user can click it, then the row exists.
         if (rowData == null) {
@@ -1044,7 +1045,7 @@ public class BooksOnBookshelf
     private boolean onRowContextMenuItemSelected(@NonNull final View v,
                                                  final int adapterPosition,
                                                  @NonNull final MenuItem menuItem) {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final DataHolder rowData = adapter.readDataAt(adapterPosition);
         // Paranoia: if the user can click it, then the row exists.
         if (rowData == null) {
@@ -1902,7 +1903,7 @@ public class BooksOnBookshelf
 
         PositioningHelper(@NonNull final RecyclerView recyclerView) {
             this.recyclerView = recyclerView;
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             this.layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
         }
 

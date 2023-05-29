@@ -108,6 +108,7 @@ public final class ReorderHelper {
                           @NonNull final String title,
                           @Nullable final String language,
                           @NonNull final List<Locale> localeList) {
+        @Nullable
         final Locale localeFromLang;
         if (language == null || language.isBlank()) {
             localeFromLang = null;

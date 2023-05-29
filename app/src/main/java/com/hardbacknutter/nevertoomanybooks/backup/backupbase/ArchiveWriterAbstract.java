@@ -160,6 +160,7 @@ public abstract class ArchiveWriterAbstract
             progressListener.setMaxPos(steps + EXTRA_STEPS);
 
             // Prepare data/files we need information of BEFORE we can write the archive header
+            @Nullable
             final File tmpBooksFile;
             if (!progressListener.isCancelled() && recordTypes.contains(RecordType.Books)) {
                 tmpBooksFile = prepareBooks(context, dateSince, progressListener);

@@ -24,6 +24,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
@@ -103,6 +104,7 @@ public class StripInfoWriter
         progressListener.setIndeterminate(null);
 
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+        @Nullable
         final LocalDateTime dateSince;
         if (syncWriterHelper.isIncremental()) {
             dateSince = dateParser.parse(global.getString(StripInfoAuth.PK_LAST_SYNC, null));

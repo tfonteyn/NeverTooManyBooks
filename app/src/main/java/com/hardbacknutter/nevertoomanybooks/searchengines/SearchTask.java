@@ -187,7 +187,10 @@ public class SearchTask
     @Override
     @WorkerThread
     protected Book doWork()
-            throws StorageException, SearchException, CredentialsException, IOException {
+            throws StorageException,
+                   SearchException,
+                   CredentialsException,
+                   IOException {
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
         publishProgress(1, context.getString(R.string.progress_msg_searching_site,
@@ -203,9 +206,10 @@ public class SearchTask
         // can we reach the site ?
         searchEngine.ping(context);
 
+        @Nullable
         final String isbnStr;
         if (isbn != null) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             if (searchEngine.getEngineId().getConfig()
                             .prefersIsbn10(context) && isbn.isIsbn10Compat()) {
                 isbnStr = isbn.asText(ISBN.Type.Isbn10);
