@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
+//ENHANCE: embed a list of {book-id,modified} pairs instead of the single 'modified' flag
 public final class EditBookOutput {
 
     private static final String TAG = "EditBookOutput";
