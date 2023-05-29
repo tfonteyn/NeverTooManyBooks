@@ -23,7 +23,6 @@ import androidx.annotation.NonNull;
 
 import java.net.HttpURLConnection;
 
-/** @noinspection LongLine */
 @SuppressWarnings("WeakerAccess")
 public final class HttpConstants {
 
