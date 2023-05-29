@@ -230,7 +230,9 @@ public class SearchBookByIsbnViewModel
 
     void setScannerMode(@NonNull final ScanMode scannerMode) {
         this.scannerMode = scannerMode;
-        if (this.scannerMode == ScanMode.Single || this.scannerMode == ScanMode.Batch) {
+
+        // If we're starting a new scan, clear the queue.
+        if (this.scannerMode != ScanMode.Off) {
             scanQueue.clear();
         }
         scanQueueUpdate.setValue(scanQueue);
@@ -245,8 +247,10 @@ public class SearchBookByIsbnViewModel
             implements Parcelable {
         /** Manual entry by user. */
         Off,
-        /** Scan and search/edit loop, until scanning is cancelled. */
+        /** Scan, search and edit the found book. Than wait for the user. */
         Single,
+        /** Same as 'Single' but start the scanner again after editing finished. */
+        Continuous,
         /** Scan and queue the code, until scanning is cancelled. */
         Batch;
 
