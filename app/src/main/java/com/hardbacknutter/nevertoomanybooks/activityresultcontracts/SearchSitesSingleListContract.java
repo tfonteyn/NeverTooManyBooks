@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminViewModel;
  * We're sticking with the {@code Optional<ArrayList<Site>>} to maintain consistency with
  * other contracts which all return an Optional.
  */
+@SuppressWarnings("OptionalContainsCollection")
 public class SearchSitesSingleListContract
         extends ActivityResultContract<ArrayList<Site>, Optional<ArrayList<Site>>> {
 
