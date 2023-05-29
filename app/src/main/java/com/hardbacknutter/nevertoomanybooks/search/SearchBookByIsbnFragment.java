@@ -94,6 +94,9 @@ public class SearchBookByIsbnFragment
     private ISBN.CleanupTextWatcher isbnCleanupTextWatcher;
     private SearchBookByIsbnViewModel vm;
 
+    @Nullable
+    private BarcodeScanner scanner;
+
     /** The user wants to import a list of ISBNs to the queue. */
     private final ActivityResultLauncher<String> openUriLauncher =
             registerForActivityResult(new GetContentUriForReadingContract(),
@@ -104,8 +107,8 @@ public class SearchBookByIsbnFragment
             registerForActivityResult(new EditBookByIdContract(),
                                       o -> o.ifPresent(this::onBookEditingDone));
 
-    @Nullable
-    private BarcodeScanner scanner;    /** Scan barcodes using the scanner Activity. */
+
+    /** Scan barcodes using the scanner Activity. */
     private final ActivityResultLauncher<ScanOptions> scannerActivityLauncher =
             registerForActivityResult(new ScannerContract(), o -> {
                 scannerActivityStarted = false;
