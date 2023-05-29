@@ -68,6 +68,10 @@ import com.hardbacknutter.tinyzxingwrapper.scanner.DecoderResultListener;
 
 /**
  * The input field is not being limited in length. This is to allow entering UPC_A numbers.
+ * <p>
+ * ENHANCE: embedded scanner is UNDER DEVELOPMENT.
+ * - need to double check the stop-logic: when is scanner.stop() needed?
+ * -> see the DecoderResultListener#onResult in the library.
  */
 public class SearchBookByIsbnFragment
         extends SearchBookBaseFragment {
@@ -98,36 +102,6 @@ public class SearchBookByIsbnFragment
     private final ActivityResultLauncher<Long> editExistingBookLauncher =
             registerForActivityResult(new EditBookByIdContract(),
                                       o -> o.ifPresent(this::onBookEditingDone));
-
-    /** Scan barcodes using the scanner Activity. */
-    private final ActivityResultLauncher<ScanOptions> scannerActivityLauncher =
-            registerForActivityResult(new ScannerContract(), o -> {
-                scannerActivityStarted = false;
-                if (o.isPresent()) {
-                    onBarcodeScanned(o.get());
-                } else {
-                    stopScanner();
-                }
-            });
-
-
-    @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        vm = new ViewModelProvider(this).get(SearchBookByIsbnViewModel.class);
-        //noinspection DataFlowIssue
-        vm.init(getContext(), coordinator.isStrictIsbn(), getArguments());
-    }
-
-    @Override
-    @Nullable
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
-        vb = FragmentBooksearchByIsbnBinding.inflate(inflater, container, false);
-        return vb.getRoot();
-    }
 
     @Override
     public void onViewCreated(@NonNull final View view,
@@ -193,8 +167,18 @@ public class SearchBookByIsbnFragment
             afterOnViewCreated();
         }
 
-        vb.btnStopScanning.setOnClickListener(v -> stopScanner());
-    }
+        vb.btnStopScanning.setOnClickListener(v -> switchOffScanner());
+    }    /** Scan barcodes using the scanner Activity. */
+    private final ActivityResultLauncher<ScanOptions> scannerActivityLauncher =
+            registerForActivityResult(new ScannerContract(), o -> {
+                scannerActivityStarted = false;
+                if (o.isPresent()) {
+                    onBarcodeScanned(o.get());
+                } else {
+                    // something was wrong ; quit scanning
+                    switchOffScanner();
+                }
+            });
 
     private void afterOnViewCreated() {
         if (vm.isAutoStart()) {
@@ -230,11 +214,7 @@ public class SearchBookByIsbnFragment
     }
 
     /**
-     * ENHANCE: Start the embedded (in this Fragment) scanner view.
-     * <p>
-     * UNDER DEVELOPMENT.
-     * - need to double check the stop-logic: when is scanner.stop() needed?
-     * -> see the DecoderResultListener#onResult in the library.
+     * Start the embedded (in this Fragment) scanner view.
      */
     private void startScannerEmbedded() {
         vb.barcodeScannerGroup.setVisibility(View.VISIBLE);
@@ -272,7 +252,8 @@ public class SearchBookByIsbnFragment
 
                           @Override
                           public void onError(@NonNull final Throwable e) {
-                              stopScanner();
+                              // quit scanning, and destroy the scanner
+                              switchOffScanner();
                               getLifecycle().removeObserver(scanner);
                               scanner = null;
                           }
@@ -290,7 +271,13 @@ public class SearchBookByIsbnFragment
         }
     }
 
-    private void stopScanner() {
+    /**
+     * Switch the scanner off.
+     * <p>
+     * Dev. note: this used to be called "stopScanning" but that was confusing as
+     * the standalone scanner would already be stopped.
+     */
+    private void switchOffScanner() {
         if (BuildConfig.EMBEDDED_BARCODE_SCANNER) {
             if (scanner != null) {
                 scanner.stop();
@@ -316,9 +303,8 @@ public class SearchBookByIsbnFragment
             startSearch();
 
         } else {
-            // always quit scanning as the safe option, the user can restart the scanner,
-            // or restart the queue processing at will.
-            stopScanner();
+            // always quit scanning until the user manually starts it again
+            switchOffScanner();
 
             // we always use the first one... really should offer the user a choice.
             final long firstFound = existingIds.get(0).first;
@@ -359,13 +345,6 @@ public class SearchBookByIsbnFragment
         }
         // edit book
         super.onSearchResults(book);
-    }
-
-    @Override
-    void onSearchCancelled(@NonNull final LiveDataEvent<TaskResult<Book>> message) {
-        super.onSearchCancelled(message);
-        // Quit scan mode until the user manually starts it again
-        stopScanner();
     }
 
     /**
@@ -425,6 +404,7 @@ public class SearchBookByIsbnFragment
                 // single-scan mode, quit scanning, go search online for the book
                 stopScanner();
                 vb.isbn.setText(code.asText());
+                // go search online for the book
                 prepareSearch(code);
             }
         } else {
@@ -433,11 +413,12 @@ public class SearchBookByIsbnFragment
                                           code.asText()));
 
             if (vm.getScannerMode() == SearchBookByIsbnViewModel.ScanMode.Batch) {
-                // batch mode, ignore the code, go scan next book
+                // invalid code but we're in batch mode.
+                // Just ignore the bad code and scan the next book.
                 startScanner();
             } else {
-                // single-scan mode, quit scanning, let the user edit the code
-                stopScanner();
+                // invalid code, always quit scanning and let the user edit the code
+                switchOffScanner();
                 vb.isbn.setText(code.asText());
             }
         }
