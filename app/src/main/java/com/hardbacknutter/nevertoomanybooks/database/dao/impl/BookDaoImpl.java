@@ -422,6 +422,7 @@ public class BookDaoImpl
 
         int rowsAffected = 0;
         Synchronizer.SyncLock txLock = null;
+        //noinspection CheckStyle
         try {
             if (!db.inTransaction()) {
                 txLock = db.beginTransaction(true);
@@ -768,8 +769,8 @@ public class BookDaoImpl
 
     @Override
     @NonNull
-    public ArrayList<Pair<Long, String>> getBookIdAndTitleByIsbn(@NonNull final ISBN isbn) {
-        final ArrayList<Pair<Long, String>> list = new ArrayList<>();
+    public List<Pair<Long, String>> getBookIdAndTitleByIsbn(@NonNull final ISBN isbn) {
+        final List<Pair<Long, String>> list = new ArrayList<>();
         // if the string is ISBN-10 compatible,
         // i.e. an actual ISBN-10, or an ISBN-13 in the 978 range,
         // we search on both formats

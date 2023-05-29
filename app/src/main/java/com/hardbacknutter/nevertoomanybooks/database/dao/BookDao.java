@@ -301,7 +301,7 @@ public interface BookDao {
      * @return list with book id/title
      */
     @NonNull
-    ArrayList<Pair<Long, String>> getBookIdAndTitleByIsbn(@NonNull ISBN isbn);
+    List<Pair<Long, String>> getBookIdAndTitleByIsbn(@NonNull ISBN isbn);
 
     /**
      * Check that a book with the passed id exists.
