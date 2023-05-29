@@ -53,13 +53,11 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookById
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForReadingContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbnBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.tinyzxingwrapper.ScanOptions;
 import com.hardbacknutter.tinyzxingwrapper.scanner.BarcodeFamily;
@@ -90,8 +88,6 @@ public class SearchBookByIsbnFragment
     private ISBN.ValidationTextWatcher isbnValidationTextWatcher;
     private ISBN.CleanupTextWatcher isbnCleanupTextWatcher;
     private SearchBookByIsbnViewModel vm;
-    @Nullable
-    private BarcodeScanner scanner;
 
     /** The user wants to import a list of ISBNs to the queue. */
     private final ActivityResultLauncher<String> openUriLauncher =
@@ -102,6 +98,37 @@ public class SearchBookByIsbnFragment
     private final ActivityResultLauncher<Long> editExistingBookLauncher =
             registerForActivityResult(new EditBookByIdContract(),
                                       o -> o.ifPresent(this::onBookEditingDone));
+
+    @Nullable
+    private BarcodeScanner scanner;    /** Scan barcodes using the scanner Activity. */
+    private final ActivityResultLauncher<ScanOptions> scannerActivityLauncher =
+            registerForActivityResult(new ScannerContract(), o -> {
+                scannerActivityStarted = false;
+                if (o.isPresent()) {
+                    onBarcodeScanned(o.get());
+                } else {
+                    // something was wrong ; quit scanning
+                    switchOffScanner();
+                }
+            });
+
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        vm = new ViewModelProvider(this).get(SearchBookByIsbnViewModel.class);
+        //noinspection DataFlowIssue
+        vm.init(getContext(), coordinator.isStrictIsbn(), getArguments());
+    }
+
+    @Override
+    @Nullable
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        vb = FragmentBooksearchByIsbnBinding.inflate(inflater, container, false);
+        return vb.getRoot();
+    }
 
     @Override
     public void onViewCreated(@NonNull final View view,
@@ -168,17 +195,50 @@ public class SearchBookByIsbnFragment
         }
 
         vb.btnStopScanning.setOnClickListener(v -> switchOffScanner());
-    }    /** Scan barcodes using the scanner Activity. */
-    private final ActivityResultLauncher<ScanOptions> scannerActivityLauncher =
-            registerForActivityResult(new ScannerContract(), o -> {
-                scannerActivityStarted = false;
-                if (o.isPresent()) {
-                    onBarcodeScanned(o.get());
-                } else {
-                    // something was wrong ; quit scanning
-                    switchOffScanner();
-                }
-            });
+    }
+
+    /**
+     * Start the embedded (in this Fragment) scanner view.
+     */
+    private void startScannerEmbedded() {
+        vb.barcodeScannerGroup.setVisibility(View.VISIBLE);
+        if (scanner == null) {
+            //noinspection DataFlowIssue
+            scanner = new BarcodeScanner.Builder()
+                    .setBarcodeFormats(BarcodeFamily.PRODUCT)
+                    .build(getContext());
+
+            if (vb.cameraViewFinder.isShowResultPoints()) {
+                scanner.setResultPointListener(vb.cameraViewFinder);
+            }
+
+            getLifecycle().addObserver(scanner);
+        }
+
+        scanner.start(getViewLifecycleOwner(),
+                      vb.cameraPreview,
+                      new DecoderResultListener() {
+                          @Nullable
+                          private String lastCode;
+
+                          @Override
+                          public void onResult(@NonNull final Result result) {
+                              final String barCode = result.getText();
+                              if (!barCode.equals(lastCode)) {
+                                  lastCode = barCode;
+                                  onBarcodeScanned(barCode);
+                              }
+                          }
+
+                          @Override
+                          public void onError(@NonNull final Throwable e) {
+                              // quit scanning, and destroy the scanner
+                              switchOffScanner();
+                              getLifecycle().removeObserver(scanner);
+                              scanner = null;
+                          }
+                      });
+    }
 
     private void afterOnViewCreated() {
         if (vm.isAutoStart()) {
@@ -214,50 +274,17 @@ public class SearchBookByIsbnFragment
     }
 
     /**
-     * Start the embedded (in this Fragment) scanner view.
+     * The user finished editing a book. Store results and continue scanning if applicable.
+     *
+     * @param data from the edit
      */
-    private void startScannerEmbedded() {
-        vb.barcodeScannerGroup.setVisibility(View.VISIBLE);
-        if (scanner == null) {
-            //noinspection DataFlowIssue
-            scanner = new BarcodeScanner.Builder()
-                    .setBarcodeFormats(BarcodeFamily.PRODUCT)
-                    .build(getContext());
-
-            if (vb.cameraViewFinder.isShowResultPoints()) {
-                scanner.setResultPointListener(vb.cameraViewFinder);
-            }
-
-            getLifecycle().addObserver(scanner);
+    @Override
+    void onBookEditingDone(@NonNull final EditBookOutput data) {
+        vm.onBookEditingDone(data);
+        if (vm.getScannerMode() == SearchBookByIsbnViewModel.ScanMode.Continuous) {
+            // scan another book until the user cancels
+            startScanner();
         }
-
-        scanner.start(getViewLifecycleOwner(),
-                      vb.cameraPreview,
-                      new DecoderResultListener() {
-                          @Nullable
-                          private String lastCode;
-
-                          @Override
-                          public void onResult(@NonNull final Result result) {
-                              final String barCode = result.getText();
-                              if (barCode != null && !barCode.isBlank()) {
-                                  if (!barCode.equals(lastCode)) {
-                                      lastCode = barCode;
-                                      onBarcodeScanned(barCode);
-                                  }
-                              } else {
-                                  stopScanner();
-                              }
-                          }
-
-                          @Override
-                          public void onError(@NonNull final Throwable e) {
-                              // quit scanning, and destroy the scanner
-                              switchOffScanner();
-                              getLifecycle().removeObserver(scanner);
-                              scanner = null;
-                          }
-                      });
     }
 
     /**
@@ -348,36 +375,6 @@ public class SearchBookByIsbnFragment
     }
 
     /**
-     * The user finished editing a book. Store results and continue scanning if applicable.
-     *
-     * @param data from the edit
-     */
-    @Override
-    void onBookEditingDone(@NonNull final EditBookOutput data) {
-        vm.onBookEditingDone(data);
-        if (vm.getScannerMode() == SearchBookByIsbnViewModel.ScanMode.Single) {
-            // scan another book until the user cancels
-            startScanner();
-        }
-    }
-
-    /**
-     * The user entered a barcode and clicked the search button.
-     *
-     * @param barCode as entered by the user.
-     */
-    private void onBarcodeEntered(@NonNull final String barCode) {
-        final boolean strictIsbn = coordinator.isStrictIsbn();
-        final ISBN code = new ISBN(barCode, strictIsbn);
-
-        if (code.isValid(strictIsbn)) {
-            prepareSearch(code);
-        } else {
-            vb.lblIsbn.setError(getString(R.string.warning_x_is_not_a_valid_code, barCode));
-        }
-    }
-
-    /**
      * The scanner returned a barcode.
      *
      * @param barCode as returned by the scanner
@@ -401,8 +398,14 @@ public class SearchBookByIsbnFragment
                 startScanner();
 
             } else {
-                // single-scan mode, quit scanning, go search online for the book
-                stopScanner();
+                // Scan mode:
+                // Single: quit scanning after the search/edit.
+                // Continuous: leave the scanner on, it will start scanning again
+                // when the edit is done.
+                if (vm.getScannerMode() == SearchBookByIsbnViewModel.ScanMode.Single) {
+                    switchOffScanner();
+                }
+                // Put the code in the field; if the search fails, the user can manually edit it
                 vb.isbn.setText(code.asText());
                 // go search online for the book
                 prepareSearch(code);
@@ -423,6 +426,24 @@ public class SearchBookByIsbnFragment
             }
         }
     }
+
+    /**
+     * The user entered a barcode and clicked the search button.
+     *
+     * @param barCode as entered by the user.
+     */
+    private void onBarcodeEntered(@NonNull final String barCode) {
+        final boolean strictIsbn = coordinator.isStrictIsbn();
+        final ISBN code = new ISBN(barCode, strictIsbn);
+
+        if (code.isValid(strictIsbn)) {
+            prepareSearch(code);
+        } else {
+            vb.lblIsbn.setError(getString(R.string.warning_x_is_not_a_valid_code, barCode));
+        }
+    }
+
+
 
     @Override
     void onClearSearchCriteria() {
