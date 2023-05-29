@@ -70,6 +70,11 @@ import com.hardbacknutter.tinyzxingwrapper.scanner.DecoderResultListener;
  * ENHANCE: embedded scanner is UNDER DEVELOPMENT.
  * - need to double check the stop-logic: when is scanner.stop() needed?
  * -> see the DecoderResultListener#onResult in the library.
+ * <p>
+ * 2023-05-29: Android Studio is completely [censored] up the code formatting in this class!
+ * Each time we format the code, methods and variables jump around.
+ * This is identical to the issue we had with "Author.java" and initializing
+ * TYPE_ORIGINAL_SCRIPT_WRITER = TYPE_WRITER
  */
 public class SearchBookByIsbnFragment
         extends SearchBookBaseFragment {
