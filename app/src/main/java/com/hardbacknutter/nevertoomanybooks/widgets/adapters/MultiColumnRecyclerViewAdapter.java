@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,8 +33,14 @@ public abstract class MultiColumnRecyclerViewAdapter<HOLDER extends RecyclerView
     private final LayoutInflater inflater;
     private final int columnCount;
 
-    public MultiColumnRecyclerViewAdapter(@NonNull final Context context,
-                                          final int columnCount) {
+    /**
+     * Constructor.
+     *
+     * @param context     Current context
+     * @param columnCount the number of columns to be used
+     */
+    protected MultiColumnRecyclerViewAdapter(@NonNull final Context context,
+                                             final int columnCount) {
         this.inflater = LayoutInflater.from(context);
         this.columnCount = columnCount;
     }
@@ -70,13 +76,13 @@ public abstract class MultiColumnRecyclerViewAdapter<HOLDER extends RecyclerView
         return (column * columnCount) + row;
     }
 
-
+    @SuppressWarnings("WeakerAccess")
     protected int getRowCount(final int realItemCount) {
         final int rowCount;
-        if (realItemCount % columnCount != 0) {
-            rowCount = (realItemCount / columnCount) + 1;
-        } else {
+        if (realItemCount % columnCount == 0) {
             rowCount = realItemCount / columnCount;
+        } else {
+            rowCount = (realItemCount / columnCount) + 1;
         }
         return rowCount;
     }
