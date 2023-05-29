@@ -146,14 +146,14 @@ public final class EditBookOutput {
      * @param data add/set
      */
     public void update(@NonNull final EditBookOutput data) {
-        if (data.isModified()) {
+        if (data.modified) {
             this.modified = true;
         }
-        if (data.getRepositionToBookId() > 0) {
-            this.repositionToBookId = data.getRepositionToBookId();
+        if (data.repositionToBookId > 0) {
+            this.repositionToBookId = data.repositionToBookId;
         }
-        if (data.getLastBookIdProcessed() > 0) {
-            this.lastBookIdProcessed = data.getLastBookIdProcessed();
+        if (data.lastBookIdProcessed > 0) {
+            this.lastBookIdProcessed = data.lastBookIdProcessed;
         }
     }
 
