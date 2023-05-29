@@ -101,6 +101,7 @@ public class Author
      * <p>
      * <strong>Dev. note:</strong> do NOT Do not set "= TYPE_WRITER"
      * as Android Studio formatting will be [censored]
+     * https://youtrack.jetbrains.com/issue/IDEA-311599/Poor-result-from-Rearrange-Code-for-Java
      */
     public static final int TYPE_ORIGINAL_SCRIPT_WRITER = 1;
 
