@@ -494,6 +494,7 @@
     <string name="title_backup_and_export">Kopia zapasowa i eksport</string>
     <string name="option_apply_to_this_node_only">Tylko ten węzeł</string>
     <string name="option_apply_to_all_related_books">Wszystkie powiązane książki</string>
+    <string name="option_barcode_scan_mode_manual">Ręcznie</string>
     <string name="option_barcode_scan_mode_continuous">Skanowanie ciągłe</string>
     <string name="option_book_sync_list_with_details">Synchronizuj/ustaw listę</string>
     <string name="option_cover_crop">Obciąć</string>

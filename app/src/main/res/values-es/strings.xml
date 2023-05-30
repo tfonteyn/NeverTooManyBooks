@@ -489,6 +489,7 @@
     <string name="title_backup_and_export">Copia de seguridad y exportación</string>
     <string name="option_apply_to_this_node_only">Este nodo solo</string>
     <string name="option_apply_to_all_related_books">Todos los libros relacionados</string>
+    <string name="option_barcode_scan_mode_manual">Manualmente</string>
     <string name="option_barcode_scan_mode_continuous">Escanear continuamente</string>
     <string name="option_book_sync_list_with_details">Sincronizar/posicionar la lista</string>
     <string name="option_cover_crop">Recortar</string>

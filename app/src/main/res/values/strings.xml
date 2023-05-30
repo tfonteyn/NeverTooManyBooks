@@ -679,7 +679,7 @@
     <string name="option_apply_to_all_related_books">All related books</string>
 
     <string name="pt_scan_mode">Scan mode</string>
-    <string name="option_barcode_scan_mode_manual">Manual</string>
+    <string name="option_barcode_scan_mode_manual">Manually</string>
     <string name="option_barcode_scan_mode_continuous">Scan continuously</string>
 
     <!-- Whether to enforce strict ISBN numbers when searching etc...  -->

@@ -314,6 +314,7 @@
     <string name="info_isfdb_warning_limited_to">(suportado apenas pelo site do ISFDB)</string>
     <string name="tip_import_isbn_list">Importar um ficheiro de texto com números ISBN. O ficheiro deve ter um único ISBN por cada linha. Os resultados serão colocados na fila.</string>
     <string name="option_storage_edit_settings">Editar configurações</string>
+    <string name="option_barcode_scan_mode_manual">Manualmente</string>
     <string name="option_barcode_scan_mode_continuous">Ler continuamente</string>
     <string name="option_isbn_strict">ISBN estrito</string>
     <string name="confirm_remove_toc_entry">Remover o título “%1$s” por %2$s deste livro?</string>

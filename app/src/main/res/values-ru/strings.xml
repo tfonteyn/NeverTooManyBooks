@@ -491,6 +491,7 @@
     <string name="title_backup_and_export">Резервное копирование и экспорт</string>
     <string name="option_apply_to_this_node_only">Только этот узел</string>
     <string name="option_apply_to_all_related_books">Все связанные книги</string>
+    <string name="option_barcode_scan_mode_manual">Вручную</string>
     <string name="option_barcode_scan_mode_continuous">Сканировать непрерывно</string>
     <string name="option_book_sync_list_with_details">Синхронизировать/позиционировать список</string>
     <string name="option_cover_crop">Обрезать эскиз</string>

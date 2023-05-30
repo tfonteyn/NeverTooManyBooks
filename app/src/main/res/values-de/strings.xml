@@ -475,6 +475,7 @@
     <string name="title_backup_and_export">Sichern &amp; Exportieren</string>
     <string name="option_apply_to_this_node_only">Nur dieser Knoten</string>
     <string name="option_apply_to_all_related_books">Alle verwandten Bücher</string>
+    <string name="option_barcode_scan_mode_manual">Manuell</string>
     <string name="option_barcode_scan_mode_continuous">Kontinuierlich scannen</string>
     <string name="option_book_sync_list_with_details">Liste synchronisieren/positionieren</string>
     <string name="option_cover_crop">Zuschneiden</string>

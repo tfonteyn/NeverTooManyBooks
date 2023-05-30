@@ -490,6 +490,7 @@
     <string name="title_backup_and_export">Zálohování a export</string>
     <string name="option_apply_to_this_node_only">Pouze tento uzel</string>
     <string name="option_apply_to_all_related_books">Všechny související knihy</string>
+    <string name="option_barcode_scan_mode_manual">Ručně</string>
     <string name="option_barcode_scan_mode_continuous">Průběžné skenování</string>
     <string name="option_book_sync_list_with_details">Synchronizujte/umístěte seznam</string>
     <string name="option_cover_crop">Oříznout</string>

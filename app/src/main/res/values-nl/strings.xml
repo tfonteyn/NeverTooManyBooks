@@ -470,6 +470,7 @@
     <string name="option_auto_updates">Laat automatische verbeteringen van het internet toe.</string>
     <string name="option_apply_to_this_node_only">Alleen dit knooppunt</string>
     <string name="option_apply_to_all_related_books">Alle gerelateerde boeken</string>
+    <string name="option_barcode_scan_mode_manual">Manueel</string>
     <string name="option_barcode_scan_mode_continuous">Continu scannen</string>
     <string name="option_bob_filter_isbn_no">Zonder ISBN</string>
     <string name="option_bob_filter_isbn_yes">Met ISBN</string>
