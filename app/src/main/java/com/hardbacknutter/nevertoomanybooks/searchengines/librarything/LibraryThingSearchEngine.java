@@ -131,14 +131,19 @@ public class LibraryThingSearchEngine
 
         futureHttpGet = createFutureGetRequest(context, true);
 
-        final SAXParserFactory factory = SAXParserFactory.newInstance();
         final LibraryThingEditionHandler handler = new LibraryThingEditionHandler();
 
         final String url = getHostUrl(context) + String.format("/api/thingISBN/%1$s", validIsbn);
 
+        final SAXParser parser;
+        try {
+            parser = SAXParserFactory.newInstance().newSAXParser();
+        } catch (@NonNull final ParserConfigurationException | SAXException e) {
+            throw new IllegalStateException(e);
+        }
+
         //noinspection OverlyBroadCatchBlock
         try {
-            final SAXParser parser = factory.newSAXParser();
             futureHttpGet.get(url, response -> {
                 try (BufferedInputStream bis = new BufferedInputStream(
                         response.getInputStream())) {
@@ -157,8 +162,7 @@ public class LibraryThingSearchEngine
                 }
             });
 
-        } catch (@NonNull final StorageException | ParserConfigurationException
-                | SAXException | IOException e) {
+        } catch (@NonNull final StorageException | IOException e) {
             throw new SearchException(getEngineId(), e);
         }
         return handler.getResult();
