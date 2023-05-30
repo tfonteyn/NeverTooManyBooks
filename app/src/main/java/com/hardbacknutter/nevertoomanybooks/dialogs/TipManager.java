@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.dialogs;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.text.method.LinkMovementMethod;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -36,8 +37,10 @@ import androidx.preference.PreferenceManager;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.Locale;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.HtmlFormatter;
 
 /**
@@ -50,25 +53,40 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.HtmlFormatter;
  */
 public final class TipManager {
 
+    private static final String TAG = "TipManager";
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "tips.";
     /** Preferences prefix for all tips. */
     private static final String PREF_TIP = PREF_PREFIX + "tip.";
     private static final TipManager INSTANCE = new TipManager();
-
     /** Cache for all tips managed by this class. */
     private final SparseArray<Tip> cached = new SparseArray<>();
 
     private TipManager() {
     }
 
+    /**
+     * Retrieve the singleton instance.
+     *
+     * @return singleton
+     */
     @NonNull
     public static TipManager getInstance() {
         return INSTANCE;
     }
 
+    private static void logError(@NonNull final Context context,
+                                 @StringRes final int tipId) {
+        try {
+            final String resourceName = context.getResources().getResourceName(tipId);
+            LoggerFactory.getLogger().w(TAG, "Tip not found: " + resourceName);
+        } catch (@NonNull final Resources.NotFoundException ignore) {
+            // should never get here... flw
+        }
+    }
+
     @NonNull
-    private Tip getTip(@StringRes final int id) {
+    private Optional<Tip> getTip(@StringRes final int id) {
         Tip tip = cached.get(id);
         if (tip == null) {
             if (id == R.string.tip_booklist_styles_editor) {
@@ -96,12 +114,15 @@ public final class TipManager {
             } else if (id == R.string.tip_series_book_may_appear_more_than_once) {
                 tip = new Tip(id, "series_book_may_appear_more_than_once");
 
+            } else if (id == R.string.tip_import_isbn_list) {
+                tip = new Tip(id, "import_isbn_list");
+
             } else {
-                throw new IllegalArgumentException(String.valueOf(id));
+                return Optional.empty();
             }
             cached.put(id, tip);
         }
-        return tip;
+        return Optional.of(tip);
     }
 
     /**
@@ -146,14 +167,9 @@ public final class TipManager {
                         @StringRes final int tipId,
                         @Nullable final Runnable postRun,
                         @Nullable final Object... args) {
-        final Tip tip = getTip(tipId);
-        if (!tip.shouldBeShown(context)) {
-            if (postRun != null) {
-                postRun.run();
-            }
-            return;
-        }
-        tip.display(context, args, postRun);
+        getTip(tipId).ifPresentOrElse(
+                tip -> tip.display(context, tip.defaultKey, args, postRun),
+                () -> logError(context, tipId));
     }
 
     /**
@@ -173,23 +189,15 @@ public final class TipManager {
                         @StringRes final int tipId,
                         @Nullable final Runnable postRun,
                         @Nullable final Object... args) {
-        final Tip tip = getTip(tipId);
-        if (!tip.shouldBeShown(context, tipKey)) {
-            if (postRun != null) {
-                postRun.run();
-            }
-            return;
-        }
-        tip.display(context, tipKey, args, postRun);
+        getTip(tipId).ifPresentOrElse(
+                tip -> tip.display(context, tipKey, args, postRun),
+                () -> logError(context, tipId));
     }
 
-    /**
-     * Class to represent a single Tip.
-     */
     private static final class Tip {
 
         @StringRes
-        private final int defaultStringId;
+        private final int id;
         /** Preferences key suffix specific to this tip. */
         @NonNull
         private final String defaultKey;
@@ -204,11 +212,12 @@ public final class TipManager {
         /**
          * Constructor.
          *
-         * @param id string resource to display
+         * @param id         string resource to display
+         * @param defaultKey the default key suffix to flag this tip as 'shown' in the preferences
          */
         Tip(@StringRes final int id,
             @NonNull final String defaultKey) {
-            defaultStringId = id;
+            this.id = id;
             this.defaultKey = defaultKey;
             layoutId = R.layout.dialog_tip;
         }
@@ -227,46 +236,7 @@ public final class TipManager {
         }
 
         /**
-         * Check if this tip should be shown.
-         *
-         * @param context Current context
-         *
-         * @return {@code true} if this Tip should be displayed
-         */
-        boolean shouldBeShown(@NonNull final Context context) {
-            return shouldBeShown(context, defaultKey);
-        }
-
-        /**
-         * Check if this tip should be shown.
-         *
-         * @param context Current context
-         * @param key     Preferences key suffix specific to this tip
-         *
-         * @return {@code true} if this Tip should be displayed
-         */
-        boolean shouldBeShown(@NonNull final Context context,
-                              @NonNull final String key) {
-            return !previouslyDisplayed
-                   && PreferenceManager.getDefaultSharedPreferences(context)
-                                       .getBoolean(PREF_TIP + key, true);
-        }
-
-        /**
-         * Display the tip.
-         *
-         * @param context Current context
-         * @param args    for the message
-         * @param postRun Runnable to start afterwards
-         */
-        void display(@NonNull final Context context,
-                     @Nullable final Object[] args,
-                     @Nullable final Runnable postRun) {
-            display(context, defaultKey, defaultStringId, args, postRun);
-        }
-
-        /**
-         * Display the tip.
+         * Display the tip if not shown before and the user has not disabled it.
          *
          * @param context Current context
          * @param key     Preferences key suffix specific to this tip
@@ -277,23 +247,31 @@ public final class TipManager {
                      @NonNull final String key,
                      @Nullable final Object[] args,
                      @Nullable final Runnable postRun) {
-            display(context, key, defaultStringId, args, postRun);
+            if (!previouslyDisplayed
+                && PreferenceManager.getDefaultSharedPreferences(context)
+                                    .getBoolean(PREF_TIP + key, true)) {
+
+                final String text = context.getString(id, args);
+                display(context, key, text, postRun);
+            } else {
+                if (postRun != null) {
+                    postRun.run();
+                }
+            }
         }
 
         /**
-         * Display the tip.
+         * Unconditionally display the tip.
          *
-         * @param context  Current context
-         * @param key      Preferences key suffix specific to this tip
-         * @param stringId for the message
-         * @param args     for the message
-         * @param postRun  Runnable to start afterwards
+         * @param context Current context
+         * @param key     Preferences key suffix specific to this tip
+         * @param text    to display
+         * @param postRun Runnable to start afterwards
          */
-        void display(@NonNull final Context context,
-                     @NonNull final String key,
-                     @StringRes final int stringId,
-                     @Nullable final Object[] args,
-                     @Nullable final Runnable postRun) {
+        private void display(@NonNull final Context context,
+                             @NonNull final String key,
+                             @NonNull final String text,
+                             @Nullable final Runnable postRun) {
 
             // Build the tip dialog
             final View root = LayoutInflater.from(context).inflate(layoutId, null);
@@ -301,9 +279,8 @@ public final class TipManager {
             // Setup the message; this is an optional View but present in the default layout.
             final TextView messageView = root.findViewById(R.id.content);
             if (messageView != null) {
-                final String tipText = context.getString(stringId, args);
                 // allow links, start a browser (or whatever)
-                messageView.setText(HtmlFormatter.linkify(tipText));
+                messageView.setText(HtmlFormatter.linkify(text));
                 messageView.setMovementMethod(LinkMovementMethod.getInstance());
             }
 
