@@ -52,6 +52,8 @@ public final class Prefs {
     public static final String pk_camera_image_action = "camera.image.action";
     public static final String pk_camera_lens_facing = "camera.lens.facing";
 
+    public static final String PK_SCAN_MODE_SINGLE = "scan.mode.single";
+
     public static final String pk_image_cache_resized = "image.cache.resized";
     public static final String pk_storage_volume = "storage.volume.index";
 

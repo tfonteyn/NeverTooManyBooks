@@ -54,8 +54,11 @@ public class SearchBookByIsbnViewModel
 
     /** Log tag. */
     private static final String TAG = "SearchBookByIsbnViewModel";
+
+    /** The {@link ScanMode} to start in. */
     public static final String BKEY_SCAN_MODE = TAG + ":scanMode";
 
+    /** Storage key into preferences for the current queue. */
     private static final String PREF_SCAN_QUEUE = "scan.queue";
 
     private static final int BUFFER_SIZE = 65535;

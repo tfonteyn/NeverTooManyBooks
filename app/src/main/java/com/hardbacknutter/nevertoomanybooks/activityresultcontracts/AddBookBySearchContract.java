@@ -58,7 +58,7 @@ public class AddBookBySearchContract
                 return FragmentHostActivity
                         .createIntent(context, SearchBookByIsbnFragment.class)
                         .putExtra(SearchBookByIsbnViewModel.BKEY_SCAN_MODE,
-                                  (Parcelable) ScanMode.Single);
+                                  (Parcelable) ScanMode.getSingleScanMode(context));
 
             case ScanBatch:
                 return FragmentHostActivity
@@ -84,7 +84,7 @@ public class AddBookBySearchContract
                                                 @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             LoggerFactory.getLogger()
-                          .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
+                         .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {

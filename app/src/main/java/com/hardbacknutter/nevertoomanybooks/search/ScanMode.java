@@ -20,22 +20,32 @@
 
 package com.hardbacknutter.nevertoomanybooks.search;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+
 public enum ScanMode
         implements Parcelable {
 
     /** Scanner is (set) offline. */
-    Off,
-    /** Scan, search and edit the found book. */
-    Single,
-    /** Same as 'Single' but start the scanner again after editing finished. */
-    Continuous,
-    /** Scan and queue the code, until scanning is cancelled. */
-    Batch;
+    Off(0),
+    /** Scan, search for, and edit the found book. */
+    Manual(1),
+    /**
+     * Scan, search for, and edit the found book.
+     * When editing is finished, start a new scan.
+     */
+    Continuous(2),
+    /**
+     * Scan and queue the code, until scanning is cancelled.
+     * The user can then edit books from the isbn-queue.
+     */
+    Batch(3);
 
     /** {@link Parcelable}. */
     public static final Creator<ScanMode> CREATOR = new Creator<>() {
@@ -51,6 +61,29 @@ public enum ScanMode
             return new ScanMode[size];
         }
     };
+    private final int value;
+
+    ScanMode(final int value) {
+        this.value = value;
+    }
+
+    /**
+     * Get the user preferred single-scan mode: either {@link #Manual} or {@link #Continuous}.
+     *
+     * @param context Current context
+     *
+     * @return scan mode
+     */
+    @NonNull
+    public static ScanMode getSingleScanMode(@NonNull final Context context) {
+        final int value = IntListPref.getInt(context, Prefs.PK_SCAN_MODE_SINGLE,
+                                             Manual.value);
+        if (value == Continuous.value) {
+            return Continuous;
+        } else {
+            return Manual;
+        }
+    }
 
     @Override
     public int describeContents() {
