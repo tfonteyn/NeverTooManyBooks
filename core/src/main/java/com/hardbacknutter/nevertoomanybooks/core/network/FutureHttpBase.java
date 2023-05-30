@@ -304,29 +304,33 @@ public abstract class FutureHttpBase<T> {
         } catch (@NonNull final ExecutionException e) {
             final Throwable cause = e.getCause();
 
+            if (cause instanceof UncheckedCoverStorageException) {
+                //noinspection DataFlowIssue
+                throw (StorageException) cause.getCause();
+            }
+            if (cause instanceof StorageException) {
+                throw (StorageException) cause;
+            }
+
+            if (cause instanceof UncheckedIOException) {
+                //noinspection DataFlowIssue
+                throw (IOException) cause.getCause();
+            }
             if (cause instanceof IOException) {
                 throw (IOException) cause;
             }
-            if (cause instanceof UncheckedCoverStorageException) {
-                //noinspection ConstantConditions
-                throw (StorageException) cause.getCause();
-            }
-            if (cause instanceof UncheckedIOException) {
-                //noinspection ConstantConditions
-                throw (IOException) cause.getCause();
-            }
+
             if (cause instanceof UncheckedSAXException) {
-                final SAXException saxException = ((UncheckedSAXException) cause).getCause();
-                // unwrap SAXException using getException() !
-                final Exception saxCause = Objects.requireNonNull(saxException).getException();
-                if (saxCause instanceof IOException) {
-                    throw (IOException) saxCause;
-                }
-                if (saxCause instanceof StorageException) {
-                    throw (StorageException) saxCause;
-                }
-                throw new IOException(saxCause);
+                final SAXException saxException = Objects.requireNonNull(
+                        ((UncheckedSAXException) cause).getCause());
+                rethrowSAXException(saxException);
             }
+            if (cause instanceof SAXException) {
+                final SAXException saxException = (SAXException) cause;
+                rethrowSAXException(saxException);
+            }
+
+            // An unexpected exception, let the caller deal with it.
             throw new IOException(cause);
 
         } catch (@NonNull final RejectedExecutionException | InterruptedException e) {
@@ -339,6 +343,33 @@ public abstract class FutureHttpBase<T> {
         } finally {
             futureHttp = null;
         }
+    }
+
+    private void rethrowSAXException(@NonNull final SAXException saxException)
+            throws IOException, StorageException {
+        // First try unwrapping with SAXException#getException() !
+        Throwable saxCause = saxException.getException();
+        if (saxCause == null) {
+            // try the standard getCause() instead
+            saxCause = saxException.getCause();
+        }
+        if (saxCause == null) {
+            // We have an actual SAXException which is not wrapping anything.
+            // This indicates a parser failure somewhere usually caused
+            // by the server response not matching the expectations.
+            // Wrap it into an IOException and let the caller deal with it.
+            throw new IOException(saxException);
+        }
+
+        // The SAXException was caused by a wrapped exception. Unwrap if we can.
+        if (saxCause instanceof IOException) {
+            throw (IOException) saxCause;
+        }
+        if (saxCause instanceof StorageException) {
+            throw (StorageException) saxCause;
+        }
+        // Some other wrapped exception, re-wrap and let the caller deal with it.
+        throw new IOException(saxCause);
     }
 
     public void cancel() {
