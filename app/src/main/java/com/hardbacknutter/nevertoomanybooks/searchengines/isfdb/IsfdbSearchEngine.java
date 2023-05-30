@@ -1541,6 +1541,7 @@ public class IsfdbSearchEngine
      *
      * @throws StorageException on storage related failures
      * @throws SearchException  on generic exceptions (wrapped) during search
+     * @throws IllegalStateException if the SAX parser could not be created
      */
     @NonNull
     private List<Book> fetchPublications(@NonNull final Context context,
@@ -1552,15 +1553,19 @@ public class IsfdbSearchEngine
 
         futureHttpGet = createFutureGetRequest(context, true);
 
-        final SAXParserFactory factory = SAXParserFactory.newInstance();
-
         final IsfdbPublicationListHandler listHandler =
                 new IsfdbPublicationListHandler(context, this, fetchCovers,
                                                 maxRecords, moneyParser);
 
+        final SAXParser parser;
         try {
-            final SAXParser parser = factory.newSAXParser();
+            parser = SAXParserFactory.newInstance().newSAXParser();
+        } catch (@NonNull final ParserConfigurationException | SAXException e) {
+            throw new IllegalStateException(e);
+        }
 
+        //noinspection OverlyBroadCatchBlock
+        try {
             futureHttpGet.get(url, response -> {
                 try (BufferedInputStream bis = new BufferedInputStream(
                         response.getInputStream())) {
@@ -1576,26 +1581,19 @@ public class IsfdbSearchEngine
                 } catch (@NonNull final IOException e) {
                     throw new UncheckedIOException(e);
                 } catch (@NonNull final SAXException e) {
+                    // unwrap SAXException using getException() !
+                    final Exception cause = e.getException();
+                    if (cause instanceof EOFException) {
+                        // not an error; we're done.
+                        return true;
+                    }
                     throw new UncheckedSAXException(e);
                 }
             });
 
             return listHandler.getResult();
 
-        } catch (@NonNull final SAXException e) {
-            // unwrap SAXException using getException() !
-            final Exception cause = e.getException();
-            if (cause instanceof EOFException) {
-                // not an error; we're done.
-                return listHandler.getResult();
-
-            } else if (cause instanceof StorageException) {
-                throw (StorageException) cause;
-            }
-            // wrap other parser exceptions
-            throw new SearchException(getEngineId(), e);
-
-        } catch (@NonNull final ParserConfigurationException | IOException e) {
+        } catch (@NonNull final IOException e) {
             throw new SearchException(getEngineId(), e);
         }
     }
