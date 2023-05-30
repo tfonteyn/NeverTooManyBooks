@@ -19,7 +19,8 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                  xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
         android:title="@string/site_bookfinder">
@@ -32,5 +33,27 @@
             android:summaryOn="@string/yes"
             android:title="@string/pt_search_prefer_isbn10" />
 
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/lbl_timeouts">
+        <SeekBarPreference
+            android:defaultValue="20"
+            android:icon="@drawable/ic_baseline_more_time_24"
+            android:key="bookfinder.timeout.connect"
+            android:max="60"
+            android:title="@string/lbl_connection_timeout"
+            app:min="3"
+            app:showSeekBarValue="true"
+            />
+        <SeekBarPreference
+            android:defaultValue="60"
+            android:icon="@drawable/ic_baseline_more_time_24"
+            android:key="bookfinder.timeout.read"
+            android:max="120"
+            android:title="@string/lbl_read_timeout"
+            app:min="3"
+            app:showSeekBarValue="true"
+            />
     </PreferenceCategory>
 </PreferenceScreen>
