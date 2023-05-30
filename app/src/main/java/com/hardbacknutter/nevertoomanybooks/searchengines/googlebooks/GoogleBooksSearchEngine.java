@@ -138,6 +138,7 @@ public class GoogleBooksSearchEngine
      *
      * @throws StorageException on storage related failures
      * @throws SearchException  on generic exceptions (wrapped) during search
+     * @throws IllegalStateException if the SAX parser could not be created
      */
     private void fetchBook(@NonNull final Context context,
                            @NonNull final String url,
@@ -152,8 +153,15 @@ public class GoogleBooksSearchEngine
         // get the booklist, can return multiple books ('entry' elements)
         final GoogleBooksListHandler listHandler = new GoogleBooksListHandler();
 
+        final SAXParser parser;
         try {
-            final SAXParser parser = factory.newSAXParser();
+            parser = factory.newSAXParser();
+        } catch (@NonNull final ParserConfigurationException | SAXException e) {
+            throw new IllegalStateException(e);
+        }
+
+        //noinspection OverlyBroadCatchBlock
+        try {
             futureHttpGet.get(url, response -> {
                 try (BufferedInputStream bis = new BufferedInputStream(
                         response.getInputStream())) {
@@ -201,16 +209,7 @@ public class GoogleBooksSearchEngine
 
             }
 
-        } catch (@NonNull final SAXException e) {
-            // unwrap SAXException using getException() !
-            final Exception cause = e.getException();
-            if (cause instanceof StorageException) {
-                throw (StorageException) cause;
-            }
-            // wrap other parser exceptions
-            throw new SearchException(getEngineId(), e);
-
-        } catch (@NonNull final ParserConfigurationException | IOException e) {
+        } catch (@NonNull final IOException e) {
             throw new SearchException(getEngineId(), e);
         } finally {
             futureHttpGet = null;
