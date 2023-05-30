@@ -154,13 +154,17 @@ public class KbNlSearchEngine
 
         futureHttpGet = createFutureGetRequest(context, true);
 
-        final SAXParserFactory factory = SAXParserFactory.newInstance();
         final DefaultHandler handler = new KbNlBookHandler(context, this, book);
+
+        final SAXParser parser;
+        try {
+            parser = SAXParserFactory.newInstance().newSAXParser();
+        } catch (@NonNull final ParserConfigurationException | SAXException e) {
+            throw new IllegalStateException(e);
+        }
 
         //noinspection OverlyBroadCatchBlock
         try {
-            final SAXParser parser = factory.newSAXParser();
-
             // Do the search... we'll either get a parsed list-page back, or the parsed book page.
             String url = getHostUrl(context) + String.format(SEARCH_URL, dbVersion, setNr,
                                                              validIsbn);
@@ -175,16 +179,7 @@ public class KbNlSearchEngine
                 futureHttpGet.get(url, response -> processResponse(response, handler, parser,
                                                                    book));
             }
-        } catch (@NonNull final SAXException e) {
-            // unwrap SAXException using getException() !
-            final Exception cause = e.getException();
-            if (cause instanceof StorageException) {
-                throw (StorageException) cause;
-            }
-            // wrap other parser exceptions
-            throw new SearchException(getEngineId(), e);
-
-        } catch (@NonNull final ParserConfigurationException | IOException e) {
+        } catch (@NonNull final IOException e) {
             throw new SearchException(getEngineId(), e);
         }
 
