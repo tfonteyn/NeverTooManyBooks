@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -45,7 +45,7 @@ public class BarcodePreferenceFragment
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_barcodes, rootKey);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final List<Integer> cameras = CameraDetection.getCameras(getContext());
         final int max = cameras.size() + 1;
         final CharSequence[] cameraLabels = new CharSequence[max];
@@ -64,12 +64,16 @@ public class BarcodePreferenceFragment
             }
         }
         final ListPreference cameraPref = findPreference(Prefs.pk_camera_lens_facing);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         cameraPref.setEntries(cameraLabels);
         cameraPref.setEntryValues(cameraValues);
         cameraPref.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
+        findPreference(Prefs.PK_SCAN_MODE_SINGLE)
+                .setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
+
+        //noinspection DataFlowIssue
         findPreference(Prefs.pk_sounds_scan_found_barcode)
                 .setOnPreferenceChangeListener((preference, newValue) -> {
                     if (newValue instanceof Boolean && (Boolean) newValue) {
@@ -77,7 +81,7 @@ public class BarcodePreferenceFragment
                     }
                     return true;
                 });
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         findPreference(Prefs.pk_sounds_scan_isbn_valid)
                 .setOnPreferenceChangeListener((preference, newValue) -> {
                     if (newValue instanceof Boolean && (Boolean) newValue) {
@@ -85,7 +89,7 @@ public class BarcodePreferenceFragment
                     }
                     return true;
                 });
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         findPreference(Prefs.pk_sounds_scan_isbn_invalid)
                 .setOnPreferenceChangeListener((preference, newValue) -> {
                     if (newValue instanceof Boolean && (Boolean) newValue) {
