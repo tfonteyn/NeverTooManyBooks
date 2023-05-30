@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -239,8 +241,8 @@
     <string name="option_fab_add_book_by_barcode_scan">Σάρωση γραμμωτού κώδικα</string>
     <string name="option_fab_add_book_by_barcode_scan_batch">Σάρωση γραμμωτών κωδικών σε παρτίδα</string>
     <string name="option_fab_add_book_by_external_id">Αναγνωριστικό βιβλίου ιστοτόπου</string>
-    <string name="option_fab_add_book_by_internet_search">Αναζήτηση στο Internet</string>
-    <string name="option_fab_add_book_by_isbn">Εισαγωγή κωδικού ISBN</string>
+    <string name="option_fab_add_book_by_internet_search">Αναζήτηση με βάση τον τίτλο</string>
+    <string name="option_fab_add_book_by_isbn">Αναζήτηση ανά ISBN</string>
     <string name="option_fab_add_book_manually">Χειροκίνητη Προσθήκη</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
     <string name="httpError">Παρουσιάστηκε σφάλμα δικτύου.</string>

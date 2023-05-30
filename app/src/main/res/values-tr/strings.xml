@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -244,8 +246,8 @@
     <string name="option_fab_add_book_by_barcode_scan">Barkod tarama</string>
     <string name="option_fab_add_book_by_barcode_scan_batch">Barkodları toplu olarak tarayın</string>
     <string name="option_fab_add_book_by_external_id">Web sitesi kitap kimliği</string>
-    <string name="option_fab_add_book_by_internet_search">Genelağ’da ara</string>
-    <string name="option_fab_add_book_by_isbn">ISBN gir</string>
+    <string name="option_fab_add_book_by_internet_search">Başlığa göre ara</string>
+    <string name="option_fab_add_book_by_isbn">ISBN’e göre ara</string>
     <string name="option_fab_add_book_manually">El ile ekle</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
     <string name="httpError">Bir ağ hatası oluştu.</string>

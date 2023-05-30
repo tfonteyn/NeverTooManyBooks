@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “...”  (older «…» are no longer used as verified with a native speaker) - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pt">
@@ -328,7 +330,7 @@
     <string name="lbl_author_type_intro">Introdução etc.</string>
     <string name="lbl_author_type_narrator">Narrador</string>
     <string name="option_sort_and_style_ellipsis">Ordenação e Estilos…</string>
-    <string name="option_fab_add_book_by_internet_search">Pesquisa na Internet</string>
+    <string name="option_fab_add_book_by_internet_search">Pesquisa por título</string>
     <string name="book_format_dimensions">Dimensões</string>
     <string name="book_color_full_color">Colorido</string>
     <string name="book_color_black_and_white">Preto e branco</string>
@@ -404,7 +406,7 @@
     <string name="option_cover_rotate_cw">No sentido horário</string>
     <string name="option_cover_rotate_ccw">Anti-Horário</string>
     <string name="option_fab_add_book_by_barcode_scan">Ler código de barras</string>
-    <string name="option_fab_add_book_by_isbn">Insira o ISBN</string>
+    <string name="option_fab_add_book_by_isbn">Pesquisa por ISBN</string>
     <string name="option_select_none">Desseleccionar tudo</string>
     <string name="btn_just_this_shelf">Apenas esta prateleira</string>
     <string name="lbl_all_bookshelves">Todas as prateleiras</string>

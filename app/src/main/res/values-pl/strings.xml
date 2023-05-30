@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -257,8 +259,8 @@
     <string name="option_fab_add_book_by_barcode_scan">Skanowanie kodu kreskowego</string>
     <string name="option_fab_add_book_by_barcode_scan_batch">Skanowanie kodów kreskowych wsadowo</string>
     <string name="option_fab_add_book_by_external_id">Identyfikator książki internetowej</string>
-    <string name="option_fab_add_book_by_internet_search">Szukaj w Internecie</string>
-    <string name="option_fab_add_book_by_isbn">Wpisz ISBN</string>
+    <string name="option_fab_add_book_by_internet_search">Wyszukiwanie według tytułu</string>
+    <string name="option_fab_add_book_by_isbn">Szukaj według ISBN</string>
     <string name="option_fab_add_book_manually">Dodaj ręcznie</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
     <string name="httpError">Wystąpił błąd sieci.</string>
