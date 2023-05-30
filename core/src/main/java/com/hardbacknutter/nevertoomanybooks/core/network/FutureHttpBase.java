@@ -302,6 +302,9 @@ public abstract class FutureHttpBase<T> {
             return futureHttp.get(getFutureTimeout(), TimeUnit.MILLISECONDS);
 
         } catch (@NonNull final ExecutionException e) {
+            // TODO: maybe move away from this early interception? and let the ExecutionException
+            //  go all the way up and decode it in ExMsg ?
+
             final Throwable cause = e.getCause();
 
             if (cause instanceof UncheckedCoverStorageException) {
