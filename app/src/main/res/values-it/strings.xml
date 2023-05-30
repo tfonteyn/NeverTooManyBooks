@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -237,7 +238,7 @@
     <string name="error_unexpected_long">Si è verificato un errore imprevisto. Se il problema persiste, contatta l’assistenza utilizzando l’opzione «%1$s» nella parte inferiore della pagina delle impostazioni.</string>
     <string name="error_unsupported_version_v">Versione non supportata: %1$d</string>
     <string name="error_upgrade_not_supported">L’aggiornamento da versioni precedenti alla %1$s non è supportato.</string>
-    <string name="option_fab_add_book_by_barcode_scan">Acquisisci codice a barre</string>
+    <string name="option_fab_add_book_by_barcode_scan">Scansione di un codice a barre</string>
     <string name="option_fab_add_book_by_barcode_scan_batch">Scansione di codici a barre in batch</string>
     <string name="option_fab_add_book_by_external_id">ID libro del sito web</string>
     <string name="option_fab_add_book_by_internet_search">Cerca in Internet</string>
@@ -475,8 +476,7 @@
     <string name="title_backup_and_export">Backup ed esportazione</string>
     <string name="option_apply_to_this_node_only">Solo questo nodo</string>
     <string name="option_apply_to_all_related_books">Tutti i libri correlati</string>
-    <string name="option_barcode_scan">Scansione codice a barre</string>
-    <string name="option_barcode_scan_continuous">Scansiona continuamente</string>
+    <string name="option_barcode_scan_mode_continuous">Scansione continua</string>
     <string name="option_book_sync_list_with_details">Sincronizza/posiziona la lista</string>
     <string name="option_cover_crop">Ritaglia</string>
     <string name="option_cover_edit">Avvia l’editor</string>
@@ -740,4 +740,5 @@
     <string name="lbl_original_title">Titolo originale</string>
     <string name="lbl_original_title_long">Titolo originale se il libro è una traduzione</string>
     <string name="error_site_access_blocked">L\'accesso è stato bloccato dal sito web.</string>
+    <string name="pt_scan_mode">Modalità di scansione</string>
 </resources>

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -311,7 +312,7 @@
     <string name="info_isfdb_warning_limited_to">(suportado apenas pelo site do ISFDB)</string>
     <string name="tip_import_isbn_list">Importar um ficheiro de texto com números ISBN. O ficheiro deve ter um único ISBN por cada linha. Os resultados serão colocados na fila.</string>
     <string name="option_storage_edit_settings">Editar configurações</string>
-    <string name="option_barcode_scan_continuous">Ler continuamente</string>
+    <string name="option_barcode_scan_mode_continuous">Ler continuamente</string>
     <string name="option_isbn_strict">ISBN estrito</string>
     <string name="confirm_remove_toc_entry">Remover o título “%1$s” por %2$s deste livro?</string>
     <string name="confirm_delete_style">Excluir o estilo “%1$s” ?</string>
@@ -407,7 +408,6 @@
     <string name="option_select_none">Desseleccionar tudo</string>
     <string name="btn_just_this_shelf">Apenas esta prateleira</string>
     <string name="lbl_all_bookshelves">Todas as prateleiras</string>
-    <string name="option_barcode_scan">Ler Código de barras</string>
     <string name="option_isfdb_menu_populate_toc">Preencher títulos (somente ISFDB)</string>
     <string name="option_auto_updates">Permitir atualizações automáticas da internet.</string>
     <string name="confirm_scope_for_delete">Excluir o título “%1$s” por %2$s
@@ -771,4 +771,5 @@
     <string name="lbl_original_title">Título original</string>
     <string name="lbl_original_title_long">Título original se este livro for uma tradução</string>
     <string name="error_site_access_blocked">O acesso foi bloqueado pelo sítio Web.</string>
+    <string name="pt_scan_mode">Modo de leitura</string>
 </resources>

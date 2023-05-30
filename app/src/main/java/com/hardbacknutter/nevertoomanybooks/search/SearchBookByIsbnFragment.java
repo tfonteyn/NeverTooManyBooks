@@ -56,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContr
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbnBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
@@ -92,20 +93,35 @@ public class SearchBookByIsbnFragment
     private ISBN.ValidationTextWatcher isbnValidationTextWatcher;
     private ISBN.CleanupTextWatcher isbnCleanupTextWatcher;
     private SearchBookByIsbnViewModel vm;
-
-    @Nullable
-    private BarcodeScanner scanner;
-
     /** The user wants to import a list of ISBNs to the queue. */
     private final ActivityResultLauncher<String> openUriLauncher =
             registerForActivityResult(new GetContentUriForReadingContract(),
                                       o -> o.ifPresent(this::onOpenUri));
+    @Nullable
+    private BarcodeScanner scanner;
+
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        vm = new ViewModelProvider(this).get(SearchBookByIsbnViewModel.class);
+        //noinspection DataFlowIssue
+        vm.init(getContext(), coordinator.isStrictIsbn(), getArguments());
+    }
 
     /** The user was prompted to edit an <strong>existing</strong> book (i.e. with a valid id). */
     private final ActivityResultLauncher<Long> editExistingBookLauncher =
             registerForActivityResult(new EditBookByIdContract(),
                                       o -> o.ifPresent(this::onBookEditingDone));
 
+    @Override
+    @Nullable
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        vb = FragmentBooksearchByIsbnBinding.inflate(inflater, container, false);
+        return vb.getRoot();
+    }
 
     /** Scan barcodes using the scanner Activity. */
     private final ActivityResultLauncher<ScanOptions> scannerActivityLauncher =
@@ -118,24 +134,6 @@ public class SearchBookByIsbnFragment
                     switchOffScanner();
                 }
             });
-
-    @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        vm = new ViewModelProvider(this).get(SearchBookByIsbnViewModel.class);
-        //noinspection DataFlowIssue
-        vm.init(getContext(), coordinator.isStrictIsbn(), getArguments());
-    }
-
-    @Override
-    @Nullable
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
-        vb = FragmentBooksearchByIsbnBinding.inflate(inflater, container, false);
-        return vb.getRoot();
-    }
 
     @Override
     public void onViewCreated(@NonNull final View view,
@@ -321,7 +319,6 @@ public class SearchBookByIsbnFragment
         vm.setScannerMode(ScanMode.Off);
     }
 
-
     /**
      * Prepare to search with ISBN or, if allowed, with a generic code.
      * If successful, {@link #startSearch()} will be called as the next step.
@@ -406,10 +403,9 @@ public class SearchBookByIsbnFragment
 
             } else {
                 // Scan mode:
-                // Single: quit scanning after the search/edit.
-                // Continuous: leave the scanner on, it will start scanning again
-                // when the edit is done.
-                if (vm.getScannerMode() == ScanMode.Single) {
+                // Manual: quit scanning after the search/edit.
+                // Continuous: leave the scanner on, scanning again when the edit is done.
+                if (vm.getScannerMode() == ScanMode.Manual) {
                     switchOffScanner();
                 }
                 // Put the code in the field; if the search fails, the user can manually edit it
@@ -450,14 +446,11 @@ public class SearchBookByIsbnFragment
         }
     }
 
-
-
     @Override
     void onClearSearchCriteria() {
         super.onClearSearchCriteria();
         //mVb.isbn.setText("");
     }
-
 
     /**
      * Import a list of ISBNs from the given {@link Uri}.
@@ -520,6 +513,8 @@ public class SearchBookByIsbnFragment
     private class ToolbarMenuProvider
             implements MenuProvider {
 
+        private static final String ANY_URI = "*/*";
+
         @Override
         public void onCreateMenu(@NonNull final Menu menu,
                                  @NonNull final MenuInflater menuInflater) {
@@ -538,7 +533,7 @@ public class SearchBookByIsbnFragment
             final int itemId = menuItem.getItemId();
 
             if (itemId == R.id.MENU_BARCODE_SCAN) {
-                vm.setScannerMode(ScanMode.Single);
+                vm.setScannerMode(ScanMode.getSingleScanMode(requireContext()));
                 startScanner();
                 return true;
 
@@ -548,14 +543,10 @@ public class SearchBookByIsbnFragment
                 return true;
 
             } else if (itemId == R.id.MENU_BARCODE_IMPORT) {
-                // See remarks in
+                // Using "*/*": see remarks in
                 // {@link com.hardbacknutter.nevertoomanybooks.backup.ImportFragment}
-                //URGENT: getContext() throws an exception stating the fragment is
-                // not attached to a host???
-                // Getting the context works fine in ShowBookDetailsFragment though
-                // TipManager.getInstance().display(getContext(), R.string.tip_import_isbn_list,
-                //                     () -> openUriLauncher.launch("*/*"));
-                openUriLauncher.launch("*/*");
+                TipManager.getInstance().display(requireContext(), R.string.tip_import_isbn_list,
+                                                 () -> openUriLauncher.launch(ANY_URI));
                 return true;
 
             } else if (itemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
@@ -571,4 +562,6 @@ public class SearchBookByIsbnFragment
             return false;
         }
     }
+
+
 }

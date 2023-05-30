@@ -652,9 +652,10 @@
     <!-- Cover image context menu option -->
     <string name="option_cover_rotate_180"
             translatable="false">180°</string>
-    <!-- Booklist FAB menu option -->
-    <string name="option_fab_add_book_by_barcode_scan">Scan Barcode</string>
-    <!-- Booklist FAB menu option -->
+
+    <!-- Booklist FAB menu option; Start the barcode scanner and scan a single barcode/book. -->
+    <string name="option_fab_add_book_by_barcode_scan">Scan a Barcode</string>
+    <!-- Booklist FAB menu option; Start the barcode scanner and scan a batch of barcodes/books. -->
     <string name="option_fab_add_book_by_barcode_scan_batch">Scan Barcodes in batch</string>
     <!-- Booklist FAB menu option -->
     <string name="option_fab_add_book_by_isbn">Enter ISBN</string>
@@ -664,6 +665,7 @@
     <string name="option_fab_add_book_manually">Add Manually</string>
     <!-- Booklist FAB menu option / screen title -->
     <string name="option_fab_add_book_by_external_id">Website book id</string>
+
     <string name="option_select_all">Select all</string>
     <string name="option_select_none">Unselect all</string>
     <!-- Whether an action will apply to all bookshelves, or... -->
@@ -676,10 +678,10 @@
     <!-- whether an action will apply to all items related to the selected booklist (tree) node. -->
     <string name="option_apply_to_all_related_books">All related books</string>
 
-    <!-- Start the barcode scanner for a single scan (one book). -->
-    <string name="option_barcode_scan">Scan Barcode</string>
-    <!-- Start the barcode scanner for a continuous scanning (multiple books). -->
-    <string name="option_barcode_scan_continuous">Scan continuously</string>
+    <string name="pt_scan_mode">Scan mode</string>
+    <string name="option_barcode_scan_mode_manual">Manual</string>
+    <string name="option_barcode_scan_mode_continuous">Scan continuously</string>
+
     <!-- Whether to enforce strict ISBN numbers when searching etc...  -->
     <string name="option_isbn_strict">Strict ISBN</string>
     <!-- ISFDB specific - used in the "book edit / toc" menu -->
@@ -1541,6 +1543,7 @@
     <!-- ####################################################################################### -->
     <!-- ========== likely to change still. -->
     <!-- ####################################################################################### -->
+
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
 </resources>

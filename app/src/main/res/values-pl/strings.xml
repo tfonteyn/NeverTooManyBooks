@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -253,8 +254,8 @@
     <string name="error_unexpected_long">Wystąpił nieoczekiwany błąd. Jeśli problem nie ustąpi, skontaktuj się z pomocą, korzystając z opcji „%1$s” u dołu strony ustawień.</string>
     <string name="error_unsupported_version_v">Nieobsługiwana wersja: %1$d</string>
     <string name="error_upgrade_not_supported">Aktualizacja z wersji starszych niż %1$s nie jest obsługiwana.</string>
-    <string name="option_fab_add_book_by_barcode_scan">Skanowanie kodów kreskowych</string>
-    <string name="option_fab_add_book_by_barcode_scan_batch">Skanowanie kodów kreskowych w partii</string>
+    <string name="option_fab_add_book_by_barcode_scan">Skanowanie kodu kreskowego</string>
+    <string name="option_fab_add_book_by_barcode_scan_batch">Skanowanie kodów kreskowych wsadowo</string>
     <string name="option_fab_add_book_by_external_id">Identyfikator książki internetowej</string>
     <string name="option_fab_add_book_by_internet_search">Szukaj w Internecie</string>
     <string name="option_fab_add_book_by_isbn">Wpisz ISBN</string>
@@ -491,8 +492,7 @@
     <string name="title_backup_and_export">Kopia zapasowa i eksport</string>
     <string name="option_apply_to_this_node_only">Tylko ten węzeł</string>
     <string name="option_apply_to_all_related_books">Wszystkie powiązane książki</string>
-    <string name="option_barcode_scan">Zeskanuj kod kreskowy</string>
-    <string name="option_barcode_scan_continuous">Skanuj w sposób ciągły</string>
+    <string name="option_barcode_scan_mode_continuous">Skanowanie ciągłe</string>
     <string name="option_book_sync_list_with_details">Synchronizuj/ustaw listę</string>
     <string name="option_cover_crop">Obciąć</string>
     <string name="option_cover_edit">Uruchom edytor</string>
@@ -753,4 +753,5 @@
     <string name="lbl_original_title">Tytuł oryginalny</string>
     <string name="lbl_original_title_long">Tytuł oryginalny, jeśli książka jest tłumaczeniem</string>
     <string name="error_site_access_blocked">Dostęp został zablokowany przez stronę internetową.</string>
+    <string name="pt_scan_mode">Tryb skanowania</string>
 </resources>

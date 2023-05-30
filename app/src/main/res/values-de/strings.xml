@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -234,7 +235,7 @@
     <string name="error_unexpected_long">Ein unerwarteter Fehler ist aufgetreten. Wenn das Problem weiterhin besteht, wenden Sie sich über die Option „%1$s“ unten auf der Einstellungsseite an den Support.</string>
     <string name="error_unsupported_version_v">Nicht unterstützte Version: %1$d</string>
     <string name="error_upgrade_not_supported">Ein Upgrade von Versionen älter als %1$s wird nicht unterstützt.</string>
-    <string name="option_fab_add_book_by_barcode_scan">Barcode scannen</string>
+    <string name="option_fab_add_book_by_barcode_scan">Scannen eines Barcodes</string>
     <string name="option_fab_add_book_by_barcode_scan_batch">Barcodes im Stapel scannen</string>
     <string name="option_fab_add_book_by_external_id">Website-Buch-ID</string>
     <string name="option_fab_add_book_by_internet_search">Internet durchsuchen</string>
@@ -472,8 +473,7 @@
     <string name="title_backup_and_export">Sichern &amp; Exportieren</string>
     <string name="option_apply_to_this_node_only">Nur dieser Knoten</string>
     <string name="option_apply_to_all_related_books">Alle verwandten Bücher</string>
-    <string name="option_barcode_scan">Barcode scannen</string>
-    <string name="option_barcode_scan_continuous">Durchgehend scannen</string>
+    <string name="option_barcode_scan_mode_continuous">Kontinuierlich scannen</string>
     <string name="option_book_sync_list_with_details">Liste synchronisieren/positionieren</string>
     <string name="option_cover_crop">Zuschneiden</string>
     <string name="option_cover_edit">Starten Sie den Editor</string>
@@ -737,4 +737,5 @@
     <string name="lbl_original_title">Originaltitel</string>
     <string name="lbl_original_title_long">Originaltitel, wenn dieses Buch eine Übersetzung ist</string>
     <string name="error_site_access_blocked">Der Zugang wurde von der Website blockiert.</string>
+    <string name="pt_scan_mode">Modus des Scannens</string>
 </resources>

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -238,8 +239,8 @@
     <string name="error_unexpected_long">Une erreur inattendue est apparue. Si le problème persiste, contactez le support technique en utilisant l’option «%1$s» en bas de la page de paramètres.</string>
     <string name="error_unsupported_version_v">Version non prise en charge : %1$d</string>
     <string name="error_upgrade_not_supported">La mise à niveau à partir de versions antérieures à %1$s n’est pas prise en charge.</string>
-    <string name="option_fab_add_book_by_barcode_scan">Scanner le code barre</string>
-    <string name="option_fab_add_book_by_barcode_scan_batch">Scanner les codes-barres par lots</string>
+    <string name="option_fab_add_book_by_barcode_scan">Numériser un code-barres</string>
+    <string name="option_fab_add_book_by_barcode_scan_batch">Numériser des codes-barres par lots</string>
     <string name="option_fab_add_book_by_external_id">Identifiant du livre du site</string>
     <string name="option_fab_add_book_by_internet_search">Chercher sur Internet</string>
     <string name="option_fab_add_book_by_isbn">Entrer l’ISBN</string>
@@ -476,8 +477,7 @@
     <string name="title_backup_and_export">Sauvegarde et exportation</string>
     <string name="option_apply_to_this_node_only">Ce nœud uniquement</string>
     <string name="option_apply_to_all_related_books">Tous les livres liés</string>
-    <string name="option_barcode_scan">Scan code à barres</string>
-    <string name="option_barcode_scan_continuous">Scanner en continu</string>
+    <string name="option_barcode_scan_mode_continuous">Numériser en continu</string>
     <string name="option_book_sync_list_with_details">Synchroniser/positionner la liste</string>
     <string name="option_cover_crop">Recadrer</string>
     <string name="option_cover_edit">Démarrer l’éditeur</string>
@@ -741,4 +741,5 @@
     <string name="lbl_original_title">Titre original</string>
     <string name="lbl_original_title_long">Titre original si ce livre est une traduction</string>
     <string name="error_site_access_blocked">L\'accès a été bloqué par le site web.</string>
+    <string name="pt_scan_mode">Mode de numérisation</string>
 </resources>

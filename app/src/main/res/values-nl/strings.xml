@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -467,8 +468,7 @@
     <string name="option_auto_updates">Laat automatische verbeteringen van het internet toe.</string>
     <string name="option_apply_to_this_node_only">Alleen dit knooppunt</string>
     <string name="option_apply_to_all_related_books">Alle gerelateerde boeken</string>
-    <string name="option_barcode_scan">Scan Barcode</string>
-    <string name="option_barcode_scan_continuous">Scan continu</string>
+    <string name="option_barcode_scan_mode_continuous">Continu scannen</string>
     <string name="option_bob_filter_isbn_no">Zonder ISBN</string>
     <string name="option_bob_filter_isbn_yes">Met ISBN</string>
     <string name="option_bob_filter_lend_out_no">Niet Uitgeleende boeken</string>
@@ -496,7 +496,7 @@
     <string name="option_download_folder">Lokale downloadmap</string>
     <string name="option_download_set_folder">Stel de downloadmap in</string>
     <string name="option_enable_sync_options">Synchronisatie-opties inschakelen</string>
-    <string name="option_fab_add_book_by_barcode_scan">Scan barcode</string>
+    <string name="option_fab_add_book_by_barcode_scan">Scan een barcode</string>
     <string name="option_fab_add_book_by_barcode_scan_batch">Barcodes in batch scannen</string>
     <string name="option_fab_add_book_by_external_id">Website boek-id</string>
     <string name="option_fab_add_book_by_internet_search">Internet doorzoeken</string>
@@ -737,4 +737,5 @@
     <string name="lbl_original_title">Oorspronkelijke titel</string>
     <string name="lbl_original_title_long">Oorspronkelijke titel indien dit boek een vertaling is</string>
     <string name="error_site_access_blocked">De toegang werd geblokkeerd door de website.</string>
+    <string name="pt_scan_mode">Scanmodus</string>
 </resources>

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -248,7 +249,7 @@
     <string name="error_unexpected_long">Ocurrió un error inesperado. Si el problema persiste, comuníquese con el servicio de asistencia mediante la opción «%1$s» en la parte inferior de la página de configuración.</string>
     <string name="error_unsupported_version_v">Versión no compatible: %1$d</string>
     <string name="error_upgrade_not_supported">No se admite la actualización desde versiones anteriores a la %1$s.</string>
-    <string name="option_fab_add_book_by_barcode_scan">Escanear código de barras</string>
+    <string name="option_fab_add_book_by_barcode_scan">Escanear un código de barras</string>
     <string name="option_fab_add_book_by_barcode_scan_batch">Escanear códigos de barras por lotes</string>
     <string name="option_fab_add_book_by_external_id">Identificación del libro del sitio web</string>
     <string name="option_fab_add_book_by_internet_search">Buscar en internet</string>
@@ -486,8 +487,7 @@
     <string name="title_backup_and_export">Copia de seguridad y exportación</string>
     <string name="option_apply_to_this_node_only">Este nodo solo</string>
     <string name="option_apply_to_all_related_books">Todos los libros relacionados</string>
-    <string name="option_barcode_scan">Escanear código de barras</string>
-    <string name="option_barcode_scan_continuous">Escanear continuamente</string>
+    <string name="option_barcode_scan_mode_continuous">Escanear continuamente</string>
     <string name="option_book_sync_list_with_details">Sincronizar/posicionar la lista</string>
     <string name="option_cover_crop">Recortar</string>
     <string name="option_cover_edit">Iniciar editor</string>
@@ -751,4 +751,5 @@
     <string name="lbl_original_title">Título original</string>
     <string name="lbl_original_title_long">Título original si el libro es una traducción</string>
     <string name="error_site_access_blocked">El acceso ha sido bloqueado por el sitio web.</string>
+    <string name="pt_scan_mode">Modo de lectura</string>
 </resources>
