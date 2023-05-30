@@ -131,8 +131,7 @@
     <!-- Editing an Author; the check boxes with the author types -->
     <dimen name="cbx_fixed_width_author_type">132dp</dimen>
 
-    <!-- sw360 uses the normal "wrap_content" -->
-    <dimen name="btn_open_toc_width">72dp</dimen>
+    <dimen name="btn_open_toc_width">@dimen/wrap_content</dimen>
     <dimen name="btn_open_toc_height">40dp</dimen>
 
     <!--  ?attr/textAppearanceLabelLarge ->  textSide: 14sp -> this is the normal size

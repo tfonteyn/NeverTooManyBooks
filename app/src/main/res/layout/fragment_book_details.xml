@@ -119,14 +119,6 @@
             app:layout_constraintTop_toBottomOf="@id/rating"
             />
 
-        <Button
-            android:id="@+id/btn_show_toc"
-            style="@style/Button.Action.OpenToc"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/rating"
-            tools:visibility="visible"
-            />
-
         <TextView
             android:id="@+id/author"
             style="@style/Field.Generic"
@@ -155,6 +147,16 @@
             tools:text="@sample/data.json/series_list/title_nr"
             />
 
+        <Button
+            android:id="@+id/btn_show_toc"
+            style="@style/Button.Action.OpenToc"
+            android:text="@string/action_show_toc"
+            android:layout_marginTop="@dimen/field_margin_top"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/series_title"
+            tools:visibility="visible"
+            />
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/publication_layout"
             android:layout_width="0dp"
@@ -162,7 +164,7 @@
             android:layout_marginTop="@dimen/section_margin_top"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
-            app:layout_constraintTop_toBottomOf="@id/series_title"
+            app:layout_constraintTop_toBottomOf="@id/btn_show_toc"
             >
 
             <include

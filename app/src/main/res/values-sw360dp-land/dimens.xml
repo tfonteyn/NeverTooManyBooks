@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -32,7 +32,7 @@
     <dimen name="til_fixed_width_series_num">200dp</dimen>
     <dimen name="til_fixed_width_external_id">200dp</dimen>
 
-    <dimen name="btn_open_toc_width">@dimen/wrap_content</dimen>
-    <dimen name="btn_open_toc_height">@dimen/wrap_content</dimen>
-    <dimen name="btn_open_toc_text_size">14sp</dimen>
+    <!--    <dimen name="btn_open_toc_width">@dimen/wrap_content</dimen>-->
+    <!--    <dimen name="btn_open_toc_height">@dimen/wrap_content</dimen>-->
+    <!--    <dimen name="btn_open_toc_text_size">14sp</dimen>-->
 </resources>

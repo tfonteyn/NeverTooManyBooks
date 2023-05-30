@@ -183,9 +183,7 @@
            parent="Widget.Material3.Button.TonalButton">
         <item name="android:layout_width">@dimen/btn_open_toc_width</item>
         <item name="android:layout_height">@dimen/btn_open_toc_height</item>
-        <item name="android:layout_marginTop">@dimen/field_margin_top</item>
         <item name="android:textSize">@dimen/btn_open_toc_text_size</item>
-        <item name="android:text">@string/lbl_table_of_content_short</item>
         <item name="android:contentDescription">@string/action_show_toc_long</item>
     </style>
 
