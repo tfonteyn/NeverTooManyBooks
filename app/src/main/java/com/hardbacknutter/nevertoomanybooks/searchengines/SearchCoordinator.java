@@ -445,11 +445,11 @@ public class SearchCoordinator
                             if (isbnFound != null && !isbnFound.isEmpty()
                                 && isbn.equals(new ISBN(isbnFound, strictIsbn))) {
                                 sitesInOrder.add(engineId);
+                            } else {
+                                // The ISBN found does not match the ISBN we searched for;
+                                // 2023-05-30: don't just skip; add it to the less reliables
+                                sitesWithoutIsbn.add(engineId);
                             }
-                            // else {
-                            // The ISBN found does not match the ISBN we searched for;
-                            // SKIP/IGNORE this site.
-                            // }
 
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                                 LoggerFactory.getLogger().d(TAG, "accumulateResults",
