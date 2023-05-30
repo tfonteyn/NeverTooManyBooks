@@ -56,6 +56,8 @@ public class BookFinderSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn {
 
+    private static final String TAG = "BookFinderSearchEngine";
+
     private static final String BY_ISBN = "/search_s/?st=sr&ac=qr&mode=basic"
                                           + "&author="
                                           + "&title="
