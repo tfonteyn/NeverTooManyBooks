@@ -49,8 +49,6 @@ Booklist style sorting by date-read or date-added etc...:
 NEW:
 
 FIXES:
-- setting a book to read/unread from the row menu in the booklist now properly
-  updates the icon checkmark
 - fixed obscure bug the list would not rebuild after editing multiple books
 
 REMOVED:
