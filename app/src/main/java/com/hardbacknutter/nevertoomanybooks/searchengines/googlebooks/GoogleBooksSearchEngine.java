@@ -188,7 +188,13 @@ public class GoogleBooksSearchEngine
                 futureHttpGet.get(urlList.get(0), response -> {
                     try (BufferedInputStream bis = new BufferedInputStream(
                             response.getInputStream())) {
-                        parser.parse(bis, handler);
+                        if (HttpConstants.isZipped(response)) {
+                            try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
+                                parser.parse(gzs, handler);
+                            }
+                        } else {
+                            parser.parse(bis, handler);
+                        }
                         checkForSeriesNameInTitle(book);
                         return true;
                     } catch (@NonNull final IOException e) {

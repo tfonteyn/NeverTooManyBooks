@@ -35,8 +35,8 @@ import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CancellationException;
 import java.util.function.Function;
+import java.util.zip.GZIPInputStream;
 
-import com.hardbacknutter.nevertoomanybooks.core.storage.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 public class FutureHttpPost<T>
@@ -66,12 +66,12 @@ public class FutureHttpPost<T>
      * @throws SocketTimeoutException if the timeout expires before
      *                                the connection can be established
      * @throws IOException            on generic/other IO failures
-     * @throws CoverStorageException  The covers directory is not available
+     * @throws StorageException       The covers directory is not available
      */
     @Nullable
     public T post(@NonNull final String url,
                   @NonNull final String postBody,
-                  @Nullable final Function<BufferedInputStream, T> responseProcessor)
+                  @Nullable final Function<InputStream, T> responseProcessor)
             throws StorageException,
                    CancellationException,
                    SocketTimeoutException,
@@ -83,6 +83,7 @@ public class FutureHttpPost<T>
                 throttler.waitUntilRequestAllowed();
             }
 
+            //noinspection OverlyBroadCatchBlock
             try {
                 try (OutputStream os = request.getOutputStream();
                      Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
@@ -96,7 +97,13 @@ public class FutureHttpPost<T>
                 if (responseProcessor != null) {
                     try (InputStream is = request.getInputStream();
                          BufferedInputStream bis = new BufferedInputStream(is)) {
-                        return responseProcessor.apply(bis);
+                        if (HttpConstants.isZipped(request)) {
+                            try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
+                                return responseProcessor.apply(gzs);
+                            }
+                        } else {
+                            return responseProcessor.apply(bis);
+                        }
                     }
                 }
                 return null;
