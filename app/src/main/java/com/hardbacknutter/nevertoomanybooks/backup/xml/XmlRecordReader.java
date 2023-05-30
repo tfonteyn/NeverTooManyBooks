@@ -136,15 +136,22 @@ public class XmlRecordReader
      * @param record   source to read from
      * @param accessor the EntityReader to convert XML to the object
      *
-     * @throws DataReaderException on a decoding/parsing of data issue
-     * @throws IOException         on generic/other IO failures
+     * @throws DataReaderException   on a decoding/parsing of data issue
+     * @throws IOException           on generic/other IO failures
+     * @throws IllegalStateException if the SAX parser could not be created
      */
     private void fromXml(@NonNull final ArchiveReaderRecord record,
                          @NonNull final EntityReader<String> accessor)
             throws DataReaderException,
                    IOException {
 
-        final SAXParserFactory factory = SAXParserFactory.newInstance();
+        final SAXParser parser;
+        try {
+            parser = SAXParserFactory.newInstance().newSAXParser();
+        } catch (@NonNull final ParserConfigurationException | SAXException e) {
+            throw new IllegalStateException(e);
+        }
+
         final XmlFilter rootFilter = new XmlFilter();
         // Allow reading BookCatalogue archive data.
         buildLegacyFilters(rootFilter, accessor);
@@ -152,7 +159,6 @@ public class XmlRecordReader
         buildFilters(rootFilter, accessor);
 
         final DefaultHandler handler = new XmlFilterHandler(rootFilter);
-
         try {
             // Don't close this stream
             final InputStream is = record.getInputStream();
@@ -161,7 +167,6 @@ public class XmlRecordReader
             final BufferedReader reader = new BufferedReaderNoClose(isr, RecordReader.BUFFER_SIZE);
             final InputSource source = new InputSource(reader);
 
-            final SAXParser parser = factory.newSAXParser();
             parser.parse(source, handler);
 
         } catch (@NonNull final SAXException e) {
@@ -171,9 +176,6 @@ public class XmlRecordReader
                 throw (IOException) cause;
             }
             // wrap other parser exceptions
-            throw new DataReaderException(e);
-
-        } catch (@NonNull final ParserConfigurationException e) {
             throw new DataReaderException(e);
         }
     }
