@@ -238,6 +238,16 @@
         <item>2</item>
     </string-array>
 
+    <!-- ListPreference - the scan mode for single scans. -->
+    <string-array name="pe_scan_mode_single">
+        <item>@string/option_barcode_scan_mode_manual</item>
+        <item>@string/option_barcode_scan_mode_continuous</item>
+    </string-array>
+    <string-array name="pv_scan_mode_single">
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
     <!-- *************************************************************************************** -->
     <!-- ========== booklist style preferences ========== -->
     <!-- *************************************************************************************** -->
