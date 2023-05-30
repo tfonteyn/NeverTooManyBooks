@@ -159,7 +159,7 @@
             android:defaultValue="1"
             android:entries="@array/pe_edit_book_isbn_checks"
             android:entryValues="@array/pv_edit_book_isbn_checks"
-            android:icon="@drawable/ic_barcode"
+            android:icon="@drawable/ic_baseline_check_24"
             android:key="edit.book.isbn.checks"
             android:title="@string/pt_edit_book_isbn_checks" />
 
