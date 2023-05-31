@@ -35,7 +35,6 @@ import androidx.annotation.WorkerThread;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.preference.PreferenceManager;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -45,7 +44,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.UncheckedIOException;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
@@ -66,7 +64,6 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.concurrent.CancellationException;
 import java.util.stream.Collectors;
-import java.util.zip.GZIPInputStream;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
@@ -436,7 +433,7 @@ public class CalibreContentServer
 
     @NonNull
     private <FRT> FutureHttpGet<FRT> createFutureGetRequest(final boolean useCompression) {
-        final FutureHttpGet<FRT> httpGet = FutureHttpGet.createGet(R.string.site_calibre);
+        final FutureHttpGet<FRT> httpGet = new FutureHttpGet<>(R.string.site_calibre);
 
         if (useCompression) {
             httpGet.setRequestProperty(HttpConstants.ACCEPT_ENCODING,
@@ -1210,30 +1207,13 @@ public class CalibreContentServer
                 futureJsonFetchRequest = createFutureGetRequest(true);
             }
         }
-        return futureJsonFetchRequest.get(url, response -> {
-            try (BufferedInputStream bis = new BufferedInputStream(response.getInputStream())) {
-                if (HttpConstants.isZipped(response)) {
-                    try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
-                        return doRead(gzs, buffer);
-                    }
-                } else {
-                    return doRead(bis, buffer);
-                }
-
-            } catch (@NonNull final IOException e) {
-                throw new UncheckedIOException(e);
+        return futureJsonFetchRequest.get(url, (con, is) -> {
+            try (InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+                 // Aren't we buffering twice here?
+                 BufferedReader reader = new BufferedReader(isr, buffer)) {
+                return reader.lines().collect(Collectors.joining());
             }
         });
-    }
-
-    @NonNull
-    private String doRead(@NonNull final InputStream bis,
-                          final int buffer)
-            throws IOException {
-        try (InputStreamReader isr = new InputStreamReader(bis, StandardCharsets.UTF_8);
-             BufferedReader reader = new BufferedReader(isr, buffer)) {
-            return reader.lines().collect(Collectors.joining());
-        }
     }
 
     /**
@@ -1286,39 +1266,27 @@ public class CalibreContentServer
                 futureFileFetchRequest = createFutureGetRequest(true);
             }
         }
-        return futureFileFetchRequest.get(url, response -> {
-            //noinspection OverlyBroadCatchBlock
+        return futureFileFetchRequest.get(url, BUFFER_FILE, (con, is) -> {
             try (OutputStream os = context.getContentResolver().openOutputStream(destUri)) {
                 if (os != null) {
-                    try (BufferedOutputStream bos = new BufferedOutputStream(os);
-                         BufferedInputStream bis = new BufferedInputStream(
-                                 response.getInputStream(), BUFFER_FILE)) {
-
-                        progressListener.publishProgress(0, context.getString(
-                                R.string.progress_msg_loading));
-
-                        if (HttpConstants.isZipped(response)) {
-                            try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
-                                FileUtils.copy(gzs, bos);
-                            }
-                        } else {
-                            FileUtils.copy(bis, bos);
-                        }
+                    progressListener.publishProgress(0, context.getString(
+                            R.string.progress_msg_loading));
+                    try (BufferedOutputStream bos = new BufferedOutputStream(os)) {
+                        FileUtils.copy(is, bos);
                     }
                 }
             } catch (@NonNull final IOException e) {
                 if (destFile.exists()) {
                     destFile.delete();
                 }
-                throw new UncheckedIOException(e);
+                throw e;
             }
             // the destFile is now properly closed.
             if (destFile.exists()) {
                 return destUri;
             } else {
-                throw new UncheckedIOException(
-                        new FileNotFoundException(context.getString(
-                                R.string.error_file_not_found, destFile.getName())));
+                throw new FileNotFoundException(context.getString(
+                        R.string.error_file_not_found, destFile.getName()));
             }
         });
     }
@@ -1430,7 +1398,9 @@ public class CalibreContentServer
      *
      * @throws IOException      on generic/other IO failures
      * @throws StorageException on storage related failures
+     * @throws JSONException    upon any parsing error
      */
+    @SuppressWarnings("OverlyBroadThrowsClause")
     void pushChanges(@NonNull final String libraryStringId,
                      final int calibreId,
                      @NonNull final JSONObject changes)
