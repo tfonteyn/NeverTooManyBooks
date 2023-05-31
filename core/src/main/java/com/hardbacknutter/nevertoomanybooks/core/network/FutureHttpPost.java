@@ -83,7 +83,6 @@ public class FutureHttpPost<T>
                 throttler.waitUntilRequestAllowed();
             }
 
-            //noinspection OverlyBroadCatchBlock
             try {
                 try (OutputStream os = request.getOutputStream();
                      Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
