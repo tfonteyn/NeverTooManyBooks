@@ -22,68 +22,38 @@ package com.hardbacknutter.nevertoomanybooks.core.network;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
-import java.io.FileNotFoundException;
+import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InterruptedIOException;
 import java.io.UncheckedIOException;
-import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 import java.util.Objects;
 import java.util.concurrent.CancellationException;
-import java.util.function.Function;
+import java.util.zip.GZIPInputStream;
 
-import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
-import com.hardbacknutter.nevertoomanybooks.core.storage.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.UncheckedSAXException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedStorageException;
+
+import org.xml.sax.SAXException;
 
 public final class FutureHttpGet<T>
-        extends FutureHttpBase<T> {
+        extends FutureHttpGetBase<T> {
 
-    private static final String TAG = "FutureHttpGet";
-    @NonNull
-    private final String command;
+    private static final int DEFAULT_BUFFER_SIZE = 8192;
 
     /**
-     * Private constructor.
+     * Constructor.
      *
      * @param siteResId string resource for the site name
      */
-    private FutureHttpGet(@StringRes final int siteResId,
-                          @NonNull final String command) {
+    public FutureHttpGet(@StringRes final int siteResId) {
         super(siteResId);
-        this.command = command;
     }
 
     /**
-     * Create a {@code GET} request.
-     *
-     * @param siteResId the site name string resource
-     * @param <T>       the type of the return value for the request
-     *
-     * @return new request
-     */
-    @NonNull
-    public static <T> FutureHttpGet<T> createGet(@StringRes final int siteResId) {
-        return new FutureHttpGet<>(siteResId, "GET");
-    }
-
-    /**
-     * Create a {@code HEAD} request.
-     *
-     * @param siteResId the site name string resource
-     * @param <T>       the type of the return value for the request
-     *
-     * @return new request
-     */
-    @NonNull
-    public static <T> FutureHttpGet<T> createHead(@StringRes final int siteResId) {
-        return new FutureHttpGet<>(siteResId, "HEAD");
-    }
-
-    /**
-     * Send the GET/HEAD.
+     * Send the GET and use the given {@link ResponseProcessor} to handle the response.
+     * <p>
+     * This method handles gzip encoding automatically.
      *
      * @param url               to use
      * @param responseProcessor which will receive the response InputStream
@@ -94,84 +64,65 @@ public final class FutureHttpGet<T>
      * @throws SocketTimeoutException if the timeout expires before
      *                                the connection can be established
      * @throws IOException            on generic/other IO failures
-     * @throws CoverStorageException  The covers directory is not available
+     * @throws StorageException       The covers directory is not available
      */
     @NonNull
     public T get(@NonNull final String url,
-                 @NonNull final Function<HttpURLConnection, T> responseProcessor)
+                 @NonNull final ResponseProcessor<T> responseProcessor)
+            throws StorageException,
+                   CancellationException,
+                   SocketTimeoutException,
+                   IOException {
+        return get(url, DEFAULT_BUFFER_SIZE, responseProcessor);
+    }
+
+    /**
+     * Send the GET and use the given {@link ResponseProcessor} to handle the response.
+     * <p>
+     * This method handles gzip encoding automatically.
+     *
+     * @param url               to use
+     * @param bufferSize        to use for the input stream
+     * @param responseProcessor which will receive the response InputStream
+     *
+     * @return the processed response
+     *
+     * @throws CancellationException  if the user cancelled us
+     * @throws SocketTimeoutException if the timeout expires before
+     *                                the connection can be established
+     * @throws IOException            on generic/other IO failures
+     * @throws StorageException       The covers directory is not available
+     */
+    @NonNull
+    public T get(@NonNull final String url,
+                 final int bufferSize,
+                 @NonNull final ResponseProcessor<T> responseProcessor)
             throws StorageException,
                    CancellationException,
                    SocketTimeoutException,
                    IOException {
 
-        return Objects.requireNonNull(execute(url, command, false, request -> {
+        return Objects.requireNonNull(execute(url, "GET", false, request -> {
             try {
                 connect(request);
-                return responseProcessor.apply(request);
 
+                try (BufferedInputStream bis = new BufferedInputStream(
+                        request.getInputStream(), bufferSize)) {
+                    if (HttpConstants.isZipped(request)) {
+                        try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
+                            return responseProcessor.parse(request, gzs);
+                        }
+                    } else {
+                        return responseProcessor.parse(request, bis);
+                    }
+                }
             } catch (@NonNull final IOException e) {
                 throw new UncheckedIOException(e);
+            } catch (@NonNull final StorageException e) {
+                throw new UncheckedStorageException(e);
+            } catch (@NonNull final SAXException e) {
+                throw new UncheckedSAXException(e);
             }
         }));
-    }
-
-    /**
-     * Perform the actual opening of the connection.
-     *
-     * @throws IOException on generic/other IO failures
-     */
-    private void connect(@NonNull final HttpURLConnection request)
-            throws IOException {
-
-        // If the site fails to connect, we retry.
-        int retry;
-        // sanity check
-        if (nrOfTries > 0) {
-            retry = nrOfTries;
-        } else {
-            retry = NR_OF_TRIES;
-        }
-
-        while (retry > 0) {
-            try {
-                if (throttler != null) {
-                    throttler.waitUntilRequestAllowed();
-                }
-
-                request.connect();
-                checkResponseCode(request);
-                // all fine, we're connected
-                return;
-
-                // these exceptions CAN be retried
-            } catch (@NonNull final InterruptedIOException
-                                    | FileNotFoundException
-                                    | UnknownHostException e) {
-                // InterruptedIOException / SocketTimeoutException: connection timeout
-                // UnknownHostException: DNS or other low-level network issue
-                // FileNotFoundException: seen on some sites. A retry and the site was ok.
-                if (BuildConfig.DEBUG /* always */) {
-                    LoggerFactory.getLogger().d(TAG, "open", "retry=" + retry,
-                                                "url=`" + request.getURL() + '`', "e=" + e);
-                }
-
-                retry--;
-                if (retry == 0) {
-                    request.disconnect();
-                    throw e;
-                }
-            }
-
-            try {
-                Thread.sleep(RETRY_AFTER_MS);
-            } catch (@NonNull final InterruptedException ignore) {
-            }
-        }
-
-        if (BuildConfig.DEBUG /* always */) {
-            LoggerFactory.getLogger()
-                         .d(TAG, "open|giving up", "url=`" + request.getURL() + '`');
-        }
-        throw new NetworkException("Giving up");
     }
 }

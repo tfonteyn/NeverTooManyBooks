@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpHead;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
@@ -238,7 +239,7 @@ public abstract class SearchEngineBase
 
     /**
      * Convenience method which uses the engines specific network configuration
-     * to create a suitable {@link FutureHttpGet#createGet(int)}.
+     * to create a suitable {@link FutureHttpGet}.
      *
      * @param context        Current context
      * @param useCompression set to {@code true} to add the standard gzip request header.
@@ -249,8 +250,7 @@ public abstract class SearchEngineBase
     @NonNull
     public <T> FutureHttpGet<T> createFutureGetRequest(@NonNull final Context context,
                                                        final boolean useCompression) {
-        final FutureHttpGet<T> httpGet = FutureHttpGet
-                .createGet(config.getEngineId().getLabelResId());
+        final FutureHttpGet<T> httpGet = new FutureHttpGet<>(config.getEngineId().getLabelResId());
 
         // Improve compatibility by sending standard headers.
         // Some headers are overridden in the ImageDownloader as needed.
@@ -351,23 +351,23 @@ public abstract class SearchEngineBase
 
     /**
      * Convenience method which uses the engines specific network configuration
-     * to create a suitable {@link FutureHttpGet#createHead(int)}.
+     * to create a suitable {@link FutureHttpHead}.
      *
      * @param context Current context
      * @param <T>     return type
      *
-     * @return new {@link FutureHttpGet} instance
+     * @return new {@link FutureHttpHead} instance
      */
     @SuppressWarnings("WeakerAccess")
     @NonNull
-    public <T> FutureHttpGet<T> createFutureHeadRequest(@NonNull final Context context) {
-        final FutureHttpGet<T> httpGet = FutureHttpGet
-                .createHead(config.getEngineId().getLabelResId());
+    public <T> FutureHttpHead<T> createFutureHeadRequest(@NonNull final Context context) {
+        final FutureHttpHead<T> futureRequest = new FutureHttpHead<>(
+                config.getEngineId().getLabelResId());
 
-        httpGet.setConnectTimeout(config.getConnectTimeoutInMs(context))
-               .setReadTimeout(config.getReadTimeoutInMs(context))
-               .setThrottler(config.getThrottler());
-        return httpGet;
+        futureRequest.setConnectTimeout(config.getConnectTimeoutInMs(context))
+                     .setReadTimeout(config.getReadTimeoutInMs(context))
+                     .setThrottler(config.getThrottler());
+        return futureRequest;
     }
 
     /**

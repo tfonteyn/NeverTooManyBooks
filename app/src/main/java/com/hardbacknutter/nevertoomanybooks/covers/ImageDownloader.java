@@ -26,27 +26,22 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.function.Supplier;
-import java.util.zip.GZIPInputStream;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
-import com.hardbacknutter.nevertoomanybooks.core.storage.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedCoverStorageException;
 
 /**
  * Given a URL and a filename, this class uses a {@link FutureHttpGet} to download an image,
@@ -131,6 +126,7 @@ public class ImageDownloader {
      * @throws StorageException The covers directory is not available
      * @throws IOException      on generic/other IO failures
      */
+    @SuppressWarnings("OverlyBroadThrowsClause")
     @NonNull
     @WorkerThread
     public Optional<File> fetch(@NonNull final String url,
@@ -145,7 +141,6 @@ public class ImageDownloader {
         @Nullable
         final File savedFile;
 
-        //noinspection OverlyBroadCatchBlock
         try {
             if (url.startsWith(DATA_IMAGE_JPEG_BASE_64)) {
                 try (OutputStream os = new FileOutputStream(destFile)) {
@@ -156,23 +151,8 @@ public class ImageDownloader {
                 }
                 savedFile = destFile;
             } else {
-                savedFile = futureHttpGet.get(url, response -> {
-                    //noinspection OverlyBroadCatchBlock
-                    try (BufferedInputStream bis = new BufferedInputStream(
-                            response.getInputStream())) {
-                        if (HttpConstants.isZipped(response)) {
-                            try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
-                                return coverStorage.persist(gzs, destFile);
-                            }
-                        } else {
-                            return coverStorage.persist(bis, destFile);
-                        }
-                    } catch (@NonNull final CoverStorageException e) {
-                        throw new UncheckedCoverStorageException(e);
-                    } catch (@NonNull final IOException e) {
-                        throw new UncheckedIOException(e);
-                    }
-                });
+                savedFile = futureHttpGet.get(url, (con, is) ->
+                        coverStorage.persist(is, destFile));
             }
 
             // too small ? reject

@@ -27,20 +27,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.zip.GZIPInputStream;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
-import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.UncheckedSAXException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -142,24 +137,10 @@ public class LibraryThingSearchEngine
             throw new IllegalStateException(e);
         }
 
-        //noinspection OverlyBroadCatchBlock
         try {
-            futureHttpGet.get(url, response -> {
-                try (BufferedInputStream bis = new BufferedInputStream(
-                        response.getInputStream())) {
-                    if (HttpConstants.isZipped(response)) {
-                        try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
-                            parser.parse(gzs, handler);
-                        }
-                    } else {
-                        parser.parse(bis, handler);
-                    }
-                    return true;
-                } catch (@NonNull final IOException e) {
-                    throw new UncheckedIOException(e);
-                } catch (@NonNull final SAXException e) {
-                    throw new UncheckedSAXException(e);
-                }
+            futureHttpGet.get(url, (con, is) -> {
+                parser.parse(is, handler);
+                return true;
             });
 
         } catch (@NonNull final StorageException | IOException e) {

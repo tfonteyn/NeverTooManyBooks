@@ -28,9 +28,9 @@ import java.io.ObjectInputStream;
 import java.util.Objects;
 
 /**
- * Wraps a {@link CoverStorageException} with an unchecked exception.
+ * Wraps a {@link StorageException} with an unchecked exception.
  */
-public class UncheckedCoverStorageException
+public class UncheckedStorageException
         extends RuntimeException {
 
     private static final long serialVersionUID = 8559698702101274197L;
@@ -43,8 +43,8 @@ public class UncheckedCoverStorageException
      *
      * @throws NullPointerException if the cause is {@code null}
      */
-    public UncheckedCoverStorageException(@Nullable final String message,
-                                          @NonNull final CoverStorageException cause) {
+    public UncheckedStorageException(@Nullable final String message,
+                                     @NonNull final StorageException cause) {
         super(message, Objects.requireNonNull(cause));
     }
 
@@ -55,19 +55,19 @@ public class UncheckedCoverStorageException
      *
      * @throws NullPointerException if the cause is {@code null}
      */
-    public UncheckedCoverStorageException(@NonNull final CoverStorageException cause) {
+    public UncheckedStorageException(@NonNull final StorageException cause) {
         super(Objects.requireNonNull(cause));
     }
 
     /**
      * Returns the cause of this exception.
      *
-     * @return the {@code CoverStorageException} which is the cause of this exception.
+     * @return the {@code StorageException} which is the cause of this exception.
      */
     @Override
     @Nullable
-    public CoverStorageException getCause() {
-        return (CoverStorageException) super.getCause();
+    public StorageException getCause() {
+        return (StorageException) super.getCause();
     }
 
     /**

@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpHead;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -121,10 +121,10 @@ public class BedethequeSearchEngine
             throws SearchException {
         if (csrfCookie == null || csrfCookie.hasExpired()) {
             try {
-                final FutureHttpGet<HttpCookie> head = createFutureHeadRequest(context);
+                final FutureHttpHead<HttpCookie> head = createFutureHeadRequest(context);
                 // Reminder: the "request" will be connected and the response code will be OK,
                 // so just extract the cookie we need for the next request
-                csrfCookie = head.get(getHostUrl(context) + SEARCH_URL, response -> cookieManager
+                csrfCookie = head.send(getHostUrl(context) + SEARCH_URL, response -> cookieManager
                         .getCookieStore()
                         .getCookies()
                         .stream()

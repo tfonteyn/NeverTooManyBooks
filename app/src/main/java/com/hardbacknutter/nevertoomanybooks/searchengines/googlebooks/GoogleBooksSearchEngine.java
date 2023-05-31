@@ -26,19 +26,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.zip.GZIPInputStream;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
-import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.UncheckedSAXException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -136,8 +131,8 @@ public class GoogleBooksSearchEngine
      *                    The array is guaranteed to have at least one element.
      * @param book        Bundle to update
      *
-     * @throws StorageException on storage related failures
-     * @throws SearchException  on generic exceptions (wrapped) during search
+     * @throws StorageException      on storage related failures
+     * @throws SearchException       on generic exceptions (wrapped) during search
      * @throws IllegalStateException if the SAX parser could not be created
      */
     private void fetchBook(@NonNull final Context context,
@@ -160,25 +155,10 @@ public class GoogleBooksSearchEngine
             throw new IllegalStateException(e);
         }
 
-        //noinspection OverlyBroadCatchBlock
         try {
-            futureHttpGet.get(url, response -> {
-                try (BufferedInputStream bis = new BufferedInputStream(
-                        response.getInputStream())) {
-                    if (HttpConstants.isZipped(response)) {
-                        try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
-                            parser.parse(gzs, listHandler);
-                        }
-                    } else {
-                        parser.parse(bis, listHandler);
-                    }
-                    return true;
-
-                } catch (@NonNull final IOException e) {
-                    throw new UncheckedIOException(e);
-                } catch (@NonNull final SAXException e) {
-                    throw new UncheckedSAXException(e);
-                }
+            futureHttpGet.get(url, (con, is) -> {
+                parser.parse(is, listHandler);
+                return true;
             });
 
             if (isCancelled()) {
@@ -193,26 +173,10 @@ public class GoogleBooksSearchEngine
                         context, this, fetchCovers, book, getLocale(context));
 
                 // only using the first one found, maybe future enhancement?
-                futureHttpGet.get(urlList.get(0), response -> {
-                    try (BufferedInputStream bis = new BufferedInputStream(
-                            response.getInputStream())) {
-                        if (HttpConstants.isZipped(response)) {
-                            try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
-                                parser.parse(gzs, handler);
-                            }
-                        } else {
-                            parser.parse(bis, handler);
-                        }
-                        checkForSeriesNameInTitle(book);
-                        return true;
-                    } catch (@NonNull final IOException e) {
-                        throw new UncheckedIOException(e);
-                    } catch (@NonNull final SAXException e) {
-                        throw new UncheckedSAXException(e);
-                    }
-
+                futureHttpGet.get(urlList.get(0), (con, is) -> {
+                    parser.parse(is, handler);
+                    return true;
                 });
-
             }
 
         } catch (@NonNull final IOException e) {

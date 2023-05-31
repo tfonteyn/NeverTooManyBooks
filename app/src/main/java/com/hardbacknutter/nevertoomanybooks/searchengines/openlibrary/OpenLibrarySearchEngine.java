@@ -28,7 +28,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,11 +41,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
-import java.util.zip.GZIPInputStream;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
-import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -298,23 +295,10 @@ public class OpenLibrarySearchEngine
 
         futureHttpGet = createFutureGetRequest(context, true);
 
-        //noinspection OverlyBroadCatchBlock
         try {
             // get and store the result into a string.
-            final String json = futureHttpGet.get(url, response -> {
-                try (BufferedInputStream bis = new BufferedInputStream(
-                        response.getInputStream())) {
-                    if (HttpConstants.isZipped(response)) {
-                        try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
-                            return readResponseStream(gzs);
-                        }
-                    } else {
-                        return readResponseStream(bis);
-                    }
-                } catch (@NonNull final IOException e) {
-                    throw new UncheckedIOException(e);
-                }
-            });
+            final String json = futureHttpGet.get(url, (con, is) ->
+                    readResponseStream(is));
 
             if (handleResponse(context, json, fetchCovers, book)) {
                 checkForSeriesNameInTitle(book);

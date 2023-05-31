@@ -29,11 +29,9 @@ import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
-import java.io.BufferedInputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -47,7 +45,6 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.zip.GZIPInputStream;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -64,7 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.UncheckedSAXException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
@@ -1564,22 +1560,11 @@ public class IsfdbSearchEngine
             throw new IllegalStateException(e);
         }
 
-        //noinspection OverlyBroadCatchBlock
         try {
-            futureHttpGet.get(url, response -> {
-                try (BufferedInputStream bis = new BufferedInputStream(
-                        response.getInputStream())) {
-                    if (HttpConstants.isZipped(response)) {
-                        try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
-                            parser.parse(gzs, listHandler);
-                        }
-                    } else {
-                        parser.parse(bis, listHandler);
-                    }
+            futureHttpGet.get(url, (con, is) -> {
+                try {
+                    parser.parse(is, listHandler);
                     return true;
-
-                } catch (@NonNull final IOException e) {
-                    throw new UncheckedIOException(e);
                 } catch (@NonNull final SAXException e) {
                     // unwrap SAXException using getException() !
                     final Exception cause = e.getException();
@@ -1587,7 +1572,7 @@ public class IsfdbSearchEngine
                         // not an error; we're done.
                         return true;
                     }
-                    throw new UncheckedSAXException(e);
+                    throw e;
                 }
             });
 

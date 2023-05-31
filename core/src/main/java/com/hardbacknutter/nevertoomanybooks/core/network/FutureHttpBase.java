@@ -45,7 +45,7 @@ import javax.net.ssl.SSLContext;
 
 import com.hardbacknutter.nevertoomanybooks.core.parsers.UncheckedSAXException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedCoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedStorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 
 import org.xml.sax.SAXException;
@@ -307,7 +307,7 @@ public abstract class FutureHttpBase<T> {
 
             final Throwable cause = e.getCause();
 
-            if (cause instanceof UncheckedCoverStorageException) {
+            if (cause instanceof UncheckedStorageException) {
                 //noinspection DataFlowIssue
                 throw (StorageException) cause.getCause();
             }

@@ -25,15 +25,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
-import java.io.BufferedInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UncheckedIOException;
 import java.net.HttpURLConnection;
 import java.util.Map;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipException;
 import javax.net.ssl.SSLProtocolException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -43,7 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpNotFoundException;
-import com.hardbacknutter.nevertoomanybooks.core.network.NetworkException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 import org.jsoup.Jsoup;
@@ -149,25 +144,7 @@ public class JsoupLoader {
                     requestProperties.forEach(futureHttpGet::setRequestProperty);
                 }
 
-                document = futureHttpGet.get(docRequestUrl, response -> {
-
-                    try (BufferedInputStream bis = new BufferedInputStream(
-                            response.getInputStream())) {
-                        if (HttpConstants.isZipped(response)) {
-                            try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
-                                return processResponse(response, gzs);
-                            }
-                        } else {
-                            return processResponse(response, bis);
-                        }
-                    } catch (@NonNull final ZipException e) {
-                        // a ZipException is very generic, replace it.
-                        throw new UncheckedIOException(
-                                new NetworkException("ZipException: " + e.getMessage()));
-                    } catch (@NonNull final IOException e) {
-                        throw new UncheckedIOException(e);
-                    }
-                });
+                document = futureHttpGet.get(docRequestUrl, this::processResponse);
                 return document;
 
             } catch (@NonNull final SSLProtocolException | EOFException e) {
