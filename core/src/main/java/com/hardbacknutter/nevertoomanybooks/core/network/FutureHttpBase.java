@@ -40,6 +40,7 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 
@@ -80,6 +81,8 @@ public abstract class FutureHttpBase<T> {
     private Future<T> futureHttp;
     @Nullable
     private SSLContext sslContext;
+    @Nullable
+    private HostnameVerifier hostnameVerifier;
     @Nullable
     private Boolean followRedirects;
     /** -1: use the static default. */
@@ -210,7 +213,7 @@ public abstract class FutureHttpBase<T> {
     /**
      * For secure connections.
      *
-     * @param sslContext (optional) SSL context to use instead of the system one.
+     * @param sslContext (optional) SSL context to use instead of the system default.
      *
      * @return {@code this} (for chaining)
      */
@@ -218,6 +221,21 @@ public abstract class FutureHttpBase<T> {
     @NonNull
     public FutureHttpBase<T> setSSLContext(@Nullable final SSLContext sslContext) {
         this.sslContext = sslContext;
+        return this;
+    }
+
+    /**
+     * For secure connections.
+     *
+     * @param hostnameVerifier (optional) for custom checking of hostnames in for
+     *                         example certificate handling with self-signed certificates.
+     *                         {@code null} to use the system default.
+     *
+     * @return {@code this} (for chaining)
+     */
+    @NonNull
+    public FutureHttpBase<T> setHostnameVerifier(@Nullable final HostnameVerifier hostnameVerifier) {
+        this.hostnameVerifier = hostnameVerifier;
         return this;
     }
 
@@ -285,8 +303,11 @@ public abstract class FutureHttpBase<T> {
                     }
 
                     if (sslContext != null) {
-                        ((HttpsURLConnection) request).setSSLSocketFactory(
-                                sslContext.getSocketFactory());
+                        final HttpsURLConnection con = (HttpsURLConnection) request;
+                        con.setSSLSocketFactory(sslContext.getSocketFactory());
+                        if (hostnameVerifier != null) {
+                            con.setHostnameVerifier(hostnameVerifier);
+                        }
                     }
 
                     // The request is now ready to be connected/used,
