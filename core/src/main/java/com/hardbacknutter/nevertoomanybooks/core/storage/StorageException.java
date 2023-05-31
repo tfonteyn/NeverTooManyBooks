@@ -26,17 +26,17 @@ import androidx.annotation.Nullable;
  * <p>
  * Base class for storage related problems.
  */
-public abstract class StorageException
+public class StorageException
         extends Exception {
 
     private static final long serialVersionUID = 6521262373361215281L;
 
-    protected StorageException(@Nullable final String message) {
+    public StorageException(@Nullable final String message) {
         super(message);
     }
 
-    protected StorageException(@Nullable final String message,
-                               @Nullable final Throwable cause) {
+    public StorageException(@Nullable final String message,
+                            @Nullable final Throwable cause) {
         super(message, cause);
     }
 }
