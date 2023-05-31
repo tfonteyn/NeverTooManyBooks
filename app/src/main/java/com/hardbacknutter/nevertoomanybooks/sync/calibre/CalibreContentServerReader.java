@@ -173,7 +173,7 @@ public class CalibreContentServerReader
         doCovers = helper.getRecordTypes().contains(RecordType.Cover);
         library = helper.getExtraArgs().getParcelable(CalibreContentServer.BKEY_LIBRARY);
 
-        server = new CalibreContentServer(context);
+        server = new CalibreContentServer.Builder(context).build();
 
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         bookDao = serviceLocator.getBookDao();

@@ -64,6 +64,7 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.concurrent.CancellationException;
 import java.util.stream.Collectors;
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
@@ -189,21 +190,19 @@ public class CalibreContentServer
     private static final String FILENAME_SUFFIX = "CL";
     @NonNull
     private final Uri serverUri;
-    /** The header string: "Basic user:password". (in base64) */
-    @Nullable
-    private final String authHeader;
     @Nullable
     private final SSLContext sslContext;
-
+    @Nullable
+    private final HostnameVerifier hostnameVerifier;
     /** As read from the Content Server. */
     @NonNull
     private final ArrayList<CalibreLibrary> libraries = new ArrayList<>();
-
     private final Set<CalibreCustomField> calibreCustomFields = new HashSet<>();
-
     private final int connectTimeoutInMs;
     private final int readTimeoutInMs;
-
+    /** The header string: "Basic user:password". (in base64) */
+    @Nullable
+    private final String authHeader;
     @Nullable
     private FutureHttpPost<Void> futureHttpPost;
     @Nullable
@@ -219,50 +218,31 @@ public class CalibreContentServer
 
     /**
      * Constructor.
-     * Uses the configured content server Uri
      *
-     * @param context Current context
-     *
-     * @throws CertificateException on failures related to a user installed CA.
+     * @param context          Current context
+     * @param uri              for the content server
+     * @param username         for the content server
+     * @param password         for the content server
+     * @param sslContext       (optional) for certificate handling
+     * @param hostnameVerifier (optional) for certificate handling
      */
-    @AnyThread
-    public CalibreContentServer(@NonNull final Context context)
-            throws CertificateException {
-        this(context, Uri.parse(getHostUrl(context)));
-    }
+    private CalibreContentServer(@NonNull final Context context,
+                                 @NonNull final Uri uri,
+                                 @NonNull final String username,
+                                 @NonNull final String password,
+                                 @Nullable final SSLContext sslContext,
+                                 @Nullable final HostnameVerifier hostnameVerifier) {
 
-    /**
-     * Constructor.
-     *
-     * @param context Current context
-     * @param uri     for the content server
-     *
-     * @throws CertificateException on failures related to a user installed CA.
-     */
-    @AnyThread
-    public CalibreContentServer(@NonNull final Context context,
-                                @NonNull final Uri uri)
-            throws CertificateException {
-
-        serverUri = uri;
+        this.serverUri = uri;
+        this.sslContext = sslContext;
+        this.hostnameVerifier = hostnameVerifier;
 
         // We're assuming Calibre will be setup with basic-auth as per their SSL recommendations
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        final String username = prefs.getString(PK_HOST_USER, "");
         if (username.isEmpty()) {
             authHeader = null;
         } else {
-            final String password = prefs.getString(PK_HOST_PASS, "");
-            authHeader = createBasicAuthHeader(username, password);
-        }
-
-        // accommodate the (usually) self-signed CA certificate
-        if ("https".equals(serverUri.getScheme())) {
-            // *if* a certificate is configured *then*
-            // we might get a CertificateException.... which we MUST propagate!
-            sslContext = getSslContext(context);
-        } else {
-            sslContext = null;
+            authHeader = "Basic " + Base64.encodeToString(
+                    (username + ":" + password).getBytes(StandardCharsets.UTF_8), 0);
         }
 
         connectTimeoutInMs = SearchEngineConfig.getTimeoutValueInMs(
@@ -380,14 +360,6 @@ public class CalibreContentServer
         }
     }
 
-    @AnyThread
-    @NonNull
-    private String createBasicAuthHeader(@NonNull final String username,
-                                         @NonNull final String password) {
-        return "Basic " + Base64.encodeToString(
-                (username + ":" + password).getBytes(StandardCharsets.UTF_8), 0);
-    }
-
     /**
      * Create the custom SSLContext if there is a custom CA file configured.
      *
@@ -398,7 +370,7 @@ public class CalibreContentServer
      * @throws CertificateException on failures related to a user installed CA.
      */
     @Nullable
-    private SSLContext getSslContext(@NonNull final Context context)
+    private static SSLContext getSslContext(@NonNull final Context context)
             throws CertificateException {
 
         try {
@@ -412,10 +384,9 @@ public class CalibreContentServer
                     .getInstance(TrustManagerFactory.getDefaultAlgorithm());
             tmf.init(keyStore);
 
-            final SSLContext sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(null, tmf.getTrustManagers(), null);
-
-            return sslContext;
+            final SSLContext tls = SSLContext.getInstance("TLS");
+            tls.init(null, tmf.getTrustManagers(), null);
+            return tls;
 
         } catch (@NonNull final KeyManagementException e) {
             // wrap for ease of handling; it is in fact almost certain that
@@ -443,7 +414,8 @@ public class CalibreContentServer
         httpGet.setConnectTimeout(connectTimeoutInMs)
                .setReadTimeout(readTimeoutInMs)
                .setRequestProperty(HttpConstants.AUTHORIZATION, authHeader)
-               .setSSLContext(sslContext);
+               .setSSLContext(sslContext)
+               .setHostnameVerifier(hostnameVerifier);
         return httpGet;
     }
 
@@ -454,7 +426,8 @@ public class CalibreContentServer
                 .setReadTimeout(readTimeoutInMs)
                 .setRequestProperty(HttpConstants.CONTENT_TYPE, HttpConstants.CONTENT_TYPE_JSON)
                 .setRequestProperty(HttpConstants.AUTHORIZATION, authHeader)
-                .setSSLContext(sslContext);
+                .setSSLContext(sslContext)
+                .setHostnameVerifier(hostnameVerifier);
         return httpPost;
     }
 
@@ -1440,4 +1413,90 @@ public class CalibreContentServer
         }
     }
 
+
+    public static class Builder {
+
+        @NonNull
+        private final Context context;
+
+        @Nullable
+        private String url;
+        @Nullable
+        private String username;
+        @Nullable
+        private String password;
+
+        @Nullable
+        private SSLContext sslContext;
+
+        @Nullable
+        private HostnameVerifier hostnameVerifier;
+
+        public Builder(@NonNull final Context context) {
+            this.context = context;
+        }
+
+        @NonNull
+        public Builder setUrl(@NonNull final String url) {
+            this.url = url;
+            return this;
+        }
+
+        @NonNull
+        public Builder setUser(@NonNull final String username) {
+            this.username = username;
+            return this;
+        }
+
+        @NonNull
+        public Builder setPassword(@NonNull final String password) {
+            this.password = password;
+            return this;
+        }
+
+        @NonNull
+        public Builder setSSLContext(@NonNull final SSLContext sslContext) {
+            this.sslContext = sslContext;
+            return this;
+        }
+
+        @NonNull
+        public Builder setHostnameVerifier(@NonNull final HostnameVerifier hostnameVerifier) {
+            this.hostnameVerifier = hostnameVerifier;
+            return this;
+        }
+
+        @NonNull
+        public CalibreContentServer build()
+                throws CertificateException {
+            final SharedPreferences prefs = PreferenceManager
+                    .getDefaultSharedPreferences(context);
+
+            if (url == null) {
+                url = prefs.getString(PK_HOST_URL, "");
+            }
+            final Uri uri = Uri.parse(url);
+
+            if (username == null) {
+                username = prefs.getString(PK_HOST_USER, "");
+                password = prefs.getString(PK_HOST_PASS, "");
+            }
+            if (password == null) {
+                password = "";
+            }
+
+            if (sslContext == null) {
+                if ("https".equals(uri.getScheme())) {
+                    // *if* a certificate is configured *then*
+                    // we might get a CertificateException.... which we MUST propagate!
+                    sslContext = getSslContext(context);
+                } else {
+                    sslContext = null;
+                }
+            }
+
+            return new CalibreContentServer(context, uri, username, password,
+                                            sslContext, hostnameVerifier);
+        }
+    }
 }

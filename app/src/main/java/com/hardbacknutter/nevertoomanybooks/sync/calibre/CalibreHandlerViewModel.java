@@ -59,7 +59,7 @@ public class CalibreHandlerViewModel
     public void init(@NonNull final Context context)
             throws CertificateException {
         if (server == null) {
-            server = new CalibreContentServer(context);
+            server = new CalibreContentServer.Builder(context).build();
             singleFileDownloadTask = new SingleFileDownloadTask(server);
         }
     }

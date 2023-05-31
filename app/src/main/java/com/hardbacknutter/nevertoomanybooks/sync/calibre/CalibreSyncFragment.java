@@ -79,8 +79,7 @@ public class CalibreSyncFragment
         getFab().setVisibility(View.GONE);
 
         vb.btnLibMap.setOnClickListener(v -> {
-            final String url = CalibreContentServer.getHostUrl(v.getContext());
-            if (url.isEmpty()) {
+            if (CalibreContentServer.getHostUrl(v.getContext()).isEmpty()) {
                 openSettings();
             } else {
                 replaceFragment(CalibreLibraryMappingFragment.create(),

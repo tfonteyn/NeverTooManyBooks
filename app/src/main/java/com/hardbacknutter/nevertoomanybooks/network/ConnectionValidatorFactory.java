@@ -53,7 +53,7 @@ public final class ConnectionValidatorFactory {
                                              @StringRes final int siteResId)
             throws CertificateException {
         if (siteResId == R.string.site_calibre) {
-            return new CalibreContentServer(context);
+            return new CalibreContentServer.Builder(context).build();
         } else if (siteResId == R.string.site_stripinfo_be) {
             final CookieManager cookieManager = ServiceLocator.getInstance().getCookieManager();
             return new StripInfoAuth(context, cookieManager);

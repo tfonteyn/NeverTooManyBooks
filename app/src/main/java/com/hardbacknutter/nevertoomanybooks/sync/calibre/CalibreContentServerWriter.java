@@ -112,7 +112,7 @@ public class CalibreContentServerWriter
 
         this.helper = helper;
 
-        server = new CalibreContentServer(context);
+        server = new CalibreContentServer.Builder(context).build();
         doCovers = this.helper.getRecordTypes().contains(RecordType.Cover);
         deleteLocalBook = this.helper.isDeleteLocalBooks();
 
