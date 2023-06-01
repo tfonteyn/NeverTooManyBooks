@@ -139,7 +139,7 @@ public class BookHolder
 
         a_bracket_b_bracket = context.getString(R.string.a_bracket_b_bracket);
 
-        if (this.style.isShowField(Style.Screen.List, DBKey.COVER[0])) {
+        if (this.style.isShowField(context, Style.Screen.List, DBKey.COVER[0])) {
             // Do not go overkill here by adding a full-blown CoverHandler.
             // We only provide zooming by clicking on the image.
             vb.coverImage0.setOnClickListener(this::onZoomCover);
@@ -420,7 +420,7 @@ public class BookHolder
                                                                              coverLongestSide,
                                                                              coverLongestSide);
             if (bitmap != null) {
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 imageLoader.fromBitmap(vb.coverImage0, bitmap);
                 return;
             }
@@ -443,7 +443,7 @@ public class BookHolder
         if (imageCachingEnabled) {
             // 1. Gets the image from the file system and display it.
             // 2. Start a subsequent task to send it to the cache.
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             imageLoader.fromFile(vb.coverImage0, file.get(), bitmap -> {
                 if (bitmap != null) {
                     coverStorageSupplier.get().saveToCache(
@@ -452,7 +452,7 @@ public class BookHolder
             });
         } else {
             // Cache not used: Get the image from the file system and display it.
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             imageLoader.fromFile(vb.coverImage0, file.get(), null);
         }
     }
