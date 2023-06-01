@@ -97,6 +97,7 @@ public class ShowBookDetailsFragment
         extends BaseFragment
         implements CoverHandler.CoverHandlerOwner {
 
+    /** Log tag. */
     public static final String TAG = "ShowBookDetailsFragment";
 
     /**
@@ -269,12 +270,14 @@ public class ShowBookDetailsFragment
         final CircularProgressIndicator progressView =
                 getView().findViewById(R.id.cover_operation_progress_bar);
 
-        final Resources res = getResources();
+        final Context context = getContext();
+        //noinspection DataFlowIssue
+        final Resources res = context.getResources();
         final TypedArray width = res.obtainTypedArray(R.array.cover_details_width);
         final TypedArray height = res.obtainTypedArray(R.array.cover_details_height);
         try {
             for (int cIdx = 0; cIdx < width.length(); cIdx++) {
-                if (aVm.getStyle().isShowField(Style.Screen.Detail, DBKey.COVER[cIdx])) {
+                if (aVm.getStyle().isShowField(context, Style.Screen.Detail, DBKey.COVER[cIdx])) {
                     final int maxWidth = width.getDimensionPixelSize(cIdx, 0);
                     final int maxHeight = height.getDimensionPixelSize(cIdx, 0);
 
@@ -451,7 +454,8 @@ public class ShowBookDetailsFragment
     private void bindLoanee(@NonNull final Book book) {
         //noinspection DataFlowIssue
         final TextView lendTo = getView().findViewById(R.id.lend_to);
-        if (aVm.getStyle().isShowField(Style.Screen.List, DBKey.LOANEE_NAME)) {
+        //noinspection DataFlowIssue
+        if (aVm.getStyle().isShowField(getContext(), Style.Screen.List, DBKey.LOANEE_NAME)) {
             final Optional<String> loanee =
                     book.getLoanee().map(s -> getString(R.string.lbl_lend_out_to_name, s));
 
@@ -488,7 +492,8 @@ public class ShowBookDetailsFragment
 
         final Button btnShowToc = parentView.findViewById(R.id.btn_show_toc);
         final FragmentContainerView tocFrame = parentView.findViewById(R.id.toc_frame);
-        if (aVm.getStyle().isShowField(Style.Screen.List, DBKey.FK_TOC_ENTRY)) {
+        //noinspection DataFlowIssue
+        if (aVm.getStyle().isShowField(getContext(), Style.Screen.List, DBKey.FK_TOC_ENTRY)) {
             if (btnShowToc != null) {
                 bindTocButton(btnShowToc, book);
             } else if (tocFrame != null) {
@@ -738,7 +743,8 @@ public class ShowBookDetailsFragment
 
         private void updateMenuLendingOptions(@NonNull final Menu menu) {
             // Always check LOANEE_NAME usage independent from the style in use.
-            if (aVm.getStyle().isShowField(Style.Screen.List, DBKey.LOANEE_NAME)) {
+            //noinspection DataFlowIssue
+            if (aVm.getStyle().isShowField(getContext(), Style.Screen.List, DBKey.LOANEE_NAME)) {
                 final boolean isLendOut = vm.getBook().getLoanee().isPresent();
                 menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(!isLendOut);
                 menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(isLendOut);
