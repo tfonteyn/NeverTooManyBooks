@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
+import android.content.Context;
+
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -102,7 +104,7 @@ public class StyleDataStore
     public static final String[] PK_DETAILS_SHOW_COVER = {
             "style.details.show.thumbnail.0",
             "style.details.show.thumbnail.1",
-            };
+    };
 
 
     /** See {@link BooklistGroup#setPreferencesVisible(PreferenceScreen, boolean)}. */
@@ -113,14 +115,26 @@ public class StyleDataStore
 
 
     @NonNull
+    private final Context appContext;
+    @NonNull
     private final UserStyle style;
     @NonNull
     private final MutableLiveData<Void> onModified;
 
     private boolean modified;
 
-    public StyleDataStore(@NonNull final UserStyle style,
+    /**
+     * Constructor.
+     *
+     * @param context    Current context
+     * @param style      to use
+     * @param onModified the LiveData to update when this store is modified
+     */
+    public StyleDataStore(@NonNull final Context context,
+                          @NonNull final UserStyle style,
                           @NonNull final MutableLiveData<Void> onModified) {
+        // we're cache this context for preferences access. So use the AppContext!
+        this.appContext = context.getApplicationContext();
         this.style = style;
         this.onModified = onModified;
     }
@@ -305,40 +319,41 @@ public class StyleDataStore
                               final boolean defValue) {
         switch (key) {
             case PK_LIST_SHOW_COVERS:
-                return style.isShowField(Style.Screen.List, DBKey.COVER[0]);
+                return style.isShowField(appContext, Style.Screen.List, DBKey.COVER[0]);
 
             case PK_LIST_SHOW_AUTHOR:
-                return style.isShowField(Style.Screen.List, DBKey.FK_AUTHOR);
+                return style.isShowField(appContext, Style.Screen.List, DBKey.FK_AUTHOR);
 
             case PK_LIST_SHOW_PUBLISHER:
-                return style.isShowField(Style.Screen.List, DBKey.FK_PUBLISHER);
+                return style.isShowField(appContext, Style.Screen.List, DBKey.FK_PUBLISHER);
 
             case PK_LIST_SHOW_SERIES:
-                return style.isShowField(Style.Screen.List, DBKey.FK_SERIES);
+                return style.isShowField(appContext, Style.Screen.List, DBKey.FK_SERIES);
 
             case PK_LIST_SHOW_PUB_DATE:
-                return style.isShowField(Style.Screen.List, DBKey.BOOK_PUBLICATION__DATE);
+                return style.isShowField(appContext, Style.Screen.List,
+                                         DBKey.BOOK_PUBLICATION__DATE);
 
             case PK_LIST_SHOW_FORMAT:
-                return style.isShowField(Style.Screen.List, DBKey.FORMAT);
+                return style.isShowField(appContext, Style.Screen.List, DBKey.FORMAT);
 
             case PK_LIST_SHOW_LANGUAGE:
-                return style.isShowField(Style.Screen.List, DBKey.LANGUAGE);
+                return style.isShowField(appContext, Style.Screen.List, DBKey.LANGUAGE);
 
             case PK_LIST_SHOW_LOCATION:
-                return style.isShowField(Style.Screen.List, DBKey.LOCATION);
+                return style.isShowField(appContext, Style.Screen.List, DBKey.LOCATION);
 
             case PK_LIST_SHOW_CONDITION:
-                return style.isShowField(Style.Screen.List, DBKey.BOOK_CONDITION);
+                return style.isShowField(appContext, Style.Screen.List, DBKey.BOOK_CONDITION);
 
             case PK_LIST_SHOW_RATING:
-                return style.isShowField(Style.Screen.List, DBKey.RATING);
+                return style.isShowField(appContext, Style.Screen.List, DBKey.RATING);
 
             case PK_LIST_SHOW_BOOKSHELVES:
-                return style.isShowField(Style.Screen.List, DBKey.FK_BOOKSHELF);
+                return style.isShowField(appContext, Style.Screen.List, DBKey.FK_BOOKSHELF);
 
             case PK_LIST_SHOW_ISBN:
-                return style.isShowField(Style.Screen.List, DBKey.BOOK_ISBN);
+                return style.isShowField(appContext, Style.Screen.List, DBKey.BOOK_ISBN);
 
             case PK_GROUP_ROW_HEIGHT:
                 return style.isGroupRowUsesPreferredHeight();
@@ -363,10 +378,10 @@ public class StyleDataStore
 
             default:
                 if (key.equals(PK_DETAILS_SHOW_COVER[0])) {
-                    return style.isShowField(Style.Screen.Detail, DBKey.COVER[0]);
+                    return style.isShowField(appContext, Style.Screen.Detail, DBKey.COVER[0]);
 
                 } else if (key.equals(PK_DETAILS_SHOW_COVER[1])) {
-                    return style.isShowField(Style.Screen.Detail, DBKey.COVER[1]);
+                    return style.isShowField(appContext, Style.Screen.Detail, DBKey.COVER[1]);
                 }
                 throw new IllegalArgumentException(key);
         }
@@ -376,7 +391,7 @@ public class StyleDataStore
     public void putString(@NonNull final String key,
                           @Nullable final String value) {
         if (PK_NAME.equals(key)) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             style.setName(value);
         } else {
             throw new IllegalArgumentException(key);
