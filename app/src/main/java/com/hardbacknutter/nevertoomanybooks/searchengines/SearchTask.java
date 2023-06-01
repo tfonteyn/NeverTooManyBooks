@@ -199,7 +199,7 @@ public class SearchTask
         // Checking this each time a search starts is not needed...
         // But it makes error handling slightly easier and doing
         // it here offloads it from the UI thread.
-        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable(context)) {
+        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable()) {
             throw new NetworkUnavailableException(this.getClass().getName());
         }
 

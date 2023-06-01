@@ -127,8 +127,7 @@ public abstract class SearchBookBaseFragment
         coordinator.onSearchCancelled().observe(getViewLifecycleOwner(), this::onSearchCancelled);
 
         // Warn the user, but don't abort.
-        //noinspection DataFlowIssue
-        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable(getContext())) {
+        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable()) {
             Snackbar.make(view, R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();
         }
@@ -186,8 +185,7 @@ public abstract class SearchBookBaseFragment
         }
 
         // Warn the user, AND abort.
-        //noinspection DataFlowIssue
-        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable(getContext())) {
+        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable()) {
             //noinspection DataFlowIssue
             Snackbar.make(getView(), R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();

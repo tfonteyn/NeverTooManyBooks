@@ -193,8 +193,7 @@ public class SearchBookUpdatesFragment
 
     private void afterOnViewCreated() {
         // Warn the user, but don't abort.
-        //noinspection DataFlowIssue
-        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable(getContext())) {
+        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable()) {
             Snackbar.make(vb.getRoot(), R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();
         }
@@ -217,8 +216,7 @@ public class SearchBookUpdatesFragment
         }
 
         // Warn the user, AND abort.
-        //noinspection DataFlowIssue
-        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable(getContext())) {
+        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable()) {
             Snackbar.make(vb.getRoot(), R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();
             return;
@@ -227,6 +225,7 @@ public class SearchBookUpdatesFragment
         // If the user has selected to overwrite thumbnails...
         if (vm.isShowWarningAboutCovers()) {
             // check if the user really wants to overwrite all covers
+            //noinspection DataFlowIssue
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_baseline_warning_24)
                     .setTitle(R.string.menu_update_books)

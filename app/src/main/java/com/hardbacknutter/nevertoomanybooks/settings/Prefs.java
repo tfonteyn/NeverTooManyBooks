@@ -37,8 +37,6 @@ public final class Prefs {
     /** Not the actual theme, but the day/night part only. */
     public static final String pk_ui_theme = "ui.theme";
 
-    public static final String pk_network_allow_metered = "network.allow.metered";
-
     public static final String pk_sounds_scan_isbn_valid = "sounds.scan.isbn.valid";
     public static final String pk_sounds_scan_isbn_invalid = "sounds.scan.isbn.invalid";
     public static final String pk_sounds_scan_found_barcode = "sounds.scan.barcode.found";

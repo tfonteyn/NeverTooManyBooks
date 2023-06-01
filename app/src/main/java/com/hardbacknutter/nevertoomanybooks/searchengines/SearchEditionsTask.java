@@ -88,7 +88,7 @@ public class SearchEditionsTask
         // Always add the original isbn!
         isbnList.add(isbn);
 
-        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable(context)) {
+        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable()) {
             throw new NetworkUnavailableException(this.getClass().getName());
         }
 

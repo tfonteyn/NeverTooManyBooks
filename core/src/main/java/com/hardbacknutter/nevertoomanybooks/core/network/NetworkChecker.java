@@ -20,8 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.core.network;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 
 import java.io.IOException;
@@ -31,7 +29,7 @@ import java.net.UnknownHostException;
 
 public interface NetworkChecker {
 
-    boolean isNetworkAvailable(@NonNull Context context);
+    boolean isNetworkAvailable();
 
     void ping(@NonNull String urlStr,
               int timeoutInMs)

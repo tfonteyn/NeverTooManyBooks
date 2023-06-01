@@ -215,8 +215,14 @@ public class ServiceLocator {
         }
     }
 
+    /**
+     * Retrieve the singleton instance.
+     *
+     * @return singleton
+     */
     @NonNull
     public static ServiceLocator getInstance() {
+        //noinspection StaticVariableUsedBeforeInitialization
         return sInstance;
     }
 
@@ -258,7 +264,7 @@ public class ServiceLocator {
     @NonNull
     public NetworkChecker getNetworkChecker() {
         if (networkChecker == null) {
-            networkChecker = new NetworkCheckerImpl();
+            networkChecker = new NetworkCheckerImpl(this::getAppContext);
         }
         return networkChecker;
     }

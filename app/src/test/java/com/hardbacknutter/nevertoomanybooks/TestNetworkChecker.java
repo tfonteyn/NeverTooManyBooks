@@ -20,8 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 
 import java.io.IOException;
@@ -41,7 +39,7 @@ public class TestNetworkChecker
     }
 
     @Override
-    public boolean isNetworkAvailable(@NonNull final Context context) {
+    public boolean isNetworkAvailable() {
         return connected;
     }
 

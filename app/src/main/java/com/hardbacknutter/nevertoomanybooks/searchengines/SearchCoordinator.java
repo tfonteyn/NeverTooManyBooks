@@ -161,7 +161,7 @@ public class SearchCoordinator
     /** {@code true} for strict ISBN checking, {@code false} for allowing generic codes. */
     private boolean strictIsbn = true;
     /**
-     * Created by {@link #prepareSearch(Context)} from {@link #isbnSearchText}.
+     * Created by {@link #prepareSearch()} from {@link #isbnSearchText}.
      * NonNull afterwards.
      */
     private ISBN isbn;
@@ -245,7 +245,7 @@ public class SearchCoordinator
                     waitingForIsbnOrCode = false;
                     // Replace the search text with the (we hope) exact ISBN/code
                     // Worst case, explicitly use an empty string
-                    //noinspection ConstantConditions
+                    //noinspection DataFlowIssue
                     isbnSearchText = result.getString(DBKey.BOOK_ISBN, "");
 
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
@@ -532,7 +532,7 @@ public class SearchCoordinator
         this.externalIdSearchText.put(engineId, externalIdSearchText);
 
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
-        prepareSearch(context);
+        prepareSearch();
         return startSearch(context, engineId);
     }
 
@@ -577,18 +577,16 @@ public class SearchCoordinator
     /**
      * Called after the search criteria are ready, and before starting the actual search.
      * Clears a number of parameters so we can start the search with a clean slate.
-     *
-     * @param context Current context
      */
-    private void prepareSearch(final Context context) {
+    private void prepareSearch() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
             searchStartTime = System.nanoTime();
         }
 
         // Developer sanity checks
         if (BuildConfig.DEBUG /* always */) {
-            if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable(context)) {
-                throw new IllegalStateException("network should be checked before starting search");
+            if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable()) {
+                throw new IllegalStateException("Network should be checked before starting search");
             }
 
             if (isSearchActive()) {
@@ -631,6 +629,11 @@ public class SearchCoordinator
         }
     }
 
+    /**
+     * Check if a search task is already running.
+     *
+     * @return {@code true} if there is
+     */
     public boolean isSearchActive() {
         synchronized (activeTasks) {
             return !activeTasks.isEmpty();
@@ -853,7 +856,7 @@ public class SearchCoordinator
     public boolean search() {
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
-        prepareSearch(context);
+        prepareSearch();
 
         // If we have one or more ID's
         if (externalIdSearchText != null && !externalIdSearchText.isEmpty()
@@ -1097,7 +1100,7 @@ public class SearchCoordinator
                 final WrappedTaskResult siteData = searchResultsBySite.get(engineId);
                 if (siteData != null && siteData.result != null && !siteData.result.isEmpty()) {
                     final SearchEngine searchEngine = engineCache.get(engineId);
-                    //noinspection ConstantConditions
+                    //noinspection DataFlowIssue
                     final Locale siteLocale = searchEngine.getLocale(context);
                     final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
                     final RealNumberParser realNumberParser = new RealNumberParser(locales);
@@ -1264,7 +1267,7 @@ public class SearchCoordinator
         private <T extends Parcelable> void processList(@NonNull final String key,
                                                         @NonNull final Book siteData,
                                                         @NonNull final Book book) {
-            final ArrayList<T> dataToAdd = siteData.getParcelableArrayList(key);
+            final List<T> dataToAdd = siteData.getParcelableArrayList(key);
             if (dataToAdd.isEmpty()) {
                 return;
             }

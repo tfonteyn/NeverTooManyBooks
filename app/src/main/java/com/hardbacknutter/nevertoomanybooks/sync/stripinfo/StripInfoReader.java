@@ -207,7 +207,7 @@ public class StripInfoReader
                    StorageException,
                    IOException {
 
-        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable(context)) {
+        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable()) {
             throw new NetworkUnavailableException(this.getClass().getName());
         }
 

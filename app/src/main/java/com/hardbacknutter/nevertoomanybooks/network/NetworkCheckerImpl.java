@@ -42,13 +42,13 @@ import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.NetworkChecker;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 public class NetworkCheckerImpl
         implements NetworkChecker {
@@ -56,23 +56,34 @@ public class NetworkCheckerImpl
     /** Log tag. */
     private static final String TAG = "NetworkCheckerImpl";
 
+    private static final String PK_NETWORK_ALLOW_METERED = "network.allow.metered";
+
     /** Timeout for {@link #ping(String, int)}; connection to the DNS server. */
     private static final long DNS_TIMEOUT_MS = 5_000L;
 
+    @NonNull
+    private final Supplier<Context> appContextSupplier;
+
+    /**
+     * Constructor.
+     *
+     * @param appContextSupplier deferred supplier for the raw Application Context
+     */
+    public NetworkCheckerImpl(@NonNull final Supplier<Context> appContextSupplier) {
+        this.appContextSupplier = appContextSupplier;
+    }
 
     /**
      * Check if we have network access; taking into account whether the user permits
      * metered (i.e. pay-per-usage) networks or not.
      *
-     * @param context Current context
-     *
      * @return {@code true} if the application can access the internet
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     @AnyThread
-    public boolean isNetworkAvailable(@NonNull final Context context) {
+    public boolean isNetworkAvailable() {
         final ConnectivityManager connMgr = (ConnectivityManager)
-                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                appContextSupplier.get().getSystemService(Context.CONNECTIVITY_SERVICE);
         final Network network = connMgr.getActiveNetwork();
         if (network != null) {
             // https://developer.android.com/training/basics/network-ops/reading-network-state
@@ -95,17 +106,17 @@ public class NetworkCheckerImpl
                         nc.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED);
 
                 final boolean isMeteredAllowed = PreferenceManager
-                        .getDefaultSharedPreferences(context)
-                        .getBoolean(Prefs.pk_network_allow_metered, true);
+                        .getDefaultSharedPreferences(appContextSupplier.get())
+                        .getBoolean(PK_NETWORK_ALLOW_METERED, true);
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
                     LoggerFactory.getLogger()
-                                  .d(TAG, "getNetworkCapabilities",
-                                     "hasInternet=" + hasInternet
-                                     + "|isValidated=" + isValidated
-                                     + "|isMetered=" + isNotMetered
-                                     + "|isMeteredAllowed=" + isMeteredAllowed
-                                  );
+                                 .d(TAG, "getNetworkCapabilities",
+                                    "hasInternet=" + hasInternet
+                                    + "|isValidated=" + isValidated
+                                    + "|isMetered=" + isNotMetered
+                                    + "|isMeteredAllowed=" + isMeteredAllowed
+                                 );
                 }
 
                 return hasInternet
@@ -121,7 +132,7 @@ public class NetworkCheckerImpl
     /**
      * Low level check if a url is reachable.
      * <p>
-     * A call to {@link #isNetworkAvailable(Context)} should be made before calling this method.
+     * A call to {@link #isNetworkAvailable()} should be made before calling this method.
      *
      * @param urlStr      url to check
      * @param timeoutInMs timeout to use for the connect call
