@@ -484,8 +484,7 @@ public class ImportFragment
                                   @NonNull final ImportResults result) {
 
         if (result.styles > 0) {
-            //noinspection DataFlowIssue
-            ServiceLocator.getInstance().getStyles().updateMenuOrder(getContext());
+            ServiceLocator.getInstance().getStyles().updateMenuOrder();
         }
 
         //noinspection DataFlowIssue

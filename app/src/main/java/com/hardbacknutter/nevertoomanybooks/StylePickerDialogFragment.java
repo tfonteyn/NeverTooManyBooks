@@ -210,15 +210,14 @@ public class StylePickerDialogFragment
 
         final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
 
-        //noinspection ConstantConditions
-        styleList = stylesHelper.getStyles(context, showAllStyles);
+        styleList = stylesHelper.getStyles(showAllStyles);
         if (!showAllStyles && currentStyleUuid != null) {
             // make sure the currently selected style is in the list
             if (styleList
                     .stream()
                     .noneMatch(style -> currentStyleUuid.equalsIgnoreCase(style.getUuid()))) {
 
-                stylesHelper.getStyle(context, currentStyleUuid)
+                stylesHelper.getStyle(currentStyleUuid)
                             .ifPresent(style -> styleList.add(style));
             }
         }
@@ -227,6 +226,7 @@ public class StylePickerDialogFragment
         styleLabels.clear();
         styleList.forEach(style -> {
             styleUuids.add(style.getUuid());
+            //noinspection DataFlowIssue
             styleLabels.add(style.getLabel(context));
         });
     }

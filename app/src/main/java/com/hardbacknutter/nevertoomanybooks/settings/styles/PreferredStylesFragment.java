@@ -133,10 +133,8 @@ public class PreferredStylesFragment
             registerForActivityResult(new EditStyleContract(), o -> o.ifPresent(data -> {
                 if (data.isModified()) {
                     if (data.getUuid().isPresent()) {
-                        //noinspection DataFlowIssue
-                        vm.getStyle(getContext(), data.getUuid().get())
-                          .ifPresent(style -> vm.onStyleEdited(getContext(), style,
-                                                               data.getTemplateUuid()));
+                        vm.getStyle(data.getUuid().get())
+                          .ifPresent(style -> vm.onStyleEdited(style, data.getTemplateUuid()));
                     }
                     // always update ALL rows as the order might have changed
                     listAdapter.notifyDataSetChanged();
@@ -152,8 +150,7 @@ public class PreferredStylesFragment
         super.onCreate(savedInstanceState);
 
         vm = new ViewModelProvider(this).get(PreferredStylesViewModel.class);
-        //noinspection DataFlowIssue
-        vm.init(getContext(), requireArguments());
+        vm.init(requireArguments());
     }
 
     @Nullable

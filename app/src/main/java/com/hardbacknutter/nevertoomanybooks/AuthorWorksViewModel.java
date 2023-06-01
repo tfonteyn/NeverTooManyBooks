@@ -92,7 +92,7 @@ public class AuthorWorksViewModel
 
             // the style is allowed to be 'null' here. If it is, the default will be used.
             final String styleUuid = args.getString(Style.BKEY_UUID);
-            style = ServiceLocator.getInstance().getStyles().getStyleOrDefault(context, styleUuid);
+            style = ServiceLocator.getInstance().getStyles().getStyleOrDefault(styleUuid);
 
             final long authorId = args.getLong(DBKey.FK_AUTHOR, 0);
             if (authorId <= 0) {

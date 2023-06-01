@@ -70,7 +70,7 @@ public class PreferredStylesViewModelTest
         stylesHelper = ServiceLocator.getInstance().getStyles();
 
         for (final String name : List.of(NAME_CLONE_BUILTIN, NAME_CLONE_USER)) {
-            stylesHelper.getStyles(context, true)
+            stylesHelper.getStyles(true)
                         .stream()
                         .filter(Style::isUserDefined)
                         .map(style -> (UserStyle) style)
@@ -79,7 +79,7 @@ public class PreferredStylesViewModelTest
         }
 
         listVm = new PreferredStylesViewModel();
-        listVm.init(context, createArgs(stylesHelper.getDefault(context)));
+        listVm.init(createArgs(stylesHelper.getDefault()));
     }
 
     @NonNull
@@ -144,7 +144,7 @@ public class PreferredStylesViewModelTest
         final String editedStyleName = editedStyle.getName();
         final boolean editedStylePreferred = editedStyle.isPreferred();
 
-        listVm.onStyleEdited(context, editedStyle, initialStyle.getUuid());
+        listVm.onStyleEdited(editedStyle, initialStyle.getUuid());
 
         // We added a style
         assertEquals(initialSize + 1, styleList.size());
@@ -213,7 +213,7 @@ public class PreferredStylesViewModelTest
         final String editedStyleName = editedStyle.getName();
         final boolean editedStylePreferred = editedStyle.isPreferred();
 
-        listVm.onStyleEdited(context, editedStyle, initialStyle.getUuid());
+        listVm.onStyleEdited(editedStyle, initialStyle.getUuid());
 
         // We added a style
         assertEquals(initialSize + 1, styleList.size());
@@ -275,7 +275,7 @@ public class PreferredStylesViewModelTest
         final String editedStyleName = editedStyle.getName();
         final boolean editedStylePreferred = editedStyle.isPreferred();
 
-        listVm.onStyleEdited(context, editedStyle, initialStyle.getUuid());
+        listVm.onStyleEdited(editedStyle, initialStyle.getUuid());
 
         // We only edited a style
         assertEquals(initialSize, styleList.size());

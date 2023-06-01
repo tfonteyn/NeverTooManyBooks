@@ -195,7 +195,7 @@ public class JsonRecordReader
             final RecordType recordType = record.getType().get();
 
             final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
-            final Style defaultStyle = stylesHelper.getDefault(context);
+            final Style defaultStyle = stylesHelper.getDefault();
 
             try {
                 // Don't close this stream
@@ -218,7 +218,7 @@ public class JsonRecordReader
 
                     if (recordType == RecordType.Styles
                         || recordType == RecordType.AutoDetect) {
-                        readStyles(context, root, stylesHelper);
+                        readStyles(root, stylesHelper);
                     }
 
                     if (recordType == RecordType.Preferences
@@ -278,13 +278,12 @@ public class JsonRecordReader
         return results;
     }
 
-    private void readStyles(@NonNull final Context context,
-                            @NonNull final JSONObject root,
+    private void readStyles(@NonNull final JSONObject root,
                             @NonNull final StylesHelper stylesHelper)
             throws JSONException {
         final JSONArray jsonRoot = root.optJSONArray(RecordType.Styles.getName());
         if (jsonRoot != null) {
-            new StyleCoder(context)
+            new StyleCoder()
                     .decode(jsonRoot)
                     .forEach(stylesHelper::updateOrInsert);
             results.styles = jsonRoot.length();

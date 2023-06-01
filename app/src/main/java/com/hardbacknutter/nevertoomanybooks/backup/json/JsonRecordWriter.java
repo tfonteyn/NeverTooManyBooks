@@ -160,7 +160,7 @@ public class JsonRecordWriter
                    IOException {
 
         final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
-        final Style defaultStyle = stylesHelper.getDefault(context);
+        final Style defaultStyle = stylesHelper.getDefault();
 
         final CoverStorage coverStorage = ServiceLocator.getInstance().getCoverStorage();
 
@@ -175,9 +175,9 @@ public class JsonRecordWriter
                 && !progressListener.isCancelled()) {
                 progressListener.publishProgress(1, context.getString(R.string.lbl_styles));
 
-                final List<Style> styles = stylesHelper.getStyles(context, true);
+                final List<Style> styles = stylesHelper.getStyles(true);
                 if (!styles.isEmpty()) {
-                    final JsonCoder<Style> coder = new StyleCoder(context);
+                    final JsonCoder<Style> coder = new StyleCoder();
                     jsonData.put(RecordType.Styles.getName(), coder.encode(styles));
                 }
                 results.styles = styles.size();

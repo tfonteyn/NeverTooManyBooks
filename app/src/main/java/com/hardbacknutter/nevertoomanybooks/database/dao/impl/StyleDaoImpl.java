@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
@@ -173,7 +172,7 @@ public class StyleDaoImpl
 
     @Override
     @NonNull
-    public Map<String, UserStyle> getUserStyles(@NonNull final Context context) {
+    public Map<String, UserStyle> getUserStyles() {
         final Map<String, UserStyle> map = new LinkedHashMap<>();
 
         try (Cursor cursor = db.rawQuery(SELECT_STYLES_BY_TYPE,
@@ -190,7 +189,7 @@ public class StyleDaoImpl
 
     @Override
     @NonNull
-    public Map<String, BuiltinStyle> getBuiltinStyles(@NonNull final Context context) {
+    public Map<String, BuiltinStyle> getBuiltinStyles() {
         final Map<String, BuiltinStyle> map = new LinkedHashMap<>();
 
         try (Cursor cursor = db.rawQuery(SELECT_STYLES_BY_TYPE,

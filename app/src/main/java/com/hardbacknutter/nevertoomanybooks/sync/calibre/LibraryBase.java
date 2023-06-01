@@ -147,7 +147,7 @@ abstract class LibraryBase
                                                          Bookshelf.DEFAULT)
                                            .orElseThrow();
 
-        final Bookshelf bookshelf = new Bookshelf(name, current.getStyle(context));
+        final Bookshelf bookshelf = new Bookshelf(name, current.getStyle());
         ServiceLocator.getInstance().getBookshelfDao().insert(context, bookshelf);
 
         mappedBookshelfId = bookshelf.getId();

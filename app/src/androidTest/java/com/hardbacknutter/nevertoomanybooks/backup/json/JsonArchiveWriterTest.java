@@ -79,7 +79,7 @@ public class JsonArchiveWriterTest
         systemLocale = serviceLocator.getSystemLocaleList().get(0);
 
         bookInDb = new DbPrep().maybeInstallTestData(context);
-        nrOfStyles = serviceLocator.getStyles().getStyles(context, true).size();
+        nrOfStyles = serviceLocator.getStyles().getStyles(true).size();
     }
 
     @Test

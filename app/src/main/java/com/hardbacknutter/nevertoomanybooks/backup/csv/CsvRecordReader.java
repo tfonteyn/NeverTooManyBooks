@@ -136,7 +136,7 @@ public class CsvRecordReader
     public CsvRecordReader(@NonNull final Context context,
                            @NonNull final Locale systemLocale) {
         super(context, systemLocale);
-        final Style defaultStyle = ServiceLocator.getInstance().getStyles().getDefault(context);
+        final Style defaultStyle = ServiceLocator.getInstance().getStyles().getDefault();
         bookCoder = new BookCoder(context, defaultStyle);
     }
 

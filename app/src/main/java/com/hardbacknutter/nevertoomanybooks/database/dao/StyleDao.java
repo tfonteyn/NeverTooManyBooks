@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -18,8 +18,6 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao;
-
-import android.content.Context;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -46,22 +44,18 @@ public interface StyleDao {
     /**
      * Get the user-defined Styles.
      *
-     * @param context Current context
-     *
      * @return an ordered Map of styles
      */
     @NonNull
-    Map<String, UserStyle> getUserStyles(@NonNull Context context);
+    Map<String, UserStyle> getUserStyles();
 
     /**
      * Get the builtin Styles.
      *
-     * @param context Current context
-     *
      * @return an ordered Map of styles
      */
     @NonNull
-    Map<String, BuiltinStyle> getBuiltinStyles(@NonNull Context context);
+    Map<String, BuiltinStyle> getBuiltinStyles();
 
     /**
      * Create a new {@link UserStyle}.

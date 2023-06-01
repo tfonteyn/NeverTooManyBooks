@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -59,14 +58,12 @@ public class PreferredStylesViewModel
     /**
      * Pseudo constructor.
      *
-     * @param context Current context
-     * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
-    void init(@NonNull final Context context,
-              @NonNull final Bundle args) {
+    void init(@NonNull final Bundle args) {
         if (stylesHelper == null) {
             stylesHelper = ServiceLocator.getInstance().getStyles();
-            styleList = stylesHelper.getStyles(context, true);
+            styleList = stylesHelper.getStyles(true);
 
             final String uuid = SanityCheck.requireValue(args.getString(Style.BKEY_UUID),
                                                          Style.BKEY_UUID);
@@ -128,9 +125,8 @@ public class PreferredStylesViewModel
     }
 
     @NonNull
-    Optional<Style> getStyle(@NonNull final Context context,
-                             @NonNull final String uuid) {
-        return stylesHelper.getStyle(context, uuid);
+    Optional<Style> getStyle(@NonNull final String uuid) {
+        return stylesHelper.getStyle(uuid);
     }
 
     int getSelectedPosition() {
@@ -235,18 +231,16 @@ public class PreferredStylesViewModel
      * Called after a style has been edited.
      * Calculates the new position in the list and sets it as selected.
      *
-     * @param context      Current context
      * @param style        the modified (or newly created) style
      * @param templateUuid uuid of the original style we cloned (different from current)
      *                     or edited (same as current).
      */
-    void onStyleEdited(final Context context,
-                       @NonNull final Style style,
+    void onStyleEdited(@NonNull final Style style,
                        @NonNull final String templateUuid) {
         dirty = true;
 
         // Now (re)organise the list of styles.
-        final Style templateStyle = stylesHelper.getStyle(context, templateUuid).orElseThrow();
+        final Style templateStyle = stylesHelper.getStyle(templateUuid).orElseThrow();
         final int templateRow = findRow(templateStyle);
 
         if (templateStyle.isUserDefined()) {

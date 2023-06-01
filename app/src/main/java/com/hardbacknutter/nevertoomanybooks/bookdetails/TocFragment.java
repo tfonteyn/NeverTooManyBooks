@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 public class TocFragment
         extends BaseFragment {
 
+    /** Log tag. */
     public static final String TAG = "TocFragment";
     static final String BKEY_EMBEDDED = TAG + ":emb";
 
@@ -108,10 +109,9 @@ public class TocFragment
 
         final Bundle args = requireArguments();
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         aVm = new ViewModelProvider(getActivity()).get(ShowBookDetailsActivityViewModel.class);
-        //noinspection ConstantConditions
-        aVm.init(getContext(), args);
+        aVm.init(args);
 
         vm = new ViewModelProvider(this).get(TocViewModel.class);
         vm.init(args);
@@ -135,7 +135,7 @@ public class TocFragment
 
         final Context context = getContext();
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final int overlayType = Prefs.getFastScrollerOverlayType(context);
         FastScroller.attach(vb.toc, overlayType);
 

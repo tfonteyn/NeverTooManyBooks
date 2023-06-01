@@ -69,7 +69,7 @@ public class StyleViewModel
             templateUuid = uuid;
 
             final Style dbStyle = ServiceLocator.getInstance().getStyles()
-                                                .getStyle(context, uuid)
+                                                .getStyle(uuid)
                                                 .orElseThrow(() -> new IllegalArgumentException(
                                                         "uuid not found: " + uuid));
 

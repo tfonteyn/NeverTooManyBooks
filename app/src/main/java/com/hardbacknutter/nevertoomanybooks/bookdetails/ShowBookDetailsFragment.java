@@ -188,10 +188,10 @@ public class ShowBookDetailsFragment
 
         //noinspection DataFlowIssue
         aVm = new ViewModelProvider(getActivity()).get(ShowBookDetailsActivityViewModel.class);
-        //noinspection DataFlowIssue
-        aVm.init(getContext(), args);
+        aVm.init(args);
 
         vm = new ViewModelProvider(this).get(ShowBookDetailsViewModel.class);
+        //noinspection DataFlowIssue
         vm.init(getContext(), args, aVm.getStyle());
 
         if (!vm.isEmbedded()) {

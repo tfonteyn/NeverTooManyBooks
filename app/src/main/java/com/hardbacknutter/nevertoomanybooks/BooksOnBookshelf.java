@@ -652,7 +652,7 @@ public class BooksOnBookshelf
             return true;
 
         } else if (itemId == R.id.MENU_MANAGE_LIST_STYLES) {
-            editStylesLauncher.launch(vm.getStyle(this).getUuid());
+            editStylesLauncher.launch(vm.getStyle().getUuid());
             return true;
 
         } else if (itemId == R.id.MENU_FILE_IMPORT) {
@@ -803,7 +803,7 @@ public class BooksOnBookshelf
                 //  and swipe prev/next functionality.
                 displayBookLauncher.launch(new ShowBookPagerContract.Input(
                         bookId,
-                        vm.getStyle(BooksOnBookshelf.this).getUuid(),
+                        vm.getStyle().getUuid(),
                         vm.getBookNavigationTableName(),
                         rowData.getLong(DBKey.PK_ID)));
             }
@@ -1067,7 +1067,7 @@ public class BooksOnBookshelf
 
             final long nodeRowId = rowData.getLong(DBKey.BL_LIST_VIEW_NODE_ROW_ID);
             vm.setNode(nodeRowId, BooklistNode.NextState.Expand,
-                       vm.getStyle(this).getGroupCount());
+                       vm.getStyle().getGroupCount());
             // don't pass the node, we want the list to scroll back to
             // the exact same (saved) position.
             displayList(null);
@@ -1238,7 +1238,7 @@ public class BooksOnBookshelf
 
         } else if (menuItemId == R.id.MENU_SHARE) {
             final Book book = DataHolderUtils.requireBook(rowData);
-            startActivity(book.getShareIntent(this, vm.getStyle(this)));
+            startActivity(book.getShareIntent(this, vm.getStyle()));
             return true;
         }
         return false;
@@ -1260,7 +1260,7 @@ public class BooksOnBookshelf
             authorWorksLauncher.launch(new AuthorWorksContract.Input(
                     rowData.getLong(DBKey.FK_AUTHOR),
                     vm.getCurrentBookshelf().getId(),
-                    vm.getStyle(this).getUuid()));
+                    vm.getStyle().getUuid()));
             return true;
 
         } else if (menuItemId == R.id.MENU_AUTHOR_SET_COMPLETE
@@ -1735,7 +1735,7 @@ public class BooksOnBookshelf
         // with the Styles. i.e. the style used to build is very likely corrupt.
         // Another reason can be during development when the database structure
         // was changed...
-        final Style style = vm.getStyle(this);
+        final Style style = vm.getStyle();
         // so we reset the style to recover.. and restarting the app will work.
         vm.onStyleChanged(this, BuiltinStyle.DEFAULT_UUID);
         // but we STILL FORCE A CRASH, SO WE CAN COLLECT DEBUG INFORMATION!
@@ -1776,7 +1776,7 @@ public class BooksOnBookshelf
 
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         adapter = new BooklistAdapter(this,
-                                      vm.getStyle(this),
+                                      vm.getStyle(),
                                       serviceLocator::getReorderHelper,
                                       serviceLocator::getAuthorDao,
                                       serviceLocator::getLanguages,
@@ -1876,7 +1876,7 @@ public class BooksOnBookshelf
         Fragment fragment = fm.findFragmentByTag(ShowBookDetailsFragment.TAG);
         if (fragment == null) {
             fragment = ShowBookDetailsFragment.create(
-                    bookId, vm.getStyle(this).getUuid(), true);
+                    bookId, vm.getStyle().getUuid(), true);
             fm.beginTransaction()
               .setReorderingAllowed(true)
               .replace(R.id.details_frame, fragment, ShowBookDetailsFragment.TAG)
@@ -2148,7 +2148,7 @@ public class BooksOnBookshelf
         @Override
         public void onPrepareMenu(@NonNull final Menu menu) {
             final boolean showPreferredOption =
-                    vm.getStyle(BooksOnBookshelf.this).getExpansionLevel() > 1;
+                    vm.getStyle().getExpansionLevel() > 1;
             menu.findItem(R.id.MENU_LEVEL_PREFERRED_EXPANSION).setVisible(showPreferredOption);
         }
 
@@ -2163,12 +2163,12 @@ public class BooksOnBookshelf
                 return true;
 
             } else if (itemId == R.id.MENU_STYLE_PICKER) {
-                stylePickerLauncher.launch(vm.getStyle(BooksOnBookshelf.this), false);
+                stylePickerLauncher.launch(vm.getStyle(), false);
                 return true;
 
             } else if (itemId == R.id.MENU_LEVEL_PREFERRED_EXPANSION) {
                 // URGENT: if we use last-saved position we're totally off from where we need to be
-                expandAllNodes(vm.getStyle(BooksOnBookshelf.this).getExpansionLevel(), false);
+                expandAllNodes(vm.getStyle().getExpansionLevel(), false);
                 return true;
 
             } else if (itemId == R.id.MENU_LEVEL_EXPAND) {

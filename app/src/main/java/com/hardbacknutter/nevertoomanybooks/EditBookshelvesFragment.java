@@ -90,7 +90,7 @@ public class EditBookshelvesFragment
                 public void handleOnBackPressed() {
                     final Intent resultIntent = EditBookshelvesContract
                             .createResult(vm.getSelectedBookshelfId());
-                    //noinspection ConstantConditions
+                    //noinspection DataFlowIssue
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();
                 }
@@ -157,7 +157,7 @@ public class EditBookshelvesFragment
         toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
         toolbar.setTitle(R.string.lbl_bookshelves);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
@@ -168,7 +168,7 @@ public class EditBookshelvesFragment
         fab.setOnClickListener(v -> editNewBookshelf());
 
         final GridLayoutManager layoutManager = (GridLayoutManager) vb.list.getLayoutManager();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         adapter = new BookshelfAdapter(getContext(), layoutManager.getSpanCount(),
                                        vm.getList(), positionHandler);
         adapter.registerAdapterDataObserver(adapterDataObserver);
@@ -188,8 +188,7 @@ public class EditBookshelvesFragment
     }
 
     private void editNewBookshelf() {
-        //noinspection ConstantConditions
-        final Style style = ServiceLocator.getInstance().getStyles().getDefault(getContext());
+        final Style style = ServiceLocator.getInstance().getStyles().getDefault();
         editLauncher.launch(new Bookshelf("", style));
     }
 
@@ -225,7 +224,7 @@ public class EditBookshelvesFragment
 
         } else if (itemId == R.id.MENU_DELETE) {
             if (bookshelf.getId() > Bookshelf.DEFAULT) {
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 StandardDialogs.deleteBookshelf(getContext(), bookshelf, () -> {
                     vm.deleteBookshelf(bookshelf);
                     // due to transposing row and columns, we MUST refresh the whole set.
@@ -234,7 +233,7 @@ public class EditBookshelvesFragment
             } else {
                 //TODO: why not ? as long as we make sure there is another one left..
                 // e.g. count > 2, then you can delete '1'
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 new MaterialAlertDialogBuilder(getContext())
                         .setIcon(R.drawable.ic_baseline_warning_24)
                         .setMessage(R.string.warning_cannot_delete_1st_bs)
@@ -246,7 +245,7 @@ public class EditBookshelvesFragment
 
         } else if (itemId == R.id.MENU_PURGE_BLNS) {
             final Context context = getContext();
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             StandardDialogs.purgeBLNS(context, R.string.lbl_bookshelf, bookshelf.getLabel(context),
                                       () -> vm.purgeBLNS(bookshelf.getId()));
             return true;

@@ -49,7 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
  * <p>
  * <strong>Warning:</strong> the {@link Style} association is LAZY.
  * i.o.w. the stored style UUID will/must always be validated before being used.
- * See {@link #getStyle(Context)}.
+ * See {@link #getStyle()}.
  */
 public class Bookshelf
         implements Parcelable, Entity, Mergeable {
@@ -220,7 +220,7 @@ public class Bookshelf
     private static Optional<Bookshelf> getAllBooksBookshelf(@NonNull final Context context) {
         final Bookshelf bookshelf = new Bookshelf(
                 context.getString(R.string.bookshelf_all_books),
-                ServiceLocator.getInstance().getStyles().getDefault(context));
+                ServiceLocator.getInstance().getStyles().getDefault());
         bookshelf.setId(ALL_BOOKS);
         return Optional.of(bookshelf);
     }
@@ -229,7 +229,7 @@ public class Bookshelf
     private static Optional<Bookshelf> getDefaultBookshelf(@NonNull final Context context) {
         final Bookshelf bookshelf = new Bookshelf(
                 context.getString(R.string.bookshelf_my_books),
-                ServiceLocator.getInstance().getStyles().getDefault(context));
+                ServiceLocator.getInstance().getStyles().getDefault());
         bookshelf.setId(DEFAULT);
         return Optional.of(bookshelf);
     }
@@ -317,16 +317,14 @@ public class Bookshelf
     /**
      * Returns a valid style for this bookshelf.
      *
-     * @param context Current context
-     *
      * @return the style associated with this bookshelf.
      */
     @NonNull
-    public Style getStyle(@NonNull final Context context) {
+    public Style getStyle() {
 
         // Always validate first
         final Style style = ServiceLocator.getInstance().getStyles()
-                                          .getStyleOrDefault(context, styleUuid);
+                                          .getStyleOrDefault(styleUuid);
         // the previous uuid might have been overruled so we always refresh it
         styleUuid = style.getUuid();
         return style;
@@ -430,7 +428,7 @@ public class Bookshelf
      */
     public void validateStyle(@NonNull final Context context) {
         final String uuid = styleUuid;
-        final Style style = getStyle(context);
+        final Style style = getStyle();
         if (!uuid.equals(style.getUuid())) {
             try {
                 ServiceLocator.getInstance().getBookshelfDao().update(context, this);

@@ -80,8 +80,7 @@ public class ShowBookPagerFragment
 
         //noinspection DataFlowIssue
         aVm = new ViewModelProvider(getActivity()).get(ShowBookDetailsActivityViewModel.class);
-        //noinspection DataFlowIssue
-        aVm.init(getContext(), args);
+        aVm.init(args);
 
         vm = new ViewModelProvider(getActivity()).get(ShowBookPagerViewModel.class);
         vm.init(args);

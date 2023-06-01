@@ -310,7 +310,7 @@ public class BookshelfDaoImpl
             throws DaoWriteException {
 
         // validate the style first
-        final long styleId = bookshelf.getStyle(context).getId();
+        final long styleId = bookshelf.getStyle().getId();
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -354,7 +354,7 @@ public class BookshelfDaoImpl
             throws DaoWriteException {
 
         // validate the style first
-        final long styleId = bookshelf.getStyle(context).getId();
+        final long styleId = bookshelf.getStyle().getId();
 
         Synchronizer.SyncLock txLock = null;
         try {

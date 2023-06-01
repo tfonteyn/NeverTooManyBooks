@@ -456,14 +456,12 @@ public class BooksOnBookshelfViewModel
     /**
      * Get the style of the current bookshelf.
      *
-     * @param context Current context
-     *
      * @return style
      */
     @NonNull
-    Style getStyle(@NonNull final Context context) {
+    Style getStyle() {
         Objects.requireNonNull(bookshelf, Bookshelf.TAG);
-        return bookshelf.getStyle(context);
+        return bookshelf.getStyle();
     }
 
     /**
@@ -477,11 +475,11 @@ public class BooksOnBookshelfViewModel
                         @NonNull final String styleUuid) {
         // Always validate first
         final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
-        final Style style = stylesHelper.getStyleOrDefault(context, styleUuid);
+        final Style style = stylesHelper.getStyleOrDefault(styleUuid);
         Objects.requireNonNull(bookshelf, Bookshelf.TAG);
 
         // set as the global default.
-        stylesHelper.setDefault(context, style.getUuid());
+        stylesHelper.setDefault(style.getUuid());
         // save the new bookshelf/style combination
         bookshelf.setAsPreferred(context);
         bookshelf.setStyle(context, style);
@@ -632,7 +630,7 @@ public class BooksOnBookshelfViewModel
     BooklistHeader getHeaderContent(@NonNull final Context context) {
         Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
         Objects.requireNonNull(bookshelf, "bookshelf");
-        return new BooklistHeader(context, getStyle(context),
+        return new BooklistHeader(context, getStyle(),
                                   booklist.countBooks(), booklist.countDistinctBooks(),
                                   bookshelf.getFilters(),
                                   searchCriteria);

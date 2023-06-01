@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 
 import java.util.List;
@@ -49,19 +47,12 @@ public class StyleCoder
     private static final String STYLE_SETTINGS = "settings";
 
     @NonNull
-    private final Context context;
-
-    @NonNull
     private final Supplier<StylesHelper> stylesHelperSupplier;
 
     /**
      * Constructor.
-     *
-     * @param context Current context
      */
-    public StyleCoder(@NonNull final Context context) {
-        this.context = context;
-
+    public StyleCoder() {
         stylesHelperSupplier = ServiceLocator.getInstance()::getStyles;
     }
 
@@ -129,7 +120,7 @@ public class StyleCoder
         final StylesHelper stylesHelper = stylesHelperSupplier.get();
 
         if (BuiltinStyle.isBuiltin(uuid)) {
-            final Optional<Style> oStyle = stylesHelper.getStyle(context, uuid);
+            final Optional<Style> oStyle = stylesHelper.getStyle(uuid);
             if (oStyle.isPresent()) {
                 final Style style = oStyle.get();
                 style.setPreferred(data.getBoolean(DBKey.STYLE_IS_PREFERRED));
@@ -138,7 +129,7 @@ public class StyleCoder
             } else {
                 // It's a recognized Builtin Style, but it's deprecated.
                 // We return the default builtin style instead.
-                return stylesHelper.getStyle(context, BuiltinStyle.DEFAULT_UUID).orElseThrow();
+                return stylesHelper.getStyle(BuiltinStyle.DEFAULT_UUID).orElseThrow();
             }
 
         } else {

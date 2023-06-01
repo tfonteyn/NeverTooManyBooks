@@ -116,7 +116,7 @@ public class BoBTask
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
         final SynchronizedDb db = ServiceLocator.getInstance().getDb();
 
-        final Style style = bookshelf.getStyle(context);
+        final Style style = bookshelf.getStyle();
 
         final BooklistBuilder builder = new BooklistBuilder(db, style, bookshelf, rebuildMode);
 

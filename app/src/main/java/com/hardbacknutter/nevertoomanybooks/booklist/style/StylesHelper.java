@@ -58,85 +58,82 @@ public class StylesHelper {
     private final Map<String, Style> cache = new LinkedHashMap<>();
     @NonNull
     private final Supplier<StyleDao> styleDaoSupplier;
+    @NonNull
+    private final Supplier<Context> appContextSupplier;
 
     /**
      * Constructor.
      *
-     * @param styleDaoSupplier deferred supplier for the {@link StyleDao}
+     * @param appContextSupplier deferred supplier for the raw Application Context
+     * @param styleDaoSupplier   deferred supplier for the {@link StyleDao}
      */
-    public StylesHelper(@NonNull final Supplier<StyleDao> styleDaoSupplier) {
+    public StylesHelper(@NonNull final Supplier<Context> appContextSupplier,
+                        @NonNull final Supplier<StyleDao> styleDaoSupplier) {
+        this.appContextSupplier = appContextSupplier;
         this.styleDaoSupplier = styleDaoSupplier;
     }
 
     /**
      * Get the specified style; {@code null} if not found.
      *
-     * @param context Current context
-     * @param uuid    UUID of the style to get.
+     * @param uuid UUID of the style to get.
      *
      * @return the style, or {@code null} if not found
      */
     @NonNull
-    public Optional<Style> getStyle(@NonNull final Context context,
-                                    @NonNull final String uuid) {
-        final Style style = getAllStyles(context).get(uuid);
+    public Optional<Style> getStyle(@NonNull final String uuid) {
+        final Style style = getAllStyles().get(uuid);
         return style == null ? Optional.empty() : Optional.of(style);
     }
 
     /**
-     * Get the specified style. If not found, {@link #getDefault(Context)} will be returned.
+     * Get the specified style. If not found, {@link #getDefault()} will be returned.
      *
-     * @param context Current context
-     * @param uuid    UUID of the style to get.
+     * @param uuid UUID of the style to get.
      *
      * @return the style, or the default style if not found
      */
     @NonNull
-    public Style getStyleOrDefault(@NonNull final Context context,
-                                   @Nullable final String uuid) {
+    public Style getStyleOrDefault(@Nullable final String uuid) {
         if (uuid != null) {
             // Try to get user or builtin style
-            final Style style = getAllStyles(context).get(uuid);
+            final Style style = getAllStyles().get(uuid);
             if (style != null) {
                 return style;
             }
         }
 
         // fall back to the user default.
-        return getDefault(context);
+        return getDefault();
     }
 
     /**
      * store the given style as the user default one.
      *
-     * @param context Current context
-     * @param uuid    style to set
+     * @param uuid style to set
      */
-    public void setDefault(@NonNull final Context context,
-                           @NonNull final String uuid) {
-        PreferenceManager.getDefaultSharedPreferences(context)
+    public void setDefault(@NonNull final String uuid) {
+        PreferenceManager.getDefaultSharedPreferences(appContextSupplier.get())
                          .edit().putString(PK_DEFAULT_STYLE, uuid).apply();
     }
 
     /**
      * Get the user default style, or if none found, the Builtin default.
      *
-     * @param context Current context
-     *
      * @return the style.
      */
     @NonNull
-    public Style getDefault(@NonNull final Context context) {
-        final Map<String, Style> allStyles = getAllStyles(context);
+    public Style getDefault() {
+        final Map<String, Style> allStyles = getAllStyles();
 
         // read the global user default, or if not present the hardcoded default.
         final String uuid = PreferenceManager
-                .getDefaultSharedPreferences(context)
+                .getDefaultSharedPreferences(appContextSupplier.get())
                 .getString(PK_DEFAULT_STYLE, BuiltinStyle.DEFAULT_UUID);
 
         // Get the user or builtin or worst case the builtin default.
         final Style style = allStyles.get(uuid);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         return style != null ? style : allStyles.get(BuiltinStyle.DEFAULT_UUID);
     }
 
@@ -146,17 +143,15 @@ public class StylesHelper {
      * followed by the non-preferred styles.
      * If 'all' is {@code false} the list only contains the preferred styles.
      *
-     * @param context Current context
      * @param all     if {@code true} then also return the non-preferred styles
      *
      * @return LinkedHashMap, key: uuid, value: style
      */
     @NonNull
-    public List<Style> getStyles(@NonNull final Context context,
-                                 final boolean all) {
+    public List<Style> getStyles(final boolean all) {
 
         // combine all styles in a NEW list; we need to keep the original lists as-is.
-        final Collection<Style> list = new ArrayList<>(getAllStyles(context).values());
+        final Collection<Style> list = new ArrayList<>(getAllStyles().values());
 
         // and sort them in the user preferred order
         // The styles marked as preferred will have a menu-position < 1000,
@@ -185,17 +180,15 @@ public class StylesHelper {
     /**
      * Get all styles.
      *
-     * @param context Current context
-     *
      * @return an ordered Map of styles
      */
     @NonNull
-    private Map<String, Style> getAllStyles(@NonNull final Context context) {
+    private Map<String, Style> getAllStyles() {
 
         if (cache.isEmpty()) {
             final StyleDao dao = styleDaoSupplier.get();
-            cache.putAll(dao.getBuiltinStyles(context));
-            cache.putAll(dao.getUserStyles(context));
+            cache.putAll(dao.getBuiltinStyles());
+            cache.putAll(dao.getUserStyles());
         }
         return cache;
     }
@@ -211,10 +204,9 @@ public class StylesHelper {
     /**
      * Convenience wrapper that gets called after an import to re-sort all styles.
      *
-     * @param context Current context
      */
-    public void updateMenuOrder(@NonNull final Context context) {
-        updateMenuOrder(getStyles(context, true));
+    public void updateMenuOrder() {
+        updateMenuOrder(getStyles(true));
     }
 
     /**
@@ -345,7 +337,12 @@ public class StylesHelper {
         return false;
     }
 
-
+    /**
+     * Purge Booklist node state data for the given Style.<br>
+     * Called when a style is deleted or manually from the Styles management context menu.
+     *
+     * @param styleId to purge
+     */
     public void purgeNodeStatesByStyle(final long styleId) {
         styleDaoSupplier.get().purgeNodeStatesByStyle(styleId);
     }

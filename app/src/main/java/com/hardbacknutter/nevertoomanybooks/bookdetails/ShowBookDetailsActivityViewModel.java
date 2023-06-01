@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.bookdetails;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -75,15 +74,13 @@ public class ShowBookDetailsActivityViewModel
     /**
      * Pseudo constructor.
      *
-     * @param context current context
-     * @param args    Bundle with arguments
+     * @param args Bundle with arguments
      */
-    public void init(@NonNull final Context context,
-                     @NonNull final Bundle args) {
+    public void init(@NonNull final Bundle args) {
         if (style == null) {
             // the style can be 'null' here. If so, the default one will be used.
             final String styleUuid = args.getString(Style.BKEY_UUID);
-            style = ServiceLocator.getInstance().getStyles().getStyleOrDefault(context, styleUuid);
+            style = ServiceLocator.getInstance().getStyles().getStyleOrDefault(styleUuid);
 
             menuHandlers = MenuHandlerFactory.create();
         }
