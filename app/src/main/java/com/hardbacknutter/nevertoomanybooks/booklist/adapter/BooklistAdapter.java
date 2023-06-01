@@ -148,7 +148,7 @@ public class BooklistAdapter
 
         groupRowHeight = this.style.getGroupRowHeight(context);
 
-        if (this.style.isShowField(Style.Screen.List, DBKey.COVER[0])) {
+        if (this.style.isShowField(context, Style.Screen.List, DBKey.COVER[0])) {
             @Style.CoverScale
             final int frontCoverScale = this.style.getCoverScale();
 
@@ -220,7 +220,7 @@ public class BooklistAdapter
      */
     @Nullable
     public DataHolder readDataAt(final int position) {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         if (!cursor.moveToPosition(position)) {
             // We should never get here... flw
             return null;
@@ -233,7 +233,7 @@ public class BooklistAdapter
      *
      * @param positions to refresh
      */
-    public void requery(final int[] positions) {
+    public void requery(@NonNull final int[] positions) {
         // Yes, requery() is deprecated but see BooklistCursor were we do the right thing.
         //noinspection deprecation,DataFlowIssue
         cursor.requery();
@@ -247,7 +247,7 @@ public class BooklistAdapter
     public long getItemId(final int position) {
         if (cursor != null && cursor.moveToPosition(position)) {
             // return the rowId of the list-table
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             return rowData.getLong(DBKey.PK_ID);
         } else {
             return RecyclerView.NO_ID;
@@ -270,7 +270,7 @@ public class BooklistAdapter
     @BooklistGroup.Id
     public int getItemViewType(final int position) {
         if (cursor != null && cursor.moveToPosition(position)) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             return rowData.getInt(DBKey.BL_NODE_GROUP);
         } else {
             // bogus, should not happen
@@ -301,7 +301,7 @@ public class BooklistAdapter
 
         final View itemView = inflater.inflate(layoutId, parent, false);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final int level = rowData.getInt(DBKey.BL_NODE_LEVEL);
 
         if (groupId != BooklistGroup.BOOK) {
@@ -377,7 +377,7 @@ public class BooklistAdapter
     public void onBindViewHolder(@NonNull final RowViewHolder holder,
                                  final int position) {
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         cursor.moveToPosition(position);
 
         //noinspection unchecked,DataFlowIssue
@@ -490,14 +490,14 @@ public class BooklistAdapter
         try {
             if (level > (style.getGroupCount())) {
                 // it's a book; use the title (no need to take the group.format round-trip).
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 return rowData.getString(DBKey.TITLE);
 
             } else {
                 // it's a group; use the display domain as the text
                 final BooklistGroup group = style.getGroupByLevel(level);
                 final String key = group.getDisplayDomainExpression().getDomain().getName();
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 return formatter.format(group.getId(), rowData, key);
             }
         } catch (@NonNull final CursorIndexOutOfBoundsException e) {
