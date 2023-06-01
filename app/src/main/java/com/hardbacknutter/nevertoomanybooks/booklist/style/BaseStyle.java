@@ -36,7 +36,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
@@ -268,13 +267,6 @@ public abstract class BaseStyle
 
     public void setHeaderFieldVisibility(@BooklistHeader.Option final int bitmask) {
         headerFieldVisibility = bitmask & BooklistHeader.BITMASK_ALL;
-    }
-
-    @Override
-    public boolean isShowField(@NonNull final Screen screen,
-                               @NonNull final String dbKey) {
-        final Context context = ServiceLocator.getInstance().getAppContext();
-        return isShowField(context, screen, dbKey);
     }
 
     @Override

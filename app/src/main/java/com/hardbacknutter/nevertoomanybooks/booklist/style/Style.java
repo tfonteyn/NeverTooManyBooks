@@ -79,6 +79,11 @@ public interface Style {
 
     int DEFAULT_COVER_SCALE = COVER_SCALE_MEDIUM;
 
+    /**
+     * Check if this style is user-defined.
+     *
+     * @return flag
+     */
     boolean isUserDefined();
 
     @SuppressWarnings("ClassReferencesSubclass")
@@ -86,12 +91,17 @@ public interface Style {
     UserStyle clone(@NonNull Context context);
 
     /**
-     * Get the database row id of the entity.
+     * Get the database row id of the style.
      *
      * @return id
      */
     long getId();
 
+    /**
+     * Set the database row id of the style.
+     *
+     * @param id to set
+     */
     void setId(long id);
 
     /**
@@ -206,14 +216,12 @@ public interface Style {
     /**
      * Check if the given field should be displayed.
      *
-     * @param screen to get the setting for
-     * @param dbKey  to check - one of the {@link DBKey} constants.
+     * @param context Current context
+     * @param screen  to get the setting for
+     * @param dbKey   to check - one of the {@link DBKey} constants.
      *
      * @return {@code true} if in use
      */
-    boolean isShowField(@NonNull Screen screen,
-                        @NonNull String dbKey);
-
     boolean isShowField(@NonNull Context context,
                         @NonNull Screen screen,
                         @NonNull String dbKey);
@@ -397,16 +405,32 @@ public interface Style {
             this.prefKey = prefKey;
         }
 
+        /**
+         * Get the {@link DBKey} for this element.
+         *
+         * @return key
+         */
         @NonNull
         public String getDbKey() {
             return dbKey;
         }
 
+        /**
+         * Get the Preferences key for this element.
+         *
+         * @return key
+         */
         @NonNull
         public String getPrefKey() {
             return prefKey;
         }
 
+        /**
+         * Get the {@link BooklistGroup} for this element.
+         *
+         * @return key
+         */
+        @SuppressWarnings("WeakerAccess")
         @BooklistGroup.Id
         public int getGroupId() {
             return groupId;
@@ -414,19 +438,19 @@ public interface Style {
     }
 
     @IntDef({TEXT_SCALE_0_VERY_SMALL,
-             TEXT_SCALE_1_SMALL,
-             TEXT_SCALE_2_MEDIUM,
-             TEXT_SCALE_3_LARGE,
-             TEXT_SCALE_4_VERY_LARGE})
+            TEXT_SCALE_1_SMALL,
+            TEXT_SCALE_2_MEDIUM,
+            TEXT_SCALE_3_LARGE,
+            TEXT_SCALE_4_VERY_LARGE})
     @Retention(RetentionPolicy.SOURCE)
     @interface TextScale {
 
     }
 
     @IntDef({COVER_SCALE_HIDDEN,
-             COVER_SCALE_SMALL,
-             COVER_SCALE_MEDIUM,
-             COVER_SCALE_LARGE})
+            COVER_SCALE_SMALL,
+            COVER_SCALE_MEDIUM,
+            COVER_SCALE_LARGE})
     @Retention(RetentionPolicy.SOURCE)
     @interface CoverScale {
 
