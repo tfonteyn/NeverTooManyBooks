@@ -214,6 +214,10 @@ public interface Style {
     boolean isShowField(@NonNull Screen screen,
                         @NonNull String dbKey);
 
+    boolean isShowField(@NonNull Context context,
+                        @NonNull Screen screen,
+                        @NonNull String dbKey);
+
     /**
      * Get the bitmask value which defines book-field visibility.
      *

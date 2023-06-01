@@ -270,12 +270,17 @@ public abstract class BaseStyle
         headerFieldVisibility = bitmask & BooklistHeader.BITMASK_ALL;
     }
 
-
     @Override
     public boolean isShowField(@NonNull final Screen screen,
                                @NonNull final String dbKey) {
         final Context context = ServiceLocator.getInstance().getAppContext();
+        return isShowField(context, screen, dbKey);
+    }
 
+    @Override
+    public boolean isShowField(@NonNull final Context context,
+                               @NonNull final Screen screen,
+                               @NonNull final String dbKey) {
         switch (screen) {
             case List:
                 return listFieldVisibility
