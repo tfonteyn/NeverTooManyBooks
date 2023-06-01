@@ -133,7 +133,7 @@ public class BoBTask
             calibreDomainList.forEach(builder::addDomain);
         }
 
-        addDomains(builder, style);
+        addDomains(context, builder, style);
 
         if (!searchCriteria.isEmpty()) {
             addCriteria(builder);
@@ -221,41 +221,43 @@ public class BoBTask
     /**
      * Add fields which are (depending on Style) shown on the Book level.
      *
+     * @param context Current context
      * @param builder to use
      * @param style   to use
      */
-    private void addDomains(@NonNull final BooklistBuilder builder,
+    private void addDomains(@NonNull final Context context,
+                            @NonNull final BooklistBuilder builder,
                             @NonNull final Style style) {
 
-        if (style.isShowField(Style.Screen.List, DBKey.COVER[0])) {
+        if (style.isShowField(context, Style.Screen.List, DBKey.COVER[0])) {
             // We need the UUID for the book to get covers
             builder.addDomain(new DomainExpression(DBDefinitions.DOM_BOOK_UUID,
                                                    DBDefinitions.TBL_BOOKS));
         }
 
-        if (style.isShowField(Style.Screen.List, DBKey.EDITION__BITMASK)) {
+        if (style.isShowField(context, Style.Screen.List, DBKey.EDITION__BITMASK)) {
             builder.addDomain(new DomainExpression(DBDefinitions.DOM_BOOK_EDITION,
                                                    DBDefinitions.TBL_BOOKS));
         }
 
-        if (style.isShowField(Style.Screen.List, DBKey.SIGNED__BOOL)) {
+        if (style.isShowField(context, Style.Screen.List, DBKey.SIGNED__BOOL)) {
             builder.addDomain(new DomainExpression(DBDefinitions.DOM_BOOK_SIGNED,
                                                    DBDefinitions.TBL_BOOKS));
         }
 
-        if (style.isShowField(Style.Screen.List, DBKey.BOOK_CONDITION)) {
+        if (style.isShowField(context, Style.Screen.List, DBKey.BOOK_CONDITION)) {
             builder.addDomain(new DomainExpression(DBDefinitions.DOM_BOOK_CONDITION,
                                                    DBDefinitions.TBL_BOOKS));
         }
 
-        if (style.isShowField(Style.Screen.List, DBKey.LOANEE_NAME)) {
+        if (style.isShowField(context, Style.Screen.List, DBKey.LOANEE_NAME)) {
             // Used to display/hide the 'lend' icon for each book.
             builder.addLeftOuterJoin(DBDefinitions.TBL_BOOK_LOANEE);
             builder.addDomain(new DomainExpression(DBDefinitions.DOM_LOANEE,
                                                    DBDefinitions.TBL_BOOK_LOANEE));
         }
 
-        if (style.isShowField(Style.Screen.List, DBKey.FK_BOOKSHELF)) {
+        if (style.isShowField(context, Style.Screen.List, DBKey.FK_BOOKSHELF)) {
             // This collects a CSV list of the bookshelves the book is on.
             builder.addDomain(new DomainExpression(DBDefinitions.DOM_BOOKSHELF_NAME_CSV,
                                                    BooklistBuilder.EXP_BOOKSHELF_NAME_CSV,
@@ -263,7 +265,7 @@ public class BoBTask
         }
 
         // we fetch ONLY the primary author to show on the Book level
-        if (style.isShowField(Style.Screen.List, DBKey.FK_AUTHOR)) {
+        if (style.isShowField(context, Style.Screen.List, DBKey.FK_AUTHOR)) {
             builder.addDomain(new DomainExpression(
                     DBDefinitions.DOM_AUTHOR_FORMATTED_FAMILY_FIRST,
                     AuthorDaoImpl.getDisplayDomainExpression(style.isShowAuthorByGivenName()),
@@ -276,7 +278,7 @@ public class BoBTask
         //                                           DBDefinitions.TBL_BOOK_AUTHOR));
         // }
 
-        if (style.isShowField(Style.Screen.List, DBKey.FK_SERIES)) {
+        if (style.isShowField(context, Style.Screen.List, DBKey.FK_SERIES)) {
             // We only collect the primary series!
             builder.addDomain(new DomainExpression(DBDefinitions.DOM_SERIES_TITLE,
                                                    DBDefinitions.TBL_SERIES));
@@ -284,29 +286,29 @@ public class BoBTask
                                                    DBDefinitions.TBL_BOOK_SERIES));
         }
 
-        if (style.isShowField(Style.Screen.List, DBKey.FK_PUBLISHER)) {
+        if (style.isShowField(context, Style.Screen.List, DBKey.FK_PUBLISHER)) {
             // Collect a CSV list of the publishers of the book
             builder.addDomain(new DomainExpression(DBDefinitions.DOM_PUBLISHER_NAME_CSV,
                                                    BooklistBuilder.EXP_PUBLISHER_NAME_CSV,
                                                    Sort.Unsorted));
         }
 
-        if (style.isShowField(Style.Screen.List, DBKey.BOOK_PUBLICATION__DATE)) {
+        if (style.isShowField(context, Style.Screen.List, DBKey.BOOK_PUBLICATION__DATE)) {
             builder.addDomain(new DomainExpression(DBDefinitions.DOM_BOOK_DATE_PUBLISHED,
                                                    DBDefinitions.TBL_BOOKS));
         }
 
-        if (style.isShowField(Style.Screen.List, DBKey.FORMAT)) {
+        if (style.isShowField(context, Style.Screen.List, DBKey.FORMAT)) {
             builder.addDomain(new DomainExpression(DBDefinitions.DOM_BOOK_FORMAT,
                                                    DBDefinitions.TBL_BOOKS));
         }
 
-        if (style.isShowField(Style.Screen.List, DBKey.LOCATION)) {
+        if (style.isShowField(context, Style.Screen.List, DBKey.LOCATION)) {
             builder.addDomain(new DomainExpression(DBDefinitions.DOM_BOOK_LOCATION,
                                                    DBDefinitions.TBL_BOOKS));
         }
 
-        if (style.isShowField(Style.Screen.List, DBKey.RATING)) {
+        if (style.isShowField(context, Style.Screen.List, DBKey.RATING)) {
             builder.addDomain(new DomainExpression(DBDefinitions.DOM_BOOK_RATING,
                                                    DBDefinitions.TBL_BOOKS));
         }
