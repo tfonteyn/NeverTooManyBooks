@@ -520,7 +520,7 @@ class BooklistBuilder {
             final String sqlForInitialInsert =
                     INSERT_INTO_ + listTable.getName() + " (" + destColumns + ") "
                     + SELECT_ + sourceColumns
-                    + _FROM_ + buildFrom(leftOuterJoins) + buildWhere(context, filters)
+                    + _FROM_ + buildFrom(context, leftOuterJoins) + buildWhere(context, filters)
                     + _ORDER_BY_ + buildOrderBy(db.isCollationCaseSensitive());
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
@@ -930,12 +930,14 @@ class BooklistBuilder {
          *      <li>{@link #leftOuterJoins}</li>
          * </ul>
          *
+         * @param context Current context
          * @param leftOuterJoins tables to be added as a LEFT OUTER JOIN
          *
          * @return FROM clause
          */
         @NonNull
-        private String buildFrom(@NonNull final Collection<TableDefinition> leftOuterJoins) {
+        private String buildFrom(@NonNull final Context context,
+                                 @NonNull final Collection<TableDefinition> leftOuterJoins) {
             final StringBuilder sb = new StringBuilder();
 
             // If there is a bookshelf specified (either as group or as a filter),
@@ -950,12 +952,12 @@ class BooklistBuilder {
             joinWithAuthors(sb);
 
             if (style.hasGroup(BooklistGroup.SERIES)
-                || style.isShowField(Style.Screen.List, DBKey.FK_SERIES)) {
+                || style.isShowField(context, Style.Screen.List, DBKey.FK_SERIES)) {
                 joinWithSeries(sb);
             }
 
             if (style.hasGroup(BooklistGroup.PUBLISHER)
-                || style.isShowField(Style.Screen.List, DBKey.FK_PUBLISHER)) {
+                || style.isShowField(context, Style.Screen.List, DBKey.FK_PUBLISHER)) {
                 joinWithPublishers(sb);
             }
 
@@ -1037,7 +1039,7 @@ class BooklistBuilder {
         @NonNull
         private String buildWhere(@NonNull final Context context,
                                   @NonNull final Collection<Filter> filters) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             final String where = filters
                     .stream()
                     // ONLY APPLY ACTIVE FILTERS!
