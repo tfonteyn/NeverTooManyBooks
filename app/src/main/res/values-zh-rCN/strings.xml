@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -19,10 +18,9 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   --><!DOCTYPE resources [
-    <!ENTITY APP_NAME "NeverTooManyBooks">
-    ]>
-<!--suppress LongLine -->
-<resources>
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
+<!--suppress LongLine --><resources>
     <string name="a_bracket_b_bracket">%1$s（%2$s）</string>
     <string name="list_element">• %s</string>
     <string name="name_hash_nr">%1$s #%2$d</string>
@@ -141,4 +139,30 @@
     <string name="vldt_non_blank_required_for_x">“%1$s”需要非空值</string>
     <string name="vldt_blank_required_for_x">“%1$s”需要空值</string>
     <string name="vldt_boolean_expected_for_x">“%1$s” 应为布尔值 (0,1,t,f,true,false)</string>
+    <string name="progress_msg_loading">加载中…</string>
+    <string name="progress_msg_downloading">下载中…</string>
+    <string name="info_tap_on_thumbnail_to_zoom">点击缩略图以显示大图。</string>
+    <string name="progress_msg_skip_s">跳过“%1$s”</string>
+    <string name="progress_msg_optimizing">优化中…</string>
+    <string name="progress_msg_searching">搜索中…</string>
+    <string name="progress_msg_searching_site">搜索%1$s</string>
+    <string name="progress_msg_searching_editions">正在搜索其他版本…</string>
+    <string name="progress_msg_connecting">连接中…</string>
+    <string name="progress_msg_saving_image">正在保存图片…</string>
+    <string name="progress_msg_cleaning_up">清理中…</string>
+    <string name="info_story_in_multiple_books">“%1$s”存在与多本书中：
+\n
+\n%2$s</string>
+    <string name="progress_msg_loading_page">正在加载第%1$d页…</string>
+    <string name="progress_msg_starting_up">启动中…</string>
+    <string name="progress_msg_upgrading">更新中…</string>
+    <string name="progress_msg_rebuilding_search_index">重建搜索索引…</string>
+    <string name="info_authorized">已授权</string>
+    <string name="info_story_in_single_book">“%1$s” 存在与一本书中：
+\n
+\n%2$s</string>
+    <string name="info_all_books_have_covers">这个书架上的所有书都有封面</string>
+    <string name="info_displaying_n_books_in_m_entries">%1$d书，在 %2$d条目中</string>
+    <string name="info_share_book_im_reading">我正在阅读\"%1$s\" %2$s 由 %3$s %4$s</string>
+    <string name="progress_msg_x_created_y_updated_z_skipped">%1$s：%2$d已创建，%3$d已更新，%4$d已跳过</string>
 </resources>
