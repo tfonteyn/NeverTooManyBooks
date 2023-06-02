@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,13 +32,15 @@ import androidx.preference.PreferenceManager;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-
 public final class SoundManager {
 
     public static final int POSITIVE = ToneGenerator.TONE_PROP_ACK;
     public static final int NEGATIVE = ToneGenerator.TONE_PROP_NACK;
     public static final int EVENT = ToneGenerator.TONE_PROP_BEEP;
+
+    public static final String PK_SOUNDS_SCAN_ISBN_VALID = "sounds.scan.isbn.valid";
+    public static final String PK_SOUNDS_SCAN_ISBN_INVALID = "sounds.scan.isbn.invalid";
+    public static final String PK_SOUNDS_SCAN_FOUND_BARCODE = "sounds.scan.barcode.found";
 
     private static final int MAX_LEN = 500;
 
@@ -52,6 +54,7 @@ public final class SoundManager {
      *             or any of the {@link ToneGenerator} predefined tones.
      */
     public static void beep(@Tone final int tone) {
+        //noinspection CheckStyle
         try {
             final ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION,
                                                        ToneGenerator.MAX_VOLUME);
@@ -73,7 +76,7 @@ public final class SoundManager {
      */
     public static void beepOnValidIsbn(@NonNull final Context context) {
         if (PreferenceManager.getDefaultSharedPreferences(context)
-                             .getBoolean(Prefs.pk_sounds_scan_isbn_valid, false)) {
+                             .getBoolean(PK_SOUNDS_SCAN_ISBN_VALID, false)) {
             beep(POSITIVE);
         }
     }
@@ -85,7 +88,7 @@ public final class SoundManager {
      */
     public static void beepOnInvalidIsbn(@NonNull final Context context) {
         if (PreferenceManager.getDefaultSharedPreferences(context)
-                             .getBoolean(Prefs.pk_sounds_scan_isbn_invalid, true)) {
+                             .getBoolean(PK_SOUNDS_SCAN_ISBN_INVALID, true)) {
             beep(NEGATIVE);
         }
     }
@@ -97,7 +100,7 @@ public final class SoundManager {
      */
     public static void beepOnBarcodeFound(@NonNull final Context context) {
         if (PreferenceManager.getDefaultSharedPreferences(context)
-                             .getBoolean(Prefs.pk_sounds_scan_found_barcode, true)) {
+                             .getBoolean(PK_SOUNDS_SCAN_FOUND_BARCODE, true)) {
             beep(EVENT);
         }
     }

@@ -74,7 +74,7 @@ public class BarcodePreferenceFragment
                 .setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
 
         //noinspection DataFlowIssue
-        findPreference(Prefs.pk_sounds_scan_found_barcode)
+        findPreference(SoundManager.PK_SOUNDS_SCAN_FOUND_BARCODE)
                 .setOnPreferenceChangeListener((preference, newValue) -> {
                     if (newValue instanceof Boolean && (Boolean) newValue) {
                         SoundManager.beep(SoundManager.EVENT);
@@ -82,7 +82,7 @@ public class BarcodePreferenceFragment
                     return true;
                 });
         //noinspection DataFlowIssue
-        findPreference(Prefs.pk_sounds_scan_isbn_valid)
+        findPreference(SoundManager.PK_SOUNDS_SCAN_ISBN_VALID)
                 .setOnPreferenceChangeListener((preference, newValue) -> {
                     if (newValue instanceof Boolean && (Boolean) newValue) {
                         SoundManager.beep(SoundManager.POSITIVE);
@@ -90,7 +90,7 @@ public class BarcodePreferenceFragment
                     return true;
                 });
         //noinspection DataFlowIssue
-        findPreference(Prefs.pk_sounds_scan_isbn_invalid)
+        findPreference(SoundManager.PK_SOUNDS_SCAN_ISBN_INVALID)
                 .setOnPreferenceChangeListener((preference, newValue) -> {
                     if (newValue instanceof Boolean && (Boolean) newValue) {
                         SoundManager.beep(SoundManager.NEGATIVE);

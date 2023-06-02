@@ -37,10 +37,6 @@ public final class Prefs {
     /** Not the actual theme, but the day/night part only. */
     public static final String pk_ui_theme = "ui.theme";
 
-    public static final String pk_sounds_scan_isbn_valid = "sounds.scan.isbn.valid";
-    public static final String pk_sounds_scan_isbn_invalid = "sounds.scan.isbn.invalid";
-    public static final String pk_sounds_scan_found_barcode = "sounds.scan.barcode.found";
-
     public static final String pk_search_reformat_format = "search.reformat.format";
     public static final String pk_search_reformat_color = "search.reformat.color";
     public static final String pk_search_isbn_prefer_10 = "search.byIsbn.prefer.10";
