@@ -112,19 +112,18 @@ public class StyleViewModel
         return Objects.requireNonNull(templateUuid, "templateUuid");
     }
 
-    public boolean isModified() {
-        //noinspection DataFlowIssue
-        return styleDataStore.isModified();
-    }
-
     /**
      * Called when the user leaves the fragment. Save any updates needed.
+     *
+     * @return {@code true} if the style was modified
      */
-    void updateOrInsertStyle() {
+    boolean updateOrInsertStyle() {
         //noinspection DataFlowIssue
         if (styleDataStore.isModified()) {
             ServiceLocator.getInstance().getStyles().updateOrInsert(style);
+            return true;
         }
+        return false;
     }
 
     @NonNull

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -65,14 +65,14 @@ public class StyleFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    vm.updateOrInsertStyle();
+                    final boolean modified = vm.updateOrInsertStyle();
 
                     final Intent resultIntent = EditStyleContract
                             .createResult(vm.getTemplateUuid(),
-                                          vm.isModified(),
+                                          modified,
                                           vm.getStyle().getUuid());
 
-                    //noinspection ConstantConditions
+                    //noinspection DataFlowIssue
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();
                 }
@@ -88,7 +88,7 @@ public class StyleFragment
     private Preference pListFieldVisibility;
     private Preference pGroups;
 
-    @SuppressWarnings("ConstantConditions")
+    @SuppressWarnings("DataFlowIssue")
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
@@ -137,14 +137,14 @@ public class StyleFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
         vm.onModified().observe(getViewLifecycleOwner(), aVoid -> updateSummaries());
 
         if (savedInstanceState == null) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             TipManager.getInstance()
                       .display(getContext(), R.string.tip_booklist_style_properties, null);
         }
@@ -197,7 +197,7 @@ public class StyleFragment
         final UserStyle style = vm.getStyle();
         final Context context = getContext();
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         pListFieldVisibility.setSummary(style.getFieldVisibilitySummaryText(context,
                                                                             Style.Screen.List));
 
