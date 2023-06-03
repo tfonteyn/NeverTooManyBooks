@@ -140,7 +140,7 @@ public class StyleDataStore
     }
 
     /**
-     * Parse and combine the values in the set into a bitmask.
+     * Parse and combine the stringified integer-bit values in the set into a bitmask.
      *
      * @param stringSet to parse
      * @param defValue  to use upon any error
@@ -167,6 +167,13 @@ public class StyleDataStore
         }
     }
 
+    /**
+     * Split the bitmask into a {@code Set} with stringified integer-bit values.
+     *
+     * @param value the bitmask to convert
+     *
+     * @return the set
+     */
     @NonNull
     private static Set<String> convert(final int value) {
         final Set<String> stringSet = new HashSet<>();
