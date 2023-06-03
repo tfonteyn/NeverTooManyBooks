@@ -151,7 +151,7 @@ public class FieldVisibility {
     /**
      * Constructor: use all fields.
      */
-    protected FieldVisibility() {
+    public FieldVisibility() {
         this.keys = Set.copyOf(DB_KEYS);
         bits = getBitValue(this.keys);
     }
