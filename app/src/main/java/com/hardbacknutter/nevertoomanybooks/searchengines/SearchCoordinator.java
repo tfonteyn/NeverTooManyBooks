@@ -57,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
@@ -368,15 +368,17 @@ public class SearchCoordinator
 
             allSites = Site.Type.Data.getSites();
 
-            final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
+            final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+            final Locale systemLocale = serviceLocator.getSystemLocaleList().get(0);
             resultsAccumulator = new ResultsAccumulator(context, engineCache, systemLocale);
 
             listElementPrefixString = context.getString(R.string.list_element);
 
             if (args != null) {
+                final FieldVisibility globalVisibility = serviceLocator.getGlobalFieldVisibility();
                 fetchCover = new boolean[]{
-                        GlobalFieldVisibility.isUsed(context, DBKey.COVER[0]),
-                        GlobalFieldVisibility.isUsed(context, DBKey.COVER[1])
+                        globalVisibility.isShowField(DBKey.COVER[0]).orElse(false),
+                        globalVisibility.isShowField(DBKey.COVER[1]).orElse(false)
                 };
 
                 isbnSearchText = args.getString(DBKey.BOOK_ISBN, "");

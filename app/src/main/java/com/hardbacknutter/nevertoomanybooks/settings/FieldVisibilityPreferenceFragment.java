@@ -123,7 +123,7 @@ public class FieldVisibilityPreferenceFragment
         private final FieldVisibility fieldVisibility;
 
         VSDataStore() {
-            fieldVisibility = ServiceLocator.getInstance().getFieldVisibility();
+            fieldVisibility = ServiceLocator.getInstance().getGlobalFieldVisibility();
         }
 
         long getValue() {

@@ -51,7 +51,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -307,8 +307,8 @@ public class EditBookFragment
                                         R.string.lbl_personal_notes));
             }
 
-            if (GlobalFieldVisibility.isUsed(container.getApplicationContext(),
-                                             DBKey.FK_TOC_ENTRY)) {
+            if (ServiceLocator.getInstance().getGlobalFieldVisibility()
+                              .isShowField(DBKey.FK_TOC_ENTRY).orElse(false)) {
                 tabList.add(new TabInfo(EditBookTocFragment.class,
                                         R.string.lbl_tab_table_of_content,
                                         R.string.lbl_table_of_content));

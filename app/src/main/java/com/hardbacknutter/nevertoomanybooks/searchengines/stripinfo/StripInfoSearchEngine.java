@@ -47,7 +47,6 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -144,7 +143,8 @@ public class StripInfoSearchEngine
 
     @Nullable
     private AuthorResolver getAuthorResolver(@NonNull final Context context) {
-        if (GlobalFieldVisibility.isUsed(context, DBKey.AUTHOR_REAL_AUTHOR)
+        if (ServiceLocator.getInstance().getGlobalFieldVisibility()
+                          .isShowField(DBKey.AUTHOR_REAL_AUTHOR).orElse(false)
             && PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(PK_USE_BEDETHEQUE, false)) {
             return new BedethequeAuthorResolver(context, this);
@@ -645,7 +645,7 @@ public class StripInfoSearchEngine
     /**
      * Download the given cover index.
      *
-     * @param context           Current context
+     * @param context Current context
      * @param isbn    (optional) ISBN of the book, will be used for the tmp cover filename
      * @param cIdx    0..n image index
      * @param url     location

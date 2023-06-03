@@ -143,11 +143,9 @@ public interface Field<T, V extends View> {
     /**
      * Is the field in use; i.e. is it enabled in the user-preferences.
      *
-     * @param context Current context
-     *
      * @return {@code true} if the field *can* be visible
      */
-    boolean isUsed(@NonNull Context context);
+    boolean isUsed();
 
     /**
      * Check if this field can be automatically populated.

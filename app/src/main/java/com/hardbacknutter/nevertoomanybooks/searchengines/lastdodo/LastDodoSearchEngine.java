@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
@@ -167,7 +167,8 @@ public class LastDodoSearchEngine
 
     @Nullable
     private AuthorResolver getAuthorResolver(@NonNull final Context context) {
-        if (GlobalFieldVisibility.isUsed(context, DBKey.AUTHOR_REAL_AUTHOR)
+        if (ServiceLocator.getInstance().getGlobalFieldVisibility()
+                          .isShowField(DBKey.AUTHOR_REAL_AUTHOR).orElse(false)
             && PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(PK_USE_BEDETHEQUE, false)) {
             return new BedethequeAuthorResolver(context, this);
@@ -316,7 +317,7 @@ public class LastDodoSearchEngine
         for (final Element section : sections) {
             final Element sectionTitle = section.selectFirst("h2.section-title");
             if (sectionTitle != null) {
-                if ("Verhalen in dit album".equals(sectionTitle.text())) {
+                if ("Verhalen in dit album" .equals(sectionTitle.text())) {
                     tocSection = section;
                     break;
                 }
@@ -330,7 +331,7 @@ public class LastDodoSearchEngine
                 final Element th = divRows.selectFirst("div.label");
                 final Element td = divRows.selectFirst("div.value");
                 if (th != null && td != null) {
-                    if ("Verhaaltitel".equals(th.text())) {
+                    if ("Verhaaltitel" .equals(th.text())) {
                         toc.add(new TocEntry(book.getAuthors().get(0), td.text()));
                     }
                 }
@@ -378,7 +379,7 @@ public class LastDodoSearchEngine
         }
 
         final Element sectionTitle = sections.get(0).selectFirst("h2.section-title");
-        if (sectionTitle == null || !"Catalogusgegevens".equals(sectionTitle.text())) {
+        if (sectionTitle == null || !"Catalogusgegevens" .equals(sectionTitle.text())) {
             return;
         }
 
@@ -454,7 +455,7 @@ public class LastDodoSearchEngine
 
                     case "ISBN":
                         tmpString = td.text();
-                        if (!"Geen".equals(tmpString)) {
+                        if (!"Geen" .equals(tmpString)) {
                             tmpString = ISBN.cleanText(tmpString);
                             if (!tmpString.isEmpty()) {
                                 book.putString(DBKey.BOOK_ISBN, tmpString);
@@ -471,7 +472,7 @@ public class LastDodoSearchEngine
                         break;
 
                     case "Afmetingen":
-                        if (!"? x ? cm".equals(td.text())) {
+                        if (!"? x ? cm" .equals(td.text())) {
                             processText(td, SiteField.SIZE, book);
                         }
                         break;

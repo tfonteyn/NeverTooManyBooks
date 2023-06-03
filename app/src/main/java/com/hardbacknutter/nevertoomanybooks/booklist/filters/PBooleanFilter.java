@@ -29,7 +29,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 
@@ -44,16 +44,14 @@ public class PBooleanFilter
         implements PFilter<Boolean> {
 
     public static final int LAYOUT_ID = R.layout.row_edit_bookshelf_filter_boolean;
-
-    @StringRes
-    private final int labelResId;
-    @ArrayRes
-    private final int acEntries;
-
     @NonNull
     protected final Domain domain;
     @NonNull
     protected final TableDefinition table;
+    @StringRes
+    private final int labelResId;
+    @ArrayRes
+    private final int acEntries;
     @NonNull
     private final String dbKey;
     @Nullable
@@ -73,17 +71,19 @@ public class PBooleanFilter
 
     @Override
     public boolean isActive(@NonNull final Context context) {
-        if (!GlobalFieldVisibility.isUsed(context, domain.getName())) {
-            return false;
+        final String dbdKey = domain.getName();
+        if (ServiceLocator.getInstance().getGlobalFieldVisibility()
+                          .isShowField(dbdKey).orElse(false)) {
+            return value != null;
         }
+        return false;
 
-        return value != null;
     }
 
     @NonNull
     @Override
     public String getExpression(@NonNull final Context context) {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         return table.dot(domain) + '=' + (value ? 1 : 0);
     }
 
@@ -101,7 +101,7 @@ public class PBooleanFilter
 
     @Override
     public void setPersistedValue(@Nullable final String value) {
-        this.value = value == null ? null : "1".equals(value);
+        this.value = value == null ? null : "1" .equals(value);
     }
 
     @SuppressLint("UseValueOf")

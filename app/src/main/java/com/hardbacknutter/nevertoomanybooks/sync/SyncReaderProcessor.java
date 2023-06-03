@@ -40,7 +40,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
@@ -138,7 +137,7 @@ public final class SyncReaderProcessor {
                             } else {
                                 // If the original was blank/zero, add to list
                                 final String value = localBook.getString(field.getKey(), null);
-                                if (value == null || value.isEmpty() || "0".equals(value)) {
+                                if (value == null || value.isEmpty() || "0" .equals(value)) {
                                     filteredMap.put(field.getKey(), field);
                                 }
                             }
@@ -283,7 +282,7 @@ public final class SyncReaderProcessor {
                 final Object o = localBook.get(key, realNumberParser);
                 if (o != null) {
                     final String value = o.toString().trim();
-                    return !value.isEmpty() && !"0".equals(value);
+                    return !value.isEmpty() && !"0" .equals(value);
                 }
                 break;
         }
@@ -520,7 +519,8 @@ public final class SyncReaderProcessor {
                         @NonNull final String key,
                         @NonNull final SyncAction defaultAction) {
 
-            if (GlobalFieldVisibility.isUsed(context, key)) {
+            if (ServiceLocator.getInstance().getGlobalFieldVisibility()
+                              .isShowField(key).orElse(false)) {
                 final SyncAction action = SyncAction
                         .read(prefs, preferencePrefix + key, defaultAction);
                 fields.put(key, new SyncField(key, label, false,
@@ -544,7 +544,8 @@ public final class SyncReaderProcessor {
                              @NonNull final String prefKey,
                              @NonNull final String key) {
 
-            if (GlobalFieldVisibility.isUsed(context, prefKey)) {
+            if (ServiceLocator.getInstance().getGlobalFieldVisibility()
+                              .isShowField(prefKey).orElse(false)) {
                 final SyncAction action = SyncAction
                         .read(prefs, preferencePrefix + key, SyncAction.Append);
                 fields.put(key, new SyncField(key, label, true,

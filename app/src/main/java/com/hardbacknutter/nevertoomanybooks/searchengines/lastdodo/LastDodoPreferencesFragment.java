@@ -25,7 +25,7 @@ import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 
@@ -39,8 +39,12 @@ public class LastDodoPreferencesFragment
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_site_lastdodo, rootKey);
 
+        getContext();
+        final boolean useRealAuthor = ServiceLocator
+                .getInstance().getGlobalFieldVisibility()
+                .isShowField(DBKey.AUTHOR_REAL_AUTHOR).orElse(false);
         //noinspection DataFlowIssue
         findPreference(LastDodoSearchEngine.PK_USE_BEDETHEQUE)
-                .setEnabled(GlobalFieldVisibility.isUsed(getContext(), DBKey.AUTHOR_REAL_AUTHOR));
+                .setEnabled(useRealAuthor);
     }
 }

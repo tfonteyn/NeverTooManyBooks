@@ -46,8 +46,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -143,7 +144,8 @@ public class EditBookFieldsFragment
         vb.lblAuthor.setEndIconOnClickListener(v -> editAuthor());
         vb.author.setOnClickListener(v -> editAuthor());
 
-        if (GlobalFieldVisibility.isUsed(context, DBKey.FK_SERIES)) {
+        if (ServiceLocator.getInstance().getGlobalFieldVisibility()
+                          .isShowField(DBKey.FK_SERIES).orElse(false)) {
             // Series editor (screen)
             // no listener/callback. We share the book view model in the Activity scope
             vb.lblSeries.setEndIconOnClickListener(v -> editSeries());
@@ -166,15 +168,16 @@ public class EditBookFieldsFragment
     }
 
     private void createCoverDelegates() {
-        final Context context = getContext();
         final Resources res = getResources();
         final TypedArray width = res.obtainTypedArray(R.array.cover_edit_width);
         final TypedArray height = res.obtainTypedArray(R.array.cover_edit_height);
         try {
+            final FieldVisibility fieldVisibility = ServiceLocator.getInstance()
+                                                                  .getGlobalFieldVisibility();
+
             for (int cIdx = 0; cIdx < width.length(); cIdx++) {
                 // in edit mode, always show both covers unless globally disabled
-                //noinspection DataFlowIssue
-                if (GlobalFieldVisibility.isUsed(context, DBKey.COVER[cIdx])) {
+                if (fieldVisibility.isShowField(DBKey.COVER[cIdx]).orElse(false)) {
                     final int maxWidth = width.getDimensionPixelSize(cIdx, 0);
                     final int maxHeight = height.getDimensionPixelSize(cIdx, 0);
 

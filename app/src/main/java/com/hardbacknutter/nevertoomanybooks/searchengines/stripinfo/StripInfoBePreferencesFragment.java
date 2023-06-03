@@ -35,7 +35,6 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.settings.ConnectionValidationBasePreferenceFragment;
@@ -47,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoHandler;
 public class StripInfoBePreferencesFragment
         extends ConnectionValidationBasePreferenceFragment {
 
+    /** Log tag. */
     public static final String TAG = "StripInfoBePrefFrag";
     // category
     private static final String PSK_SYNC_OPTIONS = "psk_sync_options";
@@ -58,11 +58,14 @@ public class StripInfoBePreferencesFragment
         init(R.string.site_stripinfo_be, StripInfoHandler.PK_ENABLED);
         setPreferencesFromResource(R.xml.preferences_site_stripinfo, rootKey);
 
+        final boolean useRealAuthor = ServiceLocator
+                .getInstance().getGlobalFieldVisibility()
+                .isShowField(DBKey.AUTHOR_REAL_AUTHOR).orElse(false);
         //noinspection DataFlowIssue
         findPreference(StripInfoSearchEngine.PK_USE_BEDETHEQUE)
-                .setEnabled(GlobalFieldVisibility.isUsed(getContext(), DBKey.AUTHOR_REAL_AUTHOR));
+                .setEnabled(useRealAuthor);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         findPreference(PSK_SYNC_OPTIONS)
                 .setVisible(BuildConfig.ENABLE_STRIP_INFO_LOGIN);
 
@@ -71,7 +74,7 @@ public class StripInfoBePreferencesFragment
             EditTextPreference etp;
 
             etp = findPreference(StripInfoAuth.PK_HOST_USER);
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             etp.setOnBindEditTextListener(editText -> {
                 editText.setInputType(InputType.TYPE_CLASS_TEXT);
                 editText.selectAll();
@@ -79,7 +82,7 @@ public class StripInfoBePreferencesFragment
             etp.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
 
             etp = findPreference(StripInfoAuth.PK_HOST_PASS);
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             etp.setOnBindEditTextListener(editText -> {
                 editText.setInputType(InputType.TYPE_CLASS_TEXT
                                       | InputType.TYPE_TEXT_VARIATION_PASSWORD);
@@ -95,7 +98,7 @@ public class StripInfoBePreferencesFragment
             });
 
             final Context context = getContext();
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             final long id = Bookshelf.getBookshelf(context, Bookshelf.PREFERRED)
                                      .map(Bookshelf::getId)
                                      .orElse((long) Bookshelf.DEFAULT);
@@ -132,7 +135,7 @@ public class StripInfoBePreferencesFragment
             @NonNull final Pair<CharSequence[], CharSequence[]> values) {
 
         final ListPreference p = findPreference(key);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         p.setEntries(values.first);
         p.setEntryValues(values.second);
         p.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());

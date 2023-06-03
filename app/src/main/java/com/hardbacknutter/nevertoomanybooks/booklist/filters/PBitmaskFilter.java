@@ -34,7 +34,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
@@ -89,17 +89,19 @@ public class PBitmaskFilter
 
     @Override
     public boolean isActive(@NonNull final Context context) {
-        if (!GlobalFieldVisibility.isUsed(context, domain.getName())) {
-            return false;
+        final String dbdKey = domain.getName();
+        if (ServiceLocator.getInstance().getGlobalFieldVisibility()
+                          .isShowField(dbdKey).orElse(false)) {
+            return value != null;
         }
+        return false;
 
-        return value != null;
     }
 
     @NonNull
     @Override
     public String getExpression(@NonNull final Context context) {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         if (value.isEmpty()) {
             return "(" + table.dot(domain) + "=0)";
         } else {

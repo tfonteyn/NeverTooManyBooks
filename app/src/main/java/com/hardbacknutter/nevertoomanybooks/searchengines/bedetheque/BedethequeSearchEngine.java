@@ -42,7 +42,6 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpHead;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
@@ -109,7 +108,8 @@ public class BedethequeSearchEngine
 
     @Nullable
     private AuthorResolver getAuthorResolver(@NonNull final Context context) {
-        if (GlobalFieldVisibility.isUsed(context, DBKey.AUTHOR_REAL_AUTHOR)) {
+        if (ServiceLocator.getInstance().getGlobalFieldVisibility()
+                          .isShowField(DBKey.AUTHOR_REAL_AUTHOR).orElse(false)) {
             return new BedethequeAuthorResolver(context, this);
         } else {
             return null;

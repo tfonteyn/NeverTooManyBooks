@@ -29,7 +29,7 @@ import androidx.annotation.StringRes;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
@@ -78,10 +78,13 @@ public class PStringEqualityFilter
 
     @Override
     public boolean isActive(@NonNull final Context context) {
-        if (!GlobalFieldVisibility.isUsed(context, domain.getName())) {
+        final String dbdKey = domain.getName();
+        if (ServiceLocator.getInstance().getGlobalFieldVisibility()
+                          .isShowField(dbdKey).orElse(false)) {
+            return value != null;
+        } else {
             return false;
         }
-        return value != null;
     }
 
     @NonNull
@@ -89,7 +92,7 @@ public class PStringEqualityFilter
     public String getExpression(@NonNull final Context context) {
         // We want to use the exact string, so do not normalize the value,
         // but we do need to handle single quotes as we are concatenating.
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         return table.dot(domain) + "='" + SqlEncode.singleQuotes(value) + '\'';
     }
 

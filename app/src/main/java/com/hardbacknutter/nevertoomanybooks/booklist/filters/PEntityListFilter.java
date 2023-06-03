@@ -36,7 +36,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
@@ -88,10 +88,12 @@ public class PEntityListFilter<T extends Entity>
 
     @Override
     public boolean isActive(@NonNull final Context context) {
-        if (!GlobalFieldVisibility.isUsed(context, domain.getName())) {
-            return false;
+        final String dbdKey = domain.getName();
+        if (ServiceLocator.getInstance().getGlobalFieldVisibility()
+                          .isShowField(dbdKey).orElse(false)) {
+            return !value.isEmpty();
         }
-        return !value.isEmpty();
+        return false;
     }
 
     @Override

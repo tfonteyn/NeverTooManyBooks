@@ -324,15 +324,14 @@ public class ServiceLocator {
     }
 
     @NonNull
-    public FieldVisibility getFieldVisibility() {
+    public FieldVisibility getGlobalFieldVisibility() {
         synchronized (this) {
             if (fieldVisibility == null) {
                 fieldVisibility = new FieldVisibility();
                 final long current = PreferenceManager
                         .getDefaultSharedPreferences(getAppContext())
-                        .getLong(
-                                FieldVisibilityPreferenceFragment.PK_FIELD_VISIBILITY,
-                                FieldVisibility.ALL);
+                        .getLong(FieldVisibilityPreferenceFragment.PK_FIELD_VISIBILITY,
+                                 FieldVisibility.ALL);
 
                 fieldVisibility.setValue(current);
             }

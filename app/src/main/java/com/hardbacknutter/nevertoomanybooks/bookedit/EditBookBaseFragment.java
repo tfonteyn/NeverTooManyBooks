@@ -94,7 +94,7 @@ public abstract class EditBookBaseFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
     }
 
@@ -108,7 +108,7 @@ public abstract class EditBookBaseFragment
                                      Lifecycle.State.RESUMED);
 
         final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final List<Locale> locales = LocaleListUtils.asList(getContext());
         dateParser = new FullDateParser(systemLocale, locales);
         realNumberParser = new RealNumberParser(locales);
@@ -129,14 +129,14 @@ public abstract class EditBookBaseFragment
         // BUT: that new data would not be in the fragment arguments?
         //TODO: double check having book-data bundle in onResume.
         if (book.isNew()) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             vm.addFieldsFromArguments(getContext(), getArguments());
         }
 
         // update the Fields for THIS fragment with their current View instances
         final List<Field<?, ? extends View>> fields = vm.getFields(getFragmentId());
         fields.forEach(field -> {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             field.setParentView(getView());
             field.setAfterFieldChangeListener(null);
         });
@@ -153,7 +153,7 @@ public abstract class EditBookBaseFragment
         fields.forEach(field -> field.setAfterFieldChangeListener(afterChangedListener));
 
         // All views should now have proper visibility set, so fix their focus order.
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         ViewFocusOrder.fix(getView());
 
         final Toolbar toolbar = getToolbar();
@@ -169,7 +169,7 @@ public abstract class EditBookBaseFragment
                 title = "[" + book.getId() + "] " + title;
             }
             toolbar.setTitle(title);
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             toolbar.setSubtitle(Author.getLabel(getContext(), book.getAuthors()));
         }
     }
@@ -191,7 +191,7 @@ public abstract class EditBookBaseFragment
         // Bulk load the data into the Views.
 
         // do NOT call notifyIfChanged, as this is the initial load
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         fields.stream()
               .filter(Field::isAutoPopulated)
               .forEach(field -> field.setInitialValue(getContext(), book, realNumberParser));
@@ -295,12 +295,10 @@ public abstract class EditBookBaseFragment
                                     final int endTitleId,
                                     @IdRes final int endFieldId) {
 
-        final Context context = getContext();
         final Field<String, TextView> startField = vm.requireField(startFieldId);
-        //noinspection ConstantConditions
-        final boolean startFieldIsUsed = startField.isUsed(context);
+        final boolean startFieldIsUsed = startField.isUsed();
         final Field<String, TextView> endField = vm.requireField(endFieldId);
-        final boolean endFieldIsUsed = endField.isUsed(context);
+        final boolean endFieldIsUsed = endField.isUsed();
 
         if (startFieldIsUsed) {
             // Always a single date picker for the start-date
@@ -334,8 +332,7 @@ public abstract class EditBookBaseFragment
                                @IdRes final int fieldId) {
 
         final Field<String, TextView> field = vm.requireField(fieldId);
-        //noinspection ConstantConditions
-        if (field.isUsed(getContext())) {
+        if (field.isUsed()) {
             final SingleDatePicker dp = new SingleDatePicker(getChildFragmentManager(),
                                                              pickerTitleId, fieldId);
             dp.setDateParser(dateParser, true);
@@ -355,8 +352,7 @@ public abstract class EditBookBaseFragment
     private void addPartialDatePicker(@StringRes final int pickerTitleId,
                                       @IdRes final int fieldId) {
         final Field<String, TextView> field = vm.requireField(fieldId);
-        //noinspection ConstantConditions
-        if (field.isUsed(getContext())) {
+        if (field.isUsed()) {
             field.requireView().setOnClickListener(v -> partialDatePickerLauncher
                     .launch(pickerTitleId, field.getFieldViewId(), field.getValue(), false));
         }
@@ -395,7 +391,7 @@ public abstract class EditBookBaseFragment
         @Override
         public void onCreateMenu(@NonNull final Menu menu,
                                  @NonNull final MenuInflater menuInflater) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             vm.getMenuHandlers().forEach(h -> h.onCreateMenu(getContext(), menu, menuInflater));
         }
 
@@ -404,7 +400,7 @@ public abstract class EditBookBaseFragment
             final Context context = getContext();
             final Book book = vm.getBook();
 
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             vm.getMenuHandlers().forEach(h -> h.onPrepareMenu(context, menu, book));
         }
 
@@ -413,7 +409,7 @@ public abstract class EditBookBaseFragment
             final Context context = getContext();
             final Book book = vm.getBook();
 
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             return vm.getMenuHandlers().stream()
                      .anyMatch(h -> h.onMenuItemSelected(context, menuItem, book));
         }

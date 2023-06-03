@@ -36,6 +36,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
@@ -277,11 +278,15 @@ public abstract class BaseStyle
             case List:
                 return listFieldVisibility
                         .isShowField(dbKey)
-                        .orElseGet(() -> GlobalFieldVisibility.isUsed(context, dbKey));
+                        .orElseGet(() -> ServiceLocator.getInstance().getGlobalFieldVisibility()
+                                                       .isShowField(dbKey)
+                                                       .orElse(false));
             case Detail:
                 return detailsFieldVisibility
                         .isShowField(dbKey)
-                        .orElseGet(() -> GlobalFieldVisibility.isUsed(context, dbKey));
+                        .orElseGet(() -> ServiceLocator.getInstance().getGlobalFieldVisibility()
+                                                       .isShowField(dbKey)
+                                                       .orElse(false));
         }
         throw new IllegalArgumentException();
     }

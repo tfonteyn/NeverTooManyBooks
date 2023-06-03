@@ -48,7 +48,6 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
@@ -225,7 +224,9 @@ public class EditBookViewModel
                                            SqlEncode.date(LocalDateTime.now()));
                         }
                         // if BOOK_CONDITION is wanted, assume the user got a new book.
-                        if (GlobalFieldVisibility.isUsed(context, DBKey.BOOK_CONDITION)
+                        if (ServiceLocator.getInstance().getGlobalFieldVisibility()
+                                          .isShowField(DBKey.BOOK_CONDITION)
+                                          .orElse(false)
                             && !book.contains(DBKey.BOOK_CONDITION)) {
                             book.putInt(DBKey.BOOK_CONDITION, Book.CONDITION_AS_NEW);
                         }
