@@ -24,8 +24,6 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
-import java.util.Set;
-
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
 //TODO: remove the isUsed method, and use this class properly + migrate the dozen prefs to just one
@@ -36,58 +34,8 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 // Direct usage of this class BYPASSES the style settings!
 // Normal usage is to ask the style, which can fallback to the global setting automatically.
 //
-public class GlobalFieldVisibility
-        extends FieldVisibility {
+public final class GlobalFieldVisibility {
 
-    /**
-     * NEWTHINGS: new fields visibility.
-     * <p>
-     * Must be kept in sync with R.xml.preferences_field_visibility
-     */
-    private static final Set<String> KEYS = Set.of(
-            DBKey.COVER[0],
-            DBKey.COVER[1],
-            DBKey.FK_AUTHOR,
-            DBKey.FK_BOOKSHELF,
-
-            DBKey.FK_SERIES,
-            DBKey.FK_PUBLISHER,
-            // represents "lending functionality enabled"
-            DBKey.LOANEE_NAME,
-            DBKey.AUTHOR_TYPE__BITMASK,
-
-            DBKey.BOOK_CONDITION,
-            DBKey.BOOK_CONDITION_COVER,
-            DBKey.BOOK_ISBN,
-            DBKey.BOOK_PUBLICATION__DATE,
-
-            DBKey.COLOR,
-            DBKey.DESCRIPTION,
-            DBKey.EDITION__BITMASK,
-            DBKey.FIRST_PUBLICATION__DATE,
-
-            DBKey.FORMAT,
-            DBKey.GENRE,
-            DBKey.LANGUAGE,
-            DBKey.LOCATION,
-
-            DBKey.PAGE_COUNT,
-            DBKey.PRICE_LISTED,
-            DBKey.PRICE_PAID,
-            DBKey.PERSONAL_NOTES,
-
-            DBKey.RATING,
-            DBKey.READ_START__DATE,
-            DBKey.READ_END__DATE,
-            DBKey.SIGNED__BOOL,
-
-            DBKey.FK_TOC_ENTRY,
-            DBKey.DATE_ADDED__UTC,
-            DBKey.DATE_LAST_UPDATED__UTC,
-            DBKey.TITLE_ORIGINAL_LANG);
-
-    /** All visible by default. */
-    public static final long DEFAULT = getBitValue(KEYS);
 
     /**
      * Users can select which fields they use / don't want to use.
@@ -102,12 +50,9 @@ public class GlobalFieldVisibility
             PREFS_PREFIX_FIELD_VISIBILITY + DBKey.COVER[1]
     };
 
-    /**
-     * Constructor.
-     */
-    GlobalFieldVisibility() {
-        super(KEYS, DEFAULT);
+    private GlobalFieldVisibility() {
     }
+
 
     /**
      * Is the field in use; i.e. is it enabled in the user-preferences.
