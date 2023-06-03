@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -41,6 +40,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -62,9 +62,11 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookshelfDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.CalibreCustomFieldDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
+import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildIndexesTask;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.settings.FieldVisibilityPreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
@@ -91,7 +93,7 @@ public class DBHelper
         extends SQLiteOpenHelper {
 
     /** Current version. */
-    public static final int DATABASE_VERSION = 24;
+    public static final int DATABASE_VERSION = 25;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -155,7 +157,7 @@ public class DBHelper
 
     /**
      * Wrapper to allow
-     * {@link com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildIndexesTask}.
+     * {@link RebuildIndexesTask}.
      * safe access to the database.
      */
     public static void recreateIndices() {
@@ -203,21 +205,38 @@ public class DBHelper
     }
 
     /**
-     * This method removes all keys which were declared obsolete.
+     * Migrate and remove all keys which were declared obsolete.
      *
      * @param context Current context
      */
-    public static void removeObsoleteKeys(@NonNull final Context context) {
+    public static void migratePreferenceKeys(@NonNull final Context context) {
 
-        final SharedPreferences prefs = PreferenceManager
-                .getDefaultSharedPreferences(context);
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
+        // db version 25
+        final Pattern dot = Pattern.compile(".");
+        final long visibilityBitmask = prefs.getAll()
+                                            .keySet()
+                                            .stream()
+                                            .filter(key -> key.startsWith("fields.visibility."))
+                                            .filter(key -> prefs.getBoolean(key, true))
+                                            .map(key -> dot.split(key, 3)[2])
+                                            .map(FieldVisibility::getBitValue)
+                                            .mapToLong(value -> value)
+                                            .sum();
+        prefs.edit()
+             .putLong(FieldVisibilityPreferenceFragment.PK_FIELD_VISIBILITY, visibilityBitmask)
+             .apply();
+
+
+        // Now remove all obsolete keys.
         final SharedPreferences.Editor editor = prefs.edit();
 
         prefs.getAll()
              .keySet()
              .stream()
-             .filter(key -> key.startsWith("style.booklist."))
+             .filter(key -> key.startsWith("style.booklist.")
+                            || key.startsWith("fields.visibility."))
              .forEach(editor::remove);
 
         editor.remove("tips.tip.BOOKLIST_STYLES_EDITOR")
@@ -255,9 +274,6 @@ public class DBHelper
               .remove("startup.lastVersion")
               .remove("tmp.edit.book.tab.authSer")
               .remove("ui.messages.use")
-
-              .remove("fields.visibility.bookshelf")
-              .remove("fields.visibility.read")
 
               // Editing the URL for these sites has been removed.
               .remove(EngineId.Isfdb.getPreferenceKey() + '.' + Prefs.pk_host_url)
@@ -613,7 +629,6 @@ public class DBHelper
      * <p>
      * {@inheritDoc}
      */
-    @SuppressLint("ApplySharedPref")
     @Override
     public void onUpgrade(@NonNull final SQLiteDatabase db,
                           final int oldVersion,
@@ -692,7 +707,7 @@ public class DBHelper
             global.edit()
                   .putBoolean("fields.visibility." + DBKey.FK_SERIES, visSeries)
                   .putBoolean("fields.visibility." + DBKey.FK_PUBLISHER, visPublisher)
-                  .commit();
+                  .apply();
 
 
             TBL_BOOKLIST_STYLES.alterTableAddColumns(
@@ -845,6 +860,8 @@ public class DBHelper
             final SharedPreferences prefs = PreferenceManager
                     .getDefaultSharedPreferences(context);
 
+            // Note that migratePreferenceKeys() did not exist at this time
+            // Not going to bother with retro-active doing this.
             // convert the old bit ids to the preference-key of the engine
             Stream.of("search.siteOrder.data",
                       "search.siteOrder.covers",
@@ -900,6 +917,9 @@ public class DBHelper
         if (oldVersion < 24) {
             TBL_BOOKS.alterTableAddColumns(db, DBDefinitions.DOM_TITLE_ORIGINAL_LANG);
         }
+        if (oldVersion < 25) {
+            LoggerFactory.getLogger().w(TAG, "Upgrade to db=25");
+        }
 
         //TODO: if at a future time we make a change that requires to copy/reload the books table:
         // 1. remove the column "books.clb_uuid"
@@ -908,8 +928,7 @@ public class DBHelper
         //NEWTHINGS: adding a new search engine: optional: add external id DOM
         //TBL_BOOKS.alterTableAddColumn(db, DBDefinitions.DOM_your_engine_external_id);
 
-
-        removeObsoleteKeys(context);
+        migratePreferenceKeys(context);
 
         // Rebuild all indices
         recreateIndices(db);

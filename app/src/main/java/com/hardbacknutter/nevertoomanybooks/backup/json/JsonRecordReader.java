@@ -298,8 +298,8 @@ public class JsonRecordReader
             // The coder itself will set/update the values directly.
             new SharedPreferencesCoder(PreferenceManager.getDefaultSharedPreferences(context))
                     .decode(jsonRoot);
-            // Make sure obsolete keys are removed
-            DBHelper.removeObsoleteKeys(context);
+            // Migrate/remove any obsolete keys
+            DBHelper.migratePreferenceKeys(context);
             results.preferences = 1;
         }
     }

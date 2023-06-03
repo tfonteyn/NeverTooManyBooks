@@ -27,10 +27,14 @@ import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceDataStore;
+import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreference;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
 /**
  * Used/defined in xml/preferences.xml
@@ -40,22 +44,32 @@ public class FieldVisibilityPreferenceFragment
         extends BasePreferenceFragment
         implements SharedPreferences.OnSharedPreferenceChangeListener {
 
+    public static final String PK_FIELD_VISIBILITY = "fields.visibility";
+
     @NonNull
     private final SwitchPreference[] pCovers = new SwitchPreference[2];
     private SettingsViewModel vm;
+    private VSDataStore dataStore;
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
+
+        // redirect storage to a single long value
+        // This MUST be done in onCreate/onCreatePreferences
+        // and BEFORE we inflate the xml screen definition
+        dataStore = new VSDataStore();
+        dataStore.setValue(getCurrent());
+        getPreferenceManager().setPreferenceDataStore(dataStore);
 
         setPreferencesFromResource(R.xml.preferences_field_visibility, rootKey);
 
-        pCovers[0] = findPreference(GlobalFieldVisibility.PREFS_COVER_VISIBILITY_KEY[0]);
-        pCovers[1] = findPreference(GlobalFieldVisibility.PREFS_COVER_VISIBILITY_KEY[1]);
+        pCovers[0] = findPreference(DBKey.COVER[0]);
+        pCovers[1] = findPreference(DBKey.COVER[1]);
 
         pCovers[0].setOnPreferenceChangeListener((preference, newValue) -> {
             if (newValue instanceof Boolean && !(Boolean) newValue) {
@@ -65,19 +79,31 @@ public class FieldVisibilityPreferenceFragment
         });
     }
 
+    private long getCurrent() {
+        //noinspection DataFlowIssue
+        return PreferenceManager.getDefaultSharedPreferences(getContext())
+                                .getLong(PK_FIELD_VISIBILITY, FieldVisibility.ALL);
+    }
+
     @Override
     public void onResume() {
         super.onResume();
-        //noinspection ConstantConditions
-        getPreferenceScreen().getSharedPreferences()
-                             .registerOnSharedPreferenceChangeListener(this);
+        dataStore.setValue(getCurrent());
+
+        //noinspection DataFlowIssue
+        PreferenceManager.getDefaultSharedPreferences(getContext())
+                         .registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     public void onPause() {
-        //noinspection ConstantConditions
-        getPreferenceScreen().getSharedPreferences()
-                             .unregisterOnSharedPreferenceChangeListener(this);
+        //noinspection DataFlowIssue
+        final SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(getContext());
+        prefs.unregisterOnSharedPreferenceChangeListener(this);
+        prefs.edit()
+             .putLong(PK_FIELD_VISIBILITY, dataStore.getValue())
+             .apply();
         super.onPause();
     }
 
@@ -87,5 +113,37 @@ public class FieldVisibilityPreferenceFragment
                                           @NonNull final String key) {
         // Changing ANY field visibility will usually require recreating the activity
         vm.setOnBackRequiresActivityRecreation();
+    }
+
+
+    private static class VSDataStore
+            extends PreferenceDataStore {
+
+        @NonNull
+        private final FieldVisibility fieldVisibility;
+
+        VSDataStore() {
+            fieldVisibility = ServiceLocator.getInstance().getFieldVisibility();
+        }
+
+        long getValue() {
+            return fieldVisibility.getValue();
+        }
+
+        void setValue(final long value) {
+            fieldVisibility.setValue(value);
+        }
+
+        @Override
+        public void putBoolean(@NonNull final String key,
+                               final boolean value) {
+            fieldVisibility.setShowField(key, value);
+        }
+
+        @Override
+        public boolean getBoolean(@NonNull final String key,
+                                  final boolean defValue) {
+            return fieldVisibility.isShowField(key).orElse(true);
+        }
     }
 }

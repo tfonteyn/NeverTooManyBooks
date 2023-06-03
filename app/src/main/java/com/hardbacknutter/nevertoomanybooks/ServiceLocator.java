@@ -27,12 +27,14 @@ import android.os.LocaleList;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.network.NetworkChecker;
@@ -82,6 +84,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StripInfoDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TocEntryDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkCheckerImpl;
+import com.hardbacknutter.nevertoomanybooks.settings.FieldVisibilityPreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocaleImpl;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
@@ -178,7 +181,8 @@ public class ServiceLocator {
     private StyleDao styleDao;
     @Nullable
     private TocEntryDao tocEntryDao;
-
+    @Nullable
+    private FieldVisibility fieldVisibility;
 
     /**
      * Private constructor.
@@ -225,7 +229,6 @@ public class ServiceLocator {
         //noinspection StaticVariableUsedBeforeInitialization
         return sInstance;
     }
-
 
     /**
      * Get the Application Context <strong>with the device Locale</strong>.
@@ -318,6 +321,23 @@ public class ServiceLocator {
             }
         }
         return languages;
+    }
+
+    @NonNull
+    public FieldVisibility getFieldVisibility() {
+        synchronized (this) {
+            if (fieldVisibility == null) {
+                fieldVisibility = new FieldVisibility();
+                final long current = PreferenceManager
+                        .getDefaultSharedPreferences(getAppContext())
+                        .getLong(
+                                FieldVisibilityPreferenceFragment.PK_FIELD_VISIBILITY,
+                                FieldVisibility.ALL);
+
+                fieldVisibility.setValue(current);
+            }
+        }
+        return fieldVisibility;
     }
 
     /**

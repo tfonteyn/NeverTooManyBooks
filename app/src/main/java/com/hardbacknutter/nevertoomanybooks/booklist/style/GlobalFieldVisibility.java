@@ -22,33 +22,16 @@ package com.hardbacknutter.nevertoomanybooks.booklist.style;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.preference.PreferenceManager;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
-//TODO: remove the isUsed method, and use this class properly + migrate the dozen prefs to just one
-// however.. we'd then need to implement a DataStore to use in the Preferences class,
-// to convert them into a single preference... and setting a DataStore
-// on individual preferences is permanently broken https://issuetracker.google.com/issues/232206237
-//
 // Direct usage of this class BYPASSES the style settings!
 // Normal usage is to ask the style, which can fallback to the global setting automatically.
 //
-public final class GlobalFieldVisibility {
+public final class GlobalFieldVisibility
+        extends FieldVisibility {
 
-
-    /**
-     * Users can select which fields they use / don't want to use.
-     * Each field has an entry in the Preferences.
-     * The key is suffixed with the name of the field.
-     */
-    private static final String PREFS_PREFIX_FIELD_VISIBILITY = "fields.visibility.";
-    public static final String[] PREFS_COVER_VISIBILITY_KEY = {
-            // fields.visibility.thumbnail.0
-            PREFS_PREFIX_FIELD_VISIBILITY + DBKey.COVER[0],
-            // fields.visibility.thumbnail.1
-            PREFS_PREFIX_FIELD_VISIBILITY + DBKey.COVER[1]
-    };
 
     private GlobalFieldVisibility() {
     }
@@ -64,7 +47,8 @@ public final class GlobalFieldVisibility {
      */
     public static boolean isUsed(@NonNull final Context context,
                                  @NonNull final String dbdKey) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(PREFS_PREFIX_FIELD_VISIBILITY + dbdKey, true);
+        return ServiceLocator.getInstance().getFieldVisibility()
+                             .isShowField(dbdKey)
+                             .orElse(false);
     }
 }

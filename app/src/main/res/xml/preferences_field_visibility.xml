@@ -40,7 +40,7 @@
         <!-- bit: 0 -->
         <SwitchPreference
             android:defaultValue="true"
-            android:key="fields.visibility.thumbnail.0"
+            android:key="thumbnail.0"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_cover_front" />
@@ -48,8 +48,8 @@
         <!-- bit: 1 -->
         <SwitchPreference
             android:defaultValue="true"
-            android:dependency="fields.visibility.thumbnail.0"
-            android:key="fields.visibility.thumbnail.1"
+            android:dependency="thumbnail.0"
+            android:key="thumbnail.1"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_cover_back" />
@@ -60,7 +60,7 @@
         <!-- bit: 4; Series name includes Series 'isComplete' and Series number. -->
         <SwitchPreference
             android:defaultValue="true"
-            android:key="fields.visibility.series_id"
+            android:key="series_id"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_series" />
@@ -68,7 +68,7 @@
         <!-- bit: 5 -->
         <SwitchPreference
             android:defaultValue="true"
-            android:key="fields.visibility.publisher_id"
+            android:key="publisher_id"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_publisher" />
@@ -76,7 +76,7 @@
         <!-- bit: 6 -->
         <SwitchPreference
             android:defaultValue="true"
-            android:key="fields.visibility.anthology"
+            android:key="anthology"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_table_of_content" />
@@ -86,7 +86,7 @@
         <!-- bit: 8 -->
         <SwitchPreference
             android:defaultValue="true"
-            android:key="fields.visibility.author_type"
+            android:key="author_type"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_author_type" />
@@ -94,7 +94,7 @@
         <!-- bit: 9 -->
         <SwitchPreference
             android:defaultValue="true"
-            android:key="fields.visibility.cond_bk"
+            android:key="cond_bk"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_condition" />
@@ -102,7 +102,7 @@
         <!-- bit: 10 -->
         <SwitchPreference
             android:defaultValue="true"
-            android:key="fields.visibility.cond_cvr"
+            android:key="cond_cvr"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_dust_cover" />
@@ -110,7 +110,7 @@
         <!-- bit: 11 -->
         <SwitchPreference
             android:defaultValue="true"
-            android:key="fields.visibility.isbn"
+            android:key="isbn"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_isbn" />
@@ -118,7 +118,7 @@
         <!-- bit: 12 -->
         <SwitchPreference
             android:defaultValue="true"
-            android:key="fields.visibility.date_published"
+            android:key="date_published"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_date_published" />
@@ -126,7 +126,7 @@
         <!-- bit: 13 -->
         <SwitchPreference
             android:defaultValue="true"
-            android:key="fields.visibility.color"
+            android:key="color"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_color" />
@@ -134,7 +134,7 @@
         <!-- bit: 14 -->
         <SwitchPreference
             android:defaultValue="true"
-            android:key="fields.visibility.description"
+            android:key="description"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_description" />
@@ -142,7 +142,7 @@
         <!-- bit: 15 -->
         <SwitchPreference
             android:defaultValue="true"
-            android:key="fields.visibility.edition_bm"
+            android:key="edition_bm"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_edition" />
@@ -150,7 +150,7 @@
         <!-- bit: 16 -->
         <SwitchPreference
             android:defaultValue="true"
-            android:key="fields.visibility.first_publication"
+            android:key="first_publication"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_date_first_publication" />
@@ -158,7 +158,7 @@
         <!-- bit: 17 -->
         <SwitchPreference
             android:defaultValue="true"
-            android:key="fields.visibility.format"
+            android:key="format"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_format" />
@@ -166,7 +166,7 @@
         <!-- bit: 18 -->
         <SwitchPreference
             android:defaultValue="true"
-            android:key="fields.visibility.genre"
+            android:key="genre"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_genre" />
@@ -174,7 +174,7 @@
         <!-- bit: 19 -->
         <SwitchPreference
             android:defaultValue="true"
-            android:key="fields.visibility.language"
+            android:key="language"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_language" />
@@ -182,7 +182,7 @@
         <!-- bit: 20 -->
         <SwitchPreference
             android:defaultValue="true"
-            android:key="fields.visibility.location"
+            android:key="location"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_location" />
@@ -190,7 +190,7 @@
         <!-- bit: 21 -->
         <SwitchPreference
             android:defaultValue="true"
-            android:key="fields.visibility.pages"
+            android:key="pages"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_pages" />
@@ -198,7 +198,7 @@
         <!-- bit: 22 -->
         <SwitchPreference
             android:defaultValue="true"
-            android:key="fields.visibility.list_price"
+            android:key="list_price"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_price_listed" />
@@ -206,7 +206,7 @@
         <!-- bit: 23 -->
         <SwitchPreference
             android:defaultValue="true"
-            android:key="fields.visibility.price_paid"
+            android:key="price_paid"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_price_paid" />
@@ -214,7 +214,7 @@
         <!-- bit: 24 -->
         <SwitchPreference
             android:defaultValue="true"
-            android:key="fields.visibility.notes"
+            android:key="notes"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_personal_notes" />
@@ -222,7 +222,7 @@
         <!-- bit: 25 -->
         <SwitchPreference
             android:defaultValue="true"
-            android:key="fields.visibility.rating"
+            android:key="rating"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_rating" />
@@ -230,7 +230,7 @@
         <!-- bit: 26 -->
         <SwitchPreference
             android:defaultValue="true"
-            android:key="fields.visibility.signed"
+            android:key="signed"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_signed" />
@@ -240,7 +240,7 @@
         <!-- bit: 28 -->
         <SwitchPreference
             android:defaultValue="true"
-            android:key="fields.visibility.read_start"
+            android:key="read_start"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_read_start" />
@@ -248,7 +248,7 @@
         <!-- bit: 29 -->
         <SwitchPreference
             android:defaultValue="true"
-            android:key="fields.visibility.read_end"
+            android:key="read_end"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_read_end" />
@@ -256,7 +256,7 @@
         <!-- bit: 30 -->
         <SwitchPreference
             android:defaultValue="true"
-            android:key="fields.visibility.date_added"
+            android:key="date_added"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_date_added" />
@@ -264,7 +264,7 @@
         <!-- bit: 31 -->
         <SwitchPreference
             android:defaultValue="true"
-            android:key="fields.visibility.last_update_date"
+            android:key="last_update_date"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_date_last_updated" />
@@ -272,7 +272,7 @@
         <!-- bit: 32 -->
         <SwitchPreference
             android:defaultValue="true"
-            android:key="fields.visibility.title_original_lang"
+            android:key="title_original_lang"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_original_title" />
@@ -280,7 +280,7 @@
         <!-- bit: 33; Authors are always visible, but the user can hide the type/pseudonym. -->
         <SwitchPreference
             android:defaultValue="true"
-            android:key="fields.visibility.real_author"
+            android:key="real_author"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_author_pseudonym" />

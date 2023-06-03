@@ -144,6 +144,8 @@ public class FieldVisibility {
             R.string.lbl_author_pseudonym
     );
 
+    public static final long ALL = getBitValue(Set.copyOf(DB_KEYS));
+
     @NonNull
     private final Set<String> keys;
     private long bits;
