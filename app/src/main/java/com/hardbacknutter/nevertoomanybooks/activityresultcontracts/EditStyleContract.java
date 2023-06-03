@@ -73,6 +73,11 @@ public class EditStyleContract
     /**
      * Create the result which {@link #parseResult(int, Intent)} will receive.
      *
+     * @param templateUuid uuid of the original style we cloned (different from current)
+     *                     or edited (same as current).
+     * @param modified     flag; whether the style was modified (either created ot updated)
+     * @param uuid         uuid of the modified (or newly created) style
+     *
      * @return Intent
      */
     @NonNull
@@ -101,7 +106,7 @@ public class EditStyleContract
                                         @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             LoggerFactory.getLogger()
-                          .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
+                         .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
