@@ -34,7 +34,7 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
-public abstract class FieldVisibility {
+public class FieldVisibility {
 
     /**
      * All keys which support visibility configuration.
@@ -93,7 +93,9 @@ public abstract class FieldVisibility {
             DBKey.DATE_LAST_UPDATED__UTC,
 
             // bit 32..35
-            DBKey.TITLE_ORIGINAL_LANG
+            DBKey.TITLE_ORIGINAL_LANG,
+            // represents "show the real author if 'this' is a pen-name"
+            DBKey.AUTHOR_REAL_AUTHOR
     );
 
     /** Simple mapping for {@link #DB_KEYS} to the label to show the user. */
@@ -137,7 +139,9 @@ public abstract class FieldVisibility {
             R.string.lbl_read_end,
             R.string.lbl_date_added,
             R.string.lbl_date_last_updated,
-            R.string.lbl_original_title
+
+            R.string.lbl_original_title,
+            R.string.lbl_author_pseudonym
     );
 
     @NonNull
@@ -145,7 +149,15 @@ public abstract class FieldVisibility {
     private long bits;
 
     /**
-     * Constructor.
+     * Constructor: use all fields.
+     */
+    protected FieldVisibility() {
+        this.keys = Set.copyOf(DB_KEYS);
+        bits = getBitValue(this.keys);
+    }
+
+    /**
+     * Constructor: use the given subset of keys.
      *
      * @param keys     the (sub)set of keys supported for this instance
      * @param defValue the bitmask with the defaults for this instance
@@ -242,6 +254,7 @@ public abstract class FieldVisibility {
      * @param dbKey to set
      * @param show  flag
      */
+    @SuppressWarnings("WeakerAccess")
     public void setShowField(@NonNull final String dbKey,
                              final boolean show) {
         if (keys.contains(dbKey)) {
