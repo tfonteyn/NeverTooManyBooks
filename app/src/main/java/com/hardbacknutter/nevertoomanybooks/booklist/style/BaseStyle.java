@@ -36,6 +36,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
@@ -287,6 +288,11 @@ public abstract class BaseStyle
                         .orElseGet(() -> ServiceLocator.getInstance().getGlobalFieldVisibility()
                                                        .isShowField(dbKey)
                                                        .orElse(false));
+
+            case Global:
+                return ServiceLocator.getInstance().getGlobalFieldVisibility()
+                                     .isShowField(dbKey)
+                                     .orElse(false);
         }
         throw new IllegalArgumentException();
     }
@@ -298,8 +304,16 @@ public abstract class BaseStyle
             case List:
                 listFieldVisibility.setShowField(dbKey, show);
                 break;
+
             case Detail:
                 detailsFieldVisibility.setShowField(dbKey, show);
+                break;
+
+            case Global:
+                if (BuildConfig.DEBUG /* always */) {
+                    throw new IllegalArgumentException("Setting global value not allowed here");
+                }
+                // ignore
                 break;
         }
     }
@@ -311,6 +325,8 @@ public abstract class BaseStyle
                 return listFieldVisibility.getValue();
             case Detail:
                 return detailsFieldVisibility.getValue();
+            case Global:
+                return ServiceLocator.getInstance().getGlobalFieldVisibility().getValue();
         }
         throw new IllegalArgumentException();
     }
@@ -324,6 +340,12 @@ public abstract class BaseStyle
             case Detail:
                 detailsFieldVisibility.setValue(bitmask);
                 break;
+            case Global:
+                if (BuildConfig.DEBUG /* always */) {
+                    throw new IllegalArgumentException("Setting global value not allowed here");
+                }
+                // ignore
+                break;
         }
     }
 
@@ -336,6 +358,12 @@ public abstract class BaseStyle
                 return listFieldVisibility.getSummaryText(context);
             case Detail:
                 return detailsFieldVisibility.getSummaryText(context);
+            case Global:
+                if (BuildConfig.DEBUG /* always */) {
+                    throw new IllegalArgumentException("Setting global value not allowed here");
+                }
+                // ignore
+                return "";
         }
         throw new IllegalArgumentException();
     }

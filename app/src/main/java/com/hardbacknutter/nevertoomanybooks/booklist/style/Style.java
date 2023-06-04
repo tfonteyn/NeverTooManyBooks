@@ -356,6 +356,8 @@ public interface Style {
      * Which visibility options to use from the user preferences/style.
      */
     enum Screen {
+        /** Bypass the style and use the global setting. */
+        Global,
         /** Based on Style, for use in a list/adapter. */
         List,
         /** Based on Style, for use on a details screen, dialog, ... */
