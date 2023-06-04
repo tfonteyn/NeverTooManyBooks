@@ -120,12 +120,12 @@ public class BooklistNodeDao {
             if (topLevel == 1) {
                 if (expand) {
                     // expand and show all levels
-                    updateAllNodesForLevel(">=", topLevel, true, true);
+                    updateAllNodesForLevel(">=", 1, true, true);
                 } else {
                     // collapse level 1, but keep it visible.
-                    updateAllNodesForLevel("=", topLevel, false, true);
+                    updateAllNodesForLevel("=", 1, false, true);
                     // collapse and hide all other levels
-                    updateAllNodesForLevel(">", topLevel, false, false);
+                    updateAllNodesForLevel(">", 1, false, false);
                 }
 
             } else /* topLevel > 1 */ {
