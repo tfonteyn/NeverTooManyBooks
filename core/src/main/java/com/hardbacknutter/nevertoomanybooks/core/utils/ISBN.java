@@ -92,8 +92,6 @@ public class ISBN {
     private static final String TAG = "ISBN";
 
     private static final String ERROR_WRONG_SIZE = "Wrong size: ";
-    private static final String ERROR_UNABLE_TO_CONVERT =
-            "Unable to convert type: %1$s to %2$s";
     private static final String ERROR_X_CAN_ONLY_BE_AT_THE_END_OF_AN_ISBN_10 =
             "X can only be at the end of an ISBN-10";
 
@@ -498,8 +496,7 @@ public class ISBN {
                 break;
         }
 
-        throw new NumberFormatException(
-                String.format(ERROR_UNABLE_TO_CONVERT, codeType, type));
+        throw new NumberFormatException("Unable to convert type: " + codeType + " to " + type);
     }
 
     /**
