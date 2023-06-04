@@ -165,8 +165,8 @@ class GoogleBooksEntryHandler
     private static final String TAG = "GoogleBooksEntryHandler";
 
     /**
-     * Contains a direct link to this entry.
-     * <id>http://www.google.com/books/feeds/volumes/IVnpNAAACAAJ</id>
+     * Contains a direct link to the entry.<br>
+     * {@code <id>http://www.google.com/books/feeds/volumes/IVnpNAAACAAJ</id>}
      */
     private static final String ID = "id";
     /** <dc:creator>Jack Vance</dc:creator>. */
