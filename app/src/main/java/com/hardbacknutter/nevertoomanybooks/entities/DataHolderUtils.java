@@ -112,7 +112,7 @@ public final class DataHolderUtils {
         if (result != null) {
             return result;
         }
-        throw new IllegalArgumentException("DataHolder does not contains a Publisher");
+        throw new IllegalArgumentException("DataHolder does not contain any Author");
     }
 
     /**
@@ -155,7 +155,7 @@ public final class DataHolderUtils {
         if (result != null) {
             return result;
         }
-        throw new IllegalArgumentException("DataHolder does not contains a Series");
+        throw new IllegalArgumentException("DataHolder does not contain any Series");
     }
 
     /**
@@ -198,7 +198,7 @@ public final class DataHolderUtils {
         if (result != null) {
             return result;
         }
-        throw new IllegalArgumentException("DataHolder does not contains a Bookshelf");
+        throw new IllegalArgumentException("DataHolder does not contain any Bookshelf");
     }
 
     /**
@@ -242,7 +242,7 @@ public final class DataHolderUtils {
         if (result != null) {
             return result;
         }
-        throw new IllegalArgumentException("DataHolder does not contains a Publisher");
+        throw new IllegalArgumentException("DataHolder does not contain any Publisher");
     }
 
     /**
@@ -260,6 +260,6 @@ public final class DataHolderUtils {
         if (bookId > 0) {
             return Book.from(bookId);
         }
-        throw new IllegalArgumentException("DataHolder does not contains a Book");
+        throw new IllegalArgumentException("DataHolder does not contain any Book");
     }
 }
