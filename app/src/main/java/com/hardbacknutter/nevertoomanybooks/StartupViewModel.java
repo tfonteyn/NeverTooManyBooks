@@ -81,11 +81,11 @@ public class StartupViewModel
     /** Number of times the app has been started. */
     private static final String PK_STARTUP_COUNT = "startup.startCount";
 
-    private final MutableLiveData<LiveDataEvent<Boolean>> finishedLiveData =
+    private final MutableLiveData<LiveDataEvent<Boolean>> onFinished =
             new MutableLiveData<>();
-    private final MutableLiveData<LiveDataEvent<TaskResult<Throwable>>> failureLiveData =
+    private final MutableLiveData<LiveDataEvent<TaskResult<Throwable>>> onFailure =
             new MutableLiveData<>();
-    private final MutableLiveData<TaskProgress> progressLiveData =
+    private final MutableLiveData<TaskProgress> onProgress =
             new MutableLiveData<>();
 
     /** TaskId holder. Added when started. Removed when stopped. */
@@ -120,14 +120,14 @@ public class StartupViewModel
             synchronized (allTasks) {
                 allTasks.remove(taskId);
                 if (!isRunning()) {
-                    finishedLiveData.setValue(new LiveDataEvent<>(true));
+                    onFinished.setValue(new LiveDataEvent<>(true));
                 }
             }
         }
 
         @Override
         public void onProgress(@NonNull final TaskProgress message) {
-            progressLiveData.setValue(message);
+            onProgress.setValue(message);
         }
     };
 
@@ -278,7 +278,7 @@ public class StartupViewModel
      */
     @NonNull
     public LiveData<LiveDataEvent<Boolean>> onFinished() {
-        return finishedLiveData;
+        return onFinished;
     }
 
     /**
@@ -288,7 +288,7 @@ public class StartupViewModel
      */
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<Throwable>>> onFailure() {
-        return failureLiveData;
+        return onFailure;
     }
 
     /**
@@ -298,7 +298,7 @@ public class StartupViewModel
      */
     @NonNull
     public LiveData<TaskProgress> onProgress() {
-        return progressLiveData;
+        return onProgress;
     }
 
     public interface StartupTask {
