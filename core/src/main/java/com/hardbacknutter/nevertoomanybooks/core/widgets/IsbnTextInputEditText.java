@@ -29,6 +29,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -73,13 +74,13 @@ public class IsbnTextInputEditText
     }
 
     public IsbnTextInputEditText(@NonNull final Context context,
-                                 final AttributeSet attrs) {
+                                 @Nullable final AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
     public IsbnTextInputEditText(@NonNull final Context context,
-                                 final AttributeSet attrs,
+                                 @Nullable final AttributeSet attrs,
                                  final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
@@ -138,13 +139,13 @@ public class IsbnTextInputEditText
         if (keyCode == KeyEvent.KEYCODE_DEL) {
             if (start < end) {
                 // We have a selection. Delete it.
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 getText().replace(start, end, "");
                 setSelection(start, start);
             } else {
                 // Delete char before cursor
                 if (start > 0) {
-                    //noinspection ConstantConditions
+                    //noinspection DataFlowIssue
                     getText().replace(start - 1, start, "");
                     setSelection(start - 1, start - 1);
                 }
