@@ -582,7 +582,7 @@ public class EditBookTocFragment
             private final String requestKey;
             private FragmentManager fragmentManager;
 
-            public Launcher(@NonNull final String requestKey) {
+            protected Launcher(@NonNull final String requestKey) {
                 this.requestKey = requestKey;
             }
 

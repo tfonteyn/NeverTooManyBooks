@@ -60,11 +60,11 @@ public abstract class ShoppingMenuHandler
      * @param midByAuthorInSeries search by both author and series menu id
      * @param midBySeries         search by series menu id
      */
-    public ShoppingMenuHandler(@MenuRes final int menuResId,
-                               @IdRes final int subMenuId,
-                               @IdRes final int midByAuthor,
-                               @IdRes final int midByAuthorInSeries,
-                               @IdRes final int midBySeries) {
+    protected ShoppingMenuHandler(@MenuRes final int menuResId,
+                                  @IdRes final int subMenuId,
+                                  @IdRes final int midByAuthor,
+                                  @IdRes final int midByAuthorInSeries,
+                                  @IdRes final int midBySeries) {
         this.menuResId = menuResId;
         this.subMenuId = subMenuId;
         this.midByAuthor = midByAuthor;
@@ -106,7 +106,7 @@ public abstract class ShoppingMenuHandler
         subMenuItem.setVisible(show);
         if (show) {
             final SubMenu sm = subMenuItem.getSubMenu();
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             sm.findItem(midByAuthor)
               .setVisible(hasAuthor);
             sm.findItem(midByAuthorInSeries)
