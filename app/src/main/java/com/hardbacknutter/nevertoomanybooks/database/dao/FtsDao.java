@@ -78,7 +78,7 @@ public interface FtsDao {
 
             } else if (current == '-' && Character.isWhitespace(prev)) {
                 // Allow negation if preceded by space
-                parameter.append(current);
+                parameter.append('-');
 
             } else {
                 // Turn everything else in whitespace
