@@ -128,7 +128,7 @@ import com.hardbacknutter.org.json.JSONObject;
  *   key:
  *   "library_path": "C:\\Users\\USER\\Downloads\\test",
  */
-public class CalibreContentServer
+public final class CalibreContentServer
         implements ConnectionValidator {
 
     /** CA certificate identifier. */
@@ -188,6 +188,7 @@ public class CalibreContentServer
     private static final String ULR_AJAX_LIBRARY_INFO = "/ajax/library-info";
     /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "CL";
+    private static final String NULL_DEFAULT_LIBRARY = "defaultLibrary";
     @NonNull
     private final Uri serverUri;
     @Nullable
@@ -564,7 +565,7 @@ public class CalibreContentServer
         }
 
         // Sanity check
-        Objects.requireNonNull(defaultLibrary, "defaultLibrary");
+        Objects.requireNonNull(defaultLibrary, NULL_DEFAULT_LIBRARY);
     }
 
     private void processVirtualLibraries(@NonNull final CalibreLibraryDao dao,
@@ -639,7 +640,7 @@ public class CalibreContentServer
      */
     @NonNull
     CalibreLibrary getDefaultLibrary() {
-        return Objects.requireNonNull(defaultLibrary, "defaultLibrary");
+        return Objects.requireNonNull(defaultLibrary, NULL_DEFAULT_LIBRARY);
     }
 
     /**
@@ -666,6 +667,7 @@ public class CalibreContentServer
      *
      * @throws IOException      on generic/other IO failures
      * @throws StorageException on storage related failures
+     * @throws JSONException    upon any parsing error
      */
     @WorkerThread
     @Nullable
@@ -1387,7 +1389,9 @@ public class CalibreContentServer
                 .put("changes", changes)
                 .put("loaded_book_ids", loadedBookIds)
                 .toString();
-
+        if (postBody == null) {
+            throw new JSONException("postBody was null");
+        }
         synchronized (this) {
             if (futureHttpPost == null) {
                 futureHttpPost = createFuturePostRequest();
