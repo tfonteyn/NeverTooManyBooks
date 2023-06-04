@@ -347,7 +347,7 @@ public class ExtArrayAdapter<T>
      *
      * @throws UnsupportedOperationException if the underlying data collection is immutable
      */
-    public void addAll(final T... items) {
+    public void addAll(@NonNull final T... items) {
         synchronized (mLock) {
             Collections.addAll(Objects.requireNonNullElseGet(mOriginalValues, () -> mObjects),
                                items);
@@ -840,7 +840,7 @@ public class ExtArrayAdapter<T>
         @NonNull
         protected FilterResults performFiltering(@Nullable final CharSequence constraint) {
             // Mimic other filter behaviour for maximum compatibility
-            final ArrayList<T> values;
+            final List<T> values;
             synchronized (mLock) {
                 if (mOriginalValues == null) {
                     mOriginalValues = new ArrayList<>(mObjects);
