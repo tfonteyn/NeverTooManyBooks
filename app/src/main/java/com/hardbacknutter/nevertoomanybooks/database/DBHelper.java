@@ -283,8 +283,10 @@ public class DBHelper
     }
 
     private static boolean getCollation(@NonNull final SQLiteDatabase db) {
-        if (sIsCollationCaseSensitive == null) {
-            sIsCollationCaseSensitive = collationIsCaseSensitive(db);
+        synchronized (DBHelper.class) {
+            if (sIsCollationCaseSensitive == null) {
+                sIsCollationCaseSensitive = collationIsCaseSensitive(db);
+            }
         }
         return sIsCollationCaseSensitive;
     }
