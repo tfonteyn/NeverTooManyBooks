@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -45,8 +45,7 @@ Public Domain.
  *
  * <b>Usage</b>
  * {@code
- *      Map<String, XMLXsiTypeConverter<?>> xsiTypeMap =
- *          new HashMap<String, XMLXsiTypeConverter<?>>();
+ *      Map<String, XMLXsiTypeConverter<?>> xsiTypeMap = new HashMap<String, XMLXsiTypeConverter<?>>();
  *      xsiTypeMap.put("string", new XMLXsiTypeConverter<String>() {
  *          &#64;Override public String convert(final String value) {
  *              return value;
@@ -59,13 +58,10 @@ Public Domain.
  *      });
  * }
  * </pre>
- *
- * @param <T> return type of convert method
- *
  * @author kumar529
+ * @param <T> return type of convert method
  */
-@FunctionalInterface
+@SuppressWarnings("ALL")
 public interface XMLXsiTypeConverter<T> {
-
     T convert(String value);
 }

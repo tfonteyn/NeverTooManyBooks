@@ -229,7 +229,7 @@ android {
 dependencies {
     implementation project(path: ":core")
     implementation project(path: ":fastscroller")
-    // We are using an updated/repacked org.json, version 20220924
+    // We are using an updated/repacked org.json, version 20230227
     // https://github.com/stleary/JSON-java
     implementation project(path: ":repacked-org-json")
 

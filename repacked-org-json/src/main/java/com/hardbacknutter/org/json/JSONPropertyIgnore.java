@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,9 +37,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * present at any level in the class hierarchy, then the method will
  * not be serialized from the bean into the JSONObject.
  */
+@SuppressWarnings("ALL")
 @Documented
 @Retention(RUNTIME)
-@Target(METHOD)
+@Target({METHOD})
 public @interface JSONPropertyIgnore {
-
 }

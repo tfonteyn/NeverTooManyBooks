@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,19 +24,14 @@ package com.hardbacknutter.org.json;
 Public Domain.
  */
 
-import androidx.annotation.NonNull;
-
 /**
  * Convert a web browser cookie list string to a JSONObject and back.
  *
  * @author JSON.org
  * @version 2015-12-09
  */
-@SuppressWarnings({"unused", "WeakerAccess"})
-public final class CookieList {
-
-    private CookieList() {
-    }
+@SuppressWarnings("ALL")
+public class CookieList {
 
     /**
      * Convert a cookie list into a JSONObject. A cookie list is a sequence
@@ -54,13 +49,12 @@ public final class CookieList {
      *
      * @throws JSONException if a called function fails
      */
-    @NonNull
-    public static JSONObject toJSONObject(final String string)
+    public static JSONObject toJSONObject(String string)
             throws JSONException {
-        final JSONObject jo = new JSONObject();
-        final JSONTokener x = new JSONTokener(string);
+        JSONObject jo = new JSONObject();
+        JSONTokener x = new JSONTokener(string);
         while (x.more()) {
-            final String name = Cookie.unescape(x.nextTo('='));
+            String name = Cookie.unescape(x.nextTo('='));
             x.next('=');
             jo.put(name, Cookie.unescape(x.nextTo(';')));
             x.next();
@@ -80,8 +74,7 @@ public final class CookieList {
      *
      * @throws JSONException if a called function fails
      */
-    @NonNull
-    public static String toString(@NonNull final JSONObject jo)
+    public static String toString(JSONObject jo)
             throws JSONException {
         boolean b = false;
         final StringBuilder sb = new StringBuilder();
@@ -94,7 +87,6 @@ public final class CookieList {
                 }
                 sb.append(Cookie.escape(key));
                 sb.append("=");
-                //noinspection ConstantConditions
                 sb.append(Cookie.escape(value.toString()));
                 b = true;
             }

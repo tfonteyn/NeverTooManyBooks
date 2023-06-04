@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,8 +24,6 @@ package com.hardbacknutter.org.json;
 Public Domain.
 */
 
-import androidx.annotation.Nullable;
-
 import java.io.Reader;
 
 /**
@@ -35,7 +33,7 @@ import java.io.Reader;
  * @author JSON.org
  * @version 2015-12-09
  */
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings("ALL")
 public class XMLTokener
         extends JSONTokener {
 
@@ -47,7 +45,7 @@ public class XMLTokener
     public static final java.util.HashMap<String, Character> entity;
 
     static {
-        entity = new java.util.HashMap<>(8);
+        entity = new java.util.HashMap<String, Character>(8);
         entity.put("amp", XML.AMP);
         entity.put("apos", XML.APOS);
         entity.put("gt", XML.GT);
@@ -60,7 +58,7 @@ public class XMLTokener
      *
      * @param r A source reader.
      */
-    public XMLTokener(final Reader r) {
+    public XMLTokener(Reader r) {
         super(r);
     }
 
@@ -69,54 +67,22 @@ public class XMLTokener
      *
      * @param s A source string.
      */
-    public XMLTokener(final String s) {
+    public XMLTokener(String s) {
         super(s);
-    }
-
-    /**
-     * Unescape an XML entity encoding;
-     *
-     * @param e entity (only the actual entity value, not the preceding & or ending ;
-     *
-     * @return
-     */
-    static String unescapeEntity(final String e) {
-        // validate
-        if (e == null || e.isEmpty()) {
-            return "";
-        }
-        // if our entity is an encoded unicode point, parse it.
-        if (e.charAt(0) == '#') {
-            final int cp;
-            if (e.charAt(1) == 'x' || e.charAt(1) == 'X') {
-                // hex encoded unicode
-                cp = Integer.parseInt(e.substring(2), 16);
-            } else {
-                // decimal encoded unicode
-                cp = Integer.parseInt(e.substring(1));
-            }
-            return new String(new int[]{cp}, 0, 1);
-        }
-        final Character knownEntity = entity.get(e);
-        if (knownEntity == null) {
-            // we don't know the entity so keep it encoded
-            return '&' + e + ';';
-        }
-        return knownEntity.toString();
     }
 
     /**
      * Get the text in the CDATA block.
      *
-     * @return The string up to the {@code ]]>}.
+     * @return The string up to the <code>]]&gt;</code>.
      *
-     * @throws JSONException If the {@code ]]>} is not found.
+     * @throws JSONException If the <code>]]&gt;</code> is not found.
      */
     public String nextCDATA()
             throws JSONException {
         char c;
         int i;
-        final StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         while (more()) {
             c = next();
             sb.append(c);
@@ -130,6 +96,7 @@ public class XMLTokener
         throw syntaxError("Unclosed CDATA");
     }
 
+
     /**
      * Get the next XML outer token, trimming whitespace. There are two kinds
      * of tokens: the <pre>{@code '<' }</pre> character which begins a markup
@@ -137,15 +104,14 @@ public class XMLTokener
      * text between markup tags.
      *
      * @return A string, or a <pre>{@code '<' }</pre> Character, or null if
-     * there is no more source text.
+     *         there is no more source text.
      *
      * @throws JSONException if a called function has an error
      */
-    @Nullable
     public Object nextContent()
             throws JSONException {
         char c;
-        final StringBuilder sb;
+        StringBuilder sb;
         do {
             c = next();
         } while (Character.isWhitespace(c));
@@ -173,6 +139,7 @@ public class XMLTokener
         }
     }
 
+
     /**
      * <pre>{@code
      * Return the next entity. These entities are translated to Characters:
@@ -185,11 +152,11 @@ public class XMLTokener
      *
      * @throws JSONException If missing ';' in XML entity.
      */
-    public Object nextEntity(@SuppressWarnings("unused") final char ampersand)
+    public Object nextEntity(@SuppressWarnings("unused") char ampersand)
             throws JSONException {
-        final StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         for (; ; ) {
-            final char c = next();
+            char c = next();
             if (Character.isLetterOrDigit(c) || c == '#') {
                 sb.append(Character.toLowerCase(c));
             } else if (c == ';') {
@@ -198,9 +165,42 @@ public class XMLTokener
                 throw syntaxError("Missing ';' in XML entity: &" + sb);
             }
         }
-        final String string = sb.toString();
+        String string = sb.toString();
         return unescapeEntity(string);
     }
+
+    /**
+     * Unescape an XML entity encoding;
+     *
+     * @param e entity (only the actual entity value, not the preceding & or ending ;
+     *
+     * @return
+     */
+    static String unescapeEntity(String e) {
+        // validate
+        if (e == null || e.isEmpty()) {
+            return "";
+        }
+        // if our entity is an encoded unicode point, parse it.
+        if (e.charAt(0) == '#') {
+            int cp;
+            if (e.charAt(1) == 'x' || e.charAt(1) == 'X') {
+                // hex encoded unicode
+                cp = Integer.parseInt(e.substring(2), 16);
+            } else {
+                // decimal encoded unicode
+                cp = Integer.parseInt(e.substring(1));
+            }
+            return new String(new int[]{cp}, 0, 1);
+        }
+        Character knownEntity = entity.get(e);
+        if (knownEntity == null) {
+            // we don't know the entity so keep it encoded
+            return '&' + e + ';';
+        }
+        return knownEntity.toString();
+    }
+
 
     /**
      * <pre>{@code
@@ -209,9 +209,9 @@ public class XMLTokener
      *  }</pre>
      *
      * @return <pre>{@code Syntax characters (< > / = ! ?) are returned as
-     *  Character, and strings and names are returned as Boolean. We don't care
-     *  what the values actually are.
-     *  }</pre>
+     *          Character, and strings and names are returned as Boolean. We don't care
+     *          what the values actually are.
+     *          }</pre>
      *
      * @throws JSONException If a string is not properly closed or if the XML
      *                       is badly structured.
@@ -219,7 +219,7 @@ public class XMLTokener
     public Object nextMeta()
             throws JSONException {
         char c;
-        final char q;
+        char q;
         do {
             c = next();
         } while (Character.isWhitespace(c));
@@ -290,8 +290,8 @@ public class XMLTokener
     public Object nextToken()
             throws JSONException {
         char c;
-        final char q;
-        final StringBuilder sb;
+        char q;
+        StringBuilder sb;
         do {
             c = next();
         } while (Character.isWhitespace(c));
@@ -370,17 +370,17 @@ public class XMLTokener
      *
      * @param to A string to skip past.
      */
-    // The Android implementation of JSONTokener has a public method of public void
-    // skipPast(String to) even though ours does not have that method, to have API
-    // compatibility, our method in the subclass should match.
-    public void skipPast(final CharSequence to) {
+    // The Android implementation of JSONTokener has a public method of public void skipPast(String to)
+    // even though ours does not have that method, to have API compatibility, our method in the subclass
+    // should match.
+    public void skipPast(String to) {
         boolean b;
         char c;
         int i;
         int j;
         int offset = 0;
-        final int length = to.length();
-        final char[] circle = new char[length];
+        int length = to.length();
+        char[] circle = new char[length];
 
         /*
          * First fill the circle buffer with as many characters as are in the
@@ -402,6 +402,7 @@ public class XMLTokener
             b = true;
 
             /* Compare the circle buffer with the to string. */
+
             for (i = 0; i < length; i += 1) {
                 if (circle[j] != to.charAt(i)) {
                     b = false;

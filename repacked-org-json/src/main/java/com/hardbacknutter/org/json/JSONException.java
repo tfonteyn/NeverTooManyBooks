@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,9 +33,9 @@ import androidx.annotation.Nullable;
  * @author JSON.org
  * @version 2015-12-09
  */
+@SuppressWarnings("ALL")
 public class JSONException
         extends RuntimeException {
-
     /** Serialization ID */
     private static final long serialVersionUID = 0;
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,8 +24,6 @@ package com.hardbacknutter.org.json;
 Public Domain.
 */
 
-import androidx.annotation.NonNull;
-
 /**
  * The HTTPTokener extends the JSONTokener to provide additional methods
  * for the parsing of HTTP headers.
@@ -33,7 +31,7 @@ import androidx.annotation.NonNull;
  * @author JSON.org
  * @version 2015-12-09
  */
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings("ALL")
 public class HTTPTokener
         extends JSONTokener {
 
@@ -42,7 +40,7 @@ public class HTTPTokener
      *
      * @param string A source string.
      */
-    public HTTPTokener(final String string) {
+    public HTTPTokener(String string) {
         super(string);
     }
 
@@ -54,16 +52,14 @@ public class HTTPTokener
      *
      * @throws JSONException if a syntax error occurs
      */
-    @NonNull
     public String nextToken()
             throws JSONException {
         char c;
-        final char q;
-        final StringBuilder sb = new StringBuilder();
+        char q;
+        StringBuilder sb = new StringBuilder();
         do {
             c = next();
         } while (Character.isWhitespace(c));
-
         if (c == '"' || c == '\'') {
             q = c;
             for (; ; ) {

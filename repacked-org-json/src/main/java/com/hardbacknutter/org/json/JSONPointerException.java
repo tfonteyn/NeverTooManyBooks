@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,17 +31,17 @@ Public Domain.
  * @author JSON.org
  * @version 2016-05-13
  */
+@SuppressWarnings("ALL")
 public class JSONPointerException
         extends JSONException {
-
     private static final long serialVersionUID = 8872944667561856751L;
 
-    public JSONPointerException(final String message) {
+    public JSONPointerException(String message) {
         super(message);
     }
 
-    public JSONPointerException(final String message,
-                                final Throwable cause) {
+    public JSONPointerException(String message,
+                                Throwable cause) {
         super(message, cause);
     }
 

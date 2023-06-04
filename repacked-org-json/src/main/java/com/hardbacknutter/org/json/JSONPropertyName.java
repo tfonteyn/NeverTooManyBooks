@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,14 +33,14 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Use this annotation on a getter method to override the Bean name
- * parser for Bean -&gt; JSONObject mapping. A value set to empty string {@code ""}
+ * parser for Bean -&gt; JSONObject mapping. A value set to empty string <code>""</code>
  * will have the Bean parser fall back to the default field name processing.
  */
+@SuppressWarnings("ALL")
 @Documented
 @Retention(RUNTIME)
-@Target(METHOD)
+@Target({METHOD})
 public @interface JSONPropertyName {
-
     /**
      * @return The name of the property as to be used in the JSON Object.
      */

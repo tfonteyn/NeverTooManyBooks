@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,21 +25,20 @@ Public Domain.
  */
 
 /**
- * The {@code JSONString} interface allows a {@code toJSONString()}
+ * The <code>JSONString</code> interface allows a <code>toJSONString()</code>
  * method so that a class can change the behavior of
- * {@code JSONObject.toString()}, {@code JSONArray.toString()},
- * and {@code JSONWriter.value(}Object{@code )}. The
- * {@code toJSONString} method will be used instead of the default behavior
- * of using the Object's {@code toString()} method and quoting the result.
+ * <code>JSONObject.toString()</code>, <code>JSONArray.toString()</code>,
+ * and <code>JSONWriter.value(</code>Object<code>)</code>. The
+ * <code>toJSONString</code> method will be used instead of the default behavior
+ * of using the Object's <code>toString()</code> method and quoting the result.
  */
-@FunctionalInterface
+@SuppressWarnings("ALL")
 public interface JSONString {
-
     /**
-     * The {@code toJSONString} method allows a class to produce its own JSON
+     * The <code>toJSONString</code> method allows a class to produce its own JSON
      * serialization.
      *
      * @return A strictly syntactically correct JSON text.
      */
-    String toJSONString();
+    public String toJSONString();
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,8 +20,6 @@
 
 package com.hardbacknutter.org.json;
 
-import androidx.annotation.NonNull;
-
 import java.util.Locale;
 
 /*
@@ -36,11 +34,8 @@ Public Domain.
  * @author JSON.org
  * @version 2015-12-09
  */
-@SuppressWarnings({"WeakerAccess", "unused"})
-public final class Cookie {
-
-    private Cookie() {
-    }
+@SuppressWarnings("ALL")
+public class Cookie {
 
     /**
      * Produce a copy of a string in which the characters '+', '%', '=', ';'
@@ -56,12 +51,11 @@ public final class Cookie {
      *
      * @return The escaped result.
      */
-    @NonNull
-    public static String escape(@NonNull final String string) {
+    public static String escape(String string) {
         char c;
-        final String s = string.trim();
-        final int length = s.length();
-        final StringBuilder sb = new StringBuilder(length);
+        String s = string.trim();
+        int length = s.length();
+        StringBuilder sb = new StringBuilder(length);
         for (int i = 0; i < length; i += 1) {
             c = s.charAt(i);
             if (c < ' ' || c == '+' || c == '%' || c == '=' || c == ';') {
@@ -89,27 +83,24 @@ public final class Cookie {
      * a JSONObject. All attribute names are converted to lower case keys in the
      * JSONObject (HttpOnly =&gt; httponly). If an attribute is specified more than
      * once, only the value found closer to the end of the cookie-string is kept.
-     *
      * @param string The cookie specification string.
-     *
      * @return A JSONObject containing "name", "value", and possibly other
-     * members.
-     *
+     *  members.
      * @throws JSONException If there is an error parsing the Cookie String.
-     *                       Cookie strings must have at least one '=' character and the 'name'
-     *                       portion of the cookie must not be blank.
+     * Cookie strings must have at least one '=' character and the 'name'
+     * portion of the cookie must not be blank.
      */
-    @NonNull
-    public static JSONObject toJSONObject(@NonNull final String string) {
+    public static JSONObject toJSONObject(String string) {
         final JSONObject jo = new JSONObject();
         String name;
         Object value;
 
-        final JSONTokener x = new JSONTokener(string);
+
+        JSONTokener x = new JSONTokener(string);
 
         name = unescape(x.nextTo('=').trim());
         //per RFC6265, if the name is blank, the cookie should be ignored.
-        if (name.isEmpty()) {
+        if ("".equals(name)) {
             throw new JSONException("Cookies must have a 'name'");
         }
         jo.put("name", name);
@@ -130,14 +121,14 @@ public final class Cookie {
                 throw new JSONException("Illegal attribute name: 'value'");
             }
             // check to see if it's a flag property
-            if (x.next() == '=') {
+            if (x.next() != '=') {
+                value = Boolean.TRUE;
+            } else {
                 value = unescape(x.nextTo(';')).trim();
                 x.next();
-            } else {
-                value = Boolean.TRUE;
             }
             // only store non-blank attributes
-            if (!name.isEmpty() && !"".equals(value)) {
+            if (!"".equals(name) && !"".equals(value)) {
                 jo.put(name, value);
             }
         }
@@ -151,8 +142,7 @@ public final class Cookie {
      * If the JSONObject contains other members, they will be appended to the cookie
      * specification string. User-Agents are instructed to ignore unknown attributes,
      * so ensure your JSONObject is using only known attributes.
-     * See also: <a href="https://tools.ietf.org/html/rfc6265">
-     * https://tools.ietf.org/html/rfc6265</a>
+     * See also: <a href="https://tools.ietf.org/html/rfc6265">https://tools.ietf.org/html/rfc6265</a>
      *
      * @param jo A JSONObject
      *
@@ -160,14 +150,13 @@ public final class Cookie {
      *
      * @throws JSONException thrown if the cookie has no name.
      */
-    @NonNull
-    public static String toString(@NonNull final JSONObject jo)
+    public static String toString(JSONObject jo)
             throws JSONException {
-        final StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
 
         String name = null;
         Object value = null;
-        for (final String key : jo.keySet()) {
+        for (String key : jo.keySet()) {
             if ("name".equalsIgnoreCase(key)) {
                 name = jo.getString(key).trim();
             }
@@ -179,7 +168,7 @@ public final class Cookie {
             }
         }
 
-        if (name == null || name.trim().isEmpty()) {
+        if (name == null || "".equals(name.trim())) {
             throw new JSONException("Cookie does not have a name");
         }
         if (value == null) {
@@ -190,20 +179,23 @@ public final class Cookie {
         sb.append("=");
         sb.append(escape((String) value));
 
-        for (final String key : jo.keySet()) {
-            if (!"name".equalsIgnoreCase(key) && !"value".equalsIgnoreCase(key)) {
-                value = jo.opt(key);
-                if (value instanceof Boolean) {
-                    if (Boolean.TRUE.equals(value)) {
-                        sb.append(';').append(escape(key));
-                    }
-                    // don't emit false values
-                } else {
-                    sb.append(';')
-                      .append(escape(key))
-                      .append('=')
-                      .append(escape(value.toString()));
+        for (String key : jo.keySet()) {
+            if ("name".equalsIgnoreCase(key)
+                || "value".equalsIgnoreCase(key)) {
+                // already processed above
+                continue;
+            }
+            value = jo.opt(key);
+            if (value instanceof Boolean) {
+                if (Boolean.TRUE.equals(value)) {
+                    sb.append(';').append(escape(key));
                 }
+                // don't emit false values
+            } else {
+                sb.append(';')
+                  .append(escape(key))
+                  .append('=')
+                  .append(escape(value.toString()));
             }
         }
 
@@ -211,25 +203,25 @@ public final class Cookie {
     }
 
     /**
-     * Convert {@code %}<i>hh</i> sequences to single characters, and convert plus to space.
+     * Convert <code>%</code><i>hh</i> sequences to single characters, and
+     * convert plus to space.
      *
      * @param string A string that may contain
-     *               {@code +}&nbsp;<small>(plus)</small> and
-     *               {@code %}<i>hh</i> sequences.
+     *               <code>+</code>&nbsp;<small>(plus)</small> and
+     *               <code>%</code><i>hh</i> sequences.
      *
      * @return The unescaped string.
      */
-    @NonNull
-    public static String unescape(@NonNull final CharSequence string) {
-        final int length = string.length();
-        final StringBuilder sb = new StringBuilder(length);
+    public static String unescape(String string) {
+        int length = string.length();
+        StringBuilder sb = new StringBuilder(length);
         for (int i = 0; i < length; ++i) {
             char c = string.charAt(i);
             if (c == '+') {
                 c = ' ';
             } else if (c == '%' && i + 2 < length) {
-                final int d = JSONTokener.dehexchar(string.charAt(i + 1));
-                final int e = JSONTokener.dehexchar(string.charAt(i + 2));
+                int d = JSONTokener.dehexchar(string.charAt(i + 1));
+                int e = JSONTokener.dehexchar(string.charAt(i + 2));
                 if (d >= 0 && e >= 0) {
                     c = (char) (d * 16 + e);
                     i += 2;

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,8 +24,6 @@ package com.hardbacknutter.org.json;
 Public Domain.
 */
 
-import androidx.annotation.NonNull;
-
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -35,14 +33,10 @@ import java.util.Properties;
  * @author JSON.org
  * @version 2015-05-05
  */
-public final class Property {
-
-    private Property() {
-    }
-
+@SuppressWarnings("ALL")
+public class Property {
     /**
-     * Converts a property file object into a JSONObject.
-     * The property file object is a table of name value pairs.
+     * Converts a property file object into a JSONObject. The property file object is a table of name value pairs.
      *
      * @param properties java.util.Properties
      *
@@ -50,16 +44,15 @@ public final class Property {
      *
      * @throws JSONException if a called function has an error
      */
-    @NonNull
-    public static JSONObject toJSONObject(final java.util.Properties properties)
+    public static JSONObject toJSONObject(java.util.Properties properties)
             throws JSONException {
         // can't use the new constructor for Android support
         // JSONObject jo = new JSONObject(properties == null ? 0 : properties.size());
-        final JSONObject jo = new JSONObject();
+        JSONObject jo = new JSONObject();
         if (properties != null && !properties.isEmpty()) {
-            final Enumeration<?> enumProperties = properties.propertyNames();
+            Enumeration<?> enumProperties = properties.propertyNames();
             while (enumProperties.hasMoreElements()) {
-                final String name = (String) enumProperties.nextElement();
+                String name = (String) enumProperties.nextElement();
                 jo.put(name, properties.getProperty(name));
             }
         }
@@ -75,16 +68,14 @@ public final class Property {
      *
      * @throws JSONException if a called function has an error
      */
-    @NonNull
-    public static Properties toProperties(final JSONObject jo)
+    public static Properties toProperties(JSONObject jo)
             throws JSONException {
-        final Properties properties = new Properties();
+        Properties properties = new Properties();
         if (jo != null) {
             // Don't use the new entrySet API to maintain Android support
             for (final String key : jo.keySet()) {
-                final Object value = jo.opt(key);
+                Object value = jo.opt(key);
                 if (!JSONObject.NULL.equals(value)) {
-                    //noinspection ConstantConditions
                     properties.put(key, value.toString());
                 }
             }

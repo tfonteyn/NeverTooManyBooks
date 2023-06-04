@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,8 +24,6 @@ package com.hardbacknutter.org.json;
 Public Domain.
 */
 
-import androidx.annotation.NonNull;
-
 import java.util.Locale;
 
 /**
@@ -34,14 +32,11 @@ import java.util.Locale;
  * @author JSON.org
  * @version 2015-12-09
  */
-@SuppressWarnings({"WeakerAccess", "unused"})
-public final class HTTP {
+@SuppressWarnings("ALL")
+public class HTTP {
 
     /** Carriage return/line feed. */
     public static final String CRLF = "\r\n";
-
-    private HTTP() {
-    }
 
     /**
      * Convert an HTTP header string into a JSONObject. It can be a request
@@ -70,20 +65,16 @@ public final class HTTP {
      * ...}</pre>
      * It does no further checking or conversion. It does not parse dates.
      * It does not do '%' transforms on URLs.
-     *
      * @param string An HTTP header string.
-     *
      * @return A JSONObject containing the elements and attributes
      * of the XML string.
-     *
      * @throws JSONException if a called function fails
      */
-    @NonNull
-    public static JSONObject toJSONObject(final String string)
+    public static JSONObject toJSONObject(String string)
             throws JSONException {
-        final JSONObject jo = new JSONObject();
-        final HTTPTokener x = new HTTPTokener(string);
-        final String token;
+        JSONObject jo = new JSONObject();
+        HTTPTokener x = new HTTPTokener(string);
+        String token;
 
         token = x.nextToken();
         if (token.toUpperCase(Locale.ROOT).startsWith("HTTP")) {
@@ -107,7 +98,7 @@ public final class HTTP {
 // Fields
 
         while (x.more()) {
-            final String name = x.nextTo(':');
+            String name = x.nextTo(':');
             x.next(':');
             jo.put(name, x.nextTo('\0'));
             x.next();
@@ -131,18 +122,14 @@ public final class HTTP {
      * }</pre>
      * Any other members of the JSONObject will be output as HTTP fields.
      * The result will end with two CRLF pairs.
-     *
      * @param jo A JSONObject
-     *
      * @return An HTTP header string.
-     *
      * @throws JSONException if the object does not contain enough
-     *                       information.
+     *  information.
      */
-    @NonNull
-    public static String toString(final JSONObject jo)
+    public static String toString(JSONObject jo)
             throws JSONException {
-        final StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         if (jo.has("Status-Code") && jo.has("Reason-Phrase")) {
             sb.append(jo.getString("HTTP-Version"));
             sb.append(' ');
@@ -163,7 +150,7 @@ public final class HTTP {
         sb.append(CRLF);
         // Don't use the new entrySet API to maintain Android support
         for (final String key : jo.keySet()) {
-            final String value = jo.optString(key);
+            String value = jo.optString(key);
             if (!"HTTP-Version".equals(key) && !"Status-Code".equals(key) &&
                 !"Reason-Phrase".equals(key) && !"Method".equals(key) &&
                 !"Request-URI".equals(key) && !JSONObject.NULL.equals(value)) {

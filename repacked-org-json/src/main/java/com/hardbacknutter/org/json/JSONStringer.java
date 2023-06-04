@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,12 +32,12 @@ import java.io.StringWriter;
  * added, so the results are ready for transmission or storage. Each instance of
  * JSONStringer can produce one JSON text.
  * <p>
- * A JSONStringer instance provides a {@code value} method for appending
+ * A JSONStringer instance provides a <code>value</code> method for appending
  * values to the
- * text, and a {@code key}
- * method for adding keys before values in objects. There are {@code array}
- * and {@code endArray} methods that make and bound array values, and
- * {@code object} and {@code endObject} methods which make and bound
+ * text, and a <code>key</code>
+ * method for adding keys before values in objects. There are <code>array</code>
+ * and <code>endArray</code> methods that make and bound array values, and
+ * <code>object</code> and <code>endObject</code> methods which make and bound
  * object values. All of these methods return the JSONWriter instance,
  * permitting cascade style. For example, <pre>
  * myString = new JSONStringer()
@@ -48,7 +48,7 @@ import java.io.StringWriter;
  *     .toString();</pre> which produces the string <pre>
  * {"JSON":"Hello, World!"}</pre>
  * <p>
- * The first method called must be {@code array} or {@code object}.
+ * The first method called must be <code>array</code> or <code>object</code>.
  * There are no methods for adding commas or colons. JSONStringer adds them for
  * you. Objects and arrays can be nested up to 200 levels deep.
  * <p>
@@ -57,9 +57,9 @@ import java.io.StringWriter;
  * @author JSON.org
  * @version 2015-12-09
  */
+@SuppressWarnings("ALL")
 public class JSONStringer
         extends JSONWriter {
-
     /**
      * Make a fresh JSONStringer. It can be used to build one JSON text.
      */
@@ -69,10 +69,10 @@ public class JSONStringer
 
     /**
      * Return the JSON text. This method is used to obtain the product of the
-     * JSONStringer instance. It will return {@code null} if there was a
+     * JSONStringer instance. It will return <code>null</code> if there was a
      * problem in the construction of the JSON text (such as the calls to
-     * {@code array} were not properly balanced with calls to
-     * {@code endArray}).
+     * <code>array</code> were not properly balanced with calls to
+     * <code>endArray</code>).
      *
      * @return The JSON text.
      */
