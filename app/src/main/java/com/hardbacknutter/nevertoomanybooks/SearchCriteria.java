@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
 public class SearchCriteria
         implements Parcelable {
 
+    /** {@link Parcelable}. */
     public static final Creator<SearchCriteria> CREATOR = new Creator<>() {
         @Override
         @NonNull
@@ -148,7 +149,7 @@ public class SearchCriteria
         return bookIdList;
     }
 
-    public void setBookIdList(@Nullable final List<Long> bookIdList) {
+    void setBookIdList(@Nullable final List<Long> bookIdList) {
         this.bookIdList.clear();
         if (bookIdList != null) {
             this.bookIdList.addAll(bookIdList);
@@ -165,47 +166,47 @@ public class SearchCriteria
     }
 
     @Nullable
-    public String getFtsBookTitle() {
+    String getFtsBookTitle() {
         return ftsBookTitle;
     }
 
-    public void setFtsBookTitle(@Nullable final String ftsBookTitle) {
+    void setFtsBookTitle(@Nullable final String ftsBookTitle) {
         this.ftsBookTitle = ftsBookTitle;
     }
 
     @Nullable
-    public String getFtsSeriesTitle() {
+    String getFtsSeriesTitle() {
         return ftsSeriesTitle;
     }
 
-    public void setFtsSeriesTitle(@Nullable final String ftsSeriesTitle) {
+    void setFtsSeriesTitle(@Nullable final String ftsSeriesTitle) {
         this.ftsSeriesTitle = ftsSeriesTitle;
     }
 
     @Nullable
-    public String getFtsAuthor() {
+    String getFtsAuthor() {
         return ftsAuthor;
     }
 
-    public void setFtsAuthor(@Nullable final String ftsAuthor) {
+    void setFtsAuthor(@Nullable final String ftsAuthor) {
         this.ftsAuthor = ftsAuthor;
     }
 
     @Nullable
-    public String getFtsPublisher() {
+    String getFtsPublisher() {
         return ftsPublisher;
     }
 
-    public void setFtsPublisher(@Nullable final String ftsPublisher) {
+    void setFtsPublisher(@Nullable final String ftsPublisher) {
         this.ftsPublisher = ftsPublisher;
     }
 
     @Nullable
-    public String getFtsKeywords() {
+    String getFtsKeywords() {
         return ftsKeywords;
     }
 
-    public void setFtsKeywords(@Nullable final String keywords) {
+    void setFtsKeywords(@Nullable final String keywords) {
         if (keywords == null || keywords.isEmpty() || ".".equals(keywords)) {
             ftsKeywords = null;
         } else {
@@ -227,12 +228,13 @@ public class SearchCriteria
         }
     }
 
-    public void setLoanee(@Nullable final String loanee) {
+    @SuppressWarnings("unused")
+    void setLoanee(@Nullable final String loanee) {
         this.loanee = loanee;
     }
 
-    public void search(@NonNull final FtsDao dao,
-                       final int maxSuggestions) {
+    void search(@NonNull final FtsDao dao,
+                final int maxSuggestions) {
         bookIdList.clear();
         bookIdList.addAll(dao.search(ftsAuthor,
                                      ftsBookTitle,

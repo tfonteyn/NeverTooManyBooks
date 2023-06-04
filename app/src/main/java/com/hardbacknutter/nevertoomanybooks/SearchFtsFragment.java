@@ -152,7 +152,7 @@ public class SearchFtsFragment
      */
     private void showFullResults() {
         final Intent resultIntent = new Intent().putExtra(SearchCriteria.BKEY, vm.getCriteria());
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         getActivity().setResult(Activity.RESULT_OK, resultIntent);
         getActivity().finish();
     }
@@ -181,15 +181,15 @@ public class SearchFtsFragment
 
     private void viewToModel() {
         final SearchCriteria criteria = vm.getCriteria();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         criteria.setFtsBookTitle(vb.title.getText().toString().trim());
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         criteria.setFtsSeriesTitle(vb.seriesTitle.getText().toString().trim());
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         criteria.setFtsAuthor(vb.author.getText().toString().trim());
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         criteria.setFtsPublisher(vb.publisher.getText().toString().trim());
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         criteria.setFtsKeywords(vb.keywords.getText().toString().trim());
     }
 

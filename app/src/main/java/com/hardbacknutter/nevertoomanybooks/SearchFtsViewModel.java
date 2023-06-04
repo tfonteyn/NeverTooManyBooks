@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,14 +36,19 @@ public class SearchFtsViewModel
 
     /** The maximum number of suggestions we'll show during a live search. */
     private static final int MAX_SUGGESTIONS = 20;
-    private final MutableLiveData<SearchCriteria> searchCriteriaMutableLiveData =
+    private final MutableLiveData<SearchCriteria> onSearchCriteriaUpdate =
             new MutableLiveData<>();
-    private final MutableLiveData<ArrayList<Long>> booklist = new MutableLiveData<>();
+    private final MutableLiveData<ArrayList<Long>> onBooklistUpdate = new MutableLiveData<>();
     /** Database Access. */
     private FtsDao dao;
     @Nullable
     private SearchCriteria criteria;
 
+    /**
+     * Pseudo constructor.
+     *
+     * @param args Bundle with arguments
+     */
     public void init(@Nullable final Bundle args) {
         if (dao == null) {
             dao = ServiceLocator.getInstance().getFtsDao();
@@ -55,17 +60,17 @@ public class SearchFtsViewModel
                 criteria = new SearchCriteria();
             }
         }
-        searchCriteriaMutableLiveData.setValue(criteria);
+        onSearchCriteriaUpdate.setValue(criteria);
     }
 
     @NonNull
-    public MutableLiveData<ArrayList<Long>> onBooklistUpdate() {
-        return booklist;
+    MutableLiveData<ArrayList<Long>> onBooklistUpdate() {
+        return onBooklistUpdate;
     }
 
     @NonNull
-    public MutableLiveData<SearchCriteria> onSearchCriteriaUpdate() {
-        return searchCriteriaMutableLiveData;
+    MutableLiveData<SearchCriteria> onSearchCriteriaUpdate() {
+        return onSearchCriteriaUpdate;
     }
 
     @NonNull
@@ -74,8 +79,8 @@ public class SearchFtsViewModel
     }
 
     public void search() {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         criteria.search(dao, MAX_SUGGESTIONS);
-        booklist.postValue(criteria.getBookIdList());
+        onBooklistUpdate.postValue(criteria.getBookIdList());
     }
 }
