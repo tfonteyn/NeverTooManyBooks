@@ -242,6 +242,8 @@ public class BooksOnBookshelfViewModel
     }
 
     /**
+     * Observable: select (highlight) the current row.
+     *
      * @return first: previous adapter position which should be un-selected
      *         second: current adapter position to select
      */
@@ -1038,8 +1040,8 @@ public class BooksOnBookshelfViewModel
      */
     void buildBookList() {
         Objects.requireNonNull(bookshelf, ERROR_NULL_BOOKLIST);
+        Objects.requireNonNull(searchCriteria, "searchCriteria");
 
-        //noinspection ConstantConditions
         boBTask.build(bookshelf, rebuildMode, searchCriteria, selectedBookId);
     }
 
