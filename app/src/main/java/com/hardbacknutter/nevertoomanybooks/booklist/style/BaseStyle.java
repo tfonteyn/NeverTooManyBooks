@@ -54,6 +54,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 public abstract class BaseStyle
         implements Style {
 
+    private static final String ERROR_SCREEN_GLOBAL_NOT_ALLOWED_HERE =
+            "Screen.Global not allowed here";
     private static final String ERROR_UUID_IS_EMPTY = "uuid.isEmpty()";
     /** Configuration for the fields shown on the Book level in the book list. */
     @NonNull
@@ -297,6 +299,15 @@ public abstract class BaseStyle
         throw new IllegalArgumentException();
     }
 
+    /**
+     * Set/unset the bit-value for the given key.
+     * <p>
+     * An invalid key will be ignored.
+     *
+     * @param screen for which the value should be set
+     * @param dbKey  to set
+     * @param show   flag
+     */
     public void setShowField(@NonNull final Screen screen,
                              @NonNull final String dbKey,
                              final boolean show) {
@@ -311,7 +322,7 @@ public abstract class BaseStyle
 
             case Global:
                 if (BuildConfig.DEBUG /* always */) {
-                    throw new IllegalArgumentException("Setting global value not allowed here");
+                    throw new IllegalArgumentException(ERROR_SCREEN_GLOBAL_NOT_ALLOWED_HERE);
                 }
                 // ignore
                 break;
@@ -331,6 +342,12 @@ public abstract class BaseStyle
         throw new IllegalArgumentException();
     }
 
+    /**
+     * Set the current configured combined bit-value.
+     *
+     * @param screen  for which the value should be set
+     * @param bitmask to set
+     */
     public void setFieldVisibility(@NonNull final Screen screen,
                                    final long bitmask) {
         switch (screen) {
@@ -342,7 +359,7 @@ public abstract class BaseStyle
                 break;
             case Global:
                 if (BuildConfig.DEBUG /* always */) {
-                    throw new IllegalArgumentException("Setting global value not allowed here");
+                    throw new IllegalArgumentException(ERROR_SCREEN_GLOBAL_NOT_ALLOWED_HERE);
                 }
                 // ignore
                 break;
@@ -360,7 +377,7 @@ public abstract class BaseStyle
                 return detailsFieldVisibility.getSummaryText(context);
             case Global:
                 if (BuildConfig.DEBUG /* always */) {
-                    throw new IllegalArgumentException("Setting global value not allowed here");
+                    throw new IllegalArgumentException(ERROR_SCREEN_GLOBAL_NOT_ALLOWED_HERE);
                 }
                 // ignore
                 return "";
