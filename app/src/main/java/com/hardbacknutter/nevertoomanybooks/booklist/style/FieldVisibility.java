@@ -302,7 +302,7 @@ public class FieldVisibility {
 
         for (int i = 0; i < DB_KEYS.size(); i++) {
             final String key = DB_KEYS.get(i);
-            if (isShowField(key).isPresent() && isShowField(key).get()) {
+            if (isShowField(key).orElse(false)) {
                 labels.add(context.getString(LABELS.get(i)));
             }
         }
