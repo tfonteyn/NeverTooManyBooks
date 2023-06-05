@@ -47,7 +47,12 @@ Booklist style sorting by date-read or date-added etc...:
 4.5.0
 
 NEW:
-
+- add preference setting for a single barcode scan to automatically restart the scanner.
+  There are now 3 ways to add books by scanning their barcodes:
+  - single: "scan/edit"
+  - continuous: "scan/edit/repeat"
+  - batch: "scan/scan/.../edit/edit/..."
+- resolving author names for Bedetheque itself is now also a user preference setting
 FIXES:
 - fixed obscure bug the list would not rebuild after editing multiple books
 
