@@ -31,6 +31,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 
 @Keep
@@ -46,13 +47,20 @@ public class BedethequePreferencesFragment
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_site_bedetheque, rootKey);
 
+        final boolean useRealAuthor = ServiceLocator
+                .getInstance().getGlobalFieldVisibility()
+                .isShowField(DBKey.AUTHOR_REAL_AUTHOR).orElse(false);
+        //noinspection DataFlowIssue
+        findPreference(BedethequeSearchEngine.PK_RESOLVE_AUTHORS_ON_BEDETHEQUE)
+                .setEnabled(useRealAuthor);
+
         final Preference purgeCache = findPreference(PSK_CLEAR_AUTHOR_CACHE);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         setPurgeCacheSummary(purgeCache);
 
         purgeCache.setOnPreferenceClickListener(p -> {
             if (authorCacheCount > 0) {
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 new MaterialAlertDialogBuilder(getContext())
                         .setIcon(R.drawable.ic_baseline_warning_24)
                         .setMessage(R.string.option_purge_bedetheque_authors_cache)
