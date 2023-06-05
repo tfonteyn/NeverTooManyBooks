@@ -87,7 +87,7 @@ public class StripInfoSearchEngine
                    SearchEngine.ByBarcode {
 
     public static final String COLLECTION_FORM_URL = "/ajax_collectie.php";
-    static final String PK_USE_BEDETHEQUE = "stripinfo.resolve.authors.bedetheque";
+    static final String PK_RESOLVE_AUTHORS_ON_BEDETHEQUE = "stripinfo.resolve.authors.bedetheque";
     /** Log tag. */
     private static final String TAG = "StripInfoSearchEngine";
     /** Color string values as used on the site. Complete 2019-10-29. */
@@ -146,7 +146,7 @@ public class StripInfoSearchEngine
         if (ServiceLocator.getInstance().getGlobalFieldVisibility()
                           .isShowField(DBKey.AUTHOR_REAL_AUTHOR).orElse(false)
             && PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(PK_USE_BEDETHEQUE, false)) {
+                                .getBoolean(PK_RESOLVE_AUTHORS_ON_BEDETHEQUE, false)) {
             return new BedethequeAuthorResolver(context, this);
         } else {
             return null;

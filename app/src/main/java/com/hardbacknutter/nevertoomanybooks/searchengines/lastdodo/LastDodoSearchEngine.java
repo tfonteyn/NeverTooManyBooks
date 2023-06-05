@@ -67,7 +67,7 @@ public class LastDodoSearchEngine
                    SearchEngine.ByExternalId,
                    SearchEngine.ViewBookByExternalId {
 
-    static final String PK_USE_BEDETHEQUE = "lastdodo.resolve.authors.bedetheque";
+    static final String PK_RESOLVE_AUTHORS_ON_BEDETHEQUE = "lastdodo.resolve.authors.bedetheque";
 
     /**
      * Param 1: external book ID; really a 'long'.
@@ -170,7 +170,7 @@ public class LastDodoSearchEngine
         if (ServiceLocator.getInstance().getGlobalFieldVisibility()
                           .isShowField(DBKey.AUTHOR_REAL_AUTHOR).orElse(false)
             && PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(PK_USE_BEDETHEQUE, false)) {
+                                .getBoolean(PK_RESOLVE_AUTHORS_ON_BEDETHEQUE, false)) {
             return new BedethequeAuthorResolver(context, this);
         } else {
             return null;
