@@ -41,6 +41,10 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
+/**
+ * Visibility of the {@link DBKey#AUTHOR_REAL_AUTHOR} and {@link DBKey#AUTHOR_TYPE__BITMASK}
+ * is based on <strong>global USAGE</strong>.
+ */
 public class EditAuthorViewModel
         extends ViewModel {
 

@@ -56,6 +56,10 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 /**
  * Represents an Author.
  * <p>
+ * Visibility of the {@link DBKey#AUTHOR_REAL_AUTHOR} and {@link DBKey#AUTHOR_TYPE__BITMASK}
+ * is based on <strong>global USAGE</strong>.
+ *
+ * <p>
  * <strong>Note:</strong> "type" is a column of {@link DBDefinitions#TBL_BOOK_AUTHOR}
  * So this class does not strictly represent an Author, but a "BookAuthor"
  * When the type is disregarded, it is a real Author representation.

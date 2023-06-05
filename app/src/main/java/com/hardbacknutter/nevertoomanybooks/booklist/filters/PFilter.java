@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,6 +30,11 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 
 /**
  * A persistable {@link Filter}. See {@link DBDefinitions#TBL_BOOKSHELF_FILTERS}.
+ * <p>
+ * When a filter is based on a {@link com.hardbacknutter.nevertoomanybooks.database.DBKey},
+ * it will check the global visibility for that field.
+ * i.e. a Style can have a particular field hidden from display, but the filter
+ * will respect the <strong>global USAGE</strong> of that field.
  *
  * @param <T> actual type of the value
  */
