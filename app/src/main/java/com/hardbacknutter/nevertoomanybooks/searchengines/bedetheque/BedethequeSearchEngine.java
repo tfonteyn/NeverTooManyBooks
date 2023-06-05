@@ -69,6 +69,8 @@ public class BedethequeSearchEngine
 
     private static final Pattern PUB_DATE = Pattern.compile("\\d\\d/\\d\\d\\d\\d");
 
+    static final String PK_USE_BEDETHEQUE = "bedetheque.resolve.authors.bedetheque";
+
     private static final String PK_BEDETHEQUE_PRESERVE_FORMAT_NAMES = "bedetheque.resolve.formats";
 
     /** These are generic author names which are really the color. */
@@ -109,7 +111,9 @@ public class BedethequeSearchEngine
     @Nullable
     private AuthorResolver getAuthorResolver(@NonNull final Context context) {
         if (ServiceLocator.getInstance().getGlobalFieldVisibility()
-                          .isShowField(DBKey.AUTHOR_REAL_AUTHOR).orElse(false)) {
+                          .isShowField(DBKey.AUTHOR_REAL_AUTHOR).orElse(false)
+            && PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(PK_USE_BEDETHEQUE, true)) {
             return new BedethequeAuthorResolver(context, this);
         } else {
             return null;
