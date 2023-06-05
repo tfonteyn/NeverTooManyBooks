@@ -127,7 +127,7 @@ public class FieldVisibilityPreferenceFragment
         @Override
         public boolean getBoolean(@NonNull final String key,
                                   final boolean defValue) {
-            return fieldVisibility.isShowField(key).orElse(true);
+            return fieldVisibility.isShowField(key).orElse(false);
         }
 
         void load(@NonNull final SharedPreferences prefs) {
