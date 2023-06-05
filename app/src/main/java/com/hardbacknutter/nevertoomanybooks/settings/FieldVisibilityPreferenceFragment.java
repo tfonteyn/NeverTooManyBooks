@@ -63,7 +63,8 @@ public class FieldVisibilityPreferenceFragment
         // This MUST be done in onCreate/onCreatePreferences
         // and BEFORE we inflate the xml screen definition
         dataStore = new VSDataStore();
-        dataStore.setValue(getCurrent());
+        //noinspection DataFlowIssue
+        dataStore.load(PreferenceManager.getDefaultSharedPreferences(getContext()));
         getPreferenceManager().setPreferenceDataStore(dataStore);
 
         setPreferencesFromResource(R.xml.preferences_field_visibility, rootKey);
@@ -79,20 +80,14 @@ public class FieldVisibilityPreferenceFragment
         });
     }
 
-    private long getCurrent() {
-        //noinspection DataFlowIssue
-        return PreferenceManager.getDefaultSharedPreferences(getContext())
-                                .getLong(PK_FIELD_VISIBILITY, Long.MAX_VALUE);
-    }
-
     @Override
     public void onResume() {
         super.onResume();
-        dataStore.setValue(getCurrent());
-
         //noinspection DataFlowIssue
-        PreferenceManager.getDefaultSharedPreferences(getContext())
-                         .registerOnSharedPreferenceChangeListener(this);
+        final SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(getContext());
+        dataStore.load(prefs);
+        prefs.registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -101,9 +96,7 @@ public class FieldVisibilityPreferenceFragment
         final SharedPreferences prefs = PreferenceManager
                 .getDefaultSharedPreferences(getContext());
         prefs.unregisterOnSharedPreferenceChangeListener(this);
-        prefs.edit()
-             .putLong(PK_FIELD_VISIBILITY, dataStore.getValue())
-             .apply();
+        dataStore.save(prefs);
         super.onPause();
     }
 
@@ -115,7 +108,6 @@ public class FieldVisibilityPreferenceFragment
         vm.setOnBackRequiresActivityRecreation();
     }
 
-
     private static class VSDataStore
             extends PreferenceDataStore {
 
@@ -124,14 +116,6 @@ public class FieldVisibilityPreferenceFragment
 
         VSDataStore() {
             fieldVisibility = ServiceLocator.getInstance().getGlobalFieldVisibility();
-        }
-
-        long getValue() {
-            return fieldVisibility.getValue();
-        }
-
-        void setValue(final long value) {
-            fieldVisibility.setValue(value);
         }
 
         @Override
@@ -144,6 +128,16 @@ public class FieldVisibilityPreferenceFragment
         public boolean getBoolean(@NonNull final String key,
                                   final boolean defValue) {
             return fieldVisibility.isShowField(key).orElse(true);
+        }
+
+        void load(@NonNull final SharedPreferences prefs) {
+            fieldVisibility.setValue(prefs.getLong(PK_FIELD_VISIBILITY, Long.MAX_VALUE));
+        }
+
+        void save(@NonNull final SharedPreferences prefs) {
+            prefs.edit()
+                 .putLong(PK_FIELD_VISIBILITY, fieldVisibility.getValue())
+                 .apply();
         }
     }
 }
