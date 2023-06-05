@@ -144,18 +144,16 @@ public class FieldVisibility {
             R.string.lbl_author_pseudonym
     );
 
-    public static final long ALL = getBitValue(Set.copyOf(DB_KEYS));
-
     @NonNull
     private final Set<String> keys;
     private long bits;
 
     /**
-     * Constructor: use all fields.
+     * Constructor: use all fields which by default are all visible.
      */
     public FieldVisibility() {
         this.keys = Set.copyOf(DB_KEYS);
-        bits = getBitValue(this.keys);
+        bits = Long.MAX_VALUE;
     }
 
     /**

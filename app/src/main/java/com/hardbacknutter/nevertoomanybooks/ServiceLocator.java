@@ -122,6 +122,9 @@ public class ServiceLocator {
     private StylesHelper stylesHelper;
 
     @Nullable
+    private FieldVisibility fieldVisibility;
+
+    @Nullable
     private ReorderHelper reorderHelper;
 
     @Nullable
@@ -181,8 +184,6 @@ public class ServiceLocator {
     private StyleDao styleDao;
     @Nullable
     private TocEntryDao tocEntryDao;
-    @Nullable
-    private FieldVisibility fieldVisibility;
 
     /**
      * Private constructor.
@@ -323,6 +324,11 @@ public class ServiceLocator {
         return languages;
     }
 
+    /**
+     * Get the global field visibility settings.
+     *
+     * @return singleton
+     */
     @NonNull
     public FieldVisibility getGlobalFieldVisibility() {
         synchronized (this) {
@@ -331,7 +337,7 @@ public class ServiceLocator {
                 final long current = PreferenceManager
                         .getDefaultSharedPreferences(getAppContext())
                         .getLong(FieldVisibilityPreferenceFragment.PK_FIELD_VISIBILITY,
-                                 FieldVisibility.ALL);
+                                 Long.MAX_VALUE);
 
                 fieldVisibility.setValue(current);
             }
@@ -386,6 +392,11 @@ public class ServiceLocator {
         return cookieManager;
     }
 
+    /**
+     * Get the current application locale helper.
+     *
+     * @return singleton
+     */
     @NonNull
     public AppLocale getAppLocale() {
         synchronized (this) {

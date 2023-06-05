@@ -82,7 +82,7 @@ public class FieldVisibilityPreferenceFragment
     private long getCurrent() {
         //noinspection DataFlowIssue
         return PreferenceManager.getDefaultSharedPreferences(getContext())
-                                .getLong(PK_FIELD_VISIBILITY, FieldVisibility.ALL);
+                                .getLong(PK_FIELD_VISIBILITY, Long.MAX_VALUE);
     }
 
     @Override

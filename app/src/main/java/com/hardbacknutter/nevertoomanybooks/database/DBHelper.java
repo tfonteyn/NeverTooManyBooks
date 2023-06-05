@@ -214,18 +214,21 @@ public class DBHelper
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         // db version 25
-        final Pattern dot = Pattern.compile(".");
-        final long visibilityBitmask = prefs.getAll()
-                                            .keySet()
-                                            .stream()
-                                            .filter(key -> key.startsWith("fields.visibility."))
-                                            .filter(key -> prefs.getBoolean(key, true))
-                                            .map(key -> dot.split(key, 3)[2])
-                                            .map(FieldVisibility::getBitValue)
-                                            .mapToLong(value -> value)
-                                            .sum();
+        final Pattern dot = Pattern.compile("\\.");
+        final FieldVisibility fieldVisibility = new FieldVisibility();
+        prefs.getAll()
+             .keySet()
+             .stream()
+             .filter(key -> key.startsWith("fields.visibility."))
+             .forEach(oldKey -> {
+                 final boolean value = prefs.getBoolean(oldKey, false);
+                 final String dbKey = dot.split(oldKey, 3)[2];
+                 fieldVisibility.setShowField(dbKey, value);
+             });
+
         prefs.edit()
-             .putLong(FieldVisibilityPreferenceFragment.PK_FIELD_VISIBILITY, visibilityBitmask)
+             .putLong(FieldVisibilityPreferenceFragment.PK_FIELD_VISIBILITY,
+                      fieldVisibility.getValue())
              .apply();
 
 
