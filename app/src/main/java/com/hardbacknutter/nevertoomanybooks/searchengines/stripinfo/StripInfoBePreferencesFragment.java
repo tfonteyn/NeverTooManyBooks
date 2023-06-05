@@ -62,7 +62,7 @@ public class StripInfoBePreferencesFragment
                 .getInstance().getGlobalFieldVisibility()
                 .isShowField(DBKey.AUTHOR_REAL_AUTHOR).orElse(false);
         //noinspection DataFlowIssue
-        findPreference(StripInfoSearchEngine.PK_USE_BEDETHEQUE)
+        findPreference(StripInfoSearchEngine.PK_RESOLVE_AUTHORS_ON_BEDETHEQUE)
                 .setEnabled(useRealAuthor);
 
         //noinspection DataFlowIssue
