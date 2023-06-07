@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 public class PBooleanFilter
         implements PFilter<Boolean> {
 
+    /** The layout id; also used as row type. */
     public static final int LAYOUT_ID = R.layout.row_edit_bookshelf_filter_boolean;
     @NonNull
     protected final Domain domain;

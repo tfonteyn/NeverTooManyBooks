@@ -65,6 +65,13 @@ public class SyncWriterFragment
     @Nullable
     private ProgressDelegate progressDelegate;
 
+    /**
+     * Constructor.
+     *
+     * @param syncServer to use
+     *
+     * @return instance
+     */
     @NonNull
     public static Fragment create(@NonNull final SyncServer syncServer) {
         final Fragment fragment = new SyncWriterFragment();

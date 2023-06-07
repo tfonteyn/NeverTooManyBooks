@@ -76,7 +76,7 @@ public class SharedPreferencesCoder
     @Override
     public SharedPreferences decode(@NonNull final JSONObject data)
             throws JSONException {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final SharedPreferences.Editor ed = out.edit();
 
         final Iterator<String> keys = data.keys();
@@ -85,6 +85,7 @@ public class SharedPreferencesCoder
             final Object o = data.get(key);
             // JSONObject Tokenizer returns Integer, Long, or Double,
             // in that order (never a float)
+            //noinspection ChainOfInstanceofChecks
             if (o instanceof String) {
                 ed.putString(key, (String) o);
 

@@ -41,8 +41,8 @@ public final class TaskFileUtils {
     /**
      * Recursively copy the source Directory to the destination Directory.
      *
-     * @param sourceDir   directory
-     * @param destDir     directory
+     * @param sourceDir        directory
+     * @param destDir          directory
      * @param progressListener (optional) to check for user cancellation
      *
      * @throws IOException on generic/other IO failures
@@ -53,21 +53,24 @@ public final class TaskFileUtils {
             throws IOException {
         // sanity check
         if (sourceDir.isDirectory() && destDir.isDirectory()) {
-            //noinspection ConstantConditions
-            for (final File file : sourceDir.listFiles()) {
-                if (progressListener != null && progressListener.isCancelled()) {
-                    return;
-                }
-                final BasicFileAttributes fileAttr =
-                        Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-                if (fileAttr.isRegularFile()) {
-                    FileUtils.copy(file, new File(destDir, file.getName()));
+            final File[] files = sourceDir.listFiles();
+            // sanity check
+            if (files != null) {
+                for (final File file : files) {
+                    if (progressListener != null && progressListener.isCancelled()) {
+                        return;
+                    }
+                    final BasicFileAttributes fileAttr =
+                            Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+                    if (fileAttr.isRegularFile()) {
+                        FileUtils.copy(file, new File(destDir, file.getName()));
 
-                } else if (fileAttr.isDirectory()) {
-                    final File destSubDir = new File(destDir, file.getName());
-                    //noinspection ResultOfMethodCallIgnored
-                    destSubDir.mkdir();
-                    copyDirectory(file, destSubDir, progressListener);
+                    } else if (fileAttr.isDirectory()) {
+                        final File destSubDir = new File(destDir, file.getName());
+                        //noinspection ResultOfMethodCallIgnored
+                        destSubDir.mkdir();
+                        copyDirectory(file, destSubDir, progressListener);
+                    }
                 }
             }
         }
@@ -77,8 +80,8 @@ public final class TaskFileUtils {
      * Recursively delete files.
      * Does <strong>NOT</strong> delete the actual directory or any actual subdirectories.
      *
-     * @param root        directory
-     * @param filter      (optional) to apply; {@code null} for all files.
+     * @param root             directory
+     * @param filter           (optional) to apply; {@code null} for all files.
      * @param progressListener (optional) to check for user cancellation
      *
      * @return number of bytes deleted
@@ -91,16 +94,18 @@ public final class TaskFileUtils {
         long totalSize = 0;
         // sanity check
         if (root.isDirectory()) {
-            //noinspection ConstantConditions
-            for (final File file : root.listFiles(filter)) {
-                if (progressListener != null && progressListener.isCancelled()) {
-                    return totalSize;
-                }
-                if (file.isFile()) {
-                    totalSize += file.length();
-                    FileUtils.delete(file);
-                } else if (file.isDirectory()) {
-                    totalSize += deleteDirectory(file, filter, progressListener);
+            final File[] files = root.listFiles(filter);
+            if (files != null) {
+                for (final File file : files) {
+                    if (progressListener != null && progressListener.isCancelled()) {
+                        return totalSize;
+                    }
+                    if (file.isFile()) {
+                        totalSize += file.length();
+                        FileUtils.delete(file);
+                    } else if (file.isDirectory()) {
+                        totalSize += deleteDirectory(file, filter, progressListener);
+                    }
                 }
             }
         }

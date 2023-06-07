@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 public class PEntityListFilter<T extends Entity>
         implements PFilter<Set<Long>> {
 
+    /** The layout id; also used as row type. */
     public static final int LAYOUT_ID = R.layout.row_edit_bookshelf_filter_entity_list;
 
     @StringRes
@@ -167,7 +168,7 @@ public class PEntityListFilter<T extends Entity>
                         .stream()
                         .collect(Collectors.toMap(Entity::getId, entity -> entity));
             }
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             return value.stream()
                         .map(entityMap::get)
                         .filter(Objects::nonNull)

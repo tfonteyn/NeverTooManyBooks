@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
@@ -304,9 +305,9 @@ public class CalibreLibraryDaoImpl
      * @return list of virtual libs
      */
     @NonNull
-    private ArrayList<CalibreVirtualLibrary> getVirtualLibraries(final long libraryId) {
+    private List<CalibreVirtualLibrary> getVirtualLibraries(final long libraryId) {
 
-        final ArrayList<CalibreVirtualLibrary> list = new ArrayList<>();
+        final List<CalibreVirtualLibrary> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(SELECT_VLIBS_BY_LIBRARY_ID,
                                          new String[]{String.valueOf(libraryId)})) {
             final CursorRow rowData = new CursorRow(cursor);
@@ -348,7 +349,7 @@ public class CalibreLibraryDaoImpl
     }
 
     private void insertVirtualLibraries(@NonNull final CalibreLibrary library) {
-        final ArrayList<CalibreVirtualLibrary> vlibs = library.getVirtualLibraries();
+        final List<CalibreVirtualLibrary> vlibs = library.getVirtualLibraries();
         if (!vlibs.isEmpty()) {
             try (SynchronizedStatement stmt = db.compileStatement(INSERT_VIRTUAL_LIBRARY)) {
                 for (final CalibreVirtualLibrary vlib : vlibs) {

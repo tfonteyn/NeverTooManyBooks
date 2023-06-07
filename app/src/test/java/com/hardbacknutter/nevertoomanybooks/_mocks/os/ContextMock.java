@@ -65,7 +65,7 @@ public final class ContextMock {
     }
 
     private static File getTmpDir() {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         return new File(System.getProperty("java.io.tmpdir"));
     }
 }

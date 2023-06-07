@@ -215,6 +215,7 @@ public final class FileUtils {
                 //noinspection ResultOfMethodCallIgnored
                 file.delete();
             } catch (@NonNull final /* SecurityException */ RuntimeException ignore) {
+                // ignore
             }
         }
     }
@@ -233,13 +234,16 @@ public final class FileUtils {
         long totalSize = 0;
         // sanity check
         if (root.isDirectory()) {
-            //noinspection ConstantConditions
-            for (final File file : root.listFiles(filter)) {
-                if (file.isFile()) {
-                    totalSize += file.length();
-                    delete(file);
-                } else if (file.isDirectory()) {
-                    totalSize += deleteDirectory(file, filter);
+            final File[] files = root.listFiles(filter);
+            // sanity check
+            if (files != null) {
+                for (final File file : files) {
+                    if (file.isFile()) {
+                        totalSize += file.length();
+                        delete(file);
+                    } else if (file.isDirectory()) {
+                        totalSize += deleteDirectory(file, filter);
+                    }
                 }
             }
         }
@@ -278,12 +282,15 @@ public final class FileUtils {
         long totalSize = 0;
         // sanity check
         if (root.isDirectory()) {
-            //noinspection ConstantConditions
-            for (final File file : root.listFiles(filter)) {
-                if (file.isFile()) {
-                    totalSize += file.length();
-                } else if (file.isDirectory()) {
-                    totalSize += getUsedSpace(file, filter);
+            final File[] files = root.listFiles(filter);
+            // sanity check
+            if (files != null) {
+                for (final File file : files) {
+                    if (file.isFile()) {
+                        totalSize += file.length();
+                    } else if (file.isDirectory()) {
+                        totalSize += getUsedSpace(file, filter);
+                    }
                 }
             }
         }

@@ -59,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 public class PBitmaskFilter
         implements PFilter<Set<Integer>> {
 
+    /** The layout id; also used as row type. */
     public static final int LAYOUT_ID = R.layout.row_edit_bookshelf_filter_bitmask;
 
     @StringRes

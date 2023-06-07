@@ -29,6 +29,7 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
@@ -478,7 +479,7 @@ public class SeriesDaoImpl
     @Override
     public int fixPositions(@NonNull final Context context) {
 
-        final ArrayList<Long> bookIds = getColumnAsLongArrayList(Sql.REPOSITION);
+        final List<Long> bookIds = getColumnAsLongArrayList(Sql.REPOSITION);
         if (!bookIds.isEmpty()) {
             Synchronizer.SyncLock txLock = null;
             try {
@@ -488,7 +489,7 @@ public class SeriesDaoImpl
 
                 for (final long bookId : bookIds) {
                     final Book book = Book.from(bookId);
-                    final ArrayList<Series> list = getByBookId(bookId);
+                    final List<Series> list = getByBookId(bookId);
                     // We KNOW there are no updates needed.
                     insertOrUpdate(context, bookId, false, list, false,
                                    book.getLocaleOrUserLocale(context));

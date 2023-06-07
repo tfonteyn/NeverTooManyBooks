@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SyncContractBase;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
@@ -81,7 +82,7 @@ public class SyncReaderFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    //noinspection ConstantConditions
+                    //noinspection DataFlowIssue
                     getActivity().finish();
                 }
             };
@@ -96,7 +97,13 @@ public class SyncReaderFragment
     @Nullable
     private ProgressDelegate progressDelegate;
 
-    @SuppressWarnings("TypeMayBeWeakened")
+    /**
+     * Constructor.
+     *
+     * @param syncServer to use
+     *
+     * @return instance
+     */
     @NonNull
     public static Fragment create(@NonNull final SyncServer syncServer) {
         final Fragment fragment = new SyncReaderFragment();
@@ -110,7 +117,7 @@ public class SyncReaderFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(SyncReaderViewModel.class);
         vm.init(requireArguments());
     }
@@ -131,7 +138,7 @@ public class SyncReaderFragment
 
         getToolbar().setTitle(vm.getDataReaderHelper().getSyncServer().getLabelResId());
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
@@ -236,11 +243,11 @@ public class SyncReaderFragment
                         .setPreventSleep(true)
                         .setOnCancelListener(v -> vm.cancelTask(R.id.TASK_ID_IMPORT));
             }
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             progressDelegate.show(() -> getActivity().getWindow());
             vm.readData();
         } else {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             Snackbar.make(getView(), R.string.warning_nothing_selected, Snackbar.LENGTH_SHORT)
                     .show();
         }
@@ -256,7 +263,7 @@ public class SyncReaderFragment
                     .setIndeterminate(true)
                     .setOnCancelListener(v -> vm.cancelTask(R.id.TASK_ID_READ_META_DATA));
         }
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         progressDelegate.show(() -> getActivity().getWindow());
         vm.readMetaData();
     }
@@ -268,6 +275,7 @@ public class SyncReaderFragment
         message.getData().flatMap(TaskResult::requireResult).ifPresent(this::showMetaData);
     }
 
+    @SuppressWarnings("WeakerAccess")
     protected void onMetaDataCancelled(@NonNull final LiveDataEvent<TaskResult<
             Optional<SyncReaderMetaData>>> message) {
         closeProgressDialog();
@@ -309,13 +317,13 @@ public class SyncReaderFragment
         final ArrayList<CalibreLibrary> libraries =
                 data.getParcelableArrayList(CalibreContentServer.BKEY_LIBRARY_LIST);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         if (libraries.size() == 1) {
             // shortcut...
             onCalibreLibrarySelected(libraries.get(0));
 
         } else {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             final ExtArrayAdapter<CalibreLibrary> adapter =
                     new EntityArrayAdapter<>(getContext(), libraries);
 
@@ -328,7 +336,7 @@ public class SyncReaderFragment
             if (library == null) {
                 library = data.getParcelable(CalibreContentServer.BKEY_LIBRARY);
             }
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             onCalibreLibrarySelected(library);
         }
     }
@@ -337,7 +345,7 @@ public class SyncReaderFragment
         vb.calibreLibrary.setText(library.getName(), false);
 
         final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
-        final ISODateParser isoDateParser = new ISODateParser(systemLocale);
+        final DateParser isoDateParser = new ISODateParser(systemLocale);
         updateSyncDate(isoDateParser.parse(library.getLastSyncDateAsString()));
 
         vb.archiveContent.setText(getString(R.string.name_colon_value,
@@ -381,7 +389,7 @@ public class SyncReaderFragment
      */
     private void updateSyncDate(@Nullable final LocalDateTime lastSyncDate) {
         vm.getDataReaderHelper().setSyncDate(lastSyncDate);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vb.syncDate.setText(DateUtils.displayDate(getContext(), lastSyncDate));
     }
 
@@ -389,7 +397,7 @@ public class SyncReaderFragment
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         message.getData().ifPresent(data -> {
             if (progressDelegate == null) {
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 progressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.lbl_importing)
                         .setPreventSleep(true)
@@ -404,7 +412,7 @@ public class SyncReaderFragment
         closeProgressDialog();
 
         message.getData().map(TaskResult::getResult).filter(Objects::nonNull).ifPresent(e -> {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             ErrorDialog.show(getContext(), e, getString(R.string.error_import_failed),
                              (d, w) -> getActivity().finish());
         });
@@ -445,7 +453,7 @@ public class SyncReaderFragment
      */
     private void onImportFinished(@StringRes final int titleId,
                                   @NonNull final ReaderResults result) {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         new MaterialAlertDialogBuilder(getContext())
                 .setIcon(R.drawable.ic_baseline_info_24)
                 .setTitle(titleId)
@@ -453,7 +461,7 @@ public class SyncReaderFragment
                 .setPositiveButton(R.string.action_done, (d, w) -> {
                     final Intent resultIntent = SyncContractBase
                             .createResult(SyncContractBase.Outcome.Read);
-                    //noinspection ConstantConditions
+                    //noinspection DataFlowIssue
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();
                 })
@@ -495,7 +503,7 @@ public class SyncReaderFragment
 
     private void closeProgressDialog() {
         if (progressDelegate != null) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             progressDelegate.dismiss(getActivity().getWindow());
             progressDelegate = null;
         }

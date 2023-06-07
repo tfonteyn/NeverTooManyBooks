@@ -98,7 +98,7 @@ public class Base {
 
     @NonNull
     protected static File getTmpDir() {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         return new File(System.getProperty("java.io.tmpdir"));
     }
 
@@ -160,7 +160,7 @@ public class Base {
                 .when(localeList).get(anyInt());
 
         when(style.getUuid()).thenReturn(BuiltinStyle.DEFAULT_UUID);
-        when(stylesHelper.getDefault(any(Context.class))).thenReturn(style);
+        when(stylesHelper.getDefault()).thenReturn(style);
 
         when(coverStorage.getDir()).thenReturn(getTmpDir());
         when(coverStorage.getTempDir()).thenReturn(getTmpDir());

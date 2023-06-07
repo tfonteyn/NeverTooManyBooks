@@ -49,6 +49,14 @@ public final class MenuUtils {
     private MenuUtils() {
     }
 
+    /**
+     * Hookup, inflating if needed, the {@code R.id.MENU_SEARCH} menu item
+     * with the system search service.
+     *
+     * @param activity from which we can the search service
+     * @param inflater to use
+     * @param menu     which contains the {@code R.id.MENU_SEARCH} menu item
+     */
     public static void setupSearchActionView(@NonNull final Activity activity,
                                              @NonNull final MenuInflater inflater,
                                              @NonNull final Menu menu) {
@@ -60,6 +68,13 @@ public final class MenuUtils {
         setupSearchActionView(activity, menu);
     }
 
+    /**
+     * Hookup an <strong>existing</strong> {@code R.id.MENU_SEARCH} menu item
+     * with the system search service.
+     *
+     * @param activity from which we can the search service
+     * @param menu     which contains the {@code R.id.MENU_SEARCH} menu item
+     */
     public static void setupSearchActionView(@NonNull final Activity activity,
                                              @NonNull final Menu menu) {
         final MenuItem searchItem = Objects.requireNonNull(menu.findItem(R.id.MENU_SEARCH),
@@ -72,7 +87,7 @@ public final class MenuUtils {
                 activity.getSystemService(Context.SEARCH_SERVICE);
         final SearchableInfo si = searchManager.getSearchableInfo(
                 new ComponentName(activity, BooksOnBookshelf.class.getName()));
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         searchView.setSearchableInfo(si);
     }
 
@@ -100,6 +115,13 @@ public final class MenuUtils {
         item.setEnabled(false);
     }
 
+    /**
+     * Create a popup menu with {@code Edit} and {@code Delete} options.
+     *
+     * @param context Current context
+     *
+     * @return menu
+     */
     @NonNull
     public static ExtPopupMenu createEditDeleteContextMenu(@NonNull final Context context) {
         final ExtPopupMenu contextMenu = new ExtPopupMenu(context);

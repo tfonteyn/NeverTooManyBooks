@@ -774,7 +774,7 @@ public class AuthorDaoImpl
     @Override
     public int fixPositions(@NonNull final Context context) {
 
-        final ArrayList<Long> bookIds = getColumnAsLongArrayList(Sql.REPOSITION);
+        final List<Long> bookIds = getColumnAsLongArrayList(Sql.REPOSITION);
         if (!bookIds.isEmpty()) {
             Synchronizer.SyncLock txLock = null;
             try {
@@ -784,7 +784,7 @@ public class AuthorDaoImpl
 
                 for (final long bookId : bookIds) {
                     final Book book = Book.from(bookId);
-                    final ArrayList<Author> list = getByBookId(bookId);
+                    final List<Author> list = getByBookId(bookId);
                     // We KNOW there are no updates needed.
                     insertOrUpdate(context, bookId, false, list, false,
                                    book.getLocaleOrUserLocale(context));

@@ -49,6 +49,7 @@ import androidx.recyclerview.widget.RecyclerView;
  *     <li>vertical and horizontal dividers can be drawn at the same time; i.e. a proper grid.</li>
  * </ul>
  */
+@SuppressWarnings("WeakerAccess")
 public class GridDividerItemDecoration
         extends RecyclerView.ItemDecoration {
 
@@ -291,9 +292,9 @@ public class GridDividerItemDecoration
 
     private void drawHorizontalDivider(@NonNull final Canvas canvas,
                                        @NonNull final RecyclerView parent) {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final int spanCount = ((GridLayoutManager) parent.getLayoutManager()).getSpanCount();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final int childCount = Math.min(parent.getChildCount(), parent.getAdapter().getItemCount());
         final int dividerCount = childCount / spanCount
                                  + ((childCount % spanCount) > 0 ? 1 : 0)
@@ -334,7 +335,7 @@ public class GridDividerItemDecoration
 
     private void drawVerticalDivider(@NonNull final Canvas canvas,
                                      @NonNull final RecyclerView parent) {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final int spanCount = ((GridLayoutManager) parent.getLayoutManager()).getSpanCount();
         final int dividerCount = Math.min(spanCount, parent.getChildCount())
                                  - (dividerAfterLastColumn ? 0 : 1);
@@ -378,7 +379,7 @@ public class GridDividerItemDecoration
                                @NonNull final RecyclerView.State state) {
         outRect.set(0, 0, 0, 0);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final int spanCount = ((GridLayoutManager) parent.getLayoutManager()).getSpanCount();
         final int childLayoutPosition = parent.getChildLayoutPosition(view);
 

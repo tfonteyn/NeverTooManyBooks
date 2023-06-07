@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 public class PStringEqualityFilter
         implements PFilter<String> {
 
+    /** The layout id; also used as row type. */
     public static final int LAYOUT_ID = R.layout.row_edit_bookshelf_filter_string_equality;
 
     @StringRes

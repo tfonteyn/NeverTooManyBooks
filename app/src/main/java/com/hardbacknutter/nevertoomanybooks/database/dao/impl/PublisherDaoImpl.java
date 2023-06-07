@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
@@ -430,7 +431,7 @@ public class PublisherDaoImpl
     @Override
     public int fixPositions(@NonNull final Context context) {
 
-        final ArrayList<Long> bookIds = getColumnAsLongArrayList(Sql.REPOSITION);
+        final List<Long> bookIds = getColumnAsLongArrayList(Sql.REPOSITION);
         if (!bookIds.isEmpty()) {
             Synchronizer.SyncLock txLock = null;
             try {
@@ -440,7 +441,7 @@ public class PublisherDaoImpl
 
                 for (final long bookId : bookIds) {
                     final Book book = Book.from(bookId);
-                    final ArrayList<Publisher> list = getByBookId(bookId);
+                    final List<Publisher> list = getByBookId(bookId);
                     // We KNOW there are no updates needed.
                     insertOrUpdate(context, bookId, false, list, false,
                                    book.getLocaleOrUserLocale(context));
@@ -460,7 +461,7 @@ public class PublisherDaoImpl
         return bookIds.size();
     }
 
-    private static class Sql {
+    private static final class Sql {
 
         /**
          * Insert the link between a {@link Book} and a {@link Publisher}.
