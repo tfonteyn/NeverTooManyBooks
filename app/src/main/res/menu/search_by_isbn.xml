@@ -23,6 +23,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <!-- TODO: we should use the same icons as used on the BoB FAB menu.
+          However, this does not look nice because the camera and camera+ icons
+          are not baseline aligned.
+          ic_baseline_photo_camera_24 -->
     <item
         android:id="@id/MENU_BARCODE_SCAN"
         android:icon="@drawable/ic_barcode"
@@ -30,6 +34,7 @@
         android:title="@string/option_fab_add_book_by_barcode_scan"
         app:showAsAction="always" />
 
+    <!-- ic_baseline_add_a_photo_24 -->
     <item
         android:id="@id/MENU_BARCODE_SCAN_BATCH"
         android:icon="@drawable/ic_barcode_batch"
