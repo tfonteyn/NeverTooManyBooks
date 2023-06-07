@@ -139,6 +139,18 @@
             Note the location on screen is NOT set, i.e. it's (0,0) relative to the 'fab'
             button itself. We'll animate them to their proper (translationX,translationY) in code.
         -->
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/fab0_scan_barcode_batch"
+            style="@style/FAB.Menu"
+            android:text="@string/option_fab_add_book_by_barcode_scan_batch"
+            app:icon="@drawable/ic_baseline_add_a_photo_24"
+            app:layout_anchor="@id/fab"
+            tools:translationX="@dimen/fab_menu_translationX_0"
+            tools:translationY="@dimen/fab_menu_translationY_0"
+            tools:visibility="visible"
+            />
+
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/fab0_scan_barcode"
             style="@style/FAB.Menu"
@@ -147,17 +159,6 @@
             app:layout_anchor="@id/fab"
             tools:translationX="@dimen/fab_menu_translationX_1"
             tools:translationY="@dimen/fab_menu_translationY_1"
-            tools:visibility="visible"
-            />
-
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/fab0_scan_barcode_batch"
-            style="@style/FAB.Menu"
-            android:text="@string/option_fab_add_book_by_barcode_scan_batch"
-            app:icon="@drawable/ic_baseline_photo_camera_24"
-            app:layout_anchor="@id/fab"
-            tools:translationX="@dimen/fab_menu_translationX_0"
-            tools:translationY="@dimen/fab_menu_translationY_0"
             tools:visibility="visible"
             />
 
