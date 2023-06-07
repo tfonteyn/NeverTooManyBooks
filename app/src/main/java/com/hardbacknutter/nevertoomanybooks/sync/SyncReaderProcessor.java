@@ -36,6 +36,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -104,7 +105,7 @@ public final class SyncReaderProcessor {
                         case Book.BKEY_TOC_LIST:
                         case Book.BKEY_BOOKSHELF_LIST:
                             if (localBook.contains(field.getKey())) {
-                                final ArrayList<Parcelable> list =
+                                final List<Parcelable> list =
                                         localBook.getParcelableArrayList(field.getKey());
                                 if (list.isEmpty()) {
                                     filteredMap.put(field.getKey(), field);
@@ -229,7 +230,7 @@ public final class SyncReaderProcessor {
                         }
                     });
         } catch (@NonNull final UncheckedIOException e) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             throw e.getCause();
         }
 
@@ -311,7 +312,7 @@ public final class SyncReaderProcessor {
                                         + "|cIdx=" + cIdx);
                 // except disk-full!
                 if (FileUtils.isDiskFull(e)) {
-                    //noinspection ConstantConditions
+                    //noinspection DataFlowIssue
                     throw (IOException) e;
                 }
             }
@@ -338,7 +339,7 @@ public final class SyncReaderProcessor {
                              @NonNull final String key) {
         switch (key) {
             case Book.BKEY_AUTHOR_LIST: {
-                final ArrayList<Author> list = remoteBook.getAuthors();
+                final List<Author> list = remoteBook.getAuthors();
                 if (!list.isEmpty()) {
                     // add the book data to the remoteBook list!
                     // (and not the other way around! We want to collect a delta)
@@ -347,28 +348,28 @@ public final class SyncReaderProcessor {
                 break;
             }
             case Book.BKEY_SERIES_LIST: {
-                final ArrayList<Series> list = remoteBook.getSeries();
+                final List<Series> list = remoteBook.getSeries();
                 if (!list.isEmpty()) {
                     list.addAll(localeBook.getSeries());
                 }
                 break;
             }
             case Book.BKEY_PUBLISHER_LIST: {
-                final ArrayList<Publisher> list = remoteBook.getPublishers();
+                final List<Publisher> list = remoteBook.getPublishers();
                 if (!list.isEmpty()) {
                     list.addAll(localeBook.getPublishers());
                 }
                 break;
             }
             case Book.BKEY_TOC_LIST: {
-                final ArrayList<TocEntry> list = remoteBook.getToc();
+                final List<TocEntry> list = remoteBook.getToc();
                 if (!list.isEmpty()) {
                     list.addAll(localeBook.getToc());
                 }
                 break;
             }
             case Book.BKEY_BOOKSHELF_LIST: {
-                final ArrayList<Bookshelf> list = remoteBook.getBookshelves();
+                final List<Bookshelf> list = remoteBook.getBookshelves();
                 if (!list.isEmpty()) {
                     list.addAll(localeBook.getBookshelves());
                     ServiceLocator.getInstance().getBookshelfDao().pruneList(context, list);

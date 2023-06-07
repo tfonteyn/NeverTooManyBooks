@@ -324,18 +324,18 @@ public class IsfdbSearchEngine
                 index++;
                 args += String.format(USE, index, "author_canonical",
                                       URLEncoder.encode(author, CHARSET_ENCODE_URL));
-//                        "&USE_" + index + "=author_canonical"
-//                        + "&O_" + index + "=contains"
-//                        + "&TERM_" + index + "=" + URLEncoder.encode(author, CHARSET_ENCODE_URL);
+                // "&USE_" + index + "=author_canonical"
+                // + "&O_" + index + "=contains"
+                // + "&TERM_" + index + "=" + URLEncoder.encode(author, CHARSET_ENCODE_URL);
             }
 
             if (title != null && !title.isEmpty()) {
                 index++;
                 args += String.format(USE, index, "pub_title",
                                       URLEncoder.encode(title, CHARSET_ENCODE_URL));
-//                        "&USE_" + index + "=pub_title"
-//                        + "&O_" + index + "=contains"
-//                        + "&TERM_" + index + "=" + URLEncoder.encode(title, CHARSET_ENCODE_URL);
+                // "&USE_" + index + "=pub_title"
+                // + "&O_" + index + "=contains"
+                // + "&TERM_" + index + "=" + URLEncoder.encode(title, CHARSET_ENCODE_URL);
             }
 
             // as per user settings.
@@ -346,10 +346,9 @@ public class IsfdbSearchEngine
                     args += String.format(USE, index, "pub_publisher",
                                           URLEncoder
                                                   .encode(publisher, CHARSET_ENCODE_URL));
-//                            "&USE_" + index + "=pub_publisher"
-//                            + "&O_" + index + "=contains"
-//                            + "&TERM_" + index + "=" + URLEncoder
-//                                    .encode(publisher, CHARSET_ENCODE_URL);
+                    // "&USE_" + index + "=pub_publisher"
+                    // + "&O_" + index + "=contains"
+                    // + "&TERM_" + index + "=" + URLEncoder.encode(publisher, CHARSET_ENCODE_URL);
                 }
             }
 
@@ -1056,7 +1055,7 @@ public class IsfdbSearchEngine
 
         // post-process all found data.
 
-        final ArrayList<TocEntry> toc = parseToc(context, document, book);
+        final List<TocEntry> toc = parseToc(context, document, book);
         if (!toc.isEmpty()) {
             // We always store the toc even if there is only a single entry.
             // ISFDB provides the *original* publication year in the toc which we want to preserve.
@@ -1361,7 +1360,7 @@ public class IsfdbSearchEngine
      */
     private void processExternalIdElements(@NonNull final Collection<Element> elements,
                                            @NonNull final Book book) {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         elements.stream()
                 .map(element -> element.select("a").first())
                 .filter(Objects::nonNull)
@@ -1534,6 +1533,8 @@ public class IsfdbSearchEngine
      *                    The array is guaranteed to have at least one element.
      * @param maxRecords  the maximum number of "Publication" records to fetch
      * @param moneyParser shared parser
+     *
+     * @return list of books found
      *
      * @throws StorageException on storage related failures
      * @throws SearchException  on generic exceptions (wrapped) during search

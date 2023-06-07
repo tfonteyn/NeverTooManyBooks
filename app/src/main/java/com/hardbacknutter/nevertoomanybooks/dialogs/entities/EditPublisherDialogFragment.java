@@ -78,7 +78,6 @@ public class EditPublisherDialogFragment
         if (savedInstanceState == null) {
             currentEdit = new Publisher(publisher.getName());
         } else {
-            //noinspection ConstantConditions
             currentEdit = savedInstanceState.getParcelable(EditLauncher.BKEY_ITEM);
         }
     }
@@ -89,7 +88,7 @@ public class EditPublisherDialogFragment
         super.onViewCreated(view, savedInstanceState);
         vb = DialogEditPublisherContentBinding.bind(view.findViewById(R.id.dialog_content));
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
                 getContext(), R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,

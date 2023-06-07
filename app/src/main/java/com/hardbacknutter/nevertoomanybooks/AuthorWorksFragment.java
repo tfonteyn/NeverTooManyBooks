@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -84,7 +84,7 @@ public class AuthorWorksFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    //noinspection ConstantConditions
+                    //noinspection DataFlowIssue
                     getActivity().setResult(Activity.RESULT_OK, vm.createResultIntent());
                     getActivity().finish();
                 }
@@ -105,7 +105,7 @@ public class AuthorWorksFragment
                 data -> vm.setDataModified(data)));
 
         vm = new ViewModelProvider(this).get(AuthorWorksViewModel.class);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm.init(getContext(), requireArguments());
     }
 
@@ -144,7 +144,7 @@ public class AuthorWorksFragment
                             @NonNull final AuthorWork work) {
         switch (work.getWorkType()) {
             case TocEntry: {
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 StandardDialogs.deleteTocEntry(
                         getContext(),
                         work.getLabel(getContext(), Details.AutoSelect, vm.getStyle()),
@@ -156,7 +156,7 @@ public class AuthorWorksFragment
             }
             case Book:
             case BookLight: {
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 StandardDialogs.deleteBook(
                         getContext(),
                         work.getLabel(getContext(), Details.AutoSelect, vm.getStyle()),
@@ -180,12 +180,12 @@ public class AuthorWorksFragment
 
         final Toolbar toolbar = getToolbar();
         toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         toolbar.setTitle(vm.getScreenTitle(context));
         toolbar.setSubtitle(vm.getScreenSubtitle(context));
 
         // Popup the search widget when the user starts to type.
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         getActivity().setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
 
         getActivity().getOnBackPressedDispatcher()
@@ -235,7 +235,7 @@ public class AuthorWorksFragment
             MenuCompat.setGroupDividerEnabled(menu, true);
             menuInflater.inflate(R.menu.author_works, menu);
 
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             MenuUtils.customizeMenuGroupTitle(getContext(), menu,
                                               R.id.sm_title_author_works_sort);
             MenuUtils.customizeMenuGroupTitle(getContext(), menu,
@@ -299,7 +299,7 @@ public class AuthorWorksFragment
                 adapter.notifyDataSetChanged();
 
                 final Toolbar toolbar = getToolbar();
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 toolbar.setTitle(vm.getScreenTitle(getContext()));
                 toolbar.setSubtitle(vm.getScreenSubtitle(getContext()));
                 return true;

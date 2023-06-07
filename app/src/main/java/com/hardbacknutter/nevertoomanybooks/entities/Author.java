@@ -350,9 +350,9 @@ public class Author
      */
     private Author(@NonNull final Parcel in) {
         id = in.readLong();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         familyName = in.readString();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         givenNames = in.readString();
         complete = in.readByte() != 0;
         type = in.readInt();
@@ -448,10 +448,7 @@ public class Author
                 if (group != null) {
                     group = group.strip();
                     if (!group.isEmpty()) {
-                        //noinspection ConstantConditions
-                        if (uName.isEmpty()
-                            && bracketSection != null && !bracketSection.isEmpty()
-                            && group.startsWith(", ")) {
+                        if (uName.isEmpty() && bracketSection != null && group.startsWith(", ")) {
                             // assume it's the format "(blah), name" and decode
                             // BACKWARDS compatible:
                             return new Author("(" + bracketSection + ")",

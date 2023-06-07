@@ -49,8 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 public class SearchAdminFragment
         extends BaseFragment {
 
-    public static final String TAG = "SearchAdminFragment";
-
     private TabAdapter tabAdapter;
 
     private SearchAdminViewModel vm;
@@ -64,7 +62,7 @@ public class SearchAdminFragment
                     final boolean hasSites = vm.validate();
                     if (hasSites) {
                         // 2022-05-29: we now always persist.
-                        //noinspection ConstantConditions
+                        //noinspection DataFlowIssue
                         vm.persist(getContext());
                         // but to keep changes minimal, we still return the list if it's single.
                         if (vm.getTypes().size() == 1) {
@@ -72,10 +70,10 @@ public class SearchAdminFragment
                             final Intent resultIntent = new Intent()
                                     .putParcelableArrayListExtra(type.getBundleKey(),
                                                                  vm.getList(type));
-                            //noinspection ConstantConditions
+                            //noinspection DataFlowIssue
                             getActivity().setResult(Activity.RESULT_OK, resultIntent);
                         }
-                        //noinspection ConstantConditions
+                        //noinspection DataFlowIssue
                         getActivity().finish();
 
                     } else {
@@ -89,7 +87,7 @@ public class SearchAdminFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(SearchAdminViewModel.class);
         vm.init(getArguments());
     }
@@ -108,7 +106,7 @@ public class SearchAdminFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 

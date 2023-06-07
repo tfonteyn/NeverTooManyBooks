@@ -78,7 +78,6 @@ public class EditSeriesDialogFragment
         if (savedInstanceState == null) {
             currentEdit = new Series(series.getTitle(), series.isComplete());
         } else {
-            //noinspection ConstantConditions
             currentEdit = savedInstanceState.getParcelable(EditLauncher.BKEY_ITEM);
         }
     }
@@ -89,7 +88,7 @@ public class EditSeriesDialogFragment
         super.onViewCreated(view, savedInstanceState);
         vb = DialogEditSeriesContentBinding.bind(view.findViewById(R.id.dialog_content));
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final ExtArrayAdapter<String> titleAdapter = new ExtArrayAdapter<>(
                 getContext(), R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,

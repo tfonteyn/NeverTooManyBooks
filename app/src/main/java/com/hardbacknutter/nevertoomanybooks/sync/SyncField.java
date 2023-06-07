@@ -88,14 +88,14 @@ public final class SyncField
      * @param in Parcel to construct the object from
      */
     private SyncField(@NonNull final Parcel in) {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         key = in.readString();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         label = in.readString();
         canAppend = in.readByte() != 0;
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         defaultAction = in.readParcelable(SyncAction.class.getClassLoader());
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         syncAction = in.readParcelable(SyncAction.class.getClassLoader());
     }
 
@@ -126,11 +126,21 @@ public final class SyncField
         return new SyncField(key, label, canAppend, defaultAction, syncAction);
     }
 
+    /**
+     * Get the action required for this field.
+     *
+     * @return syncAction
+     */
     @NonNull
     public SyncAction getAction() {
         return syncAction;
     }
 
+    /**
+     * Set the action required for this field.
+     *
+     * @param syncAction to use
+     */
     public void setAction(@NonNull final SyncAction syncAction) {
         this.syncAction = syncAction;
     }

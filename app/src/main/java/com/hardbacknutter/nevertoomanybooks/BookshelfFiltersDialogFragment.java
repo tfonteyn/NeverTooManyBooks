@@ -112,7 +112,7 @@ public class BookshelfFiltersDialogFragment
         vb = DialogEditBookshelfFiltersContentBinding.bind(view.findViewById(R.id.dialog_content));
         setSubtitle(vm.getBookshelf().getName());
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         listAdapter = new FilterListAdapter(getContext(), vm.getFilterList(), modificationListener);
         vb.filterList.setAdapter(listAdapter);
         vb.filterList.addItemDecoration(
@@ -157,7 +157,7 @@ public class BookshelfFiltersDialogFragment
     // We don't set the modified flag on adding a filter - the filter is NOT activated yet here.
     private void onAdd() {
         final Context context = getContext();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final Pair<String[], String[]> items = vm.getFilterChoiceItems(context);
 
         new MaterialAlertDialogBuilder(context)
@@ -179,7 +179,7 @@ public class BookshelfFiltersDialogFragment
     }
 
     protected boolean saveChanges() {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final boolean success = vm.saveChanges(getContext());
         if (success) {
             Launcher.setResult(this, vm.getRequestKey(), vm.isModified());
@@ -269,8 +269,9 @@ public class BookshelfFiltersDialogFragment
         /**
          * Constructor.
          *
-         * @param context Current context
-         * @param filters List of items
+         * @param context              Current context
+         * @param filters              List of items
+         * @param modificationListener listener which will be notified if a filter is modified
          */
         FilterListAdapter(@NonNull final Context context,
                           @NonNull final List<PFilter<?>> filters,

@@ -92,6 +92,13 @@ public class SearchOrderFragment
      */
     private ArrayList<Site> siteList;
 
+    /**
+     * Constructor.
+     *
+     * @param type of the list to edit
+     *
+     * @return instance
+     */
     @NonNull
     public static Fragment create(@NonNull final Site.Type type) {
         final Fragment fragment = new SearchOrderFragment();
@@ -105,7 +112,7 @@ public class SearchOrderFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(SearchAdminViewModel.class);
     }
 
@@ -132,7 +139,7 @@ public class SearchOrderFragment
         type = Objects.requireNonNull(requireArguments().getParcelable(BKEY_TYPE), BKEY_TYPE);
         siteList = vm.getList(type);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vb.siteList.addItemDecoration(
                 new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL));
         vb.siteList.setHasFixedSize(true);
@@ -255,7 +262,7 @@ public class SearchOrderFragment
             if (menuItem.getItemId() == R.id.MENU_RESET) {
                 final Languages languages = ServiceLocator.getInstance().getLanguages();
                 // Reset the global/original list for the type.
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 type.resetList(getContext(), languages);
                 // and replace the content of the local list with the (new) defaults.
                 siteList.clear();

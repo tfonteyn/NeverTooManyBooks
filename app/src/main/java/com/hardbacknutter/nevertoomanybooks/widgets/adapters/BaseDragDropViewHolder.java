@@ -80,13 +80,18 @@ public abstract class BaseDragDropViewHolder
         checkableButton = itemView.findViewById(R.id.ROW_CHECKABLE_BTN);
     }
 
+    /**
+     * Check if this row is draggable.
+     *
+     * @return flag
+     */
     public boolean isDraggable() {
         return dragHandleView != null;
     }
 
     @SuppressLint("ClickableViewAccessibility")
     void setOnDragListener(@NonNull final View.OnTouchListener listener) {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         dragHandleView.setOnTouchListener(listener);
     }
 
@@ -97,13 +102,13 @@ public abstract class BaseDragDropViewHolder
      *                 return the new checkable status for the row.
      */
     public void setOnItemCheckChangedListener(@NonNull final Function<Integer, Boolean> listener) {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         checkableButton.setOnClickListener(
                 v -> setChecked(listener.apply(getBindingAdapterPosition())));
     }
 
     public void setChecked(final boolean checked) {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         checkableButton.setChecked(checked);
     }
 

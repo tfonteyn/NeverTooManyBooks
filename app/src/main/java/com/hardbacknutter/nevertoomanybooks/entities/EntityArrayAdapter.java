@@ -57,6 +57,7 @@ public class EntityArrayAdapter<T extends Entity>
      * @param filterType the type of filter to apply
      * @param list       of entities to choose from
      */
+    @SuppressWarnings("WeakerAccess")
     public EntityArrayAdapter(@NonNull final Context context,
                               @NonNull final FilterType filterType,
                               @NonNull final List<T> list) {
@@ -72,7 +73,7 @@ public class EntityArrayAdapter<T extends Entity>
      */
     @Override
     public long getItemId(final int position) {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         return getItem(position).getId();
     }
 

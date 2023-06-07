@@ -80,7 +80,7 @@ public class EditBookFragment
                 public void handleOnBackPressed() {
                     // Warn the user if the book was changed
                     if (vm.getBook().getStage() == EntityStage.Stage.Dirty) {
-                        //noinspection ConstantConditions
+                        //noinspection DataFlowIssue
                         StandardDialogs.unsavedEdits(getContext(),
                                                      () -> prepareSave(true),
                                                      () -> setResultsAndFinish());
@@ -95,9 +95,9 @@ public class EditBookFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm.init(getContext(), getArguments());
     }
 
@@ -117,7 +117,7 @@ public class EditBookFragment
 
         getToolbar().addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
@@ -258,7 +258,7 @@ public class EditBookFragment
      */
     private void saveBook() {
         try {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             vm.saveBook(getContext());
             setResultsAndFinish();
 
@@ -272,7 +272,7 @@ public class EditBookFragment
 
     /** Single point of exit for this Activity. */
     private void setResultsAndFinish() {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         getActivity().setResult(Activity.RESULT_OK, vm.createResultIntent());
         getActivity().finish();
     }
@@ -372,7 +372,7 @@ public class EditBookFragment
             menuInflater.inflate(R.menu.toolbar_action_save, menu);
 
             final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             final Button button = menuItem.getActionView().findViewById(R.id.btn_save);
             button.setOnClickListener(v -> onMenuItemSelected(menuItem));
         }

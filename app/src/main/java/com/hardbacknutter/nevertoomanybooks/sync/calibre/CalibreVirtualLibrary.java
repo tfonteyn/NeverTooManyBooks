@@ -31,6 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 public class CalibreVirtualLibrary
         extends LibraryBase {
 
+    /** {@link Parcelable}. */
     public static final Creator<CalibreVirtualLibrary> CREATOR = new Creator<>() {
         @Override
         @NonNull
@@ -112,7 +113,7 @@ public class CalibreVirtualLibrary
         super(in);
 
         libraryId = in.readInt();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         searchExpression = in.readString();
     }
 

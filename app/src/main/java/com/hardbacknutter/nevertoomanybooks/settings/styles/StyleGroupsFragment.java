@@ -75,7 +75,7 @@ public class StyleGroupsFragment
                         getParentFragmentManager().popBackStack();
 
                     } else {
-                        //noinspection ConstantConditions
+                        //noinspection DataFlowIssue
                         new MaterialAlertDialogBuilder(getContext())
                                 .setIcon(R.drawable.ic_baseline_warning_24)
                                 .setTitle(R.string.pt_bob_groups)
@@ -98,7 +98,7 @@ public class StyleGroupsFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(StyleViewModel.class);
     }
 
@@ -117,11 +117,11 @@ public class StyleGroupsFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vb.groupList.addItemDecoration(
                 new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL));
         vb.groupList.setHasFixedSize(true);
@@ -153,11 +153,17 @@ public class StyleGroupsFragment
             extends BaseDragDropViewHolder {
 
         @NonNull
-        final TextView groupNameView;
+        private final TextView groupNameView;
 
         Holder(@NonNull final View itemView) {
             super(itemView);
             groupNameView = itemView.findViewById(R.id.booklist_group_name);
+        }
+
+        public void onBind(@NonNull final StyleViewModel.WrappedGroup wrappedGroup) {
+            final Context context = itemView.getContext();
+            groupNameView.setText(wrappedGroup.getGroup().getLabel(context));
+            setChecked(wrappedGroup.isPresent());
         }
     }
 
@@ -199,13 +205,7 @@ public class StyleGroupsFragment
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
             super.onBindViewHolder(holder, position);
-            final Context context = holder.itemView.getContext();
-
-            final StyleViewModel.WrappedGroup wrappedGroup = getItem(position);
-
-            holder.groupNameView.setText(wrappedGroup.getGroup().getLabel(context));
-            holder.setChecked(wrappedGroup.isPresent());
+            holder.onBind(getItem(position));
         }
     }
-
 }

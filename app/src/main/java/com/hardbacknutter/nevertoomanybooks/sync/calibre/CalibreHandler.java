@@ -136,7 +136,7 @@ public class CalibreHandler {
      * @param fragment the hosting Fragment
      */
     public void onViewCreated(@NonNull final Fragment fragment) {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         onViewCreated(fragment.getActivity().getWindow(),
                       fragment.getView(),
                       fragment.getViewLifecycleOwner(),

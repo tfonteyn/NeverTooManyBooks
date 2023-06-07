@@ -61,7 +61,7 @@ public class EditTextField<T, V extends EditText>
     private long lastChange;
 
     @Nullable
-    private ArrayList<View.OnFocusChangeListener> focusChangeListeners;
+    private List<View.OnFocusChangeListener> focusChangeListeners;
 
     /**
      * Constructor.
@@ -129,6 +129,13 @@ public class EditTextField<T, V extends EditText>
         }
     }
 
+    /**
+     * Set the end-icon to use.
+     *
+     * @param endIconMode to use
+     *
+     * @return {@code this} (for chaining)
+     */
     @NonNull
     public EditTextField<T, V> setEndIconMode(
             @ExtEndIconDelegate.EndIconMode final int endIconMode) {
@@ -211,7 +218,7 @@ public class EditTextField<T, V extends EditText>
 
         final V view = getView();
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final Context context = view.getContext();
 
         final String text = editable.toString().trim();

@@ -120,7 +120,7 @@ public class SingleChoiceDialogFragment
 
         final Context context = getContext();
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final RadioGroupRecyclerAdapter<Long, String> adapter =
                 new RadioGroupRecyclerAdapter<>(context, itemIds, itemLabels, selectedItem,
                                                 id -> selectedItem = id);

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -47,21 +47,21 @@ public class ImagesPreferenceFragment
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_images, rootKey);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         findPreference(Prefs.pk_camera_image_autorotate)
                 .setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         findPreference(Prefs.pk_camera_image_action)
                 .setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
 
         // Purge image cache database table.
         final Preference purgeCache = findPreference(PSK_PURGE_IMAGE_CACHE);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         setPurgeCacheSummary(purgeCache);
 
         purgeCache.setOnPreferenceClickListener(p -> {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_baseline_warning_24)
                     .setMessage(R.string.option_purge_image_cache)

@@ -90,7 +90,7 @@ abstract class LibraryBase
      */
     LibraryBase(@NonNull final Parcel in) {
         id = in.readLong();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         name = in.readString();
         mappedBookshelfId = in.readLong();
     }

@@ -91,7 +91,7 @@ public class EditAuthorDialogFragment
 
         final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final ExtArrayAdapter<String> familyNameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,

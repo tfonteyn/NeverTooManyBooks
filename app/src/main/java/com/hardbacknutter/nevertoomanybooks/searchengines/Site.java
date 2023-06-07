@@ -118,9 +118,9 @@ public final class Site
      * @param in Parcel to construct the object from
      */
     private Site(@NonNull final Parcel in) {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         engineId = in.readParcelable(Type.class.getClassLoader());
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         type = in.readParcelable(Type.class.getClassLoader());
         active = in.readByte() != 0;
     }
@@ -251,7 +251,8 @@ public final class Site
         /**
          * Create the list for <strong>this</strong> type.
          *
-         * @param context Current context
+         * @param context   Current context
+         * @param languages the language cache container
          */
         void createList(@NonNull final Context context,
                         @NonNull final Languages languages) {

@@ -64,12 +64,11 @@ public class EditBookPublicationFragment
 
         final Context context = getContext();
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm.initFields(context, FragmentId.Publication, FieldGroup.Publication);
         // On tablets the notes fields (notes, read-flag, read-dates...)
         // are incorporated in the publication fragment
         // On small screens (i.e. phones) they get their own tab
-        //noinspection ConstantConditions
         if (vb.notes != null) {
             vm.initFields(context, FragmentId.Publication, FieldGroup.Notes);
         }
@@ -88,14 +87,14 @@ public class EditBookPublicationFragment
     @Override
     void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
                          @NonNull final Book book) {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm.getBook().prunePublishers(getContext(), true);
 
         super.onPopulateViews(fields, book);
 
         getFab().setVisibility(View.INVISIBLE);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         fields.forEach(field -> field.setVisibility(getView(), false, false));
     }
 }

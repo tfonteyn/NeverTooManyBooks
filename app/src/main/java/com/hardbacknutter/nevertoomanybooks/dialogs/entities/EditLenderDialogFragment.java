@@ -149,7 +149,7 @@ public class EditLenderDialogFragment
         vb = DialogEditLoanContentBinding.bind(view.findViewById(R.id.dialog_content));
         setSubtitle(bookTitle);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         adapter = new ExtArrayAdapter<>(getContext(), R.layout.popup_dropdown_menu_item,
                                         ExtArrayAdapter.FilterType.Diacritic, people);
         vb.lendTo.setAdapter(adapter);
@@ -172,7 +172,7 @@ public class EditLenderDialogFragment
     private void addContacts() {
         // LinkedHashSet to remove duplicates
         final Set<String> contacts = new LinkedHashSet<>(people);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final ContentResolver cr = getContext().getContentResolver();
         try (Cursor cursor = cr.query(ContactsContract.Contacts.CONTENT_URI,
                                       new String[]{ContactsContract.Contacts.LOOKUP_KEY,
@@ -211,7 +211,7 @@ public class EditLenderDialogFragment
         viewToModel();
 
         // anything actually changed ?
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         if (currentEdit.equalsIgnoreCase(loanee)) {
             return true;
         }

@@ -100,7 +100,7 @@ public class EditTocEntryDialogFragment
         if (savedInstanceState == null) {
             title = tocEntry.getTitle();
             firstPublicationDate = tocEntry.getFirstPublicationDate();
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             authorName = tocEntry.getPrimaryAuthor().getLabel(getContext());
         } else {
             title = savedInstanceState.getString(DBKey.TITLE);
@@ -126,7 +126,7 @@ public class EditTocEntryDialogFragment
                 String.valueOf(date.getYearValue())));
 
         if (isAnthology) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             final ExtArrayAdapter<String> authorAdapter = new ExtArrayAdapter<>(
                     getContext(), R.layout.popup_dropdown_menu_item,
                     ExtArrayAdapter.FilterType.Diacritic,
@@ -170,7 +170,7 @@ public class EditTocEntryDialogFragment
         }
 
         // anything actually changed ?
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         if (tocEntry.getTitle().equals(title)
             && tocEntry.getFirstPublicationDate().equals(firstPublicationDate)
             && tocEntry.getPrimaryAuthor().getLabel(getContext()).equals(authorName)) {
@@ -191,9 +191,9 @@ public class EditTocEntryDialogFragment
     }
 
     private void viewToModel() {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         title = vb.title.getText().toString().trim();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         firstPublicationDate = new PartialDate(vb.firstPublication.getText().toString().trim());
         if (isAnthology) {
             authorName = vb.author.getText().toString().trim();

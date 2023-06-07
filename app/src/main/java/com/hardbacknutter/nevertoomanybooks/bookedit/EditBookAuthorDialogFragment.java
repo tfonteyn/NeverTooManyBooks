@@ -84,7 +84,7 @@ public class EditBookAuthorDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
         authorVm = new ViewModelProvider(this).get(EditAuthorViewModel.class);
         //noinspection DataFlowIssue
@@ -105,7 +105,7 @@ public class EditBookAuthorDialogFragment
         final Context context = getContext();
         final Author currentEdit = authorVm.getCurrentEdit();
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final ExtArrayAdapter<String> familyNameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,
@@ -236,7 +236,7 @@ public class EditBookAuthorDialogFragment
         }
 
         final Context context = getContext();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final Locale bookLocale = ServiceLocator
                 .getInstance().getLanguages()
                 .toLocale(context, vm.getBook().getString(DBKey.LANGUAGE));

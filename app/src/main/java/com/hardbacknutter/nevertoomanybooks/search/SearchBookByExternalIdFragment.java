@@ -162,7 +162,7 @@ public class SearchBookByExternalIdFragment
                 .getByViewId(viewId).orElseThrow(IllegalStateException::new);
 
         this.engineId = config.getEngineId();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         EngineId.promptToRegister(getContext(), List.of(Site.Type.Data.getSite(engineId)),
                                   "searchByExternalId", () -> updateUI(config));
     }
@@ -171,7 +171,7 @@ public class SearchBookByExternalIdFragment
 
         final int keyboardIcon;
         final int inputType;
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         if (config.getExternalIdDomain().getSqLiteDataType() == SqLiteDataType.Text) {
             // display an alphanumeric keyboard icon
             keyboardIcon = R.drawable.ic_baseline_keyboard_24;
@@ -184,7 +184,7 @@ public class SearchBookByExternalIdFragment
 
             // if the user switched from a text input, clean the input
             if ((vb.externalId.getInputType() & InputType.TYPE_CLASS_NUMBER) == 0) {
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 final String text = vb.externalId.getText().toString().trim();
                 if (!DIGITS_PATTERN.matcher(text).matches()) {
                     vb.externalId.setText("");
@@ -201,7 +201,7 @@ public class SearchBookByExternalIdFragment
     public void onPause() {
         super.onPause();
         selectedRbViewId = vb.sitesGroup.getCheckedRadioButtonId();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         currentInput = vb.externalId.getText().toString().trim();
     }
 
@@ -215,7 +215,7 @@ public class SearchBookByExternalIdFragment
     @Override
     boolean onPreSearch() {
         //sanity check
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         if (vb.externalId.getText().toString().trim().isEmpty()
             || vb.sitesGroup.getCheckedRadioButtonId() == View.NO_ID) {
             vb.lblExternalId.setError(getString(R.string.warning_requires_site_and_id));
@@ -226,9 +226,9 @@ public class SearchBookByExternalIdFragment
 
     @Override
     boolean onSearch() {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final String externalId = vb.externalId.getText().toString().trim();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         return coordinator.searchByExternalId(engineId, externalId);
     }
 

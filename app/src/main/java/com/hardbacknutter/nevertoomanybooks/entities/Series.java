@@ -123,7 +123,7 @@ public class Series
             + /* */ "\\s[(]?"
             // roman numerals
             + "(?=.)M*(C[MD]|D?C{0,3})(X[CL]|L?X{0,3})(I[XV]|V?I{0,3})"
-//            + /* */ "[ivxlcm.]+"
+            //     + /* */ "[ivxlcm.]+"
             // must be suffixed by either ')' or EOL
             // no alphanumeric suffix
             + /* */ "[)]?$"
@@ -226,10 +226,10 @@ public class Series
      */
     private Series(@NonNull final Parcel in) {
         id = in.readLong();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         title = in.readString();
         complete = in.readByte() != 0;
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         number = in.readString();
     }
 

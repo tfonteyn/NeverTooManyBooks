@@ -51,7 +51,7 @@ public class BolPreferencesFragment
         entries[2] = new Locale("nl", "NL").getDisplayCountry();
 
         final ListPreference p = findPreference(BolSearchEngine.PK_BOL_COUNTRY);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         p.setEntries(entries);
         p.setEntryValues(entryValues);
         p.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());

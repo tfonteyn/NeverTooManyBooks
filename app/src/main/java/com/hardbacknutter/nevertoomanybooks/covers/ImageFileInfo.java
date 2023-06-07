@@ -100,7 +100,7 @@ public class ImageFileInfo
      * @param in Parcel to construct the object from
      */
     private ImageFileInfo(@NonNull final Parcel in) {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         isbn = in.readString();
         fileSpec = in.readString();
         engineId = in.readParcelable(getClass().getClassLoader());

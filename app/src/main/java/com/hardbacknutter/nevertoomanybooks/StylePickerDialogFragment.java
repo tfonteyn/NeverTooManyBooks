@@ -110,7 +110,7 @@ public class StylePickerDialogFragment
 
         loadStyles();
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         adapter = new RadioGroupRecyclerAdapter<>(getContext(), styleUuids, styleLabels,
                                                   currentStyleUuid,
                                                   uuid -> currentStyleUuid = uuid);
@@ -198,7 +198,7 @@ public class StylePickerDialogFragment
                          .orElseThrow(IllegalStateException::new);
 
         // use the activity so we get the results there.
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         ((BooksOnBookshelf) getActivity()).editStyle(selectedStyle);
     }
 

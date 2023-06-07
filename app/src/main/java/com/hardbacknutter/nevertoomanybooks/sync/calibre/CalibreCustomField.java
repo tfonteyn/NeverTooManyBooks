@@ -112,11 +112,11 @@ public class CalibreCustomField
      */
     private CalibreCustomField(@NonNull final Parcel in) {
         id = in.readLong();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         calibreKey = in.readString();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         dbKey = in.readString();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         type = in.readString();
     }
 

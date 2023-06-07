@@ -183,11 +183,11 @@ public class TocEntry
      */
     private TocEntry(@NonNull final Parcel in) {
         id = in.readLong();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         author = in.readParcelable(Author.class.getClassLoader());
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         title = in.readString();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         firstPublicationDate = in.readParcelable(PartialDate.class.getClassLoader());
 
         bookCount = in.readInt();
@@ -278,6 +278,11 @@ public class TocEntry
         return title;
     }
 
+    /**
+     * Set the <strong>unformatted</strong> title.
+     *
+     * @param title to set
+     */
     public void setTitle(@NonNull final String title) {
         this.title = title;
     }

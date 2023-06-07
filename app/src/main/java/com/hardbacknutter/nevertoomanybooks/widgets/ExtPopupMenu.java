@@ -403,7 +403,7 @@ public class ExtPopupMenu {
             this.menuCallback = menuCallback;
             menuItemClickListener = listener;
 
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             subMenuPointer = context.getDrawable(R.drawable.ic_baseline_arrow_right_24);
 
             setMenu(menu);
@@ -465,10 +465,10 @@ public class ExtPopupMenu {
             final MenuItem item = list.get(holder.getBindingAdapterPosition());
             if (item.isEnabled()) {
                 if (item.hasSubMenu()) {
-                    //noinspection ConstantConditions
+                    //noinspection DataFlowIssue
                     setMenu(item.getSubMenu());
                     notifyDataSetChanged();
-                    //noinspection ConstantConditions
+                    //noinspection DataFlowIssue
                     menuCallback.update(item.getTitle().toString());
 
                 } else {

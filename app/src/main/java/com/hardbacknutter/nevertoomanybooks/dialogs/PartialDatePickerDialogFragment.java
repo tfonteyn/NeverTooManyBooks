@@ -228,12 +228,12 @@ public class PartialDatePickerDialogFragment
 
     private boolean saveChanges() {
         if (day != 0 && month == 0) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             Snackbar.make(getView(), R.string.warning_if_day_set_month_and_year_must_be,
                           Snackbar.LENGTH_LONG).show();
 
         } else if (month != 0 && year == 0) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             Snackbar.make(getView(), R.string.warning_if_month_set_year_must_be,
                           Snackbar.LENGTH_LONG).show();
 
@@ -248,6 +248,8 @@ public class PartialDatePickerDialogFragment
 
     /**
      * Generate the month names (abbreviated). There are 13: first entry being 'unknown'.
+     *
+     * @return short month names
      */
     @NonNull
     private String[] getMonthAbbr() {

@@ -132,7 +132,7 @@ public class ZoomedImageDialogFragment
             maxWidth = (int) (maxHeight / screenHwRatio);
         }
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         getDialog().getWindow().setLayout(maxWidth, maxHeight);
         getDialog().getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 

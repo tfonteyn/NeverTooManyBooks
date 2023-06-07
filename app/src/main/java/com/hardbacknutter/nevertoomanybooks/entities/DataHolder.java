@@ -121,7 +121,7 @@ public interface DataHolder {
      */
     @NonNull
     default String getString(@NonNull final String key) {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         return getString(key, "");
     }
 

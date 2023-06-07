@@ -155,7 +155,7 @@ public abstract class DataWriterViewModel<RESULTS>
             final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
 
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             return helper.write(context, this);
         }
     }

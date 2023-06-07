@@ -74,7 +74,7 @@ public class CalibrePreferencesFragment
         EditTextPreference etp;
 
         etp = findPreference(CalibreContentServer.PK_HOST_USER);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         etp.setOnBindEditTextListener(editText -> {
             editText.setInputType(InputType.TYPE_CLASS_TEXT);
             editText.selectAll();
@@ -83,7 +83,7 @@ public class CalibrePreferencesFragment
 
 
         etp = findPreference(CalibreContentServer.PK_HOST_PASS);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         etp.setOnBindEditTextListener(editText -> {
             editText.setInputType(InputType.TYPE_CLASS_TEXT
                                   | InputType.TYPE_TEXT_VARIATION_PASSWORD);
@@ -99,21 +99,19 @@ public class CalibrePreferencesFragment
         });
 
 
-        //noinspection ConstantConditions
         caPref = findPreference(PSK_CA_FROM_FILE);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         caPref.setSummary(createCaSummary());
         caPref.setOnPreferenceClickListener(preference -> {
             openCaUriLauncher.launch("*/*");
             return true;
         });
 
-        //noinspection ConstantConditions
         folderPref = findPreference(PSK_PICK_FOLDER);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         setFolderSummary(folderPref);
         folderPref.setOnPreferenceClickListener(preference -> {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             pickFolderLauncher.launch(CalibreContentServer.getFolderUri(getContext())
                                                           .orElse(null));
             return true;
@@ -127,7 +125,7 @@ public class CalibrePreferencesFragment
 
         pickFolderLauncher = registerForActivityResult(
                 new GetDirectoryUriContract(), o -> {
-                    //noinspection ConstantConditions
+                    //noinspection DataFlowIssue
                     o.ifPresent(uri -> CalibreContentServer.setFolderUri(getContext(), uri));
                     setFolderSummary(folderPref);
                 });
@@ -139,7 +137,7 @@ public class CalibrePreferencesFragment
      * @param preference to use
      */
     private void setFolderSummary(@NonNull final Preference preference) {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final Uri uri = CalibreContentServer.getFolderUri(getContext()).orElse(null);
         if (uri == null) {
             preference.setSummary(R.string.preference_not_set);
@@ -163,7 +161,7 @@ public class CalibrePreferencesFragment
     }
 
     private void onOpenCaUri(@NonNull final Uri uri) {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         try (InputStream is = getContext().getContentResolver().openInputStream(uri)) {
             if (is != null) {
                 final X509Certificate ca;
@@ -189,7 +187,7 @@ public class CalibrePreferencesFragment
     @NonNull
     private String createCaSummary() {
         try {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             final X509Certificate ca = CalibreContentServer.getCertificate(getContext());
             ca.checkValidity();
             return getString(R.string.lbl_certificate_issued_to,

@@ -113,7 +113,7 @@ public abstract class EditStringBaseDialogFragment
             return false;
         });
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final ExtArrayAdapter<String> adapter = new ExtArrayAdapter<>(
                 getContext(), R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic, getList());

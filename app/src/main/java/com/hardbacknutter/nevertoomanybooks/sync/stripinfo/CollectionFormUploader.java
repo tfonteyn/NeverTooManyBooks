@@ -201,7 +201,7 @@ public class CollectionFormUploader {
                 .appendQueryParameter(FORM_NAME, "collScore")
                 .build()
                 .getEncodedQuery();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         doPost(postBody);
     }
 
@@ -299,7 +299,7 @@ public class CollectionFormUploader {
                        .appendQueryParameter(FORM_NAME, "collDetail")
                        .build()
                        .getEncodedQuery();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         doPost(postBody);
     }
 
@@ -327,7 +327,7 @@ public class CollectionFormUploader {
                 .build()
                 .getEncodedQuery();
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final Document form = doPost(postBody);
 
         if (externalId == jSoupHelper.getInt(form, FF_STRIP_ID)
@@ -342,7 +342,7 @@ public class CollectionFormUploader {
                     .getEncodedQuery();
 
             //TODO: should parse the response to check delete went ok.
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             doPost(postBody);
         }
     }
@@ -389,7 +389,7 @@ public class CollectionFormUploader {
                     .appendQueryParameter(FORM_MODE, mode)
                     .build()
                     .getEncodedQuery();
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             final Document responseForm = doPost(postBody);
 
             collectionId = jSoupHelper.getInt(responseForm, FF_STRIP_COLLECTIE_ID);
@@ -404,7 +404,7 @@ public class CollectionFormUploader {
                     .appendQueryParameter(FORM_MODE, mode)
                     .build()
                     .getEncodedQuery();
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             doPost(postBody);
         }
     }

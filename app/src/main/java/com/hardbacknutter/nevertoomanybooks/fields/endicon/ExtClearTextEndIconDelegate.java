@@ -178,7 +178,7 @@ public class ExtClearTextEndIconDelegate<V extends TextView, T>
             if (endIconOnClickConsumer != null) {
                 endIconOnClickConsumer.accept(v);
             } else {
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 final Editable text = textInputLayout.getEditText().getText();
                 if (text != null) {
                     text.clear();

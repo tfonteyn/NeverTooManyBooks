@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -57,7 +57,7 @@ public class EditBookNotesFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm.initFields(getContext(), FragmentId.Notes, FieldGroup.Notes);
     }
 
@@ -69,7 +69,7 @@ public class EditBookNotesFragment
 
         getFab().setVisibility(View.INVISIBLE);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         fields.forEach(field -> field.setVisibility(getView(), false, false));
     }
 }

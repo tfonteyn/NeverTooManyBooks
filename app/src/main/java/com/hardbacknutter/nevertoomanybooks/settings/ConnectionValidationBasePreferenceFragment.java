@@ -83,7 +83,7 @@ public abstract class ConnectionValidationBasePreferenceFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
@@ -96,9 +96,9 @@ public abstract class ConnectionValidationBasePreferenceFragment
     private void proposeValidation() {
         Objects.requireNonNull(pkEnabled, "pkEnabled");
         final SwitchPreference sp = findPreference(pkEnabled);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         if (sp.isChecked()) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_baseline_info_24)
                     .setTitle(R.string.lbl_test_connection)
@@ -115,7 +115,7 @@ public abstract class ConnectionValidationBasePreferenceFragment
                                     .setOnCancelListener(v -> vm.cancelTask(
                                             R.id.TASK_ID_VALIDATE_CONNECTION));
                         }
-                        //noinspection ConstantConditions
+                        //noinspection DataFlowIssue
                         progressDelegate.show(() -> getActivity().getWindow());
                         vm.validateConnection();
                     })
@@ -129,7 +129,7 @@ public abstract class ConnectionValidationBasePreferenceFragment
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         message.getData().ifPresent(data -> {
             if (progressDelegate == null) {
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 progressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.lbl_test_connection)
                         .setPreventSleep(false)
@@ -143,7 +143,7 @@ public abstract class ConnectionValidationBasePreferenceFragment
 
     private void closeProgressDialog() {
         if (progressDelegate != null) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             progressDelegate.dismiss(getActivity().getWindow());
             progressDelegate = null;
         }
@@ -156,14 +156,14 @@ public abstract class ConnectionValidationBasePreferenceFragment
             final Boolean result = data.getResult();
             if (result != null) {
                 if (result) {
-                    //noinspection ConstantConditions
+                    //noinspection DataFlowIssue
                     Snackbar.make(getView(), R.string.info_authorized, Snackbar.LENGTH_SHORT)
                             .show();
                     getView().postDelayed(this::popBackStackOrFinish, BaseActivity.DELAY_SHORT_MS);
                 } else {
                     //For now we don't get here, instead we would be in onFailure.
                     // But keeping this here to guard against future changes in the task logic
-                    //noinspection ConstantConditions
+                    //noinspection DataFlowIssue
                     Snackbar.make(getView(), R.string.httpErrorAuth, Snackbar.LENGTH_LONG).show();
                 }
             }
@@ -174,7 +174,7 @@ public abstract class ConnectionValidationBasePreferenceFragment
         closeProgressDialog();
 
         message.getData().ifPresent(data -> {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
         });
     }
@@ -183,7 +183,7 @@ public abstract class ConnectionValidationBasePreferenceFragment
         closeProgressDialog();
 
         message.getData().map(TaskResult::getResult).filter(Objects::nonNull).ifPresent(e -> {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             ErrorDialog.show(getContext(), e,
                              getString(R.string.httpError),
                              getString(R.string.error_network_failed_try_again));

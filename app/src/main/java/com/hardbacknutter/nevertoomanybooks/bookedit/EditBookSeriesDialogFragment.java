@@ -74,7 +74,7 @@ public class EditBookSeriesDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
         final Bundle args = requireArguments();
@@ -89,7 +89,6 @@ public class EditBookSeriesDialogFragment
             currentEdit = new Series(series.getTitle(), series.isComplete());
             currentEdit.setNumber(series.getNumber());
         } else {
-            //noinspection ConstantConditions
             currentEdit = savedInstanceState.getParcelable(EditLauncher.BKEY_ITEM);
         }
     }
@@ -101,7 +100,7 @@ public class EditBookSeriesDialogFragment
         vb = DialogEditBookSeriesContentBinding.bind(view.findViewById(R.id.dialog_content));
         setSubtitle(vm.getBook().getTitle());
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final ExtArrayAdapter<String> titleAdapter = new ExtArrayAdapter<>(
                 getContext(), R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic, vm.getAllSeriesTitles());
@@ -150,7 +149,7 @@ public class EditBookSeriesDialogFragment
         currentEdit.setTitle(vb.seriesTitle.getText().toString().trim());
         currentEdit.setComplete(vb.cbxIsComplete.isChecked());
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         currentEdit.setNumber(vb.seriesNum.getText().toString().trim());
     }
 

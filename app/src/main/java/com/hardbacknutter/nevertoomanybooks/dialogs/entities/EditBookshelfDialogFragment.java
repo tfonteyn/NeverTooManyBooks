@@ -81,7 +81,6 @@ public class EditBookshelfDialogFragment
         if (savedInstanceState == null) {
             currentEdit = bookshelf.getName();
         } else {
-            //noinspection ConstantConditions
             currentEdit = savedInstanceState.getString(EditLauncher.BKEY_ITEM);
         }
     }
@@ -158,10 +157,10 @@ public class EditBookshelfDialogFragment
             try {
                 // We have a unique/new name; either add or update and we're done
                 if (bookshelf.getId() == 0) {
-                    //noinspection ConstantConditions
+                    //noinspection DataFlowIssue
                     dao.insert(context, bookshelf);
                 } else {
-                    //noinspection ConstantConditions
+                    //noinspection DataFlowIssue
                     dao.update(context, bookshelf);
                 }
                 EditInPlaceParcelableLauncher.setResult(this, requestKey, bookshelf);
@@ -177,7 +176,7 @@ public class EditBookshelfDialogFragment
     }
 
     private void viewToModel() {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         currentEdit = vb.bookshelf.getText().toString().trim();
     }
 

@@ -104,7 +104,7 @@ public class CalibreDaoImpl
             // only now going to insert it.
             library = book.getParcelable(Book.BKEY_CALIBRE_LIBRARY);
 
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             libraryDao.fixId(context, library);
             if (library.getId() == 0) {
                 if (libraryDao.insert(library) == -1) {

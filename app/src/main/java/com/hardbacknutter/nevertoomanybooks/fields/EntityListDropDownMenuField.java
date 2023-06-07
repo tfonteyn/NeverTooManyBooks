@@ -59,6 +59,8 @@ public class EntityListDropDownMenuField<T extends Entity>
      *                    Set to {@code ""} to suppress all access.
      * @param context     Current context
      * @param items       the list of items for the dropdown menu
+     *
+     * @throws IllegalArgumentException if the list has no items
      */
     public EntityListDropDownMenuField(@NonNull final FragmentId fragmentId,
                                        @IdRes final int fieldViewId,
@@ -74,6 +76,13 @@ public class EntityListDropDownMenuField<T extends Entity>
         }
     }
 
+    /**
+     * Set the id for the surrounding TextInputLayout (if this field has one).
+     *
+     * @param viewId view id
+     *
+     * @return {@code this} (for chaining)
+     */
     @NonNull
     public EntityListDropDownMenuField<T> setTextInputLayoutId(@IdRes final int viewId) {
         addRelatedViews(viewId);
@@ -105,7 +114,7 @@ public class EntityListDropDownMenuField<T extends Entity>
 
         final AutoCompleteTextView view = getView();
         if (view != null) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             final T current = items.stream()
                                    .filter(item -> item.getId() == rawValue)
                                    .findFirst()

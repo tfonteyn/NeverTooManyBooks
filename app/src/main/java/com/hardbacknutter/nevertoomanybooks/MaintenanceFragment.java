@@ -40,7 +40,6 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -119,13 +118,13 @@ public class MaintenanceFragment
 
         vb.btnResetTips.setOnClickListener(v -> {
             TipManager.getInstance().reset(v.getContext());
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             Snackbar.make(getView(), R.string.tip_reset_done, Snackbar.LENGTH_LONG).show();
         });
 
         vb.btnPurgeFiles.setOnClickListener(v -> {
             final Context context = v.getContext();
-            final ArrayList<String> bookUuidList =
+            final List<String> bookUuidList =
                     ServiceLocator.getInstance().getBookDao().getBookUuidList();
 
             final long bytes;
@@ -250,11 +249,11 @@ public class MaintenanceFragment
 
     private void sendDebug(@NonNull final Uri uri) {
         try {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             vm.sendDebug(getContext(), uri);
 
         } catch (@NonNull final RuntimeException | IOException e) {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             Snackbar.make(getView(), R.string.error_export_failed,
                           Snackbar.LENGTH_LONG).show();
         }

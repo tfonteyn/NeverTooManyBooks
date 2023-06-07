@@ -161,9 +161,9 @@ public class Bookshelf
      */
     private Bookshelf(@NonNull final Parcel in) {
         id = in.readLong();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         name = in.readString();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         styleUuid = in.readString();
 
         filters.addAll(ServiceLocator.getInstance().getBookshelfDao().getFilters(id));

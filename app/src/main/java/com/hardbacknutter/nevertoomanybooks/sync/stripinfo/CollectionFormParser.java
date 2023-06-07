@@ -133,7 +133,7 @@ public class CollectionFormParser
                 .build()
                 .getEncodedQuery();
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final Document response = Objects.requireNonNull(
                 futureHttpPost.post(postUrl, postBody, bis -> {
                     try {

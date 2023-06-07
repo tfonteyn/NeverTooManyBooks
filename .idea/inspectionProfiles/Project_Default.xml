@@ -241,6 +241,7 @@
           <option value="SameParameterValue" />
           <option value="DataFlowIssue" />
           <option value="WeakerAccess" />
+          <option value="ChainOfInstanceofChecks" />
         </list>
       </option>
     </inspection_tool>

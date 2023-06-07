@@ -76,7 +76,7 @@ public class ListChipGroupField<T extends Parcelable & Entity>
         this.listSupplier = listSupplier;
 
         editChipListener = view -> {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             final ArrayList<T> previous = new ArrayList<>(rawValue);
             //noinspection unchecked
             final T current = (T) view.getTag();

@@ -143,18 +143,18 @@ public class CalibreLibrary
     private CalibreLibrary(@NonNull final Parcel in) {
         super(in);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         libraryStringId = in.readString();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         uuid = in.readString();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         lastSyncDate = in.readString();
 
         ParcelUtils.readParcelableList(in, virtualLibraries,
                                        CalibreVirtualLibrary.class.getClassLoader());
 
         totalBooks = in.readInt();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         Arrays.stream(in.readParcelableArray(CalibreCustomField.class.getClassLoader()))
               .forEach(field -> calibreCustomFields.add((CalibreCustomField) field));
     }

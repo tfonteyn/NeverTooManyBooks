@@ -91,7 +91,7 @@ public class Publisher
      */
     private Publisher(@NonNull final Parcel in) {
         id = in.readLong();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         name = in.readString();
     }
 

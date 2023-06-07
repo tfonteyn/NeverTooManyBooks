@@ -123,7 +123,7 @@ public class EditBookPublisherListDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
         editLauncher.registerForFragmentResult(getChildFragmentManager(), this);
@@ -137,7 +137,7 @@ public class EditBookPublisherListDialogFragment
         // always fullscreen; title is fixed, no buttonPanel
         setSubtitle(vm.getBook().getTitle());
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
                 getContext(), R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic, vm.getAllPublisherNames());
@@ -168,7 +168,7 @@ public class EditBookPublisherListDialogFragment
 
         publisherList = vm.getBook().getPublishers();
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         adapter = new PublisherListAdapter(context, publisherList,
                                            vh -> itemTouchHelper.startDrag(vh));
         adapter.setOnRowClickListener((v, position) -> editEntry(position));
@@ -269,7 +269,7 @@ public class EditBookPublisherListDialogFragment
      */
     private void add(@NonNull final Publisher publisher) {
         // see if it already exists
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm.fixId(getContext(), publisher);
         // and check it's not already in the list.
         if (publisherList.contains(publisher)) {
@@ -289,7 +289,7 @@ public class EditBookPublisherListDialogFragment
     private boolean saveChanges() {
         if (!vb.publisherName.getText().toString().isEmpty()) {
             // Discarding applies to the edit field(s) only.
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             StandardDialogs.unsavedEdits(getContext(), null, () -> {
                 vb.publisherName.setText("");
                 if (saveChanges()) {
@@ -318,7 +318,7 @@ public class EditBookPublisherListDialogFragment
 
         // The name was not changed OR
         // the name was modified but not used by any other books.
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         if (original.getName().equals(modified.getName())
             || vm.isSingleUsage(context, original)) {
 
@@ -343,7 +343,7 @@ public class EditBookPublisherListDialogFragment
                                    @NonNull final Publisher modified) {
 
         // This change is done in the database right NOW!
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         if (vm.changeForAllBooks(getContext(), original, modified)) {
             adapter.notifyDataSetChanged();
         } else {
@@ -364,7 +364,7 @@ public class EditBookPublisherListDialogFragment
         // Note that if the user abandons the entire book edit,
         // we will orphan this new Publisher. That's ok, it will get
         // garbage collected from the database sooner or later.
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         if (vm.changeForThisBook(getContext(), original, modified)) {
             adapter.notifyDataSetChanged();
         } else {
@@ -386,7 +386,7 @@ public class EditBookPublisherListDialogFragment
             implements BindableViewHolder<Publisher> {
 
         @NonNull
-        final TextView publisherView;
+        private final TextView publisherView;
 
         Holder(@NonNull final View itemView) {
             super(itemView);

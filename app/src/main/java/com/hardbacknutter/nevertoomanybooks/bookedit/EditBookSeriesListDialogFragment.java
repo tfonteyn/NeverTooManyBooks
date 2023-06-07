@@ -123,7 +123,7 @@ public class EditBookSeriesListDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
         editLauncher.registerForFragmentResult(getChildFragmentManager(), this);
@@ -137,7 +137,7 @@ public class EditBookSeriesListDialogFragment
         // always fullscreen; title is fixed, no buttonPanel
         setSubtitle(vm.getBook().getTitle());
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final ExtArrayAdapter<String> titleAdapter = new ExtArrayAdapter<>(
                 getContext(), R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic, vm.getAllSeriesTitles());
@@ -168,7 +168,7 @@ public class EditBookSeriesListDialogFragment
 
         seriesList = vm.getBook().getSeries();
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         adapter = new SeriesListAdapter(context, seriesList,
                                         vh -> itemTouchHelper.startDrag(vh));
         adapter.setOnRowClickListener((v, position) -> editEntry(position));
@@ -256,7 +256,7 @@ public class EditBookSeriesListDialogFragment
         }
 
         final Series series = new Series(title);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         series.setNumber(vb.seriesNum.getText().toString().trim());
         if (withDetails) {
             editLauncher.launch(EditAction.Add, series);
@@ -272,7 +272,7 @@ public class EditBookSeriesListDialogFragment
      */
     private void add(@NonNull final Series series) {
         // see if it already exists
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm.fixId(getContext(), series);
         // and check it's not already in the list.
         if (seriesList.contains(series)) {
@@ -293,7 +293,7 @@ public class EditBookSeriesListDialogFragment
     private boolean saveChanges() {
         if (!vb.seriesTitle.getText().toString().isEmpty()) {
             // Discarding applies to the edit field(s) only.
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             StandardDialogs.unsavedEdits(getContext(), null, () -> {
                 vb.seriesTitle.setText("");
                 if (saveChanges()) {
@@ -322,7 +322,7 @@ public class EditBookSeriesListDialogFragment
 
         // The name was not changed OR
         // the name was modified but not used by any other books.
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         if (original.getTitle().equals(modified.getTitle())
             || vm.isSingleUsage(context, original)) {
 
@@ -346,7 +346,7 @@ public class EditBookSeriesListDialogFragment
     private void changeForAllBooks(@NonNull final Series original,
                                    @NonNull final Series modified) {
         // This change is done in the database right NOW!
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         if (vm.changeForAllBooks(getContext(), original, modified)) {
             adapter.notifyDataSetChanged();
         } else {
@@ -367,7 +367,7 @@ public class EditBookSeriesListDialogFragment
         // Note that if the user abandons the entire book edit,
         // we will orphan this new Series. That's ok, it will get
         // garbage collected from the database sooner or later.
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         if (vm.changeForThisBook(getContext(), original, modified)) {
             adapter.notifyDataSetChanged();
         } else {
@@ -389,7 +389,7 @@ public class EditBookSeriesListDialogFragment
             implements BindableViewHolder<Series> {
 
         @NonNull
-        final TextView seriesView;
+        private final TextView seriesView;
 
         Holder(@NonNull final View itemView) {
             super(itemView);

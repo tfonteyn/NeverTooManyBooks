@@ -41,6 +41,14 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 public class EditBookExternalIdFragment
         extends EditBookBaseFragment {
 
+    /**
+     * Check if the {@code external id} edit tab should be shown.
+     * This is an 'advanced' user preference.
+     *
+     * @param context Current context
+     *
+     * @return flag
+     */
     public static boolean isShowTab(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(Prefs.pk_edit_book_tabs_external_id, false);
@@ -65,7 +73,7 @@ public class EditBookExternalIdFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm.initFields(getContext(), FragmentId.ExternalId, FieldGroup.ExternalId);
     }
 
@@ -78,7 +86,7 @@ public class EditBookExternalIdFragment
 
         // Force hidden fields to stay hidden; this will allow us to temporarily remove
         // some sites without removing the data.
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         fields.forEach(field -> field.setVisibility(getView(), false, true));
     }
 }

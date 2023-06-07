@@ -74,7 +74,7 @@ public class EditBookPublisherDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
         final Bundle args = requireArguments();
@@ -88,7 +88,6 @@ public class EditBookPublisherDialogFragment
         if (savedInstanceState == null) {
             currentEdit = new Publisher(publisher.getName());
         } else {
-            //noinspection ConstantConditions
             currentEdit = savedInstanceState.getParcelable(EditLauncher.BKEY_ITEM);
         }
     }
@@ -100,7 +99,7 @@ public class EditBookPublisherDialogFragment
         vb = DialogEditBookPublisherContentBinding.bind(view.findViewById(R.id.dialog_content));
         setSubtitle(vm.getBook().getTitle());
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
                 getContext(), R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic, vm.getAllPublisherNames());

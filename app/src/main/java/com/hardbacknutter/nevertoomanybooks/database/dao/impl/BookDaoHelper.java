@@ -404,7 +404,7 @@ public class BookDaoHelper {
                             book.remove(domain.getName());
                         } else {
                             // restore the column to its default value.
-                            //noinspection ConstantConditions
+                            //noinspection DataFlowIssue
                             book.putString(domain.getName(), domain.getDefault());
                         }
                     }

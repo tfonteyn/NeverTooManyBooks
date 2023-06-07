@@ -249,7 +249,7 @@ public class CoverHandler {
         } else {
             // there is no current image; only show the replace menu
             final MenuItem menuItem = popupMenu.getMenu().findItem(R.id.SUBMENU_THUMB_REPLACE);
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             popupMenu.setMenu(menuItem.getSubMenu());
         }
 
@@ -549,7 +549,7 @@ public class CoverHandler {
 
             final int surfaceRotation;
             if (Build.VERSION.SDK_INT >= 30) {
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 surfaceRotation = context.getDisplay().getRotation();
             } else {
                 final WindowManager wm = (WindowManager)

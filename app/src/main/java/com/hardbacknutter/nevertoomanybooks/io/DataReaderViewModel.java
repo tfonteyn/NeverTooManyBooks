@@ -189,7 +189,7 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
             final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
 
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             return helper.readMetaData(context);
         }
     }
@@ -239,7 +239,7 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
             final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
 
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             return helper.read(context, this);
         }
     }

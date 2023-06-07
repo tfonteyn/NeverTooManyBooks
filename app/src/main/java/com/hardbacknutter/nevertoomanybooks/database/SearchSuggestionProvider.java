@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -71,7 +71,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
  * @see MenuUtils#setupSearchActionView(Activity, Menu)
  * @see <a href="https://developer.android.com/reference/android/content/ContentProvider.html">
  *         ContentProvider</a>
- * @see <a href="https://developer.android.com/guide/topics/providers/content-provider-creating#MIMETypes">
+ * @see <a href=
+ * "https://developer.android.com/guide/topics/providers/content-provider-creating#MIMETypes">
  *         MIMETypes</a>
  */
 public class SearchSuggestionProvider
@@ -99,7 +100,7 @@ public class SearchSuggestionProvider
     @Override
     public boolean onCreate() {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         uriMatcher.addURI(getContext().getString(R.string.searchSuggestAuthority),
                           SearchManager.SUGGEST_URI_PATH_QUERY,
                           SUGGEST_URI_PATH_ID);

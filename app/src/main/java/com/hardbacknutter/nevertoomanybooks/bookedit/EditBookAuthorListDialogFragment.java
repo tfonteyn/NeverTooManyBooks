@@ -127,7 +127,7 @@ public class EditBookAuthorListDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
         editLauncher.registerForFragmentResult(getChildFragmentManager(), this);
@@ -142,7 +142,7 @@ public class EditBookAuthorListDialogFragment
         // always fullscreen; title is fixed, no buttonPanel
         setSubtitle(vm.getBook().getTitle());
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
                 getContext(), R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic, vm.getAllAuthorNames());
@@ -173,7 +173,7 @@ public class EditBookAuthorListDialogFragment
 
         authorList = vm.getBook().getAuthors();
 
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         adapter = new AuthorListAdapter(context, authorList,
                                         vh -> itemTouchHelper.startDrag(vh));
         adapter.setOnRowClickListener((v, position) -> editEntry(position));
@@ -273,7 +273,7 @@ public class EditBookAuthorListDialogFragment
      */
     private void add(@NonNull final Author author) {
         // see if it already exists
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         vm.fixId(getContext(), author);
 
         // and check it's not already in the list.
@@ -294,7 +294,7 @@ public class EditBookAuthorListDialogFragment
     protected boolean saveChanges() {
         if (!vb.author.getText().toString().isEmpty()) {
             // Discarding applies to the edit field(s) only.
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             StandardDialogs.unsavedEdits(getContext(), null, () -> {
                 vb.author.setText("");
                 if (saveChanges()) {
@@ -323,7 +323,7 @@ public class EditBookAuthorListDialogFragment
 
         // The name was not changed OR
         // the name was modified but not used by any other books.
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         if (original.getFamilyName().equals(modified.getFamilyName())
             && original.getGivenNames().equals(modified.getGivenNames())
             || vm.isSingleUsage(context, original)) {
@@ -348,7 +348,7 @@ public class EditBookAuthorListDialogFragment
     private void changeForAllBooks(@NonNull final Author original,
                                    @NonNull final Author modified) {
         // This change is done in the database right NOW!
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         if (vm.changeForAllBooks(getContext(), original, modified)) {
             adapter.notifyDataSetChanged();
         } else {
@@ -369,7 +369,7 @@ public class EditBookAuthorListDialogFragment
         // Note that if the user abandons the entire book edit,
         // we will orphan this new Author. That's ok, it will get
         // garbage collected from the database sooner or later.
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         if (vm.changeForThisBook(getContext(), original, modified)) {
             adapter.notifyDataSetChanged();
         } else {
@@ -410,7 +410,7 @@ public class EditBookAuthorListDialogFragment
             implements BindableViewHolder<Author> {
 
         @NonNull
-        final TextView authorView;
+        private final TextView authorView;
         @NonNull
         private final FieldFormatter<Author> formatter;
 

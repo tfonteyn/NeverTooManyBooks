@@ -211,7 +211,7 @@ public abstract class BaseActivity
 
     @NonNull
     View getNavigationMenuItemView(final int itemId) {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         final View anchor = navigationView.findViewById(itemId);
         // Not 100% we are using a legal way of getting the View...
         Objects.requireNonNull(anchor, () -> "navigationView.findViewById(" + itemId + ")");

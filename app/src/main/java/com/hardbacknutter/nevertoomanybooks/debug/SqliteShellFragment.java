@@ -132,7 +132,7 @@ public class SqliteShellFragment
     @Override
     public void onResume() {
         super.onResume();
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         maxLines = PreferenceManager.getDefaultSharedPreferences(getContext())
                                     .getInt(Prefs.pk_sqlite_max_lines, MAX_LINES);
     }
@@ -240,7 +240,7 @@ public class SqliteShellFragment
                 return true;
 
             } else if (itemId == R.id.MENU_DEBUG_SQ_SHELL_EDIT_MAX_LINES) {
-                //noinspection ConstantConditions
+                //noinspection DataFlowIssue
                 final Intent intent = FragmentHostActivity
                         .createIntent(getContext(), SqlitePreferenceFragment.class);
                 startActivity(intent);
