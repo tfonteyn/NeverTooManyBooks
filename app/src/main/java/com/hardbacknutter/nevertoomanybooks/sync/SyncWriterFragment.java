@@ -132,9 +132,6 @@ public class SyncWriterFragment
         fab.setVisibility(View.GONE);
         fab.setOnClickListener(v -> startWriting());
 
-        vb.btnStart.setVisibility(View.GONE);
-        //vb.btnStart.setOnClickListener(v -> startWriting());
-
         if (!vm.isRunning()) {
             // The task is NOT yet running.
             // Show either the full-options screen or the quick-options dialog

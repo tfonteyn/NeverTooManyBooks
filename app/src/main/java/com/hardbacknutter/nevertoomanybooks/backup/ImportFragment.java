@@ -195,9 +195,6 @@ public class ImportFragment
         fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(v -> startImport());
 
-        vb.btnStart.setVisibility(View.GONE);
-        //vb.btnStart.setOnClickListener(v -> startImport());
-
         if (!vm.isRunning()) {
             if (vm.hasUri()) {
                 // if we already have a uri when called (from getArguments()),

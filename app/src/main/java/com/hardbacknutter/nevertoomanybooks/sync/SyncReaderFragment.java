@@ -188,9 +188,6 @@ public class SyncReaderFragment
         fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(v -> startReading());
 
-        vb.btnStart.setVisibility(View.GONE);
-        //vb.btnStart.setOnClickListener(v -> startReading());
-
         if (!vm.isRunning()) {
             showOptions();
         }

@@ -140,9 +140,6 @@ public class ExportFragment
         fab.setVisibility(View.GONE);
         fab.setOnClickListener(v -> startExport());
 
-        vb.btnStart.setVisibility(View.GONE);
-        //vb.btnStart.setOnClickListener(v -> startExport());
-
         if (!vm.isRunning()) {
             // The task is NOT yet running.
             // Show either the full-options screen or the quick-options dialog
