@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
+//file:noinspection LongLine
 
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -241,12 +242,9 @@ dependencies {
     implementation("androidx.cardview:cardview:${androidx_cardview_version}")
     implementation("androidx.collection:collection:${androidx_collection_version}")
     // core is only needed for custom constraint helpers
-    implementation("androidx.constraintlayout:constraintlayout-core:"
-            + "${androidx_constraintlayout_core_version}")
-    implementation("androidx.constraintlayout:constraintlayout:"
-            + "${androidx_constraintlayout_version}")
-    implementation("androidx.coordinatorlayout:coordinatorlayout:"
-            + "${androidx_coordinatorlayout_version}")
+    implementation("androidx.constraintlayout:constraintlayout-core:${androidx_constraintlayout_core_version}")
+    implementation("androidx.constraintlayout:constraintlayout:${androidx_constraintlayout_version}")
+    implementation("androidx.coordinatorlayout:coordinatorlayout:${androidx_coordinatorlayout_version}")
     implementation("androidx.core:core:${androidx_core_version}")
     implementation("androidx.customview:customview:${androidx_customview_version}")
     implementation("androidx.documentfile:documentfile:${androidx_documentfile_version}")
@@ -259,8 +257,7 @@ dependencies {
 
     implementation("androidx.preference:preference:${androidx_preference_version}")
     implementation("androidx.recyclerview:recyclerview:${androidx_recyclerview_version}")
-//    implementation("androidx.slidingpanelayout:slidingpanelayout:"
-//            + "${androidx_slidingpanelayout_version}")
+//    implementation("androidx.slidingpanelayout:slidingpanelayout:${androidx_slidingpanelayout_version}")
     implementation("androidx.viewpager2:viewpager2:${androidx_viewpager2_version}")
     implementation("androidx.window:window:${androidx_window_version}")
 
@@ -270,13 +267,10 @@ dependencies {
     // jsoup HTML parser library @ https://jsoup.org/
     implementation("org.jsoup:jsoup:${jsoup_version}")
 
-    // New CameraX based scanner code from "TinyZXingWrapper"
-    releaseImplementation("com.hardbacknutter.tinyzxingwrapper:TinyZXingWrapper:" +
-            "${tiny_zxing_wrapper_version}:release@aar")
-    betaImplementation("com.hardbacknutter.tinyzxingwrapper:TinyZXingWrapper:" +
-            "${tiny_zxing_wrapper_version}:release@aar")
-    debugImplementation("com.hardbacknutter.tinyzxingwrapper:TinyZXingWrapper:" +
-            "${tiny_zxing_wrapper_version}:debug@aar")
+    // CameraX based scanner code from "TinyZXingWrapper"
+    releaseImplementation("com.hardbacknutter.tinyzxingwrapper:TinyZXingWrapper:${tiny_zxing_wrapper_version}:release@aar")
+    betaImplementation("com.hardbacknutter.tinyzxingwrapper:TinyZXingWrapper:${tiny_zxing_wrapper_version}:release@aar")
+    debugImplementation("com.hardbacknutter.tinyzxingwrapper:TinyZXingWrapper:${tiny_zxing_wrapper_version}:debug@aar")
 
     implementation "com.google.zxing:core:${zxing_core_version}"
 
@@ -312,8 +306,7 @@ dependencies {
     //    public TestRule rule = new InstantTaskExecutorRule();
     androidTestImplementation("androidx.arch.core:core-testing:${androidx_arch_core_testing}")
 
-    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:" +
-            "${kotlinx_coroutines_core}")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${kotlinx_coroutines_core}")
 
 //    testImplementation("org.robolectric:robolectric:4.4")
 //    androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
