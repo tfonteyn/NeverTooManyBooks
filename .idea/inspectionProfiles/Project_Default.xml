@@ -202,7 +202,6 @@
       <option name="ignoreSerializable" value="false" />
       <option name="ignoreCloneable" value="false" />
     </inspection_tool>
-    <inspection_tool class="RedundantMethodOverride" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ResultSetIndexZero" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ReturnNull" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="m_reportObjectMethods" value="true" />
@@ -236,12 +235,12 @@
       <option name="myAllowedSuppressions">
         <list>
           <option value="SameParameterValue" />
+          <option value="DataFlowIssue" />
         </list>
       </option>
     </inspection_tool>
     <inspection_tool class="SuspiciousArrayCast" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="SuspiciousLiteralUnderscore" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="SwitchStatementWithConfusingDeclaration" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="SystemOutErr" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ThisEscapedInConstructor" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ThreadDumpStack" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -249,13 +248,12 @@
     <inspection_tool class="TimeToString" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="TooBroadCatch" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="TooBroadThrows" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="TrivialStringConcatenation" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="TypeMayBeWeakened" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="useRighthandTypeAsWeakestTypeInAssignments" value="true" />
       <option name="useParameterizedTypeForCollectionMethods" value="true" />
       <option name="doNotWeakenToJavaLangObject" value="true" />
       <option name="onlyWeakentoInterface" value="true" />
-      <stopClasses>java.util.Set,com.hardbacknutter.nevertoomanybooks.bookedit.EditAction,java.util.List,java.util.Collection,java.time.LocalDateTime,android.net.Uri,com.hardbacknutter.nevertoomanybooks.sync.SyncServer,com.hardbacknutter.nevertoomanybooks.entities.Book.ContentType</stopClasses>
+      <stopClasses>java.util.Set,com.hardbacknutter.nevertoomanybooks.bookedit.EditAction,java.util.List,java.util.Collection,java.time.LocalDateTime,android.net.Uri,com.hardbacknutter.nevertoomanybooks.sync.SyncServer,com.hardbacknutter.nevertoomanybooks.entities.Book.ContentType,com.hardbacknutter.nevertoomanybooks.entities.Bookshelf</stopClasses>
     </inspection_tool>
     <inspection_tool class="UnnecessarilyQualifiedStaticUsage" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="m_ignoreStaticFieldAccesses" value="false" />
