@@ -118,7 +118,7 @@ public class BookshelfFiltersDialogFragment
         vb.filterList.addItemDecoration(
                 new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL));
 
-        adjustWindowSize();
+        adjustWindowSize(vb.filterList, 3);
     }
 
     @Override
