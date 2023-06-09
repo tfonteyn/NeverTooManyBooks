@@ -47,6 +47,8 @@ Booklist style sorting by date-read or date-added etc...:
 4.5.0
 
 NEW:
+- Deleted books will now be 'remembered'. This will allow importing a backup on a second device
+  to automatically synchronize/mirror these deletions.
 - add preference setting for a single barcode scan to automatically restart the scanner.
   There are now 3 ways to add books by scanning their barcodes:
   - single: "scan/edit"

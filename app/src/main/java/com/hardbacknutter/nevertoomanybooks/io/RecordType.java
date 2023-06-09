@@ -100,7 +100,14 @@ public enum RecordType {
      * {@link CalibreCustomField} elements.
      * ONLY ONE PER ARCHIVE.
      */
-    CalibreCustomFields("calibreCustomFields"),
+    CalibreCustomFields("calibrecustomfields"),
+
+    /**
+     * All information needed to encode/decode
+     * {@code Pair<String, String> with UUID and Date-added as iso utc timestamp} elements.
+     * ONLY ONE PER ARCHIVE.
+     */
+    DeletedBooks("deletedbooks"),
 
     /**
      * All information needed to encode/decode {@link Book} elements.
@@ -141,9 +148,10 @@ public enum RecordType {
     private final String prefix;
 
     RecordType(@NonNull final String name) {
+        // do toLowerCase to avoid the developer doing a boo-boo
+        this.name = name.toLowerCase(Locale.ENGLISH);
         // for now the same, but keeping this open to change
-        this.name = name;
-        prefix = name;
+        prefix = this.name;
     }
 
     /**
@@ -180,6 +188,7 @@ public enum RecordType {
         if (recordTypes.contains(Books)) {
             recordTypes.add(Bookshelves);
             recordTypes.add(CalibreLibraries);
+            recordTypes.add(DeletedBooks);
         }
     }
 

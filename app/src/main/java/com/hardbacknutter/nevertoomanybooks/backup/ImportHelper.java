@@ -27,7 +27,6 @@ import androidx.annotation.VisibleForTesting;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.EnumSet;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -93,11 +92,11 @@ public final class ImportHelper
                 break;
 
             case Zip:
-                addRecordType(EnumSet.of(RecordType.Styles,
-                                         RecordType.Preferences,
-                                         RecordType.Certificates,
-                                         RecordType.Books,
-                                         RecordType.Cover));
+                addRecordType(RecordType.Styles,
+                              RecordType.Preferences,
+                              RecordType.Certificates,
+                              RecordType.Books,
+                              RecordType.Cover);
                 setUpdateOption(DataReader.Updates.OnlyNewer);
                 break;
 
@@ -107,10 +106,10 @@ public final class ImportHelper
                 break;
 
             case Json:
-                addRecordType(EnumSet.of(RecordType.Styles,
-                                         RecordType.Preferences,
-                                         RecordType.Certificates,
-                                         RecordType.Books));
+                addRecordType(RecordType.Styles,
+                              RecordType.Preferences,
+                              RecordType.Certificates,
+                              RecordType.Books);
                 setUpdateOption(DataReader.Updates.OnlyNewer);
                 break;
 

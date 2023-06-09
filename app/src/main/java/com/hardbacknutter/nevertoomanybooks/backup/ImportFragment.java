@@ -55,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForReadingContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ImportContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImportBinding;
@@ -165,7 +166,18 @@ public class ImportFragment
         vb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
             vm.getDataReaderHelper().setRecordType(isChecked, RecordType.Books);
             vb.rbBooksGroup.setEnabled(isChecked);
+            // follow the cbxBooks status
+            vb.cbxDeleteRemovedBooks.setEnabled(isChecked);
+            if (!isChecked) {
+                // and when cbxBooks is switched off,
+                // then also set sync deleting books off.
+                vb.cbxDeleteRemovedBooks.setChecked(false);
+                vm.setRemoveDeletedBooksAfterImport(false);
+            }
         });
+
+        vb.cbxDeleteRemovedBooks.setOnCheckedChangeListener(
+                (buttonView, isChecked) -> vm.setRemoveDeletedBooksAfterImport(isChecked));
 
         vb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> vm
                 .getDataReaderHelper().setRecordType(isChecked, RecordType.Cover));
@@ -175,8 +187,7 @@ public class ImportFragment
 
         vb.cbxPrefs.setOnCheckedChangeListener((buttonView, isChecked) -> {
             final ImportHelper helper = vm.getDataReaderHelper();
-            helper.setRecordType(isChecked, RecordType.Preferences);
-            helper.setRecordType(isChecked, RecordType.Certificates);
+            helper.setRecordType(isChecked, RecordType.Preferences, RecordType.Certificates);
         });
 
         vb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> {
@@ -307,6 +318,8 @@ public class ImportFragment
         vb.rbImportNewAndUpdated.setChecked(updateOption == DataReader.Updates.OnlyNewer);
         vb.rbImportAll.setChecked(updateOption == DataReader.Updates.Overwrite);
 
+        vb.cbxDeleteRemovedBooks.setChecked(vm.isRemoveDeletedBooksAfterImport());
+
         // Set the visibility depending on the encoding
         switch (helper.getEncoding()) {
             case Zip: {
@@ -315,6 +328,7 @@ public class ImportFragment
                 vb.cbxCovers.setVisibility(View.VISIBLE);
                 vb.cbxPrefs.setVisibility(View.VISIBLE);
                 vb.cbxStyles.setVisibility(View.VISIBLE);
+                vb.cbxDeleteRemovedBooks.setVisibility(View.VISIBLE);
                 break;
             }
             case Json: {
@@ -323,15 +337,18 @@ public class ImportFragment
                 vb.cbxCovers.setVisibility(View.GONE);
                 vb.cbxPrefs.setVisibility(View.VISIBLE);
                 vb.cbxStyles.setVisibility(View.VISIBLE);
+                vb.cbxDeleteRemovedBooks.setVisibility(View.VISIBLE);
                 break;
             }
             case Csv:
             case SqLiteDb: {
-                // show only the book options
+                // Show only the book options;
+                // The following are not applicable
                 vb.cbxBooks.setVisibility(View.GONE);
                 vb.cbxCovers.setVisibility(View.GONE);
                 vb.cbxPrefs.setVisibility(View.GONE);
                 vb.cbxStyles.setVisibility(View.GONE);
+                vb.cbxDeleteRemovedBooks.setVisibility(View.GONE);
                 break;
             }
         }
@@ -481,7 +498,20 @@ public class ImportFragment
                                   @NonNull final ImportResults result) {
 
         if (result.styles > 0) {
-            ServiceLocator.getInstance().getStyles().updateMenuOrder();
+            final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
+            // Resort the styles menu as per their (new) order.
+            stylesHelper.updateMenuOrder();
+            // Force a refresh of the cached styles.
+            stylesHelper.clearCache();
+        }
+
+        // If the user checked the option to import books,
+        // we also imported the deleted-book records for future syncs
+        // which is independent from the sync option.
+
+        // Here we are effectively deleting the actual books if sync was enabled.
+        if (vm.isRemoveDeletedBooksAfterImport()) {
+            ServiceLocator.getInstance().getDeletedBooksDao().sync();
         }
 
         //noinspection DataFlowIssue
@@ -539,6 +569,12 @@ public class ImportFragment
             items.add(getString(R.string.name_colon_value,
                                 getString(R.string.lbl_certificates),
                                 String.valueOf(result.certificates)));
+        }
+
+        if (result.bookshelves > 0) {
+            items.add(getString(R.string.name_colon_value,
+                                getString(R.string.lbl_bookshelves),
+                                String.valueOf(result.bookshelves)));
         }
 
         final String report = items.stream()

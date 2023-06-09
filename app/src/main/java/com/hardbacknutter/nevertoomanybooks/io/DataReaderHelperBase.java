@@ -27,6 +27,7 @@ import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.security.cert.CertificateException;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
@@ -78,35 +79,32 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
     }
 
     /**
-     * Add the given set of {@link RecordType}s.
+     * Add the given {@link RecordType}s. Typically used to set the defaults.
      *
      * @param recordTypes to add
-     */
-    protected void addRecordType(@NonNull final Set<RecordType> recordTypes) {
-        this.recordTypes.addAll(recordTypes);
-    }
-
-    /**
-     * Add the given {@link RecordType}.
      *
-     * @param recordType to add
+     * @see #setRecordType(boolean, RecordType...)
      */
-    public void addRecordType(@NonNull final RecordType recordType) {
-        recordTypes.add(recordType);
+    public void addRecordType(@NonNull final RecordType... recordTypes) {
+        if (recordTypes.length > 0) {
+            this.recordTypes.addAll(Arrays.asList(recordTypes));
+        }
     }
 
     /**
      * Add or remove the given {@link RecordType}.
      *
-     * @param add        {@code true} to add, {@code false} to remove
-     * @param recordType to add/remove
+     * @param add         {@code true} to add, {@code false} to remove
+     * @param recordTypes to add/remove
      */
     public void setRecordType(final boolean add,
-                              @NonNull final RecordType recordType) {
-        if (add) {
-            recordTypes.add(recordType);
-        } else {
-            recordTypes.remove(recordType);
+                              @NonNull final RecordType... recordTypes) {
+        if (recordTypes.length > 0) {
+            if (add) {
+                this.recordTypes.addAll(Arrays.asList(recordTypes));
+            } else {
+                Arrays.asList(recordTypes).forEach(this.recordTypes::remove);
+            }
         }
     }
 
@@ -158,6 +156,7 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
      * @throws IOException          on generic/other IO failures
      * @throws CredentialsException on authentication/login failures
      * @throws StorageException     on storage related failures
+     * @throws CertificateException on failures related to a user installed CA.
      */
     @NonNull
     protected abstract DataReader<METADATA, RESULTS> createReader(@NonNull Context context)
@@ -212,11 +211,12 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
      *
      * @return results summary
      *
-     * @throws DataReaderException  on failure to read the data
-     * @throws CredentialsException on authentication/login failures
-     * @throws StorageException     on storage related failures
-     * @throws IOException          on generic/other IO failures
-     * @throws CertificateException on failures related to a user installed CA
+     * @throws DataReaderException      on failure to read the data
+     * @throws CredentialsException     on authentication/login failures
+     * @throws StorageException         on storage related failures
+     * @throws IOException              on generic/other IO failures
+     * @throws CertificateException     on failures related to a user installed CA
+     * @throws IllegalArgumentException if there are no record-types to read
      * @see DataReader
      */
     @NonNull

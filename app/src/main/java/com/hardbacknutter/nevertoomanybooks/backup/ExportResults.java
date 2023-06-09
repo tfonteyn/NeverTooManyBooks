@@ -63,16 +63,20 @@ public class ExportResults
     private final List<String> coversExported = new ArrayList<>();
     /** #styles we exported. */
     public int styles;
+    /** #preferences we exported. */
+    public int preferences;
+    /** #certificates we exported. */
+    public int certificates;
+
     /** #bookshelves we exported. */
     public int bookshelves;
     /** #calibreLibraries we exported. */
     public int calibreLibraries;
     /** #calibreLibraries we exported. */
     public int calibreCustomFields;
-    /** #preferences we exported. */
-    public int preferences;
-    /** #certificates we exported. */
-    public int certificates;
+    /** #deletedBook uuids we exported. */
+    public int deletedBooks;
+
     /** whether we exported the actual database. */
     public boolean database;
 
@@ -94,6 +98,7 @@ public class ExportResults
         bookshelves = in.readInt();
         calibreLibraries = in.readInt();
         calibreCustomFields = in.readInt();
+        deletedBooks = in.readInt();
         styles = in.readInt();
         preferences = in.readInt();
         certificates = in.readInt();
@@ -106,6 +111,8 @@ public class ExportResults
      * @param recordType to check
      *
      * @return {@code true} if there is at least one.
+     *
+     * @throws IllegalArgumentException for non supported types
      */
     public boolean has(@NonNull final RecordType recordType) {
         switch (recordType) {
@@ -121,6 +128,8 @@ public class ExportResults
                 return calibreLibraries > 0;
             case CalibreCustomFields:
                 return calibreCustomFields > 0;
+            case DeletedBooks:
+                return deletedBooks > 0;
             case Books:
                 return getBookCount() > 0;
             case Cover:
@@ -132,7 +141,7 @@ public class ExportResults
             case MetaData:
             case AutoDetect:
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(recordType.getName());
         }
     }
 
@@ -148,6 +157,7 @@ public class ExportResults
         bookshelves += results.bookshelves;
         calibreLibraries += results.calibreLibraries;
         calibreCustomFields += results.calibreCustomFields;
+        deletedBooks += results.deletedBooks;
         styles += results.styles;
         preferences += results.preferences;
         certificates += results.certificates;
@@ -212,6 +222,7 @@ public class ExportResults
         dest.writeInt(bookshelves);
         dest.writeInt(calibreLibraries);
         dest.writeInt(calibreCustomFields);
+        dest.writeInt(deletedBooks);
         dest.writeInt(styles);
         dest.writeInt(preferences);
         dest.writeInt(certificates);
@@ -232,6 +243,7 @@ public class ExportResults
                + ", bookshelves=" + bookshelves
                + ", calibreLibraries=" + calibreLibraries
                + ", calibreCustomFields=" + calibreCustomFields
+               + ", deletedBooks=" + deletedBooks
                + ", styles=" + styles
                + ", preferences=" + preferences
                + ", certificates=" + certificates

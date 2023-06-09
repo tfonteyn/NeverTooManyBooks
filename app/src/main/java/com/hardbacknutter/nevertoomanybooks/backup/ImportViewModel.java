@@ -38,6 +38,7 @@ public class ImportViewModel
 
     @Nullable
     private ImportHelper importHelper;
+    private boolean removeDeletedBooksAfterImport = true;
 
     @NonNull
     ImportHelper createDataReaderHelper(@NonNull final Context context,
@@ -71,5 +72,13 @@ public class ImportViewModel
             return false;
         }
         return importHelper.getMetaData().isPresent();
+    }
+
+    public void setRemoveDeletedBooksAfterImport(final boolean removeDeletedBooksAfterImport) {
+        this.removeDeletedBooksAfterImport = removeDeletedBooksAfterImport;
+    }
+
+    public boolean isRemoveDeletedBooksAfterImport() {
+        return removeDeletedBooksAfterImport;
     }
 }

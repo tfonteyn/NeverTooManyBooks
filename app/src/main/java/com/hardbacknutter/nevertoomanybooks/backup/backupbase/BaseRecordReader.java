@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DeletedBooksDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.RecordReader;
@@ -52,6 +53,8 @@ public abstract class BaseRecordReader
     /** Database Access. */
     @NonNull
     protected final BookDao bookDao;
+    @NonNull
+    protected final DeletedBooksDao deletedBooksDao;
 
     @NonNull
     protected final DateParser dateParser;
@@ -73,6 +76,8 @@ public abstract class BaseRecordReader
     protected BaseRecordReader(@NonNull final Context context,
                                @NonNull final Locale systemLocale) {
         bookDao = ServiceLocator.getInstance().getBookDao();
+        deletedBooksDao = ServiceLocator.getInstance().getDeletedBooksDao();
+
         this.dateParser = new ISODateParser(systemLocale);
 
         booksString = context.getString(R.string.lbl_books);

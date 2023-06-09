@@ -22,6 +22,7 @@
  TODO: on a 4" screen, we get some overlap between the columns.
  Leaving this for now... 4" screens.. oh well :/
 -->
+<!--suppress LongLine -->
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -36,23 +37,6 @@
         style="@style/TopCentered"
         >
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/col0"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.3"
-            />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/col1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.7"
-            />
-
-        <!--suppress LongLine -->
         <com.hardbacknutter.nevertoomanybooks.core.widgets.ConstraintRadioGroup
             android:id="@+id/rb_books_group"
             android:layout_width="0dp"
@@ -65,7 +49,6 @@
             android:id="@+id/header"
             style="@style/Text.Header"
             android:text="@string/lbl_import_options"
-            app:layout_constraintEnd_toStartOf="@id/col0"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -78,6 +61,9 @@
             android:layout_marginTop="@dimen/section_margin_top"
             android:textAppearance="?attr/textAppearanceBodyLarge"
             android:textIsSelectable="true"
+            android:maxLines="2"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintEnd_toStartOf="@id/col0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/header"
             tools:text="archive name"
@@ -90,18 +76,34 @@
             android:layout_marginTop="@dimen/section_margin_top"
             android:textAppearance="?attr/textAppearanceBodyLarge"
             android:textIsSelectable="true"
-            app:layout_constraintStart_toStartOf="@id/archive_name"
             app:layout_constraintEnd_toStartOf="@id/col0"
-            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintHorizontal_bias="0.26"
+            app:layout_constraintStart_toStartOf="@id/archive_name"
             app:layout_constraintTop_toBottomOf="@id/archive_name"
             tools:text="May 26, 2022, 11:37 AM\nBooks: 123\nCovers: 456"
+            />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="start"
+            android:id="@+id/col0"
+            app:constraint_referenced_ids="cbx_books,cbx_delete_removed_books,inf_new_only,inf_new_and_updated,inf_all"
+            />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="end"
+            android:id="@+id/col1"
+            app:constraint_referenced_ids="cbx_books,cbx_delete_removed_books,inf_new_only,inf_new_and_updated,inf_all"
             />
 
         <CheckBox
             android:id="@+id/cbx_books"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/field_margin_start"
+            android:layout_marginStart="@dimen/field_margin_inline"
             android:checked="true"
             android:text="@string/lbl_books"
             app:layout_constraintStart_toEndOf="@id/col0"
@@ -163,11 +165,20 @@
             />
 
         <CheckBox
+            android:id="@+id/cbx_delete_removed_books"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/option_synchronize_deleted_books"
+            app:layout_constraintStart_toStartOf="@id/cbx_books"
+            app:layout_constraintTop_toBottomOf="@id/rb_import_all"
+            />
+
+        <CheckBox
             android:id="@+id/cbx_covers"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/field_margin_start"
-
+            android:layout_marginStart="@dimen/field_margin_inline"
             android:checked="true"
             android:text="@string/lbl_covers_long"
             app:layout_constraintStart_toEndOf="@id/col1"
@@ -179,7 +190,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="true"
-            android:layout_marginStart="@dimen/field_margin_start"
+            android:layout_marginStart="@dimen/field_margin_inline"
             android:text="@string/lbl_settings"
             app:layout_constraintStart_toEndOf="@id/col1"
             app:layout_constraintTop_toBottomOf="@id/cbx_covers"
@@ -189,7 +200,7 @@
             android:id="@+id/cbx_styles"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/field_margin_start"
+            android:layout_marginStart="@dimen/field_margin_inline"
             android:checked="true"
             android:text="@string/lbl_styles"
             app:layout_constraintStart_toEndOf="@id/col1"

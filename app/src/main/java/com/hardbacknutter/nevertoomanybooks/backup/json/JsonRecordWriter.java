@@ -26,6 +26,7 @@ import android.database.Cursor;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
@@ -46,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BundleCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CalibreCustomFieldCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CalibreLibraryCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CertificateCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.json.coders.DeletedBooksCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.StyleCoder;
@@ -78,6 +80,7 @@ import com.hardbacknutter.org.json.JSONObject;
  *      <li>{@link RecordType#Bookshelves}</li>
  *      <li>{@link RecordType#CalibreLibraries}</li>
  *      <li>{@link RecordType#CalibreCustomFields}</li>
+ *      <li>{@link RecordType#DeletedBooks}</li>
  *      <li>{@link RecordType#Books}</li>
  * </ul>
  */
@@ -255,6 +258,20 @@ public class JsonRecordWriter
                                  new CalibreCustomFieldCoder().encode(fields));
                 }
                 results.calibreCustomFields = fields.size();
+            }
+
+            if (recordTypes.contains(RecordType.DeletedBooks)
+                && !progressListener.isCancelled()) {
+                progressListener.publishProgress(1, context.getString(
+                        R.string.lbl_books));
+
+                final List<Pair<String, String>> list =
+                        ServiceLocator.getInstance().getDeletedBooksDao().getAll(null);
+                if (!list.isEmpty()) {
+                    jsonData.put(RecordType.DeletedBooks.getName(),
+                                 new DeletedBooksCoder().encode(list));
+                }
+                results.deletedBooks = list.size();
             }
 
             if (recordTypes.contains(RecordType.Books)

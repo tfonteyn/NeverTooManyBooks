@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.ColorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CoverCacheDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DeletedBooksDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FormatDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.GenreDao;
@@ -71,6 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.CalibreDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.CalibreLibraryDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.ColorDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.CoverCacheDaoImpl;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.DeletedBooksDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.FormatDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.FtsDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.GenreDaoImpl;
@@ -160,6 +162,8 @@ public class ServiceLocator {
     private ColorDao colorDao;
     @Nullable
     private CoverCacheDao coverCacheDao;
+    @Nullable
+    private DeletedBooksDao deletedBooksDao;
     @Nullable
     private FormatDao formatDao;
     @Nullable
@@ -502,6 +506,16 @@ public class ServiceLocator {
             }
         }
         return bookDao;
+    }
+
+    @NonNull
+    public DeletedBooksDao getDeletedBooksDao() {
+        synchronized (this) {
+            if (deletedBooksDao == null) {
+                deletedBooksDao = new DeletedBooksDaoImpl(getDb(), this::getBookDao);
+            }
+        }
+        return deletedBooksDao;
     }
 
     @NonNull

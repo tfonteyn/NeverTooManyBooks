@@ -294,6 +294,8 @@ public class BookshelfDaoImpl
                 if (bookshelf.getId() == 0) {
                     insert(context, bookshelf);
                 }
+                //2023-06-11: If we ever do updates here, then we need to check the triggers!
+                // also: look at AuthorDaoImpl/PublisherDaoImpl how we avoid unneeded updates
 
                 stmt.bindLong(1, bookId);
                 stmt.bindLong(2, bookshelf.getId());

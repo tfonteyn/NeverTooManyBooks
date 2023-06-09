@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
+import com.hardbacknutter.nevertoomanybooks.core.database.UncheckedDaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
@@ -330,7 +331,20 @@ public class SeriesDaoImpl
                 if (series.getId() == 0) {
                     insert(context, series, bookLocale);
                 } else if (doUpdates) {
-                    update(context, series, bookLocale);
+                    // https://stackoverflow.com/questions/6677517/update-if-different-changed
+                    // ONLY update if there are actual changes.
+                    // Otherwise the trigger after_update_on" + TBL_SERIES
+                    // thereby setting DATE_LAST_UPDATED__UTC for
+                    // ALL books by that series
+                    getById(series.getId()).ifPresent(current -> {
+                        if (!current.equals(series)) {
+                            try {
+                                update(context, series, bookLocale);
+                            } catch (@NonNull final DaoWriteException e) {
+                                throw new UncheckedDaoWriteException(e);
+                            }
+                        }
+                    });
                 }
 
                 position++;

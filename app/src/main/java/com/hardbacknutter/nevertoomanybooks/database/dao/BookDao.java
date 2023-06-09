@@ -135,6 +135,15 @@ public interface BookDao {
     boolean delete(@IntRange(from = 1) long id);
 
     /**
+     * Delete the given list of books (and its covers).
+     *
+     * @param uuids list of book UUIDs
+     *
+     * @return the number of rows deleted
+     */
+    int deleteByUuid(@NonNull List<String> uuids);
+
+    /**
      * Update the 'read' status and the 'read_end' date of the book.
      * <p>
      * If successful, the book object will have been updated with the new status.

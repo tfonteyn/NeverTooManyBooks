@@ -1022,10 +1022,6 @@ public class BooksOnBookshelfViewModel
      */
     void onImportFinished(@NonNull final Context context,
                           @NonNull final ImportResults importResults) {
-        if (importResults.styles > 0) {
-            // Force a refresh of the cached styles
-            ServiceLocator.getInstance().getStyles().clearCache();
-        }
         if (importResults.preferences > 0) {
             // Refresh the preferred bookshelf. This also refreshes its style.
             reloadSelectedBookshelf(context);

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -60,13 +60,33 @@
             />
 
         <Button
+            android:id="@+id/btn_sync_deleted_books"
+            style="@style/Button.Menu"
+            android:text="@string/option_synchronize_deleted_books"
+            app:icon="@drawable/ic_baseline_warning_24"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_purge_files"
+            />
+
+        <Button
+            android:id="@+id/btn_clear_deleted_books"
+            style="@style/Button.Menu"
+            android:text="@string/option_clear_deleted_book_records"
+            app:icon="@drawable/ic_baseline_remove_24"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_sync_deleted_books"
+            />
+
+        <Button
             android:id="@+id/btn_purge_blns"
             style="@style/Button.Menu"
             android:text="@string/info_purge_blns_all"
             app:icon="@drawable/ic_baseline_remove_24"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_purge_files"
+            app:layout_constraintTop_toBottomOf="@id/btn_clear_deleted_books"
             />
 
         <Button

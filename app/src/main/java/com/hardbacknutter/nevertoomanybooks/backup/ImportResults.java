@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -61,11 +62,15 @@ public class ImportResults
             return new ImportResults[size];
         }
     };
+
     static final int MAX_FAIL_LINES = 10;
+
     /** Log tag. */
     private static final String TAG = "ImportResults";
+
     /** Bundle key if we get passed around. */
     public static final String BKEY = TAG;
+    private static final String ERROR_IMPORT_FAILED_FOR_BOOK = "Import failed for book ";
 
     /**
      * Keeps track of failed import lines in a text file.
@@ -85,6 +90,10 @@ public class ImportResults
     /** #certificates we imported. */
     public int certificates;
 
+    /** #bookshelves (new only) we imported. */
+    public int bookshelves;
+    /** #deletedBook uuids we imported. */
+    public int deletedBooks;
 
     /**
      * Constructor.
@@ -103,6 +112,8 @@ public class ImportResults
         styles = in.readInt();
         preferences = in.readInt();
         certificates = in.readInt();
+        bookshelves = in.readInt();
+        deletedBooks = in.readInt();
 
         recordsSkipped = in.readInt();
         in.readList(failedLinesNr, getClass().getClassLoader());
@@ -120,6 +131,8 @@ public class ImportResults
         styles += results.styles;
         preferences += results.preferences;
         certificates += results.certificates;
+        bookshelves += results.bookshelves;
+        deletedBooks += results.deletedBooks;
 
         recordsSkipped += results.recordsSkipped;
         failedLinesNr.addAll(results.failedLinesNr);
@@ -139,13 +152,9 @@ public class ImportResults
                                    final int row,
                                    @NonNull final Exception e,
                                    @Nullable final String localizedMessage) {
-        final String message;
-        if (localizedMessage != null) {
-            message = localizedMessage;
-        } else {
-            message = ExMsg.map(context, e)
-                           .orElseGet(() -> context.getString(R.string.error_import_csv_line, row));
-        }
+        final String message = Objects.requireNonNullElseGet(localizedMessage, () -> ExMsg
+                .map(context, e)
+                .orElseGet(() -> context.getString(R.string.error_import_csv_line, row)));
 
         failedLinesMessage.add(message);
         failedLinesNr.add(row);
@@ -153,17 +162,17 @@ public class ImportResults
 
         final Logger logger = LoggerFactory.getLogger();
         if (booksFailed <= MAX_FAIL_LINES) {
-            logger.w(TAG, "Import failed for book " + row + "|e=" + e.getMessage());
+            logger.w(TAG, ERROR_IMPORT_FAILED_FOR_BOOK + row + "|e=" + e.getMessage());
         }
         if (BuildConfig.DEBUG /* always */) {
             if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS && booksFailed > MAX_FAIL_LINES) {
                 logger.d(TAG, "handleRowException",
-                         "Import failed for book " + row,
+                         ERROR_IMPORT_FAILED_FOR_BOOK + row,
                          "e=" + e.getMessage());
             } else if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS_EXT) {
                 // logging with the full exception is VERY HEAVY
                 logger.d(TAG, "handleRowException",
-                         "Import failed for book " + row, e);
+                         ERROR_IMPORT_FAILED_FOR_BOOK + row, e);
             }
         }
     }
@@ -176,6 +185,8 @@ public class ImportResults
         dest.writeInt(styles);
         dest.writeInt(preferences);
         dest.writeInt(certificates);
+        dest.writeInt(bookshelves);
+        dest.writeInt(deletedBooks);
 
         dest.writeInt(recordsSkipped);
         dest.writeList(failedLinesNr);
@@ -190,6 +201,8 @@ public class ImportResults
                + ", styles=" + styles
                + ", preferences=" + preferences
                + ", certificates=" + certificates
+               + ", bookshelves=" + bookshelves
+               + ", deletedBooks=" + deletedBooks
 
                + ", recordsSkipped=" + recordsSkipped
                + ", failedLinesNr=" + failedLinesNr

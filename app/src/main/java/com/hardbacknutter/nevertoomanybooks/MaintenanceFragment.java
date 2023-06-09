@@ -22,14 +22,19 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.TextAppearanceSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -162,6 +167,30 @@ public class MaintenanceFragment
                     .show();
         });
 
+        addInfo(vb.btnSyncDeletedBooks, R.string.info_sync_deleted_book_records);
+        vb.btnSyncDeletedBooks.setOnClickListener(
+                v -> new MaterialAlertDialogBuilder(v.getContext())
+                        .setIcon(R.drawable.ic_baseline_warning_24)
+                        .setTitle(R.string.option_sync_deleted_book_records)
+                        .setMessage(R.string.info_sync_deleted_book_records)
+                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                        .setPositiveButton(android.R.string.ok, (d, w) ->
+                                ServiceLocator.getInstance().getDeletedBooksDao().purge())
+                        .create()
+                        .show());
+
+        addInfo(vb.btnClearDeletedBooks, R.string.info_clear_deleted_book_records);
+        vb.btnClearDeletedBooks.setOnClickListener(
+                v -> new MaterialAlertDialogBuilder(v.getContext())
+                        .setIcon(R.drawable.ic_baseline_warning_24)
+                        .setTitle(R.string.option_clear_deleted_book_records)
+                        .setMessage(R.string.info_clear_deleted_book_records)
+                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                        .setPositiveButton(android.R.string.ok, (d, w) ->
+                                ServiceLocator.getInstance().getDeletedBooksDao().purge())
+                        .create()
+                        .show());
+
         vb.btnPurgeBlns.setOnClickListener(v -> new MaterialAlertDialogBuilder(v.getContext())
                 .setIcon(R.drawable.ic_baseline_warning_24)
                 .setTitle(R.string.lbl_purge_blns)
@@ -173,7 +202,7 @@ public class MaintenanceFragment
                 .show());
 
         vb.btnRebuildFts.setOnClickListener(v -> new MaterialAlertDialogBuilder(v.getContext())
-                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setIcon(R.drawable.ic_baseline_info_24)
                 .setTitle(R.string.option_rebuild_fts)
                 .setMessage(R.string.confirm_rebuild_fts)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> {
@@ -190,7 +219,7 @@ public class MaintenanceFragment
                 .show());
 
         vb.btnRebuildIndex.setOnClickListener(v -> new MaterialAlertDialogBuilder(v.getContext())
-                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setIcon(R.drawable.ic_baseline_info_24)
                 .setTitle(R.string.option_rebuild_index)
                 .setMessage(R.string.confirm_rebuild_index)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> {
@@ -247,7 +276,29 @@ public class MaintenanceFragment
                 .commit());
     }
 
+    /**
+     * Experimental... might be removed again.
+     * <p>
+     * Add a second line of text to the button with additional information.
+     *
+     * @param button  to add to
+     * @param infoRes info string resource.
+     */
+    private void addInfo(@NonNull final Button button,
+                         @StringRes final int infoRes) {
+        final CharSequence main = button.getText();
+        final String info = getString(infoRes);
+        final Spannable text = new SpannableString(main.toString() + '\n' + info);
+        final int end = main.length();
+        text.setSpan(new TextAppearanceSpan(getContext(), R.style.Button_Menu_Label),
+                     0, end, 0);
+        text.setSpan(new TextAppearanceSpan(getContext(), R.style.Button_Menu_Info),
+                     end + 1, end + 1 + info.length(), 0);
+        button.setText(text);
+    }
+
     private void sendDebug(@NonNull final Uri uri) {
+        //noinspection CheckStyle
         try {
             //noinspection DataFlowIssue
             vm.sendDebug(getContext(), uri);
@@ -260,7 +311,8 @@ public class MaintenanceFragment
     }
 
     /**
-     * Count size / Cleanup any purgeable files.
+     * Count size / Cleanup any purge-able files:
+     * Covers, upgrade-backup-files, logs and generic temporary files.
      *
      * @param bookUuidList a list of book uuid to check for orphaned covers
      * @param reallyDelete {@code true} to actually delete files,

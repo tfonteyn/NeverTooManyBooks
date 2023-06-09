@@ -76,11 +76,14 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_CUSTOM_FIELDS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_DELETED_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FTS_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PSEUDONYM_AUTHOR;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_STRIPINFO_COLLECTION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
@@ -117,6 +120,13 @@ public class DBHelper
     /** Static Factory object to create a {@link SynchronizedCursor} cursor. */
     private static final SQLiteDatabase.CursorFactory CURSOR_FACTORY =
             (db, d, et, q) -> new SynchronizedCursor(d, et, q, SYNCHRONIZER);
+
+    private static final String DROP_TRIGGER_IF_EXISTS_ = "DROP TRIGGER IF EXISTS";
+    private static final String CREATE_TRIGGER_ = "CREATE TRIGGER ";
+    private static final String _AFTER_DELETE_ON_ = " AFTER DELETE ON ";
+    private static final String _AFTER_UPDATE_ON_ = " AFTER UPDATE ON ";
+    private static final String _AFTER_INSERT_ON_ = " AFTER INSERT ON ";
+    private static final String _AFTER_UPDATE_OF_ = " AFTER UPDATE OF ";
 
     /** Always use {@link #getCollation(SQLiteDatabase)} to access. */
     @Nullable
@@ -176,6 +186,8 @@ public class DBHelper
      * This method should only be called at the *END* of {@link #onUpgrade}.
      * <p>
      * (re)Creates the indexes as defined on the tables.
+     *
+     * @param db Underlying database
      */
     private static void recreateIndices(@NonNull final SQLiteDatabase db) {
         // Delete all indices.
@@ -184,6 +196,7 @@ public class DBHelper
         try (Cursor current = db.rawQuery(SQL_GET_INDEX_NAMES, null)) {
             while (current.moveToNext()) {
                 final String indexName = current.getString(0);
+                //noinspection CheckStyle
                 try {
                     db.execSQL("DROP INDEX " + indexName);
                 } catch (@NonNull final SQLException e) {
@@ -301,6 +314,8 @@ public class DBHelper
      * <p>
      * This bug was introduced in ICS and present in 4.0-4.0.3, at least.
      *
+     * @param db Underlying database
+     *
      * @return This method is supposed to return {@code false} in normal circumstances.
      */
     private static boolean collationIsCaseSensitive(@NonNull final SQLiteDatabase db) {
@@ -325,10 +340,9 @@ public class DBHelper
             }
 
             if (cs) {
-                LoggerFactory.getLogger()
-                             .w(TAG, "\n=============================================="
-                                     + "\n========== CASE SENSITIVE COLLATION =========="
-                                     + "\n==============================================");
+                LoggerFactory.getLogger().w(
+                        TAG,
+                        "==================== CASE SENSITIVE COLLATION ====================");
             }
             return cs;
 
@@ -374,6 +388,30 @@ public class DBHelper
     }
 
     /**
+     * Create an "AFTER DELETE ON" on a TBL_BOOK_* table.
+     * <p>
+     * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
+     *
+     * @param db        Underlying database
+     * @param linkTable the TBL_BOOK_* link table on which to set the trigger
+     */
+    private void createTriggerAfterDeleteOn(@NonNull final SQLiteDatabase db,
+                                            @NonNull final TableDefinition linkTable) {
+
+        final String name = "after_delete_on_" + linkTable.getName();
+        final String body = _AFTER_DELETE_ON_ + linkTable.getName()
+                            + " FOR EACH ROW"
+                            + " BEGIN"
+                            + "  UPDATE " + TBL_BOOKS.getName()
+                            + "  SET " + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
+                            + "  WHERE " + DBKey.PK_ID + "=OLD." + DBKey.FK_BOOK + ';'
+                            + " END";
+
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + ' ' + name);
+        db.execSQL(CREATE_TRIGGER_ + name + body);
+    }
+
+    /**
      * Create all database triggers.
      *
      * <p>
@@ -407,37 +445,36 @@ public class DBHelper
         String name;
         String body;
 
+        createTriggerAfterDeleteOn(db, TBL_BOOK_BOOKSHELF);
+        // It's currently not possible to delete an Author directly.
+        //  createTriggerAfterDeleteOn(db, TBL_BOOK_AUTHOR);
+        createTriggerAfterDeleteOn(db, TBL_BOOK_SERIES);
+        createTriggerAfterDeleteOn(db, TBL_BOOK_PUBLISHER);
+        createTriggerAfterDeleteOn(db, TBL_BOOK_LOANEE);
+
         /*
-         * Deleting a {@link Bookshelf).
+         * Deleting a {@link Book).
          *
-         * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
+         * <ul>
+         * <li>Delete the book from FTS.</li>
+         * <li>Add the uuid to {@link DBDefinitions#TBL_DELETED_BOOKS} unless already present.</li>
+         * </ul>
          */
-        name = "after_delete_on_" + TBL_BOOK_BOOKSHELF.getName();
-        body = " AFTER DELETE ON " + TBL_BOOK_BOOKSHELF.getName() + " FOR EACH ROW\n"
-               + " BEGIN\n"
-               + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
-               + " WHERE " + DBKey.PK_ID + "=OLD." + DBKey.FK_BOOK + ";\n"
+        name = "after_delete_on_" + TBL_BOOKS.getName();
+        body = _AFTER_DELETE_ON_ + TBL_BOOKS.getName()
+               + " FOR EACH ROW"
+               + " BEGIN"
+               + " DELETE FROM " + TBL_FTS_BOOKS.getName()
+               + "  WHERE " + DBKey.FTS_BOOK_ID + "=OLD." + DBKey.PK_ID + ';'
+               // we must use IGNORE for when we do a sync. i.e.
+               // the TBL_DELETED_BOOKS contains a UUID which we imported from another device,
+               // and we're syncing the delete on the local device.
+               + " INSERT OR IGNORE INTO " + TBL_DELETED_BOOKS.getName()
+               + " (" + DBKey.BOOK_UUID + ") VALUES(OLD." + DBKey.BOOK_UUID + ");"
                + " END";
 
-        db.execSQL("DROP TRIGGER IF EXISTS " + name);
-        db.execSQL("\nCREATE TRIGGER " + name + body);
-
-//        /*
-//         * Deleting an {@link Author). Currently not possible to delete an Author directly.
-//         *
-//         * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
-//         */
-//        name = "after_delete_on_" + TBL_BOOK_AUTHOR.getName();
-//        body = " AFTER DELETE ON " + TBL_BOOK_AUTHOR.getName() + " FOR EACH ROW\n"
-//                + " BEGIN\n"
-//                + "  UPDATE " + TBL_BOOKS.getName()
-//                + "  SET " + DATE_LAST_UPDATED + "=current_timestamp"
-//                + " WHERE " + PK_ID + "=Old." + FK_BOOK + ";\n"
-//                + " END";
-//
-//        db.execSQL("DROP TRIGGER IF EXISTS " + name);
-//        db.execSQL("\nCREATE TRIGGER " + name + body);
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + ' ' + name);
+        db.execSQL(CREATE_TRIGGER_ + name + body);
 
         /*
          * Updating an {@link Author).
@@ -447,93 +484,93 @@ public class DBHelper
          * (i.e. each toc has the right author, but the book says "many authors")
          *
          * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
+         *
+         * dev note: "after_update_on" is missing a "_" at the end!
          */
         name = "after_update_on" + TBL_AUTHORS.getName();
-        body = " AFTER UPDATE ON " + TBL_AUTHORS.getName() + " FOR EACH ROW\n"
-               + " BEGIN\n"
+        body = _AFTER_UPDATE_ON_ + TBL_AUTHORS.getName()
+               + " FOR EACH ROW"
+               + " BEGIN"
                + "  UPDATE " + TBL_BOOKS.getName()
                + "  SET " + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
 
-               + " WHERE " + DBKey.PK_ID + " IN \n"
+               + " WHERE " + DBKey.PK_ID + " IN "
                // actual books by this Author
                + "(SELECT " + DBKey.FK_BOOK + " FROM " + TBL_BOOK_AUTHOR.getName()
-               + " WHERE " + DBKey.FK_AUTHOR + "=OLD." + DBKey.PK_ID + ")\n"
+               + " WHERE " + DBKey.FK_AUTHOR + "=OLD." + DBKey.PK_ID + ')'
 
-               + " OR " + DBKey.PK_ID + " IN \n"
+               + " OR " + DBKey.PK_ID + " IN "
                // books with entries in anthologies by this Author
                + "(SELECT " + DBKey.FK_BOOK
                + " FROM " + TBL_BOOK_TOC_ENTRIES.startJoin(TBL_TOC_ENTRIES)
-               + " WHERE " + DBKey.FK_AUTHOR + "=OLD." + DBKey.PK_ID + ");\n"
+               + " WHERE " + DBKey.FK_AUTHOR + "=OLD." + DBKey.PK_ID + ");"
+
                + " END";
 
-        db.execSQL("DROP TRIGGER IF EXISTS " + name);
-        db.execSQL("\nCREATE TRIGGER " + name + body);
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + ' ' + name);
+        db.execSQL(CREATE_TRIGGER_ + name + body);
 
-        /*
-         * Deleting a {@link Series).
-         *
-         * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
-         */
-        name = "after_delete_on_" + TBL_BOOK_SERIES.getName();
-        body = " AFTER DELETE ON " + TBL_BOOK_SERIES.getName() + " FOR EACH ROW\n"
-               + " BEGIN\n"
-               + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
-               + " WHERE " + DBKey.PK_ID + "=OLD." + DBKey.FK_BOOK + ";\n"
-               + " END";
-
-        db.execSQL("DROP TRIGGER IF EXISTS " + name);
-        db.execSQL("\nCREATE TRIGGER " + name + body);
 
         /*
          * Update a {@link Series}
          *
          * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
+         *
+         * dev note: "after_update_on" is missing a "_" at the end!
          */
         name = "after_update_on" + TBL_SERIES.getName();
-        body = " AFTER UPDATE ON " + TBL_SERIES.getName() + " FOR EACH ROW\n"
-               + " BEGIN\n"
+        body = _AFTER_UPDATE_ON_ + TBL_SERIES.getName()
+               + " FOR EACH ROW"
+               + " BEGIN"
                + "  UPDATE " + TBL_BOOKS.getName()
                + "  SET " + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
-               + " WHERE " + DBKey.PK_ID + " IN \n"
+               + " WHERE " + DBKey.PK_ID + " IN "
                + "(SELECT " + DBKey.FK_BOOK + " FROM " + TBL_BOOK_SERIES.getName()
-               + " WHERE " + DBKey.FK_SERIES + "=OLD." + DBKey.PK_ID + ");\n"
+               + " WHERE " + DBKey.FK_SERIES + "=OLD." + DBKey.PK_ID + ");"
                + " END";
 
-        db.execSQL("DROP TRIGGER IF EXISTS " + name);
-        db.execSQL("\nCREATE TRIGGER " + name + body);
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + ' ' + name);
+        db.execSQL(CREATE_TRIGGER_ + name + body);
 
         /*
-         * Deleting a Loan.
+         * Update a {@link Publisher}
          *
          * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
+         *
+         * dev note: "after_update_on" is missing a "_" at the end!
          */
-        name = "after_delete_on_" + TBL_BOOK_LOANEE.getName();
-        body = " AFTER DELETE ON " + TBL_BOOK_LOANEE.getName() + " FOR EACH ROW\n"
-               + " BEGIN\n"
+        name = "after_update_on" + TBL_PUBLISHERS.getName();
+        body = _AFTER_UPDATE_ON_ + TBL_PUBLISHERS.getName()
+               + " FOR EACH ROW"
+               + " BEGIN"
                + "  UPDATE " + TBL_BOOKS.getName()
                + "  SET " + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
-               + " WHERE " + DBKey.PK_ID + "=OLD." + DBKey.FK_BOOK + ";\n"
+               + " WHERE " + DBKey.PK_ID + " IN "
+               + "(SELECT " + DBKey.FK_BOOK + " FROM " + TBL_BOOK_PUBLISHER.getName()
+               + " WHERE " + DBKey.FK_PUBLISHER + "=OLD." + DBKey.PK_ID + ");"
                + " END";
 
-        db.execSQL("DROP TRIGGER IF EXISTS " + name);
-        db.execSQL("\nCREATE TRIGGER " + name + body);
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + ' ' + name);
+        db.execSQL(CREATE_TRIGGER_ + name + body);
 
         /*
-         * Updating a Loan.
+         * Update a Loan.
          *
          * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
+         *
+         * dev note: "after_update_on" HAS a "_" at the end!
          */
         name = "after_update_on_" + TBL_BOOK_LOANEE.getName();
-        body = " AFTER UPDATE ON " + TBL_BOOK_LOANEE.getName() + " FOR EACH ROW\n"
-               + " BEGIN\n"
+        body = _AFTER_UPDATE_ON_ + TBL_BOOK_LOANEE.getName()
+               + " FOR EACH ROW"
+               + " BEGIN"
                + "  UPDATE " + TBL_BOOKS.getName()
                + "  SET " + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
-               + " WHERE " + DBKey.PK_ID + "=NEW." + DBKey.FK_BOOK + ";\n"
+               + " WHERE " + DBKey.PK_ID + "=NEW." + DBKey.FK_BOOK + ';'
                + " END";
 
-        db.execSQL("DROP TRIGGER IF EXISTS " + name);
-        db.execSQL("\nCREATE TRIGGER " + name + body);
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + ' ' + name);
+        db.execSQL(CREATE_TRIGGER_ + name + body);
 
         /*
          * Inserting a Loan.
@@ -541,41 +578,25 @@ public class DBHelper
          * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
          */
         name = "after_insert_on_" + TBL_BOOK_LOANEE.getName();
-        body = " AFTER INSERT ON " + TBL_BOOK_LOANEE.getName() + " FOR EACH ROW\n"
-               + " BEGIN\n"
+        body = _AFTER_INSERT_ON_ + TBL_BOOK_LOANEE.getName()
+               + " FOR EACH ROW"
+               + " BEGIN"
                + "  UPDATE " + TBL_BOOKS.getName()
                + "  SET " + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
-               + " WHERE " + DBKey.PK_ID + "=NEW." + DBKey.FK_BOOK + ";\n"
+               + " WHERE " + DBKey.PK_ID + "=NEW." + DBKey.FK_BOOK + ';'
                + " END";
 
-        db.execSQL("DROP TRIGGER IF EXISTS " + name);
-        db.execSQL("\nCREATE TRIGGER " + name + body);
-
-
-        /*
-         * Deleting a {@link Book).
-         *
-         * Delete the book from FTS.
-         */
-        name = "after_delete_on_" + TBL_BOOKS.getName();
-        body = " AFTER DELETE ON " + TBL_BOOKS.getName() + " FOR EACH ROW\n"
-               + " BEGIN\n"
-               + "  DELETE FROM " + TBL_FTS_BOOKS.getName()
-               + " WHERE " + DBKey.FTS_BOOK_ID + "=OLD." + DBKey.PK_ID + ";\n"
-               + " END";
-
-        db.execSQL("DROP TRIGGER IF EXISTS " + name);
-        db.execSQL("\nCREATE TRIGGER " + name + body);
-
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + ' ' + name);
+        db.execSQL(CREATE_TRIGGER_ + name + body);
 
         /*
          * If the ISBN of a {@link Book) is changed, reset external ID's and sync dates.
          */
         name = "after_update_of_" + DBKey.BOOK_ISBN + "_on_" + TBL_BOOKS.getName();
-        body = " AFTER UPDATE OF " + DBKey.BOOK_ISBN + " ON " + TBL_BOOKS.getName()
-               + " FOR EACH ROW\n"
-               + " WHEN NEW." + DBKey.BOOK_ISBN + " <> OLD." + DBKey.BOOK_ISBN + '\n'
-               + " BEGIN\n"
+        body = _AFTER_UPDATE_OF_ + DBKey.BOOK_ISBN + " ON " + TBL_BOOKS.getName()
+               + " FOR EACH ROW"
+               + " WHEN NEW." + DBKey.BOOK_ISBN + " <> OLD." + DBKey.BOOK_ISBN
+               + " BEGIN"
                + "  UPDATE " + TBL_BOOKS.getName() + " SET ";
 
         body += SearchEngineConfig
@@ -586,11 +607,11 @@ public class DBHelper
 
         //NEWTHINGS: adding a new search engine: optional: add engine specific keys
 
-        body += " WHERE " + DBKey.PK_ID + "=NEW." + DBKey.PK_ID + ";\n"
+        body += " WHERE " + DBKey.PK_ID + "=NEW." + DBKey.PK_ID + ";"
                 + " END";
 
-        db.execSQL("DROP TRIGGER IF EXISTS " + name);
-        db.execSQL("\nCREATE TRIGGER " + name + body);
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + ' ' + name);
+        db.execSQL(CREATE_TRIGGER_ + name + body);
     }
 
     @Override
@@ -909,10 +930,10 @@ public class DBHelper
         if (oldVersion < 23) {
             // Up to version 22 we had a bug in how we'd store TOC entries which could create
             // duplicate authors. Fixed in 23 but we need to do a clean up during upgrade.
-            removeDuplicateAuthors_v23(db);
+            removeDuplicateAuthorsV23(db);
             // as a result of the author cleanup, we now might have duplicate toc entries,
             // same algorithm to clean those up
-            removeDuplicateTocEntries_v23(db);
+            removeDuplicateTocEntriesV23(db);
 
             // Add pen-name support
             TBL_PSEUDONYM_AUTHOR.create(db, true);
@@ -923,7 +944,7 @@ public class DBHelper
             TBL_BOOKS.alterTableAddColumns(db, DBDefinitions.DOM_TITLE_ORIGINAL_LANG);
         }
         if (oldVersion < 25) {
-            LoggerFactory.getLogger().w(TAG, "Upgrade to db=25");
+            TBL_DELETED_BOOKS.create(db, true);
         }
 
         //TODO: if at a future time we make a change that requires to copy/reload the books table:
@@ -949,7 +970,7 @@ public class DBHelper
         db.setForeignKeyConstraintsEnabled(true);
     }
 
-    private void removeDuplicateAuthors_v23(@NonNull final SQLiteDatabase db) {
+    private void removeDuplicateAuthorsV23(@NonNull final SQLiteDatabase db) {
 
         // find the names for duplicate author; i.e. identical family and given names.
         final List<Pair<String, String>> authors = new ArrayList<>();
@@ -1002,6 +1023,7 @@ public class DBHelper
 
             sql = "UPDATE " + TBL_BOOK_AUTHOR.getName() + " SET " + DBKey.FK_AUTHOR + "=" + keep
                   + " WHERE " + DBKey.FK_AUTHOR + " IN (" + ids + ')';
+            //noinspection CheckStyle,OverlyBroadCatchBlock
             try (SQLiteStatement stmt = db.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             } catch (@NonNull final Exception e) {
@@ -1011,6 +1033,7 @@ public class DBHelper
 
             sql = "UPDATE " + TBL_TOC_ENTRIES.getName() + " SET " + DBKey.FK_AUTHOR + "=" + keep
                   + " WHERE " + DBKey.FK_AUTHOR + " IN (" + ids + ')';
+            //noinspection CheckStyle,OverlyBroadCatchBlock
             try (SQLiteStatement stmt = db.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             } catch (@NonNull final Exception e) {
@@ -1020,6 +1043,7 @@ public class DBHelper
 
             sql = "DELETE FROM " + TBL_AUTHORS.getName()
                   + " WHERE " + DBKey.PK_ID + " IN (" + ids + ')';
+            //noinspection CheckStyle,OverlyBroadCatchBlock
             try (SQLiteStatement stmt = db.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             } catch (@NonNull final Exception e) {
@@ -1029,7 +1053,7 @@ public class DBHelper
         }
     }
 
-    private void removeDuplicateTocEntries_v23(@NonNull final SQLiteDatabase db) {
+    private void removeDuplicateTocEntriesV23(@NonNull final SQLiteDatabase db) {
         // find the duplicate tocs; i.e. identical author and title.
         final List<Pair<Long, String>> entries = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(
@@ -1081,6 +1105,7 @@ public class DBHelper
 
             sql = "UPDATE " + TBL_BOOK_TOC_ENTRIES + " SET " + DBKey.FK_TOC_ENTRY + "=" + keep
                   + " WHERE " + DBKey.FK_TOC_ENTRY + " IN (" + ids + ')';
+            //noinspection CheckStyle,OverlyBroadCatchBlock
             try (SQLiteStatement stmt = db.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             } catch (@NonNull final Exception e) {
@@ -1089,6 +1114,7 @@ public class DBHelper
             }
 
             sql = "DELETE FROM " + TBL_TOC_ENTRIES + " WHERE " + DBKey.PK_ID + " IN (" + ids + ')';
+            //noinspection CheckStyle,OverlyBroadCatchBlock
             try (SQLiteStatement stmt = db.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             } catch (@NonNull final Exception e) {

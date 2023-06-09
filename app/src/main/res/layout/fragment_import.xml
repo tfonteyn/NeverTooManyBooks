@@ -142,13 +142,23 @@
             />
 
         <CheckBox
+            android:id="@+id/cbx_delete_removed_books"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/option_synchronize_deleted_books"
+            app:layout_constraintStart_toStartOf="@id/cbx_books"
+            app:layout_constraintTop_toBottomOf="@id/rb_import_all"
+            />
+
+        <CheckBox
             android:id="@+id/cbx_covers"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="true"
             android:text="@string/lbl_covers_long"
             app:layout_constraintStart_toStartOf="@id/cbx_books"
-            app:layout_constraintTop_toBottomOf="@id/rb_import_all"
+            app:layout_constraintTop_toBottomOf="@id/cbx_delete_removed_books"
             />
 
         <CheckBox

@@ -1544,6 +1544,19 @@
     <!-- ========== likely to change still. -->
     <!-- ####################################################################################### -->
 
+    <!-- TEMPORARY STRING, DO NOT TRANSLATE YET; option on the import screen to synchronize/mirror imported 'deleted-books' records by deleting the actual books. -->
+    <string name="option_synchronize_deleted_books">Synchronize deleted books locally</string>
 
-    <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
+
+    <!-- TEMPORARY STRING, DO NOT TRANSLATE YET - Maintenance screen -->
+    <string name="option_sync_deleted_book_records">Synchronize deleted books locally</string>
+    <!-- TEMPORARY STRING, DO NOT TRANSLATE YET - Maintenance screen -->
+    <string name="info_sync_deleted_book_records">blah blah blah</string>
+
+    <!-- TEMPORARY STRING, DO NOT TRANSLATE YET - Maintenance screen -->
+    <string name="option_clear_deleted_book_records">Clear the deleted books cache</string>
+    <!-- TEMPORARY STRING, DO NOT TRANSLATE YET -->
+    <string name="info_clear_deleted_book_records">blah blah blah</string>
+
+    <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
 </resources>

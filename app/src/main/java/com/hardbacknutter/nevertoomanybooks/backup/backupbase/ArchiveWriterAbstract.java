@@ -69,6 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
  *     <li>{@link RecordType#Bookshelves}</li>
  *     <li>{@link RecordType#CalibreLibraries}</li>
  *     <li>{@link RecordType#CalibreCustomFields}</li>
+ *     <li>{@link RecordType#DeletedBooks}</li>
  *
  *     <li>These always come last in the given order</li>
  *     <li>{@link RecordType#Books}</li>
@@ -90,7 +91,7 @@ public abstract class ArchiveWriterAbstract
      * <p>
      * RELEASE: set correct archiver version
      */
-    private static final int VERSION = 5;
+    private static final int VERSION = 6;
 
     /**
      * Arbitrary number of steps added to the progress max value.
@@ -185,7 +186,8 @@ public abstract class ArchiveWriterAbstract
                                                       RecordType.Certificates,
                                                       RecordType.Bookshelves,
                                                       RecordType.CalibreLibraries,
-                                                      RecordType.CalibreCustomFields);
+                                                      RecordType.CalibreCustomFields,
+                                                      RecordType.DeletedBooks);
             for (final RecordType type : typeList) {
                 if (!progressListener.isCancelled() && recordTypes.contains(type)) {
                     results.add(writeRecord(context, type, progressListener));
@@ -307,6 +309,7 @@ public abstract class ArchiveWriterAbstract
      *     <li>{@link RecordType#Bookshelves}</li>
      *     <li>{@link RecordType#CalibreLibraries}</li>
      *     <li>{@link RecordType#CalibreCustomFields}</li>
+     *     <li>{@link RecordType#DeletedBooks}</li>
      * </ul>
      * <p>
      * When writing, the 'compress' flag is set to {@code true}.

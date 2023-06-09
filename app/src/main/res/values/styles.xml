@@ -159,12 +159,23 @@
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">?attr/listPreferredItemHeight</item>
         <item name="android:layout_marginStart">@dimen/field_margin_start</item>
-        <item name="android:textAppearance">?attr/textAppearanceListItem</item>
+        <item name="android:textAppearance">@style/Button.Menu.Label</item>
         <item name="android:textColor">?android:attr/textColorPrimary</item>
-        <item name="android:maxLines">1</item>
+        <item name="android:maxLines">3</item>
         <item name="android:gravity">start|center_vertical</item>
         <!-- icon space is 48dp, minus the icon of 24dp, divided by 2 -->
         <item name="iconPadding">12dp</item>
+    </style>
+
+    <!-- textAppearance; not a full style -->
+    <style name="Button.Menu.Label"
+           parent="TextAppearance.Material3.TitleMedium">
+    </style>
+
+    <!-- textAppearance; not a full style -->
+    <style name="Button.Menu.Info"
+           parent="TextAppearance.Material3.TitleSmall">
+        <item name="android:textSize">12sp</item>
     </style>
 
     <!-- A button to save/submit some form. Meant to be placed on the 'end' & 'bottom' of the form. -->

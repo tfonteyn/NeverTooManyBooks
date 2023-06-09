@@ -413,14 +413,19 @@ public class BookDaoImpl
 
     @Override
     public boolean delete(@IntRange(from = 1) final long id) {
-
         final String uuid = getBookUuid(id);
         // sanity check
-        if (uuid == null) {
+        if (uuid == null || uuid.isBlank()) {
             return false;
         }
 
-        int rowsAffected = 0;
+        return deleteByUuid(List.of(uuid)) == 1;
+    }
+
+    @Override
+    public int deleteByUuid(@NonNull final List<String> uuids) {
+        final List<String> actuallyDeleted = new ArrayList<>();
+
         Synchronizer.SyncLock txLock = null;
         //noinspection CheckStyle
         try {
@@ -428,19 +433,27 @@ public class BookDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            try (SynchronizedStatement stmt = db.compileStatement(Sql.Delete.BOOK_BY_ID)) {
-                stmt.bindLong(1, id);
-                rowsAffected = stmt.executeUpdateDelete();
-            }
-
-            if (rowsAffected > 0) {
-                // sanity check
-                if (!uuid.isEmpty()) {
-                    for (int cIdx = 0; cIdx < 2; cIdx++) {
-                        coverStorageSupplier.get().delete(uuid, cIdx);
+            // Delete the book, and remember which ones were really deleted.
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.Delete.BOOK_BY_UUID)) {
+                for (final String uuid : uuids) {
+                    stmt.bindString(1, uuid);
+                    if (stmt.executeUpdateDelete() > 0) {
+                        actuallyDeleted.add(uuid);
                     }
                 }
             }
+
+            // Now delete the covers for those actually deleted books.
+            // Note that if anything goes wrong here:
+            // - the database will be rolled back as expected.
+            // - the already deleted covers will NOT be restored!
+            // but what could go wrong during a file-delete op... flw... oh well.
+            actuallyDeleted.forEach(uuid -> {
+                for (int cIdx = 0; cIdx < 2; cIdx++) {
+                    coverStorageSupplier.get().delete(uuid, cIdx);
+                }
+            });
+
             if (txLock != null) {
                 db.setTransactionSuccessful();
             }
@@ -453,7 +466,7 @@ public class BookDaoImpl
             }
         }
 
-        return rowsAffected == 1;
+        return actuallyDeleted.size();
     }
 
     /**
@@ -994,6 +1007,15 @@ public class BookDaoImpl
              */
             static final String BOOK_BY_ID =
                     DELETE_FROM_ + TBL_BOOKS.getName() + _WHERE_ + DBKey.PK_ID + "=?";
+
+            /**
+             * Delete a {@link Book}.
+             * <p>
+             * All 'link' tables will be updated due to their FOREIGN KEY constraints.
+             * The 'other-side' of a link table is cleaned by triggers.
+             */
+            static final String BOOK_BY_UUID =
+                    DELETE_FROM_ + TBL_BOOKS.getName() + _WHERE_ + DBKey.BOOK_UUID + "=?";
 
             private Delete() {
             }

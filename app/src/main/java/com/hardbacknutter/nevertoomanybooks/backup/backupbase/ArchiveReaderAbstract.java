@@ -59,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
  * <p>
  * Currently supported formats.
  * <ul>
+ *     <li>v6: add {@link RecordType#DeletedBooks} : {@link RecordEncoding#Json}</li>
  *     <li>v5: identical to v4,
  *              but a number of internal preferences have been changed/deleted.
  *     </li>
@@ -262,6 +263,7 @@ public abstract class ArchiveReaderAbstract
 
         final int archiveVersion = metaData.getArchiveVersion();
         switch (archiveVersion) {
+            case 6:
             case 5:
             case 4:
             case 3:
@@ -373,6 +375,12 @@ public abstract class ArchiveReaderAbstract
                                && recordTypes.contains(type)) {
                         progressListener.publishProgress(
                                 1, context.getString(R.string.lbl_calibre_content_server));
+                        readRecord(context, recordTypes, record, progressListener);
+
+                    } else if (type == RecordType.DeletedBooks
+                               && recordTypes.contains(type)) {
+                        progressListener.publishProgress(
+                                1, context.getString(R.string.lbl_books));
                         readRecord(context, recordTypes, record, progressListener);
                     }
                 }

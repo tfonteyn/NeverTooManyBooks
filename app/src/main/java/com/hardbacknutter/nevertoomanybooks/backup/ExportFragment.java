@@ -348,6 +348,7 @@ public class ExportFragment
                 final int title = helper.isBackup() ? R.string.info_backup_successful
                                                     : R.string.info_export_successful;
 
+                //URGENT: the report can be large - i.e. the user will need to scroll
                 //noinspection DataFlowIssue
                 final MaterialAlertDialogBuilder dialogBuilder =
                         new MaterialAlertDialogBuilder(getContext())

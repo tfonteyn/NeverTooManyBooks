@@ -25,6 +25,7 @@ import android.os.Bundle;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
+import androidx.core.util.Pair;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
@@ -33,6 +34,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateEncodingException;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
@@ -48,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BundleCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CalibreCustomFieldCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CalibreLibraryCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CertificateCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.json.coders.DeletedBooksCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.StyleCoder;
@@ -80,7 +83,7 @@ import com.hardbacknutter.org.json.JSONTokener;
 /**
  * Supports two levels of Archive records.
  * <ol>
- *     <li>Single level: a record will contain ONE of
+ *     <li>Single level (one record == one json file): a record will contain ONE of
  *     <ul>
  *         <li>{@link RecordType#MetaData}</li>
  *         <li>{@link RecordType#Styles}</li>
@@ -89,10 +92,11 @@ import com.hardbacknutter.org.json.JSONTokener;
  *         <li>{@link RecordType#Bookshelves}</li>
  *         <li>{@link RecordType#CalibreLibraries}</li>
  *         <li>{@link RecordType#CalibreCustomFields}</li>
+ *         <li>{@link RecordType#DeletedBooks}</li>
  *         <li>{@link RecordType#Books}</li>
  *     </ul>
  *     </li>
- *     <li>EXPERIMENTAL: All-in-one: top level: {@link JsonCoder#TAG_APPLICATION_ROOT},
+ *     <li>All-in-one (single json file): top level: {@link JsonCoder#TAG_APPLICATION_ROOT},
  *     which contains:
  *     <ul>
  *         <li>{@link RecordType#MetaData}</li>
@@ -104,6 +108,7 @@ import com.hardbacknutter.org.json.JSONTokener;
  *              <li>{@link RecordType#Bookshelves}</li>
  *              <li>{@link RecordType#CalibreLibraries}</li>
  *              <li>{@link RecordType#CalibreCustomFields}</li>
+ *              <li>{@link RecordType#DeletedBooks}</li>
  *              <li>{@link RecordType#Books}</li>
  *         </ul>
  *         </li>
@@ -246,6 +251,11 @@ public class JsonRecordReader
                         readCalibreCustomFields(root, helper);
                     }
 
+                    if (recordType == RecordType.DeletedBooks
+                        || recordType == RecordType.AutoDetect) {
+                        readDeletedBooks(root);
+                    }
+
                     if (recordType == RecordType.Books
                         || recordType == RecordType.AutoDetect) {
                         readBooks(context, root, helper, defaultStyle,
@@ -358,6 +368,7 @@ public class JsonRecordReader
                         } else {
                             try {
                                 bookshelfDao.insert(context, bookshelf);
+                                results.bookshelves++;
                             } catch (@NonNull final DaoWriteException e) {
                                 throw new UncheckedDaoWriteException(e);
                             }
@@ -427,6 +438,16 @@ public class JsonRecordReader
                             dao.insert(calibreCustomField);
                         }
                     });
+        }
+    }
+
+    private void readDeletedBooks(@NonNull final JSONObject root) {
+        final JSONArray jsonRoot = root.optJSONArray(RecordType.DeletedBooks.getName());
+        if (jsonRoot != null) {
+            final List<Pair<String, String>> list = new DeletedBooksCoder().decode(jsonRoot);
+            if (!list.isEmpty()) {
+                results.deletedBooks = deletedBooksDao.importRecords(list);
+            }
         }
     }
 

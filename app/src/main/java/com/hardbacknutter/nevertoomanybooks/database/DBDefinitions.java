@@ -81,6 +81,7 @@ public final class DBDefinitions {
      * {@link #TBL_PUBLISHERS},
      * {@link #TBL_BOOKS},
      * {@link #TBL_TOC_ENTRIES},
+     * {@link #TBL_DELETED_BOOKS},
      * <p>
      * link tables
      * {@link #TBL_PSEUDONYM_AUTHOR},
@@ -124,6 +125,8 @@ public final class DBDefinitions {
     public static final TableDefinition TBL_TOC_ENTRIES;
     /** Basic table definition. */
     public static final TableDefinition TBL_BOOKS;
+    /** Basic table definition. Track UUID's of deleted books for full sync functionality. */
+    public static final TableDefinition TBL_DELETED_BOOKS;
     /** link table. */
     public static final TableDefinition TBL_BOOK_BOOKSHELF;
     /** link table. */
@@ -499,6 +502,7 @@ public final class DBDefinitions {
         TBL_AUTHORS = new TableDefinition("authors", "a");
         // never change the "books" "b" alias. It's hardcoded elsewhere.
         TBL_BOOKS = new TableDefinition("books", "b");
+        TBL_DELETED_BOOKS = new TableDefinition("deleted_books", "delb");
         // never change the "series" "s" alias. It's hardcoded elsewhere.
         TBL_SERIES = new TableDefinition("series", "s");
         // never change the "publishers" "p" alias. It's hardcoded elsewhere.
@@ -1380,18 +1384,20 @@ public final class DBDefinitions {
                 .addIndex(DBKey.BOOK_ISBN, false, DOM_BOOK_ISBN)
                 .addIndex(DBKey.BOOK_UUID, true, DOM_BOOK_UUID)
                 //NEWTHINGS: adding a new search engine: optional: add indexes as needed.
+                // note that not all external id's warrant an index
 
                 .addIndex(DBKey.SID_GOODREADS_BOOK, false, DOM_ESID_GOODREADS_BOOK)
                 .addIndex(DBKey.SID_ISFDB, false, DOM_ESID_ISFDB)
                 .addIndex(DBKey.SID_OPEN_LIBRARY, false, DOM_ESID_OPEN_LIBRARY)
                 .addIndex(DBKey.SID_STRIP_INFO, false, DOM_ESID_STRIP_INFO_BE)
                 .addIndex(DBKey.SID_LAST_DODO_NL, false, DOM_ESID_LAST_DODO_NL)
-                .addIndex(DBKey.SID_BEDETHEQUE, false, DOM_ESID_BEDETHEQUE)
-        // we probably do not need this one (and have not created it)
-        //.addIndex(DBKey.SID_LIBRARY_THING, false, DOM_ESID_LIBRARY_THING)
-        ;
+                .addIndex(DBKey.SID_BEDETHEQUE, false, DOM_ESID_BEDETHEQUE);
         ALL_TABLES.put(TBL_BOOKS.getName(), TBL_BOOKS);
 
+        TBL_DELETED_BOOKS.addDomains(DOM_BOOK_UUID,
+                                     DOM_ADDED__UTC)
+                         .setPrimaryKey(DOM_BOOK_UUID);
+        ALL_TABLES.put(TBL_DELETED_BOOKS.getName(), TBL_DELETED_BOOKS);
 
         TBL_TOC_ENTRIES
                 .addDomains(DOM_PK_ID,

@@ -28,7 +28,6 @@ import androidx.annotation.Nullable;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
-import java.util.EnumSet;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -67,8 +66,7 @@ public final class SyncReaderHelper
         this.systemLocale = systemLocale;
 
         // set the defaults
-        addRecordType(EnumSet.of(RecordType.Books,
-                                 RecordType.Cover));
+        addRecordType(RecordType.Books, RecordType.Cover);
 
         setUpdateOption(this.syncServer.hasLastUpdateDateField()
                         ? DataReader.Updates.OnlyNewer
