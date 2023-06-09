@@ -116,7 +116,7 @@ public class StylePickerDialogFragment
                                                   uuid -> currentStyleUuid = uuid);
         vb.stylesList.setAdapter(adapter);
 
-        adjustWindowSize();
+        adjustWindowSize(vb.stylesList, 3);
     }
 
     @Override

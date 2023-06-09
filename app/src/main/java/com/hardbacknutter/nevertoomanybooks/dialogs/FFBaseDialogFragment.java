@@ -28,6 +28,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -40,12 +41,15 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.window.layout.WindowMetricsCalculator;
 
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.IntFunction;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -73,7 +77,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
  *         {@code app:layout_constraintBottom_toTopOf="@id/button_panel_layout"}
  *     </li>
  *     <li>
- *         Call {@link #adjustWindowSize()} from {@link #onViewCreated(View, Bundle)}
+ *         Call {@link #adjustWindowSize(RecyclerView, int)} from {@link #onViewCreated(View, Bundle)}
  *     </li>
  * </ol>
  * <p>
@@ -255,34 +259,91 @@ public abstract class FFBaseDialogFragment
      * <p>
      * <strong>MUST</strong> be called as the last thing from {@link #onViewCreated(View, Bundle)}.
      * <p>
-     * Dev note: RecyclerView in a dialog is cursed... and should NOT be used.
+     * URGENT: RecyclerView in a dialog is cursed... we need to redo this whole floating
+     *  dialog code
+     *
+     * @param recyclerView  optional RecyclerView to adjust the height of
+     * @param heightDivider the absolute value to divide the screen height with;
+     *                      used to set the RecyclerView absolute height.
      */
-    protected void adjustWindowSize() {
-        // If we are NOT already in fullscreen mode:
-        // - phones: make the dialog match the entire screen size; i.e. force fullscreen
-        //   but keep the dialog UI.
-        // - tablets: make the dialog wrap the content width, but match the screen size
+    protected void adjustWindowSize(@Nullable final RecyclerView recyclerView,
+                                    final int heightDivider) {
         if (!fullscreen) {
             // Sanity check
-            if (getDialog() != null && getDialog().getWindow() != null) {
-                //noinspection DataFlowIssue
-                final WindowSizeClass height = WindowSizeClass.getHeight(getContext());
-                if (height == WindowSizeClass.Compact || height == WindowSizeClass.Medium) {
-                    if (BuildConfig.DEBUG /* always */) {
-                        LoggerFactory.getLogger().d(TAG, "adjustWindowSize");
-                    }
+            if (getDialog() != null) {
+                final Window window = getDialog().getWindow();
+                // Sanity check
+                if (window != null) {
+                    final FragmentActivity activity = getActivity();
+                    //noinspection DataFlowIssue
+                    final WindowSizeClass height = WindowSizeClass.getHeight(activity);
+                    final WindowSizeClass width = WindowSizeClass.getWidth(activity);
 
-                    final WindowSizeClass width = WindowSizeClass.getWidth(getContext());
-                    final int lpWidth;
-                    if (width == WindowSizeClass.Compact || width == WindowSizeClass.Medium) {
-                        // Maximize the dialog width; i.e. make the Dialog match the full screen.
-                        lpWidth = ViewGroup.LayoutParams.MATCH_PARENT;
-                    } else {
-                        // WindowSizeClass.Expanded: keep the dialog width reasonable
+                    int lpWidth = ViewGroup.LayoutParams.MATCH_PARENT;
+                    int lpHeight = ViewGroup.LayoutParams.MATCH_PARENT;
+
+                    if (width == WindowSizeClass.Expanded) {
                         lpWidth = ViewGroup.LayoutParams.WRAP_CONTENT;
                     }
-                    // Either way, the height is always maximized.
-                    getDialog().getWindow().setLayout(lpWidth, ViewGroup.LayoutParams.MATCH_PARENT);
+                    if (height == WindowSizeClass.Expanded) {
+                        lpHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
+                        if (recyclerView != null) {
+                            final ViewGroup.LayoutParams rvLp = recyclerView.getLayoutParams();
+                            // Sanity check
+                            if (rvLp != null) {
+                                final int heightPx = WindowMetricsCalculator
+                                        .getOrCreate()
+                                        .computeCurrentWindowMetrics(activity)
+                                        .getBounds()
+                                        .height();
+                                rvLp.height = heightPx / heightDivider;
+                                recyclerView.setLayoutParams(rvLp);
+                            }
+                        }
+                    }
+
+                    if (BuildConfig.DEBUG /* always */) {
+                        final WindowManager.LayoutParams lp = window.getAttributes();
+                        final IntFunction<String> t = value -> {
+                            switch (value) {
+                                case ViewGroup.LayoutParams.MATCH_PARENT:
+                                    return "MATCH_PARENT";
+                                case ViewGroup.LayoutParams.WRAP_CONTENT:
+                                    return "WRAP_CONTENT";
+                                default:
+                                    return String.valueOf(value);
+                            }
+                        };
+
+                        // GitHub #17 with v4.4.1
+                        // Pixel 6a:
+                        // lp.width=WRAP_CONTENT|lp.height=WRAP_CONTENT|
+                        // width=Compact|height=Expanded|
+                        // lpWidth=MATCH_PARENT|lpHeight=WRAP_CONTENT|.
+                        //==> FAIL
+                        //
+                        // 10" tablet
+                        // lp.width=WRAP_CONTENT|lp.height=WRAP_CONTENT|
+                        // width=Compact|height=Expanded|
+                        // lpWidth=MATCH_PARENT|lpHeight=WRAP_CONTENT|.
+                        //==> OK
+
+                        // 2023-06-09: patch 4.4.2: adjust the recyclerView
+                        // manually when the height is expanded.
+
+                        LoggerFactory.getLogger().d(TAG, "adjustWindowSize",
+                                                    "lp.width=" + t.apply(lp.width),
+                                                    "lp.height=" + t.apply(lp.height),
+                                                    "width=" + width,
+                                                    "height=" + height,
+                                                    "lpWidth=" + t.apply(lpWidth),
+                                                    "lpHeight=" + t.apply(lpHeight)
+
+                        );
+                    }
+
+
+                    window.setLayout(lpWidth, lpHeight);
                 }
             }
         }
