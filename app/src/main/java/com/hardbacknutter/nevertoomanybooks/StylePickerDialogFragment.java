@@ -76,11 +76,12 @@ public class StylePickerDialogFragment
      * No-arg constructor for OS use.
      */
     public StylePickerDialogFragment() {
-        super(R.layout.dialog_styles_menu, R.layout.dialog_styles_menu_content,
+        super(R.layout.dialog_styles_menu,
+              R.layout.dialog_styles_menu_content,
               // Fullscreen on Medium screens
               // for consistency with BookshelfFiltersDialogFragment
-              EnumSet.of(WindowSizeClass.Compact, WindowSizeClass.Medium),
-              EnumSet.of(WindowSizeClass.Compact, WindowSizeClass.Medium));
+              EnumSet.of(WindowSizeClass.Medium),
+              EnumSet.of(WindowSizeClass.Medium));
     }
 
     @Override

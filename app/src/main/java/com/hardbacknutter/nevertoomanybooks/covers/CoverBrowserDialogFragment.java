@@ -137,8 +137,8 @@ public class CoverBrowserDialogFragment
         super(R.layout.dialog_cover_browser,
               R.layout.dialog_cover_browser_content,
               // Fullscreen on Medium screens
-              EnumSet.of(WindowSizeClass.Compact, WindowSizeClass.Medium),
-              EnumSet.of(WindowSizeClass.Compact, WindowSizeClass.Medium));
+              EnumSet.of(WindowSizeClass.Medium),
+              EnumSet.of(WindowSizeClass.Medium));
     }
 
     /**

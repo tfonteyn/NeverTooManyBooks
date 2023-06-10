@@ -77,7 +77,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
  *         {@code app:layout_constraintBottom_toTopOf="@id/button_panel_layout"}
  *     </li>
  *     <li>
- *         Call {@link #adjustWindowSize(RecyclerView, int)} from {@link #onViewCreated(View, Bundle)}
+ *         Call {@link #adjustWindowSize(RecyclerView, int)}
+ *         from {@link #onViewCreated(View, Bundle)}
  *     </li>
  * </ol>
  * <p>
@@ -86,21 +87,44 @@ import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 public abstract class FFBaseDialogFragment
         extends DialogFragment {
 
-    private static final String TAG = "FFBaseDialogFragment";
-
     private final int fullscreenLayoutId;
     private final int contentLayoutId;
+
+    /** Whether to force fullscreen - set in the constructor. */
     private final boolean forceFullscreen;
     @NonNull
-    private final Set<WindowSizeClass> useFullscreenWidth = EnumSet.noneOf(WindowSizeClass.class);
+    private final Set<WindowSizeClass> useFullscreenWidth = EnumSet.of(WindowSizeClass.Compact);
     @NonNull
-    private final Set<WindowSizeClass> useFullscreenHeight = EnumSet.noneOf(WindowSizeClass.class);
+    private final Set<WindowSizeClass> useFullscreenHeight = EnumSet.of(WindowSizeClass.Compact);
 
     /** The <strong>Dialog</strong> Toolbar. Not to be confused with the Activity's Toolbar! */
     @Nullable
     private Toolbar dialogToolbar;
-    /** Show the dialog fullscreen (default) or as a floating dialog. */
+
+    /**
+     * Show the dialog fullscreen (default) or as a floating dialog.
+     * Decided in {@link #onAttach(Context)}
+     */
     private boolean fullscreen;
+
+    /**
+     * Constructor.
+     *
+     * @param fullscreenLayoutId the layout resource id which offers a full screen
+     *                           dialog-fragment with a CoordinatorLayout/AppBarLayout
+     *                           at the root.
+     * @param contentLayoutId    the layout resource if which can be used to view the same
+     *                           dialog-fragment as a floating dialog; i.e. without
+     *                           the CoordinatorLayout/AppBarLayout.
+     *                           Set this to {@code 0} to <strong>force</strong> fullscreen usage
+     *                           on all screen sizes.
+     */
+    protected FFBaseDialogFragment(@LayoutRes final int fullscreenLayoutId,
+                                   @LayoutRes final int contentLayoutId) {
+        this.fullscreenLayoutId = fullscreenLayoutId;
+        this.contentLayoutId = contentLayoutId;
+        forceFullscreen = contentLayoutId == 0;
+    }
 
     /**
      * Constructor.
@@ -113,27 +137,18 @@ public abstract class FFBaseDialogFragment
      *                            the CoordinatorLayout/AppBarLayout.
      *                            Set this to {@code 0} to <strong>force</strong> fullscreen usage
      *                            on all screen sizes.
-     * @param useFullscreenWidth  set of WindowSizeClass when to use fullscreen.
-     *                            Ignored when contentLayoutId == 0
-     * @param useFullscreenHeight set of WindowSizeClass when to use fullscreen.
-     *                            Ignored when contentLayoutId == 0
+     * @param useFullscreenWidth  set of {@link WindowSizeClass} when to use fullscreen.
+     *                            Ignored when {@code contentLayoutId == 0}
+     * @param useFullscreenHeight set of {@link WindowSizeClass} when to use fullscreen.
+     *                            Ignored when {@code contentLayoutId == 0}
      */
     protected FFBaseDialogFragment(@LayoutRes final int fullscreenLayoutId,
                                    @LayoutRes final int contentLayoutId,
                                    @NonNull final Set<WindowSizeClass> useFullscreenWidth,
                                    @NonNull final Set<WindowSizeClass> useFullscreenHeight) {
-        this.fullscreenLayoutId = fullscreenLayoutId;
-        this.contentLayoutId = contentLayoutId;
-        forceFullscreen = contentLayoutId == 0;
+        this(fullscreenLayoutId, contentLayoutId);
         this.useFullscreenWidth.addAll(useFullscreenWidth);
         this.useFullscreenHeight.addAll(useFullscreenHeight);
-    }
-
-    protected FFBaseDialogFragment(@LayoutRes final int fullscreenLayoutId,
-                                   @LayoutRes final int contentLayoutId) {
-        this(fullscreenLayoutId, contentLayoutId,
-             EnumSet.of(WindowSizeClass.Compact),
-             EnumSet.of(WindowSizeClass.Compact));
     }
 
     @Override
@@ -149,8 +164,7 @@ public abstract class FFBaseDialogFragment
                      useFullscreenWidth.contains(width) && useFullscreenHeight.contains(height);
 
         if (BuildConfig.DEBUG /* always */) {
-            LoggerFactory.getLogger().d(TAG, "onAttach",
-                                        getClass().getSimpleName(),
+            LoggerFactory.getLogger().d(getClass().getSimpleName(), "onAttach",
                                         "forceFullscreen=" + forceFullscreen,
                                         "width=" + width,
                                         "height=" + height,
@@ -268,85 +282,87 @@ public abstract class FFBaseDialogFragment
      */
     protected void adjustWindowSize(@Nullable final RecyclerView recyclerView,
                                     final int heightDivider) {
-        if (!fullscreen) {
-            // Sanity check
-            if (getDialog() != null) {
-                final Window window = getDialog().getWindow();
+        if (fullscreen) {
+            return;
+        }
+
+        // Sanity check
+        if (getDialog() == null || getDialog().getWindow() == null) {
+            return;
+        }
+
+        final FragmentActivity activity = getActivity();
+        //noinspection DataFlowIssue
+        final WindowSizeClass width = WindowSizeClass.getWidth(activity);
+        final WindowSizeClass height = WindowSizeClass.getHeight(activity);
+
+        int lpWidth = ViewGroup.LayoutParams.MATCH_PARENT;
+        int lpHeight = ViewGroup.LayoutParams.MATCH_PARENT;
+
+        if (width == WindowSizeClass.Expanded) {
+            lpWidth = ViewGroup.LayoutParams.WRAP_CONTENT;
+        }
+
+        // GitHub #17 with v4.4.1
+        // Pixel 6a:
+        // lp.width=WRAP_CONTENT|lp.height=WRAP_CONTENT|
+        // width=Compact|height=Expanded|
+        // lpWidth=MATCH_PARENT|lpHeight=WRAP_CONTENT|.
+        //==> the filter/style dialogs are squashed vertically
+        //
+        // 10" tablet
+        // lp.width=WRAP_CONTENT|lp.height=WRAP_CONTENT|
+        // width=Compact|height=Expanded|
+        // lpWidth=MATCH_PARENT|lpHeight=WRAP_CONTENT|.
+        //==> the filter/style dialogs show ok!
+
+        // So we can't rely on Android being consistent (surprise...)
+        // 2023-06-09: patch 4.4.2: adjust the recyclerView manually
+        if (height == WindowSizeClass.Expanded) {
+            lpHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
+            if (recyclerView != null) {
+                final ViewGroup.LayoutParams rvLp = recyclerView.getLayoutParams();
                 // Sanity check
-                if (window != null) {
-                    final FragmentActivity activity = getActivity();
-                    //noinspection DataFlowIssue
-                    final WindowSizeClass height = WindowSizeClass.getHeight(activity);
-                    final WindowSizeClass width = WindowSizeClass.getWidth(activity);
-
-                    int lpWidth = ViewGroup.LayoutParams.MATCH_PARENT;
-                    int lpHeight = ViewGroup.LayoutParams.MATCH_PARENT;
-
-                    if (width == WindowSizeClass.Expanded) {
-                        lpWidth = ViewGroup.LayoutParams.WRAP_CONTENT;
-                    }
-                    if (height == WindowSizeClass.Expanded) {
-                        lpHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
-                        if (recyclerView != null) {
-                            final ViewGroup.LayoutParams rvLp = recyclerView.getLayoutParams();
-                            // Sanity check
-                            if (rvLp != null) {
-                                final int heightPx = WindowMetricsCalculator
-                                        .getOrCreate()
-                                        .computeCurrentWindowMetrics(activity)
-                                        .getBounds()
-                                        .height();
-                                rvLp.height = heightPx / heightDivider;
-                                recyclerView.setLayoutParams(rvLp);
-                            }
-                        }
-                    }
-
-                    if (BuildConfig.DEBUG /* always */) {
-                        final WindowManager.LayoutParams lp = window.getAttributes();
-                        final IntFunction<String> t = value -> {
-                            switch (value) {
-                                case ViewGroup.LayoutParams.MATCH_PARENT:
-                                    return "MATCH_PARENT";
-                                case ViewGroup.LayoutParams.WRAP_CONTENT:
-                                    return "WRAP_CONTENT";
-                                default:
-                                    return String.valueOf(value);
-                            }
-                        };
-
-                        // GitHub #17 with v4.4.1
-                        // Pixel 6a:
-                        // lp.width=WRAP_CONTENT|lp.height=WRAP_CONTENT|
-                        // width=Compact|height=Expanded|
-                        // lpWidth=MATCH_PARENT|lpHeight=WRAP_CONTENT|.
-                        //==> FAIL
-                        //
-                        // 10" tablet
-                        // lp.width=WRAP_CONTENT|lp.height=WRAP_CONTENT|
-                        // width=Compact|height=Expanded|
-                        // lpWidth=MATCH_PARENT|lpHeight=WRAP_CONTENT|.
-                        //==> OK
-
-                        // 2023-06-09: patch 4.4.2: adjust the recyclerView
-                        // manually when the height is expanded.
-
-                        LoggerFactory.getLogger().d(TAG, "adjustWindowSize",
-                                                    "lp.width=" + t.apply(lp.width),
-                                                    "lp.height=" + t.apply(lp.height),
-                                                    "width=" + width,
-                                                    "height=" + height,
-                                                    "lpWidth=" + t.apply(lpWidth),
-                                                    "lpHeight=" + t.apply(lpHeight)
-
-                        );
-                    }
-
-
-                    window.setLayout(lpWidth, lpHeight);
+                if (rvLp != null) {
+                    final int heightPx = WindowMetricsCalculator
+                            .getOrCreate()
+                            .computeCurrentWindowMetrics(activity)
+                            .getBounds()
+                            .height();
+                    // We're setting the height relative to the height
+                    // with a divider as per Dialog needs.
+                    rvLp.height = heightPx / heightDivider;
+                    recyclerView.setLayoutParams(rvLp);
                 }
             }
         }
+
+        final Window window = getDialog().getWindow();
+
+        if (BuildConfig.DEBUG /* always */) {
+            final IntFunction<String> dbgLp = value -> {
+                switch (value) {
+                    case ViewGroup.LayoutParams.MATCH_PARENT:
+                        return "MATCH_PARENT";
+                    case ViewGroup.LayoutParams.WRAP_CONTENT:
+                        return "WRAP_CONTENT";
+                    default:
+                        return String.valueOf(value);
+                }
+            };
+
+            final WindowManager.LayoutParams lp = window.getAttributes();
+            LoggerFactory.getLogger()
+                         .d(getClass().getSimpleName(), "adjustWindowSize",
+                            "lp.width=" + dbgLp.apply(lp.width),
+                            "lp.height=" + dbgLp.apply(lp.height),
+                            "width=" + width,
+                            "height=" + height,
+                            "lpWidth=" + dbgLp.apply(lpWidth),
+                            "lpHeight=" + dbgLp.apply(lpHeight));
+        }
+
+        window.setLayout(lpWidth, lpHeight);
     }
 
     /**

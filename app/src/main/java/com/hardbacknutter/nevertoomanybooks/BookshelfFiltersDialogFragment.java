@@ -92,8 +92,8 @@ public class BookshelfFiltersDialogFragment
               R.layout.dialog_edit_bookshelf_filters_content,
               // Fullscreen on Medium screens
               // to avoid 3 buttons overlapping text on a UI in e.g. german
-              EnumSet.of(WindowSizeClass.Compact, WindowSizeClass.Medium),
-              EnumSet.of(WindowSizeClass.Compact, WindowSizeClass.Medium));
+              EnumSet.of(WindowSizeClass.Medium),
+              EnumSet.of(WindowSizeClass.Medium));
     }
 
     @Override
