@@ -277,24 +277,27 @@ public abstract class BaseStyle
     public boolean isShowField(@NonNull final Context context,
                                @NonNull final Screen screen,
                                @NonNull final String dbKey) {
+        // First check the style!
+        // If we have a field which is simply not defined on the style, use the global
         switch (screen) {
             case List:
                 return listFieldVisibility
-                        .isShowField(dbKey)
+                        .isShowFieldOpt(dbKey)
                         .orElseGet(() -> ServiceLocator.getInstance().getGlobalFieldVisibility()
-                                                       .isShowField(dbKey)
-                                                       .orElse(false));
+                                                       .isShowFieldOpt(dbKey)
+                                                       .orElse(true));
+
             case Detail:
                 return detailsFieldVisibility
-                        .isShowField(dbKey)
+                        .isShowFieldOpt(dbKey)
                         .orElseGet(() -> ServiceLocator.getInstance().getGlobalFieldVisibility()
-                                                       .isShowField(dbKey)
-                                                       .orElse(false));
+                                                       .isShowFieldOpt(dbKey)
+                                                       .orElse(true));
 
             case Global:
                 return ServiceLocator.getInstance().getGlobalFieldVisibility()
-                                     .isShowField(dbKey)
-                                     .orElse(false);
+                                     .isShowFieldOpt(dbKey)
+                                     .orElse(true);
         }
         throw new IllegalArgumentException();
     }

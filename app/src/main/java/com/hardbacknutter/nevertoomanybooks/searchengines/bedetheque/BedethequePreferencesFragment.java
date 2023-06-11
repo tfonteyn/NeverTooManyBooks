@@ -47,9 +47,8 @@ public class BedethequePreferencesFragment
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_site_bedetheque, rootKey);
 
-        final boolean useRealAuthor = ServiceLocator
-                .getInstance().getGlobalFieldVisibility()
-                .isShowField(DBKey.AUTHOR_REAL_AUTHOR).orElse(false);
+        final boolean useRealAuthor = ServiceLocator.getInstance().getGlobalFieldVisibility()
+                                                    .isShowField(DBKey.AUTHOR_REAL_AUTHOR);
         //noinspection DataFlowIssue
         findPreference(BedethequeSearchEngine.PK_RESOLVE_AUTHORS_ON_BEDETHEQUE)
                 .setEnabled(useRealAuthor);

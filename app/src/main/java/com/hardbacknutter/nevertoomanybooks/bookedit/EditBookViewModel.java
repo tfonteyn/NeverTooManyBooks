@@ -226,7 +226,6 @@ public class EditBookViewModel
                         // if BOOK_CONDITION is wanted, assume the user got a new book.
                         if (ServiceLocator.getInstance().getGlobalFieldVisibility()
                                           .isShowField(DBKey.BOOK_CONDITION)
-                                          .orElse(false)
                             && !book.contains(DBKey.BOOK_CONDITION)) {
                             book.putInt(DBKey.BOOK_CONDITION, Book.CONDITION_AS_NEW);
                         }

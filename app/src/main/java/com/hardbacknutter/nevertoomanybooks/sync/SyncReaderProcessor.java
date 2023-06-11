@@ -520,8 +520,7 @@ public final class SyncReaderProcessor {
                         @NonNull final String key,
                         @NonNull final SyncAction defaultAction) {
 
-            if (ServiceLocator.getInstance().getGlobalFieldVisibility()
-                              .isShowField(key).orElse(false)) {
+            if (ServiceLocator.getInstance().getGlobalFieldVisibility().isShowField(key)) {
                 final SyncAction action = SyncAction
                         .read(prefs, preferencePrefix + key, defaultAction);
                 fields.put(key, new SyncField(key, label, false,
@@ -545,8 +544,7 @@ public final class SyncReaderProcessor {
                              @NonNull final String prefKey,
                              @NonNull final String key) {
 
-            if (ServiceLocator.getInstance().getGlobalFieldVisibility()
-                              .isShowField(prefKey).orElse(false)) {
+            if (ServiceLocator.getInstance().getGlobalFieldVisibility().isShowField(prefKey)) {
                 final SyncAction action = SyncAction
                         .read(prefs, preferencePrefix + key, SyncAction.Append);
                 fields.put(key, new SyncField(key, label, true,

@@ -80,8 +80,7 @@ public class PStringEqualityFilter
     @Override
     public boolean isActive(@NonNull final Context context) {
         final String dbdKey = domain.getName();
-        if (ServiceLocator.getInstance().getGlobalFieldVisibility()
-                          .isShowField(dbdKey).orElse(false)) {
+        if (ServiceLocator.getInstance().getGlobalFieldVisibility().isShowField(dbdKey)) {
             return value != null;
         } else {
             return false;

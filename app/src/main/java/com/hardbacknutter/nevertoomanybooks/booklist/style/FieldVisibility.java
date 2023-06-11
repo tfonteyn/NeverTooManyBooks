@@ -236,7 +236,7 @@ public class FieldVisibility {
      * @return Optional
      */
     @NonNull
-    public Optional<Boolean> isShowField(@NonNull final String dbKey) {
+    Optional<Boolean> isShowFieldOpt(@NonNull final String dbKey) {
         if (keys.contains(dbKey)) {
             final int index = DB_KEYS.indexOf(dbKey);
             if (index != -1) {
@@ -244,6 +244,25 @@ public class FieldVisibility {
             }
         }
         return Optional.empty();
+    }
+
+    /**
+     * Check if the given field should be displayed.
+     * <p>
+     * An invalid key will return {@code true}
+     *
+     * @param dbKey to check - one of the {@link DBKey} constants.
+     *
+     * @return boolean
+     */
+    public boolean isShowField(@NonNull final String dbKey) {
+        if (keys.contains(dbKey)) {
+            final int index = DB_KEYS.indexOf(dbKey);
+            if (index != -1) {
+                return (bits & (1L << index)) != 0;
+            }
+        }
+        return true;
     }
 
     /**
@@ -302,7 +321,7 @@ public class FieldVisibility {
 
         for (int i = 0; i < DB_KEYS.size(); i++) {
             final String key = DB_KEYS.get(i);
-            if (isShowField(key).orElse(false)) {
+            if (isShowField(key)) {
                 labels.add(context.getString(LABELS.get(i)));
             }
         }

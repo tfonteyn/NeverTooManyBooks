@@ -377,8 +377,8 @@ public class SearchCoordinator
             if (args != null) {
                 final FieldVisibility globalVisibility = serviceLocator.getGlobalFieldVisibility();
                 fetchCover = new boolean[]{
-                        globalVisibility.isShowField(DBKey.COVER[0]).orElse(false),
-                        globalVisibility.isShowField(DBKey.COVER[1]).orElse(false)
+                        globalVisibility.isShowField(DBKey.COVER[0]),
+                        globalVisibility.isShowField(DBKey.COVER[1])
                 };
 
                 isbnSearchText = args.getString(DBKey.BOOK_ISBN, "");
