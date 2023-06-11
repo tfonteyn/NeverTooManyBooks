@@ -20,6 +20,29 @@
   -->
 <!--suppress LongLine -->
 <resources>
+    <!-- Main FAB; contains an icon, no text-->
+    <style name="Widget.App.FloatingActionButton"
+           parent="Widget.Material3.FloatingActionButton.Primary">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">bottom|end</item>
+        <item name="android:layout_margin">@dimen/fab_margin</item>
+    </style>
+
+    <!-- FAB buttons that appear as a menu above the actual FAB button.
+    These contain a text + an icon -->
+    <style name="Widget.App.ExtendedFloatingActionButton"
+           parent="Widget.Material3.ExtendedFloatingActionButton.Icon.Primary">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/fab_margin</item>
+        <item name="android:visibility">invisible</item>
+        <item name="iconGravity">end</item>
+        <item name="layout_anchorGravity">top|end</item>
+        <!-- the anchorGravity is set to the 'end', hence the layout gravity must be 'start'
+        to get everything aligned on the right (end) side. -->
+        <item name="android:layout_gravity">start</item>
+    </style>
 
     <style name="Widget.App.TabLayout"
            parent="Widget.Material3.TabLayout">

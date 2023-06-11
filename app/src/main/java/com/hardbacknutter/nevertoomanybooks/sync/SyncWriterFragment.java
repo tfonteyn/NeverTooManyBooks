@@ -32,7 +32,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -126,8 +126,8 @@ public class SyncWriterFragment
         vb.cbxDeleteRemovedBooks.setOnCheckedChangeListener((v, isChecked) -> vm
                 .getSyncWriterHelper().setDeleteLocalBooks(isChecked));
 
-        final ExtendedFloatingActionButton fab = getFab();
-        fab.setIconResource(R.drawable.ic_baseline_export);
+        final FloatingActionButton fab = getFab();
+        fab.setImageResource(R.drawable.ic_baseline_export);
         // GONE here; will be made visible in showOptions() together with the full UI.
         fab.setVisibility(View.GONE);
         fab.setOnClickListener(v -> startWriting());

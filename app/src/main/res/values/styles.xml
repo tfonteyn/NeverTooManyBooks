@@ -239,42 +239,6 @@
 
     <!-- *************************************************************************************** -->
 
-    <!-- Main/single FAB.
-         MUST contain an icon; a text is optional. -->
-    <style name="FAB.Main"
-           parent="Widget.Material3.ExtendedFloatingActionButton.Icon.Primary">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">@dimen/fab_margin</item>
-        <item name="android:layout_gravity">bottom|end</item>
-        <!-- We MUST always have a default icon - override as needed.
-             See ExtendedFloatingActionButton#onAttachedToWindow():
-             a FAB without text is only shown/shrunk properly if there is an icon at layout time.
-        -->
-        <item name="icon">@drawable/ic_baseline_add_24</item>
-    </style>
-
-    <!-- FAB buttons that appear as a menu above the actual FAB button.
-         MUST contain a text; an icon is optional.
-    -->
-    <style name="FAB.Menu"
-           parent="Widget.Material3.ExtendedFloatingActionButton.Icon.Primary">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">@dimen/fab_margin</item>
-        <!-- align the icons at the end of the button for visual consistency-->
-        <item name="iconGravity">end</item>
-        <!-- the buttons are always anchored appear to above the main FAB button -->
-        <item name="layout_anchorGravity">top|end</item>
-        <!-- the anchorGravity is set to the 'end', hence the layout gravity must be 'start'
-             to get everything aligned on the right (end) side. -->
-        <item name="android:layout_gravity">start</item>
-        <!-- initially always hidden; shown when the user taps the main FAB button -->
-        <item name="android:visibility">invisible</item>
-    </style>
-
-    <!-- *************************************************************************************** -->
-
     <style name="About"
            parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_width">wrap_content</item>

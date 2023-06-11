@@ -27,7 +27,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
@@ -40,7 +40,7 @@ public abstract class BaseFragment
     @Nullable
     private Toolbar toolbar;
     @Nullable
-    private ExtendedFloatingActionButton fab;
+    private FloatingActionButton fab;
 
     @NonNull
     protected View getProgressFrame() {
@@ -63,7 +63,7 @@ public abstract class BaseFragment
     }
 
     @NonNull
-    protected ExtendedFloatingActionButton getFab() {
+    protected FloatingActionButton getFab() {
         if (fab == null) {
             //noinspection DataFlowIssue
             fab = Objects.requireNonNull(getActivity().findViewById(R.id.fab),

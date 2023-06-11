@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -39,7 +40,7 @@ public class FabMenu {
 
     /** The normal FAB button; opens or closes the FAB menu. */
     @NonNull
-    private final ExtendedFloatingActionButton fabButton;
+    private final FloatingActionButton fabButton;
 
     /** Overlay enabled while the FAB menu is shown to intercept clicks and close the FAB menu. */
     @NonNull
@@ -82,7 +83,7 @@ public class FabMenu {
      * @param fabOverlay the overlay view
      * @param items      the fab menu items
      */
-    public FabMenu(@NonNull final ExtendedFloatingActionButton fabButton,
+    public FabMenu(@NonNull final FloatingActionButton fabButton,
                    @NonNull final View fabOverlay,
                    @Nullable final ExtendedFloatingActionButton... items) {
         this.fabButton = fabButton;
@@ -157,13 +158,13 @@ public class FabMenu {
      */
     public void show(final boolean show) {
         if (show) {
-            fabButton.setIconResource(R.drawable.ic_baseline_close_24);
+            fabButton.setImageResource(R.drawable.ic_baseline_close_24);
             // mFabOverlay overlaps the whole screen and intercepts clicks.
             // This does not include the ToolBar.
             fabOverlay.setVisibility(View.VISIBLE);
             fabOverlay.setOnClickListener(v -> hideMenu());
         } else {
-            fabButton.setIconResource(R.drawable.ic_baseline_add_24);
+            fabButton.setImageResource(R.drawable.ic_baseline_add_24);
             fabOverlay.setVisibility(View.GONE);
             fabOverlay.setOnClickListener(null);
         }

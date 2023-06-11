@@ -28,15 +28,15 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 /**
  * Allow the user to drag the FAB button.
  * <p>
- * Reminder: the super class is a {@code MaterialButton}
+ * Reminder: the super class is an {@code ImageButton}
  */
 public class MovableFloatingActionButton
-        extends ExtendedFloatingActionButton
+        extends FloatingActionButton
         implements View.OnTouchListener {
 
     /**

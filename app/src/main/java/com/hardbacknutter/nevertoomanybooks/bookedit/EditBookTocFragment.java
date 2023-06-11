@@ -47,7 +47,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.divider.MaterialDividerItemDecoration;
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -184,8 +184,8 @@ public class EditBookTocFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final ExtendedFloatingActionButton fab = getFab();
-        fab.setIconResource(R.drawable.ic_baseline_add_24);
+        final FloatingActionButton fab = getFab();
+        fab.setImageResource(R.drawable.ic_baseline_add_24);
         //noinspection DataFlowIssue
         fab.setOnClickListener(v -> editEntry(
                 new TocEntry(vm.getPrimaryAuthor(getContext()), ""), POS_NEW_ENTRY));

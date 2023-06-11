@@ -22,7 +22,6 @@
 <!-- A frame will let the FAB show on top of the image -->
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -38,8 +37,8 @@
 
     <com.hardbacknutter.nevertoomanybooks.core.widgets.MovableFloatingActionButton
         android:id="@+id/fab"
-        style="@style/FAB.Main"
-        app:icon="@drawable/ic_baseline_crop_24"
+        style="@style/Widget.App.FloatingActionButton"
+        android:src="@drawable/ic_baseline_crop_24"
         />
 
 </FrameLayout>
