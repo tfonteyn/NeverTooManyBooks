@@ -114,6 +114,18 @@ public class CalibreLibraryCoder
         return data;
     }
 
+    /**
+     * Encode a reference to the given {@link CalibreLibrary}.
+     * <p>
+     * Reference is {@link DBKey#CALIBRE_LIBRARY_UUID} <strong>OR</strong>,
+     * if not available, the {@link DBKey#CALIBRE_LIBRARY_STRING_ID}.
+     *
+     * @param library to encode
+     *
+     * @return the encoded CalibreLibrary
+     *
+     * @see #decodeReference(JSONObject)
+     */
     @NonNull
     @Override
     public JSONObject encodeReference(@NonNull final CalibreLibrary library)
@@ -129,6 +141,16 @@ public class CalibreLibraryCoder
         return data;
     }
 
+    /**
+     * Decode a {@link CalibreLibrary} referenced by {@link DBKey#CALIBRE_LIBRARY_UUID}
+     * <strong>OR</strong> the {@link DBKey#CALIBRE_LIBRARY_STRING_ID}.
+     *
+     * @param data json object
+     *
+     * @return the resolved library
+     *
+     * @see #encodeReference(CalibreLibrary)
+     */
     @NonNull
     @Override
     public Optional<CalibreLibrary> decodeReference(@NonNull final JSONObject data)

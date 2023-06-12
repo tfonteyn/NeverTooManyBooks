@@ -73,6 +73,17 @@ public class BookshelfCoder
         return out;
     }
 
+    /**
+     * Encode a reference to the given {@link Bookshelf}.
+     * <p>
+     * Reference is {@link DBKey#BOOKSHELF_NAME}.
+     *
+     * @param bookshelf to encode
+     *
+     * @return the encoded Bookshelf
+     *
+     * @see #decodeReference(JSONObject)
+     */
     @NonNull
     @Override
     public JSONObject encodeReference(@NonNull final Bookshelf bookshelf)
@@ -102,6 +113,16 @@ public class BookshelfCoder
         return bookshelf;
     }
 
+    /**
+     * Decode a {@link Bookshelf} referenced by {@link DBKey#BOOKSHELF_NAME}.
+     * If not found, the {@link Bookshelf#PREFERRED} bookshelf is returned.
+     *
+     * @param data json object
+     *
+     * @return the resolved bookshelf, or the user-preferred if not found.
+     *
+     * @see #encodeReference(Bookshelf)
+     */
     @NonNull
     @Override
     public Optional<Bookshelf> decodeReference(@NonNull final JSONObject data)
