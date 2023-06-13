@@ -101,8 +101,10 @@ public class AuthorWorksFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        displayBookLauncher = new DisplayBookLauncher(this, o -> o.ifPresent(
-                data -> vm.setDataModified(data)));
+        displayBookLauncher = new DisplayBookLauncher(
+                this,
+                ServiceLocator.getInstance()::getTocEntryDao,
+                o -> o.ifPresent(data -> vm.setDataModified(data)));
 
         vm = new ViewModelProvider(this).get(AuthorWorksViewModel.class);
         //noinspection DataFlowIssue

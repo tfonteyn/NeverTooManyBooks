@@ -27,6 +27,7 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultCaller;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
+import androidx.core.util.Supplier;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
@@ -34,11 +35,11 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelfViewModel;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -47,10 +48,14 @@ public class DisplayBookLauncher {
 
     @NonNull
     private final ActivityResultLauncher<ShowBookPagerContract.Input> launcher;
+    @NonNull
+    private final Supplier<TocEntryDao> tocEntryDaoSupplier;
 
     public DisplayBookLauncher(@NonNull final ActivityResultCaller fragment,
+                               @NonNull final Supplier<TocEntryDao> tocEntryDaoSupplier,
                                @NonNull final ActivityResultCallback<Optional<EditBookOutput>>
                                        optionalActivityResultCallback) {
+        this.tocEntryDaoSupplier = tocEntryDaoSupplier;
         this.launcher = fragment.registerForActivityResult(new ShowBookPagerContract(),
                                                            optionalActivityResultCallback);
     }
@@ -62,8 +67,8 @@ public class DisplayBookLauncher {
 
         switch (work.getWorkType()) {
             case TocEntry: {
-                final ArrayList<Long> bookIdList = ServiceLocator.getInstance().getTocEntryDao()
-                                                                 .getBookIds(work.getId());
+                final ArrayList<Long> bookIdList = tocEntryDaoSupplier
+                        .get().getBookIds(work.getId());
                 if (bookIdList.size() == 1) {
                     launcher.launch(new ShowBookPagerContract.Input(
                             bookIdList.get(0), style.getUuid(), null, 0));
