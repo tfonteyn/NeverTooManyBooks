@@ -22,19 +22,14 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.TextAppearanceSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -175,19 +170,18 @@ public class MaintenanceFragment
                     .show();
         });
 
-        addInfo(vb.btnSyncDeletedBooks, R.string.info_sync_deleted_book_records);
         vb.btnSyncDeletedBooks.setOnClickListener(
                 v -> new MaterialAlertDialogBuilder(v.getContext())
                         .setIcon(R.drawable.ic_baseline_warning_24)
                         .setTitle(R.string.option_sync_deleted_book_records)
-                        .setMessage(R.string.info_sync_deleted_book_records)
+                        .setMessage(getString(R.string.info_sync_deleted_book_records)
+                                    + "\n\n" + getString(R.string.confirm_continue))
                         .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                         .setPositiveButton(android.R.string.ok, (d, w) ->
                                 ServiceLocator.getInstance().getDeletedBooksDao().purge())
                         .create()
                         .show());
 
-        addInfo(vb.btnClearDeletedBooks, R.string.info_clear_deleted_book_records);
         vb.btnClearDeletedBooks.setOnClickListener(
                 v -> new MaterialAlertDialogBuilder(v.getContext())
                         .setIcon(R.drawable.ic_baseline_warning_24)
@@ -282,27 +276,6 @@ public class MaintenanceFragment
                          SqliteShellFragment.create(vm.isDebugSqLiteAllowsUpdates()),
                          SqliteShellFragment.TAG)
                 .commit());
-    }
-
-    /**
-     * Experimental... might be removed again.
-     * <p>
-     * Add a second line of text to the button with additional information.
-     *
-     * @param button  to add to
-     * @param infoRes info string resource.
-     */
-    private void addInfo(@NonNull final Button button,
-                         @StringRes final int infoRes) {
-        final CharSequence main = button.getText();
-        final String info = getString(infoRes);
-        final Spannable text = new SpannableString(main.toString() + '\n' + info);
-        final int end = main.length();
-        text.setSpan(new TextAppearanceSpan(getContext(), R.style.Button_Menu_Label),
-                     0, end, 0);
-        text.setSpan(new TextAppearanceSpan(getContext(), R.style.Button_Menu_Info),
-                     end + 1, end + 1 + info.length(), 0);
-        button.setText(text);
     }
 
     private void sendDebug(@NonNull final Uri uri) {
