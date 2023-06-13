@@ -511,8 +511,8 @@
     <string name="option_lend_out_book">Одолжить книгу…</string>
     <string name="option_lend_return_book">Заимствованная книга возвращается</string>
     <string name="option_purge_bedetheque_authors_cache">Очистить кэш авторов Bedetheque</string>
-    <string name="option_rebuild_fts">Переобрать FTS</string>
-    <string name="option_rebuild_index">Перестроить индекс</string>
+    <string name="option_rebuild_fts">Перестроить данные полнотекстового поиска</string>
+    <string name="option_rebuild_index">Перестройте индексы</string>
     <string name="option_set_complete">Отметка завершена</string>
     <string name="option_download_set_folder">Установите папку загрузки</string>
     <string name="option_set_incomplete">Отметить не полностью</string>

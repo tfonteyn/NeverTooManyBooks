@@ -495,8 +495,8 @@
     <string name="option_lend_out_book">Buch verleihen…</string>
     <string name="option_lend_return_book">Geliehenes Buch ist zurück</string>
     <string name="option_purge_bedetheque_authors_cache">Leeren Sie den Cache der Bedetheque-Autoren</string>
-    <string name="option_rebuild_fts">FTS neu aufbauen</string>
-    <string name="option_rebuild_index">Index neu erstellen</string>
+    <string name="option_rebuild_fts">Volltext-Suchdaten neu aufbauen</string>
+    <string name="option_rebuild_index">Neuaufbau der Indizes</string>
     <string name="option_set_complete">Als abgeschlossen markieren</string>
     <string name="option_download_set_folder">Legen Sie den Download-Ordner fest</string>
     <string name="option_set_incomplete">Als unvollständig markieren</string>

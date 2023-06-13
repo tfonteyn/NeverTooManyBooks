@@ -496,8 +496,8 @@
     <string name="option_lend_out_book">Δανεισμός βιβλίου…</string>
     <string name="option_lend_return_book">Το δανεισμένο βιβλίο είναι πίσω</string>
     <string name="option_purge_bedetheque_authors_cache">Διαγράψτε την κρυφή μνήμη του Bedetheque Authors</string>
-    <string name="option_rebuild_fts">Ανακατασκευή FTS</string>
-    <string name="option_rebuild_index">Αναδημιουργία ευρετηρίου</string>
+    <string name="option_rebuild_fts">Επαναδημιουργία δεδομένων αναζήτησης πλήρους κειμένου</string>
+    <string name="option_rebuild_index">Επαναδημιουργήστε τα ευρετήρια</string>
     <string name="option_set_complete">Ορίστε να «ολοκληρώσετε»</string>
     <string name="option_download_set_folder">Ορίστε το φάκελο λήψης</string>
     <string name="option_set_incomplete">Ρυθμίστε σε «ατελές»</string>

@@ -1260,10 +1260,10 @@
     <!-- author lists from the Bedetheque are cached to resolve pseudonyms faster. -->
     <string name="option_purge_bedetheque_authors_cache">Clear Bedetheque Authors cache</string>
     <!-- Maintenance option to rebuild the internal search cache -->
-    <string name="option_rebuild_fts">Rebuild FTS</string>
+    <string name="option_rebuild_fts">Rebuild Full Text Search data</string>
     <!-- Maintenance option to rebuild the internal search index -->
     <!-- a warning that there is a rebuild of cache/index scheduled at the next app start. -->
-    <string name="option_rebuild_index">Rebuild index</string>
+    <string name="option_rebuild_index">Rebuild the indexes</string>
     <!-- a warning that there is a rebuild of cache/index scheduled at the next app start. -->
     <string name="info_rebuild_scheduled">Rebuild scheduled</string>
     <!-- Dialog title - Internal cleanup of Booklist node states... collapsed/expanded etc. -->

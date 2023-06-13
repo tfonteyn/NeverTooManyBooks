@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “...”  (older «…» are no longer used as verified with a native speaker) - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pt">
@@ -472,7 +475,7 @@
     <string name="pe_bob_row_menu_long_click">Sempre use o clique longo.</string>
     <string name="pt_fast_scroller_overlay">Bolha de texto durante a deslocação.</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dinâmico</string>
-    <string name="option_rebuild_index">Reconstruir o índice</string>
+    <string name="option_rebuild_index">Reconstruir os índices</string>
     <string name="info_rebuild_scheduled">Reconstrução agendada</string>
     <string name="lbl_purge_blns">Limpar o estado do nó</string>
     <string name="info_purge_blns_all">Limpar o estado do nó de todas as listas</string>
@@ -746,7 +749,7 @@
     <string name="pt_thumbnails_rotate_auto">Rodar imagens</string>
     <string name="pe_camera_back">Câmera traseira</string>
     <string name="option_purge_bedetheque_authors_cache">Limpar cache de autores do Bedetheque</string>
-    <string name="option_rebuild_fts">Reconstruir o FTS</string>
+    <string name="option_rebuild_fts">Reconstruir dados da Pesquisa de Texto Completo</string>
     <string name="info_purge_blns_item_name">Limpar o estado do nó para %1$s “%2$s”?</string>
     <string name="option_bob_filter_read_no">Livros Não Lidos</string>
     <string name="option_bob_filter_signed_yes">Livros Assinados</string>

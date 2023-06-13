@@ -498,8 +498,8 @@
     <string name="option_lend_out_book">Presta libro…</string>
     <string name="option_lend_return_book">Il libro preso in prestito è tornato</string>
     <string name="option_purge_bedetheque_authors_cache">Svuota la cache degli autori di Bedetheque</string>
-    <string name="option_rebuild_fts">Ricrea FTS</string>
-    <string name="option_rebuild_index">Ricostruisci indice</string>
+    <string name="option_rebuild_fts">Ricostruire i dati della ricerca full-text</string>
+    <string name="option_rebuild_index">Ricostruire gli indici</string>
     <string name="option_set_complete">Contrassegna come completo</string>
     <string name="option_download_set_folder">Imposta la cartella di download</string>
     <string name="option_set_incomplete">Contrassegna come incompleto</string>

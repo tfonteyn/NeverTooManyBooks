@@ -514,8 +514,8 @@
     <string name="option_lend_out_book">Wypożycz książkę…</string>
     <string name="option_lend_return_book">Pożyczona książka powraca</string>
     <string name="option_purge_bedetheque_authors_cache">Wyczyść pamięć podręczną Bedetheque Authors</string>
-    <string name="option_rebuild_fts">Odbuduj FTS</string>
-    <string name="option_rebuild_index">Przebuduj indeks</string>
+    <string name="option_rebuild_fts">Odbuduj dane wyszukiwania pełnotekstowego</string>
+    <string name="option_rebuild_index">Odbuduj indeksy</string>
     <string name="option_set_complete">Ustaw na „uzupełnij”</string>
     <string name="option_download_set_folder">Ustaw folder pobierania</string>
     <string name="option_set_incomplete">Ustaw na „niekompletny”</string>

@@ -501,8 +501,8 @@
     <string name="option_lend_out_book">Kitabı ödünç ver…</string>
     <string name="option_lend_return_book">Ödünç alınan kitap geri döndü</string>
     <string name="option_purge_bedetheque_authors_cache">Bedetheque Yazar önbelleğini temizle</string>
-    <string name="option_rebuild_fts">FTS’yi yeniden yapıla</string>
-    <string name="option_rebuild_index">Dizini yeniden oluştur</string>
+    <string name="option_rebuild_fts">Tam Metin Arama verilerini yeniden oluşturun</string>
+    <string name="option_rebuild_index">Dizinleri yeniden oluşturun</string>
     <string name="option_set_complete">“Tamamla” olarak ayarla</string>
     <string name="option_download_set_folder">İndirme klasörünü ayarlayın</string>
     <string name="option_set_incomplete">Eksik ayarla</string>
