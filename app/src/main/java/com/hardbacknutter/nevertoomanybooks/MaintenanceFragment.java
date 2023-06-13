@@ -38,6 +38,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -116,8 +117,15 @@ public class MaintenanceFragment
             }
 
             if (vm.isDebugSqLiteAllowsUpdates()) {
-                vb.btnDebugSqShell.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                        R.drawable.ic_baseline_warning_24, 0, 0, 0);
+                // Sanity check
+                if (vb.btnDebugSqShell instanceof MaterialButton) {
+                    ((MaterialButton) (vb.btnDebugSqShell))
+                            .setIconResource(R.drawable.ic_baseline_warning_24);
+                } else {
+                    // This SHOULD have worked, but doesn't on a MaterialButton
+                    vb.btnDebugSqShell.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                            R.drawable.ic_baseline_warning_24, 0, 0, 0);
+                }
             }
         });
 
