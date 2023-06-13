@@ -53,7 +53,7 @@
     <string name="X_btn_customize">Kişiselleştir…</string>
     <string name="X_btn_do_not_show_again">Bir daha gösterme</string>
     <string name="X_btn_show_list">Gösteri listesi</string>
-    <string name="X_confirm_continue">Devam etmek istediğine emin misin ?</string>
+    <string name="confirm_continue">Devam etmek istediğine emin misin ?</string>
     <string name="X_error_authentication_failed">Kimlik doğrulama başarısız oldu</string>
     <string name="X_error_download_failed">Yükleme başarısız</string>
     <string name="error_record_must_contain_column">Kayıt, “%1$s” adlı bir alan içermelidir.</string>

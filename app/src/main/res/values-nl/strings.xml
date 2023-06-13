@@ -53,7 +53,7 @@
     <string name="X_btn_customize">Aanpassen…</string>
     <string name="X_btn_do_not_show_again">Niet meer laten zien</string>
     <string name="X_btn_show_list">Lijst weergeven</string>
-    <string name="X_confirm_continue">Weet je zeker dat je door wilt gaan ?</string>
+    <string name="confirm_continue">Weet je zeker dat je door wilt gaan ?</string>
     <string name="X_error_authentication_failed">Authenticatie mislukt</string>
     <string name="X_error_download_failed">Download mislukt</string>
     <string name="X_error_network_site_has_problems">De website heeft problemen.</string>

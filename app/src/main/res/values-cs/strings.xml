@@ -59,7 +59,7 @@
     <string name="X_btn_customize">Přizpůsobit…</string>
     <string name="X_btn_do_not_show_again">Příště již nezobrazovat</string>
     <string name="X_btn_show_list">Zobrazit seznam</string>
-    <string name="X_confirm_continue">Jste si jistý, že chcete pokračovat ?</string>
+    <string name="confirm_continue">Jste si jistý, že chcete pokračovat ?</string>
     <string name="X_error_authentication_failed">Ověření se nezdařilo</string>
     <string name="X_error_download_failed">Stažení se nezdařilo</string>
     <string name="error_record_must_contain_column">Záznam musí obsahovat pole s názvem „%1$s“.</string>

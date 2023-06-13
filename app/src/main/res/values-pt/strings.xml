@@ -523,7 +523,7 @@
     <string name="lbl_library">Biblioteca</string>
     <string name="X_action_swap">Trocar</string>
     <string name="X_btn_customize">Personalizar…</string>
-    <string name="X_confirm_continue">Tem certeza de que deseja continuar?</string>
+    <string name="confirm_continue">Tem certeza de que deseja continuar?</string>
     <string name="X_txt_thank_you">Obrigado!</string>
     <string name="X_txt_import_books_option_all_books">Novos livros serão adicionados. Os livros existentes serão atualizados.</string>
     <string name="lbl_sync_date">Desde</string>

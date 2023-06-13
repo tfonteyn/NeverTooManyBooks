@@ -56,7 +56,7 @@
     <string name="X_btn_customize">Configurar…</string>
     <string name="X_btn_do_not_show_again">No volver a mostrar</string>
     <string name="X_btn_show_list">Mostrar lista</string>
-    <string name="X_confirm_continue">Estás seguro de que quieres continuar ?</string>
+    <string name="confirm_continue">Estás seguro de que quieres continuar ?</string>
     <string name="X_error_authentication_failed">Autenticación fallida</string>
     <string name="X_error_download_failed">Descarga fracasó</string>
     <string name="error_record_must_contain_column">El registro debe contener un campo llamado %1$s.</string>

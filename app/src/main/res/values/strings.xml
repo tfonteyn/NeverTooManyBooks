@@ -698,6 +698,7 @@
     <string name="option_enable_sync_options">Enable sync options</string>
     <!-- endregion -->
     <!-- region ========== Messages for actions that need confirming first. -->
+    <string name="confirm_continue">Are you sure you want to continue ?</string>
     <string name="confirm_unsaved_edits">You have unsaved changes, if you exit now they will be lost.</string>
     <string name="confirm_delete_series">Delete the series “%1$s”?\n\nThe books themselves will not be deleted.\n\nConsider editing the series and changing the series name to that of another series to preserve this data.</string>
     <string name="confirm_delete_publisher">Delete the publisher “%1$s”?\n\nThe books themselves will not be deleted.\n\nConsider editing the publisher and changing the publisher name to that of another publisher to preserve this data.</string>
@@ -1502,7 +1503,6 @@
     <string name="X_btn_do_not_show_again">Do not show again</string>
     <string name="X_btn_show_list">Show list</string>
     <string name="X_lbl_clear_filters">Clear filters</string>
-    <string name="X_confirm_continue">Are you sure you want to continue ?</string>
     <string name="X_error_download_failed">Download failed</string>
     <string name="X_error_not_available">%1$s is not available.</string>
     <string name="X_info_authorized_needed">Authorize Access</string>

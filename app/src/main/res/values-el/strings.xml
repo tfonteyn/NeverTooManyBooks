@@ -53,7 +53,7 @@
     <string name="X_btn_customize">Προσαρμογή…</string>
     <string name="X_btn_do_not_show_again">Μην εμφανιστείς ξανά</string>
     <string name="X_btn_show_list">Εμφάνιση λίστας</string>
-    <string name="X_confirm_continue">Εισαι σιγουρος οτι θελεις να συνεχισεις ?</string>
+    <string name="confirm_continue">Εισαι σιγουρος οτι θελεις να συνεχισεις ?</string>
     <string name="X_error_authentication_failed">Η ταυτοποίηση απέτυχε</string>
     <string name="X_error_download_failed">Η λήψη απέτυχε</string>
     <string name="error_record_must_contain_column">Η εγγραφή πρέπει να περιέχει ένα πεδίο με το όνομα «%1$s».</string>
