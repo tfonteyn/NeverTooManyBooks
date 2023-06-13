@@ -50,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNodeDao;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.storage.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentMaintenanceBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.SqliteShellFragment;
@@ -74,7 +73,7 @@ public class MaintenanceFragment
     private final ActivityResultLauncher<GetContentUriForWritingContract.Input>
             createDocumentLauncher =
             registerForActivityResult(new GetContentUriForWritingContract(),
-                                      o -> o.ifPresent(this::sendDebug));
+                                      o -> o.ifPresent(this::createBugReport));
     /** View Binding. */
     private FragmentMaintenanceBinding vb;
 
@@ -104,6 +103,19 @@ public class MaintenanceFragment
         toolbar.setTitle(R.string.lbl_settings);
         toolbar.setSubtitle(R.string.pt_maintenance);
 
+        vb.btnResetTips.setOnClickListener(this::onResetTips);
+        vb.btnPurgeFiles.setOnClickListener(this::onPurgeFiles);
+        vb.btnPurgeBlns.setOnClickListener(this::onPurgeBlns);
+
+        vb.btnSyncDeletedBooks.setOnClickListener(this::onSyncDeletedBooks);
+        vb.btnClearDeletedBooks.setOnClickListener(this::onClearDeletedBooks);
+
+        vb.btnRebuildFts.setOnClickListener(this::onRebuildFts);
+        vb.btnRebuildIndex.setOnClickListener(this::onRebuildIndex);
+
+        vb.btnCreateBugReport.setOnClickListener(this::onCreateBugReport);
+        vb.btnDebugSqShell.setOnClickListener(this::onDebugSqShell);
+
         vb.btnDebug.setOnClickListener(v -> {
             vm.incDebugClicks();
 
@@ -123,77 +135,100 @@ public class MaintenanceFragment
                 }
             }
         });
+    }
 
-        vb.btnResetTips.setOnClickListener(v -> {
-            TipManager.getInstance().reset(v.getContext());
-            //noinspection DataFlowIssue
-            Snackbar.make(getView(), R.string.tip_reset_done, Snackbar.LENGTH_LONG).show();
-        });
+    private void onResetTips(final View v) {
+        TipManager.getInstance().reset(v.getContext());
+        //noinspection DataFlowIssue
+        Snackbar.make(getView(), R.string.tip_reset_done, Snackbar.LENGTH_LONG).show();
+    }
 
-        vb.btnPurgeFiles.setOnClickListener(v -> {
-            final Context context = v.getContext();
-            final List<String> bookUuidList =
-                    ServiceLocator.getInstance().getBookDao().getBookUuidList();
+    private void onPurgeFiles(@NonNull final View v) {
+        final Context context = v.getContext();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        final CoverStorage coverStorage = serviceLocator.getCoverStorage();
 
-            final long bytes;
-            try {
-                bytes = purge(bookUuidList, false);
+        final List<String> bookUuidList = serviceLocator.getBookDao().getBookUuidList();
 
-            } catch (@NonNull final StorageException e) {
-                ErrorDialog.show(context, TAG, e);
-                return;
-            } catch (@NonNull final SecurityException e) {
-                ErrorDialog.show(context, TAG, e);
-                return;
+        // Filter to check for orphaned cover files
+        final FileFilter coverFilter = file -> {
+            if (file.getName().length() > UUID_LEN) {
+                // not in the list? then we can purge it
+                return !((Collection<String>) bookUuidList)
+                        .contains(file.getName().substring(0, UUID_LEN));
             }
+            // not a uuid base filename ? be careful and leave it.
+            return false;
+        };
 
-            final String msg = getString(R.string.info_cleanup_files,
-                                         FileSize.format(context, bytes),
-                                         getString(R.string.option_bug_report));
+        final long bytes;
+        try {
+            bytes = FileUtils.getUsedSpace(LoggerFactory.getLogger().getLogDir(), null)
+                    + FileUtils.getUsedSpace(serviceLocator.getUpgradesDir(), null)
+                    + FileUtils.getUsedSpace(coverStorage.getTempDir(), null)
+                    + FileUtils.getUsedSpace(coverStorage.getDir(), coverFilter);
 
-            new MaterialAlertDialogBuilder(context)
-                    .setIcon(R.drawable.ic_baseline_warning_24)
-                    .setTitle(R.string.option_purge_files)
-                    .setMessage(msg)
-                    .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                    .setPositiveButton(android.R.string.ok, (d, w) -> {
-                        try {
-                            purge(bookUuidList, true);
+        } catch (@NonNull final CoverStorageException e) {
+            ErrorDialog.show(context, TAG, e);
+            return;
+        } catch (@NonNull final SecurityException e) {
+            ErrorDialog.show(context, TAG, e);
+            return;
+        }
 
-                        } catch (@NonNull final StorageException e) {
-                            ErrorDialog.show(context, TAG, e);
-                        } catch (@NonNull final SecurityException e) {
-                            ErrorDialog.show(context, TAG, e);
-                        }
-                    })
-                    .create()
-                    .show();
-        });
+        final String msg = getString(R.string.info_cleanup_files,
+                                     FileSize.format(context, bytes),
+                                     getString(R.string.option_bug_report));
 
-        vb.btnSyncDeletedBooks.setOnClickListener(
-                v -> new MaterialAlertDialogBuilder(v.getContext())
-                        .setIcon(R.drawable.ic_baseline_warning_24)
-                        .setTitle(R.string.option_sync_deleted_book_records)
-                        .setMessage(getString(R.string.info_sync_deleted_book_records)
-                                    + "\n\n" + getString(R.string.confirm_continue))
-                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                        .setPositiveButton(android.R.string.ok, (d, w) ->
-                                ServiceLocator.getInstance().getDeletedBooksDao().purge())
-                        .create()
-                        .show());
+        new MaterialAlertDialogBuilder(context)
+                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setTitle(R.string.option_purge_files)
+                .setMessage(msg)
+                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(android.R.string.ok, (d, w) -> {
+                    try {
+                        FileUtils.deleteDirectory(LoggerFactory.getLogger().getLogDir(), null);
+                        FileUtils.deleteDirectory(serviceLocator.getUpgradesDir(), null);
+                        FileUtils.deleteDirectory(coverStorage.getTempDir(), null);
+                        FileUtils.deleteDirectory(coverStorage.getDir(), coverFilter);
 
-        vb.btnClearDeletedBooks.setOnClickListener(
-                v -> new MaterialAlertDialogBuilder(v.getContext())
-                        .setIcon(R.drawable.ic_baseline_warning_24)
-                        .setTitle(R.string.option_clear_deleted_book_records)
-                        .setMessage(R.string.info_clear_deleted_book_records)
-                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                        .setPositiveButton(android.R.string.ok, (d, w) ->
-                                ServiceLocator.getInstance().getDeletedBooksDao().purge())
-                        .create()
-                        .show());
+                    } catch (@NonNull final CoverStorageException e) {
+                        ErrorDialog.show(context, TAG, e);
+                    } catch (@NonNull final SecurityException e) {
+                        ErrorDialog.show(context, TAG, e);
+                    }
+                })
+                .create()
+                .show();
+    }
 
-        vb.btnPurgeBlns.setOnClickListener(v -> new MaterialAlertDialogBuilder(v.getContext())
+    private void onSyncDeletedBooks(@NonNull final View v) {
+        new MaterialAlertDialogBuilder(v.getContext())
+                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setTitle(R.string.option_sync_deleted_book_records)
+                .setMessage(getString(R.string.info_sync_deleted_book_records)
+                            + "\n\n" + getString(R.string.confirm_continue))
+                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(android.R.string.ok, (d, w) ->
+                        ServiceLocator.getInstance().getDeletedBooksDao().purge())
+                .create()
+                .show();
+    }
+
+    private void onClearDeletedBooks(@NonNull final View v) {
+        new MaterialAlertDialogBuilder(v.getContext())
+                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setTitle(R.string.option_clear_deleted_book_records)
+                .setMessage(R.string.info_clear_deleted_book_records)
+                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(android.R.string.ok, (d, w) ->
+                        ServiceLocator.getInstance().getDeletedBooksDao().purge())
+                .create()
+                .show();
+    }
+
+    private void onPurgeBlns(@NonNull final View v) {
+        new MaterialAlertDialogBuilder(v.getContext())
                 .setIcon(R.drawable.ic_baseline_warning_24)
                 .setTitle(R.string.lbl_purge_blns)
                 .setMessage(R.string.info_purge_blns_all)
@@ -201,9 +236,11 @@ public class MaintenanceFragment
                 .setPositiveButton(android.R.string.ok, (d, w) ->
                         BooklistNodeDao.clearAll(ServiceLocator.getInstance().getDb()))
                 .create()
-                .show());
+                .show();
+    }
 
-        vb.btnRebuildFts.setOnClickListener(v -> new MaterialAlertDialogBuilder(v.getContext())
+    private void onRebuildFts(@NonNull final View v) {
+        new MaterialAlertDialogBuilder(v.getContext())
                 .setIcon(R.drawable.ic_baseline_info_24)
                 .setTitle(R.string.option_rebuild_fts)
                 .setMessage(R.string.confirm_rebuild_fts)
@@ -218,9 +255,11 @@ public class MaintenanceFragment
                     vb.btnRebuildFts.setError(getString(R.string.info_rebuild_scheduled));
                 })
                 .create()
-                .show());
+                .show();
+    }
 
-        vb.btnRebuildIndex.setOnClickListener(v -> new MaterialAlertDialogBuilder(v.getContext())
+    private void onRebuildIndex(@NonNull final View v) {
+        new MaterialAlertDialogBuilder(v.getContext())
                 .setIcon(R.drawable.ic_baseline_info_24)
                 .setTitle(R.string.option_rebuild_index)
                 .setMessage(R.string.confirm_rebuild_index)
@@ -235,50 +274,41 @@ public class MaintenanceFragment
                     vb.btnRebuildIndex.setError(getString(R.string.info_rebuild_scheduled));
                 })
                 .create()
-                .show());
-
-        vb.btnDebugSendMail.setOnClickListener(v -> {
-            final Context context = v.getContext();
-
-            new MultiChoiceAlertDialogBuilder<Integer>(context)
-                    .setIcon(R.drawable.ic_baseline_warning_24)
-                    .setTitle(R.string.debug)
-                    .setMessage(R.string.debug_select_items)
-                    .setSelectedItems(Set.of(MaintenanceViewModel.DBG_SEND_LOGFILES,
-                                             MaintenanceViewModel.DBG_SEND_PREFERENCES))
-                    .setItems(List.of(MaintenanceViewModel.DBG_SEND_DATABASE,
-                                      MaintenanceViewModel.DBG_SEND_DATABASE_UPGRADE,
-                                      MaintenanceViewModel.DBG_SEND_LOGFILES,
-                                      MaintenanceViewModel.DBG_SEND_PREFERENCES),
-                              List.of(context.getString(R.string.option_bug_report_database),
-                                      context.getString(
-                                              R.string.option_bug_report_database_upgrade),
-                                      context.getString(R.string.option_bug_report_logfiles),
-                                      context.getString(R.string.option_bug_report_settings)))
-
-                    .setPositiveButton(R.string.action_save, selection -> {
-                        vm.setDebugSelection(selection);
-                        final String fileName = "ntmb-debug-" + LocalDate
-                                .now().format(DateTimeFormatter.ISO_LOCAL_DATE);
-                        final String mimeType = FileUtils.getMimeTypeFromExtension("zip");
-                        createDocumentLauncher.launch(new GetContentUriForWritingContract
-                                .Input(mimeType, fileName));
-                    })
-                    .create()
-                    .show();
-        });
-
-        vb.btnDebugSqShell.setOnClickListener(v -> getParentFragmentManager()
-                .beginTransaction()
-                .setReorderingAllowed(true)
-                .addToBackStack(SqliteShellFragment.TAG)
-                .replace(R.id.main_fragment,
-                         SqliteShellFragment.create(vm.isDebugSqLiteAllowsUpdates()),
-                         SqliteShellFragment.TAG)
-                .commit());
+                .show();
     }
 
-    private void sendDebug(@NonNull final Uri uri) {
+    private void onCreateBugReport(@NonNull final View v) {
+        final Context context = v.getContext();
+
+        new MultiChoiceAlertDialogBuilder<Integer>(context)
+                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setTitle(R.string.debug)
+                .setMessage(R.string.debug_select_items)
+                .setSelectedItems(Set.of(MaintenanceViewModel.DBG_SEND_LOGFILES,
+                                         MaintenanceViewModel.DBG_SEND_PREFERENCES))
+                .setItems(List.of(MaintenanceViewModel.DBG_SEND_DATABASE,
+                                  MaintenanceViewModel.DBG_SEND_DATABASE_UPGRADE,
+                                  MaintenanceViewModel.DBG_SEND_LOGFILES,
+                                  MaintenanceViewModel.DBG_SEND_PREFERENCES),
+                          List.of(context.getString(R.string.option_bug_report_database),
+                                  context.getString(
+                                          R.string.option_bug_report_database_upgrade),
+                                  context.getString(R.string.option_bug_report_logfiles),
+                                  context.getString(R.string.option_bug_report_settings)))
+
+                .setPositiveButton(R.string.action_save, selection -> {
+                    vm.setDebugSelection(selection);
+                    final String fileName = "ntmb-debug-" + LocalDate
+                            .now().format(DateTimeFormatter.ISO_LOCAL_DATE);
+                    final String mimeType = FileUtils.getMimeTypeFromExtension("zip");
+                    createDocumentLauncher.launch(new GetContentUriForWritingContract
+                            .Input(mimeType, fileName));
+                })
+                .create()
+                .show();
+    }
+
+    private void createBugReport(@NonNull final Uri uri) {
         //noinspection CheckStyle
         try {
             //noinspection DataFlowIssue
@@ -291,58 +321,14 @@ public class MaintenanceFragment
         }
     }
 
-    /**
-     * Count size / Cleanup any purge-able files:
-     * Covers, upgrade-backup-files, logs and generic temporary files.
-     *
-     * @param bookUuidList a list of book uuid to check for orphaned covers
-     * @param reallyDelete {@code true} to actually delete files,
-     *                     {@code false} to only sum file sizes in bytes
-     *
-     * @return the total size in bytes of purgeable/purged files.
-     *
-     * @throws CoverStorageException The covers directory is not available
-     */
-    private long purge(@NonNull final Collection<String> bookUuidList,
-                       final boolean reallyDelete)
-            throws CoverStorageException {
-
-        // check for orphaned cover files
-        final FileFilter coverFilter = file -> {
-            if (file.getName().length() > UUID_LEN) {
-                // not in the list? then we can purge it
-                return !bookUuidList.contains(file.getName().substring(0, UUID_LEN));
-            }
-            // not a uuid base filename ? be careful and leave it.
-            return false;
-        };
-
-        if (reallyDelete) {
-            return delete(coverFilter);
-        } else {
-            return count(coverFilter);
-        }
-    }
-
-    private long count(@Nullable final FileFilter coverFilter)
-            throws CoverStorageException {
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        final CoverStorage coverStorage = serviceLocator.getCoverStorage();
-
-        return FileUtils.getUsedSpace(LoggerFactory.getLogger().getLogDir(), null)
-               + FileUtils.getUsedSpace(serviceLocator.getUpgradesDir(), null)
-               + FileUtils.getUsedSpace(coverStorage.getTempDir(), null)
-               + FileUtils.getUsedSpace(coverStorage.getDir(), coverFilter);
-    }
-
-    private long delete(@Nullable final FileFilter coverFilter)
-            throws CoverStorageException {
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        final CoverStorage coverStorage = serviceLocator.getCoverStorage();
-
-        return FileUtils.deleteDirectory(LoggerFactory.getLogger().getLogDir(), null)
-               + FileUtils.deleteDirectory(serviceLocator.getUpgradesDir(), null)
-               + FileUtils.deleteDirectory(coverStorage.getTempDir(), null)
-               + FileUtils.deleteDirectory(coverStorage.getDir(), coverFilter);
+    private void onDebugSqShell(@NonNull final View v) {
+        getParentFragmentManager()
+                .beginTransaction()
+                .setReorderingAllowed(true)
+                .addToBackStack(SqliteShellFragment.TAG)
+                .replace(R.id.main_fragment,
+                         SqliteShellFragment.create(vm.isDebugSqLiteAllowsUpdates()),
+                         SqliteShellFragment.TAG)
+                .commit();
     }
 }
