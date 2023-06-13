@@ -61,10 +61,29 @@
             android:id="@+id/btn_purge_files"
             style="@style/Button.Menu"
             android:text="@string/option_purge_files"
-            app:icon="@drawable/ic_baseline_remove_24"
+            app:icon="@drawable/ic_baseline_clear_24"
             app:layout_constraintEnd_toEndOf="@id/col0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btn_reset_tips"
+            />
+
+        <Button
+            android:id="@+id/btn_purge_blns"
+            style="@style/Button.Menu"
+            android:text="@string/lbl_purge_blns"
+            app:icon="@drawable/ic_baseline_clear_24"
+            app:layout_constraintEnd_toEndOf="@id/col0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_purge_files"
+            />
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="@id/col0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_purge_blns"
             />
 
         <Button
@@ -72,30 +91,21 @@
             style="@style/Button.Menu"
             android:text="@string/option_synchronize_deleted_books"
             app:icon="@drawable/ic_baseline_warning_24"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="@id/col0"
-            app:layout_constraintTop_toBottomOf="@id/btn_purge_files"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_purge_blns"
             />
 
         <Button
             android:id="@+id/btn_clear_deleted_books"
             style="@style/Button.Menu"
             android:text="@string/option_clear_deleted_book_records"
-            app:icon="@drawable/ic_baseline_remove_24"
-            app:layout_constraintStart_toStartOf="parent"
+            app:icon="@drawable/ic_baseline_clear_24"
             app:layout_constraintEnd_toEndOf="@id/col0"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btn_sync_deleted_books"
             />
 
-        <Button
-            android:id="@+id/btn_purge_blns"
-            style="@style/Button.Menu"
-            android:text="@string/lbl_purge_blns"
-            app:icon="@drawable/ic_baseline_remove_24"
-            app:layout_constraintEnd_toEndOf="@id/col0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_clear_deleted_books"
-            />
 
         <Button
             android:id="@+id/btn_rebuild_fts"
