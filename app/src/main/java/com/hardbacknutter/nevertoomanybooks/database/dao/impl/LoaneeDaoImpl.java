@@ -26,13 +26,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
@@ -67,39 +65,26 @@ public class LoaneeDaoImpl
     private static final String DELETE_BY_BOOK_ID =
             DELETE_FROM_ + DBDefinitions.TBL_BOOK_LOANEE.getName()
             + _WHERE_ + DBKey.FK_BOOK + "=?";
-    @NonNull
-    private final Supplier<BookDao> bookDaoSupplier;
 
     /**
      * Constructor.
      *
-     * @param db              Underlying database
-     * @param bookDaoSupplier deferred supplier for the {@link BookDao}
+     * @param db Underlying database
      */
-    public LoaneeDaoImpl(@NonNull final SynchronizedDb db,
-                         @NonNull final Supplier<BookDao> bookDaoSupplier) {
+    public LoaneeDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);
-        this.bookDaoSupplier = bookDaoSupplier;
     }
 
     @Override
     public boolean setLoanee(@IntRange(from = 1) final long bookId,
                              @Nullable final String loanee) {
-        final boolean success = setLoaneeInternal(bookId, loanee);
-        if (success) {
-            bookDaoSupplier.get().touch(bookId);
-        }
-        return success;
+        return setLoaneeInternal(bookId, loanee);
     }
 
     @Override
     public boolean setLoanee(@NonNull final Book book,
                              @Nullable final String loanee) {
-        final boolean success = setLoaneeInternal(book.getId(), loanee);
-        if (success) {
-            bookDaoSupplier.get().touch(book);
-        }
-        return success;
+        return setLoaneeInternal(book.getId(), loanee);
     }
 
     /**
@@ -131,6 +116,8 @@ public class LoaneeDaoImpl
                 }
 
             } else if (!loanee.equals(current)) {
+                // This is currently not reachable from the user-menu's
+                // but leaving this in place for the future.
                 final ContentValues cv = new ContentValues();
                 cv.put(DBKey.LOANEE_NAME, loanee);
                 success = 0 < db.update(DBDefinitions.TBL_BOOK_LOANEE.getName(), cv,

@@ -27,7 +27,6 @@ import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -41,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 
 public interface BookDao {
 
-
     /**
      * Update the 'last updated' of the given book.
      * If successful, the book itself will also be updated with
@@ -53,9 +51,6 @@ public interface BookDao {
      */
     @SuppressWarnings("UnusedReturnValue")
     boolean touch(@NonNull Book book);
-
-    @SuppressWarnings("UnusedReturnValue")
-    boolean touch(@IntRange(from = 1) long bookId);
 
     /**
      * Create a new Book using the details provided.
@@ -277,7 +272,7 @@ public interface BookDao {
      * @return a list of all book UUID in the database.
      */
     @NonNull
-    ArrayList<String> getBookUuidList();
+    List<String> getBookUuidList();
 
     /**
      * Check that a book with the passed UUID exists and return the id of the book, or zero.

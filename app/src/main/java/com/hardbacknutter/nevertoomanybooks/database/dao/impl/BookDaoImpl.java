@@ -177,23 +177,6 @@ public class BookDaoImpl
     /**
      * Update the 'last updated' of the given book.
      * <p>
-     * This method should only be called from places where only the book id is available.
-     * If the full Book is available, use {@link #touch(Book)} instead.
-     *
-     * @param bookId to update
-     *
-     * @return {@code true} on success
-     */
-    public boolean touch(@IntRange(from = 1) final long bookId) {
-        try (SynchronizedStatement stmt = db.compileStatement(Sql.Update.TOUCH)) {
-            stmt.bindLong(1, bookId);
-            return 0 < stmt.executeUpdateDelete();
-        }
-    }
-
-    /**
-     * Update the 'last updated' of the given book.
-     * <p>
      * If successful, the book itself will also be updated with
      * the current date-time (which will be very slightly 'later' then what we store).
      *
@@ -203,7 +186,13 @@ public class BookDaoImpl
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean touch(@NonNull final Book book) {
-        if (touch(book.getId())) {
+        final boolean result;
+        final long bookId = book.getId();
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.Update.TOUCH)) {
+            stmt.bindLong(1, bookId);
+            result = 0 < stmt.executeUpdateDelete();
+        }
+        if (result) {
             book.putString(DBKey.DATE_LAST_UPDATED__UTC,
                            SqlEncode.date(LocalDateTime.now(ZoneOffset.UTC)));
             return true;
@@ -739,7 +728,7 @@ public class BookDaoImpl
 
     @Override
     @NonNull
-    public ArrayList<String> getBookUuidList() {
+    public List<String> getBookUuidList() {
         return getColumnAsStringArrayList(Sql.Select.ALL_BOOK_UUID);
     }
 

@@ -612,7 +612,7 @@ public class ServiceLocator {
     public LoaneeDao getLoaneeDao() {
         synchronized (this) {
             if (loaneeDao == null) {
-                loaneeDao = new LoaneeDaoImpl(getDb(), this::getBookDao);
+                loaneeDao = new LoaneeDaoImpl(getDb());
             }
         }
         return loaneeDao;
