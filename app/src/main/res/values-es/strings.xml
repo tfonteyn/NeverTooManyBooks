@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -755,4 +752,8 @@
     <string name="lbl_original_title_long">Título original si el libro es una traducción</string>
     <string name="error_site_access_blocked">El acceso ha sido bloqueado por el sitio web.</string>
     <string name="pt_scan_mode">Modo de lectura</string>
+    <string name="option_clear_deleted_book_records">Borrar la caché de los libros eliminados</string>
+    <string name="info_clear_deleted_book_records">Esto borrará la caché de libros borrados. No se borrará ningún libro.</string>
+    <string name="option_sync_deleted_book_records">Sincronizar localmente los libros eliminados</string>
+    <string name="info_sync_deleted_book_records">Esto comprobará la lista en caché de los libros eliminados de una importación anterior desde otro dispositivo y sincronizará esas eliminaciones. En otras palabras, los libros marcados como borrados en el otro dispositivo también se borrarán en este dispositivo.</string>
 </resources>
