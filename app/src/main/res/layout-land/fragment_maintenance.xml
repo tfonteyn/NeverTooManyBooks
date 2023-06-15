@@ -89,7 +89,7 @@
         <Button
             android:id="@+id/btn_sync_deleted_books"
             style="@style/Button.Menu"
-            android:text="@string/option_synchronize_deleted_books"
+            android:text="@string/option_sync_deleted_book_records"
             app:icon="@drawable/ic_baseline_warning_24"
             app:layout_constraintEnd_toEndOf="@id/col0"
             app:layout_constraintStart_toStartOf="parent"

@@ -146,7 +146,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="true"
-            android:text="@string/option_synchronize_deleted_books"
+            android:text="@string/option_sync_deleted_book_records"
             app:layout_constraintStart_toStartOf="@id/cbx_books"
             app:layout_constraintTop_toBottomOf="@id/rb_import_all"
             />
