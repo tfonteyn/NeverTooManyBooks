@@ -111,7 +111,7 @@ ext {
     androidx_test_rules_version = "1.5.0"
 
     // needed for testing
-    kotlinx_coroutines_core = "1.7.1"
+    kotlinx_coroutines_core = "1.6.4"
 
     mannodermaus_version = "1.3.0"
 }
