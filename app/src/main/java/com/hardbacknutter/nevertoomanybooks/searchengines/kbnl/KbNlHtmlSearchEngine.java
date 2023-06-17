@@ -45,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -188,10 +187,7 @@ public class KbNlHtmlSearchEngine
         }
 
         if (fetchCovers[0]) {
-            final ArrayList<String> list = searchBestCoverByIsbn(context, validIsbn, 0);
-            if (!list.isEmpty()) {
-                book.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
-            }
+            book.setCoverFileSpecList(0, searchBestCoverByIsbn(context, validIsbn, 0));
         }
         return book;
     }

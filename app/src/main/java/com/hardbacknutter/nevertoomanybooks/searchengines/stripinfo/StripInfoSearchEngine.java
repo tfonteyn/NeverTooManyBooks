@@ -59,7 +59,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
@@ -599,9 +598,7 @@ public class StripInfoSearchEngine
         if (url != null) {
             final String fileSpec = saveCover(context, isbn, cIdx, url);
             if (fileSpec != null && !fileSpec.isEmpty()) {
-                final ArrayList<String> list = new ArrayList<>();
-                list.add(fileSpec);
-                book.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[cIdx], list);
+                book.setCoverFileSpec(cIdx, fileSpec);
             }
         }
     }

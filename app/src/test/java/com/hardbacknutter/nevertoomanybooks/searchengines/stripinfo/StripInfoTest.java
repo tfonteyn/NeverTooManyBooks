@@ -37,7 +37,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.jsoup.nodes.Document;
@@ -126,15 +125,13 @@ class StripInfoTest
         assertEquals(Author.TYPE_COLORIST, author.getType());
 
 
-        final List<String> covers = book.getStringArrayList(
-                SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0]);
+        final List<String> covers = book.getCoverFileSpecList(0);
         assertNotNull(covers);
         assertEquals(1, covers.size());
         assertTrue(covers.get(0).endsWith(EngineId.StripInfoBe.getPreferenceKey()
                                           + "_9789463064385_0_.jpg"));
 
-        final List<String> backCovers = book.getStringArrayList(
-                SearchCoordinator.BKEY_FILE_SPEC_ARRAY[1]);
+        final List<String> backCovers = book.getCoverFileSpecList(1);
         assertNotNull(backCovers);
         assertEquals(1, backCovers.size());
         assertTrue(backCovers.get(0).endsWith(EngineId.StripInfoBe.getPreferenceKey()
@@ -195,15 +192,13 @@ class StripInfoTest
         assertEquals(Author.TYPE_ARTIST, author.getType());
         // there are more...
 
-        final List<String> covers = book.getStringArrayList(
-                SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0]);
+        final List<String> covers = book.getCoverFileSpecList(0);
         assertNotNull(covers);
         assertEquals(1, covers.size());
         assertTrue(covers.get(0).endsWith(EngineId.StripInfoBe.getPreferenceKey()
                                           + "_905581315X_0_.jpg"));
 
-        final List<String> backCovers = book.getStringArrayList(
-                SearchCoordinator.BKEY_FILE_SPEC_ARRAY[1]);
+        final List<String> backCovers = book.getCoverFileSpecList(1);
         assertNotNull(backCovers);
         assertEquals(1, backCovers.size());
         assertTrue(backCovers.get(0).endsWith(EngineId.StripInfoBe.getPreferenceKey()
@@ -260,16 +255,14 @@ class StripInfoTest
         assertEquals("Jun Sik", author.getGivenNames());
         assertEquals(Author.TYPE_ARTIST, author.getType());
 
-        final List<String> covers = book.getStringArrayList(
-                SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0]);
+        final List<String> covers = book.getCoverFileSpecList(0);
         assertNotNull(covers);
         assertEquals(1, covers.size());
 
         assertTrue(covers.get(0).endsWith(EngineId.StripInfoBe.getPreferenceKey()
                                           + "_9789085522072_0_.jpg"));
 
-        final List<String> backCovers = book.getStringArrayList(
-                SearchCoordinator.BKEY_FILE_SPEC_ARRAY[1]);
+        final List<String> backCovers = book.getCoverFileSpecList(1);
         assertNotNull(backCovers);
         assertTrue(backCovers.isEmpty());
     }

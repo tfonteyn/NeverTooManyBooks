@@ -100,16 +100,6 @@ public class SearchCoordinator
     /** The data returned from the search can contain this key with error messages. */
     public static final String BKEY_SEARCH_ERROR = TAG + ":error";
 
-    /**
-     * List of front/back cover file specs as collected during the search.
-     * <p>
-     * <br>type: {@code ArrayList<String>}
-     */
-    public static final String[] BKEY_FILE_SPEC_ARRAY = {
-            TAG + ":fileSpec_array:0",
-            TAG + ":fileSpec_array:1"
-    };
-
     private static final AtomicInteger TASK_ID = new AtomicInteger();
 
     /** divider to convert nanoseconds to milliseconds. */
@@ -1045,8 +1035,8 @@ public class SearchCoordinator
                                                             Book.BKEY_PUBLISHER_LIST,
                                                             Book.BKEY_TOC_LIST,
                                                             Book.BKEY_BOOKSHELF_LIST,
-                                                            BKEY_FILE_SPEC_ARRAY[0],
-                                                            BKEY_FILE_SPEC_ARRAY[1]);
+                                                            Book.BKEY_FILE_SPEC_ARRAY[0],
+                                                            Book.BKEY_FILE_SPEC_ARRAY[1]);
 
         private final Map<EngineId, SearchEngine> engineCache;
         /** Mappers to apply. */
@@ -1456,7 +1446,7 @@ public class SearchCoordinator
         }
 
         /**
-         * Filter the {@link #BKEY_FILE_SPEC_ARRAY} present, selecting only the best
+         * Filter the {@link Book#getCoverFileSpecList} present, selecting only the best
          * image for each index, and store those in {@link Book#BKEY_TMP_FILE_SPEC}.
          * This may result in removing ALL images if none are found suitable.
          *
@@ -1464,20 +1454,16 @@ public class SearchCoordinator
          */
         private void processCovers(@NonNull final Book book) {
             for (int cIdx = 0; cIdx < 2; cIdx++) {
-                if (book.contains(BKEY_FILE_SPEC_ARRAY[cIdx])) {
-                    final List<String> imageList =
-                            book.getStringArrayList(BKEY_FILE_SPEC_ARRAY[cIdx]);
-
-                    if (!imageList.isEmpty()) {
-                        // ALWAYS call even if we only have 1 image...
-                        // We want to remove bad ones if needed.
-                        final String coverName = getBestImage(imageList);
-                        if (coverName != null) {
-                            book.putString(Book.BKEY_TMP_FILE_SPEC[cIdx], coverName);
-                        }
+                final List<String> imageList = book.getCoverFileSpecList(cIdx);
+                if (!imageList.isEmpty()) {
+                    // ALWAYS call even if we only have 1 image...
+                    // We want to remove bad ones if needed.
+                    final String coverName = getBestImage(imageList);
+                    if (coverName != null) {
+                        book.putString(Book.BKEY_TMP_FILE_SPEC[cIdx], coverName);
                     }
-                    book.remove(BKEY_FILE_SPEC_ARRAY[cIdx]);
                 }
+                book.setCoverFileSpecList(cIdx, null);
             }
         }
 

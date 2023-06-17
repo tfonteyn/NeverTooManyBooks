@@ -36,7 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.jsoup.nodes.Document;
@@ -125,14 +124,14 @@ public class BedethequeTest
         assertEquals(Author.TYPE_FOREWORD, author.getType());
 
         List<String> coverList;
-        coverList = book.getStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0]);
+        coverList = book.getCoverFileSpecList(0);
         assertNotNull(coverList);
         assertEquals(1, coverList.size());
         String cover;
         cover = coverList.get(0);
         assertTrue(cover.endsWith(searchEngine.getEngineId().getPreferenceKey()
                                   + "_2840557428_0_.jpg"));
-        coverList = book.getStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[1]);
+        coverList = book.getCoverFileSpecList(1);
         assertNotNull(coverList);
         assertEquals(1, coverList.size());
         cover = coverList.get(0);

@@ -40,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -292,9 +291,7 @@ class GoogleBooksEntryHandler
                 }
 
                 if (fileSpec != null) {
-                    final ArrayList<String> list = new ArrayList<>();
-                    list.add(fileSpec);
-                    book.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
+                    book.setCoverFileSpec(0, fileSpec);
                 }
             }
         } else if (XML_PRICE.equalsIgnoreCase(localName)) {

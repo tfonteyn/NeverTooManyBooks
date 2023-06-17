@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
@@ -278,10 +277,7 @@ public class LastDodoSearchEngine
                     final String url = aas.get(cIdx).attr("href");
                     final String fileSpec = saveImage(context, url, isbn, cIdx, null);
                     if (fileSpec != null) {
-                        final ArrayList<String> list = new ArrayList<>();
-                        list.add(fileSpec);
-                        book.putStringArrayList(
-                                SearchCoordinator.BKEY_FILE_SPEC_ARRAY[cIdx], list);
+                        book.setCoverFileSpec(cIdx, fileSpec);
                     }
                 }
             }

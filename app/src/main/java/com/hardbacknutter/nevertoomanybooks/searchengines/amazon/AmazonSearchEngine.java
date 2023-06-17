@@ -302,10 +302,7 @@ public class AmazonSearchEngine
 
         if (fetchCovers[0]) {
             final String isbn = book.getString(DBKey.BOOK_ISBN);
-            final ArrayList<String> list = parseCovers(context, document, isbn, 0);
-            if (!list.isEmpty()) {
-                book.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
-            }
+            book.setCoverFileSpecList(0, parseCovers(context, document, isbn, 0));
         }
     }
 

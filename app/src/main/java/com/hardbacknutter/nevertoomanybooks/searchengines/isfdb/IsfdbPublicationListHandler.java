@@ -39,7 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 
 import org.xml.sax.Attributes;
@@ -361,10 +360,7 @@ class IsfdbPublicationListHandler
                             final String fileSpec =
                                     searchEngine.saveImage(context, tmpString, isbn, 0, null);
                             if (fileSpec != null) {
-                                final ArrayList<String> list = new ArrayList<>();
-                                list.add(fileSpec);
-                                publicationData.putStringArrayList(
-                                        SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
+                                publicationData.setCoverFileSpec(0, fileSpec);
 
                             }
                         } catch (@NonNull final StorageException e) {

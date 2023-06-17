@@ -54,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -624,10 +623,7 @@ public class OpenLibrarySearchEngine
         }
 
         if (fetchCovers[0]) {
-            final ArrayList<String> list = parseCovers(context, document, validIsbn, 0);
-            if (!list.isEmpty()) {
-                book.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
-            }
+            book.setCoverFileSpecList(0, parseCovers(context, document, validIsbn, 0));
         }
     }
 

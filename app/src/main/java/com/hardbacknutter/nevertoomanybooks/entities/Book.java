@@ -149,6 +149,17 @@ public class Book
      * <strong>No prefix, NEVER change this string as it's used in export/import.</strong>
      */
     public static final String BKEY_CALIBRE_LIBRARY = "calibre_library";
+
+    /**
+     * List of front/back cover file specs as collected during the search.
+     * <p>
+     * <br>type: {@code ArrayList<String>}
+     */
+    public static final String[] BKEY_FILE_SPEC_ARRAY = {
+            "fileSpec_array:0",
+            "fileSpec_array:1"
+    };
+
     /**
      * Rating goes from 0 to 5 stars, in 0.5 increments.
      */
@@ -1186,6 +1197,51 @@ public class Book
             ServiceLocator.getInstance().getBookDao().touch(this);
 
             return destination;
+        }
+    }
+
+    /**
+     * Add (or replace) a single cover fileSpec for the given cover index.
+     *
+     * @param cIdx     0..n image index
+     * @param fileSpec to set
+     */
+    public void setCoverFileSpec(@IntRange(from = 0, to = 1) final int cIdx,
+                                 @NonNull final String fileSpec) {
+        final ArrayList<String> list = new ArrayList<>();
+        list.add(fileSpec);
+        putStringArrayList(BKEY_FILE_SPEC_ARRAY[cIdx], list);
+    }
+
+    /**
+     * Add (or replace) a list of cover fileSpecs for the given cover index.
+     *
+     * @param cIdx      0..n image index
+     * @param fileSpecs to set;
+     *                  Pass in {@code null} or an empty list to remove any previous list
+     */
+    public void setCoverFileSpecList(@IntRange(from = 0, to = 1) final int cIdx,
+                                     @Nullable final ArrayList<String> fileSpecs) {
+        if (fileSpecs != null && !fileSpecs.isEmpty()) {
+            putStringArrayList(BKEY_FILE_SPEC_ARRAY[cIdx], fileSpecs);
+        } else {
+            remove(BKEY_FILE_SPEC_ARRAY[cIdx]);
+        }
+    }
+
+    /**
+     * Get the list of cover fileSpecs for the given cover index.
+     *
+     * @param cIdx 0..n image index
+     *
+     * @return list
+     */
+    @NonNull
+    public List<String> getCoverFileSpecList(@IntRange(from = 0, to = 1) final int cIdx) {
+        if (contains(BKEY_FILE_SPEC_ARRAY[cIdx])) {
+            return getStringArrayList(BKEY_FILE_SPEC_ARRAY[cIdx]);
+        } else {
+            return List.of();
         }
     }
 

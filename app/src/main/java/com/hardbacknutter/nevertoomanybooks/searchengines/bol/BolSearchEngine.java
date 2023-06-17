@@ -54,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
@@ -644,9 +643,7 @@ public class BolSearchEngine
         if (url != null && !url.isEmpty()) {
             final String fileSpec = saveImage(context, url, isbn, cIdx, null);
             if (fileSpec != null && !fileSpec.isEmpty()) {
-                final ArrayList<String> list = new ArrayList<>();
-                list.add(fileSpec);
-                book.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[cIdx], list);
+                book.setCoverFileSpec(cIdx, fileSpec);
                 return true;
             }
         }
