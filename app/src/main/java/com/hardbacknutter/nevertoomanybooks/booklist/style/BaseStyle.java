@@ -347,6 +347,8 @@ public abstract class BaseStyle
 
     /**
      * Set the current configured combined bit-value.
+     * <p>
+     * Setting the {@link Screen#Global} will be <strong>IGNORED</strong>.
      *
      * @param screen  for which the value should be set
      * @param bitmask to set
@@ -361,9 +363,6 @@ public abstract class BaseStyle
                 detailsFieldVisibility.setValue(bitmask);
                 break;
             case Global:
-                if (BuildConfig.DEBUG /* always */) {
-                    throw new IllegalArgumentException(ERROR_SCREEN_GLOBAL_NOT_ALLOWED_HERE);
-                }
                 // ignore
                 break;
         }

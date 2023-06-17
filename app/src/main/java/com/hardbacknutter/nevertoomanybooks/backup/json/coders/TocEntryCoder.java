@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.org.json.JSONException;
@@ -44,8 +45,10 @@ public class TocEntryCoder
         data.put(DBKey.TITLE, tocEntry.getTitle());
         data.put(DBKey.FK_AUTHOR, authorCoder.encode(tocEntry.getPrimaryAuthor()));
 
-        tocEntry.getFirstPublicationDate().ifPresent(
-                date -> data.put(DBKey.FIRST_PUBLICATION__DATE, date.getIsoString()));
+        final PartialDate firstPublicationDate = tocEntry.getFirstPublicationDate();
+        if (firstPublicationDate.isPresent()) {
+            data.put(DBKey.FIRST_PUBLICATION__DATE, firstPublicationDate.getIsoString());
+        }
 
         return data;
     }

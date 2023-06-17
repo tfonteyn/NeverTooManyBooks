@@ -41,7 +41,6 @@ import java.time.format.TextStyle;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
-import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
@@ -253,22 +252,10 @@ public class PartialDate
     }
 
     /**
-     * If a value is present, invoke the specified consumer with the value,
-     * otherwise do nothing.
-     *
-     * @param consumer block to be executed if a value is present
-     */
-    public void ifPresent(@NonNull final Consumer<PartialDate> consumer) {
-        if (yearSet) {
-            consumer.accept(this);
-        }
-    }
-
-    /**
-     * Format the date as 'YYYY-MM-DD', or 'YYYY-MM' or 'YYYY' or ''
+     * Format the date as {@code YYYY-MM-DD}, {@code YYYY-MM}, {@code YYYY} or an empty string
      * depending on the fields set.
      *
-     * @return partial ISO string representation of the date.
+     * @return (partial) ISO string representation of the date.
      */
     @SuppressLint("DefaultLocale")
     @NonNull

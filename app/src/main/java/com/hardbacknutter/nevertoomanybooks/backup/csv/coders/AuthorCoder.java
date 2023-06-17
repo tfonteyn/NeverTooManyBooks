@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.backup.csv.coders;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
 import java.util.List;
 
@@ -43,10 +42,6 @@ import com.hardbacknutter.org.json.JSONObject;
  */
 public class AuthorCoder
         implements StringList.Coder<Author> {
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public AuthorCoder() {
-    }
 
     @Override
     @NonNull

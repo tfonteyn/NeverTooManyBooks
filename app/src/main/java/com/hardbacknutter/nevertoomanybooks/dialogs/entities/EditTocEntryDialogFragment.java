@@ -122,8 +122,9 @@ public class EditTocEntryDialogFragment
         vb.title.setText(title);
         autoRemoveError(vb.title, vb.lblTitle);
 
-        firstPublicationDate.ifPresent(date -> vb.firstPublication.setText(
-                String.valueOf(date.getYearValue())));
+        if (firstPublicationDate.isPresent()) {
+            vb.firstPublication.setText(String.valueOf(firstPublicationDate.getYearValue()));
+        }
 
         if (isAnthology) {
             //noinspection DataFlowIssue
