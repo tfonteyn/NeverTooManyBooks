@@ -44,14 +44,14 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
  * A {@link ChipGroup} where each {@link Chip} represents one
  * {@link Parcelable} & {@link Entity} in a list.
  * <p>
- * A {@code null} value is always handled as an empty {@link ArrayList}.
+ * A {@code null} value is always handled as an empty {@link List}.
  * <p>
  * Relies on {@link R.attr#appChipFilterStyle}
  *
  * @param <T> type of Entity (== Field) value.
  */
 public class ListChipGroupField<T extends Parcelable & Entity>
-        extends BaseField<ArrayList<T>, ChipGroup> {
+        extends BaseField<List<T>, ChipGroup> {
 
     @NonNull
     private final Supplier<List<T>> listSupplier;
@@ -77,7 +77,7 @@ public class ListChipGroupField<T extends Parcelable & Entity>
 
         editChipListener = view -> {
             //noinspection DataFlowIssue
-            final ArrayList<T> previous = new ArrayList<>(rawValue);
+            final List<T> previous = new ArrayList<>(rawValue);
             //noinspection unchecked
             final T current = (T) view.getTag();
             if (((Checkable) view).isChecked()) {
@@ -91,12 +91,12 @@ public class ListChipGroupField<T extends Parcelable & Entity>
 
     @Override
     @NonNull
-    public ArrayList<T> getValue() {
+    public List<T> getValue() {
         return rawValue != null ? rawValue : new ArrayList<>();
     }
 
     @Override
-    public void setValue(@Nullable final ArrayList<T> value) {
+    public void setValue(@Nullable final List<T> value) {
         super.setValue(value != null ? value : new ArrayList<>());
 
         final ChipGroup chipGroup = getView();
@@ -126,7 +126,7 @@ public class ListChipGroupField<T extends Parcelable & Entity>
     public void setInitialValue(@NonNull final Context context,
                                 @NonNull final DataManager source,
                                 @NonNull final RealNumberParser realNumberParser) {
-        initialValue = new ArrayList<>(source.getParcelableArrayList(fieldKey));
+        initialValue = source.getParcelableArrayList(fieldKey);
         setValue(initialValue);
     }
 
@@ -136,7 +136,7 @@ public class ListChipGroupField<T extends Parcelable & Entity>
     }
 
     @Override
-    boolean isEmpty(@Nullable final ArrayList<T> value) {
+    boolean isEmpty(@Nullable final List<T> value) {
         return value == null || value.isEmpty();
     }
 }

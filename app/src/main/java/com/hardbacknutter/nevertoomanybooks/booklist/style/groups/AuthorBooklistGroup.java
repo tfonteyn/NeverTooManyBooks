@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,6 +25,7 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -119,9 +120,9 @@ public class AuthorBooklistGroup
 
     @Override
     @NonNull
-    public ArrayList<DomainExpression> getGroupDomainExpressions() {
+    public List<DomainExpression> getGroupDomainExpressions() {
         // We inject the sortingDomainExpression as first in the list.
-        final ArrayList<DomainExpression> list = new ArrayList<>();
+        final List<DomainExpression> list = new ArrayList<>();
         list.add(0, sortingDomainExpression);
         list.addAll(super.getGroupDomainExpressions());
         return list;

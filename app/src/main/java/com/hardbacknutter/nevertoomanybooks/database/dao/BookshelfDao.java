@@ -25,7 +25,6 @@ import android.database.Cursor;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -186,7 +185,7 @@ public interface BookshelfDao
      * @return list with book ID's linked to this item
      */
     @NonNull
-    ArrayList<Long> getBookIds(long itemId);
+    List<Long> getBookIds(long itemId);
 
     /**
      * Get a list of all the bookshelves this book is on.
@@ -196,5 +195,5 @@ public interface BookshelfDao
      * @return the list
      */
     @NonNull
-    ArrayList<Bookshelf> getByBookId(@IntRange(from = 1) long bookId);
+    List<Bookshelf> getByBookId(@IntRange(from = 1) long bookId);
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,7 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao;
 
 import androidx.annotation.NonNull;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreCustomField;
 
@@ -33,7 +33,7 @@ public interface CalibreCustomFieldDao {
     boolean delete(@NonNull CalibreCustomField calibreCustomField);
 
     @NonNull
-    ArrayList<CalibreCustomField> getCustomFields();
+    List<CalibreCustomField> getCustomFields();
 
     boolean update(@NonNull CalibreCustomField calibreCustomField);
 

@@ -195,7 +195,7 @@ public class BookCoder {
         }
 
         if (encodedList != null && !encodedList.isEmpty()) {
-            final ArrayList<Bookshelf> bookshelves = bookshelfCoder.decodeList(encodedList);
+            final List<Bookshelf> bookshelves = bookshelfCoder.decodeList(encodedList);
             if (!bookshelves.isEmpty()) {
                 ServiceLocator.getInstance().getBookshelfDao().pruneList(context, bookshelves);
                 book.setBookshelves(bookshelves);
@@ -221,7 +221,7 @@ public class BookCoder {
         final String encodedList = book.getString(CSV_COLUMN_AUTHORS, null);
         book.remove(CSV_COLUMN_AUTHORS);
 
-        final ArrayList<Author> list;
+        final List<Author> list;
         if (encodedList == null || encodedList.isEmpty()) {
             // check for individual author (full/family/given) fields in the input
             list = new ArrayList<>();
@@ -287,7 +287,7 @@ public class BookCoder {
                 book.remove(DBKey.SERIES_BOOK_NUMBER);
             }
         } else {
-            final ArrayList<Series> list = seriesCoder.decodeList(encodedList);
+            final List<Series> list = seriesCoder.decodeList(encodedList);
             if (!list.isEmpty()) {
                 book.setSeries(list);
             }
@@ -307,7 +307,7 @@ public class BookCoder {
         book.remove(CSV_COLUMN_PUBLISHERS);
 
         if (encodedList != null && !encodedList.isEmpty()) {
-            final ArrayList<Publisher> list = publisherCoder.decodeList(encodedList);
+            final List<Publisher> list = publisherCoder.decodeList(encodedList);
             if (!list.isEmpty()) {
                 book.setPublishers(list);
             }
@@ -334,7 +334,7 @@ public class BookCoder {
         book.remove(CSV_COLUMN_TOC);
 
         if (encodedList != null && !encodedList.isEmpty()) {
-            final ArrayList<TocEntry> list = tocCoder.decodeList(encodedList);
+            final List<TocEntry> list = tocCoder.decodeList(encodedList);
             if (!list.isEmpty()) {
                 // Force using the Book Locale, otherwise the import is far to slow.
                 ServiceLocator.getInstance().getTocEntryDao()

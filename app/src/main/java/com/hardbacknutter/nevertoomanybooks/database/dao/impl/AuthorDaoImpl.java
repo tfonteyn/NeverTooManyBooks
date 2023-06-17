@@ -177,7 +177,7 @@ public class AuthorDaoImpl
 
     @Override
     @NonNull
-    public ArrayList<String> getNames(@NonNull final String key) {
+    public List<String> getNames(@NonNull final String key) {
         switch (key) {
             case DBKey.AUTHOR_FAMILY_NAME:
                 return getColumnAsStringArrayList(Sql.SELECT_ALL_FAMILY_NAMES);
@@ -198,8 +198,8 @@ public class AuthorDaoImpl
 
     @Override
     @NonNull
-    public ArrayList<Author> getByBookId(@IntRange(from = 1) final long bookId) {
-        final ArrayList<Author> list = new ArrayList<>();
+    public List<Author> getByBookId(@IntRange(from = 1) final long bookId) {
+        final List<Author> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(Sql.AUTHORS_BY_BOOK_ID,
                                          new String[]{String.valueOf(bookId)})) {
             final CursorRow rowData = new CursorRow(cursor);
@@ -212,8 +212,8 @@ public class AuthorDaoImpl
 
     @Override
     @NonNull
-    public ArrayList<Long> getBookIds(final long authorId) {
-        final ArrayList<Long> list = new ArrayList<>();
+    public List<Long> getBookIds(final long authorId) {
+        final List<Long> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(Sql.SELECT_BOOK_IDS_BY_AUTHOR_ID,
                                          new String[]{String.valueOf(authorId)})) {
             while (cursor.moveToNext()) {
@@ -225,9 +225,9 @@ public class AuthorDaoImpl
 
     @Override
     @NonNull
-    public ArrayList<Long> getBookIds(final long authorId,
-                                      final long bookshelfId) {
-        final ArrayList<Long> list = new ArrayList<>();
+    public List<Long> getBookIds(final long authorId,
+                                 final long bookshelfId) {
+        final List<Long> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(Sql.SELECT_BOOK_IDS_BY_AUTHOR_ID_AND_BOOKSHELF_ID,
                                          new String[]{String.valueOf(authorId),
                                                  String.valueOf(bookshelfId)})) {
@@ -240,11 +240,11 @@ public class AuthorDaoImpl
 
     @Override
     @NonNull
-    public ArrayList<AuthorWork> getAuthorWorks(@NonNull final Author author,
-                                                final long bookshelfId,
-                                                final boolean withTocEntries,
-                                                final boolean withBooks,
-                                                @WorksOrderBy @Nullable final String orderBy) {
+    public List<AuthorWork> getAuthorWorks(@NonNull final Author author,
+                                           final long bookshelfId,
+                                           final boolean withTocEntries,
+                                           final boolean withBooks,
+                                           @WorksOrderBy @Nullable final String orderBy) {
         // sanity check
         if (!withTocEntries && !withBooks) {
             throw new IllegalArgumentException("Must specify what to fetch");
@@ -302,7 +302,7 @@ public class AuthorDaoImpl
 
         sql += _ORDER_BY_ + orderByColumns;
 
-        final ArrayList<AuthorWork> list = new ArrayList<>();
+        final List<AuthorWork> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(sql, paramList.toArray(Z_ARRAY_STRING))) {
             final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
@@ -739,8 +739,8 @@ public class AuthorDaoImpl
             for (final long bookId : getBookIds(source.getId())) {
                 final Book book = Book.from(bookId);
 
-                final Collection<Author> fromBook = book.getAuthors();
-                final Collection<Author> destList = new ArrayList<>();
+                final List<Author> fromBook = book.getAuthors();
+                final List<Author> destList = new ArrayList<>();
 
                 for (final Author item : fromBook) {
                     if (source.getId() == item.getId()) {
@@ -791,6 +791,7 @@ public class AuthorDaoImpl
         final List<Long> bookIds = getColumnAsLongArrayList(Sql.REPOSITION);
         if (!bookIds.isEmpty()) {
             Synchronizer.SyncLock txLock = null;
+            //noinspection CheckStyle
             try {
                 if (!db.inTransaction()) {
                     txLock = db.beginTransaction(true);

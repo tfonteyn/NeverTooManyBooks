@@ -39,6 +39,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
@@ -69,7 +70,7 @@ public class SearchAdminFragment
                             final Site.Type type = vm.getTypes().get(0);
                             final Intent resultIntent = new Intent()
                                     .putParcelableArrayListExtra(type.getBundleKey(),
-                                                                 vm.getList(type));
+                                                                 new ArrayList<>(vm.getList(type)));
                             //noinspection DataFlowIssue
                             getActivity().setResult(Activity.RESULT_OK, resultIntent);
                         }

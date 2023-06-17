@@ -216,8 +216,7 @@ public final class DataHolderUtils {
 
         if (holder.contains(Book.BKEY_PUBLISHER_LIST)) {
             // Ideally the row contains the data as a list. Simply return the first one.
-            final List<Publisher> list = holder.getParcelableArrayList(
-                    Book.BKEY_PUBLISHER_LIST);
+            final List<Publisher> list = holder.getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
             if (!list.isEmpty()) {
                 result = list.get(0);
             }

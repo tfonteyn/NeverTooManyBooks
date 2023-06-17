@@ -616,8 +616,8 @@ public class Booklist
      */
     @SuppressWarnings("JavadocReference")
     @NonNull
-    public ArrayList<Long> getBookIdsForNodeKey(@NonNull final String nodeKey,
-                                                final int level) {
+    public List<Long> getBookIdsForNodeKey(@NonNull final String nodeKey,
+                                           final int level) {
         if (sqlGetBookIdListForNodeKey == null) {
             sqlGetBookIdListForNodeKey =
                     SELECT_ + DBKey.FK_BOOK
@@ -637,7 +637,7 @@ public class Booklist
 
         try (Cursor cursor = db.rawQuery(sqlGetBookIdListForNodeKey,
                                          new String[]{sj.toString()})) {
-            final ArrayList<Long> rows = new ArrayList<>();
+            final List<Long> rows = new ArrayList<>();
             while (cursor.moveToNext()) {
                 final long id = cursor.getInt(0);
                 rows.add(id);
@@ -652,7 +652,7 @@ public class Booklist
      * @return list of book ID's
      */
     @NonNull
-    public ArrayList<Long> getCurrentBookIdList() {
+    public List<Long> getCurrentBookIdList() {
         if (sqlGetCurrentBookIdList == null) {
             sqlGetCurrentBookIdList =
                     SELECT_ + DBKey.FK_BOOK
@@ -663,7 +663,7 @@ public class Booklist
 
         try (Cursor cursor = db.rawQuery(sqlGetCurrentBookIdList, null)) {
             if (cursor.moveToFirst()) {
-                final ArrayList<Long> rows = new ArrayList<>(cursor.getCount());
+                final List<Long> rows = new ArrayList<>(cursor.getCount());
                 do {
                     final long id = cursor.getInt(0);
                     rows.add(id);

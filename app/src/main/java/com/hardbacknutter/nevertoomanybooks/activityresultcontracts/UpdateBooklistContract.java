@@ -27,7 +27,7 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -83,7 +83,7 @@ public class UpdateBooklistContract
     public static class Input {
 
         @NonNull
-        final ArrayList<Long> bookIdList;
+        final List<Long> bookIdList;
         @Nullable
         final String title;
         @Nullable
@@ -96,7 +96,7 @@ public class UpdateBooklistContract
          * @param title      optional title for the screen
          * @param subTitle   optional subtitle for the screen
          */
-        public Input(@NonNull final ArrayList<Long> bookIdList,
+        public Input(@NonNull final List<Long> bookIdList,
                      @Nullable final String title,
                      @Nullable final String subTitle) {
             this.bookIdList = bookIdList;

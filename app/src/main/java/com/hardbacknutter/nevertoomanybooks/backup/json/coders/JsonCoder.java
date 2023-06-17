@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -75,9 +75,9 @@ public interface JsonCoder<T> {
             throws JSONException;
 
     @NonNull
-    default ArrayList<T> decode(@NonNull final JSONArray elements)
+    default List<T> decode(@NonNull final JSONArray elements)
             throws JSONException {
-        final ArrayList<T> list = new ArrayList<>();
+        final List<T> list = new ArrayList<>();
         for (int i = 0; i < elements.length(); i++) {
             list.add(decode((JSONObject) elements.get(i)));
         }
@@ -91,9 +91,9 @@ public interface JsonCoder<T> {
     }
 
     @NonNull
-    default ArrayList<T> decodeReference(@NonNull final JSONArray elements)
+    default List<T> decodeReference(@NonNull final JSONArray elements)
             throws JSONException {
-        final ArrayList<T> list = new ArrayList<>();
+        final List<T> list = new ArrayList<>();
         for (int i = 0; i < elements.length(); i++) {
             decodeReference((JSONObject) elements.get(i)).ifPresent(list::add);
         }

@@ -23,7 +23,7 @@ import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
@@ -37,7 +37,7 @@ public interface SeriesDao
      * @return The list
      */
     @NonNull
-    ArrayList<String> getNames();
+    List<String> getNames();
 
     /**
      * Get all series; mainly for the purpose of exports.

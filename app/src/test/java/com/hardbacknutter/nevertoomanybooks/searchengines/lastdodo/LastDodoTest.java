@@ -20,7 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.lastdodo;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
@@ -32,7 +32,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
@@ -51,7 +50,6 @@ class LastDodoTest
     private static final String UTF_8 = "UTF-8";
     private LastDodoSearchEngine searchEngine;
     private Book book;
-    private AuthorResolver mockAuthorResolver;
 
     @BeforeEach
     public void setup()
@@ -70,8 +68,7 @@ class LastDodoTest
         final String filename = "/lastdodo/7323911-de-37ste-parallel.html";
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
-        searchEngine.parse(context, document, new boolean[]{false, false}, book,
-                           mockAuthorResolver);
+        searchEngine.parse(context, document, new boolean[]{false, false}, book, null);
         // System.out.println(rawData);
 
         assertEquals("De 37ste parallel", book.getString(DBKey.TITLE, null));
@@ -82,12 +79,12 @@ class LastDodoTest
         assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Gekleurd", book.getString(DBKey.COLOR, null));
 
-        final ArrayList<Publisher> allPublishers = book.getPublishers();
+        final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Silvester", allPublishers.get(0).getName());
 
-        final ArrayList<Series> allSeries = book.getSeries();
+        final List<Series> allSeries = book.getSeries();
         assertNotNull(allSeries);
         assertEquals(1, allSeries.size());
 
@@ -95,7 +92,7 @@ class LastDodoTest
         assertEquals("Hauteville House", series.getTitle());
         assertEquals("14", series.getNumber());
 
-        final ArrayList<Author> authors = book.getAuthors();
+        final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(2, authors.size());
 

@@ -196,7 +196,7 @@ public class BooklistGroup {
      * based on current group <strong>and its outer groups</strong>
      */
     @Nullable
-    private ArrayList<Domain> accumulatedDomains;
+    private List<Domain> accumulatedDomains;
 
     /**
      * Constructor.
@@ -762,7 +762,7 @@ public class BooklistGroup {
      * @return list
      */
     @NonNull
-    public ArrayList<DomainExpression> getGroupDomainExpressions() {
+    public List<DomainExpression> getGroupDomainExpressions() {
         return groupKey.getGroupDomainExpressions();
     }
 
@@ -775,7 +775,7 @@ public class BooklistGroup {
      * @return list
      */
     @NonNull
-    public ArrayList<DomainExpression> getBaseDomainExpressions() {
+    public List<DomainExpression> getBaseDomainExpressions() {
         return groupKey.getBaseDomainExpressions();
     }
 
@@ -786,7 +786,7 @@ public class BooklistGroup {
      * @return list
      */
     @NonNull
-    public ArrayList<Domain> getAccumulatedDomains() {
+    public List<Domain> getAccumulatedDomains() {
         return Objects.requireNonNull(accumulatedDomains);
     }
 
@@ -795,7 +795,7 @@ public class BooklistGroup {
      *
      * @param accumulatedDomains list of domains.
      */
-    public void setAccumulatedDomains(@NonNull final ArrayList<Domain> accumulatedDomains) {
+    public void setAccumulatedDomains(@NonNull final List<Domain> accumulatedDomains) {
         this.accumulatedDomains = accumulatedDomains;
     }
 
@@ -981,13 +981,13 @@ public class BooklistGroup {
          * be fetched/sorted.
          */
         @NonNull
-        private final ArrayList<DomainExpression> groupDomains = new ArrayList<>();
+        private final List<DomainExpression> groupDomains = new ArrayList<>();
 
         /**
          * A group can add domains to the lowest level (the book).
          */
         @NonNull
-        private final ArrayList<DomainExpression> baseDomains = new ArrayList<>();
+        private final List<DomainExpression> baseDomains = new ArrayList<>();
 
         /**
          * Constructor.
@@ -1075,7 +1075,7 @@ public class BooklistGroup {
          * @return the list, can be empty.
          */
         @NonNull
-        ArrayList<DomainExpression> getGroupDomainExpressions() {
+        List<DomainExpression> getGroupDomainExpressions() {
             return groupDomains;
         }
 
@@ -1087,7 +1087,7 @@ public class BooklistGroup {
          * @return the list, can be empty.
          */
         @NonNull
-        ArrayList<DomainExpression> getBaseDomainExpressions() {
+        List<DomainExpression> getBaseDomainExpressions() {
             return baseDomains;
         }
 

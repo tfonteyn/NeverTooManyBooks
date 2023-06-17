@@ -24,7 +24,7 @@ import android.content.SharedPreferences;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
@@ -112,13 +112,13 @@ class IsfdbBookHandlerTest
                      " This edition published 1986 by Methuen London Ltd. Month from Locus1",
                      book.getString(DBKey.DESCRIPTION, null));
 
-        final ArrayList<Publisher> allPublishers = book.getPublishers();
+        final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Methuen", allPublishers.get(0).getName());
 
-        final ArrayList<Author> authors = book.getAuthors();
+        final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(2, authors.size());
         assertEquals("Russell", authors.get(0).getFamilyName());
@@ -133,7 +133,7 @@ class IsfdbBookHandlerTest
 //        assertEquals("Hugi", authors.get(1).getFamilyName());
 //        assertEquals("Maurice G.", authors.get(1).getGivenNames());
 
-        final ArrayList<TocEntry> toc = book.getToc();
+        final List<TocEntry> toc = book.getToc();
         assertNotNull(toc);
         //7 • Allamagoosa • (1955) • short story by Eric Frank Russell
         //24 • Hobbyist • (1947) • novelette by Eric Frank Russell
@@ -178,13 +178,13 @@ class IsfdbBookHandlerTest
         assertEquals("hc", book.getString(DBKey.FORMAT, null));
         assertEquals("NOVEL", book.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE, null));
 
-        final ArrayList<Publisher> allPublishers = book.getPublishers();
+        final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Gollancz", allPublishers.get(0).getName());
 
-        final ArrayList<Author> authors = book.getAuthors();
+        final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(2, authors.size());
         assertEquals("Pratchett", authors.get(0).getFamilyName());
@@ -195,7 +195,7 @@ class IsfdbBookHandlerTest
         assertEquals("Joe", authors.get(1).getGivenNames());
         assertEquals(Author.TYPE_COVER_ARTIST, authors.get(1).getType());
 
-        final ArrayList<Series> series = book.getSeries();
+        final List<Series> series = book.getSeries();
         assertNotNull(series);
         assertEquals(2, series.size());
         // Pub. Series
@@ -204,7 +204,7 @@ class IsfdbBookHandlerTest
         assertEquals("Discworld", series.get(1).getTitle());
         assertEquals("4", series.get(1).getNumber());
 
-        final ArrayList<TocEntry> toc = book.getToc();
+        final List<TocEntry> toc = book.getToc();
         assertNotNull(toc);
         assertEquals(1, toc.size());
         final TocEntry entry = toc.get(0);
@@ -241,13 +241,13 @@ class IsfdbBookHandlerTest
         assertEquals("2015943558", book.getString(DBKey.SID_LCCN, null));
         assertEquals("B00W2EBY8O", book.getString(DBKey.SID_ASIN, null));
 
-        final ArrayList<Publisher> allPublishers = book.getPublishers();
+        final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Harper", allPublishers.get(0).getName());
 
-        final ArrayList<Author> authors = book.getAuthors();
+        final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(2, authors.size());
         assertEquals("Pratchett", authors.get(0).getFamilyName());
@@ -258,13 +258,13 @@ class IsfdbBookHandlerTest
         assertEquals("Jim", authors.get(1).getGivenNames());
         assertEquals(Author.TYPE_COVER_ARTIST, authors.get(1).getType());
 
-        final ArrayList<Series> series = book.getSeries();
+        final List<Series> series = book.getSeries();
         assertNotNull(series);
         assertEquals(1, series.size());
         assertEquals("Tiffany Aching", series.get(0).getTitle());
         assertEquals("41", series.get(0).getNumber());
 
-        final ArrayList<TocEntry> toc = book.getToc();
+        final List<TocEntry> toc = book.getToc();
         assertNotNull(toc);
         assertEquals(2, toc.size());
         TocEntry entry = toc.get(0);
@@ -293,7 +293,7 @@ class IsfdbBookHandlerTest
         final Document document = loadDocument(filename, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
                                                locationHeader);
         searchEngine.parse(context, document, new boolean[]{false, false}, book);
-        System.out.println(book);
+        //System.out.println(book);
 
         // We're only interested in the price field to check if the Locale is working as expected.
         assertEquals(7.0d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));

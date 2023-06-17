@@ -197,9 +197,8 @@ public class CalibreLibraryDaoImpl
 
     @Override
     @NonNull
-    public ArrayList<CalibreLibrary> getAllLibraries() {
-
-        final ArrayList<CalibreLibrary> list = new ArrayList<>();
+    public List<CalibreLibrary> getAllLibraries() {
+        final List<CalibreLibrary> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(SELECT_LIBRARIES, null)) {
             final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {

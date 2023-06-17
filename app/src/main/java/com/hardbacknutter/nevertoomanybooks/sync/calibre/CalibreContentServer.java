@@ -197,7 +197,7 @@ public final class CalibreContentServer
     private final HostnameVerifier hostnameVerifier;
     /** As read from the Content Server. */
     @NonNull
-    private final ArrayList<CalibreLibrary> libraries = new ArrayList<>();
+    private final List<CalibreLibrary> libraries = new ArrayList<>();
     private final Set<CalibreCustomField> calibreCustomFields = new HashSet<>();
     private final int connectTimeoutInMs;
     private final int readTimeoutInMs;
@@ -629,7 +629,7 @@ public final class CalibreContentServer
      */
     @NonNull
     @AnyThread
-    public ArrayList<CalibreLibrary> getLibraries() {
+    public List<CalibreLibrary> getLibraries() {
         return libraries;
     }
 

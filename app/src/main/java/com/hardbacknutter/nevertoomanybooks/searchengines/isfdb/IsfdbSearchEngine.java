@@ -404,8 +404,8 @@ public class IsfdbSearchEngine
             final Edition edition = editions.get(0);
             final Document document = loadDocumentByEdition(context, edition);
             if (!isCancelled()) {
-                final ArrayList<String> imageList = parseCovers(context, document,
-                                                                edition.getIsbn(), 0);
+                final List<String> imageList = parseCovers(context, document,
+                                                           edition.getIsbn(), 0);
                 if (!imageList.isEmpty()) {
                     // let the system resolve any path variations
                     return new File(imageList.get(0)).getAbsolutePath();
@@ -446,13 +446,13 @@ public class IsfdbSearchEngine
      */
     @WorkerThread
     @NonNull
-    private ArrayList<TocEntry> parseToc(@NonNull final Context context,
-                                         @NonNull final Document document,
-                                         @NonNull final Book book) {
+    private List<TocEntry> parseToc(@NonNull final Context context,
+                                    @NonNull final Document document,
+                                    @NonNull final Book book) {
 
         final boolean addSeriesFromToc = PreferenceManager.getDefaultSharedPreferences(context)
                                                           .getBoolean(PK_SERIES_FROM_TOC, false);
-        final ArrayList<TocEntry> toc = new ArrayList<>();
+        final List<TocEntry> toc = new ArrayList<>();
 
         // <div class="ContentBox"> but there are two, so get last one
         final Element contentBox = document.select(CSS_Q_DIV_CONTENTBOX).last();
@@ -1113,11 +1113,11 @@ public class IsfdbSearchEngine
     @WorkerThread
     @VisibleForTesting
     @NonNull
-    private ArrayList<String> parseCovers(@NonNull final Context context,
-                                          @NonNull final Document document,
-                                          @Nullable final String isbn,
-                                          @SuppressWarnings("SameParameterValue")
-                                          @IntRange(from = 0, to = 1) final int cIdx)
+    private List<String> parseCovers(@NonNull final Context context,
+                                     @NonNull final Document document,
+                                     @Nullable final String isbn,
+                                     @SuppressWarnings("SameParameterValue")
+                                     @IntRange(from = 0, to = 1) final int cIdx)
             throws StorageException {
         /* First "ContentBox" contains all basic details.
          * <pre>
@@ -1146,7 +1146,7 @@ public class IsfdbSearchEngine
          * </pre>
          */
 
-        final ArrayList<String> imageList = new ArrayList<>();
+        final List<String> imageList = new ArrayList<>();
 
         final Element contentBox = document.selectFirst(CSS_Q_DIV_CONTENTBOX);
         if (contentBox != null) {
@@ -1532,8 +1532,8 @@ public class IsfdbSearchEngine
      *
      * @return list of books found
      *
-     * @throws StorageException on storage related failures
-     * @throws SearchException  on generic exceptions (wrapped) during search
+     * @throws StorageException      on storage related failures
+     * @throws SearchException       on generic exceptions (wrapped) during search
      * @throws IllegalStateException if the SAX parser could not be created
      */
     @NonNull

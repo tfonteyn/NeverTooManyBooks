@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,7 +23,7 @@ import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 
@@ -37,7 +37,7 @@ public interface PublisherDao
      * @return The list
      */
     @NonNull
-    ArrayList<String> getNames();
+    List<String> getNames();
 
     /**
      * Get all publishers; mainly for the purpose of exports.

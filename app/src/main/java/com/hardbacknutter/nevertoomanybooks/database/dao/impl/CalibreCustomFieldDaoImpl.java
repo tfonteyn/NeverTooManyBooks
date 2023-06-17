@@ -26,6 +26,7 @@ import android.database.sqlite.SQLiteDatabase;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
@@ -157,8 +158,8 @@ public class CalibreCustomFieldDaoImpl
 
     @NonNull
     @Override
-    public ArrayList<CalibreCustomField> getCustomFields() {
-        final ArrayList<CalibreCustomField> list = new ArrayList<>();
+    public List<CalibreCustomField> getCustomFields() {
+        final List<CalibreCustomField> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(SELECT_ALL, null)) {
             final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {

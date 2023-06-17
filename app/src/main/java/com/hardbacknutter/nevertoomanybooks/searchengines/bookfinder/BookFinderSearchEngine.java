@@ -215,12 +215,12 @@ public class BookFinderSearchEngine
     @WorkerThread
     @VisibleForTesting
     @NonNull
-    private ArrayList<String> parseCovers(@NonNull final Context context,
-                                          @NonNull final Document document,
-                                          @NonNull final Book book)
+    private List<String> parseCovers(@NonNull final Context context,
+                                     @NonNull final Document document,
+                                     @NonNull final Book book)
             throws StorageException {
 
-        final ArrayList<String> imageList = new ArrayList<>();
+        final List<String> imageList = new ArrayList<>();
 
         final Element img = document.selectFirst("div#header-img > img");
         if (img != null) {

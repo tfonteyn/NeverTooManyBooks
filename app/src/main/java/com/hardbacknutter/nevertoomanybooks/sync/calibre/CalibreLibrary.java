@@ -72,7 +72,7 @@ public class CalibreLibrary
     private final Set<CalibreCustomField> calibreCustomFields = new HashSet<>();
 
     /** The list of virtual libs in this library. */
-    private final ArrayList<CalibreVirtualLibrary> virtualLibraries = new ArrayList<>();
+    private final List<CalibreVirtualLibrary> virtualLibraries = new ArrayList<>();
 
     /** The physical Calibre library uuid. */
     @NonNull
@@ -221,7 +221,7 @@ public class CalibreLibrary
     }
 
     @NonNull
-    public ArrayList<CalibreVirtualLibrary> getVirtualLibraries() {
+    public List<CalibreVirtualLibrary> getVirtualLibraries() {
         return virtualLibraries;
     }
 

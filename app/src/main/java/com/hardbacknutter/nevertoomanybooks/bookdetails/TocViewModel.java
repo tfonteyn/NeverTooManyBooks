@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -78,7 +78,7 @@ public class TocViewModel
             // optional, display purpose only
             bookTitle = args.getString(DBKey.TITLE);
 
-            final ArrayList<TocEntry> tocList = args.getParcelableArrayList(Book.BKEY_TOC_LIST);
+            final List<TocEntry> tocList = args.getParcelableArrayList(Book.BKEY_TOC_LIST);
             Objects.requireNonNull(tocList, Book.BKEY_TOC_LIST);
             works.addAll(tocList);
 

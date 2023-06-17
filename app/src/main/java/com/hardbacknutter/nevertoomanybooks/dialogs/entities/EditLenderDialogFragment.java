@@ -97,7 +97,7 @@ public class EditLenderDialogFragment
     @Nullable
     private String currentEdit;
 
-    private ArrayList<String> people;
+    private List<String> people;
     private ExtArrayAdapter<String> adapter;
 
     /**

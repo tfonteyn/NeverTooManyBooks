@@ -25,7 +25,7 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
@@ -64,7 +64,7 @@ public interface CalibreLibraryDao {
     CalibreLibrary findLibraryByStringId(@NonNull String libraryStringId);
 
     @NonNull
-    ArrayList<CalibreLibrary> getAllLibraries();
+    List<CalibreLibrary> getAllLibraries();
 
     /**
      * Get the <strong>virtual</strong> {@link CalibreLibrary} for the given library + name.
@@ -97,6 +97,15 @@ public interface CalibreLibraryDao {
      */
     long insert(@NonNull CalibreLibrary library);
 
+    /**
+     * Find a {@link CalibreLibrary} by using the <strong>name</strong> fields.
+     * If found, updates <strong>ONLY</strong> the id with the one found in the database.
+     * <p>
+     * If the item has 'sub' items, then implementations must propagate the call.
+     *
+     * @param context Current context
+     * @param library to update
+     */
     void fixId(@NonNull Context context,
                @NonNull CalibreLibrary library);
 

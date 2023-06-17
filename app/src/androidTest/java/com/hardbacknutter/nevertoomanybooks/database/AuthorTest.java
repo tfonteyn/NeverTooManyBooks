@@ -21,7 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.database;
 
 import androidx.test.filters.MediumTest;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -97,7 +97,7 @@ public class AuthorTest
     public void renameAuthor()
             throws DaoWriteException, StorageException {
 
-        ArrayList<Long> bookIdList;
+        final List<Long> bookIdList;
 
         Author existingAuthor;
         final Author tmpAuthor;
@@ -184,8 +184,8 @@ public class AuthorTest
     public void renameAuthorWithTocs()
             throws DaoWriteException, StorageException {
 
-        final ArrayList<Long> bookIdList;
-        final ArrayList<AuthorWork> works;
+        final List<Long> bookIdList;
+        final List<AuthorWork> works;
 
         Author existingAuthor;
 
@@ -400,7 +400,6 @@ public class AuthorTest
         for (int i = 0; i <= 4; i++) {
             author[i] = Author.from(TestConstants.AuthorFullName(i));
             author[i] = authorDao.findByName(context, author[i], () -> bookLocale).orElseThrow();
-            ;
             assertEquals(authorId[i], author[i].getId());
         }
     }

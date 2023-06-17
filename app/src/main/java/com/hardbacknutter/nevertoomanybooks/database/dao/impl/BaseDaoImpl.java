@@ -24,6 +24,7 @@ import android.database.Cursor;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
@@ -95,8 +96,8 @@ abstract class BaseDaoImpl {
      * @return List of values
      */
     @NonNull
-    ArrayList<String> getColumnAsStringArrayList(@NonNull final String sql) {
-        final ArrayList<String> list = new ArrayList<>();
+    List<String> getColumnAsStringArrayList(@NonNull final String sql) {
+        final List<String> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(sql, null)) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getString(0));
@@ -113,8 +114,8 @@ abstract class BaseDaoImpl {
      * @return List of values
      */
     @NonNull
-    ArrayList<Long> getColumnAsLongArrayList(@NonNull final String sql) {
-        final ArrayList<Long> list = new ArrayList<>();
+    List<Long> getColumnAsLongArrayList(@NonNull final String sql) {
+        final List<Long> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(sql, null)) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getLong(0));

@@ -104,6 +104,7 @@ public class Book
         extends DataManager
         implements AuthorWork, Entity {
 
+    /** {@link Parcelable}. */
     public static final Creator<Book> CREATOR = new Creator<>() {
 
         @Override
@@ -118,6 +119,7 @@ public class Book
             return new Book[size];
         }
     };
+
     /**
      * Bundle key for {@code ParcelableArrayList<Author>}.
      * <strong>No prefix, NEVER change this string as it's used in export/import.</strong>
@@ -164,6 +166,7 @@ public class Book
      * Rating goes from 0 to 5 stars, in 0.5 increments.
      */
     public static final int RATING_STARS = 5;
+
     /**
      * A book (and dustcover) condition goes from 1(worst)..5(best) or 0 for not-set.
      * In code we only need 5(best) which is used as default when adding a new book.
@@ -179,6 +182,7 @@ public class Book
      */
     @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
     public static final int CONDITION_AS_NEW = 5;
+
     /** Log tag. */
     private static final String TAG = "Book";
 
@@ -584,10 +588,10 @@ public class Book
     /**
      * Get the list of {@link Author}s.
      *
-     * @return new List
+     * @return List
      */
     @NonNull
-    public ArrayList<Author> getAuthors() {
+    public List<Author> getAuthors() {
         return getParcelableArrayList(BKEY_AUTHOR_LIST);
     }
 
@@ -597,7 +601,7 @@ public class Book
      * @param authors list
      */
     public void setAuthors(@NonNull final List<Author> authors) {
-        putParcelableArrayList(BKEY_AUTHOR_LIST, new ArrayList<>(authors));
+        putParcelableArrayList(BKEY_AUTHOR_LIST, authors);
     }
 
     /**
@@ -634,7 +638,7 @@ public class Book
      */
     public void pruneAuthors(@NonNull final Context context,
                              final boolean lookupLocale) {
-        final ArrayList<Author> authors = getAuthors();
+        final List<Author> authors = getAuthors();
         if (!authors.isEmpty()) {
             final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
 
@@ -676,10 +680,10 @@ public class Book
     /**
      * Get the list of {@link Series}.
      *
-     * @return new List
+     * @return List
      */
     @NonNull
-    public ArrayList<Series> getSeries() {
+    public List<Series> getSeries() {
         return getParcelableArrayList(BKEY_SERIES_LIST);
     }
 
@@ -689,7 +693,7 @@ public class Book
      * @param series list
      */
     public void setSeries(@NonNull final List<Series> series) {
-        putParcelableArrayList(BKEY_SERIES_LIST, new ArrayList<>(series));
+        putParcelableArrayList(BKEY_SERIES_LIST, series);
     }
 
     /**
@@ -770,10 +774,10 @@ public class Book
     /**
      * Get the list of {@link Publisher}s.
      *
-     * @return new List
+     * @return List
      */
     @NonNull
-    public ArrayList<Publisher> getPublishers() {
+    public List<Publisher> getPublishers() {
         return getParcelableArrayList(BKEY_PUBLISHER_LIST);
     }
 
@@ -783,7 +787,7 @@ public class Book
      * @param publishers list
      */
     public void setPublishers(@NonNull final List<Publisher> publishers) {
-        putParcelableArrayList(BKEY_PUBLISHER_LIST, new ArrayList<>(publishers));
+        putParcelableArrayList(BKEY_PUBLISHER_LIST, publishers);
     }
 
     /**
@@ -842,10 +846,10 @@ public class Book
     /**
      * Get the list of {@link Bookshelf}s.
      *
-     * @return new List
+     * @return List
      */
     @NonNull
-    public ArrayList<Bookshelf> getBookshelves() {
+    public List<Bookshelf> getBookshelves() {
         return getParcelableArrayList(BKEY_BOOKSHELF_LIST);
     }
 
@@ -855,7 +859,7 @@ public class Book
      * @param bookShelves list
      */
     public void setBookshelves(@NonNull final List<Bookshelf> bookShelves) {
-        putParcelableArrayList(BKEY_BOOKSHELF_LIST, new ArrayList<>(bookShelves));
+        putParcelableArrayList(BKEY_BOOKSHELF_LIST, bookShelves);
     }
 
     /**
@@ -870,10 +874,10 @@ public class Book
     /**
      * Get the list of {@link TocEntry}s.
      *
-     * @return new List
+     * @return List
      */
     @NonNull
-    public ArrayList<TocEntry> getToc() {
+    public List<TocEntry> getToc() {
         return getParcelableArrayList(BKEY_TOC_LIST);
     }
 
@@ -883,7 +887,7 @@ public class Book
      * @param tocEntries list
      */
     public void setToc(@NonNull final List<TocEntry> tocEntries) {
-        putParcelableArrayList(BKEY_TOC_LIST, new ArrayList<>(tocEntries));
+        putParcelableArrayList(BKEY_TOC_LIST, tocEntries);
     }
 
     @NonNull
@@ -1208,7 +1212,7 @@ public class Book
      */
     public void setCoverFileSpec(@IntRange(from = 0, to = 1) final int cIdx,
                                  @NonNull final String fileSpec) {
-        final ArrayList<String> list = new ArrayList<>();
+        final List<String> list = new ArrayList<>();
         list.add(fileSpec);
         putStringArrayList(BKEY_FILE_SPEC_ARRAY[cIdx], list);
     }
@@ -1221,7 +1225,7 @@ public class Book
      *                  Pass in {@code null} or an empty list to remove any previous list
      */
     public void setCoverFileSpecList(@IntRange(from = 0, to = 1) final int cIdx,
-                                     @Nullable final ArrayList<String> fileSpecs) {
+                                     @Nullable final List<String> fileSpecs) {
         if (fileSpecs != null && !fileSpecs.isEmpty()) {
             putStringArrayList(BKEY_FILE_SPEC_ARRAY[cIdx], fileSpecs);
         } else {

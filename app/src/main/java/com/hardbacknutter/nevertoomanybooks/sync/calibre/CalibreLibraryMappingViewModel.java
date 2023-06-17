@@ -30,8 +30,8 @@ import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderViewModel;
@@ -39,7 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderViewModel;
 public class CalibreLibraryMappingViewModel
         extends SyncReaderViewModel {
 
-    private final ArrayList<CalibreLibrary> libraries = new ArrayList<>();
+    private final List<CalibreLibrary> libraries = new ArrayList<>();
     private CalibreLibraryDao calibreLibraryDao;
 
     private CalibreLibrary currentLibrary;
@@ -59,7 +59,7 @@ public class CalibreLibraryMappingViewModel
     }
 
     @NonNull
-    ArrayList<CalibreLibrary> getLibraries() {
+    List<CalibreLibrary> getLibraries() {
         return libraries;
     }
 

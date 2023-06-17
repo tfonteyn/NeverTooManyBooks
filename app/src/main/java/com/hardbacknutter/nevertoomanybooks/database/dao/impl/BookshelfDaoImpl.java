@@ -467,9 +467,8 @@ public class BookshelfDaoImpl
 
     @NonNull
     @Override
-    public ArrayList<Long> getBookIds(final long bookshelfId) {
-        //
-        final ArrayList<Long> list = new ArrayList<>();
+    public List<Long> getBookIds(final long bookshelfId) {
+        final List<Long> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(Sql.SELECT_BOOK_IDS_BY_BOOKSHELF_ID,
                                          new String[]{String.valueOf(bookshelfId)})) {
             while (cursor.moveToNext()) {
@@ -481,8 +480,8 @@ public class BookshelfDaoImpl
 
     @Override
     @NonNull
-    public ArrayList<Bookshelf> getByBookId(@IntRange(from = 1) final long bookId) {
-        final ArrayList<Bookshelf> list = new ArrayList<>();
+    public List<Bookshelf> getByBookId(@IntRange(from = 1) final long bookId) {
+        final List<Bookshelf> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(Sql.BOOKSHELVES_BY_BOOK_ID,
                                          new String[]{String.valueOf(bookId)})) {
             final CursorRow rowData = new CursorRow(cursor);

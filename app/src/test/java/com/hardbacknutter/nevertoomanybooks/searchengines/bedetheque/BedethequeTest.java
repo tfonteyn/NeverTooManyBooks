@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
@@ -34,7 +33,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
@@ -55,7 +53,6 @@ public class BedethequeTest
 
     private BedethequeSearchEngine searchEngine;
     private Book book;
-    private AuthorResolver mockAuthorResolver;
 
     @BeforeEach
     public void setup()
@@ -76,8 +73,8 @@ public class BedethequeTest
         final String filename = "/bedetheque/BD-Fond-du-monde-Tome-6-La-grande-terre-19401.html";
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
-        searchEngine.parse(context, document, new boolean[]{true, true}, book, mockAuthorResolver);
-        System.out.println(book);
+        searchEngine.parse(context, document, new boolean[]{true, true}, book, null);
+        //System.out.println(book);
 
         assertEquals("La grande terre", book.getString(DBKey.TITLE, null));
 
@@ -86,12 +83,12 @@ public class BedethequeTest
         assertEquals("2840557428", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("46", book.getString(DBKey.PAGE_COUNT, null));
 
-        final ArrayList<Publisher> allPublishers = book.getPublishers();
+        final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Delcourt", allPublishers.get(0).getName());
 
-        final ArrayList<Series> allSeries = book.getSeries();
+        final List<Series> allSeries = book.getSeries();
         assertNotNull(allSeries);
         assertEquals(1, allSeries.size());
 
@@ -99,7 +96,7 @@ public class BedethequeTest
         assertEquals("Le Fond du monde", series.getTitle());
         assertEquals("6", series.getNumber());
 
-        final ArrayList<Author> authors = book.getAuthors();
+        final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(4, authors.size());
 

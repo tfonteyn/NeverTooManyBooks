@@ -92,7 +92,7 @@ public class CalibreLibraryCoder
         // but the space-saving would be minuscule.
         data.put(DBKey.FK_BOOKSHELF, bookshelfCoder.encode(libraryBookshelf));
 
-        final ArrayList<CalibreVirtualLibrary> vlibs = library.getVirtualLibraries();
+        final List<CalibreVirtualLibrary> vlibs = library.getVirtualLibraries();
         if (!vlibs.isEmpty()) {
             final JSONArray vlArray = new JSONArray();
             for (final CalibreVirtualLibrary vlib : vlibs) {

@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.CookieManager;
 import java.net.HttpCookie;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -433,7 +432,7 @@ public class BedethequeSearchEngine
                 book.putString(DBKey.DESCRIPTION, description.text());
             }
 
-            if (!book.getAuthors().isEmpty() && authorResolver != null) {
+            if (authorResolver != null) {
                 for (final Author author : book.getAuthors()) {
                     authorResolver.resolve(author);
                 }

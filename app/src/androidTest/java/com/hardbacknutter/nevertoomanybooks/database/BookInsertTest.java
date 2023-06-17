@@ -21,7 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.database;
 
 import androidx.test.filters.MediumTest;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -70,8 +70,8 @@ public class BookInsertTest
     @Test
     public void inserting()
             throws DaoWriteException, StorageException {
-        ArrayList<Long> bookIdList;
-        ArrayList<AuthorWork> works;
+        List<Long> bookIdList;
+        List<AuthorWork> works;
 
         assertFalse(serviceLocator.getDb().isCollationCaseSensitive());
 

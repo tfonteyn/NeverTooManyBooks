@@ -63,10 +63,10 @@ public class StringList<E> {
      *
      * @param stringList String representing the list
      *
-     * @return ArrayList (so it's Parcelable) of elements
+     * @return list
      */
     @NonNull
-    public ArrayList<E> decodeList(@Nullable final CharSequence stringList) {
+    public List<E> decodeList(@Nullable final CharSequence stringList) {
         return decode(stringList, coder.getElementSeparator(), false);
     }
 
@@ -93,11 +93,11 @@ public class StringList<E> {
      * @return list
      */
     @NonNull
-    public ArrayList<E> decode(@Nullable final CharSequence stringList,
-                               final char delimiter,
-                               final boolean allowBlank) {
+    public List<E> decode(@Nullable final CharSequence stringList,
+                          final char delimiter,
+                          final boolean allowBlank) {
         final StringBuilder sb = new StringBuilder();
-        final ArrayList<E> list = new ArrayList<>();
+        final List<E> list = new ArrayList<>();
         if (stringList == null) {
             return list;
         }

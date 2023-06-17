@@ -85,7 +85,7 @@ public class CoverBrowserViewModel
     private final SearchEditionsTask searchEditionsTask = new SearchEditionsTask();
     /** List of ISBN numbers for alternative editions. The base list for the gallery adapter. */
     @NonNull
-    private final ArrayList<String> editions = new ArrayList<>();
+    private final List<String> editions = new ArrayList<>();
     /** FragmentResultListener request key to use for our response. */
     private String requestKey;
     /** SelectedImage. */
@@ -251,7 +251,7 @@ public class CoverBrowserViewModel
     }
 
     @NonNull
-    public ArrayList<String> getEditions() {
+    public List<String> getEditions() {
         // used directly
         return editions;
     }

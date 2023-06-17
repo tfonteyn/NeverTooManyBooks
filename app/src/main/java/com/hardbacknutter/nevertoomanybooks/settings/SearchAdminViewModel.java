@@ -51,7 +51,7 @@ public class SearchAdminViewModel
     public static final String BKEY_LIST = TAG + ":list";
 
     /** Ordered list. */
-    private final Map<Site.Type, ArrayList<Site>> typeAndSites = new LinkedHashMap<>();
+    private final Map<Site.Type, List<Site>> typeAndSites = new LinkedHashMap<>();
 
     /**
      * Pseudo constructor.
@@ -64,7 +64,7 @@ public class SearchAdminViewModel
     public void init(@Nullable final Bundle args) {
         if (typeAndSites.isEmpty()) {
             if (args != null) {
-                final ArrayList<Site> siteList = args.getParcelableArrayList(BKEY_LIST);
+                final List<Site> siteList = args.getParcelableArrayList(BKEY_LIST);
                 if (siteList != null && !siteList.isEmpty()) {
                     // all sites have the same type, just grab it from the first one.
                     typeAndSites.put(siteList.get(0).getType(), siteList);
@@ -100,8 +100,8 @@ public class SearchAdminViewModel
      * @return the list of sites
      */
     @NonNull
-    ArrayList<Site> getList(@NonNull final Site.Type type) {
-        final ArrayList<Site> list = typeAndSites.get(type);
+    List<Site> getList(@NonNull final Site.Type type) {
+        final List<Site> list = typeAndSites.get(type);
         if (list == null) {
             throw new IllegalStateException("type not found: " + type);
         }
@@ -116,7 +116,7 @@ public class SearchAdminViewModel
      * @return {@code true} if each list handled has at least one site enabled.
      */
     public boolean validate() {
-        for (final ArrayList<Site> list : typeAndSites.values()) {
+        for (final List<Site> list : typeAndSites.values()) {
             if (list.stream().noneMatch(Site::isActive)) {
                 return false;
             }
@@ -130,7 +130,7 @@ public class SearchAdminViewModel
      * @param context Current context
      */
     void persist(@NonNull final Context context) {
-        for (final Map.Entry<Site.Type, ArrayList<Site>> entry : typeAndSites.entrySet()) {
+        for (final Map.Entry<Site.Type, List<Site>> entry : typeAndSites.entrySet()) {
             entry.getKey().setSiteList(context, entry.getValue());
         }
     }

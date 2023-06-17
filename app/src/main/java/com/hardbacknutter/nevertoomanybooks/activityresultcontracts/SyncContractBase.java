@@ -30,6 +30,7 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -54,19 +55,6 @@ public abstract class SyncContractBase
                                                         new ArrayList<>(EnumSet.of(outcome)));
     }
 
-    /**
-     * Create the result which {@link #parseResult(int, Intent)} will receive.
-     *
-     * @param outcomes the result
-     *
-     * @return Intent
-     */
-    @NonNull
-    public static Intent createResult(@NonNull final EnumSet<Outcome> outcomes) {
-        return new Intent().putParcelableArrayListExtra(BKEY_RESULT,
-                                                        new ArrayList<>(outcomes));
-    }
-
     @Override
     @NonNull
     public EnumSet<SyncContractBase.Outcome> parseResult(final int resultCode,
@@ -80,7 +68,7 @@ public abstract class SyncContractBase
             return EnumSet.noneOf(Outcome.class);
         }
 
-        final ArrayList<Outcome> list = intent.getParcelableArrayListExtra(BKEY_RESULT);
+        final List<Outcome> list = intent.getParcelableArrayListExtra(BKEY_RESULT);
         if (list == null) {
             return EnumSet.noneOf(Outcome.class);
         }

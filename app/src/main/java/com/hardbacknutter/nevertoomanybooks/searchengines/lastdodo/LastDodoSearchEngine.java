@@ -520,7 +520,7 @@ public class LastDodoSearchEngine
             }
         }
 
-        if (!book.getAuthors().isEmpty() && authorResolver != null) {
+        if (authorResolver != null) {
             for (final Author author : book.getAuthors()) {
                 authorResolver.resolve(author);
             }

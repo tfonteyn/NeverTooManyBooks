@@ -90,7 +90,7 @@ public class SearchOrderFragment
      * Single-list mode: the list as passed in.
      * All-list mode: a local <strong>deep-copy</strong> of the {@link #type} list.
      */
-    private ArrayList<Site> siteList;
+    private List<Site> siteList;
 
     /**
      * Constructor.

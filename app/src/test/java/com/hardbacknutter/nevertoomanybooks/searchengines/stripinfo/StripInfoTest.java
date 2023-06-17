@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
@@ -160,12 +159,12 @@ class StripInfoTest
         assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Kleur", book.getString(DBKey.COLOR, null));
 
-        final ArrayList<Publisher> allPublishers = book.getPublishers();
+        final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Le Lombard", allPublishers.get(0).getName());
 
-        final ArrayList<Series> allSeries = book.getSeries();
+        final List<Series> allSeries = book.getSeries();
         assertNotNull(allSeries);
         assertEquals(2, allSeries.size());
 
@@ -177,7 +176,7 @@ class StripInfoTest
         assertEquals("Getekend", series.getTitle());
         assertEquals("", series.getNumber());
 
-        final ArrayList<Author> authors = book.getAuthors();
+        final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(20, authors.size());
 

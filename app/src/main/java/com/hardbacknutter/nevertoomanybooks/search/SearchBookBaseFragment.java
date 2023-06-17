@@ -41,7 +41,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
@@ -79,7 +78,7 @@ public abstract class SearchBookBaseFragment
 
     SearchCoordinator coordinator;
 
-    private final ActivityResultLauncher<ArrayList<Site>> editSitesLauncher =
+    private final ActivityResultLauncher<List<Site>> editSitesLauncher =
             registerForActivityResult(new SearchSitesSingleListContract(),
                                       o -> o.ifPresent(sites -> {
                                           coordinator.setSiteList(sites);

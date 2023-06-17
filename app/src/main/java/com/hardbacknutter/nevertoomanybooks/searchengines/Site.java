@@ -326,9 +326,8 @@ public final class Site
          * @return deep-copy instance of the Site list
          */
         @NonNull
-        public ArrayList<Site> getSites() {
-            return siteList.stream().map(Site::new)
-                           .collect(Collectors.toCollection(ArrayList::new));
+        public List<Site> getSites() {
+            return siteList.stream().map(Site::new).collect(Collectors.toList());
         }
 
         /**

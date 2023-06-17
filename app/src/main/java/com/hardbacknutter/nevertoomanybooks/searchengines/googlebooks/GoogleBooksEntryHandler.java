@@ -25,7 +25,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

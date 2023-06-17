@@ -439,7 +439,7 @@ public class TableDefinition {
             return ref() + join(tables[0]);
         }
 
-        final ArrayList<TableDefinition> list = new ArrayList<>(Arrays.asList(tables));
+        final List<TableDefinition> list = new ArrayList<>(Arrays.asList(tables));
         list.add(0, this);
 
         final StringBuilder sb = new StringBuilder(ref());

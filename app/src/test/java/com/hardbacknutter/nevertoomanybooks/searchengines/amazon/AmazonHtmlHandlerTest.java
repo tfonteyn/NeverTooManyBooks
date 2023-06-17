@@ -20,7 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.amazon;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
@@ -85,13 +85,13 @@ class AmazonHtmlHandlerTest
         assertEquals(14.49d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
         assertEquals(MoneyParser.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
-        final ArrayList<Publisher> allPublishers = book.getPublishers();
+        final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Gollancz", allPublishers.get(0).getName());
 
-        final ArrayList<Author> authors = book.getAuthors();
+        final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(1, authors.size());
         assertEquals("Reynolds", authors.get(0).getFamilyName());
@@ -121,12 +121,12 @@ class AmazonHtmlHandlerTest
         assertEquals(5.84d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
         assertEquals(MoneyParser.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
-        final ArrayList<Publisher> allPublishers = book.getPublishers();
+        final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Gollancz", allPublishers.get(0).getName());
 
-        final ArrayList<Author> authors = book.getAuthors();
+        final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(2, authors.size());
         assertEquals("Reynolds", authors.get(0).getFamilyName());
@@ -156,12 +156,12 @@ class AmazonHtmlHandlerTest
         assertEquals(12d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
-        final ArrayList<Publisher> allPublishers = book.getPublishers();
+        final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Dargaud", allPublishers.get(0).getName());
 
-        final ArrayList<Author> authors = book.getAuthors();
+        final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(2, authors.size());
         assertEquals("Jean-Yves", authors.get(0).getFamilyName());

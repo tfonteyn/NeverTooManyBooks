@@ -42,9 +42,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Executor;
@@ -470,7 +470,7 @@ public class CoverBrowserDialogFragment
         private final ImageViewLoader imageLoader;
         private final LayoutInflater inflater;
         @NonNull
-        private final ArrayList<String> editionsList;
+        private final List<String> editionsList;
         @NonNull
         private final PositionHandler positionHandler;
 
@@ -484,7 +484,7 @@ public class CoverBrowserDialogFragment
          */
         @SuppressWarnings("SameParameterValue")
         GalleryAdapter(@NonNull final Context context,
-                       @NonNull final ArrayList<String> editionsList,
+                       @NonNull final List<String> editionsList,
                        @NonNull final PositionHandler positionHandler,
                        @NonNull final Executor executor) {
             inflater = LayoutInflater.from(context);

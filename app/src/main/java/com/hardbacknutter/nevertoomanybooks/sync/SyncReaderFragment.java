@@ -311,7 +311,7 @@ public class SyncReaderFragment
 
     private void showCalibreMetaData(@NonNull final Bundle data) {
 
-        final ArrayList<CalibreLibrary> libraries =
+        final List<CalibreLibrary> libraries =
                 data.getParcelableArrayList(CalibreContentServer.BKEY_LIBRARY_LIST);
 
         //noinspection DataFlowIssue

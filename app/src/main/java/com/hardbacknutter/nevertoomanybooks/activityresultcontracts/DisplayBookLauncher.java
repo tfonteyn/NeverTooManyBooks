@@ -30,7 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.core.util.Supplier;
 import androidx.fragment.app.Fragment;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
@@ -67,8 +67,7 @@ public class DisplayBookLauncher {
 
         switch (work.getWorkType()) {
             case TocEntry: {
-                final ArrayList<Long> bookIdList = tocEntryDaoSupplier
-                        .get().getBookIds(work.getId());
+                final List<Long> bookIdList = tocEntryDaoSupplier.get().getBookIds(work.getId());
                 if (bookIdList.size() == 1) {
                     launcher.launch(new ShowBookPagerContract.Input(
                             bookIdList.get(0), style.getUuid(), null, 0));

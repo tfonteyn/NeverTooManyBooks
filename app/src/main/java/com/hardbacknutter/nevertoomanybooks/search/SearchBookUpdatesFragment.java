@@ -43,8 +43,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
@@ -88,7 +88,7 @@ public class SearchBookUpdatesFragment
 
     /** The extended SearchCoordinator. */
     private SearchBookUpdatesViewModel vm;
-    private final ActivityResultLauncher<ArrayList<Site>> editSitesLauncher =
+    private final ActivityResultLauncher<List<Site>> editSitesLauncher =
             registerForActivityResult(new SearchSitesSingleListContract(),
                                       o -> o.ifPresent(sites -> vm.setSiteList(sites)));
 

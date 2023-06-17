@@ -25,7 +25,6 @@ import android.database.Cursor;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -75,7 +74,7 @@ public interface TocEntryDao {
      * @return list with book ID's
      */
     @NonNull
-    ArrayList<Long> getBookIds(long tocId);
+    List<Long> getBookIds(long tocId);
 
     /**
      * Return a list of paired book-id and book-title 's for the given TOC id.
@@ -100,7 +99,7 @@ public interface TocEntryDao {
      * @return list
      */
     @NonNull
-    ArrayList<TocEntry> getByBookId(@IntRange(from = 1) long bookId);
+    List<TocEntry> getByBookId(@IntRange(from = 1) long bookId);
 
     /**
      * Saves a list of {@link TocEntry} items.

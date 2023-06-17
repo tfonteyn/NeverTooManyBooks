@@ -268,7 +268,8 @@ public class CalibreContentServerReader
         // the requested (or default) library
         args.putParcelable(CalibreContentServer.BKEY_LIBRARY, library);
         // and the full list
-        args.putParcelableArrayList(CalibreContentServer.BKEY_LIBRARY_LIST, server.getLibraries());
+        args.putParcelableArrayList(CalibreContentServer.BKEY_LIBRARY_LIST,
+                                    new ArrayList<>(server.getLibraries()));
 
         args.putBoolean(CalibreContentServer.BKEY_EXT_INSTALLED, server.isExtensionInstalled());
 

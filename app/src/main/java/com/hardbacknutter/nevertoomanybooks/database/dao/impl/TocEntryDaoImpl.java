@@ -150,8 +150,8 @@ public class TocEntryDaoImpl
 
     @Override
     @NonNull
-    public ArrayList<TocEntry> getByBookId(@IntRange(from = 1) final long bookId) {
-        final ArrayList<TocEntry> list = new ArrayList<>();
+    public List<TocEntry> getByBookId(@IntRange(from = 1) final long bookId) {
+        final List<TocEntry> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(Sql.SELECT_TOC_ENTRIES_BY_BOOK_ID,
                                          new String[]{String.valueOf(bookId)})) {
             final CursorRow rowData = new CursorRow(cursor);
@@ -164,8 +164,8 @@ public class TocEntryDaoImpl
 
     @Override
     @NonNull
-    public ArrayList<Long> getBookIds(final long tocId) {
-        final ArrayList<Long> list = new ArrayList<>();
+    public List<Long> getBookIds(final long tocId) {
+        final List<Long> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(Sql.SELECT_BOOK_IDS_BY_TOC_ENTRY_ID,
                                          new String[]{String.valueOf(tocId)})) {
             while (cursor.moveToNext()) {
@@ -322,6 +322,7 @@ public class TocEntryDaoImpl
         final List<Long> bookIds = getColumnAsLongArrayList(Sql.REPOSITION);
         if (!bookIds.isEmpty()) {
             Synchronizer.SyncLock txLock = null;
+            //noinspection CheckStyle
             try {
                 if (!db.inTransaction()) {
                     txLock = db.beginTransaction(true);
@@ -329,7 +330,7 @@ public class TocEntryDaoImpl
 
                 for (final long bookId : bookIds) {
                     final Book book = Book.from(bookId);
-                    final Collection<TocEntry> list = getByBookId(bookId);
+                    final List<TocEntry> list = getByBookId(bookId);
                     // We KNOW there are no updates needed.
                     insertOrUpdate(context, bookId, list, false,
                                    book.getLocaleOrUserLocale(context));

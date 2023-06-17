@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -40,12 +41,12 @@ import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminViewModel;
 
 /**
- * We're sticking with the {@code Optional<ArrayList<Site>>} to maintain consistency with
+ * We're sticking with the {@code Optional<List<Site>>} to maintain consistency with
  * other contracts which all return an Optional.
  */
 @SuppressWarnings("OptionalContainsCollection")
 public class SearchSitesSingleListContract
-        extends ActivityResultContract<ArrayList<Site>, Optional<ArrayList<Site>>> {
+        extends ActivityResultContract<List<Site>, Optional<List<Site>>> {
 
     /** Log tag. */
     private static final String TAG = "SearchSitesSingleList";
@@ -55,20 +56,21 @@ public class SearchSitesSingleListContract
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @NonNull final ArrayList<Site> list) {
+                               @NonNull final List<Site> list) {
 
         // All sites in a list are always of the same type; just grab it from the first entry
         listKey = list.get(0).getType().getBundleKey();
 
         return FragmentHostActivity
                 .createIntent(context, R.layout.activity_admin_search, SearchAdminFragment.class)
-                .putParcelableArrayListExtra(SearchAdminViewModel.BKEY_LIST, list);
+                .putParcelableArrayListExtra(SearchAdminViewModel.BKEY_LIST,
+                                             new ArrayList<>(list));
     }
 
     @NonNull
     @Override
-    public Optional<ArrayList<Site>> parseResult(final int resultCode,
-                                                 @Nullable final Intent intent) {
+    public Optional<List<Site>> parseResult(final int resultCode,
+                                            @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             LoggerFactory.getLogger()
                          .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent
@@ -79,7 +81,7 @@ public class SearchSitesSingleListContract
             return Optional.empty();
         }
 
-        final ArrayList<Site> siteList = intent.getParcelableArrayListExtra(listKey);
+        final List<Site> siteList = intent.getParcelableArrayListExtra(listKey);
         if (siteList != null) {
             return Optional.of(siteList);
         } else {

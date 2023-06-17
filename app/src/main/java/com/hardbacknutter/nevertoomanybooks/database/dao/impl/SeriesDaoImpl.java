@@ -117,14 +117,14 @@ public class SeriesDaoImpl
 
     @Override
     @NonNull
-    public ArrayList<String> getNames() {
+    public List<String> getNames() {
         return getColumnAsStringArrayList(Sql.SELECT_ALL_NAMES);
     }
 
     @Override
     @NonNull
-    public ArrayList<Series> getByBookId(@IntRange(from = 1) final long bookId) {
-        final ArrayList<Series> list = new ArrayList<>();
+    public List<Series> getByBookId(@IntRange(from = 1) final long bookId) {
+        final List<Series> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(Sql.SERIES_BY_BOOK_ID,
                                          new String[]{String.valueOf(bookId)})) {
             final CursorRow rowData = new CursorRow(cursor);
@@ -147,8 +147,8 @@ public class SeriesDaoImpl
 
     @Override
     @NonNull
-    public ArrayList<Long> getBookIds(final long seriesId) {
-        final ArrayList<Long> list = new ArrayList<>();
+    public List<Long> getBookIds(final long seriesId) {
+        final List<Long> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(Sql.SELECT_BOOK_IDS_BY_SERIES_ID,
                                          new String[]{String.valueOf(seriesId)})) {
             while (cursor.moveToNext()) {
@@ -160,9 +160,9 @@ public class SeriesDaoImpl
 
     @Override
     @NonNull
-    public ArrayList<Long> getBookIds(final long seriesId,
-                                      final long bookshelfId) {
-        final ArrayList<Long> list = new ArrayList<>();
+    public List<Long> getBookIds(final long seriesId,
+                                 final long bookshelfId) {
+        final List<Long> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(
                 Sql.SELECT_BOOK_IDS_BY_SERIES_ID_AND_BOOKSHELF_ID,
                 new String[]{String.valueOf(seriesId), String.valueOf(bookshelfId)})) {

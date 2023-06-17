@@ -40,7 +40,6 @@ import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
 import androidx.lifecycle.Lifecycle;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -260,7 +259,7 @@ public class EditBookFieldsFragment
                 vm.getAllBookshelves()
                   .stream()
                   .filter(bookshelf -> selectedIds.contains(bookshelf.getId()))
-                  .collect(Collectors.toCollection(ArrayList::new));
+                  .collect(Collectors.toList());
 
         vm.getBook().setBookshelves(selected);
         field.setValue(selected);

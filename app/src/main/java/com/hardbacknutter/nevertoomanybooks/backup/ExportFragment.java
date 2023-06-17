@@ -190,9 +190,9 @@ public class ExportFragment
         vb.rbExportNewAndUpdated.setChecked(incremental);
 
         //noinspection DataFlowIssue
-        final Pair<Integer, ArrayList<String>> fo = vm.getFormatOptions(getContext());
+        final Pair<Integer, List<String>> fo = vm.getFormatOptions(getContext());
         final int initialPos = fo.first;
-        final ArrayList<String> list = fo.second;
+        final List<String> list = fo.second;
 
         vb.archiveFormat.setAdapter(new ExtArrayAdapter<>(
                 getContext(), R.layout.popup_dropdown_menu_item,

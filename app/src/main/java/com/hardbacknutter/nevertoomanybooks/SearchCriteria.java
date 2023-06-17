@@ -73,7 +73,7 @@ public class SearchCriteria
      * which can be re-used for the builder.
      */
     @NonNull
-    private final ArrayList<Long> bookIdList = new ArrayList<>();
+    private final List<Long> bookIdList = new ArrayList<>();
 
     /** Book title to use in FTS search query. */
     @Nullable
@@ -144,7 +144,7 @@ public class SearchCriteria
     }
 
     @NonNull
-    public ArrayList<Long> getBookIdList() {
+    public List<Long> getBookIdList() {
         // used directly!
         return bookIdList;
     }

@@ -138,7 +138,7 @@ public class SearchCoordinator
      * Sites to search on. If this list is empty, all searches will return {@code false}.
      * This list includes both active and disabled sites.
      */
-    private ArrayList<Site> allSites;
+    private List<Site> allSites;
     /** Base message for progress updates. */
     @Nullable
     private String baseMessage;
@@ -626,7 +626,7 @@ public class SearchCoordinator
      * @return list with all sites <strong>active and disabled</strong>
      */
     @NonNull
-    public ArrayList<Site> getSiteList() {
+    public List<Site> getSiteList() {
         return allSites;
     }
 
@@ -635,7 +635,7 @@ public class SearchCoordinator
      *
      * @param sites to use
      */
-    public void setSiteList(@NonNull final ArrayList<Site> sites) {
+    public void setSiteList(@NonNull final List<Site> sites) {
         allSites = sites;
     }
 
@@ -1072,10 +1072,10 @@ public class SearchCoordinator
          * @param sites   the ordered list of engines
          * @param book    Destination bundle
          */
-        public void process(@NonNull final Context context,
-                            @NonNull final List<EngineId> sites,
-                            @NonNull final Map<EngineId, WrappedTaskResult> searchResultsBySite,
-                            @NonNull final Book book) {
+        void process(@NonNull final Context context,
+                     @NonNull final List<EngineId> sites,
+                     @NonNull final Map<EngineId, WrappedTaskResult> searchResultsBySite,
+                     @NonNull final Book book) {
             sites.forEach(engineId -> {
                 final WrappedTaskResult siteData = searchResultsBySite.get(engineId);
                 if (siteData != null && siteData.result != null && !siteData.result.isEmpty()) {
@@ -1252,7 +1252,7 @@ public class SearchCoordinator
                 return;
             }
 
-            final ArrayList<T> list = book.getParcelableArrayList(key);
+            final List<T> list = book.getParcelableArrayList(key);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                 if (list.isEmpty()) {

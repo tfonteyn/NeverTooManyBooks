@@ -49,7 +49,7 @@ public class AuthorWorksViewModel
         extends ViewModel {
 
     /** The list of TOC/Books we're displaying. */
-    private final ArrayList<AuthorWork> works = new ArrayList<>();
+    private final List<AuthorWork> works = new ArrayList<>();
 
     /** Database Access. */
     private BookDao bookDao;
@@ -166,7 +166,7 @@ public class AuthorWorksViewModel
     }
 
     @NonNull
-    ArrayList<AuthorWork> getWorks() {
+    List<AuthorWork> getWorks() {
         // used directly by the adapter
         return works;
     }

@@ -53,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -229,7 +228,7 @@ public class AmazonSearchEngine
         checkCaptcha(context, url, document);
 
         if (!isCancelled()) {
-            final ArrayList<String> imageList = parseCovers(context, document, validIsbn, 0);
+            final List<String> imageList = parseCovers(context, document, validIsbn, 0);
             if (!imageList.isEmpty()) {
                 // let the system resolve any path variations
                 return new File(imageList.get(0)).getAbsolutePath();
@@ -538,14 +537,14 @@ public class AmazonSearchEngine
     @WorkerThread
     @VisibleForTesting
     @NonNull
-    private ArrayList<String> parseCovers(@NonNull final Context context,
-                                          @NonNull final Document document,
-                                          @Nullable final String isbn,
-                                          @SuppressWarnings("SameParameterValue")
-                                          @IntRange(from = 0, to = 1) final int cIdx)
+    private List<String> parseCovers(@NonNull final Context context,
+                                     @NonNull final Document document,
+                                     @Nullable final String isbn,
+                                     @SuppressWarnings("SameParameterValue")
+                                     @IntRange(from = 0, to = 1) final int cIdx)
             throws StorageException {
 
-        final ArrayList<String> imageList = new ArrayList<>();
+        final List<String> imageList = new ArrayList<>();
 
         final Element coverElement = document.selectFirst("img#imgBlkFront");
         if (coverElement == null) {

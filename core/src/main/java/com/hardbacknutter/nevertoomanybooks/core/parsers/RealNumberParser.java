@@ -98,9 +98,9 @@ public class RealNumberParser
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
 
-        final ArrayList<String> list = locales.stream()
-                                              .map(Locale::toLanguageTag)
-                                              .collect(Collectors.toCollection(ArrayList::new));
+        final List<String> list = locales.stream()
+                                         .map(Locale::toLanguageTag)
+                                         .collect(Collectors.toList());
         dest.writeStringList(list);
     }
 

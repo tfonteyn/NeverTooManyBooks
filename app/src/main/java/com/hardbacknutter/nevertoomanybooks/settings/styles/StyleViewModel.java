@@ -29,7 +29,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -50,7 +50,7 @@ public class StyleViewModel
     private UserStyle style;
     /** The list of groups with a boolean flag for when the user is editing the groups. */
     @Nullable
-    private ArrayList<WrappedGroup> wrappedGroupList;
+    private List<WrappedGroup> wrappedGroupList;
     @Nullable
     private StyleDataStore styleDataStore;
 
@@ -127,13 +127,13 @@ public class StyleViewModel
     }
 
     @NonNull
-    ArrayList<WrappedGroup> createWrappedGroupList() {
+    List<WrappedGroup> createWrappedGroupList() {
         // Build an array list with the groups already present in the style
         wrappedGroupList = style
                 .getGroupList()
                 .stream()
                 .map(group -> new WrappedGroup(group, true))
-                .collect(Collectors.toCollection(ArrayList::new));
+                .collect(Collectors.toList());
 
         // Get all other groups and add any missing ones to the list so the user can
         // add them if wanted.

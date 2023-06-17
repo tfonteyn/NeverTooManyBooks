@@ -395,14 +395,14 @@ public interface SearchEngine
          */
         @WorkerThread
         @NonNull
-        default ArrayList<String> searchBestCoverByIsbn(@NonNull final Context context,
-                                                        @NonNull final String validIsbn,
-                                                        @IntRange(from = 0, to = 1) final int cIdx)
+        default List<String> searchBestCoverByIsbn(@NonNull final Context context,
+                                                   @NonNull final String validIsbn,
+                                                   @IntRange(from = 0, to = 1) final int cIdx)
                 throws StorageException,
                        SearchException,
                        CredentialsException {
 
-            final ArrayList<String> list = new ArrayList<>();
+            final List<String> list = new ArrayList<>();
             String fileSpec = searchCoverByIsbn(context, validIsbn, cIdx,
                                                 Size.Large);
             if (fileSpec == null && supportsMultipleCoverSizes()) {

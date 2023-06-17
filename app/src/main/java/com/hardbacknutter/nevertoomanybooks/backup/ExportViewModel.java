@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
@@ -101,12 +102,12 @@ public class ExportViewModel
      * @return initial position + list
      */
     @NonNull
-    Pair<Integer, ArrayList<String>> getFormatOptions(@NonNull final Context context) {
+    Pair<Integer, List<String>> getFormatOptions(@NonNull final Context context) {
         Objects.requireNonNull(exportHelper);
 
         final ArchiveEncoding currentEncoding = exportHelper.getEncoding();
         int initialPos = 0;
-        final ArrayList<String> list = new ArrayList<>();
+        final List<String> list = new ArrayList<>();
         for (int i = 0; i < ENCODINGS.length; i++) {
             final ArchiveEncoding encoding = ENCODINGS[i];
             if (encoding == currentEncoding) {

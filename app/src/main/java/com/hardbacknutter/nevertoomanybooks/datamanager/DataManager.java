@@ -32,6 +32,7 @@ import androidx.annotation.VisibleForTesting;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -527,8 +528,12 @@ public class DataManager
      * @param value to store
      */
     protected void putStringArrayList(@NonNull final String key,
-                                      @NonNull final ArrayList<String> value) {
-        rawData.putStringArrayList(key, value);
+                                      @NonNull final List<String> value) {
+        if (value instanceof ArrayList) {
+            rawData.putStringArrayList(key, (ArrayList<String>) value);
+        } else {
+            rawData.putStringArrayList(key, new ArrayList<>(value));
+        }
     }
 
     /**
@@ -557,15 +562,19 @@ public class DataManager
     /**
      * Store a {@link Parcelable} {@link ArrayList} in the collection.
      * <p>
-     * If possible, AVOID using this method directly.
+     * <strong>If possible, AVOID using this method directly.</strong>
      *
      * @param key   Key of data object
      * @param value to store
      * @param <T>   type of objects in the list
      */
     public <T extends Parcelable> void putParcelableArrayList(@NonNull final String key,
-                                                              @NonNull final ArrayList<T> value) {
-        rawData.putParcelableArrayList(key, value);
+                                                              @NonNull final List<T> value) {
+        if (value instanceof ArrayList) {
+            rawData.putParcelableArrayList(key, (ArrayList<T>) value);
+        } else {
+            rawData.putParcelableArrayList(key, new ArrayList<>(value));
+        }
     }
 
     @Nullable

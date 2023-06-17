@@ -227,13 +227,13 @@ public class DebugReport {
     }
 
     @NonNull
-    public ArrayList<Uri> createUriList() {
+    public List<Uri> createUriList() {
         // Build the attachment list
         return files
                 .stream()
                 .filter(file -> file.exists() && file.length() > 0)
                 .map(file -> GenericFileProvider.createUri(context, file))
-                .collect(Collectors.toCollection(ArrayList::new));
+                .collect(Collectors.toList());
     }
 
     @NonNull

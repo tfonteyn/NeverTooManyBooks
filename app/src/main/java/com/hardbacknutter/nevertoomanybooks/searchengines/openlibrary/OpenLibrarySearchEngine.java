@@ -687,14 +687,14 @@ public class OpenLibrarySearchEngine
     }
 
     @NonNull
-    private ArrayList<String> parseCovers(@NonNull final Context context,
-                                          @NonNull final JSONObject element,
-                                          @NonNull final String validIsbn,
-                                          @SuppressWarnings("SameParameterValue")
-                                          @IntRange(from = 0, to = 1) final int cIdx)
+    private List<String> parseCovers(@NonNull final Context context,
+                                     @NonNull final JSONObject element,
+                                     @NonNull final String validIsbn,
+                                     @SuppressWarnings("SameParameterValue")
+                                     @IntRange(from = 0, to = 1) final int cIdx)
             throws StorageException {
 
-        final ArrayList<String> list = new ArrayList<>();
+        final List<String> list = new ArrayList<>();
 
         // get the largest cover image available.
         final JSONObject o = element.optJSONObject("cover");

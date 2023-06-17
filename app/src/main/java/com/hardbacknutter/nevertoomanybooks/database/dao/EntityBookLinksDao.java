@@ -25,8 +25,8 @@ import android.content.Context;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
@@ -113,7 +113,7 @@ public interface EntityBookLinksDao<T extends Entity>
      * @return list with book ID's linked to this item
      */
     @NonNull
-    ArrayList<Long> getBookIds(long itemId);
+    List<Long> getBookIds(long itemId);
 
     /**
      * Get a list of book ID's for the given {@link T} and {@link Bookshelf}.
@@ -125,8 +125,8 @@ public interface EntityBookLinksDao<T extends Entity>
      *         which are present on the given {@link Bookshelf}
      */
     @NonNull
-    ArrayList<Long> getBookIds(long itemId,
-                               long bookshelfId);
+    List<Long> getBookIds(long itemId,
+                          long bookshelfId);
 
     /**
      * Get a list of the {@link T} for a book.
@@ -136,7 +136,7 @@ public interface EntityBookLinksDao<T extends Entity>
      * @return list
      */
     @NonNull
-    ArrayList<T> getByBookId(@IntRange(from = 1) long bookId);
+    List<T> getByBookId(@IntRange(from = 1) long bookId);
 
     /**
      * Insert or update a list of {@link T}'s linked to a single {@link Book}.

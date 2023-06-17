@@ -25,7 +25,7 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
@@ -140,7 +140,7 @@ public class LoaneeDaoImpl
 
     @Override
     @NonNull
-    public ArrayList<String> getList() {
+    public List<String> getList() {
         return getColumnAsStringArrayList(SELECT_ALL);
     }
 }

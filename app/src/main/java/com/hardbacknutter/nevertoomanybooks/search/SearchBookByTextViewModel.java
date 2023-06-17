@@ -29,6 +29,7 @@ import androidx.preference.PreferenceManager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -96,12 +97,12 @@ public class SearchBookByTextViewModel
      * @return combined list
      */
     @NonNull
-    ArrayList<String> getAuthorNames(@NonNull final Context context) {
+    List<String> getAuthorNames(@NonNull final Context context) {
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
         // Uses {@link DBDefinitions#KEY_AUTHOR_FORMATTED_GIVEN_FIRST} as not all
         // search sites can copy with the formatted version.
-        final ArrayList<String> authors =
+        final List<String> authors =
                 ServiceLocator.getInstance().getAuthorDao()
                               .getNames(DBKey.AUTHOR_FORMATTED_GIVEN_FIRST);
 
@@ -145,11 +146,11 @@ public class SearchBookByTextViewModel
      * @return combined list
      */
     @NonNull
-    ArrayList<String> getPublisherNames(@NonNull final Context context) {
+    List<String> getPublisherNames(@NonNull final Context context) {
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
-        final ArrayList<String> publishers = ServiceLocator.getInstance().getPublisherDao()
-                                                           .getNames();
+        final List<String> publishers = ServiceLocator.getInstance().getPublisherDao()
+                                                      .getNames();
 
         final Collection<String> uniqueNames = new HashSet<>(publishers.size());
         for (final String s : publishers) {

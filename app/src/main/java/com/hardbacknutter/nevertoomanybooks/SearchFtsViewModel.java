@@ -26,7 +26,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
@@ -38,7 +38,7 @@ public class SearchFtsViewModel
     private static final int MAX_SUGGESTIONS = 20;
     private final MutableLiveData<SearchCriteria> onSearchCriteriaUpdate =
             new MutableLiveData<>();
-    private final MutableLiveData<ArrayList<Long>> onBooklistUpdate = new MutableLiveData<>();
+    private final MutableLiveData<List<Long>> onBooklistUpdate = new MutableLiveData<>();
     /** Database Access. */
     private FtsDao dao;
     @Nullable
@@ -64,7 +64,7 @@ public class SearchFtsViewModel
     }
 
     @NonNull
-    MutableLiveData<ArrayList<Long>> onBooklistUpdate() {
+    MutableLiveData<List<Long>> onBooklistUpdate() {
         return onBooklistUpdate;
     }
 

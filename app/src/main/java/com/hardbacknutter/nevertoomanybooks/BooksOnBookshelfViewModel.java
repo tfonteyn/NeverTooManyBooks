@@ -665,7 +665,7 @@ public class BooksOnBookshelfViewModel
     @NonNull
     UpdateBooklistContract.Input createUpdateBooklistContractInput(
             @NonNull final Context context) {
-        final ArrayList<Long> books = getBooklist().getCurrentBookIdList();
+        final List<Long> books = getBooklist().getCurrentBookIdList();
 
         final String title = context.getString(R.string.name_colon_value,
                                                context.getString(R.string.lbl_bookshelf),
@@ -693,7 +693,7 @@ public class BooksOnBookshelfViewModel
         final BLGRecord blgRecord = Objects.requireNonNull(BLG_RECORD.get(groupId),
                                                            () -> GROUP_NOT_DEFINED + groupId);
 
-        final ArrayList<Long> books;
+        final List<Long> books;
 
         final long id = rowData.getLong(blgRecord.dbKey);
         // the id should never be 0. But paranoia...
@@ -756,7 +756,7 @@ public class BooksOnBookshelfViewModel
         final int level = rowData.getInt(DBKey.BL_NODE_LEVEL);
 
         Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
-        final ArrayList<Long> books = booklist.getBookIdsForNodeKey(nodeKey, level);
+        final List<Long> books = booklist.getBookIdsForNodeKey(nodeKey, level);
 
         @BooklistGroup.Id
         final int groupId = rowData.getInt(DBKey.BL_NODE_GROUP);

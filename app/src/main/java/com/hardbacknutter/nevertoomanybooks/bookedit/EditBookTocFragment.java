@@ -511,7 +511,7 @@ public class EditBookTocFragment
         private String requestKey;
         private boolean hasOtherEditions;
         private Book.ContentType bookContentType;
-        private ArrayList<TocEntry> tocEntries;
+        private List<TocEntry> tocEntries;
 
         @Override
         public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -589,10 +589,10 @@ public class EditBookTocFragment
             static void setResult(@NonNull final Fragment fragment,
                                   @NonNull final String requestKey,
                                   @NonNull final Book.ContentType bookContentType,
-                                  @NonNull final ArrayList<TocEntry> tocEntries) {
+                                  @NonNull final List<TocEntry> tocEntries) {
                 final Bundle result = new Bundle(2);
                 result.putLong(TOC_BIT_MASK, bookContentType.getId());
-                result.putParcelableArrayList(TOC_LIST, tocEntries);
+                result.putParcelableArrayList(TOC_LIST, new ArrayList<>(tocEntries));
                 fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
             }
 
@@ -610,12 +610,12 @@ public class EditBookTocFragment
              * @param bookContentType  the {@link Book.ContentType} ordinal
              * @param hasOtherEditions flag
              */
-            public void launch(@NonNull final ArrayList<TocEntry> toc,
+            public void launch(@NonNull final List<TocEntry> toc,
                                final long bookContentType,
                                final boolean hasOtherEditions) {
 
                 final Bundle args = new Bundle(4);
-                args.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
+                args.putParcelableArrayList(Book.BKEY_TOC_LIST, new ArrayList<>(toc));
                 args.putString(BKEY_REQUEST_KEY, requestKey);
                 args.putLong(DBKey.BOOK_CONTENT_TYPE, bookContentType);
                 args.putBoolean(BKEY_HAS_OTHER_EDITIONS, hasOtherEditions);

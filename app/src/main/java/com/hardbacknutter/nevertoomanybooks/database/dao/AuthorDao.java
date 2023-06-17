@@ -28,7 +28,7 @@ import androidx.annotation.StringDef;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -52,7 +52,7 @@ public interface AuthorDao
      * @return list of all author names.
      */
     @NonNull
-    ArrayList<String> getNames(@NonNull String key);
+    List<String> getNames(@NonNull String key);
 
     /**
      * Get all Authors; mainly for the purpose of exports.
@@ -75,11 +75,11 @@ public interface AuthorDao
      * @return List of {@link AuthorWork} for this {@link Author}
      */
     @NonNull
-    ArrayList<AuthorWork> getAuthorWorks(@NonNull Author author,
-                                         long bookshelfId,
-                                         boolean withTocEntries,
-                                         boolean withBooks,
-                                         @WorksOrderBy @Nullable String orderBy);
+    List<AuthorWork> getAuthorWorks(@NonNull Author author,
+                                    long bookshelfId,
+                                    boolean withTocEntries,
+                                    boolean withBooks,
+                                    @WorksOrderBy @Nullable String orderBy);
 
     /**
      * Count the {@link TocEntry}'s for the given {@link Author}.
