@@ -38,6 +38,16 @@ import static org.junit.Assert.assertTrue;
 public class UserStyleTest
         extends BaseDBTest {
 
+    /**
+     * Test fails with:
+     * <p>
+     * android.content.res.Resources$NotFoundException: Failed to resolve attribute 2130969324
+     * at com.hardbacknutter.nevertoomanybooks.utils.AttrUtils.getDimensionPixelSize(AttrUtils.java:151)
+     * at com.hardbacknutter.nevertoomanybooks.booklist.style.BaseStyle.getGroupRowHeight(BaseStyle.java:394)
+     * <p>
+     * because {@code com.google.android.material.R.attr.listPreferredItemHeightSmall}
+     * cannot be resolved in androidTest?
+     */
     @Test
     public void clone01() {
         final StylesHelper helper = serviceLocator.getStyles();

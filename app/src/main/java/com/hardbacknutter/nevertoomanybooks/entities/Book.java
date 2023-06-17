@@ -875,9 +875,9 @@ public class Book
     }
 
     /**
-     * Get the list of {@link CalibreLibrary}s.
+     * Get the {@link CalibreLibrary}.
      *
-     * @return new List
+     * @return library
      */
     @Nullable
     public CalibreLibrary getCalibreLibrary() {
@@ -900,9 +900,9 @@ public class Book
     }
 
     /**
-     * Replace the list of {@link CalibreLibrary}s with the given list.
+     * Set the {@link CalibreLibrary}.
      *
-     * @param library list
+     * @param library to set
      */
     public void setCalibreLibrary(@Nullable final CalibreLibrary library) {
         if (library != null) {

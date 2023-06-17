@@ -70,9 +70,19 @@ public interface AuthorWork {
                     @NonNull Details details,
                     @Nullable Style style);
 
+    /**
+     * Get the first-publication-date for this work.
+     *
+     * @return date
+     */
     @NonNull
     PartialDate getFirstPublicationDate();
 
+    /**
+     * Get the first/primary {@link Author} for this work.
+     *
+     * @return the {@link Author} or {@code null} if none present
+     */
     @Nullable
     Author getPrimaryAuthor();
 
