@@ -167,7 +167,7 @@
     <inspection_tool class="NegatedEqualityExpression" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="NegatedIfElse" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="m_ignoreNegatedNullComparison" value="true" />
-      <option name="m_ignoreNegatedZeroComparison" value="false" />
+      <option name="m_ignoreNegatedZeroComparison" value="true" />
     </inspection_tool>
     <inspection_tool class="NegativelyNamedBooleanVariable" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="NestedAssignment" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -205,7 +205,6 @@
       <option name="ignoreSerializable" value="false" />
       <option name="ignoreCloneable" value="false" />
     </inspection_tool>
-    <inspection_tool class="RedundantMethodOverride" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ResultSetIndexZero" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ReturnNull" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="m_reportObjectMethods" value="true" />
@@ -229,7 +228,6 @@
     <inspection_tool class="StringBufferToStringInConcatenation" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="StringConcatenationInFormatCall" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="StringConcatenationInMessageFormatCall" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="StringConcatenationMissingWhitespace" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="StringEqualsEmptyString" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="StringReplaceableByStringBuffer" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="onlyWarnOnLoop" value="true" />
@@ -242,12 +240,12 @@
           <option value="DataFlowIssue" />
           <option value="WeakerAccess" />
           <option value="ChainOfInstanceofChecks" />
+          <option value="CallToNumericToString" />
         </list>
       </option>
     </inspection_tool>
     <inspection_tool class="SuspiciousArrayCast" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="SuspiciousLiteralUnderscore" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="SwitchStatementWithConfusingDeclaration" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="SystemOutErr" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ThisEscapedInConstructor" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ThreadDumpStack" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -259,13 +257,12 @@
     <inspection_tool class="TooBroadThrows" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="ignoreThrown" value="true" />
     </inspection_tool>
-    <inspection_tool class="TrivialStringConcatenation" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="TypeMayBeWeakened" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="useRighthandTypeAsWeakestTypeInAssignments" value="true" />
       <option name="useParameterizedTypeForCollectionMethods" value="true" />
       <option name="doNotWeakenToJavaLangObject" value="true" />
       <option name="onlyWeakentoInterface" value="true" />
-      <stopClasses>java.util.Set,com.hardbacknutter.nevertoomanybooks.bookedit.EditAction,java.util.List,java.util.Collection,java.time.LocalDateTime,android.net.Uri,com.hardbacknutter.nevertoomanybooks.sync.SyncServer,com.hardbacknutter.nevertoomanybooks.entities.Book.ContentType,com.hardbacknutter.nevertoomanybooks.entities.Bookshelf,com.hardbacknutter.nevertoomanybooks.entities.TocEntry,com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener,com.hardbacknutter.nevertoomanybooks.backup.ImportResults,com.hardbacknutter.nevertoomanybooks.searchengines.Site.Type,com.hardbacknutter.nevertoomanybooks.entities.Series,com.hardbacknutter.nevertoomanybooks.entities.Publisher,com.hardbacknutter.nevertoomanybooks.entities.Author</stopClasses>
+      <stopClasses>java.util.Set,com.hardbacknutter.nevertoomanybooks.bookedit.EditAction,java.util.List,java.util.Collection,java.time.LocalDateTime,android.net.Uri,com.hardbacknutter.nevertoomanybooks.sync.SyncServer,com.hardbacknutter.nevertoomanybooks.entities.Book.ContentType,com.hardbacknutter.nevertoomanybooks.entities.Bookshelf,com.hardbacknutter.nevertoomanybooks.entities.TocEntry,com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener,com.hardbacknutter.nevertoomanybooks.backup.ImportResults,com.hardbacknutter.nevertoomanybooks.searchengines.Site.Type,com.hardbacknutter.nevertoomanybooks.entities.Series,com.hardbacknutter.nevertoomanybooks.entities.Publisher,com.hardbacknutter.nevertoomanybooks.entities.Author,com.hardbacknutter.nevertoomanybooks.entities.Book,android.text.Editable</stopClasses>
     </inspection_tool>
     <inspection_tool class="UnnecessarilyQualifiedStaticUsage" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="m_ignoreStaticFieldAccesses" value="false" />
