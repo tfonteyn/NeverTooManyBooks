@@ -486,6 +486,16 @@ public class Book
     }
 
     /**
+     * Check if this Book contains a non-blank ISBN string. Does not check if the ISBN is valid.
+     *
+     * @return {@code true} if present
+     */
+    public boolean hasIsbn() {
+        final String isbnStr = getString(DBKey.BOOK_ISBN, null);
+        return isbnStr != null && !isbnStr.isEmpty();
+    }
+
+    /**
      * Get the Book's Locale (based on its language).
      *
      * @param context Current context

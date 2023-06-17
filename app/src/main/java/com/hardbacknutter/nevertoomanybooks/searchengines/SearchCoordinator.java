@@ -241,7 +241,7 @@ public class SearchCoordinator
             searchCoordinatorProgress.setValue(new LiveDataEvent<>(accumulateProgress()));
 
             if (waitingForIsbnOrCode) {
-                if (result != null && hasIsbn(result)) {
+                if (result != null && result.hasIsbn()) {
                     waitingForIsbnOrCode = false;
                     // Replace the search text with the (we hope) exact ISBN/code
                     // Worst case, explicitly use an empty string
@@ -494,18 +494,6 @@ public class SearchCoordinator
         }
 
         return book;
-    }
-
-    /**
-     * Check if passed Bundle contains a non-blank ISBN string. Does not check if the ISBN is valid.
-     *
-     * @param book to check
-     *
-     * @return Present/absent
-     */
-    private boolean hasIsbn(@NonNull final Book book) {
-        final String isbnStr = book.getString(DBKey.BOOK_ISBN, null);
-        return isbnStr != null && !isbnStr.isEmpty();
     }
 
     @Override
