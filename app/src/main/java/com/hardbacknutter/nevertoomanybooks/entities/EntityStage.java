@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,6 +30,7 @@ import androidx.annotation.NonNull;
 public class EntityStage
         implements Parcelable {
 
+    /** {@link Parcelable}. */
     public static final Creator<EntityStage> CREATOR = new Creator<>() {
         @Override
         @NonNull
@@ -47,10 +48,14 @@ public class EntityStage
     private Stage stage = Stage.Clean;
     private boolean locked;
 
+    /**
+     * Constructor.
+     */
     public EntityStage() {
     }
 
     protected EntityStage(@NonNull final Parcel in) {
+        //noinspection DataFlowIssue
         stage = in.readParcelable(Stage.class.getClassLoader());
         locked = in.readByte() != 0;
     }

@@ -61,6 +61,7 @@ public enum SqLiteDataType
     /** Stored as UTC, in SQL-ISO format. */
     DateTime("datetime", Cursor.FIELD_TYPE_STRING);
 
+    /** {@link Parcelable}. */
     public static final Creator<SqLiteDataType> CREATOR = new Creator<>() {
         @Override
         @NonNull

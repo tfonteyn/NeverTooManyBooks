@@ -66,6 +66,7 @@ public class Money
         extends Number
         implements Parcelable {
 
+    /** {@link Parcelable}. */
     public static final Creator<Money> CREATOR = new Creator<>() {
         @Override
         @NonNull
@@ -152,6 +153,7 @@ public class Money
     }
 
     protected Money(@NonNull final Parcel in) {
+        //noinspection DataFlowIssue
         value = (BigDecimal) in.readSerializable();
         final boolean hasCurrency = in.readByte() != 0;
         if (hasCurrency) {
@@ -258,7 +260,10 @@ public class Money
 
     /**
      * DEBUG.
+     *
+     * @return traditional toPrint() formatting
      */
+    @SuppressWarnings("unused")
     @NonNull
     public String toDbgString() {
         return "Money{"

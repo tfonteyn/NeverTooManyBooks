@@ -137,6 +137,7 @@ public final class ParcelUtils {
     public static final class ParcelableArrayListLong
             implements Parcelable {
 
+        /** {@link Parcelable}. */
         public static final Creator<ParcelableArrayListLong> CREATOR = new Creator<>() {
             @Override
             @NonNull

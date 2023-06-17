@@ -58,6 +58,7 @@ import java.util.stream.Collectors;
 public class RealNumberParser
         implements Parcelable {
 
+    /** {@link Parcelable}. */
     public static final Creator<RealNumberParser> CREATOR = new Creator<>() {
         @Override
         @NonNull

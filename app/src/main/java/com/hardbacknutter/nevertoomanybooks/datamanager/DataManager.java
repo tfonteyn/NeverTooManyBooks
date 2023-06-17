@@ -55,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 public class DataManager
         implements DataHolder, Parcelable {
 
+    /** {@link Parcelable}. */
     public static final Creator<DataManager> CREATOR = new Creator<>() {
 
         @Override
@@ -155,7 +156,7 @@ public class DataManager
      * @param context Current context
      * @param src     DataManager to copy from
      */
-    protected void putAll(final Context context,
+    protected void putAll(@NonNull final Context context,
                           @NonNull final DataManager src) {
         final RealNumberParser realNumberParser =
                 new RealNumberParser(LocaleListUtils.asList(context));

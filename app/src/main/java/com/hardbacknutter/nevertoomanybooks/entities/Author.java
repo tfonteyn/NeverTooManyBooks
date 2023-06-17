@@ -391,6 +391,13 @@ public class Author
         }
     }
 
+    /**
+     * Create a suitable "unknown" Author.
+     *
+     * @param context Current context
+     *
+     * @return an Author with a localized "Unknown Author" family name
+     */
     @NonNull
     public static Author createUnknownAuthor(@NonNull final Context context) {
         final String unknownAuthor = context.getString(R.string.unknown_author);
@@ -546,6 +553,10 @@ public class Author
             }
             return text;
         }
+    }
+
+    private static String smallerText(@NonNull final String text) {
+        return " <small><i>" + text + "</i></small>";
     }
 
     /**
@@ -718,17 +729,16 @@ public class Author
                 if (fieldVisibility.isShowField(DBKey.AUTHOR_REAL_AUTHOR)) {
                     final Author author = getRealAuthor();
                     if (author != null) {
-                        label += " <small><i>"
-                                 + context.getString(R.string.lbl_author_pseudonym_of_X,
-                                                     author.getFormattedName(context, style))
-                                 + "</i></small>";
+                        label += smallerText(context.getString(
+                                R.string.lbl_author_pseudonym_of_X,
+                                author.getFormattedName(context, style)));
                     }
                 }
 
                 if (fieldVisibility.isShowField(DBKey.AUTHOR_TYPE__BITMASK)) {
                     final String typeLabels = getTypeLabels(context);
                     if (!typeLabels.isEmpty()) {
-                        label += " <small><i>" + typeLabels + "</i></small>";
+                        label += smallerText(typeLabels);
                     }
                 }
                 break;
@@ -897,7 +907,7 @@ public class Author
     }
 
     /**
-     * Syntax sugar to set the names in one call.
+     * Set the names.
      *
      * @param familyName Family name
      * @param givenNames Given names
@@ -908,13 +918,18 @@ public class Author
         this.givenNames = givenNames;
     }
 
+    /**
+     * Get the family name of this Author.
+     *
+     * @return family name
+     */
     @NonNull
     public String getFamilyName() {
         return familyName;
     }
 
     /**
-     * Get the given name ('first' name) of the Author.
+     * Get the given name ('first' name) of this Author.
      * Will be {@code ""} if unknown.
      *
      * @return given-name

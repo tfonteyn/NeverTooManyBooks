@@ -74,7 +74,7 @@ public class BookCoder {
     /** Obsolete, not used. */
     private static final String LEGACY_BOOKSHELF_ID = "bookshelf_id";
     /** Obsolete/alternative header: bookshelf name. Used by pre-1.2 versions. */
-    private static final String LEGACY_BOOKSHELF_1_1_x = "bookshelf";
+    private static final String LEGACY_BOOKSHELF_1_1 = "bookshelf";
 
     private final StringList<Author> authorCoder = new StringList<>(new AuthorCoder());
     private final StringList<Series> seriesCoder = new StringList<>(new SeriesCoder());
@@ -185,9 +185,9 @@ public class BookCoder {
             // current version
             encodedList = book.getString(DBKey.BOOKSHELF_NAME, null);
 
-        } else if (book.contains(LEGACY_BOOKSHELF_1_1_x)) {
+        } else if (book.contains(LEGACY_BOOKSHELF_1_1)) {
             // obsolete
-            encodedList = book.getString(LEGACY_BOOKSHELF_1_1_x, null);
+            encodedList = book.getString(LEGACY_BOOKSHELF_1_1, null);
 
         } else if (book.contains(LEGACY_BOOKSHELF_TEXT)) {
             // obsolete
@@ -204,7 +204,7 @@ public class BookCoder {
 
         book.remove(LEGACY_BOOKSHELF_ID);
         book.remove(LEGACY_BOOKSHELF_TEXT);
-        book.remove(LEGACY_BOOKSHELF_1_1_x);
+        book.remove(LEGACY_BOOKSHELF_1_1);
         book.remove(DBKey.BOOKSHELF_NAME);
     }
 

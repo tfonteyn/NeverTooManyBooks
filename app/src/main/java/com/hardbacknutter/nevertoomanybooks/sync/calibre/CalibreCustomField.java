@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 public class CalibreCustomField
         implements Parcelable {
 
+    /** {@link Parcelable}. */
     public static final Creator<CalibreCustomField> CREATOR = new Creator<>() {
         @Override
         @NonNull
