@@ -189,9 +189,11 @@ public final class ExMsg {
         } else if (e instanceof HttpStatusException) {
             final HttpStatusException he = (HttpStatusException) e;
             if (he.getSiteResId() != 0) {
-                return context.getString(R.string.error_network_site_access_failed,
-                                         context.getString(he.getSiteResId()))
-                       + " (" + he.getStatusCode() + ")";
+                return context.getString(R.string.a_bracket_b_bracket,
+                                         context.getString(
+                                                 R.string.error_network_site_access_failed,
+                                                 context.getString(he.getSiteResId())),
+                                         String.valueOf(he.getStatusCode()));
             } else {
                 return context.getString(R.string.httpError) + " (" + he.getStatusCode() + ")";
             }
@@ -243,10 +245,11 @@ public final class ExMsg {
     public static void dumpSSLException(@NonNull final HttpsURLConnection request,
                                         @NonNull final SSLException e) {
         final Logger logger = LoggerFactory.getLogger();
+        //noinspection CheckStyle,OverlyBroadCatchBlock
         try {
             logger.w("dumpSSLException", request.getURL().toString());
             final Certificate[] serverCertificates = request.getServerCertificates();
-            if (serverCertificates != null && serverCertificates.length > 0) {
+            if (serverCertificates != null) {
                 for (final Certificate c : serverCertificates) {
                     logger.w("dumpSSLException", c.toString());
                 }
