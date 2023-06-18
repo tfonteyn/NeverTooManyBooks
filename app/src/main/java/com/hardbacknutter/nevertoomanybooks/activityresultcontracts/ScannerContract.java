@@ -48,6 +48,7 @@ public class ScannerContract
 
     private static final String TAG = "ScannerContract";
 
+    @NonNull
     public static ScanOptions createDefaultOptions(@NonNull final Context context) {
         return new ScanOptions()
                 .setBarcodeFormats(BarcodeFamily.PRODUCT)

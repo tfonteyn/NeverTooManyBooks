@@ -123,6 +123,7 @@ public class DebugReport {
      *
      * @return {@code this} (for chaining)
      */
+    @NonNull
     public DebugReport addCustomMessage(@NonNull final String message) {
         this.message = message;
         return this;
