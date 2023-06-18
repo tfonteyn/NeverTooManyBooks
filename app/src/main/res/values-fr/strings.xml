@@ -743,6 +743,6 @@
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
     <string name="lbl_original_title">Titre original</string>
     <string name="lbl_original_title_long">Titre original si ce livre est une traduction</string>
-    <string name="error_site_access_blocked">L\'accès a été bloqué par le site web.</string>
+    <string name="error_site_access_blocked">L’accès a été bloqué par le site web.</string>
     <string name="pt_scan_mode">Mode de numérisation</string>
 </resources>
