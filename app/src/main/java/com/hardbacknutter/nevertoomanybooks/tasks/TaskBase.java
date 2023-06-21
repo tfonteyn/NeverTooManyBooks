@@ -52,7 +52,11 @@ abstract class TaskBase<Result>
     @NonNull
     private final String taskName;
 
-    /** @see #cancel() */
+    /**
+     * Tracks a cancellation <strong>request</strong>.
+     *
+     * @see #cancel()
+     */
     private final AtomicBoolean cancelRequested = new AtomicBoolean();
 
     /** State of this task. */
@@ -170,16 +174,22 @@ abstract class TaskBase<Result>
 
     /**
      * Called when the task successfully finishes.
+     *
+     * @param result potential result
      */
     protected abstract void setTaskFinished(@Nullable Result result);
 
     /**
      * Called when the task was cancelled.
+     *
+     * @param result potential/partial result
      */
     protected abstract void setTaskCancelled(@Nullable Result result);
 
     /**
      * Called when the task fails with an Exception.
+     *
+     * @param e as thrown
      */
     protected abstract void setTaskFailure(@NonNull Throwable e);
 
