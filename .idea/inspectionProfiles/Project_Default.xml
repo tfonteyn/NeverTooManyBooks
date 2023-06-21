@@ -241,6 +241,7 @@
           <option value="WeakerAccess" />
           <option value="ChainOfInstanceofChecks" />
           <option value="CallToNumericToString" />
+          <option value="OverlyBroadThrowsClause" />
         </list>
       </option>
     </inspection_tool>
