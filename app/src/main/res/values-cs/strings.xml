@@ -753,4 +753,5 @@
     <string name="lbl_original_title_long">Původní název, pokud je tato kniha překladem</string>
     <string name="error_site_access_blocked">Přístup byl zablokován na webových stránkách.</string>
     <string name="pt_scan_mode">Režim skenování</string>
+    <string name="option_sync_deleted_book_records">Místní synchronizace smazaných knih</string>
 </resources>

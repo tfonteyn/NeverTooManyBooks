@@ -741,4 +741,5 @@
     <string name="lbl_original_title_long">Oorspronkelijke titel indien dit boek een vertaling is</string>
     <string name="error_site_access_blocked">De toegang werd geblokkeerd door de website.</string>
     <string name="pt_scan_mode">Scanmodus</string>
+    <string name="option_sync_deleted_book_records">Verwijderde boeken lokaal synchroniseren</string>
 </resources>

@@ -745,4 +745,5 @@
     <string name="lbl_original_title_long">Titre original si ce livre est une traduction</string>
     <string name="error_site_access_blocked">L’accès a été bloqué par le site web.</string>
     <string name="pt_scan_mode">Mode de numérisation</string>
+    <string name="option_sync_deleted_book_records">Synchroniser localement les livres supprimés</string>
 </resources>

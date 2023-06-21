@@ -744,4 +744,5 @@
     <string name="lbl_original_title_long">Titolo originale se il libro è una traduzione</string>
     <string name="error_site_access_blocked">L’accesso è stato bloccato dal sito web.</string>
     <string name="pt_scan_mode">Modalità di scansione</string>
+    <string name="option_sync_deleted_book_records">Sincronizzare i libri eliminati localmente</string>
 </resources>

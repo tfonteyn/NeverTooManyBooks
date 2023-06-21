@@ -1541,12 +1541,11 @@
     <string name="X_lbl_folder">Folder</string>
     <!-- endregion -->
 
-    <!-- TEMPORARY STRINGS - DO NOT TRANSLATE YET - likely to change still. -->
 
-    <!-- TEMPORARY STRING, DO NOT TRANSLATE YET.
-         Option on the import screen to synchronize/mirror imported 'deleted-books' records by deleting the actual books.
+    <!-- Option on the import screen to synchronize/mirror imported 'deleted-books' records by deleting the actual books.
          Also used on the Maintenance screen for the same action. -->
     <string name="option_sync_deleted_book_records">Synchronize deleted books locally</string>
+
     <!-- TEMPORARY STRING, DO NOT TRANSLATE YET.
          Maintenance screen -->
     <string name="info_sync_deleted_book_records">This will check the cached list of deleted-books from a previous import from another device and synchronization those deletions. In other words, books flagged deleted on the other device will also be deleted on this device.</string>

@@ -748,4 +748,5 @@
     <string name="lbl_original_title_long">Bu kitap bir çeviriyse orijinal adı</string>
     <string name="error_site_access_blocked">Web sitesi tarafından erişim engellendi.</string>
     <string name="pt_scan_mode">Tarama modu</string>
+    <string name="option_sync_deleted_book_records">Silinen kitapları yerel olarak senkronize etme</string>
 </resources>
