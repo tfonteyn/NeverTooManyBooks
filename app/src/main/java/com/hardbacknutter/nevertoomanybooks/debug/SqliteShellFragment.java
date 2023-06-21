@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -100,6 +100,7 @@ public class SqliteShellFragment
         db = ServiceLocator.getInstance().getDb();
     }
 
+    @NonNull
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
@@ -153,6 +154,7 @@ public class SqliteShellFragment
 
     private void executeSql(@NonNull final String sql) {
         final String lcSql = sql.toLowerCase(Locale.ROOT);
+        //noinspection OverlyBroadCatchBlock,CheckStyle
         try {
             if (lcSql.startsWith("update") || lcSql.startsWith("delete")) {
                 getToolbar().setTitle("");

@@ -298,6 +298,7 @@ public final class SyncReaderProcessor {
 
         final String fileSpec = remoteBook.getString(Book.BKEY_TMP_FILE_SPEC[cIdx], null);
         if (fileSpec != null && !fileSpec.isEmpty()) {
+            //noinspection OverlyBroadCatchBlock
             try {
                 final String uuid = localBook.getString(DBKey.BOOK_UUID);
                 ServiceLocator.getInstance().getCoverStorage()

@@ -113,6 +113,7 @@ public class CalibreHandlerViewModel
 
         final Optional<Uri> optFolderUri = CalibreContentServer.getFolderUri(context);
         if (optFolderUri.isPresent()) {
+            //noinspection OverlyBroadCatchBlock
             try {
                 return server.getDocumentFile(context, book, optFolderUri.get(), false)
                              .getUri();

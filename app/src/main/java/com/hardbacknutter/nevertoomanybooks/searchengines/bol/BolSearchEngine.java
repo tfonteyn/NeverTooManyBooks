@@ -421,6 +421,7 @@ public class BolSearchEngine
                              final RealNumberParser realNumberParser) {
         final Element ratingElement = document.selectFirst("div.reviews-summary__avg-score");
         if (ratingElement != null) {
+            //noinspection OverlyBroadCatchBlock
             try {
                 final float rating = realNumberParser.parseFloat(ratingElement.text());
                 book.putFloat(DBKey.RATING, rating);
@@ -438,6 +439,7 @@ public class BolSearchEngine
         // but those button elements are not easy to parse for.
         final Element priceElement = document.selectFirst("span.promo-price");
         if (priceElement != null) {
+            //noinspection OverlyBroadCatchBlock
             try {
                 // <span class="promo-price" data-test="price">22
                 //    <sup class="promo-price__fraction" data-test="price-fraction">99</sup>

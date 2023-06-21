@@ -66,6 +66,7 @@ public class CoverRecordReader
         this.coverStorageSupplier = coverStorageSupplier;
     }
 
+    @SuppressWarnings("OverlyBroadThrowsClause")
     @NonNull
     @Override
     public ImportResults read(@NonNull final Context context,

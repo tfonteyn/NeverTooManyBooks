@@ -124,8 +124,11 @@ public class StartupActivity
 
     /**
      * Startup stages.
+     *
+     * @param currentStage the current stage
      */
     private void nextStage(@NonNull final Stage currentStage) {
+        //noinspection OverlyBroadCatchBlock,CheckStyle
         try {
             switch (currentStage.next()) {
 
@@ -194,6 +197,7 @@ public class StartupActivity
      */
     private void initDb() {
         // This is crucial, catch ALL exceptions
+        //noinspection CheckStyle,OverlyBroadCatchBlock
         try {
             ServiceLocator.getInstance().getDb();
         } catch (@NonNull final Exception e) {
@@ -227,6 +231,8 @@ public class StartupActivity
 
     /**
      * A fatal error happened preventing startup.
+     *
+     * @param e as thrown
      */
     private void onFailure(@NonNull final Throwable e) {
         LoggerFactory.getLogger().e(TAG, e);
@@ -314,12 +320,22 @@ public class StartupActivity
     }
 
     public enum Stage {
+        /** We're starting. */
         Init,
+        /** We need storage for the covers. */
         InitStorage,
+        /** We need the database; and potentially upgrade it. */
         InitDb,
+        /** Optimize, cleanup,... */
         RunTasks,
+        /** All done, start the UI. */
         Done;
 
+        /**
+         * Get the next stage.
+         *
+         * @return next stage
+         */
         @NonNull
         public Stage next() {
             switch (this) {

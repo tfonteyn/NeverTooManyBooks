@@ -369,6 +369,7 @@ public class StripInfoSearchEngine
                 return;
             }
 
+            //noinspection CheckStyle,OverlyBroadCatchBlock
             try {
                 // use the title header to determine we are in a book row.
                 final Element titleHeader = row.selectFirst("h2.title");

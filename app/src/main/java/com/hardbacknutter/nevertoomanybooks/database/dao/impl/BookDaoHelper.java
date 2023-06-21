@@ -535,6 +535,7 @@ public class BookDaoHelper {
      * @throws StorageException The covers directory is not available
      * @throws IOException      on generic/other IO failures
      */
+    @SuppressWarnings("OverlyBroadThrowsClause")
     void persistCovers()
             throws StorageException, IOException {
 

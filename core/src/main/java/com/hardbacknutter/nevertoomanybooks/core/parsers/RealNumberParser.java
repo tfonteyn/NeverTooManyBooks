@@ -238,6 +238,7 @@ public class RealNumberParser
     private Number getNumber(@NonNull final String source) {
         // we check in order - first match returns.
         for (final Locale locale : locales) {
+            //noinspection ProhibitedExceptionCaught
             try {
                 final DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(locale);
                 // if the dec sep for this format is present in the source,

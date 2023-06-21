@@ -318,6 +318,7 @@ public class IsfdbSearchEngine
         String args = "";
         final Book book = new Book();
 
+        //noinspection OverlyBroadCatchBlock
         try {
             if (author != null && !author.isEmpty()) {
                 index++;
@@ -823,6 +824,7 @@ public class IsfdbSearchEngine
                 return;
             }
 
+            //noinspection ProhibitedExceptionCaught
             try {
                 String fieldName = null;
 

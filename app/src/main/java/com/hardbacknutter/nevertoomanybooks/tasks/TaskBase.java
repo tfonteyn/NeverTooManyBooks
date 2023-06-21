@@ -127,6 +127,7 @@ abstract class TaskBase<Result>
             Thread.currentThread().setName(taskName);
             Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
 
+            //noinspection CheckStyle
             try {
                 final Result result = doWork();
                 if (isCancelled()) {

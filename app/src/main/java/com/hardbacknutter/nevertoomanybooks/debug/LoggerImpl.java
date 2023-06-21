@@ -215,6 +215,7 @@ public class LoggerImpl
     @Override
     public void cycleLogs() {
         File logFile = null;
+        //noinspection CheckStyle,OverlyBroadCatchBlock
         try {
             logFile = new File(logDir, ERROR_LOG_FILE);
             if (logFile.exists() && logFile.length() > 0) {

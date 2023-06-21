@@ -173,6 +173,10 @@ public class FtsDaoImpl
      * in bindString produces an error.
      * <p>
      * <strong>Note:</strong> We specifically want to use the default Locale for this.
+     *
+     * @param stmt     to use
+     * @param position to bind
+     * @param text     to bind
      */
     private static void bindStringOrNull(@NonNull final SynchronizedStatement stmt,
                                          final int position,
@@ -221,6 +225,7 @@ public class FtsDaoImpl
         final TableDefinition ftsTemp = DBDefinitions.createFtsTableDefinition(tmpTableName);
 
         Synchronizer.SyncLock txLock = null;
+        //noinspection CheckStyle,OverlyBroadCatchBlock
         try {
             if (!db.inTransaction()) {
                 txLock = db.beginTransaction(true);
@@ -276,6 +281,7 @@ public class FtsDaoImpl
             }
         }
 
+        //noinspection CheckStyle,OverlyBroadCatchBlock
         try (Cursor cursor = db.rawQuery(BOOK_BY_ID, new String[]{String.valueOf(bookId)})) {
             processBooks(cursor, INSERT);
 
@@ -295,6 +301,7 @@ public class FtsDaoImpl
             }
         }
 
+        //noinspection CheckStyle,OverlyBroadCatchBlock
         try (Cursor cursor = db.rawQuery(BOOK_BY_ID, new String[]{String.valueOf(bookId)})) {
             processBooks(cursor, UPDATE);
 

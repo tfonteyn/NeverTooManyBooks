@@ -95,6 +95,7 @@ class FetchImageTask
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
         // We need to catch the exceptions we really want to thrown, but catch all others.
+        //noinspection OverlyBroadCatchBlock,CheckStyle
         try {
             return fileManager.search(context, this, isbn, cIdx, sizes);
 

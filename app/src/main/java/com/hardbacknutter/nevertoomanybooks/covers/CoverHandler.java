@@ -301,6 +301,7 @@ public class CoverHandler {
             return true;
 
         } else if (itemId == R.id.MENU_THUMB_CROP) {
+            //noinspection OverlyBroadCatchBlock
             try {
                 cropPictureLauncher.launch(new CropImageActivity.ResultContract.Input(
                         // source
@@ -316,6 +317,7 @@ public class CoverHandler {
             return true;
 
         } else if (itemId == R.id.MENU_EDIT) {
+            //noinspection OverlyBroadCatchBlock
             try {
                 editPicture(createTempCoverFile(book));
 
@@ -345,6 +347,8 @@ public class CoverHandler {
      * Create a temporary cover file for the given book.
      * If there is a permanent cover, we get a <strong>copy of that one</strong>.
      * If there is no cover, we get a new File object with a temporary name.
+     *
+     * @param book for which we want a cover
      *
      * @return the File
      *
@@ -427,6 +431,8 @@ public class CoverHandler {
      * Called when the user clicks the large preview in the {@link CoverBrowserDialogFragment}.
      *
      * @param fileSpec the selected image
+     *
+     * @throws IllegalArgumentException if the fileSpec is invalid
      */
     private void onFileSelected(@NonNull final String fileSpec) {
         if (fileSpec.isEmpty()) {
@@ -493,6 +499,7 @@ public class CoverHandler {
      */
     private void onPictureResult(@NonNull final Uri uri) {
         final Context context = fragmentView.getContext();
+        //noinspection OverlyBroadCatchBlock
         try (InputStream is = context.getContentResolver().openInputStream(uri)) {
             // copy the data, and retrieve the (potentially) resolved file
             final File file = coverStorageSupplier.get().persist(is, getTempFile());
@@ -525,6 +532,7 @@ public class CoverHandler {
             || ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
                == PackageManager.PERMISSION_GRANTED) {
 
+            //noinspection OverlyBroadCatchBlock
             try {
                 final File dstFile = getTempFile();
                 FileUtils.delete(dstFile);
@@ -581,6 +589,7 @@ public class CoverHandler {
      * @param angle to rotate.
      */
     private void startRotation(final int angle) {
+        //noinspection OverlyBroadCatchBlock
         try {
             final File file = createTempCoverFile(bookSupplier.get());
             showProgress();

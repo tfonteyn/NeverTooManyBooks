@@ -1122,7 +1122,7 @@ public class Book
      * @throws IOException           on generic/other IO failures
      * @throws IllegalStateException if the UUID is missing
      */
-    @SuppressWarnings("UnusedReturnValue")
+    @SuppressWarnings({"UnusedReturnValue", "OverlyBroadThrowsClause"})
     @Nullable
     public File setCover(@IntRange(from = 0, to = 1) final int cIdx,
                          @Nullable final File file)

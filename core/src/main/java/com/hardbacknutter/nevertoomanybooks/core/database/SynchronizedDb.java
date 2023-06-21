@@ -567,6 +567,7 @@ public class SynchronizedDb
         }
         // We have the lock, but if the real beginTransaction() throws an exception,
         // we need to release the lock.
+        //noinspection CheckStyle,OverlyBroadCatchBlock
         try {
             // If we have a lock, and there is currently a TX active...die
             // Note: because we get a lock, two 'isUpdate' transactions will

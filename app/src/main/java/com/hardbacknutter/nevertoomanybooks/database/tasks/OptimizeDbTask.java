@@ -61,6 +61,7 @@ public class OptimizeDbTask
         execute();
     }
 
+    @SuppressWarnings("OverlyBroadThrowsClause")
     @NonNull
     @Override
     @WorkerThread
