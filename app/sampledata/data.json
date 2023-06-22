@@ -1,8 +1,8 @@
 {
   "sites": [
-    {"name": "Amazon", "info": "ISBN, Barcode"},
-    {"name": "OpenLibrary", "info": "Search"},
-    {"name": "ISFDB", "info": "ISBN"}
+    {"name": "Amazon", "capabilities": "ISBN, Barcode", "info": "General"},
+    {"name": "OpenLibrary", "capabilities": "Search", "info": "General"},
+    {"name": "ISFDB", "capabilities": "ISBN", "info": "F&SF"}
   ],
   "author": [
     {"full_name": "Charles Emerson Winchester III"},
