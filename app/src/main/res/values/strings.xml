@@ -1565,14 +1565,15 @@
     <!-- website info: languages; type; specifics. -->
     <string name="site_description_dutch_shopping">Dutch and more; Shopping</string>
     <!-- website info: languages; type; specifics. -->
-    <string name="site_description_general_shopping">General; Shopping</string>
-    <!-- website info: languages; type; specifics. -->
     <string name="site_description_english_catalogue">English and more; Catalogue</string>
     <!-- website info: languages; type; specifics. -->
     <string name="site_description_english_catalogue_FSF">English and more; Catalogue; Fantasy and Science Fiction</string>
     <!-- website info: languages; type; specifics. -->
     <string name="site_description_french_catalogue_eu_comics">French and more; Catalogue; European Comics</string>
-
+    <!-- website info: languages; type; specifics. -->
+    <string name="site_description_general_shopping">General; Shopping</string>
+    <!-- website info: languages; type; specifics. -->
+    <string name="site_description_portuguese_shopping">Portuguese and more; Shopping</string>
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
 </resources>
