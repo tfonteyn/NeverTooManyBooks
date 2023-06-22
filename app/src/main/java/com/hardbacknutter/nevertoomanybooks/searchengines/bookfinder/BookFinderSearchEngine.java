@@ -33,7 +33,6 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
@@ -134,17 +133,13 @@ public class BookFinderSearchEngine
         final Locale siteLocale = getLocale(context, document.location().split("/")[2]);
         final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
         final RealNumberParser realNumberParser = new RealNumberParser(locales);
-        final MoneyParser moneyParser = new MoneyParser(siteLocale, realNumberParser);
 
         final Element authorElement = bookInfo.selectFirst(
                 "div.bf-content-header-book-author > p > strong > a");
-        if (authorElement == null) {
-            LoggerFactory.getLogger().w(TAG, "parse", "no author?");
-            return;
+        if (authorElement != null) {
+            final Author author = Author.from(authorElement.text());
+            processAuthor(author, Author.TYPE_UNKNOWN, book);
         }
-        final Author author = Author.from(authorElement.text());
-        processAuthor(author, Author.TYPE_UNKNOWN, book);
-
         final Element ratingElement = bookInfo.selectFirst("div.rating"
                                                            + " > span.book-rating-average");
         if (ratingElement != null) {
