@@ -741,7 +741,7 @@
     <string name="lbl_original_title_long">Oorspronkelijke titel indien dit boek een vertaling is</string>
     <string name="error_site_access_blocked">De toegang werd geblokkeerd door de website.</string>
     <string name="pt_scan_mode">Scanmodus</string>
-    <string name="option_sync_deleted_book_records">Verwijderde boeken lokaal synchroniseren</string>
+    <string name="option_sync_deleted_book_records">Verwijderde boeken op dit apparaat synchroniseren</string>
     <string name="site_description_dutch_catalogue">Nederlands en meer; Catalogus</string>
     <string name="site_description_dutch_catalogue_eu_comics">Nederlands en meer; Catalogus; Europese Strips</string>
     <string name="site_description_dutch_shopping">Nederlands en meer; Winkelen</string>
@@ -750,4 +750,7 @@
     <string name="site_description_french_catalogue_eu_comics">Frans en meer; Catalogus; Europese Strips</string>
     <string name="site_description_general_shopping">Algemeen; Winkelen</string>
     <string name="site_description_portuguese_shopping">Portugees en meer; Winkelen</string>
+    <string name="info_sync_deleted_book_records">Dit controleert de geschiedenis van verwijderde boeken van een eerdere import vanaf een ander apparaat en synchroniseert deze verwijderingen. Met andere woorden, boeken die op het andere apparaat verwijderd zijn, worden ook op dit apparaat verwijderd.</string>
+    <string name="option_clear_deleted_book_records">Wis de geschiedenis van verwijderde boeken</string>
+    <string name="info_clear_deleted_book_records">Hiermee wordt de geschiedenis van verwijderde boeken gewist. Er worden geen boeken verwijderd.</string>
 </resources>

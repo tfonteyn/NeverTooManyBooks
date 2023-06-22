@@ -775,7 +775,7 @@
     <string name="lbl_original_title_long">Título original se este livro for uma tradução</string>
     <string name="error_site_access_blocked">O acesso foi bloqueado pelo sítio Web.</string>
     <string name="pt_scan_mode">Modo de leitura</string>
-    <string name="option_sync_deleted_book_records">Sincronizar livros eliminados localmente</string>
+    <string name="option_sync_deleted_book_records">Sincronizar livros eliminados neste dispositivo</string>
     <string name="site_description_dutch_catalogue">Holandês e mais; Catálogo</string>
     <string name="site_description_dutch_catalogue_eu_comics">Holandês e mais; Catálogo; Banda desenhada europeia</string>
     <string name="site_description_dutch_shopping">Holandês e mais; Compras</string>
@@ -784,4 +784,7 @@
     <string name="site_description_french_catalogue_eu_comics">Francês e mais; Catálogo; Banda desenhada europeia</string>
     <string name="site_description_general_shopping">Geral; Compras</string>
     <string name="site_description_portuguese_shopping">Português e mais; Compras</string>
+    <string name="info_sync_deleted_book_records">Isto irá verificar o histórico de livros eliminados de uma importação anterior de outro dispositivo e sincronizar essas eliminações. Por outras palavras, os livros eliminados no outro dispositivo também serão eliminados neste dispositivo.</string>
+    <string name="option_clear_deleted_book_records">Limpar o histórico de livros eliminados</string>
+    <string name="info_clear_deleted_book_records">Esta ação limpa o histórico de livros eliminados. Não serão eliminados quaisquer livros actuais.</string>
 </resources>

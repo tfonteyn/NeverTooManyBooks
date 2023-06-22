@@ -754,7 +754,7 @@
     <string name="lbl_original_title_long">Оригинальное название, если эта книга является переводом</string>
     <string name="error_site_access_blocked">Доступ был заблокирован сайтом.</string>
     <string name="pt_scan_mode">Режим сканирования</string>
-    <string name="option_sync_deleted_book_records">Синхронизация удаленных книг локально</string>
+    <string name="option_sync_deleted_book_records">Синхронизация удаленных книг на этом устройстве</string>
     <string name="site_description_dutch_catalogue">Голландский и не только; Каталог</string>
     <string name="site_description_dutch_catalogue_eu_comics">Голландский и не только; Каталог; Европейские комиксы</string>
     <string name="site_description_dutch_shopping">Голландский и не только; Покупки</string>
@@ -763,4 +763,7 @@
     <string name="site_description_french_catalogue_eu_comics">Французский и более; Каталог; Европейские комиксы</string>
     <string name="site_description_general_shopping">Общий; Покупки</string>
     <string name="site_description_portuguese_shopping">Португальский и не только; Покупки</string>
+    <string name="info_sync_deleted_book_records">Это позволит проверить историю удаленных книг из предыдущего импорта с другого устройства и синхронизировать эти удаления. Другими словами, книги, удаленные на другом устройстве, будут удалены и на этом устройстве.</string>
+    <string name="option_clear_deleted_book_records">Очистить историю удаленных книг</string>
+    <string name="info_clear_deleted_book_records">Это очистит историю удаленных книг. При этом фактические книги удалены не будут.</string>
 </resources>

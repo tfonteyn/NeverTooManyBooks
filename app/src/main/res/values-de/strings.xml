@@ -741,7 +741,7 @@
     <string name="lbl_original_title_long">Originaltitel, wenn dieses Buch eine Übersetzung ist</string>
     <string name="error_site_access_blocked">Der Zugang wurde von der Website blockiert.</string>
     <string name="pt_scan_mode">Modus des Scannens</string>
-    <string name="option_sync_deleted_book_records">Gelöschte Bücher lokal synchronisieren</string>
+    <string name="option_sync_deleted_book_records">Gelöschte Bücher auf diesem Gerät synchronisieren</string>
     <string name="site_description_dutch_catalogue">Niederländisch und mehr; Katalog</string>
     <string name="site_description_dutch_catalogue_eu_comics">Niederländisch und mehr; Katalog; Europäische Comics</string>
     <string name="site_description_dutch_shopping">Niederländisch und mehr; Einkaufen</string>
@@ -750,4 +750,7 @@
     <string name="site_description_french_catalogue_eu_comics">Französisch und mehr; Katalog; Europäische Comics</string>
     <string name="site_description_general_shopping">Allgemein; Einkaufen</string>
     <string name="site_description_portuguese_shopping">Portugiesisch und mehr; Einkaufen</string>
+    <string name="info_sync_deleted_book_records">Hiermit wird der Verlauf der gelöschten Bücher aus einem früheren Import von einem anderen Gerät überprüft und diese Löschungen werden synchronisiert. Mit anderen Worten: Bücher, die auf dem anderen Gerät gelöscht wurden, werden auch auf diesem Gerät gelöscht.</string>
+    <string name="option_clear_deleted_book_records">Löschen des Verlaufs gelöschter Bücher</string>
+    <string name="info_clear_deleted_book_records">Hiermit wird der Verlauf der gelöschten Bücher gelöscht. Es werden keine aktuellen Bücher gelöscht.</string>
 </resources>
