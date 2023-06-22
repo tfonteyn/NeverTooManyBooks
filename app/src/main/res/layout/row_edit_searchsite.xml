@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -26,7 +26,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="?attr/listPreferredItemHeightSmall"
-    tools:viewBindingIgnore="true"
     >
 
     <CheckBox
@@ -56,11 +55,21 @@
             />
 
         <TextView
-            android:id="@+id/website_search_capabilities"
+            android:id="@+id/info"
             style="@style/RowEditor.Text.Secondary"
+            android:maxLines="2"
             android:visibility="gone"
             tools:ignore="SelectableText"
             tools:text="@sample/data.json/sites/info"
+            tools:visibility="visible"
+            />
+
+        <TextView
+            android:id="@+id/capabilities"
+            style="@style/RowEditor.Text.Secondary"
+            android:visibility="gone"
+            tools:ignore="SelectableText"
+            tools:text="@sample/data.json/sites/capabilities"
             tools:visibility="visible"
             />
     </LinearLayout>

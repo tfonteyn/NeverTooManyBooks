@@ -39,35 +39,61 @@
     <string name="lbl_isbn"
             translatable="false">ISBN</string>
 
-    <!-- External sites / trademarks  -->
+    <!-- External sites  -->
     <string name="site_amazon"
             translatable="false">Amazon</string>
-    <string name="site_goodreads"
-            translatable="false">Goodreads</string>
-    <string name="site_google_books"
-            translatable="false">Google Books</string>
-    <string name="site_isfdb"
-            translatable="false">ISFDB</string>
-    <string name="site_kb_nl"
-            translatable="false">KBNL</string>
-    <string name="site_lastdodo_nl"
-            translatable="false">LastDodo</string>
-    <string name="site_library_thing"
-            translatable="false">LibraryThing</string>
-    <string name="site_open_library"
-            translatable="false">OpenLibrary</string>
-    <string name="site_stripinfo_be"
-            translatable="false">StripInfo</string>
+    <string name="site_info_amazon"
+            translatable="false">@string/site_description_general_shopping</string>
     <string name="site_bedetheque"
             translatable="false">Bedetheque</string>
+    <string name="site_info_bedetheque"
+            translatable="false">@string/site_description_french_catalogue_eu_comics</string>
     <string name="site_bol_com"
             translatable="false">bol.com</string>
+    <string name="site_info_bol_com"
+            translatable="false">@string/site_description_dutch_shopping</string>
     <string name="site_bookfinder"
             translatable="false">BookFinder</string>
+    <string name="site_info_bookfinder"
+            translatable="false">@string/site_description_general_shopping</string>
+    <string name="site_goodreads"
+            translatable="false">Goodreads</string>
+    <string name="site_info_goodreads"
+            translatable="false">@string/site_description_english_catalogue</string>
+    <string name="site_google_books"
+            translatable="false">Google Books</string>
+    <string name="site_info_google_books"
+            translatable="false">@string/site_description_english_catalogue</string>
+    <string name="site_isfdb"
+            translatable="false">ISFDB</string>
+    <string name="site_info_isfdb"
+            translatable="false">@string/site_description_english_catalogue_FSF</string>
+    <string name="site_kb_nl"
+            translatable="false">KBNL</string>
+    <string name="site_info_kb_nl"
+            translatable="false">@string/site_description_dutch_catalogue</string>
+    <string name="site_lastdodo_nl"
+            translatable="false">LastDodo</string>
+    <string name="site_info_lastdodo_nl"
+            translatable="false">@string/site_description_dutch_catalogue_eu_comics</string>
+    <string name="site_library_thing"
+            translatable="false">LibraryThing</string>
+    <string name="site_info_library_thing"
+            translatable="false">@string/site_description_english_catalogue</string>
+    <string name="site_open_library"
+            translatable="false">OpenLibrary</string>
+    <string name="site_info_open_library"
+            translatable="false">@string/site_description_english_catalogue</string>
+    <string name="site_stripinfo_be"
+            translatable="false">StripInfo</string>
+    <string name="site_info_stripinfo_be"
+            translatable="false">@string/site_description_dutch_catalogue_eu_comics</string>
+
+    <!-- https://calibre-ebook.com -->
     <string name="site_calibre"
             translatable="false">Calibre</string>
 
-    <!-- submenu title -->
+    <!-- Shopping submenu title -->
     <string name="option_amazon_ellipsis"
             translatable="false">Amazon…</string>
     <!-- submenu title -->

@@ -1557,5 +1557,22 @@
          Maintenance screen -->
     <string name="info_clear_deleted_book_records">This will clear the deleted books cache. No actual books will be deleted.</string>
 
+
+    <!-- website info: languages; type; specifics. -->
+    <string name="site_description_dutch_catalogue">Dutch and more; Catalogue</string>
+    <!-- website info: languages; type; specifics. -->
+    <string name="site_description_dutch_catalogue_eu_comics">Dutch and more; Catalogue; European Comics</string>
+    <!-- website info: languages; type; specifics. -->
+    <string name="site_description_dutch_shopping">Dutch and more; Shopping</string>
+    <!-- website info: languages; type; specifics. -->
+    <string name="site_description_general_shopping">General; Shopping</string>
+    <!-- website info: languages; type; specifics. -->
+    <string name="site_description_english_catalogue">English and more; Catalogue</string>
+    <!-- website info: languages; type; specifics. -->
+    <string name="site_description_english_catalogue_FSF">English and more; Catalogue; Fantasy and Science Fiction</string>
+    <!-- website info: languages; type; specifics. -->
+    <string name="site_description_french_catalogue_eu_comics">French and more; Catalogue; European Comics</string>
+
+
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
 </resources>

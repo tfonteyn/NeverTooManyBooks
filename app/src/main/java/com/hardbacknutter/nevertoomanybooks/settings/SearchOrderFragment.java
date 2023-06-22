@@ -28,7 +28,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -53,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditSearchOrderBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.RowEditSearchsiteBinding;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
@@ -162,20 +162,17 @@ public class SearchOrderFragment
             implements BindableViewHolder<Site> {
 
         @NonNull
-        private final TextView nameView;
-        @NonNull
-        private final TextView infoView;
+        private final RowEditSearchsiteBinding vb;
 
-        Holder(@NonNull final View itemView) {
-            super(itemView);
-            nameView = itemView.findViewById(R.id.website_name);
-            infoView = itemView.findViewById(R.id.website_search_capabilities);
+        Holder(@NonNull final RowEditSearchsiteBinding vb) {
+            super(vb.getRoot());
+            this.vb = vb;
         }
 
         @Override
         public void onBind(@NonNull final Site site) {
             final Context context = itemView.getContext();
-            nameView.setText(site.getEngineId().getName(context));
+            vb.websiteName.setText(site.getEngineId().getName(context));
 
             setChecked(site.isActive());
 
@@ -183,25 +180,28 @@ public class SearchOrderFragment
             if (site.getType() == Site.Type.Data) {
                 final EngineId engineId = site.getEngineId();
                 // do not list SearchEngine.CoverByIsbn, it's irrelevant to the user.
-                final Collection<String> info = new ArrayList<>();
+                final Collection<String> capabilities = new ArrayList<>();
                 if (engineId.supports(SearchEngine.SearchBy.Isbn)) {
-                    info.add(context.getString(R.string.lbl_isbn));
+                    capabilities.add(context.getString(R.string.lbl_isbn));
                 }
                 if (engineId.supports(SearchEngine.SearchBy.Barcode)) {
-                    info.add(context.getString(R.string.lbl_barcode));
+                    capabilities.add(context.getString(R.string.lbl_barcode));
                 }
                 if (engineId.supports(SearchEngine.SearchBy.ExternalId)) {
-                    info.add(context.getString(R.string.lbl_tab_lbl_ext_id));
+                    capabilities.add(context.getString(R.string.lbl_tab_lbl_ext_id));
                 }
                 if (engineId.supports(SearchEngine.SearchBy.Text)) {
-                    info.add(context.getString(android.R.string.search_go));
+                    capabilities.add(context.getString(android.R.string.search_go));
                 }
-                infoView.setText(context.getString(R.string.brackets,
-                                                   String.join(", ", info)));
+                vb.capabilities.setText(context.getString(R.string.brackets,
+                                                          String.join(", ", capabilities)));
+                vb.capabilities.setVisibility(View.VISIBLE);
 
-                infoView.setVisibility(View.VISIBLE);
+                vb.info.setText(site.getEngineId().getInfoResId());
+                vb.info.setVisibility(View.VISIBLE);
             } else {
-                infoView.setVisibility(View.GONE);
+                vb.capabilities.setVisibility(View.GONE);
+                vb.info.setVisibility(View.GONE);
             }
         }
     }
@@ -226,9 +226,9 @@ public class SearchOrderFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final View view = getLayoutInflater()
-                    .inflate(R.layout.row_edit_searchsite, parent, false);
-            final Holder holder = new Holder(view);
+            final RowEditSearchsiteBinding vb =
+                    RowEditSearchsiteBinding.inflate(getLayoutInflater(), parent, false);
+            final Holder holder = new Holder(vb);
             holder.setOnItemCheckChangedListener(position -> {
                 final Site site = getItem(position);
                 site.setActive(!site.isActive());
