@@ -64,6 +64,8 @@
             translatable="false">bol.com</string>
     <string name="site_bookfinder"
             translatable="false">BookFinder</string>
+    <string name="site_bertrand_pt"
+            translatable="false">Bertrand.pt</string>
     <string name="site_calibre"
             translatable="false">Calibre</string>
 
