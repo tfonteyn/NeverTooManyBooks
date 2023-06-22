@@ -48,6 +48,10 @@
             translatable="false">Bedetheque</string>
     <string name="site_info_bedetheque"
             translatable="false">@string/site_description_french_catalogue_eu_comics</string>
+    <string name="site_bertrand_pt"
+            translatable="false">Bertrand.pt</string>
+    <string name="site_info_bertrand_pt"
+            translatable="false">@string/site_description_french_catalogue_eu_comics</string>
     <string name="site_bol_com"
             translatable="false">bol.com</string>
     <string name="site_info_bol_com"

@@ -118,6 +118,8 @@ android {
                             .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "\"")
 
             // under development
+            buildConfigField("boolean", "ENABLE_BERTRAND_PT", "false")
+            // under development
             buildConfigField("boolean", "ENABLE_BOOKFINDER", "false")
             // under development
             buildConfigField("boolean", "ENABLE_STRIP_INFO_LOGIN", "false")
@@ -149,6 +151,8 @@ android {
             resValue("string", "fileProviderAuthority",
                     "${applicationId}.GenericFileProvider.debug")
 
+            // under development
+            buildConfigField("boolean", "ENABLE_BERTRAND_PT", "true")
             // under development
             buildConfigField("boolean", "ENABLE_BOOKFINDER", "true")
             // under development

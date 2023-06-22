@@ -51,6 +51,8 @@ public final class FormatMapper
         MAPPER.put("gebonden", R.string.book_format_hardcover);
         // french - BOL
         MAPPER.put("couverture rigide", R.string.book_format_hardcover);
+        // portuguese - Bertrand.pt
+        MAPPER.put("capa dura", R.string.book_format_hardcover);
 
 
         // ### Plain paperback ###
@@ -62,7 +64,9 @@ public final class FormatMapper
         // dutch - KBNL
         MAPPER.put("pbk.", R.string.book_format_paperback);
         // french - BOL
-        MAPPER.put(" broché ", R.string.book_format_paperback);
+        MAPPER.put("broché", R.string.book_format_paperback);
+        // portuguese - Bertrand.pt
+        MAPPER.put("capa mole", R.string.book_format_paperback);
 
         // ### Mid-size (a.k.a 'trade') format paperback ###
         MAPPER.put("tp", R.string.book_format_paperback_large);
@@ -89,6 +93,8 @@ public final class FormatMapper
         MAPPER.put("digitaal luisterboek", R.string.book_format_audiobook);
         // french - BOL
         MAPPER.put("livre audio numérique", R.string.book_format_audiobook);
+        // portuguese - Bertrand
+        MAPPER.put("audiolivro", R.string.book_format_audiobook);
 
 
         // ### Special ###
