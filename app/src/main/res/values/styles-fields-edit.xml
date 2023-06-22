@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -201,7 +201,7 @@
      -->
     <style name="TIE.SeriesNumber" parent="Base.TIE">
         <item name="android:inputType">text</item>
-        <item name="android:singleLine">true</item>
+        <item name="android:maxLines">1</item>
     </style>
 
     <!-- Plain 4 digit year field.
@@ -223,7 +223,7 @@
     <style name="Base.TIE.Price">
         <item name="android:textAlignment">viewEnd</item>
         <item name="android:completionThreshold">1</item>
-        <item name="android:singleLine">true</item>
+        <item name="android:maxLines">1</item>
         <item name="android:background">@null</item>
     </style>
 
@@ -258,7 +258,7 @@
         <item name="android:textAlignment">viewEnd</item>
         <item name="android:inputType">text|textCapCharacters</item>
         <item name="android:maxLength">3</item>
-        <item name="android:singleLine">true</item>
+        <item name="android:maxLines">1</item>
         <item name="android:background">@null</item>
     </style>
 
