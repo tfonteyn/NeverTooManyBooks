@@ -754,4 +754,12 @@
     <string name="error_site_access_blocked">Přístup byl zablokován na webových stránkách.</string>
     <string name="pt_scan_mode">Režim skenování</string>
     <string name="option_sync_deleted_book_records">Místní synchronizace smazaných knih</string>
+    <string name="site_description_dutch_catalogue">Holandština a další; Katalog</string>
+    <string name="site_description_dutch_catalogue_eu_comics">Nizozemština a další; Katalog; Evropský komiks</string>
+    <string name="site_description_dutch_shopping">Nizozemština a další; Nakupování</string>
+    <string name="site_description_english_catalogue">Angličtina a další; Katalog</string>
+    <string name="site_description_english_catalogue_FSF">Angličtina a více; Katalog; Fantasy a science fiction</string>
+    <string name="site_description_french_catalogue_eu_comics">Francouzština a další; Katalog; Evropský komiks</string>
+    <string name="site_description_general_shopping">Obecné; Nakupování</string>
+    <string name="site_description_portuguese_shopping">Portugalština a další; Nakupování</string>
 </resources>

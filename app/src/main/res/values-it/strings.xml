@@ -745,4 +745,12 @@
     <string name="error_site_access_blocked">L’accesso è stato bloccato dal sito web.</string>
     <string name="pt_scan_mode">Modalità di scansione</string>
     <string name="option_sync_deleted_book_records">Sincronizzare i libri eliminati localmente</string>
+    <string name="site_description_dutch_catalogue">Olandese e non solo; Catalogo</string>
+    <string name="site_description_dutch_catalogue_eu_comics">Olandese e non solo; Catalogo; Fumetti europei</string>
+    <string name="site_description_dutch_shopping">Olandese e altro; Shopping</string>
+    <string name="site_description_english_catalogue">Inglese e altro; Catalogo</string>
+    <string name="site_description_english_catalogue_FSF">Inglese e altro; Catalogo; Fantasy e fantascienza</string>
+    <string name="site_description_french_catalogue_eu_comics">Francese e altro; Catalogo; Fumetti europei</string>
+    <string name="site_description_general_shopping">Generale; Shopping</string>
+    <string name="site_description_portuguese_shopping">Portoghese e altro; Shopping</string>
 </resources>

@@ -755,4 +755,12 @@
     <string name="error_site_access_blocked">Доступ был заблокирован сайтом.</string>
     <string name="pt_scan_mode">Режим сканирования</string>
     <string name="option_sync_deleted_book_records">Синхронизация удаленных книг локально</string>
+    <string name="site_description_dutch_catalogue">Голландский и не только; Каталог</string>
+    <string name="site_description_dutch_catalogue_eu_comics">Голландский и не только; Каталог; Европейские комиксы</string>
+    <string name="site_description_dutch_shopping">Голландский и не только; Покупки</string>
+    <string name="site_description_english_catalogue">Английский и не только; Каталог</string>
+    <string name="site_description_english_catalogue_FSF">Английский и более; Каталог; Фэнтези и научная фантастика</string>
+    <string name="site_description_french_catalogue_eu_comics">Французский и более; Каталог; Европейские комиксы</string>
+    <string name="site_description_general_shopping">Общий; Покупки</string>
+    <string name="site_description_portuguese_shopping">Португальский и не только; Покупки</string>
 </resources>

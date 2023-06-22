@@ -758,4 +758,12 @@
     <string name="error_site_access_blocked">Dostęp został zablokowany przez stronę internetową.</string>
     <string name="pt_scan_mode">Tryb skanowania</string>
     <string name="option_sync_deleted_book_records">Lokalna synchronizacja usuniętych książek</string>
+    <string name="site_description_dutch_catalogue">Holenderski i nie tylko; Katalog</string>
+    <string name="site_description_dutch_catalogue_eu_comics">Niderlandzki i nie tylko; Katalog; Komiksy europejskie</string>
+    <string name="site_description_dutch_shopping">Niderlandzki i więcej; Zakupy</string>
+    <string name="site_description_english_catalogue">Angielski i więcej; Katalog</string>
+    <string name="site_description_english_catalogue_FSF">Angielski i więcej; Katalog; Fantasy i science fiction</string>
+    <string name="site_description_french_catalogue_eu_comics">Francuski i więcej; Katalog; Komiksy europejskie</string>
+    <string name="site_description_general_shopping">Ogólne; Zakupy</string>
+    <string name="site_description_portuguese_shopping">Portugalski i więcej; Zakupy</string>
 </resources>

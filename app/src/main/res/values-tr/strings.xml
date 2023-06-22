@@ -749,4 +749,12 @@
     <string name="error_site_access_blocked">Web sitesi tarafından erişim engellendi.</string>
     <string name="pt_scan_mode">Tarama modu</string>
     <string name="option_sync_deleted_book_records">Silinen kitapları yerel olarak senkronize etme</string>
+    <string name="site_description_dutch_catalogue">Hollandaca ve daha fazlası; Katalog</string>
+    <string name="site_description_dutch_catalogue_eu_comics">Hollandaca ve daha fazlası; Katalog; Avrupa Çizgi Romanları</string>
+    <string name="site_description_dutch_shopping">Hollandaca ve daha fazlası; Alışveriş</string>
+    <string name="site_description_english_catalogue">İngilizce ve daha fazlası; Katalog</string>
+    <string name="site_description_english_catalogue_FSF">İngilizce ve daha fazlası; Katalog; Fantezi ve Bilim Kurgu</string>
+    <string name="site_description_french_catalogue_eu_comics">Fransızca ve daha fazlası; Katalog; Avrupa Çizgi Romanları</string>
+    <string name="site_description_general_shopping">Genel; Alışveriş</string>
+    <string name="site_description_portuguese_shopping">Portekizce ve daha fazlası; Alışveriş</string>
 </resources>

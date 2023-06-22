@@ -743,4 +743,12 @@
     <string name="error_site_access_blocked">Η πρόσβαση αποκλείστηκε από τον ιστότοπο.</string>
     <string name="pt_scan_mode">Λειτουργία σάρωσης</string>
     <string name="option_sync_deleted_book_records">Συγχρονισμός διαγραμμένων βιβλίων τοπικά</string>
+    <string name="site_description_dutch_catalogue">Ολλανδικά και άλλα; Κατάλογος</string>
+    <string name="site_description_dutch_catalogue_eu_comics">Ολλανδικά και άλλα; Κατάλογος; Ευρωπαϊκά κόμικς</string>
+    <string name="site_description_dutch_shopping">Ολλανδικά και άλλα; Αγορές</string>
+    <string name="site_description_english_catalogue">Αγγλικά και άλλα; Κατάλογος</string>
+    <string name="site_description_english_catalogue_FSF">Φαντασία και επιστημονική φαντασία</string>
+    <string name="site_description_french_catalogue_eu_comics">Γαλλικά και άλλα- Κατάλογος- Ευρωπαϊκά κόμικς</string>
+    <string name="site_description_general_shopping">Γενικά- Αγορές</string>
+    <string name="site_description_portuguese_shopping">Πορτογαλικά και άλλα- Αγορές</string>
 </resources>

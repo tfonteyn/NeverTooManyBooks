@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,9 +18,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+  -->
+
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d libro</item>
@@ -756,4 +759,12 @@
     <string name="info_clear_deleted_book_records">Esto borrará la caché de libros borrados. No se borrará ningún libro.</string>
     <string name="option_sync_deleted_book_records">Sincronizar localmente los libros eliminados</string>
     <string name="info_sync_deleted_book_records">Esto comprobará la lista en caché de los libros eliminados de una importación anterior desde otro dispositivo y sincronizará esas eliminaciones. En otras palabras, los libros marcados como borrados en el otro dispositivo también se borrarán en este dispositivo.</string>
+    <string name="site_description_dutch_catalogue">Holandés y más; Catálogo</string>
+    <string name="site_description_dutch_catalogue_eu_comics">Neerlandés y más; Catálogo; Cómics europeos</string>
+    <string name="site_description_dutch_shopping">Holandés y más; Compras</string>
+    <string name="site_description_english_catalogue">Inglés y más; Catálogo</string>
+    <string name="site_description_english_catalogue_FSF">Inglés y más; Catálogo; Fantasía y Ciencia Ficción</string>
+    <string name="site_description_french_catalogue_eu_comics">Francés y más; Catálogo; Cómics europeos</string>
+    <string name="site_description_general_shopping">General; Compras</string>
+    <string name="site_description_portuguese_shopping">Portugués y más; Compras</string>
 </resources>
