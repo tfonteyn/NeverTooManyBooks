@@ -91,7 +91,7 @@ public abstract class ArchiveWriterAbstract
      * <p>
      * RELEASE: set correct archiver version
      */
-    private static final int VERSION = 6;
+    public static final int VERSION = 6;
 
     /**
      * Arbitrary number of steps added to the progress max value.

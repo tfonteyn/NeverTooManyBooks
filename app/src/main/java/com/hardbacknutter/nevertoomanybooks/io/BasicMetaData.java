@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,10 +37,10 @@ public class BasicMetaData {
     /**
      * Constructor.
      *
-     * @param args The (usually new/empty) bundle; will be returned by {@link #getData()}
+     * @param data The bundle with the information previously read.
      */
-    public BasicMetaData(@NonNull final Bundle args) {
-        data = args;
+    public BasicMetaData(@NonNull final Bundle data) {
+        this.data = data;
     }
 
     /**
@@ -69,6 +69,11 @@ public class BasicMetaData {
         return Optional.empty();
     }
 
+    /**
+     * Set the number of books.
+     *
+     * @param count to set
+     */
     public void setBookCount(final int count) {
         data.putInt(INFO_NUMBER_OF_BOOKS, count);
     }

@@ -59,12 +59,25 @@ public class ArchiveMetaData
     private static final String INFO_DATABASE_VERSION = "DatabaseVersionCode";
 
     /**
-     * Constructor used while reading from an Archive.
+     * Constructor used while <strong>reading</strong> from an Archive.
      *
-     * @param args The (usually new/empty) bundle; will be returned by {@link #getData()}
+     * @param data The bundle with the information previously read.
      */
-    public ArchiveMetaData(@NonNull final Bundle args) {
-        super(args);
+    public ArchiveMetaData(@NonNull final Bundle data) {
+        super(data);
+    }
+
+    /**
+     * Constructor used while <strong>reading</strong> from an Archive.
+     * The meta-data will be (re)constructed on-the-fly.
+     *
+     * @param version explicitly set or override the version of the archive
+     * @param data    The bundle with (optional) the information previously read.
+     */
+    public ArchiveMetaData(final int version,
+                           @NonNull final Bundle data) {
+        super(data);
+        data.putInt(INFO_ARCHIVER_VERSION, version);
     }
 
     /**
