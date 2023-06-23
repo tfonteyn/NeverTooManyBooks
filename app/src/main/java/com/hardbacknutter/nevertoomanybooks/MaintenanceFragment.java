@@ -206,7 +206,7 @@ public class MaintenanceFragment
         new MaterialAlertDialogBuilder(v.getContext())
                 .setIcon(R.drawable.ic_baseline_warning_24)
                 .setTitle(R.string.option_sync_deleted_book_records)
-                .setMessage(getString(R.string.info_sync_deleted_book_records)
+                .setMessage(getString(R.string.info_maintenance_sync_deleted_book_records)
                             + "\n\n" + getString(R.string.confirm_continue))
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                 .setPositiveButton(android.R.string.ok, (d, w) ->
@@ -219,7 +219,7 @@ public class MaintenanceFragment
         new MaterialAlertDialogBuilder(v.getContext())
                 .setIcon(R.drawable.ic_baseline_warning_24)
                 .setTitle(R.string.option_clear_deleted_book_records)
-                .setMessage(R.string.info_clear_deleted_book_records)
+                .setMessage(R.string.info_maintenance_clear_deleted_book_records)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                 .setPositiveButton(android.R.string.ok, (d, w) ->
                         ServiceLocator.getInstance().getDeletedBooksDao().purge())
