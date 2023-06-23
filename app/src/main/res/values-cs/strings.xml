@@ -207,7 +207,7 @@
 \n na
 \n „%2$s“
 \n
-\nJak si přejete aplikovat tuto změnu\?
+\nJak si přejete aplikovat tuto změnu?
 \nUpozornění: Volba „%3$s“ bude aplikována okamžitě. Pokud zvolíte „%4$s“, vytvoří se nový %5$s.</string>
     <string name="confirm_scope_for_delete">Smazat název „%1$s“ od %2$s.\n\nJak chcete tuto změnu uplatnit?\nVAROVÁNÍ: Volbu „%3$s“ nelze vrátit zpět!</string>
     <string name="confirm_test_connection">Doporučujeme toto připojení otestovat, abyste se později vyhnuli problémům.</string>
@@ -766,4 +766,6 @@
     <string name="info_maintenance_sync_deleted_book_records">Zkontroluje se historie smazaných knih z předchozího importu z jiného zařízení a tato smazání se synchronizují. Jinými slovy, knihy smazané v jiném zařízení budou smazány i v tomto zařízení.</string>
     <string name="option_clear_deleted_book_records">Vymazání historie smazaných knih</string>
     <string name="info_maintenance_clear_deleted_book_records">Tato funkce vymaže historii smazaných knih. Žádné skutečné knihy nebudou odstraněny.</string>
+    <string name="error_type_not_supported">Type not supported: %1$s …</string>
+    <string name="info_books_deleted">Smazané knihy: %1$d</string>
 </resources>

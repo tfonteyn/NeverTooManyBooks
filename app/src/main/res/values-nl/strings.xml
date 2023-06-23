@@ -172,11 +172,11 @@
     <string name="cancelled">Geannuleerd</string>
     <string name="cd_btn_drag_handle">Sleep om deze lijst opnieuw te ordenen</string>
     <string name="cd_clear_text_end_icon">Tekst wissen</string>
-    <string name="confirm_create_real_author">„%1$s” bestaat nog niet. Moeten ze worden gemaakt\?</string>
+    <string name="confirm_create_real_author">„%1$s” bestaat nog niet. Moeten ze worden gemaakt?</string>
     <string name="confirm_delete_book">Dit zal het boek met de titel „%1$s” door %2$s compleet verwijderen.\n\nWeet je zeker dat je door wilt gaan?</string>
     <string name="confirm_delete_bookshelf">De boekenplank „%1$s” verwijderen? De boeken zelf worden niet verwijderd. Ze zullen nog steeds aanwezig zijn op alle andere schappen, of op de „%2$s” -plank.</string>
-    <string name="confirm_delete_publisher">De uitgever „%1$s” verwijderen\?\n\nDe boeken zelf worden niet verwijderd.\n\nOverweeg de uitgever te bewerken en de naam te veranderen om deze gegevens te behouden.</string>
-    <string name="confirm_delete_series">De reeks „%1$s” verwijderen\?\n\nDe boeken zelf worden niet verwijderd.\n\nOverweeg de reeks te bewerken en de reeksnaam te veranderen om deze gegevens te behouden.</string>
+    <string name="confirm_delete_publisher">De uitgever „%1$s” verwijderen?\n\nDe boeken zelf worden niet verwijderd.\n\nOverweeg de uitgever te bewerken en de naam te veranderen om deze gegevens te behouden.</string>
+    <string name="confirm_delete_series">De reeks „%1$s” verwijderen?\n\nDe boeken zelf worden niet verwijderd.\n\nOverweeg de reeks te bewerken en de reeksnaam te veranderen om deze gegevens te behouden.</string>
     <string name="confirm_delete_style">De stijl „%1$s” verwijderen?</string>
     <string name="confirm_delete_toc_entry_everywhere">De titel „%1$s” (door %2$s) echt verwijderen? Het wordt verwijderd uit alle boeken waarin het wordt vermeld. De boeken zelf worden niet verwijderd.</string>
     <string name="confirm_duplicate_book_message">Het boek dat je wil toevoegen is al aanwezig in de database, weet je zeker dat je nog een exemplaar wilt toevoegen?</string>
@@ -185,7 +185,7 @@
     <string name="confirm_merge_bookshelves">De boekenplank die je hernoemt bestaat al. Wil je ze samenvoegen?</string>
     <string name="confirm_merge_publishers">De uitgever die je hernoemt bestaat al. Wil je ze samenvoegen?</string>
     <string name="confirm_merge_series">De reeks die je hernoemt bestaat al. Wil je ze samenvoegen?</string>
-    <string name="confirm_no_missing_covers_search_from_top">Alle boeken onder deze rij hebben omslagen. Opnieuw zoeken vanaf de top\?</string>
+    <string name="confirm_no_missing_covers_search_from_top">Alle boeken onder deze rij hebben omslagen. Opnieuw zoeken vanaf de top?</string>
     <string name="confirm_overwrite_cover">Dit zal de geselecteerde velden zoals getoond bijwerken, maar afbeeldingen kunnen desgewenst voor alle boeken worden gedownload.\n\nWil je alle afbeeldingen overschrijven? Waarschuwing: dit kan een lange tijd in beslag nemen.</string>
     <string name="confirm_rebuild_fts">De zoekindexgegevens worden opnieuw opgebouwd wanneer de app opnieuw wordt opgestart. Weet je zeker dat je door wilt gaan ?</string>
     <string name="confirm_rebuild_index">De indexen worden opnieuw opgebouwd wanneer de app opnieuw wordt opgestart. Weet je zeker dat je door wilt gaan ?</string>
@@ -193,7 +193,7 @@
     <string name="confirm_registration_benefits">Deze functie profiteert van registratie bij %1$s. Wil je meer informatie bekijken of dit bericht uitschakelen?\nJe vind deze informatie op een later tijdstip in de sectie „%2$s” in de instellingen.</string>
     <string name="confirm_registration_required">Deze functie vereist registratie bij %1$s. Wil je meer informatie zien?</string>
     <string name="confirm_remove_toc_entry">De titel „%1$s” door %2$s uit dit boek verwijderen?</string>
-    <string name="confirm_scope_for_change">Je wijzigde:\n „%1$s”\n naar\n „%2$s”\n\nHoe wil je deze verandering toepassen\?\nNB: De keuze „%3$s” wordt onmiddellijk toegepast. Als u „%4$s” kiest, wordt een nieuwe %5$s aangemaakt.</string>
+    <string name="confirm_scope_for_change">Je wijzigde:\n „%1$s”\n naar\n „%2$s”\n\nHoe wil je deze verandering toepassen?\nNB: De keuze „%3$s” wordt onmiddellijk toegepast. Als u „%4$s” kiest, wordt een nieuwe %5$s aangemaakt.</string>
     <string name="confirm_scope_for_delete">Verwijder de titel „%1$s” door %2$s.\n\nHoe wilt u deze wijziging toepassen?\nWAARSCHUWING: De keuze „%3$s” kan niet ongedaan worden gemaakt!</string>
     <string name="confirm_test_connection">Het is raadzaam om deze verbinding te testen om later problemen te voorkomen.</string>
     <string name="confirm_unsaved_edits">Je hebt niet opgeslagen veranderingen. Als je nu afsluit gaan die verloren.</string>
@@ -601,6 +601,7 @@
     <string name="ps_bob_books_under_multiple_primary_series_only">Alleen onder primaire reeks</string>
     <string name="ps_manage_fields">Geselecteerde velden zijn zichtbaar in de toevoegen/bewerken boekschermen. Ongeselecteerde velden zijn verborgen.</string>
     <string name="ps_show_titles_reordered_off">De titel</string>
+    <string name="error_type_not_supported">Type niet ondersteund: %1$s …</string>
     <string name="ps_show_titles_reordered_on">titel, De</string>
     <string name="pt_allow_editing_external_id">Sta bewerken van website-boek-ID toe</string>
     <string name="pt_allow_metered_network_data">Sta mobiel dataverbruik toe</string>
@@ -754,4 +755,5 @@
     <string name="info_maintenance_sync_deleted_book_records">Dit controleert de geschiedenis van verwijderde boeken van een eerdere import vanaf een ander apparaat en synchroniseert deze verwijderingen. Met andere woorden, boeken die op het andere apparaat verwijderd zijn, worden ook op dit apparaat verwijderd.</string>
     <string name="option_clear_deleted_book_records">Wis de geschiedenis van verwijderde boeken</string>
     <string name="info_maintenance_clear_deleted_book_records">Hiermee wordt de geschiedenis van verwijderde boeken gewist. Er worden geen boeken verwijderd.</string>
+    <string name="info_books_deleted">Boeken verwijdered: %1$d</string>
 </resources>

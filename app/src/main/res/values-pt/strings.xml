@@ -515,6 +515,7 @@
     <string name="info_export_successful">Exportação bem sucedida</string>
     <string name="pt_field_visibility">Visibilidade do campo</string>
     <string name="pt_show_title_reordered">Mostrar títulos como…</string>
+    <string name="error_type_not_supported">Tipo não suportado: %1$s …</string>
     <string name="ps_show_titles_reordered_on">título, O</string>
     <string name="ps_author_name_family_first">por exemplo, “de Camões, Luís”</string>
     <string name="pt_bob_books_under_multiple_authors">Mostrar livros com vários autores</string>
@@ -788,4 +789,5 @@
     <string name="info_maintenance_sync_deleted_book_records">Isto irá verificar o histórico de livros eliminados de uma importação anterior de outro dispositivo e sincronizar essas eliminações. Por outras palavras, os livros eliminados no outro dispositivo também serão eliminados neste dispositivo.</string>
     <string name="option_clear_deleted_book_records">Limpar o histórico de livros eliminados</string>
     <string name="info_maintenance_clear_deleted_book_records">Esta ação limpa o histórico de livros eliminados. Não serão eliminados quaisquer livros actuais.</string>
+    <string name="info_books_deleted">Livros eliminados: %1$d</string>
 </resources>

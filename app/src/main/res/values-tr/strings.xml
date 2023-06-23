@@ -199,7 +199,7 @@
 \n“%2$s”
 \n olarak.
 \n
-\nDeğişiklikleri nasıl uygulamak istersiniz\?
+\nDeğişiklikleri nasıl uygulamak istersiniz?
 \nNot: “%3$s” seçimi anında uygulanacaktır. “%4$s” seçerseniz, yeni bir %5$s oluşturulacaktır.</string>
     <string name="confirm_scope_for_delete">“%1$s” başlığını %2$s ile silin.\n\nBu değişikliği nasıl uygulamak istersiniz?\nUYARI: “%3$s” seçimi geri alınamaz!</string>
     <string name="confirm_test_connection">Daha sonra sorunları önlemek için bu bağlantıyı test etmeniz önerilir.</string>
@@ -761,4 +761,6 @@
     <string name="info_maintenance_sync_deleted_book_records">Bu, başka bir cihazdan önceki bir içe aktarma işleminden silinen kitap geçmişini kontrol edecek ve bu silme işlemlerini senkronize edecektir. Başka bir deyişle, diğer cihazda silinen kitaplar bu cihazda da silinecektir.</string>
     <string name="option_clear_deleted_book_records">Silinen kitaplar geçmişini temizle</string>
     <string name="info_maintenance_clear_deleted_book_records">Bu, silinen kitap geçmişini temizleyecektir. Hiçbir gerçek kitap silinmeyecektir.</string>
+    <string name="error_type_not_supported">Tür desteklenmiyor: %1$s …</string>
+    <string name="info_books_deleted">Silinen kitaplar: %1$d</string>
 </resources>

@@ -212,7 +212,7 @@
 \n na
 \n „%2$s”
 \n
-\nJak chcesz zastosować tę zmianę\?
+\nJak chcesz zastosować tę zmianę?
 \nUwaga: Zmiana „%3$s” zostanie wykonana natychmiast. Jeśli wybierzesz „%4$s”, zostanie utworzone nowe %5$s.</string>
     <string name="confirm_scope_for_delete">Usuń tytuł „%1$s” do %2$s.\n\nJak chcesz zastosować tę zmianę?\nOSTRZEŻENIE: wyboru „%3$s” nie można cofnąć!</string>
     <string name="confirm_test_connection">Zaleca się przetestowanie tego połączenia, aby później uniknąć problemów.</string>
@@ -770,4 +770,6 @@
     <string name="info_maintenance_sync_deleted_book_records">Spowoduje to sprawdzenie historii usuniętych książek z poprzedniego importu z innego urządzenia i synchronizację tych usunięć. Innymi słowy, książki usunięte na innym urządzeniu zostaną również usunięte na tym urządzeniu.</string>
     <string name="option_clear_deleted_book_records">Wyczyść historię usuniętych książek</string>
     <string name="info_maintenance_clear_deleted_book_records">Spowoduje to wyczyszczenie historii usuniętych książek. Żadne książki nie zostaną usunięte.</string>
+    <string name="error_type_not_supported">Typ nie jest obsługiwany: %1$s …</string>
+    <string name="info_books_deleted">Książki usunięte: %1$d</string>
 </resources>

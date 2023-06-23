@@ -609,6 +609,7 @@
     <string name="pt_show_author_name_given_first">Formato de nombre de autor</string>
     <string name="pt_show_title_reordered">Mostrar títulos como…</string>
     <string name="ps_show_titles_reordered_off">El título</string>
+    <string name="error_type_not_supported">Tipo no soportado: %1$s …</string>
     <string name="ps_show_titles_reordered_on">título, El</string>
     <string name="pt_sort_author_name_given_first">Clasificación del nombre del autor</string>
     <string name="pt_sort_title_reordered">Ordenar títulos por</string>
@@ -768,4 +769,5 @@
     <string name="site_description_french_catalogue_eu_comics">Francés y más; Catálogo; Cómics europeos</string>
     <string name="site_description_general_shopping">General; Compras</string>
     <string name="site_description_portuguese_shopping">Portugués y más; Compras</string>
+    <string name="info_books_deleted">Libros borrados: %1$d</string>
 </resources>

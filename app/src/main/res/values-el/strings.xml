@@ -596,6 +596,7 @@
     <string name="pt_show_author_name_given_first">Μορφοποίηση ονόματος συντάκτη</string>
     <string name="pt_show_title_reordered">Εμφάνιση τίτλων ως…</string>
     <string name="ps_show_titles_reordered_off">Ο τίτλος</string>
+    <string name="error_type_not_supported">Ο τύπος δεν υποστηρίζεται: %1$s …</string>
     <string name="ps_show_titles_reordered_on">τίτλος, Ο</string>
     <string name="pt_sort_author_name_given_first">Ταξινόμηση ονόματος συγγραφέα</string>
     <string name="pt_sort_title_reordered">Ταξινόμηση τίτλων με βάση</string>
@@ -755,4 +756,5 @@
     <string name="info_maintenance_sync_deleted_book_records">Αυτό θα ελέγξει το ιστορικό των διαγραμμένων βιβλίων από μια προηγούμενη εισαγωγή από άλλη συσκευή και θα συγχρονίσει αυτές τις διαγραφές. Με άλλα λόγια, τα βιβλία που έχουν διαγραφεί στην άλλη συσκευή θα διαγραφούν και σε αυτή τη συσκευή.</string>
     <string name="option_clear_deleted_book_records">Διαγραφή του ιστορικού διαγραμμένων βιβλίων</string>
     <string name="info_maintenance_clear_deleted_book_records">Αυτό θα διαγράψει το ιστορικό διαγραμμένων βιβλίων. Δεν θα διαγραφούν πραγματικά βιβλία.</string>
+    <string name="info_books_deleted">Βιβλία που διαγράφηκαν: %1$d</string>
 </resources>

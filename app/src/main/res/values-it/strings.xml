@@ -547,7 +547,7 @@
     <string name="info_download_successful">Download riuscito</string>
     <string name="info_export_report">Nella cartella selezionata è stato creato un file %1$s chiamato «%2$s». È necessario copiarlo manualmente altrove per proteggere i dati in caso di danneggiamento, smarrimento o furto del dispositivo.</string>
     <string name="info_export_successful">Esportazione riuscita</string>
-    <string name="option_info_delete_removed_books">I libri eliminati sull\'altro dispositivo saranno eliminati anche su questo dispositivo.</string>
+    <string name="option_info_delete_removed_books">I libri eliminati sull’altro dispositivo saranno eliminati anche su questo dispositivo.</string>
     <string name="info_import_complete">Importazione Completata</string>
     <string name="info_import_partially_complete">Importazione parziale eseguita</string>
     <string name="progress_msg_cleaning_up">Pulire…</string>
@@ -598,6 +598,7 @@
     <string name="pt_show_author_name_given_first">Formattazione del nome dell’autore</string>
     <string name="pt_show_title_reordered">Mostra titoli come…</string>
     <string name="ps_show_titles_reordered_off">Il titolo</string>
+    <string name="error_type_not_supported">Tipo non supportato: %1$s …</string>
     <string name="ps_show_titles_reordered_on">titolo, Il</string>
     <string name="pt_sort_author_name_given_first">Ordinamento dei nomi degli autori</string>
     <string name="pt_sort_title_reordered">Ordina titoli per</string>
@@ -754,7 +755,8 @@
     <string name="site_description_french_catalogue_eu_comics">Francese e altro; Catalogo; Fumetti europei</string>
     <string name="site_description_general_shopping">Generale; Shopping</string>
     <string name="site_description_portuguese_shopping">Portoghese e altro; Shopping</string>
-    <string name="info_maintenance_sync_deleted_book_records">In questo modo si controllerà la cronologia dei libri eliminati da una precedente importazione da un altro dispositivo e si sincronizzeranno tali eliminazioni. In altre parole, i libri eliminati sull\'altro dispositivo saranno eliminati anche su questo dispositivo.</string>
+    <string name="info_maintenance_sync_deleted_book_records">In questo modo si controllerà la cronologia dei libri eliminati da una precedente importazione da un altro dispositivo e si sincronizzeranno tali eliminazioni. In altre parole, i libri eliminati sull’altro dispositivo saranno eliminati anche su questo dispositivo.</string>
     <string name="option_clear_deleted_book_records">Cancella la cronologia dei libri eliminati</string>
     <string name="info_maintenance_clear_deleted_book_records">Cancella la cronologia dei libri eliminati. Non verranno eliminati libri veri e propri.</string>
+    <string name="info_books_deleted">Libri cancellati: %1$d</string>
 </resources>

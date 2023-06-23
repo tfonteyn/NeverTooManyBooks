@@ -595,6 +595,7 @@
     <string name="pt_show_author_name_given_first">Formatierung des Autornamens</string>
     <string name="pt_show_title_reordered">Titel anzeigen als…</string>
     <string name="ps_show_titles_reordered_off">Der Titel</string>
+    <string name="error_type_not_supported">Typ nicht unterstützt: %1$s …</string>
     <string name="ps_show_titles_reordered_on">Titel, Der</string>
     <string name="pt_sort_author_name_given_first">Autorennamen sortieren</string>
     <string name="pt_sort_title_reordered">Titel sortieren nach</string>
@@ -754,4 +755,5 @@
     <string name="info_maintenance_sync_deleted_book_records">Hiermit wird der Verlauf der gelöschten Bücher aus einem früheren Import von einem anderen Gerät überprüft und diese Löschungen werden synchronisiert. Mit anderen Worten: Bücher, die auf dem anderen Gerät gelöscht wurden, werden auch auf diesem Gerät gelöscht.</string>
     <string name="option_clear_deleted_book_records">Löschen des Verlaufs gelöschter Bücher</string>
     <string name="info_maintenance_clear_deleted_book_records">Hiermit wird der Verlauf der gelöschten Bücher gelöscht. Es werden keine aktuellen Bücher gelöscht.</string>
+    <string name="info_books_deleted">Bücher gelöscht: %1$d</string>
 </resources>

@@ -548,7 +548,7 @@
     <string name="info_download_successful">Téléchargement réussi</string>
     <string name="info_export_report">Un fichier de %1$s appelé «%2$s» a été créé dans le dossier sélectionné. Vous devez le copier manuellement ailleurs pour protéger les données en cas d’endommagement, de perte ou de vol de votre appareil.</string>
     <string name="info_export_successful">Exportation réussie</string>
-    <string name="option_info_delete_removed_books">Les livres supprimés sur l\\\'autre appareil seront également supprimés sur cet appareil.</string>
+    <string name="option_info_delete_removed_books">Les livres supprimés sur l’autre appareil seront également supprimés sur cet appareil.</string>
     <string name="info_import_complete">Import terminé</string>
     <string name="info_import_partially_complete">Importation partielle effectuée</string>
     <string name="progress_msg_cleaning_up">Nettoyer…</string>
@@ -599,6 +599,7 @@
     <string name="pt_show_author_name_given_first">Formatage du nom de l’auteur</string>
     <string name="pt_show_title_reordered">Afficher les titres en tant que…</string>
     <string name="ps_show_titles_reordered_off">Le titre</string>
+    <string name="error_type_not_supported">Type non pris en charge : %1$s …</string>
     <string name="ps_show_titles_reordered_on">titre, Le</string>
     <string name="pt_sort_author_name_given_first">Tri par nom d’auteur</string>
     <string name="pt_sort_title_reordered">Trier les titres par</string>
@@ -755,7 +756,8 @@
     <string name="site_description_french_catalogue_eu_comics">Français et plus ; Catalogue ; Bandes dessinées européennes</string>
     <string name="site_description_general_shopping">Général ; Shopping</string>
     <string name="site_description_portuguese_shopping">Portugais et plus ; Shopping</string>
-    <string name="info_maintenance_sync_deleted_book_records">Cette opération permet de vérifier l\'historique des livres supprimés lors d\'une précédente importation depuis un autre appareil et de synchroniser ces suppressions. En d\'autres termes, les livres supprimés sur l\'autre appareil seront également supprimés sur cet appareil.</string>
-    <string name="option_clear_deleted_book_records">Effacer l\'historique des livres supprimés</string>
-    <string name="info_maintenance_clear_deleted_book_records">Cette option permet d\'effacer l\'historique des livres supprimés. Aucun livre ne sera supprimé.</string>
+    <string name="info_maintenance_sync_deleted_book_records">Cette opération permet de vérifier l’historique des livres supprimés lors d’une précédente importation depuis un autre appareil et de synchroniser ces suppressions. En d’autres termes, les livres supprimés sur l’autre appareil seront également supprimés sur cet appareil.</string>
+    <string name="option_clear_deleted_book_records">Effacer l’historique des livres supprimés</string>
+    <string name="info_maintenance_clear_deleted_book_records">Cette option permet d’effacer l’historique des livres supprimés. Aucun livre ne sera supprimé.</string>
+    <string name="info_books_deleted">Livres supprimés : %1$d</string>
 </resources>
