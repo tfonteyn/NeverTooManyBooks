@@ -54,9 +54,6 @@ public class ExportViewModel
     @Nullable
     private ExportHelper exportHelper;
 
-    /** UI helper. */
-    private boolean quickOptionsAlreadyShown;
-
     /**
      * Pseudo constructor.
      *
@@ -66,14 +63,6 @@ public class ExportViewModel
         if (exportHelper == null) {
             exportHelper = new ExportHelper(systemLocale);
         }
-    }
-
-    boolean isQuickOptionsAlreadyShown() {
-        return quickOptionsAlreadyShown;
-    }
-
-    void setQuickOptionsAlreadyShown() {
-        quickOptionsAlreadyShown = true;
     }
 
     @NonNull

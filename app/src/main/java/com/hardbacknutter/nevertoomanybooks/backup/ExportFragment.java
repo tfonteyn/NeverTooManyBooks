@@ -141,38 +141,8 @@ public class ExportFragment
         fab.setOnClickListener(v -> startExport());
 
         if (!vm.isRunning()) {
-            // The task is NOT yet running.
-            // Show either the full-options screen or the quick-options dialog
-            if (vm.isQuickOptionsAlreadyShown()) {
-                showOptions();
-            } else {
-                showQuickOptions();
-            }
+            showOptions();
         }
-    }
-
-    private void showQuickOptions() {
-        vm.setQuickOptionsAlreadyShown();
-
-        final ExportHelper helper = vm.getExportHelper();
-        // set the default; a backup to archive
-        helper.setEncoding(ArchiveEncoding.Zip);
-
-        //noinspection DataFlowIssue
-        new MaterialAlertDialogBuilder(getContext())
-                .setTitle(R.string.lbl_backup)
-                .setMessage(R.string.info_export_backup_all)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
-                .setNeutralButton(R.string.action_show_options, (d, w) -> {
-                    d.dismiss();
-                    showOptions();
-                })
-                .setPositiveButton(android.R.string.ok, (d, w) -> {
-                    d.dismiss();
-                    exportPickUri();
-                })
-                .create()
-                .show();
     }
 
     /**
