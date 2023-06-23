@@ -558,6 +558,7 @@
     <string name="info_download_successful">Descarga exitosa</string>
     <string name="info_export_report">Se ha creado un archivo %1$s llamado «%2$s» en la carpeta seleccionada. Deberías copiarlo manualmente en otro lugar para proteger los datos en caso de que tu dispositivo se dañe, se pierda o te lo roben.</string>
     <string name="info_export_successful">Exportación exitosa</string>
+    <string name="option_info_delete_removed_books">Los libros marcados como borrados en el otro dispositivo también se borrarán en este dispositivo.</string>
     <string name="info_import_complete">Importación finalizada</string>
     <string name="info_import_partially_complete">Importación parcial realizada</string>
     <string name="progress_msg_cleaning_up">Limpiar…</string>
@@ -756,9 +757,9 @@
     <string name="error_site_access_blocked">El acceso ha sido bloqueado por el sitio web.</string>
     <string name="pt_scan_mode">Modo de lectura</string>
     <string name="option_clear_deleted_book_records">Borrar el historial de los libros eliminados</string>
-    <string name="info_clear_deleted_book_records">Esto borrará el historial de libros borrados. No se borrará ningún libro.</string>
-    <string name="option_sync_deleted_book_records">Sincronizar libros borrados en este dispositivo</string>
-    <string name="info_sync_deleted_book_records">Esto comprobará el historial de los libros eliminados de una importación anterior desde otro dispositivo y sincronizará esas eliminaciones. En otras palabras, los libros marcados como borrados en el otro dispositivo también se borrarán en este dispositivo.</string>
+    <string name="info_maintenance_clear_deleted_book_records">Esto borrará el historial de libros borrados. No se borrará ningún libro.</string>
+    <string name="option_sync_deleted_book_records">Sincronizar libros borrados</string>
+    <string name="info_maintenance_sync_deleted_book_records">Esto comprobará el historial de los libros eliminados de una importación anterior desde otro dispositivo y sincronizará esas eliminaciones. En otras palabras, los libros marcados como borrados en el otro dispositivo también se borrarán en este dispositivo.</string>
     <string name="site_description_dutch_catalogue">Holandés y más; Catálogo</string>
     <string name="site_description_dutch_catalogue_eu_comics">Neerlandés y más; Catálogo; Cómics europeos</string>
     <string name="site_description_dutch_shopping">Holandés y más; Compras</string>

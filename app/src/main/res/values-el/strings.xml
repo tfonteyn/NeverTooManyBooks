@@ -545,6 +545,7 @@
     <string name="info_download_successful">Η λήψη ήταν επιτυχής</string>
     <string name="info_export_report">Ένα αρχείο %1$s με όνομα «%2$s» δημιουργήθηκε στον επιλεγμένο φάκελο. Θα πρέπει να το αντιγράψετε με μη αυτόματο τρόπο σε άλλο μέρος για να προστατεύσετε τα δεδομένα σε περίπτωση που η συσκευή σας καταστραφεί, χαθεί ή κλαπεί.</string>
     <string name="info_export_successful">Η εξαγωγή ήταν επιτυχής</string>
+    <string name="option_info_delete_removed_books">Τα βιβλία που έχουν διαγραφεί στην άλλη συσκευή θα διαγραφούν και σε αυτή τη συσκευή.</string>
     <string name="info_import_complete">Εισαγωγή Ολοκληρώθηκε</string>
     <string name="info_import_partially_complete">Έγινε μερική εισαγωγή</string>
     <string name="progress_msg_cleaning_up">Καθαρισμό…</string>
@@ -742,7 +743,7 @@
     <string name="lbl_original_title_long">Πρωτότυπος τίτλος αν το βιβλίο είναι μετάφραση</string>
     <string name="error_site_access_blocked">Η πρόσβαση αποκλείστηκε από τον ιστότοπο.</string>
     <string name="pt_scan_mode">Λειτουργία σάρωσης</string>
-    <string name="option_sync_deleted_book_records">Συγχρονισμός διαγραμμένων βιβλίων σε αυτή τη συσκευή</string>
+    <string name="option_sync_deleted_book_records">Συγχρονισμός διαγραμμένων βιβλίων</string>
     <string name="site_description_dutch_catalogue">Ολλανδικά και άλλα; Κατάλογος</string>
     <string name="site_description_dutch_catalogue_eu_comics">Ολλανδικά και άλλα; Κατάλογος; Ευρωπαϊκά κόμικς</string>
     <string name="site_description_dutch_shopping">Ολλανδικά και άλλα; Αγορές</string>
@@ -751,7 +752,7 @@
     <string name="site_description_french_catalogue_eu_comics">Γαλλικά και άλλα- Κατάλογος- Ευρωπαϊκά κόμικς</string>
     <string name="site_description_general_shopping">Γενικά- Αγορές</string>
     <string name="site_description_portuguese_shopping">Πορτογαλικά και άλλα- Αγορές</string>
-    <string name="info_sync_deleted_book_records">Αυτό θα ελέγξει το ιστορικό των διαγραμμένων βιβλίων από μια προηγούμενη εισαγωγή από άλλη συσκευή και θα συγχρονίσει αυτές τις διαγραφές. Με άλλα λόγια, τα βιβλία που έχουν διαγραφεί στην άλλη συσκευή θα διαγραφούν και σε αυτή τη συσκευή.</string>
+    <string name="info_maintenance_sync_deleted_book_records">Αυτό θα ελέγξει το ιστορικό των διαγραμμένων βιβλίων από μια προηγούμενη εισαγωγή από άλλη συσκευή και θα συγχρονίσει αυτές τις διαγραφές. Με άλλα λόγια, τα βιβλία που έχουν διαγραφεί στην άλλη συσκευή θα διαγραφούν και σε αυτή τη συσκευή.</string>
     <string name="option_clear_deleted_book_records">Διαγραφή του ιστορικού διαγραμμένων βιβλίων</string>
-    <string name="info_clear_deleted_book_records">Αυτό θα διαγράψει το ιστορικό διαγραμμένων βιβλίων. Δεν θα διαγραφούν πραγματικά βιβλία.</string>
+    <string name="info_maintenance_clear_deleted_book_records">Αυτό θα διαγράψει το ιστορικό διαγραμμένων βιβλίων. Δεν θα διαγραφούν πραγματικά βιβλία.</string>
 </resources>

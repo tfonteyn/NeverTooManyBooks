@@ -550,6 +550,7 @@
     <string name="info_download_successful">İndirme başarılı</string>
     <string name="info_export_report">Seçilen klasörde “%2$s” adında bir %1$s dosyası oluşturuldu. Cihazınızın hasar görmesi, kaybolması veya çalınması durumunda verileri korumak için elle başka bir yere kopyalamanız gerekir.</string>
     <string name="info_export_successful">İhracat başarılı</string>
+    <string name="option_info_delete_removed_books">Diğer cihazda silinen kitaplar bu cihazda da silinecektir.</string>
     <string name="info_import_complete">İçe aktarma başarılı</string>
     <string name="info_import_partially_complete">Kısmi ithalat yapıldı</string>
     <string name="progress_msg_cleaning_up">Temizlemek…</string>
@@ -748,7 +749,7 @@
     <string name="lbl_original_title_long">Bu kitap bir çeviriyse orijinal adı</string>
     <string name="error_site_access_blocked">Web sitesi tarafından erişim engellendi.</string>
     <string name="pt_scan_mode">Tarama modu</string>
-    <string name="option_sync_deleted_book_records">Bu cihazdaki silinmiş kitapları senkronize edin</string>
+    <string name="option_sync_deleted_book_records">Silinen kitapları senkronize edin</string>
     <string name="site_description_dutch_catalogue">Hollandaca ve daha fazlası; Katalog</string>
     <string name="site_description_dutch_catalogue_eu_comics">Hollandaca ve daha fazlası; Katalog; Avrupa Çizgi Romanları</string>
     <string name="site_description_dutch_shopping">Hollandaca ve daha fazlası; Alışveriş</string>
@@ -757,7 +758,7 @@
     <string name="site_description_french_catalogue_eu_comics">Fransızca ve daha fazlası; Katalog; Avrupa Çizgi Romanları</string>
     <string name="site_description_general_shopping">Genel; Alışveriş</string>
     <string name="site_description_portuguese_shopping">Portekizce ve daha fazlası; Alışveriş</string>
-    <string name="info_sync_deleted_book_records">Bu, başka bir cihazdan önceki bir içe aktarma işleminden silinen kitap geçmişini kontrol edecek ve bu silme işlemlerini senkronize edecektir. Başka bir deyişle, diğer cihazda silinen kitaplar bu cihazda da silinecektir.</string>
+    <string name="info_maintenance_sync_deleted_book_records">Bu, başka bir cihazdan önceki bir içe aktarma işleminden silinen kitap geçmişini kontrol edecek ve bu silme işlemlerini senkronize edecektir. Başka bir deyişle, diğer cihazda silinen kitaplar bu cihazda da silinecektir.</string>
     <string name="option_clear_deleted_book_records">Silinen kitaplar geçmişini temizle</string>
-    <string name="info_clear_deleted_book_records">Bu, silinen kitap geçmişini temizleyecektir. Hiçbir gerçek kitap silinmeyecektir.</string>
+    <string name="info_maintenance_clear_deleted_book_records">Bu, silinen kitap geçmişini temizleyecektir. Hiçbir gerçek kitap silinmeyecektir.</string>
 </resources>

@@ -563,6 +563,7 @@
     <string name="info_download_successful">Pobieranie powiodło się</string>
     <string name="info_export_report">W wybranym folderze został utworzony plik %1$s o nazwie „%2$s”. Należy go ręcznie skopiować w inne miejsce, aby chronić dane w przypadku uszkodzenia, zgubienia lub kradzieży urządzenia.</string>
     <string name="info_export_successful">Eksport powiódł się</string>
+    <string name="option_info_delete_removed_books">Książki usunięte na innym urządzeniu zostaną również usunięte na tym urządzeniu.</string>
     <string name="info_import_complete">Import zakończony</string>
     <string name="info_import_partially_complete">Wykonano częściowy import</string>
     <string name="progress_msg_cleaning_up">Sprzątanie…</string>
@@ -757,7 +758,7 @@
     <string name="lbl_original_title_long">Tytuł oryginalny, jeśli książka jest tłumaczeniem</string>
     <string name="error_site_access_blocked">Dostęp został zablokowany przez stronę internetową.</string>
     <string name="pt_scan_mode">Tryb skanowania</string>
-    <string name="option_sync_deleted_book_records">Synchronizowanie usuniętych książek na tym urządzeniu</string>
+    <string name="option_sync_deleted_book_records">Synchronizacja usuniętych książek</string>
     <string name="site_description_dutch_catalogue">Holenderski i nie tylko; Katalog</string>
     <string name="site_description_dutch_catalogue_eu_comics">Niderlandzki i nie tylko; Katalog; Komiksy europejskie</string>
     <string name="site_description_dutch_shopping">Niderlandzki i więcej; Zakupy</string>
@@ -766,7 +767,7 @@
     <string name="site_description_french_catalogue_eu_comics">Francuski i więcej; Katalog; Komiksy europejskie</string>
     <string name="site_description_general_shopping">Ogólne; Zakupy</string>
     <string name="site_description_portuguese_shopping">Portugalski i więcej; Zakupy</string>
-    <string name="info_sync_deleted_book_records">Spowoduje to sprawdzenie historii usuniętych książek z poprzedniego importu z innego urządzenia i synchronizację tych usunięć. Innymi słowy, książki usunięte na innym urządzeniu zostaną również usunięte na tym urządzeniu.</string>
+    <string name="info_maintenance_sync_deleted_book_records">Spowoduje to sprawdzenie historii usuniętych książek z poprzedniego importu z innego urządzenia i synchronizację tych usunięć. Innymi słowy, książki usunięte na innym urządzeniu zostaną również usunięte na tym urządzeniu.</string>
     <string name="option_clear_deleted_book_records">Wyczyść historię usuniętych książek</string>
-    <string name="info_clear_deleted_book_records">Spowoduje to wyczyszczenie historii usuniętych książek. Żadne książki nie zostaną usunięte.</string>
+    <string name="info_maintenance_clear_deleted_book_records">Spowoduje to wyczyszczenie historii usuniętych książek. Żadne książki nie zostaną usunięte.</string>
 </resources>
