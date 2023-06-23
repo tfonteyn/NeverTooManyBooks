@@ -1110,6 +1110,9 @@
     <string name="info_import_complete">Import complete</string>
     <!-- progress final message - some data was imported. The user probably canceled before we finished. -->
     <string name="info_import_partially_complete">Partial import done</string>
+
+    <string name="info_books_deleted">Books deleted: %1$d</string>
+
     <!-- endregion -->
     <!-- region ========== Global settings. -->
     <!-- Generic place holder text for preference fields which are NOT SET.

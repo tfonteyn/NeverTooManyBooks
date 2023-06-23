@@ -80,6 +80,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ExportContra
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ImportContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PreferredStylesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchFtsContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ShowBookPagerContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.StripInfoSyncContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SyncContractBase;
@@ -691,6 +692,15 @@ public class BooksOnBookshelf
 
         // Otherwise handle the back-key as normal.
         super.onBackPressed();
+    }
+
+    @Override
+    public void onSettingsChanged(@NonNull final Bundle result) {
+        super.onSettingsChanged(result);
+
+        if (result.getBoolean(SettingsContract.BKEY_REBUILD_BOOKLIST, false)) {
+            vm.setForceRebuildInOnResume(true);
+        }
     }
 
     @Override

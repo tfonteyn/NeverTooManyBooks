@@ -22,10 +22,13 @@ package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -35,23 +38,31 @@ import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsFragment;
 
 public class SettingsContract
-        extends ActivityResultContract<String, Boolean> {
+        extends ActivityResultContract<String, Optional<Bundle>> {
 
     private static final String TAG = "SettingsContract";
 
     /** Something changed (or not) that requires a recreation of the caller Activity. */
-    private static final String BKEY_RECREATE_ACTIVITY = SettingsFragment.TAG + ":recreate";
+    public static final String BKEY_RECREATE_ACTIVITY = SettingsFragment.TAG + ":recreate";
+    /** Something changed (or not) that requires a rebuild of the Booklist. */
+    public static final String BKEY_REBUILD_BOOKLIST = SettingsFragment.TAG + ":rebuildList";
 
     /**
      * Create the result which {@link #parseResult(int, Intent)} will receive.
      *
-     * @param requiresRecreation flag indicating if the BoB should be recreated
+     * @param requiresRecreation   flag indicating if the BoB <strong>Activity</strong>
+     *                             should be recreated
+     * @param forceRebuildBooklist flag indicating if the BoB <strong>Booklist</strong>
+     *                             should be rebuild
      *
      * @return Intent
      */
     @NonNull
-    public static Intent createResult(final boolean requiresRecreation) {
-        return new Intent().putExtra(BKEY_RECREATE_ACTIVITY, requiresRecreation);
+    public static Intent createResult(final boolean requiresRecreation,
+                                      final boolean forceRebuildBooklist) {
+        return new Intent()
+                .putExtra(BKEY_RECREATE_ACTIVITY, requiresRecreation)
+                .putExtra(BKEY_REBUILD_BOOKLIST, forceRebuildBooklist);
     }
 
     @NonNull
@@ -67,16 +78,20 @@ public class SettingsContract
 
     @Override
     @NonNull
-    public Boolean parseResult(final int resultCode,
-                               @Nullable final Intent intent) {
+    public Optional<Bundle> parseResult(final int resultCode,
+                                        @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             LoggerFactory.getLogger()
-                          .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
+                         .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
-            return false;
+            return Optional.empty();
         }
-        return intent.getBooleanExtra(BKEY_RECREATE_ACTIVITY, false);
+        final Bundle result = intent.getExtras();
+        if (result == null) {
+            return Optional.empty();
+        }
+        return Optional.of(result);
     }
 }

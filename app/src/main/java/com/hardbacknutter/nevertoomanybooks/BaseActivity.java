@@ -72,15 +72,12 @@ public abstract class BaseActivity
     DrawerLayout drawerLayout;
     private RecreateViewModel recreateVm;
     private final ActivityResultLauncher<String> editSettingsLauncher =
-            registerForActivityResult(new SettingsContract(), recreateActivity -> {
-                if (recreateActivity) {
-                    recreateVm.setRecreationRequired();
-                }
-            });
+            registerForActivityResult(new SettingsContract(), o -> o.ifPresent(
+                    this::onSettingsChanged));
+
     /** Optional - The side/navigation menu. */
     @Nullable
     private NavigationView navigationView;
-
     private Toolbar toolbar;
 
     /**
@@ -92,6 +89,18 @@ public abstract class BaseActivity
         final InputMethodManager imm = (InputMethodManager)
                 view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    /**
+     * Called when w return from editing the Settings.
+     * Override as needed.
+     *
+     * @param result Bundle; see {@link SettingsContract} for keys.
+     */
+    public void onSettingsChanged(@NonNull final Bundle result) {
+        if (result.getBoolean(SettingsContract.BKEY_RECREATE_ACTIVITY, false)) {
+            recreateVm.setRecreationRequired();
+        }
     }
 
     @NonNull

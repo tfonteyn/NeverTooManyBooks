@@ -115,7 +115,8 @@ public class SettingsFragment
                 @Override
                 public void handleOnBackPressed() {
                     final Intent resultIntent = SettingsContract.createResult(
-                            vm.getRequiresActivityRecreation());
+                            vm.isRequiresActivityRecreation(),
+                            vm.isForceRebuildBooklist());
                     //noinspection DataFlowIssue
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();

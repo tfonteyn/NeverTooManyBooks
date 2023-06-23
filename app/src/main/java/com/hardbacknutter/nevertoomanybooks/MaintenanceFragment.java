@@ -56,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.SqliteShellFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceAlertDialogBuilder;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsViewModel;
 import com.hardbacknutter.nevertoomanybooks.utils.FileSize;
 
 @Keep
@@ -68,6 +69,7 @@ public class MaintenanceFragment
     /** The length of a UUID string. */
     private static final int UUID_LEN = 32;
 
+    private SettingsViewModel settingsViewModel;
     private MaintenanceViewModel vm;
     /** The launcher for picking a Uri to write to. */
     private final ActivityResultLauncher<GetContentUriForWritingContract.Input>
@@ -80,6 +82,9 @@ public class MaintenanceFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //noinspection DataFlowIssue
+        settingsViewModel = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
 
         vm = new ViewModelProvider(this).get(MaintenanceViewModel.class);
     }
@@ -209,8 +214,15 @@ public class MaintenanceFragment
                 .setMessage(getString(R.string.info_maintenance_sync_deleted_book_records)
                             + "\n\n" + getString(R.string.confirm_continue))
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(android.R.string.ok, (d, w) ->
-                        ServiceLocator.getInstance().getDeletedBooksDao().purge())
+                .setPositiveButton(android.R.string.ok, (d, w) -> {
+                    final int count = ServiceLocator.getInstance().getDeletedBooksDao().sync();
+                    if (count > 0) {
+                        settingsViewModel.setForceRebuildBooklist();
+                    }
+                    //noinspection DataFlowIssue
+                    Snackbar.make(getView(), getString(R.string.info_books_deleted, count),
+                                  Snackbar.LENGTH_LONG).show();
+                })
                 .create()
                 .show();
     }
@@ -221,8 +233,11 @@ public class MaintenanceFragment
                 .setTitle(R.string.option_clear_deleted_book_records)
                 .setMessage(R.string.info_maintenance_clear_deleted_book_records)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(android.R.string.ok, (d, w) ->
-                        ServiceLocator.getInstance().getDeletedBooksDao().purge())
+                .setPositiveButton(android.R.string.ok, (d, w) -> {
+                    ServiceLocator.getInstance().getDeletedBooksDao().purge();
+                    //noinspection DataFlowIssue
+                    Snackbar.make(getView(), R.string.action_done, Snackbar.LENGTH_SHORT).show();
+                })
                 .create()
                 .show();
     }
@@ -233,8 +248,11 @@ public class MaintenanceFragment
                 .setTitle(R.string.lbl_purge_blns)
                 .setMessage(R.string.info_purge_blns_all)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(android.R.string.ok, (d, w) ->
-                        BooklistNodeDao.clearAll(ServiceLocator.getInstance().getDb()))
+                .setPositiveButton(android.R.string.ok, (d, w) -> {
+                    BooklistNodeDao.clearAll(ServiceLocator.getInstance().getDb());
+                    //noinspection DataFlowIssue
+                    Snackbar.make(getView(), R.string.action_done, Snackbar.LENGTH_SHORT).show();
+                })
                 .create()
                 .show();
     }
