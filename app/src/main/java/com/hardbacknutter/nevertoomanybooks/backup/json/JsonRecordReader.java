@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.backupbase.ArchiveWriterAbstract;
 import com.hardbacknutter.nevertoomanybooks.backup.backupbase.BaseRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookshelfCoder;
@@ -182,7 +183,30 @@ public class JsonRecordReader
                     return Optional.of(new ArchiveMetaData(data));
                 }
             } else {
-                // There is no meta-data, we have an unknown file
+                // This is a gamble...
+                // Suppose the user took our standard zip archive, and extracted
+                // the "books.json" file and then tries to import that file...
+                // Then theoretically we *could* now be inside that file at a point
+                // were we *could* find "books" at the current root level.
+                if (root.has(RecordType.Books.getName())) {
+                    // If we do, then we should be able to reconstruct the meta-data
+                    // by simply counting the elements under "books"
+                    final int nrOfBooks = root.getJSONArray(RecordType.Books.getName())
+                                              .length();
+                    if (nrOfBooks > 1) {
+                        // The next gamble is that each element is formatted
+                        // in the current archiver version format.
+                        // If it's not... then the import will fail at a later stage...
+                        final ArchiveMetaData metaData = new ArchiveMetaData(
+                                ArchiveWriterAbstract.VERSION,
+                                ServiceLocator.getInstance().newBundle());
+                        metaData.setBookCount(nrOfBooks);
+                        // and now let's hope for the best...
+                        return Optional.of(metaData);
+                    }
+                }
+
+                // We have an unknown file...
                 return Optional.empty();
             }
 
