@@ -293,7 +293,7 @@ public abstract class ArchiveWriterAbstract
         try (Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
              Writer bw = new BufferedWriter(osw, META_WRITER_BUFFER);
              RecordWriter recordWriter = encoding.createWriter(null)) {
-            recordWriter.writeMetaData(bw, ArchiveMetaData.create(context, VERSION, data));
+            recordWriter.writeMetaData(context, bw, ArchiveMetaData.create(context, VERSION, data));
         }
 
         putByteArray(RecordType.MetaData.getName() + encoding.getFileExt(),

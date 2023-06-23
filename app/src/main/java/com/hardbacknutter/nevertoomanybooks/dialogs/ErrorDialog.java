@@ -179,14 +179,18 @@ public final class ErrorDialog {
 
             // the exception MAY be absent
             if (e != null) {
-                // If an exception is available, the "more" button will
-                // show the message concatenated with the actual exception message.
-                // Pass in a null exception so we don't loop.
-                builder.setNeutralButton(R.string.action_more_ellipsis, (d, w) ->
-                        showDialog(context, null,
-                                   title, message + "\n\n" + e.getLocalizedMessage(),
-                                   closingAction)
-                );
+                final String eMessage = e.getLocalizedMessage();
+                // Don't show the "more" button if the current message and the exception message
+                // are the same.
+                if (!message.equals(eMessage)) {
+                    // If an exception is available, the "more" button will
+                    // show the message concatenated with the actual exception message.
+                    // Pass in a null exception so we don't loop.
+                    builder.setNeutralButton(R.string.action_more_ellipsis, (d, w) ->
+                            showDialog(context, null, title, message + "\n\n" + eMessage,
+                                       closingAction)
+                    );
+                }
             }
             builder.create()
                    .show();
@@ -206,14 +210,18 @@ public final class ErrorDialog {
 
             // The exception SHOULD be present but we're paranoid.
             if (e != null) {
-                // If an exception is available, the "more" button will
-                // show the derived message concatenated with the actual exception message.
-                // Pass in a null exception so we don't loop.
-                builder.setNeutralButton(R.string.action_more_ellipsis, (d, w) ->
-                        showDialog(context, null,
-                                   title, message2 + "\n\n" + e.getLocalizedMessage(),
-                                   closingAction)
-                );
+                final String eMessage = e.getLocalizedMessage();
+                // Don't show the "more" button if the current message and the exception message
+                // are the same.
+                if (!message2.equals(eMessage)) {
+                    // If an exception is available, the "more" button will
+                    // show the derived message concatenated with the actual exception message.
+                    // Pass in a null exception so we don't loop.
+                    builder.setNeutralButton(R.string.action_more_ellipsis, (d, w) ->
+                            showDialog(context, null, title, message2 + "\n\n" + eMessage,
+                                       closingAction)
+                    );
+                }
             }
             builder.create()
                    .show();

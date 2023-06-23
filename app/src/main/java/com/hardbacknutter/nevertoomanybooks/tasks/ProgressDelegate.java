@@ -51,6 +51,13 @@ public class ProgressDelegate {
         vb = DialogProgressBinding.bind(view);
     }
 
+    /**
+     * Set the dialog title.
+     *
+     * @param title to set
+     *
+     * @return {@code this} (for chaining)
+     */
     @NonNull
     public ProgressDelegate setTitle(@NonNull final CharSequence title) {
         vb.progressTitle.setText(title);
@@ -58,6 +65,13 @@ public class ProgressDelegate {
         return this;
     }
 
+    /**
+     * Set the dialog title.
+     *
+     * @param title string resource to set
+     *
+     * @return {@code this} (for chaining)
+     */
     @NonNull
     public ProgressDelegate setTitle(@StringRes final int title) {
         vb.progressTitle.setText(title);
@@ -65,12 +79,41 @@ public class ProgressDelegate {
         return this;
     }
 
+    /**
+     * Set an initial message.
+     *
+     * @param message string resource to set
+     *
+     * @return {@code this} (for chaining)
+     */
+    @NonNull
+    public ProgressDelegate setMessage(@StringRes final int message) {
+        vb.progressMessage.setText(message);
+        vb.progressMessage.setVisibility(View.VISIBLE);
+        return this;
+    }
+
+    /**
+     * Suppress or allow the device from going into power-save mode.
+     *
+     * @param preventSleep {@code true} to keep the display on until finished.
+     *
+     * @return {@code this} (for chaining)
+     */
     @NonNull
     public ProgressDelegate setPreventSleep(final boolean preventSleep) {
         this.preventSleep = preventSleep;
         return this;
     }
 
+    /**
+     * Set the mode.
+     *
+     * @param indeterminate {@code true} for an indeterminate progress bar,
+     *                      * or {@code false} for an exact length bar.
+     *
+     * @return {@code this} (for chaining)
+     */
     @NonNull
     public ProgressDelegate setIndeterminate(final boolean indeterminate) {
         originalIndeterminate = indeterminate;
@@ -78,12 +121,26 @@ public class ProgressDelegate {
         return this;
     }
 
+    /**
+     * Install a callback listener for when the user cancels the dialog.
+     *
+     * @param listener to call hen cancelling
+     *
+     * @return {@code this} (for chaining)
+     */
     @NonNull
     public ProgressDelegate setOnCancelListener(@Nullable final View.OnClickListener listener) {
         vb.btnCancel.setOnClickListener(listener);
         return this;
     }
 
+    /**
+     * Make the dialog visible.
+     *
+     * @param windowSupplier deferred supplier for the {@link Window} to update
+     *
+     * @return {@code this} (for chaining)
+     */
     @NonNull
     public ProgressDelegate show(@NonNull final Supplier<Window> windowSupplier) {
         if (vb.getRoot().getVisibility() == View.VISIBLE) {
@@ -96,6 +153,11 @@ public class ProgressDelegate {
         return this;
     }
 
+    /**
+     * Close the dialog.
+     *
+     * @param window to update
+     */
     public void dismiss(@NonNull final Window window) {
         if (preventSleep) {
             window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -103,6 +165,11 @@ public class ProgressDelegate {
         vb.getRoot().setVisibility(View.GONE);
     }
 
+    /**
+     * Update the message shown.
+     *
+     * @param message to show
+     */
     public void onProgress(@NonNull final TaskProgress message) {
 
         // mode change requested ?

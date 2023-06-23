@@ -354,7 +354,8 @@ public class ImportFragment
         // connection can take a long time, so bring up the progress dialog now
         if (progressDelegate == null) {
             progressDelegate = new ProgressDelegate(getProgressFrame())
-                    .setTitle(R.string.progress_msg_connecting)
+                    .setTitle(R.string.lbl_importing)
+                    .setMessage(R.string.progress_msg_please_wait)
                     .setPreventSleep(true)
                     .setIndeterminate(true)
                     .setOnCancelListener(v -> vm.cancelTask(R.id.TASK_ID_READ_META_DATA));

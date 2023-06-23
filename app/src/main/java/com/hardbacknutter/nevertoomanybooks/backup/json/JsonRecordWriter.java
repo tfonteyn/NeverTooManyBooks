@@ -102,12 +102,13 @@ public class JsonRecordWriter
     }
 
     @Override
-    public void writeMetaData(@NonNull final Writer writer,
+    public void writeMetaData(@NonNull final Context context,
+                              @NonNull final Writer writer,
                               @NonNull final ArchiveMetaData metaData)
             throws DataWriterException,
                    IOException {
         try {
-            writer.write(new BundleCoder().encode(metaData.getData()).toString());
+            writer.write(new BundleCoder(context).encode(metaData.getData()).toString());
         } catch (@NonNull final JSONException e) {
             throw new DataWriterException(e);
         }

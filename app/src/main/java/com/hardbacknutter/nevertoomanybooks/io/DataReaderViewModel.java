@@ -162,7 +162,7 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
          * @param helper configuration
          */
         @UiThread
-        public void start(@NonNull final DataReaderHelperBase<METADATA, RESULTS> helper) {
+        void start(@NonNull final DataReaderHelperBase<METADATA, RESULTS> helper) {
             this.helper = helper;
             execute();
         }

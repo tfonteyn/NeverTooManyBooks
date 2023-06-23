@@ -206,6 +206,8 @@
     <string name="error_backup_failed">Backup Failed.</string>
     <!-- generic export failure -->
     <string name="error_export_failed">Export failed.</string>
+    <!-- When we're importing from a known file/source, but the content is somehow not correct. -->
+    <string name="error_type_not_supported">Type not supported: %1$s …</string>
     <!-- endregion -->
     <!-- region ========== Warning messages. -->
     <string name="warning_import_csv">Warning. Importing data may update existing book records with new information if the uuid column is not present and the id in the import file is the same as an existing id. This is usually fine if you changed a field in an exported file. If you created a new book record, or are importing someone else’s books, ensure the uuid field is present or the id field is blank.</string>

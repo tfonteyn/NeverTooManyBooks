@@ -115,7 +115,8 @@ public class JsonArchiveWriter
 
                 // 4. the metadata
                 bw.write(",\"" + RecordType.MetaData.getName() + "\":");
-                recordWriter.writeMetaData(bw, ArchiveMetaData.create(context, VERSION, results));
+                recordWriter.writeMetaData(context, bw,
+                                           ArchiveMetaData.create(context, VERSION, results));
 
                 // 5. close the envelope
                 bw.write("}}");

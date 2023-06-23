@@ -40,6 +40,19 @@ public interface JsonCoder<T> {
 
     String TAG_APPLICATION_ROOT = "NeverTooManyBooks";
 
+    /**
+     * Encode the given element.
+     *
+     * @param element to encode
+     *
+     * @return encoded data
+     *
+     * @throws IllegalArgumentException if the data could partially be encoded,
+     *                                  but we encountered an unknown type/element.
+     *                                  The message <strong>must be localized and
+     *                                  will be shown to the user</strong>
+     * @throws JSONException            upon any parsing error
+     */
     @NonNull
     JSONObject encode(@NonNull T element)
             throws JSONException;
@@ -70,6 +83,19 @@ public interface JsonCoder<T> {
         return new JSONArray(result);
     }
 
+    /**
+     * Decode the given data object.
+     *
+     * @param data to decode
+     *
+     * @return decoded data
+     *
+     * @throws IllegalArgumentException if the data could partially be parsed,
+     *                                  but we encountered an unknown type/element.
+     *                                  The message <strong>must be localized and
+     *                                  will be shown to the user</strong>
+     * @throws JSONException            upon any parsing error
+     */
     @NonNull
     T decode(@NonNull JSONObject data)
             throws JSONException;

@@ -19,12 +19,14 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
 import java.util.Iterator;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -38,7 +40,13 @@ import com.hardbacknutter.org.json.JSONObject;
 public class BundleCoder
         implements JsonCoder<Bundle> {
 
-    private static final String ERROR_TYPE_NOT_SUPPORTED = "type not supported: ";
+    private static final int MAX_ERR_LEN = 200;
+    @NonNull
+    private final Context context;
+
+    public BundleCoder(@NonNull final Context context) {
+        this.context = context;
+    }
 
     @NonNull
     @Override
@@ -53,7 +61,13 @@ public class BundleCoder
                 out.put(key, o);
 
             } else if (o != null) {
-                throw new IllegalArgumentException(ERROR_TYPE_NOT_SUPPORTED + o);
+                // Avoid showing an extremely long error to the user.
+                String s = o.toString();
+                if (s.length() > MAX_ERR_LEN) {
+                    s = s.substring(0, MAX_ERR_LEN);
+                }
+                throw new IllegalArgumentException(
+                        context.getString(R.string.error_type_not_supported, s));
             }
         }
         return out;
@@ -65,6 +79,7 @@ public class BundleCoder
             throws JSONException {
         final Bundle bundle = ServiceLocator.getInstance().newBundle();
         final Iterator<String> keys = data.keys();
+
         while (keys.hasNext()) {
             final String key = keys.next();
             final Object o = data.get(key);
@@ -85,7 +100,13 @@ public class BundleCoder
                 bundle.putBoolean(key, (boolean) o);
 
             } else {
-                throw new IllegalArgumentException(ERROR_TYPE_NOT_SUPPORTED + o);
+                // Avoid showing an extremely long error to the user.
+                String s = o.toString();
+                if (s.length() > MAX_ERR_LEN) {
+                    s = s.substring(0, MAX_ERR_LEN);
+                }
+                throw new IllegalArgumentException(
+                        context.getString(R.string.error_type_not_supported, s));
             }
         }
         return bundle;

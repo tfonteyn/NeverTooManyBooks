@@ -171,12 +171,20 @@ public class JsonRecordReader
                         R.string.error_file_not_recognized));
             }
 
-            // We should now be 'in' the MetaData object
-            final Bundle data = new BundleCoder().decode(root);
-            if (data.isEmpty()) {
-                return Optional.empty();
+            // We should now be 'in' the MetaData object, but we need to do another
+            // sanity check by explicitly checking for the INFO_ARCHIVER_VERSION field,
+            // as we might be inside a generic json file instead and we do not
+            // want the BundleCoder to crash!
+            if (root.has(ArchiveMetaData.INFO_ARCHIVER_VERSION)) {
+                final Bundle data = new BundleCoder(context).decode(root);
+                if (data.isEmpty()) {
+                    return Optional.empty();
+                } else {
+                    return Optional.of(new ArchiveMetaData(data));
+                }
             } else {
-                return Optional.of(new ArchiveMetaData(data));
+                // There is no meta-data, we have an unknown file
+                return Optional.empty();
             }
 
         } catch (@NonNull final JSONException e) {
