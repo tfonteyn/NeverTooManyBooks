@@ -29,9 +29,12 @@ import java.io.FileNotFoundException;
 import java.util.Locale;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderViewModel;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 
 public class ImportViewModel
         extends DataReaderViewModel<ArchiveMetaData, ImportResults> {
@@ -74,11 +77,31 @@ public class ImportViewModel
         return importHelper.getMetaData().isPresent();
     }
 
-    public void setRemoveDeletedBooksAfterImport(final boolean removeDeletedBooksAfterImport) {
+    boolean isRemoveDeletedBooksAfterImport() {
+        return removeDeletedBooksAfterImport;
+    }
+
+    void setRemoveDeletedBooksAfterImport(final boolean removeDeletedBooksAfterImport) {
         this.removeDeletedBooksAfterImport = removeDeletedBooksAfterImport;
     }
 
-    public boolean isRemoveDeletedBooksAfterImport() {
-        return removeDeletedBooksAfterImport;
+    void onImportFinished(@NonNull final ImportResults result) {
+        if (result.styles > 0) {
+            final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
+            // Resort the styles menu as per their (new) order.
+            stylesHelper.updateMenuOrder();
+            // Force a refresh of the cached styles.
+            stylesHelper.clearCache();
+        }
+
+        // If the user checked the option to import books,
+        // we also imported the deleted-book records for future syncs
+        // which is independent from the sync option.
+
+        // Here we are effectively deleting the actual books if sync was enabled.
+        if (getDataReaderHelper().getRecordTypes().contains(RecordType.Books)
+            && removeDeletedBooksAfterImport) {
+            ServiceLocator.getInstance().getDeletedBooksDao().sync();
+        }
     }
 }

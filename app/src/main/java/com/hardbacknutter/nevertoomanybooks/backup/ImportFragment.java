@@ -55,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForReadingContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ImportContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImportBinding;
@@ -168,12 +167,6 @@ public class ImportFragment
             vb.rbBooksGroup.setEnabled(isChecked);
             // follow the cbxBooks status
             vb.cbxDeleteRemovedBooks.setEnabled(isChecked);
-            if (!isChecked) {
-                // and when cbxBooks is switched off,
-                // then also set sync deleting books off.
-                vb.cbxDeleteRemovedBooks.setChecked(false);
-                vm.setRemoveDeletedBooksAfterImport(false);
-            }
         });
 
         vb.cbxDeleteRemovedBooks.setOnCheckedChangeListener(
@@ -497,22 +490,7 @@ public class ImportFragment
     private void onImportFinished(@StringRes final int titleId,
                                   @NonNull final ImportResults result) {
 
-        if (result.styles > 0) {
-            final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
-            // Resort the styles menu as per their (new) order.
-            stylesHelper.updateMenuOrder();
-            // Force a refresh of the cached styles.
-            stylesHelper.clearCache();
-        }
-
-        // If the user checked the option to import books,
-        // we also imported the deleted-book records for future syncs
-        // which is independent from the sync option.
-
-        // Here we are effectively deleting the actual books if sync was enabled.
-        if (vm.isRemoveDeletedBooksAfterImport()) {
-            ServiceLocator.getInstance().getDeletedBooksDao().sync();
-        }
+        vm.onImportFinished(result);
 
         //noinspection DataFlowIssue
         new MaterialAlertDialogBuilder(getContext())
