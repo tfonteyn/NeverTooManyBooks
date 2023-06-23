@@ -74,7 +74,7 @@
             style="@style/Text.Body"
             android:layout_marginStart="@dimen/field_margin_inline"
             android:layout_marginTop="@dimen/section_margin_top"
-            android:textAppearance="?attr/textAppearanceBodyLarge"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
             android:textIsSelectable="true"
             app:layout_constraintEnd_toStartOf="@id/col0"
             app:layout_constraintHorizontal_bias="0.26"
@@ -169,9 +169,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="true"
+            android:layout_marginStart="@dimen/field_margin_start"
+
             android:text="@string/option_sync_deleted_book_records"
             app:layout_constraintStart_toStartOf="@id/cbx_books"
             app:layout_constraintTop_toBottomOf="@id/rb_import_all"
+            />
+
+        <Button
+            android:id="@+id/inf_removed_books"
+            style="@style/Button.InfoPopup"
+            android:contentDescription="@string/option_info_delete_removed_books"
+            app:layout_constraintStart_toEndOf="@id/cbx_delete_removed_books"
+            app:layout_constraintTop_toTopOf="@id/cbx_delete_removed_books"
             />
 
         <CheckBox

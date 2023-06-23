@@ -67,7 +67,7 @@
             style="@style/Text.Body"
             android:layout_marginStart="@dimen/field_margin_inline"
             android:layout_marginTop="@dimen/section_margin_top"
-            android:textAppearance="?attr/textAppearanceBodyLarge"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
             android:textIsSelectable="true"
             app:layout_constraintStart_toStartOf="@id/archive_name"
             app:layout_constraintTop_toBottomOf="@id/archive_name"
@@ -145,16 +145,26 @@
             android:id="@+id/cbx_delete_removed_books"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/field_margin_start"
             android:checked="true"
             android:text="@string/option_sync_deleted_book_records"
             app:layout_constraintStart_toStartOf="@id/cbx_books"
             app:layout_constraintTop_toBottomOf="@id/rb_import_all"
             />
 
+        <Button
+            android:id="@+id/inf_removed_books"
+            style="@style/Button.InfoPopup"
+            android:contentDescription="@string/option_info_delete_removed_books"
+            app:layout_constraintStart_toEndOf="@id/cbx_delete_removed_books"
+            app:layout_constraintTop_toTopOf="@id/cbx_delete_removed_books"
+            />
+
         <CheckBox
             android:id="@+id/cbx_covers"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/section_margin_top"
             android:checked="true"
             android:text="@string/lbl_covers_long"
             app:layout_constraintStart_toStartOf="@id/cbx_books"
