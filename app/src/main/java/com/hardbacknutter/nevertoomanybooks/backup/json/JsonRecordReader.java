@@ -167,8 +167,7 @@ public class JsonRecordReader
 
             // Sanity check before we try decoding
             if (root == null) {
-                throw new DataReaderException(context.getString(
-                        R.string.error_file_not_recognized));
+                return Optional.empty();
             }
 
             // We should now be 'in' the MetaData object, but we need to do another
