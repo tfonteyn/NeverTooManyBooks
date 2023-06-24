@@ -229,6 +229,8 @@ public class EditBookViewModel
                             && !book.contains(DBKey.BOOK_CONDITION)) {
                             book.putInt(DBKey.BOOK_CONDITION, Book.CONDITION_AS_NEW);
                         }
+                        // it's all new data, not saved yet, hence 'Dirty'
+                        book.setStage(EntityStage.Stage.Dirty);
                     }
 
                 } else {
