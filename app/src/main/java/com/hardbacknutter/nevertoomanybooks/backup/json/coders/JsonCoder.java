@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.hardbacknutter.nevertoomanybooks.backup.json.JsonArchiveWriter;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -38,6 +39,9 @@ import com.hardbacknutter.org.json.JSONObject;
  */
 public interface JsonCoder<T> {
 
+    /**
+     * The json tag used for the root level by the {@link JsonArchiveWriter}.
+     */
     String TAG_APPLICATION_ROOT = "NeverTooManyBooks";
 
     /**
@@ -57,11 +61,20 @@ public interface JsonCoder<T> {
     JSONObject encode(@NonNull T element)
             throws JSONException;
 
+    /**
+     * Encode a list of elements. Actual work is done in {@link #encode(Object)}.
+     *
+     * @param elements to encode
+     *
+     * @return encoded data
+     *
+     * @throws JSONException upon any parsing error
+     */
     @NonNull
-    default JSONArray encode(@NonNull final List<T> list)
+    default JSONArray encode(@NonNull final List<T> elements)
             throws JSONException {
         final List<JSONObject> result = new ArrayList<>();
-        for (final T element : list) {
+        for (final T element : elements) {
             result.add(encode(element));
         }
         return new JSONArray(result);
@@ -74,10 +87,10 @@ public interface JsonCoder<T> {
     }
 
     @NonNull
-    default JSONArray encodeReference(@NonNull final List<T> list)
+    default JSONArray encodeReference(@NonNull final List<T> elements)
             throws JSONException {
         final List<JSONObject> result = new ArrayList<>();
-        for (final T element : list) {
+        for (final T element : elements) {
             result.add(encodeReference(element));
         }
         return new JSONArray(result);
@@ -100,6 +113,15 @@ public interface JsonCoder<T> {
     T decode(@NonNull JSONObject data)
             throws JSONException;
 
+    /**
+     * Decode a list of elements. Actual work is done in {@link #decode(JSONObject)}.
+     *
+     * @param elements to decode
+     *
+     * @return decoded data
+     *
+     * @throws JSONException upon any parsing error
+     */
     @NonNull
     default List<T> decode(@NonNull final JSONArray elements)
             throws JSONException {

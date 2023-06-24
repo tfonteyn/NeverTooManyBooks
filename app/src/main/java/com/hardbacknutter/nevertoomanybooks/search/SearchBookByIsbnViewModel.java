@@ -193,7 +193,6 @@ public class SearchBookByIsbnViewModel
                       final boolean strictIsbn) {
         //TODO: should be run as background task, and use LiveData to update the view...
         // ... but it's so fast for any reasonable length list....
-        //noinspection OverlyBroadCatchBlock
         try (InputStream is = context.getContentResolver().openInputStream(uri)) {
             if (is != null) {
                 try (Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);

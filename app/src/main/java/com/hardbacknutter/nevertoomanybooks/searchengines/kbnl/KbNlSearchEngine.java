@@ -70,9 +70,9 @@ public class KbNlSearchEngine
     //    + "/DB=1/SET=1/TTL=1/REL?PPN=%1$s";
 
     /**
-     * param 1: db version (part of the site session vars)
-     * param 2: the set number (part of the site session vars)
-     * param 3: the ISBN
+     * param 1: db version (part of the site session vars).
+     * param 2: the set number (part of the site session vars).
+     * param 3: the ISBN.
      */
     private static final String SEARCH_URL = "/cbs/DB=%1$s/SET=%2$s/TTL=1/CMD?"
                                              // Action is a search
@@ -85,9 +85,9 @@ public class KbNlSearchEngine
                                              + "TRM=%3$s";
 
     /**
-     * param 1: db version (part of the site session vars)
-     * param 2: the set number (part of the site session params)
-     * Param 3: the SHW part of the url as found in a multi-result
+     * param 1: db version (part of the site session vars).
+     * param 2: the set number (part of the site session params).
+     * Param 3: the SHW part of the url as found in a multi-result.
      */
     private static final String BOOK_URL = "/cbs/DB=%1$s/SET=%2$s/TTL=1/%3$s";
 
@@ -156,7 +156,6 @@ public class KbNlSearchEngine
             throw new IllegalStateException(e);
         }
 
-        //noinspection OverlyBroadCatchBlock
         try {
             // Do the search... we'll either get a parsed list-page back, or the parsed book page.
             String url = getHostUrl(context) + String.format(SEARCH_URL, dbVersion, setNr,

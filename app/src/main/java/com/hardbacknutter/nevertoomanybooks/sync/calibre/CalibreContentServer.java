@@ -1375,7 +1375,6 @@ public final class CalibreContentServer
      * @throws StorageException on storage related failures
      * @throws JSONException    upon any parsing error
      */
-    @SuppressWarnings("OverlyBroadThrowsClause")
     void pushChanges(@NonNull final String libraryStringId,
                      final int calibreId,
                      @NonNull final JSONObject changes)

@@ -91,7 +91,6 @@ public class TransformationTask
         final Optional<Bitmap> optBitmap = transformation.transform();
 
         if (optBitmap.isPresent()) {
-            //noinspection OverlyBroadCatchBlock
             try {
                 final Bitmap bitmap = optBitmap.get();
                 try (OutputStream os = new FileOutputStream(destFile.getAbsoluteFile())) {

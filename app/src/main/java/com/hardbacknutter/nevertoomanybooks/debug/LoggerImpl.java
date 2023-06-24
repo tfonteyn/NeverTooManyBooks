@@ -56,9 +56,14 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 public class LoggerImpl
         implements Logger {
 
+    /**
+     * Base name of the logfile.
+     */
     public static final String ERROR_LOG_FILE = "error.log";
+
     /** Sub directory of {@link Context#getFilesDir()}. */
     public static final String DIR_LOG = "log";
+
     /** Keep the last 3 log files. */
     private static final int LOGFILE_COPIES = 3;
 
@@ -69,6 +74,11 @@ public class LoggerImpl
     @NonNull
     private final File logDir;
 
+    /**
+     * Constructor.
+     *
+     * @param logDir the directory where logs will be written
+     */
     public LoggerImpl(@NonNull final File logDir) {
         this.logDir = logDir;
     }
@@ -109,6 +119,8 @@ public class LoggerImpl
      * Handy function to get a loggable stack trace from a Throwable
      *
      * @param e An exception to log
+     *
+     * @return stacktrace as a printable string
      */
     @VisibleForTesting
     @NonNull
@@ -292,6 +304,7 @@ public class LoggerImpl
                                             .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
                                + '|' + tag + '|' + type + '|' + message + exMsg;
 
+        //noinspection OverlyBroadCatchBlock,CheckStyle
         try {
             final File logFile = new File(logDir, ERROR_LOG_FILE);
             try (FileOutputStream fos = new FileOutputStream(logFile, true);

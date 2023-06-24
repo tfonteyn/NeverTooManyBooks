@@ -68,7 +68,6 @@ public class WrappedArrayList<E>
     @NonNull
     @Override
     public <T> T[] toArray(@NonNull final T[] a) {
-        //noinspection SuspiciousToArrayCall
         return list.toArray(a);
     }
 

@@ -66,8 +66,8 @@ public final class CameraDetection {
         try {
             final String[] cameraIdList = cm.getCameraIdList();
             for (final String cameraId : cameraIdList) {
-                final CameraCharacteristics cc = cm.getCameraCharacteristics(cameraId);
-                list.add(cc.get(CameraCharacteristics.LENS_FACING));
+                final CameraCharacteristics characteristics = cm.getCameraCharacteristics(cameraId);
+                list.add(characteristics.get(CameraCharacteristics.LENS_FACING));
             }
         } catch (@NonNull final CameraAccessException e) {
             LoggerFactory.getLogger().e(TAG, e);

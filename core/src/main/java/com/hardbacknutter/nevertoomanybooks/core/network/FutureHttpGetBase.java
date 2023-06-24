@@ -44,7 +44,7 @@ public class FutureHttpGetBase<T>
      *
      * @param siteResId string resource for the site name
      */
-    public FutureHttpGetBase(@StringRes final int siteResId) {
+    FutureHttpGetBase(@StringRes final int siteResId) {
         super(siteResId);
     }
 
@@ -57,7 +57,6 @@ public class FutureHttpGetBase<T>
      * @throws IOException      on generic/other IO failures
      * @throws NetworkException on fatal error / giving up
      */
-    @SuppressWarnings({"OverlyBroadThrowsClause", "OverlyBroadCatchBlock"})
     protected void connect(@NonNull final HttpURLConnection request)
             throws IOException {
 
@@ -71,6 +70,7 @@ public class FutureHttpGetBase<T>
         }
 
         while (retry > 0) {
+            //noinspection OverlyBroadCatchBlock
             try {
                 if (throttler != null) {
                     throttler.waitUntilRequestAllowed();

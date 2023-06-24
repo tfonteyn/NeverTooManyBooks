@@ -378,6 +378,7 @@ public class PartialDatePickerDialogFragment
 
         int yyyy = 0;
         int mm = 0;
+        //noinspection QuestionableName
         int dd = 0;
         try {
             final String[] dateAndTime = dateString.split(" ");

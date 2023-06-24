@@ -126,7 +126,6 @@ public class ImageDownloader {
      * @throws StorageException The covers directory is not available
      * @throws IOException      on generic/other IO failures
      */
-    @SuppressWarnings("OverlyBroadThrowsClause")
     @NonNull
     @WorkerThread
     public Optional<File> fetch(@NonNull final String url,

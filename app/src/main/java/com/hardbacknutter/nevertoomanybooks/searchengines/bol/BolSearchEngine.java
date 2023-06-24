@@ -532,7 +532,7 @@ public class BolSearchEngine
      *   {
      *     "type": "video",
      *     "imageUrl": "https://media.s-bol.com/mEW048AnXmQG/550x309.jpg",
-     *     "videoUrl": "/nl/rnwy/ajax/video/product?productId\u003d9200000122271922",
+     *     "videoUrl": "/nl/rnwy/ajax/video/product?productId=9200000122271922",
      *     "srtText": "Video afspelen",
      *     "m2": {
      *       "bltghselecteditemvideotemplate0StartVideo": {

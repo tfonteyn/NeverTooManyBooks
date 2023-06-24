@@ -147,7 +147,6 @@ public class CropImageActivity
         final Uri srcUri = Uri.fromFile(new File(srcPath));
 
         Bitmap bitmap = null;
-        //noinspection OverlyBroadCatchBlock
         try (InputStream is = getContentResolver().openInputStream(srcUri)) {
             bitmap = BitmapFactory.decodeStream(is);
         } catch (@NonNull final IOException e) {
@@ -178,7 +177,6 @@ public class CropImageActivity
         @Nullable
         Bitmap bitmap = vb.coverImage0.getCroppedBitmap();
         if (bitmap != null) {
-            //noinspection OverlyBroadCatchBlock
             try (OutputStream os = getContentResolver().openOutputStream(destinationUri)) {
                 if (os != null) {
                     bitmap.compress(Bitmap.CompressFormat.PNG, QUALITY, os);
