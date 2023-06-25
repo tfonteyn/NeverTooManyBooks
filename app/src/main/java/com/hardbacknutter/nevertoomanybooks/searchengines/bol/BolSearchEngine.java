@@ -31,8 +31,6 @@ import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.StringJoiner;
@@ -40,8 +38,6 @@ import java.util.StringJoiner;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
@@ -276,10 +272,7 @@ public class BolSearchEngine
             return;
         }
 
-        final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
         final List<Locale> locales = LocaleListUtils.asList(context, getLocale(context));
-
-        final DateParser dateParser = new FullDateParser(systemLocale, locales);
         final RealNumberParser realNumberParser = new RealNumberParser(locales);
 
         for (final Element specRow : specs.select("div.specs__row")) {
@@ -302,11 +295,7 @@ public class BolSearchEngine
                     case "Date de sortie initiale": {
                         final String text = SearchEngineUtils.cleanText(value.text());
                         if (!text.isEmpty()) {
-                            final LocalDateTime date = dateParser.parse(text, getLocale(context));
-                            if (date != null) {
-                                book.putString(DBKey.BOOK_PUBLICATION__DATE,
-                                               date.format(DateTimeFormatter.ISO_LOCAL_DATE));
-                            }
+                            book.putString(DBKey.BOOK_PUBLICATION__DATE, text);
                         }
                         break;
                     }
