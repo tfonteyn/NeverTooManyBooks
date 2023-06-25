@@ -121,6 +121,12 @@ public class AuthorTypeMapper {
         MAPPER.put("Übersetzer", TYPE_TRANSLATOR);
         MAPPER.put("Übersetzung", TYPE_TRANSLATOR);
 
+        // Spanish, unless listed above
+        MAPPER.put("escritor", TYPE_WRITER);
+        MAPPER.put("traductor", TYPE_TRANSLATOR);
+        MAPPER.put("ilustrador", TYPE_ARTIST);
+        MAPPER.put("dibujos", TYPE_ARTIST);
+
         // Italian, unless listed above
         MAPPER.put("testi", TYPE_WRITER);
         MAPPER.put("disegni", TYPE_ARTIST);
