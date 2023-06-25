@@ -99,9 +99,6 @@ public class StripInfoReader
     /** Which fields and how to process them for existing books. */
     @NonNull
     private final SyncReaderProcessor syncProcessor;
-    /** cached localized progress string. */
-    @NonNull
-    private final String booksString;
     @NonNull
     private final BookDao bookDao;
     /** Reused for each call to the {@link SyncReaderProcessor#process}. */
@@ -135,8 +132,6 @@ public class StripInfoReader
         final Locale siteLocale = searchEngine.getLocale(context);
         final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
         realNumberParser = new RealNumberParser(locales);
-
-        booksString = context.getString(R.string.lbl_books);
     }
 
     /**
@@ -286,9 +281,6 @@ public class StripInfoReader
                    CredentialsException,
                    IOException {
 
-        final String progressMessage =
-                context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
-
         for (final Book colBook : page) {
             if (!searchEngine.isCancelled()) {
                 final long externalId = colBook.getLong(DBKey.SID_STRIP_INFO);
@@ -330,12 +322,9 @@ public class StripInfoReader
                     results.booksFailed++;
                 }
 
-                final String msg = String.format(progressMessage,
-                                                 booksString,
-                                                 results.booksCreated,
-                                                 results.booksUpdated,
-                                                 results.booksSkipped);
-                progressListener.publishProgress(1, msg);
+                // Due to the network access, we're not adding
+                // any additional interval/delay for each message
+                progressListener.publishProgress(1, results.createBooksSummaryLine(context));
             }
         }
     }

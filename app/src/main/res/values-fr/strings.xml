@@ -566,7 +566,9 @@
     <string name="progress_msg_skip_s">Passer - %1$s</string>
     <string name="progress_msg_starting_up">Démarrage…</string>
     <string name="progress_msg_upgrading">Mise à niveau…</string>
-    <string name="progress_msg_x_created_y_updated_z_skipped">%1$s : %2$d ajoutés, %3$d mis à jour, %4$d ignorées</string>
+    <string name="progress_msg_x_created">%1$d ajoutés</string>
+    <string name="progress_msg_x_updated">%1$d mis à jour</string>
+    <string name="progress_msg_x_skipped">%1$d ignorées</string>
     <string name="pt_allow_editing_external_id">Autoriser la modification de l’ID du livre du site Web natif</string>
     <string name="pt_allow_metered_network_data">Autoriser l’utilisation de données mobiles</string>
     <string name="pt_bob_books_under_multiple_authors">Livres d’auteurs multiples</string>
@@ -760,4 +762,5 @@
     <string name="option_clear_deleted_book_records">Effacer l’historique des livres supprimés</string>
     <string name="info_maintenance_clear_deleted_book_records">Cette option permet d’effacer l’historique des livres supprimés. Aucun livre ne sera supprimé.</string>
     <string name="info_books_deleted">Livres supprimés : %1$d</string>
+    <string name="progress_msg_x_deleted">%1$d supprimé</string>
 </resources>

@@ -39,22 +39,18 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForReadingContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ImportContract;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImportBinding;
@@ -491,7 +487,8 @@ public class ImportFragment
     private void onImportFinished(@StringRes final int titleId,
                                   @NonNull final ImportResults result) {
 
-        vm.onImportFinished(result);
+        vm.postProcessStyles(result);
+        result.booksDeleted = vm.postProcessDeletedBooks();
 
         //noinspection DataFlowIssue
         new MaterialAlertDialogBuilder(getContext())
@@ -517,74 +514,25 @@ public class ImportFragment
      */
     @NonNull
     private String createReport(@NonNull final ImportResults result) {
+        //noinspection DataFlowIssue
+        final String report = String.join("\n", result.createReport(getContext()));
 
-        final List<String> items = new ArrayList<>();
-
-        if (result.booksCreated > 0 || result.booksUpdated > 0 || result.booksSkipped > 0) {
-            items.add(getString(R.string.progress_msg_x_created_y_updated_z_skipped,
-                                getString(R.string.lbl_books),
-                                result.booksCreated,
-                                result.booksUpdated,
-                                result.booksSkipped));
-        }
-        if (result.coversCreated > 0 || result.coversUpdated > 0 || result.coversSkipped > 0) {
-            items.add(getString(R.string.progress_msg_x_created_y_updated_z_skipped,
-                                getString(R.string.lbl_covers),
-                                result.coversCreated,
-                                result.coversUpdated,
-                                result.coversSkipped));
-        }
-
-        if (result.styles > 0) {
-            items.add(getString(R.string.name_colon_value,
-                                getString(R.string.lbl_styles),
-                                // deduct built-in styles
-                                String.valueOf(result.styles - BuiltinStyle.size())));
-        }
-        if (result.preferences > 0) {
-            items.add(getString(R.string.lbl_settings));
-        }
-        if (result.certificates > 0) {
-            items.add(getString(R.string.name_colon_value,
-                                getString(R.string.lbl_certificates),
-                                String.valueOf(result.certificates)));
-        }
-
-        if (result.bookshelves > 0) {
-            items.add(getString(R.string.name_colon_value,
-                                getString(R.string.lbl_bookshelves),
-                                String.valueOf(result.bookshelves)));
-        }
-
-        final String report = items.stream()
-                                   .map(s -> getString(R.string.list_element, s))
-                                   .collect(Collectors.joining("\n"));
-
-        int failed = result.failedLinesNr.size();
+        final int failed = result.failedLinesNr.size();
         if (failed == 0) {
             return report;
         }
 
+        final List<String> failures = result.createFailuresReport(getContext());
+
         @StringRes
         final int fs;
         if (failed > ImportResults.MAX_FAIL_LINES) {
-            failed = ImportResults.MAX_FAIL_LINES;
             fs = R.string.warning_import_failed_for_lines_lots;
         } else {
             fs = R.string.warning_import_failed_for_lines_some;
         }
 
-        final Collection<String> itemList = new ArrayList<>();
-        for (int i = 0; i < failed; i++) {
-            itemList.add(getString(R.string.a_bracket_b_bracket,
-                                   String.valueOf(result.failedLinesNr.get(i)),
-                                   result.failedLinesMessage.get(i)));
-        }
-
-        return report + "\n" + getString(fs, itemList
-                .stream()
-                .map(s -> getString(R.string.list_element, s))
-                .collect(Collectors.joining("\n")));
+        return report + "\n" + getString(fs, String.join("\n", failures));
     }
 
     private void closeProgressDialog() {

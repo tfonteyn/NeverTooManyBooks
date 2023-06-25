@@ -562,7 +562,9 @@
     <string name="progress_msg_skip_s">Überspringe - %1$s</string>
     <string name="progress_msg_starting_up">Gleich geht’s los…</string>
     <string name="progress_msg_upgrading">Upgrade läuft…</string>
-    <string name="progress_msg_x_created_y_updated_z_skipped">%1$s: %2$d erzeugt, %3$d aktualisiert, %4$d übersprungen</string>
+    <string name="progress_msg_x_created">%1$d erzeugt</string>
+    <string name="progress_msg_x_updated">%1$d aktualisiert</string>
+    <string name="progress_msg_x_skipped">%1$d übersprungen</string>
     <string name="pt_allow_editing_external_id">Bearbeitung der Website-Buch-ID zulassen</string>
     <string name="pt_allow_metered_network_data">Mobile Datennutzung zulassen</string>
     <string name="pt_bob_books_under_multiple_authors">Bücher mit mehreren Autoren</string>
@@ -756,4 +758,5 @@
     <string name="option_clear_deleted_book_records">Löschen des Verlaufs gelöschter Bücher</string>
     <string name="info_maintenance_clear_deleted_book_records">Hiermit wird der Verlauf der gelöschten Bücher gelöscht. Es werden keine aktuellen Bücher gelöscht.</string>
     <string name="info_books_deleted">Bücher gelöscht: %1$d</string>
+    <string name="progress_msg_x_deleted">%1$d gelöscht</string>
 </resources>

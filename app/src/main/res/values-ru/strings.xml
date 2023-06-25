@@ -578,7 +578,9 @@
     <string name="progress_msg_skip_s">Пропустить - %1$s</string>
     <string name="progress_msg_starting_up">Запуск…</string>
     <string name="progress_msg_upgrading">Обновление…</string>
-    <string name="progress_msg_x_created_y_updated_z_skipped">%1$s: %2$d создано, %3$d обновлено, %4$d пропущена</string>
+    <string name="progress_msg_x_created">%1$d создано</string>
+    <string name="progress_msg_x_updated">%1$d обновлено</string>
+    <string name="progress_msg_x_skipped">%1$d пропущена</string>
     <string name="pt_allow_editing_external_id">Разрешить редактировать родной идентификатор книги сайта</string>
     <string name="pt_allow_metered_network_data">Разрешить использование мобильных данных</string>
     <string name="pt_bob_books_under_multiple_authors">Книги с множеством авторов</string>
@@ -769,4 +771,5 @@
     <string name="info_maintenance_clear_deleted_book_records">Это очистит историю удаленных книг. При этом фактические книги удалены не будут.</string>
     <string name="error_type_not_supported">Тип не поддерживается: %1$s …</string>
     <string name="info_books_deleted">Книги удалены: %1$d</string>
+    <string name="progress_msg_x_deleted">%1$d удалено</string>
 </resources>

@@ -132,9 +132,6 @@ public class CalibreContentServerReader
     /** cached localized "eBooks" string. */
     @NonNull
     private final String eBookString;
-    /** cached localized progress string. */
-    @NonNull
-    private final String booksString;
 
     @NonNull
     private final BookDao bookDao;
@@ -182,57 +179,56 @@ public class CalibreContentServerReader
         dateParser = new ISODateParser(systemLocale);
 
         eBookString = context.getString(R.string.book_format_ebook);
-        booksString = context.getString(R.string.lbl_books);
     }
 
     // This needs thought/work....
-//    @NonNull
-//    public static SyncReaderProcessor getDefaultSyncProcessor() {
-//        return new SyncReaderProcessor.Builder(SYNC_PROCESSOR_PREFIX)
-//
-//                .add(R.string.lbl_cover_front, DBKey.COVER_IS_USED[0])
-//                .addRelatedField(DBKey.COVER_IS_USED[0], Book.BKEY_TMP_FILE_SPEC[0])
-//
-//                .add(R.string.lbl_cover_back, DBKey.COVER_IS_USED[1])
-//                .addRelatedField(DBKey.COVER_IS_USED[1], Book.BKEY_TMP_FILE_SPEC[1])
-//
-//                .add(R.string.lbl_title, DBKey.KEY_TITLE,
-//                     SyncAction.Overwrite)
-//
-//                .addList(R.string.lbl_authors, DBKey.FK_AUTHOR, Book.BKEY_AUTHOR_LIST)
-//                .addList(R.string.lbl_series_multiple, DBKey.KEY_SERIES_TITLE,
-//                         Book.BKEY_SERIES_LIST)
-//
-//                .add(R.string.lbl_description, DBKey.KEY_DESCRIPTION,
-//                     SyncAction.Overwrite)
-//
-//                .addList(R.string.lbl_publishers, DBKey.KEY_PUBLISHER_NAME,
-//                         Book.BKEY_PUBLISHER_LIST)
-//                .add(R.string.lbl_date_published, DBKey.DATE_BOOK_PUBLICATION)
-//
-//
-//
-//                .add(R.string.site_calibre, DBKey.KEY_CALIBRE_BOOK_ID)
-//                .addRelatedField(DBKey.KEY_CALIBRE_BOOK_UUID, DBKey.KEY_CALIBRE_BOOK_ID)
-//
-//                .add(R.string.lbl_date_last_updated, DBKey.UTC_DATE_LAST_UPDATED,
-//                     SyncAction.Overwrite)
-//
-//
-//
-//                .add(R.string.lbl_format, DBKey.KEY_FORMAT)
-//                .add(R.string.lbl_language, DBKey.KEY_LANGUAGE)
-//
-//                .add(R.string.lbl_rating, DBKey.KEY_RATING)
-//
-//
-//                // CustomFields
-//                .add(R.string.lbl_read, DBKey.BOOL_READ)
-//                .add(R.string.lbl_read_start, DBKey.DATE_READ_START)
-//                .add(R.string.lbl_read_end, DBKey.DATE_READ_END)
-//                .add(R.string.lbl_personal_notes, DBKey.KEY_PRIVATE_NOTES)
-//                .build();
-//    }
+    //    @NonNull
+    //    public static SyncReaderProcessor getDefaultSyncProcessor() {
+    //        return new SyncReaderProcessor.Builder(SYNC_PROCESSOR_PREFIX)
+    //
+    //                .add(R.string.lbl_cover_front, DBKey.COVER_IS_USED[0])
+    //                .addRelatedField(DBKey.COVER_IS_USED[0], Book.BKEY_TMP_FILE_SPEC[0])
+    //
+    //                .add(R.string.lbl_cover_back, DBKey.COVER_IS_USED[1])
+    //                .addRelatedField(DBKey.COVER_IS_USED[1], Book.BKEY_TMP_FILE_SPEC[1])
+    //
+    //                .add(R.string.lbl_title, DBKey.KEY_TITLE,
+    //                     SyncAction.Overwrite)
+    //
+    //                .addList(R.string.lbl_authors, DBKey.FK_AUTHOR, Book.BKEY_AUTHOR_LIST)
+    //                .addList(R.string.lbl_series_multiple, DBKey.KEY_SERIES_TITLE,
+    //                         Book.BKEY_SERIES_LIST)
+    //
+    //                .add(R.string.lbl_description, DBKey.KEY_DESCRIPTION,
+    //                     SyncAction.Overwrite)
+    //
+    //                .addList(R.string.lbl_publishers, DBKey.KEY_PUBLISHER_NAME,
+    //                         Book.BKEY_PUBLISHER_LIST)
+    //                .add(R.string.lbl_date_published, DBKey.DATE_BOOK_PUBLICATION)
+    //
+    //
+    //
+    //                .add(R.string.site_calibre, DBKey.KEY_CALIBRE_BOOK_ID)
+    //                .addRelatedField(DBKey.KEY_CALIBRE_BOOK_UUID, DBKey.KEY_CALIBRE_BOOK_ID)
+    //
+    //                .add(R.string.lbl_date_last_updated, DBKey.UTC_DATE_LAST_UPDATED,
+    //                     SyncAction.Overwrite)
+    //
+    //
+    //
+    //                .add(R.string.lbl_format, DBKey.KEY_FORMAT)
+    //                .add(R.string.lbl_language, DBKey.KEY_LANGUAGE)
+    //
+    //                .add(R.string.lbl_rating, DBKey.KEY_RATING)
+    //
+    //
+    //                // CustomFields
+    //                .add(R.string.lbl_read, DBKey.BOOL_READ)
+    //                .add(R.string.lbl_read_start, DBKey.DATE_READ_START)
+    //                .add(R.string.lbl_read_end, DBKey.DATE_READ_END)
+    //                .add(R.string.lbl_personal_notes, DBKey.KEY_PRIVATE_NOTES)
+    //                .build();
+    //    }
 
     @Override
     public void cancel() {
@@ -284,9 +280,6 @@ public class CalibreContentServerReader
             throws DataReaderException,
                    StorageException,
                    IOException {
-
-        final String progressMessage =
-                context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
 
         results = new ReaderResults();
 
@@ -371,12 +364,10 @@ public class CalibreContentServerReader
                             handleBook(context, calibreBook);
 
                             results.booksProcessed++;
-                            final String msg = String.format(progressMessage,
-                                                             booksString,
-                                                             results.booksCreated,
-                                                             results.booksUpdated,
-                                                             results.booksSkipped);
-                            progressListener.publishProgress(1, msg);
+                            // Due to the network access, we're not adding
+                            // any additional interval/delay for each message
+                            progressListener.publishProgress(
+                                    1, results.createBooksSummaryLine(context));
                         }
                     }
                     offset += num;
@@ -526,9 +517,10 @@ public class CalibreContentServerReader
      * @param calibreBook the book data to import
      * @param localBook   the local book to add the data to
      *
-     * @throws StorageException The covers directory is not available
-     * @throws JSONException    upon any parsing error
-     * @throws IOException      on generic/other IO failures
+     * @throws StorageException         The covers directory is not available
+     * @throws JSONException            upon any parsing error
+     * @throws IOException              on generic/other IO failures
+     * @throws IllegalArgumentException if a value has unexpectedly the text "null".
      */
     private void copyCalibreData(@NonNull final Context context,
                                  @NonNull final JSONObject calibreBook,

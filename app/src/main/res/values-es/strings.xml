@@ -576,7 +576,9 @@
     <string name="progress_msg_skip_s">Excluir - %1$s</string>
     <string name="progress_msg_starting_up">Arrancando…</string>
     <string name="progress_msg_upgrading">Actualizando…</string>
-    <string name="progress_msg_x_created_y_updated_z_skipped">%1$s: %2$d creados, %3$d actualizados, %4$d omitidas</string>
+    <string name="progress_msg_x_created">%1$d creados</string>
+    <string name="progress_msg_x_updated">%1$d actualizados</string>
+    <string name="progress_msg_x_skipped">%1$d omitidas</string>
     <string name="pt_allow_editing_external_id">Permitir editar la identificación del libro nativo del sitio</string>
     <string name="pt_allow_metered_network_data">Permitir el uso de datos móviles</string>
     <string name="pt_bob_books_under_multiple_authors">Libros con varios autores</string>
@@ -770,4 +772,5 @@
     <string name="site_description_general_shopping">General; Compras</string>
     <string name="site_description_portuguese_shopping">Portugués y más; Compras</string>
     <string name="info_books_deleted">Libros borrados: %1$d</string>
+    <string name="progress_msg_x_deleted">%1$d borrado</string>
 </resources>

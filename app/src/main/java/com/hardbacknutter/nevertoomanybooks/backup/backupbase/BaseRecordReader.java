@@ -29,7 +29,6 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
@@ -58,12 +57,6 @@ public abstract class BaseRecordReader
 
     @NonNull
     protected final DateParser dateParser;
-    /** cached localized "Books" string. */
-    @NonNull
-    protected final String booksString;
-    /** cached localized progress string. */
-    @NonNull
-    protected final String progressMessage;
 
     protected ImportResults results;
 
@@ -79,9 +72,6 @@ public abstract class BaseRecordReader
         deletedBooksDao = ServiceLocator.getInstance().getDeletedBooksDao();
 
         this.dateParser = new ISODateParser(systemLocale);
-
-        booksString = context.getString(R.string.lbl_books);
-        progressMessage = context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
     }
 
     /**

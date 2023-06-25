@@ -477,7 +477,7 @@ public class JsonRecordReader
         if (jsonRoot != null) {
             final List<Pair<String, String>> list = new DeletedBooksCoder().decode(jsonRoot);
             if (!list.isEmpty()) {
-                results.deletedBooks = deletedBooksDao.importRecords(list);
+                results.deletedBookRecords = deletedBooksDao.importRecords(list);
             }
         }
     }
@@ -548,14 +548,9 @@ public class JsonRecordReader
 
             delta++;
             final long now = System.currentTimeMillis();
-            if ((now - lastUpdateTime) > progressListener.getUpdateIntervalInMs()
+            if (now - lastUpdateTime > progressListener.getUpdateIntervalInMs()
                 && !progressListener.isCancelled()) {
-                final String msg = String.format(progressMessage,
-                                                 booksString,
-                                                 results.booksCreated,
-                                                 results.booksUpdated,
-                                                 results.booksSkipped);
-                progressListener.publishProgress(delta, msg);
+                progressListener.publishProgress(delta, results.createBooksSummaryLine(context));
                 lastUpdateTime = now;
                 delta = 0;
             }

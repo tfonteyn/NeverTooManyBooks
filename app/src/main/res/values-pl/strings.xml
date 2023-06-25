@@ -581,7 +581,9 @@
     <string name="progress_msg_skip_s">Pomiń - %1$s</string>
     <string name="progress_msg_starting_up">Rozpoczęcie…</string>
     <string name="progress_msg_upgrading">Aktualizacja…</string>
-    <string name="progress_msg_x_created_y_updated_z_skipped">%1$s: Utworzono %2$d, zaktualizowano %3$d, pominięto %4$d</string>
+    <string name="progress_msg_x_created">%1$d Utworzono</string>
+    <string name="progress_msg_x_updated">%1$d zaktualizowano</string>
+    <string name="progress_msg_x_skipped">%1$d pominięto</string>
     <string name="pt_allow_editing_external_id">Zezwalaj na edycję natywnego identyfikatora książki w witrynie</string>
     <string name="pt_allow_metered_network_data">Włącz mobilne korzystanie z danych</string>
     <string name="pt_bob_books_under_multiple_authors">Książki z wieloma autorami</string>
@@ -772,4 +774,5 @@
     <string name="info_maintenance_clear_deleted_book_records">Spowoduje to wyczyszczenie historii usuniętych książek. Żadne książki nie zostaną usunięte.</string>
     <string name="error_type_not_supported">Typ nie jest obsługiwany: %1$s …</string>
     <string name="info_books_deleted">Książki usunięte: %1$d</string>
+    <string name="progress_msg_x_deleted">%1$d usunięty</string>
 </resources>

@@ -568,7 +568,9 @@
     <string name="progress_msg_skip_s">Atla - %1$s</string>
     <string name="progress_msg_starting_up">Başlatılıyor…</string>
     <string name="progress_msg_upgrading">Yükseltiliyor…</string>
-    <string name="progress_msg_x_created_y_updated_z_skipped">%1$s: %2$d oluşturuldu, %3$d güncellendi, %4$d atlandı</string>
+    <string name="progress_msg_x_created">%1$d oluşturuldu</string>
+    <string name="progress_msg_x_updated">%1$d güncellendi</string>
+    <string name="progress_msg_x_skipped">%1$d atlandı</string>
     <string name="pt_allow_editing_external_id">Yerel web sitesi kitap kimliğinin düzenlenmesine izin ver</string>
     <string name="pt_allow_metered_network_data">Mobil veri kullanımına izin ver</string>
     <string name="pt_bob_books_under_multiple_authors">Birden fazla yazarlı kitaplar</string>
@@ -763,4 +765,5 @@
     <string name="info_maintenance_clear_deleted_book_records">Bu, silinen kitap geçmişini temizleyecektir. Hiçbir gerçek kitap silinmeyecektir.</string>
     <string name="error_type_not_supported">Tür desteklenmiyor: %1$s …</string>
     <string name="info_books_deleted">Silinen kitaplar: %1$d</string>
+    <string name="progress_msg_x_deleted">%1$d silindi</string>
 </resources>

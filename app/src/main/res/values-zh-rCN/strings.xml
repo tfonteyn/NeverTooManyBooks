@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,9 +18,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+  -->
+
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!--suppress LongLine --><resources>
     <string name="a_bracket_b_bracket">%1$s（%2$s）</string>
     <string name="list_element">• %s</string>
@@ -164,7 +167,9 @@
     <string name="info_all_books_have_covers">这个书架上的所有书都有封面</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d书，在 %2$d条目中</string>
     <string name="info_share_book_im_reading">我正在阅读\"%1$s\" %2$s 由 %3$s %4$s</string>
-    <string name="progress_msg_x_created_y_updated_z_skipped">%1$s：%2$d已创建，%3$d已更新，%4$d已跳过</string>
+    <string name="progress_msg_x_created">%1$d已创建</string>
+    <string name="progress_msg_x_updated">%1$d已更新</string>
+    <string name="progress_msg_x_skipped">%1$d已跳过</string>
     <string name="tip_book_search_by_text">按ISBN号添加图书要比按作者和书名添加准确得多，而且通常是首选。您有时可以在内侧前盖上找到正确的条形码。</string>
     <string name="tip_booklist_style_properties">您可以使用此页面设置特定书目样式的特征。您可以更改名称、编辑分组以更改层次结构，并调整各种其他首选项以构建您认为有用的样式。</string>
     <string name="tip_booklist_styles_editor">您可以使用此页面自定义将显示在默认样式菜单中的样式列表。“勾选”表示样式将显示在列表中，“取消勾选”表示隐藏它，反之亦然。如果没有选中任何样式，则将显示所有样式。您可以通过向上或向下拖动每行最右边的图标来重新排列层次结构。长按一行中的任何其他位置将允许您编辑或克隆特定样式的细节。如果你克隆了一个样式，然后改变了主意，你需要自己删除它。</string>

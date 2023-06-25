@@ -85,15 +85,7 @@ public class ImportViewModel
         this.removeDeletedBooksAfterImport = removeDeletedBooksAfterImport;
     }
 
-    void onImportFinished(@NonNull final ImportResults result) {
-        if (result.styles > 0) {
-            final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
-            // Resort the styles menu as per their (new) order.
-            stylesHelper.updateMenuOrder();
-            // Force a refresh of the cached styles.
-            stylesHelper.clearCache();
-        }
-
+    int postProcessDeletedBooks() {
         // If the user checked the option to import books,
         // we also imported the deleted-book records for future syncs
         // which is independent from the sync option.
@@ -101,7 +93,18 @@ public class ImportViewModel
         // Here we are effectively deleting the actual books if sync was enabled.
         if (getDataReaderHelper().getRecordTypes().contains(RecordType.Books)
             && removeDeletedBooksAfterImport) {
-            ServiceLocator.getInstance().getDeletedBooksDao().sync();
+            return ServiceLocator.getInstance().getDeletedBooksDao().sync();
+        }
+        return 0;
+    }
+
+    void postProcessStyles(@NonNull final ImportResults result) {
+        if (result.styles > 0) {
+            final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
+            // Resort the styles menu as per their (new) order.
+            stylesHelper.updateMenuOrder();
+            // Force a refresh of the cached styles.
+            stylesHelper.clearCache();
         }
     }
 }

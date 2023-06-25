@@ -33,6 +33,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.core.Logger;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
@@ -92,8 +93,9 @@ public class ImportResults
 
     /** #bookshelves (new only) we imported. */
     public int bookshelves;
+
     /** #deletedBook uuids we imported. */
-    public int deletedBooks;
+    public int deletedBookRecords;
 
     /**
      * Constructor.
@@ -113,7 +115,7 @@ public class ImportResults
         preferences = in.readInt();
         certificates = in.readInt();
         bookshelves = in.readInt();
-        deletedBooks = in.readInt();
+        deletedBookRecords = in.readInt();
 
         recordsSkipped = in.readInt();
         in.readList(failedLinesNr, getClass().getClassLoader());
@@ -132,7 +134,7 @@ public class ImportResults
         preferences += results.preferences;
         certificates += results.certificates;
         bookshelves += results.bookshelves;
-        deletedBooks += results.deletedBooks;
+        deletedBookRecords += results.deletedBookRecords;
 
         recordsSkipped += results.recordsSkipped;
         failedLinesNr.addAll(results.failedLinesNr);
@@ -177,6 +179,59 @@ public class ImportResults
         }
     }
 
+    @NonNull
+    @Override
+    public List<String> createReport(@NonNull final Context context) {
+        final List<String> lines = super.createReport(context);
+
+        if (styles > 0) {
+            lines.add(context.getString(R.string.list_element, context.getString(
+                    R.string.name_colon_value,
+                    context.getString(R.string.lbl_styles),
+                    // deduct built-in styles
+                    String.valueOf(styles - BuiltinStyle.size()))));
+        }
+        if (preferences > 0) {
+            lines.add(context.getString(R.string.list_element, context.getString(
+                    R.string.lbl_settings)));
+        }
+        if (certificates > 0) {
+            lines.add(context.getString(R.string.list_element, context.getString(
+                    R.string.name_colon_value,
+                    context.getString(R.string.lbl_certificates),
+                    String.valueOf(certificates))));
+        }
+
+        if (bookshelves > 0) {
+            lines.add(context.getString(R.string.list_element, context.getString(
+                    R.string.name_colon_value,
+                    context.getString(R.string.lbl_bookshelves),
+                    String.valueOf(bookshelves))));
+        }
+
+        return lines;
+    }
+
+    @NonNull
+    List<String> createFailuresReport(@NonNull final Context context) {
+        final List<String> lines = new ArrayList<>();
+
+        int failed = failedLinesNr.size();
+        if (failed == 0) {
+            return lines;
+        }
+        if (failed > MAX_FAIL_LINES) {
+            failed = MAX_FAIL_LINES;
+        }
+        for (int i = 0; i < failed; i++) {
+            lines.add(context.getString(R.string.list_element, context.getString(
+                    R.string.a_bracket_b_bracket,
+                    String.valueOf(failedLinesNr.get(i)),
+                    failedLinesMessage.get(i))));
+        }
+        return lines;
+    }
+
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
@@ -186,7 +241,7 @@ public class ImportResults
         dest.writeInt(preferences);
         dest.writeInt(certificates);
         dest.writeInt(bookshelves);
-        dest.writeInt(deletedBooks);
+        dest.writeInt(deletedBookRecords);
 
         dest.writeInt(recordsSkipped);
         dest.writeList(failedLinesNr);
@@ -202,7 +257,7 @@ public class ImportResults
                + ", preferences=" + preferences
                + ", certificates=" + certificates
                + ", bookshelves=" + bookshelves
-               + ", deletedBooks=" + deletedBooks
+               + ", deletedBooks=" + deletedBookRecords
 
                + ", recordsSkipped=" + recordsSkipped
                + ", failedLinesNr=" + failedLinesNr

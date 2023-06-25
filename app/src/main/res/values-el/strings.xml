@@ -563,7 +563,9 @@
     <string name="progress_msg_skip_s">Παράβλεψη - %1$s</string>
     <string name="progress_msg_starting_up">Εκκίνηση…</string>
     <string name="progress_msg_upgrading">Γίνεται αναβάθμηση…</string>
-    <string name="progress_msg_x_created_y_updated_z_skipped">%1$s: %2$d δημιουργήθηκαν, %3$d ενημερώθηκαν, %4$d παρελείφθησαν</string>
+    <string name="progress_msg_x_created">%1$d δημιουργήθηκαν</string>
+    <string name="progress_msg_x_updated">%1$d ενημερώθηκαν</string>
+    <string name="progress_msg_x_skipped">%1$d παρελείφθησαν</string>
     <string name="pt_allow_editing_external_id">Να επιτρέπεται η επεξεργασία του εγγενούς αναγνωριστικού ιστοτόπου</string>
     <string name="pt_allow_metered_network_data">Να επιτρέπεται η χρήση δεδομένων κινητής τηλεφωνίας</string>
     <string name="pt_bob_books_under_multiple_authors">Βιβλία με πολλούς συγγραφείς</string>
@@ -757,4 +759,5 @@
     <string name="option_clear_deleted_book_records">Διαγραφή του ιστορικού διαγραμμένων βιβλίων</string>
     <string name="info_maintenance_clear_deleted_book_records">Αυτό θα διαγράψει το ιστορικό διαγραμμένων βιβλίων. Δεν θα διαγραφούν πραγματικά βιβλία.</string>
     <string name="info_books_deleted">Βιβλία που διαγράφηκαν: %1$d</string>
+    <string name="progress_msg_x_deleted">%1$d διαγράφηκε</string>
 </resources>

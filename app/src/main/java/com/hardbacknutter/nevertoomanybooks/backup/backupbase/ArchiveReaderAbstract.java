@@ -115,15 +115,9 @@ public abstract class ArchiveReaderAbstract
     /** Provide access to the Uri InputStream. */
     @NonNull
     private final ContentResolver contentResolver;
-    /** progress message. */
-    @NonNull
-    private final String coversText;
-    /** progress message. */
-    @NonNull
-    private final String progressMessage;
     /** The accumulated results. */
     @NonNull
-    private final ImportResults results = new ImportResults();
+    private final ImportResults results;
     @NonNull
     private final Locale systemLocale;
 
@@ -148,8 +142,7 @@ public abstract class ArchiveReaderAbstract
         importHelper = helper;
         contentResolver = context.getContentResolver();
 
-        coversText = context.getString(R.string.lbl_covers);
-        progressMessage = context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
+        results = new ImportResults();
     }
 
     @WorkerThread
@@ -334,6 +327,11 @@ public abstract class ArchiveReaderAbstract
                 closeInputStream();
             }
 
+            // Instance in time when we last send a progress message
+            long lastUpdateTime = 0;
+            // Count the nr of covers in between progress updates.
+            int coversDelta = 0;
+
             Optional<ArchiveReaderRecord> nextRecord;
             // process each entry based on type, unless we are cancelled.
             while ((nextRecord = next()).isPresent()
@@ -344,13 +342,16 @@ public abstract class ArchiveReaderAbstract
                     final RecordType type = record.getType().get();
 
                     if (type == RecordType.Cover && readCovers) {
-                        // send accumulated progress for the total nr of covers
-                        final String msg = String.format(progressMessage,
-                                                         coversText,
-                                                         results.coversCreated,
-                                                         results.coversUpdated,
-                                                         results.coversSkipped);
-                        progressListener.publishProgress(1, msg);
+                        coversDelta++;
+                        final long now = System.currentTimeMillis();
+                        if (now - lastUpdateTime > progressListener.getUpdateIntervalInMs()) {
+                            // send accumulated progress for the total nr of covers
+                            progressListener.publishProgress(
+                                    coversDelta, results.createCoversSummaryLine(context));
+                            lastUpdateTime = now;
+                            coversDelta = 0;
+                        }
+
                         // there will be many covers... we're re-using a single RecordReader
                         results.add(coverReader.read(context, record, importHelper,
                                                      progressListener));

@@ -565,7 +565,9 @@
     <string name="progress_msg_skip_s">Salta - %1$s</string>
     <string name="progress_msg_starting_up">Avvio…</string>
     <string name="progress_msg_upgrading">Sto aggiornando…</string>
-    <string name="progress_msg_x_created_y_updated_z_skipped">%1$s: %2$d creati, %3$d aggiornati, %4$d saltate</string>
+    <string name="progress_msg_x_created">%1$d creati</string>
+    <string name="progress_msg_x_updated">%1$d aggiornati</string>
+    <string name="progress_msg_x_skipped">%1$d saltate</string>
     <string name="pt_allow_editing_external_id">Consenti la modifica dell’ID libro del sito Web nativo</string>
     <string name="pt_allow_metered_network_data">Consenti l’utilizzo dei dati mobili</string>
     <string name="pt_bob_books_under_multiple_authors">Libri con autori multipli</string>
@@ -759,4 +761,5 @@
     <string name="option_clear_deleted_book_records">Cancella la cronologia dei libri eliminati</string>
     <string name="info_maintenance_clear_deleted_book_records">Cancella la cronologia dei libri eliminati. Non verranno eliminati libri veri e propri.</string>
     <string name="info_books_deleted">Libri cancellati: %1$d</string>
+    <string name="progress_msg_x_deleted">%1$d cancellato</string>
 </resources>

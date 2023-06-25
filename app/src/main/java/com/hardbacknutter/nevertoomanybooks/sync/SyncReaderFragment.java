@@ -40,13 +40,11 @@ import com.google.android.material.snackbar.Snackbar;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -475,27 +473,8 @@ public class SyncReaderFragment
      */
     @NonNull
     private String createReport(@NonNull final ReaderResults result) {
-
-        final List<String> items = new ArrayList<>();
-
-        if (result.booksCreated > 0 || result.booksUpdated > 0 || result.booksSkipped > 0) {
-            items.add(getString(R.string.progress_msg_x_created_y_updated_z_skipped,
-                                getString(R.string.lbl_books),
-                                result.booksCreated,
-                                result.booksUpdated,
-                                result.booksSkipped));
-        }
-        if (result.coversCreated > 0 || result.coversUpdated > 0 || result.coversSkipped > 0) {
-            items.add(getString(R.string.progress_msg_x_created_y_updated_z_skipped,
-                                getString(R.string.lbl_covers),
-                                result.coversCreated,
-                                result.coversUpdated,
-                                result.coversSkipped));
-        }
-
-        return items.stream()
-                    .map(s -> getString(R.string.list_element, s))
-                    .collect(Collectors.joining("\n"));
+        //noinspection DataFlowIssue
+        return String.join("\n", result.createReport(getContext()));
     }
 
     private void closeProgressDialog() {

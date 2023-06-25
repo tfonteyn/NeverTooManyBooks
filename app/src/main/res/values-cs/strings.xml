@@ -577,7 +577,9 @@
     <string name="progress_msg_skip_s">Vynechat - %1$s</string>
     <string name="progress_msg_starting_up">Spouštění…</string>
     <string name="progress_msg_upgrading">Aktualizování…</string>
-    <string name="progress_msg_x_created_y_updated_z_skipped">%1$s: %2$d vytvořeno, %3$d aktualizováno, %4$d přeskočeno</string>
+    <string name="progress_msg_x_created">%1$d vytvořeno</string>
+    <string name="progress_msg_x_updated">%1$d aktualizováno</string>
+    <string name="progress_msg_x_skipped">%1$d přeskočeno</string>
     <string name="pt_allow_editing_external_id">Povolit úpravy ID nativní webové knihy</string>
     <string name="pt_allow_metered_network_data">Povolit používání mobilních dat</string>
     <string name="pt_bob_books_under_multiple_authors">Knihy s více autory</string>
@@ -768,4 +770,5 @@
     <string name="info_maintenance_clear_deleted_book_records">Tato funkce vymaže historii smazaných knih. Žádné skutečné knihy nebudou odstraněny.</string>
     <string name="error_type_not_supported">Type not supported: %1$s …</string>
     <string name="info_books_deleted">Smazané knihy: %1$d</string>
+    <string name="progress_msg_x_deleted">%1$d smazáno</string>
 </resources>

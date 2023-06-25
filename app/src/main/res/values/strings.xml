@@ -316,16 +316,15 @@
     <string name="progress_msg_saving_image">Saving image…</string>
     <!-- Progress message displayed when automatically updating book fields. Param 1: a book title  -->
     <string name="progress_msg_skip_s">Skipping “%1$s”</string>
-    <!-- Progress message displayed when importing books/covers.
-        param 1: what, e.g. Books,Covers.
-        example:
-            "Books: 4 created, 78 updated, 3 skipped"
-            "Covers: 32 created, 4 updated, 21 skipped"
+    <!-- Progress message displayed when importing: the number of books/covers created so far. -->
+    <string name="progress_msg_x_created">%1$d created</string>
+    <!-- Progress message displayed when importing: the number of books/covers updated so far. -->
+    <string name="progress_msg_x_updated">%1$d updated</string>
+    <!-- Progress message displayed when importing: the number of books/covers skipped so far. -->
+    <string name="progress_msg_x_skipped">%1$d skipped</string>
+    <!-- Progress message displayed when importing: the number of books/covers deleted so far. -->
+    <string name="progress_msg_x_deleted">%1$d deleted</string>
 
-            Note the format should cause the least disruption to the eyes of the user.
-            i.e. the numbers will count up, but the overall message should be constant.
-     . -->
-    <string name="progress_msg_x_created_y_updated_z_skipped">%1$s: %2$d created, %3$d updated, %4$d skipped</string>
     <!-- e.g. after an import -->
     <string name="progress_msg_cleaning_up">Cleaning up…</string>
     <!-- endregion -->

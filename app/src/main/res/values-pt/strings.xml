@@ -245,7 +245,9 @@
     <string name="progress_msg_searching_editions">À procura de outras edições…</string>
     <string name="progress_msg_downloading">A transferir…</string>
     <string name="progress_msg_saving_image">A guardar imagem…</string>
-    <string name="progress_msg_x_created_y_updated_z_skipped">%1$s: %2$d criado, %3$d atualizado, %4$d ignorado</string>
+    <string name="progress_msg_x_created">%1$d criado</string>
+    <string name="progress_msg_x_updated">%1$d atualizado</string>
+    <string name="progress_msg_x_skipped">%1$d ignorado</string>
     <string name="info_authorized">Autorizado</string>
     <string name="info_story_in_multiple_books">“%1$s” está presente em vários livros:
 \n
@@ -790,4 +792,5 @@
     <string name="option_clear_deleted_book_records">Limpar o histórico de livros eliminados</string>
     <string name="info_maintenance_clear_deleted_book_records">Esta ação limpa o histórico de livros eliminados. Não serão eliminados quaisquer livros actuais.</string>
     <string name="info_books_deleted">Livros eliminados: %1$d</string>
+    <string name="progress_msg_x_deleted">%1$d eliminado</string>
 </resources>

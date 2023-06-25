@@ -590,7 +590,10 @@
     <string name="progress_msg_skip_s">Overslaan van - %1$s</string>
     <string name="progress_msg_starting_up">Opstarten…</string>
     <string name="progress_msg_upgrading">Nieuwe versie voorbereiden…</string>
-    <string name="progress_msg_x_created_y_updated_z_skipped">%1$s: %2$d toegevoegd, %3$d bijgewerkt, %4$d overgeslagen</string>
+    <string name="progress_msg_x_created">%1$d toegevoegd</string>
+    <string name="progress_msg_x_updated">%1$d bijgewerkt</string>
+    <string name="progress_msg_x_skipped">%1$d overgeslagen</string>
+    <string name="progress_msg_x_deleted">%1$d verwijderd</string>
     <string name="ps_author_name_family_first">bvb. „Reve, Gerard”</string>
     <string name="ps_author_name_given_first">bvb. „Gerard Reve”</string>
     <string name="ps_bob_books_under_multiple_each_author">Onder elke auteur</string>
