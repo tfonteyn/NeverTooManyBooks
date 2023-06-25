@@ -34,20 +34,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -515,11 +509,6 @@ public class OpenLibrarySearchEngine
                        @NonNull final Book book)
             throws StorageException {
 
-        final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
-        final List<Locale> locales = LocaleListUtils.asList(context, getLocale(context));
-
-        final DateParser dateParser = new FullDateParser(systemLocale, locales);
-
         // store the isbn; we might override it later on though (e.g. isbn 13v10)
         // not sure if this is needed though. Need more data.
         book.putString(DBKey.BOOK_ISBN, validIsbn);
@@ -571,11 +560,7 @@ public class OpenLibrarySearchEngine
 
         s = document.optString("publish_date");
         if (s != null && !s.isEmpty()) {
-            final LocalDateTime date = dateParser.parse(s, getLocale(context));
-            if (date != null) {
-                book.putString(DBKey.BOOK_PUBLICATION__DATE,
-                               date.format(DateTimeFormatter.ISO_LOCAL_DATE));
-            }
+            book.putString(DBKey.BOOK_PUBLICATION__DATE, s);
         }
 
         // "subjects": [
