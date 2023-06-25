@@ -34,9 +34,17 @@ public final class SearchEngineUtils {
     private static final Pattern AMPERSAND_LITERAL = Pattern.compile("&amp;", Pattern.LITERAL);
     /** a CR is replaced with a space. */
     private static final Pattern CR_LITERAL = Pattern.compile("\n", Pattern.LITERAL);
+
+    private static final String LRM_CHAR = "\u200E";
+    private static final String RTL_CHAR = "\u200F";
+    /** a Right-to-left is replaced with a space. */
+    private static final Pattern LRM_LITERAL = Pattern.compile(LRM_CHAR, Pattern.LITERAL);
+    /** a Left-to-right is replaced with a space. */
+    private static final Pattern RTL_LITERAL = Pattern.compile(RTL_CHAR, Pattern.LITERAL);
+
     /** Trim extraneous punctuation and whitespace from the titles and authors. */
     private static final Pattern CLEANUP_TITLE_PATTERN =
-            Pattern.compile("[,.':;`~@#$%^&*(\\-=_+]*$");
+            Pattern.compile("[,.':;`~@#$%^&*(\\-=_+\u200E\u200F]*$");
 
     private SearchEngineUtils() {
     }
@@ -74,7 +82,7 @@ public final class SearchEngineUtils {
      */
     @NonNull
     public static String cleanText(@NonNull final String s) {
-        String text = s.trim();
+        String text = s.strip();
         // add more rules when needed.
         if (text.contains("&")) {
             text = AMPERSAND_LITERAL.matcher(text).replaceAll(
@@ -85,9 +93,15 @@ public final class SearchEngineUtils {
             text = DIV_PATTERN.matcher(text).replaceAll("");
         }
         if (text.contains("\n")) {
-            text = CR_LITERAL.matcher(text).replaceAll(" ").trim();
+            text = CR_LITERAL.matcher(text).replaceAll(" ");
         }
-        return text;
+        if (text.contains(LRM_CHAR)) {
+            text = LRM_LITERAL.matcher(text).replaceAll(" ");
+        }
+        if (text.contains(RTL_CHAR)) {
+            text = RTL_LITERAL.matcher(text).replaceAll(" ");
+        }
+        return text.strip();
     }
 
     /**
