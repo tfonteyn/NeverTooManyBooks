@@ -68,15 +68,19 @@ import org.jsoup.select.Elements;
 
 /**
  * This class supports parsing these Amazon websites:
- * www.amazon.com: BLOCKED by captcha
+ * www.amazon.com
  * www.amazon.co.uk
  * www.amazon.fr
  * www.amazon.de
  * www.amazon.nl
+ * www.amazon.es
  * <p>
  * Anything failing there is a bug.
- * <p>
  * Other Amazon sites should work for basic info (e.g. title) only.
+ * <p>
+ * TODO: We're ignoring the rating(stars) for now.
+ * Note we don't support Kindle or Audiobook entries very well for now
+ * due to them not having ISBN's.
  * <p>
  * Should really implement the Amazon API.
  * <a href="https://docs.aws.amazon.com/en_pv/AWSECommerceService/latest/DG/becomingAssociate.html">
@@ -129,6 +133,78 @@ public class AmazonSearchEngine
     private static final Pattern AUTHOR_TYPE_PATTERN =
             Pattern.compile("\\((.*)\\).*",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+    private static final String LABEL_FORMAT =
+            // English
+            "hardcover,paperback"
+            // French
+            + ",relié,broché"
+            // German
+            + ",taschenbuch,gebundene ausgabe"
+            // Spanish
+            + ",tapa dura,tapa blanda"
+            // Portuguese
+            + ",capa dura,capa blanda";
+
+    private static final String LABEL_LANGUAGE =
+            // English
+            "language"
+            // French
+            + ",langue"
+            // German
+            + ",sprache"
+            // Dutch
+            + ",taal"
+            // Spanish/Portuguese
+            + ",idioma";
+
+    private static final String LABEL_PUBLISHER =
+            // English
+            "publisher"
+            // French
+            + ",editeur"
+            // German
+            + ",verlag"
+            // Dutch
+            + ",uitgever"
+            // Spanish/Portuguese
+            + ",editor,editorial";
+
+    private static final String LABEL_SERIES =
+            "series,collection";
+
+    // These labels are ignored, but listed as an indication we know them.
+    private static final String LABEL_IGNORED =
+            "asin"
+            // English
+            + ",product dimensions"
+            + ",shipping weight"
+            + ",customer reviews"
+            + ",average customer review"
+            + ",amazon bestsellers rank"
+            // French
+            + ",dimensions du produit"
+            + ",commentaires client"
+            + ",moyenne des commentaires client"
+            + ",classement des meilleures ventes d'amazon"
+            // German
+            + ",größe und/oder gewicht"
+            + ",kundenrezensionen"
+            + ",amazon bestseller-rang"
+            + ",vom hersteller empfohlenes alter"
+            + ",originaltitel"
+            // Dutch
+            + ",productafmetingen"
+            + ",brutogewicht (incl. verpakking)"
+            + ",klantenrecensies"
+            + ",plaats op amazon-bestsellerlijst"
+            // Spanish/Portuguese
+            + ",peso do produto"
+            + ",classificação dos produtos mais vendidos"
+            + ",dimensões";
+
+    private static final String LABEL_ISBN_13 = "isbn-13";
+    private static final String LABEL_ISBN_10 = "isbn-10";
+
     private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
     /** Parse the "x pages" string. */
     @Nullable
@@ -380,95 +456,52 @@ public class AmazonSearchEngine
             // so we now just cut out the label, and use the text itself.
             li.child(0).remove();
             final String data = li.text().trim();
-            switch (label.toLowerCase(siteLocale)) {
-                case "isbn-13":
-                    book.putString(DBKey.BOOK_ISBN, data);
-                    break;
+            final String lcLabel = label.toLowerCase(siteLocale);
 
-                case "isbn-10":
-                    if (!book.contains(DBKey.BOOK_ISBN)) {
-                        book.putString(DBKey.BOOK_ISBN, data);
-                    }
-                    break;
+            if (LABEL_ISBN_13.equals(lcLabel)) {
+                book.putString(DBKey.BOOK_ISBN, data);
 
-                case "hardcover":
-                case "paperback":
-                case "relié":
-                case "broché":
-                case "taschenbuch":
-                case "gebundene ausgabe":
-                    book.putString(DBKey.FORMAT, label);
-                    book.putString(DBKey.PAGE_COUNT, extractPages(context, data));
-                    break;
+            } else if (LABEL_ISBN_10.equals(lcLabel) && !book.contains(DBKey.BOOK_ISBN)) {
+                book.putString(DBKey.BOOK_ISBN, data);
 
-                case "language":
-                case "langue":
-                case "sprache":
-                case "taal":
-                    book.putString(DBKey.LANGUAGE, data);
-                    break;
+            } else if (LABEL_FORMAT.contains(lcLabel)) {
+                book.putString(DBKey.FORMAT, label);
+                book.putString(DBKey.PAGE_COUNT, extractPages(context, data));
 
-                case "publisher":
-                case "editeur":
-                case "verlag":
-                case "uitgever": {
-                    boolean publisherWasAdded = false;
-                    final Matcher matcher = PUBLISHER_PATTERN.matcher(data);
-                    if (matcher.find()) {
-                        final String pubName = matcher.group(1);
-                        if (pubName != null) {
-                            final Publisher publisher = Publisher.from(pubName.trim());
-                            book.add(publisher);
-                            publisherWasAdded = true;
-                        }
+            } else if (LABEL_LANGUAGE.contains(lcLabel)) {
+                book.putString(DBKey.LANGUAGE, data);
 
-                        final String pubDate = matcher.group(2);
-                        if (pubDate != null) {
-                            book.putString(DBKey.BOOK_PUBLICATION__DATE, pubDate.trim());
-                        }
-                    }
-
-                    if (!publisherWasAdded) {
-                        final Publisher publisher = Publisher.from(data);
+            } else if (LABEL_PUBLISHER.contains(lcLabel)) {
+                boolean publisherWasAdded = false;
+                final Matcher matcher = PUBLISHER_PATTERN.matcher(data);
+                if (matcher.find()) {
+                    final String pubName = matcher.group(1);
+                    if (pubName != null) {
+                        final Publisher publisher = Publisher.from(pubName.trim());
                         book.add(publisher);
+                        publisherWasAdded = true;
                     }
-                    break;
+
+                    final String pubDate = matcher.group(2);
+                    if (pubDate != null) {
+                        book.putString(DBKey.BOOK_PUBLICATION__DATE, pubDate.trim());
+                    }
                 }
 
-                case "series":
-                case "collection":
-                    book.add(Series.from(data));
-                    break;
+                if (!publisherWasAdded) {
+                    final Publisher publisher = Publisher.from(data);
+                    book.add(publisher);
+                }
 
-                case "product dimensions":
-                case "shipping weight":
-                case "customer reviews":
-                case "average customer review":
-                case "amazon bestsellers rank":
-                    // french
-                case "dimensions du produit":
-                case "commentaires client":
-                case "moyenne des commentaires client":
-                case "classement des meilleures ventes d'amazon":
-                    // german
-                case "größe und/oder gewicht":
-                case "kundenrezensionen":
-                case "amazon bestseller-rang":
-                case "vom hersteller empfohlenes alter":
-                case "originaltitel":
-                    // dutch
-                case "productafmetingen":
-                case "brutogewicht (incl. verpakking)":
-                case "klantenrecensies":
-                case "plaats op amazon-bestsellerlijst":
-                    // These labels are ignored, but listed as an indication we know them.
-                    break;
+            } else if (LABEL_SERIES.contains(lcLabel)) {
+                book.add(Series.from(data));
 
-                default:
-                    if (BuildConfig.DEBUG /* always */) {
+            } else {
+                if (BuildConfig.DEBUG /* always */) {
+                    if (!LABEL_IGNORED.contains(lcLabel)) {
                         LoggerFactory.getLogger().d(TAG, "parse", "label=" + label);
                     }
-                    break;
+                }
             }
         }
     }
@@ -592,6 +625,10 @@ public class AmazonSearchEngine
 
                 case "nl":
                     pagesStr = "pagina's";
+                    break;
+
+                case "es":
+                    pagesStr = "páginas";
                     break;
 
                 default:
