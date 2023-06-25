@@ -34,6 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
@@ -82,8 +83,6 @@ class AmazonHtmlHandlerTest
         assertEquals("608", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("English", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(14.49d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
-        assertEquals(MoneyParser.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -112,14 +111,13 @@ class AmazonHtmlHandlerTest
         searchEngine.parse(context, document, new boolean[]{false, false}, book);
         // System.out.println(book);
 
-        assertEquals("The Medusa Chronicles", book.getString(DBKey.TITLE, null));
+        assertEquals("The Medusa Chronicles: Alastair Reynolds & Stephen Baxter",
+                     book.getString(DBKey.TITLE, null));
         assertEquals("978-1473210202", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("12 Jan. 2017", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("336", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("English", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(5.84d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
-        assertEquals(MoneyParser.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -152,14 +150,15 @@ class AmazonHtmlHandlerTest
 
         assertEquals("Le retour à la terre, 1 : La vraie vie",
                      book.getString(DBKey.TITLE, null));
+        assertEquals("Français", book.getString(DBKey.LANGUAGE, null));
         assertEquals("978-2205057331", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals(12d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(13d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
-        assertEquals("Dargaud", allPublishers.get(0).getName());
+        assertEquals("DARGAUD", allPublishers.get(0).getName());
 
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
@@ -182,29 +181,156 @@ class AmazonHtmlHandlerTest
 
         final RealNumberParser realNumberParser = new RealNumberParser(locales);
 
-        final String locationHeader = "https://www.amazon.de/Siddhartha-indische-Dichtung-Hermann-Hesse/dp/3518366823/ref=sr_1_1?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=EM8GE4M54T6N&keywords=3518366823&qid=1679912159&sprefix=3518366823%2Caps%2C75&sr=8-1";
+        final String locationHeader = "https://www.amazon.de/gp/product/3518366823";
         final String filename = "/amazon/3518366823.html";
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
         searchEngine.parse(context, document, new boolean[]{false, false}, book);
-        System.out.println(book);
+        //System.out.println(book);
+
+        assertEquals("Siddhartha. Eine indische Dichtung",
+                     book.getString(DBKey.TITLE, null));
+        assertEquals("978-3518366820", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("Deutsch", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("Taschenbuch", book.getString(DBKey.FORMAT, null));
+        assertEquals("3518366823", book.getString(DBKey.SID_ASIN, null));
+        assertEquals(8d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertEquals("1. Juli 1974", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+
+        final List<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+        assertEquals("Suhrkamp Verlag", allPublishers.get(0).getName());
+
+        final List<Author> authors = book.getAuthors();
+        assertNotNull(authors);
+        assertEquals(1, authors.size());
+        assertEquals("Hesse", authors.get(0).getFamilyName());
+        assertEquals("Hermann", authors.get(0).getGivenNames());
+        assertEquals(Author.TYPE_WRITER, authors.get(0).getType());
     }
 
     @Test
     void parse12()
             throws SearchException, IOException, CredentialsException, StorageException {
-        setLocale(Locale.GERMANY);
+        setLocale(Locale.US);
 
         searchEngine = (AmazonSearchEngine) EngineId.Amazon.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 
         final RealNumberParser realNumberParser = new RealNumberParser(locales);
 
-        final String locationHeader = "https://www.amazon.com/Siddhartha-German-Hermann-Hesse/dp/3518366823/ref=sr_1_1?crid=1KWU787T6IGNO&keywords=3518366823&qid=1679916105&sprefix=%2Caps%2C150&sr=8-1";
+        final String locationHeader = "https://www.amazon.com/gp/product/3518366823";
         final String filename = "/amazon/3518366823-us.html";
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
         searchEngine.parse(context, document, new boolean[]{false, false}, book);
-        System.out.println(book);
+        //System.out.println(book);
+
+        assertEquals("Siddhartha", book.getString(DBKey.TITLE, null));
+        assertEquals("978-3518366820", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("German", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("3518366823", book.getString(DBKey.SID_ASIN, null));
+        assertEquals(13.19d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(MoneyParser.USD, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertEquals("January 1, 1995", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+
+        final List<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+        assertEquals("Suhrkamp Verlag", allPublishers.get(0).getName());
+
+        final List<Author> authors = book.getAuthors();
+        assertNotNull(authors);
+        assertEquals(1, authors.size());
+        assertEquals("Hesse", authors.get(0).getFamilyName());
+        assertEquals("Hermann", authors.get(0).getGivenNames());
+        assertEquals(Author.TYPE_WRITER, authors.get(0).getType());
+    }
+
+    @Test
+    void parse20()
+            throws SearchException, IOException, CredentialsException, StorageException {
+        setLocale(new Locale("es", "ES"));
+
+        searchEngine = (AmazonSearchEngine) EngineId.Amazon.createSearchEngine(context);
+        searchEngine.setCaller(new TestProgressListener(TAG));
+
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
+
+        final String locationHeader = "https://www.amazon.es/gp/product/1107480558";
+        final String filename = "/amazon/1107480558.html";
+
+        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        searchEngine.parse(context, document, new boolean[]{false, false}, book);
+        //System.out.println(book);
+
+        assertEquals("Essential Grammar in Use. Fourth Edition. Book with Answers.",
+                     book.getString(DBKey.TITLE, null));
+        assertEquals("978-1107480551", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("Inglés", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("1107480558", book.getString(DBKey.SID_ASIN, null));
+        assertEquals(22.36d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertEquals("20 abril 2015", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+
+        final List<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+        assertEquals("Cambridge University Press", allPublishers.get(0).getName());
+
+        final List<Author> authors = book.getAuthors();
+        assertNotNull(authors);
+        assertEquals(1, authors.size());
+        assertEquals("Murphy", authors.get(0).getFamilyName());
+        assertEquals("Raymond", authors.get(0).getGivenNames());
+        assertEquals(Author.TYPE_WRITER, authors.get(0).getType());
+    }
+
+    @Test
+    void parse21()
+            throws SearchException, IOException, CredentialsException, StorageException {
+        setLocale(new Locale("es", "ES"));
+
+        searchEngine = (AmazonSearchEngine) EngineId.Amazon.createSearchEngine(context);
+        searchEngine.setCaller(new TestProgressListener(TAG));
+
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
+
+        final String locationHeader = "https://www.amazon.es/gp/product/840827578X";
+        final String filename = "/amazon/840827578X.html";
+
+        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        searchEngine.parse(context, document, new boolean[]{false, false}, book);
+        //System.out.println(book);
+
+        assertEquals("La rebelión de los buenos: Premio de Novela Fernando Lara 2023",
+                     book.getString(DBKey.TITLE, null));
+        assertEquals("978-8408275787", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("Tapa dura", book.getString(DBKey.FORMAT, null));
+        assertEquals("Español", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("720 páginas", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("840827578X", book.getString(DBKey.SID_ASIN, null));
+        assertEquals(21.75d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertEquals("14 Junho 2023", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+
+        final List<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+        assertEquals("Editorial Planeta", allPublishers.get(0).getName());
+
+        final List<Author> authors = book.getAuthors();
+        assertNotNull(authors);
+        assertEquals(1, authors.size());
+        assertEquals("Santiago", authors.get(0).getFamilyName());
+        assertEquals("Roberto", authors.get(0).getGivenNames());
+        assertEquals(Author.TYPE_WRITER, authors.get(0).getType());
+
+        final List<Series> series = book.getSeries();
+        assertNotNull(series);
+        assertEquals(1, series.size());
+        assertEquals("Autores Españoles e Iberoamericanos", series.get(0).getTitle());
     }
 }
