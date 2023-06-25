@@ -257,7 +257,7 @@ public class KbNlHtmlSearchEngine
             if (label != null) {
                 final Element td = tr.selectFirst("td.rec_title");
                 if (td != null) {
-                    final String s = label.text().trim();
+                    final String s = label.text().strip();
                     switch (s) {
                         case "Titel:":
                             processTitle(td, book);

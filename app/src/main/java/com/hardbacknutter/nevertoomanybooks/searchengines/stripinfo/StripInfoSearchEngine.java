@@ -374,7 +374,7 @@ public class StripInfoSearchEngine
                 // use the title header to determine we are in a book row.
                 final Element titleHeader = row.selectFirst("h2.title");
                 if (titleHeader != null) {
-                    primarySeriesBookNr = titleHeader.textNodes().get(0).text().trim();
+                    primarySeriesBookNr = titleHeader.textNodes().get(0).text().strip();
 
                     final Element titleUrlElement = titleHeader.selectFirst(A_HREF_STRIP);
                     if (titleUrlElement != null) {
@@ -838,7 +838,7 @@ public class StripInfoSearchEngine
                                   @NonNull final Book book) {
         final Element dataElement = td.nextElementSibling();
         if (dataElement != null && dataElement.childNodeSize() == 1) {
-            final String text = dataElement.text().trim();
+            final String text = dataElement.text().strip();
 
             // is it a color ?
             if (COLOR_STRINGS.contains(text)) {
