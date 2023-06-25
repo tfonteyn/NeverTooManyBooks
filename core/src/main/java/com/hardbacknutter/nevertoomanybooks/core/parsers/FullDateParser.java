@@ -64,25 +64,27 @@ public class FullDateParser
 
     /** Patterns with Locale dependent text. */
     private static final String[] TEXT_PATTERNS = {
-            // These are the wide spread common formats
+            // Abbreviated month
             "dd-MMM-yyyy",
-            "dd-MMMM-yyyy",
-            "dd-MMM-yy",
-            "dd-MMMM-yy",
-
-            // Dates of the form: 'Fri May 5 17:23:11 -0800 2012'
-            "EEE MMM dd HH:mm:ss ZZZZ yyyy",
-
-            // Used by Amazon; e.g. "12 jan. 2017"
+            "dd MMM yyyy",
             "dd MMM. yyyy",
 
-            // Used by OpenLibrary
-            "dd MMM yyyy",
+            // Month in full
+            "dd-MMMM-yyyy",
             "dd MMMM yyyy",
+
+            // Dates of the form: 'Fri Apr 5 17:23:11 -0800 2012'
+            "EEE MMM dd HH:mm:ss ZZZZ yyyy",
+
+            // Used by OpenLibrary, maybe others
             "MMM d, yyyy",
             "MMMM d, yyyy",
             "MMM yyyy",
             "MMMM yyyy",
+
+            // Occasionally we have seen the year in old style 2 digits
+            "dd-MMM-yy",
+            "dd-MMMM-yy",
     };
 
     /** Immutable. */
