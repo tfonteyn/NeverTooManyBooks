@@ -55,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -161,9 +162,9 @@ public class AmazonSearchEngine
             // English
             "publisher"
             // French
-            + ",editeur"
+            + ",editeur,éditeur"
             // German
-            + ",verlag"
+            + ",verlag,herausgeber"
             // Dutch
             + ",uitgever"
             // Spanish/Portuguese
@@ -188,6 +189,7 @@ public class AmazonSearchEngine
             + ",classement des meilleures ventes d'amazon"
             // German
             + ",größe und/oder gewicht"
+            + ",abmessungen"
             + ",kundenrezensionen"
             + ",amazon bestseller-rang"
             + ",vom hersteller empfohlenes alter"
@@ -337,20 +339,16 @@ public class AmazonSearchEngine
                       @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
-        // This is WEIRD...
-        // Unless we do this seemingly needless select, the next select (for the title)
-        // will return null.
-        // When run in JUnit, this call is NOT needed.
-        // Whats different? -> the Java JDK!
-        final Element unused = document.selectFirst("div#booksTitle");
-
-        final Element titleElement = document.selectFirst("span#productTitle");
+        // Fr the some books the title will be "just" the title,
+        // for other books they will add the author and more info all in the same string.
+        // It's to difficult to cover all possibilities, we're leaving that to the user.
+        final Element titleElement = document.selectFirst("h1#title > span#productTitle");
         if (titleElement == null) {
             LoggerFactory.getLogger().w(TAG, "parse", "no title?");
             return;
         }
 
-        final String title = titleElement.text().trim();
+        final String title = titleElement.text().strip();
         book.putString(DBKey.TITLE, title);
 
         // Use the site locale for all parsing!
@@ -393,26 +391,46 @@ public class AmazonSearchEngine
     private void parsePrice(@NonNull final Document document,
                             @NonNull final Book book,
                             @NonNull final MoneyParser moneyParser) {
-        Element price = document.selectFirst("span.offer-price");
-        if (price == null) {
-            price = document.selectFirst("span.price");
-        }
-        if (price == null) {
+        final Element mediaMatrix = document.selectFirst("div#MediaMatrix");
+        if (mediaMatrix == null) {
+            LoggerFactory.getLogger().w(TAG, "parsePrice", "no MediaMatrix?");
             return;
         }
 
-        final Money money = moneyParser.parse(price.text());
+        final Element swatchElement = mediaMatrix.selectFirst("li.swatchElement.selected");
+        if (swatchElement == null) {
+            LoggerFactory.getLogger().w(TAG, "parsePrice", "no swatchElement?");
+            return;
+        }
+
+        final Element price = swatchElement.selectFirst("span.a-color-price");
+        if (price == null) {
+            LoggerFactory.getLogger().w(TAG, "parsePrice", "no a-color-price?");
+            return;
+        }
+
+        final Money money = moneyParser.parse(price.text().strip());
         if (money != null) {
             book.putMoney(DBKey.PRICE_LISTED, money);
         } else {
             // parsing failed, store the string as-is;
             // no separate currency!
-            book.putString(DBKey.PRICE_LISTED, price.text());
+            book.putString(DBKey.PRICE_LISTED, price.text().strip());
             // log this as we need to understand WHY it failed
             LoggerFactory.getLogger().w(TAG, "Failed to parse",
                                         DBKey.PRICE_LISTED,
-                                        "text=" + price.text());
+                                        "text=" + price.text().strip());
         }
+
+        // The format can/should also be here
+        final Element formatElement = swatchElement.selectFirst("a.a-button-text > span");
+        if (formatElement != null) {
+            final String format = formatElement.text().strip();
+            if (!format.isEmpty()) {
+                book.putString(DBKey.FORMAT, format);
+            }
+        }
+
     }
 
     private void parseASIN(@NonNull final Document document,
@@ -433,6 +451,8 @@ public class AmazonSearchEngine
 
     /**
      * Parse fields.
+     * <p>
+     * Parse format last checked/updated: 2023-06-25
      *
      * @param context    Current context
      * @param document   to parse
@@ -444,19 +464,16 @@ public class AmazonSearchEngine
                               @NonNull final Book book,
                               @NonNull final Locale siteLocale) {
         final Elements lis = document
-                .select("div#detail_bullets_id > table > tbody > tr > td > div > ul > li");
+                .select("div#detailBulletsWrapper_feature_div > div > ul > li");
         for (final Element li : lis) {
-            String label = li.child(0).text().trim();
-            if (label.endsWith(":")) {
-                label = label.substring(0, label.length() - 1).trim();
+            final String[] text = li.text().strip().split(":", 2);
+            if (text.length != 2) {
+                continue;
             }
 
-            // we used to do: String data = li.childNode(1).toString().trim();
-            // but that fails when the data is spread over multiple child nodes.
-            // so we now just cut out the label, and use the text itself.
-            li.child(0).remove();
-            final String data = li.text().trim();
+            final String label = SearchEngineUtils.cleanText(text[0]);
             final String lcLabel = label.toLowerCase(siteLocale);
+            final String data = SearchEngineUtils.cleanName(text[1]);
 
             if (LABEL_ISBN_13.equals(lcLabel)) {
                 book.putString(DBKey.BOOK_ISBN, data);
@@ -465,6 +482,7 @@ public class AmazonSearchEngine
                 book.putString(DBKey.BOOK_ISBN, data);
 
             } else if (LABEL_FORMAT.contains(lcLabel)) {
+                // we might already have the format, but we'll overwrite it - that's ok.
                 book.putString(DBKey.FORMAT, label);
                 book.putString(DBKey.PAGE_COUNT, extractPages(context, data));
 
@@ -477,14 +495,14 @@ public class AmazonSearchEngine
                 if (matcher.find()) {
                     final String pubName = matcher.group(1);
                     if (pubName != null) {
-                        final Publisher publisher = Publisher.from(pubName.trim());
+                        final Publisher publisher = Publisher.from(pubName.strip());
                         book.add(publisher);
                         publisherWasAdded = true;
                     }
 
                     final String pubDate = matcher.group(2);
                     if (pubDate != null) {
-                        book.putString(DBKey.BOOK_PUBLICATION__DATE, pubDate.trim());
+                        book.putString(DBKey.BOOK_PUBLICATION__DATE, pubDate.strip());
                     }
                 }
 
@@ -532,13 +550,13 @@ public class AmazonSearchEngine
                     // So... we will incorrectly interpret the format "family given".
                     //FIXME: search our database twice with f/g and g/f
                     // this means parsing the 'a.text()' twice.. and french names... COMPLICATED
-                    final Author author = Author.from(a.text());
+                    final Author author = Author.from(a.text().strip());
                     @Author.Type
                     int type = Author.TYPE_UNKNOWN;
 
                     final Element typeElement = span.selectFirst("span.contribution");
                     if (typeElement != null) {
-                        String data = typeElement.text();
+                        String data = typeElement.text().strip();
                         final Matcher matcher = AUTHOR_TYPE_PATTERN.matcher(data);
                         if (matcher.find()) {
                             data = matcher.group(1);
@@ -639,6 +657,6 @@ public class AmazonSearchEngine
             pagesPattern = Pattern.compile(pagesStr, Pattern.LITERAL);
         }
 
-        return pagesPattern.matcher(data).replaceAll("").trim();
+        return pagesPattern.matcher(data).replaceAll("").strip();
     }
 }
