@@ -24,8 +24,8 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.sync.FormatMapper;
-import com.hardbacknutter.nevertoomanybooks.sync.Mapper;
+import com.hardbacknutter.nevertoomanybooks.utils.mappers.FormatMapper;
+import com.hardbacknutter.nevertoomanybooks.utils.mappers.Mapper;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

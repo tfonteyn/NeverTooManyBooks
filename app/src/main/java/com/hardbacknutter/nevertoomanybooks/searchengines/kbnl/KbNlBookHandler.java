@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.sync.ColorMapper;
+import com.hardbacknutter.nevertoomanybooks.utils.mappers.ColorMapper;
 
 import org.xml.sax.SAXException;
 

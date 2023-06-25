@@ -73,12 +73,12 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.sync.ColorMapper;
-import com.hardbacknutter.nevertoomanybooks.sync.FormatMapper;
-import com.hardbacknutter.nevertoomanybooks.sync.Mapper;
 import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
+import com.hardbacknutter.nevertoomanybooks.utils.mappers.ColorMapper;
+import com.hardbacknutter.nevertoomanybooks.utils.mappers.FormatMapper;
+import com.hardbacknutter.nevertoomanybooks.utils.mappers.Mapper;
 
 /**
  * Co-ordinate multiple {@link SearchTask}.
