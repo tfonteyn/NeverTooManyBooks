@@ -31,24 +31,25 @@ The UI is available in:
 
 Translations are now integrated and editable
 on [https://hosted.weblate.org/engage/nevertoomanybooks/](https://hosted.weblate.org/engage/nevertoomanybooks/)
-- everyone welcome
+
+- everyone welcome; log a github 'issue' if you want to be credited with your help.
 
 Data is fetched on-demand from multiple internet sites.
-You can enable/disable and prioritize the sites in the settings.
+You can enable/disable and prioritize the sites in Settings/Search/Websites..
 
-- Amazon (see warning below)
-- Bedetheque
-- BOL.com
-- Google Books
-- ISFDB
-- KB.NL
-- LastDodo
-- OpenLibrary
-- StripInfo
+- **Amazon** *see warning below*
+- **Bedetheque** (French and more; Catalogue; European Comics)
+- **BOL.com** (Dutch and more; Shop)
+- **Google Books** (English and more; Catalogue)
+- **ISFDB** (English and more; Catalogue; Fantasy and Science Fiction)
+- **KB.NL** (Dutch and more; Catalogue)
+- **LastDodo** (Dutch and more; Catalogue; European Comics)
+- **OpenLibrary** (English and more; Catalogue)
+- **StripInfo** (Dutch and more; Catalogue; European Comics)
 
 Please do not ask for GoodReads/LibraryThing to be added.
 
-WARNING: Amazon is increasingly blocking access - if you see any Amazon specific errors, I suggest
+*WARNING:* Amazon is increasingly blocking access - if you see any Amazon specific errors, I suggest
 you switch off Amazon in Settings/Search/Websites.
 
 Supports synchronizing with a Calibre Content Server.
@@ -56,7 +57,6 @@ Supports synchronizing with a Calibre Content Server.
 Requires minimal Android 8.0 (API 26)
 
 Screen size support:
-
 - 4" works but will be very cramped.
 - 5" is the default aimed for.
 - 7" and 10" tablets fully supported with dedicated screen layouts.
