@@ -56,6 +56,15 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+/**
+ * 2023-06-23: the site started responding with 403.
+ * <p>
+ * wget -d --referer='https://www.bertrand.pt/' https://www.bertrand.pt/pesquisa/9789899087774
+ * <p>
+ * and it shows cloudflare is responsible for the block.
+ * <p>
+ * Leaving this engine here for potential future use, but completely disabled.
+ */
 public class BertrandPtSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn,
@@ -91,7 +100,7 @@ public class BertrandPtSearchEngine
                              @NonNull final String validIsbn,
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
-        final String url = getHostUrl(context) + SEARCH + DELIM + validIsbn;
+        final String url = getHostUrl(context) + SEARCH + validIsbn;
         final Document document = loadDocument(context, url, extraRequestProperties);
 
         final Book book = new Book();
