@@ -207,7 +207,7 @@
     <string name="disabled">Spento</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dinamico</string>
     <string name="enabled">Abilitato</string>
-    <string name="error_authorization_failed">Autorizzazione fallita</string>
+    <string name="error_http_401_authorization_failed">Autorizzazione fallita</string>
     <string name="error_auto_toc_population_failed">Inserimento titoli in automatico fallito.</string>
     <string name="error_backup_failed">Backup fallito.</string>
     <string name="error_certificate_invalid">Certificato non valido o non accessibile.</string>
@@ -231,7 +231,7 @@
     <string name="error_search_failed_network">Si prega di aprire le impostazioni e controllare la rete e le preferenze del sito di ricerca.\nControlla anche le impostazioni di rete del tuo dispositivo.</string>
     <string name="error_search_x_failed_y">Ricerca su %1$s non riuscita: %2$s</string>
     <string name="error_site_authentication_failed">Autenticazione %1$s non riuscita</string>
-    <string name="error_site_authorization_failed">Errore durante l’autorizzazione di %1$s.</string>
+    <string name="error_http_401_site_authorization_failed">Errore durante l’autorizzazione di %1$s.</string>
     <string name="error_storage_no_space_left">Spazio disponibile insufficiente.</string>
     <string name="error_storage_not_accessible">Si prega di verificare che lo spazio di archiviazione sia accessibile.</string>
     <string name="error_storage_not_writable">Verifica che lo spazio di archiviazione sia scrivibile e che disponga di spazio sufficiente.</string>

@@ -218,7 +218,7 @@
     <string name="disabled">Vypnutý</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dynamický</string>
     <string name="enabled">Povoleno</string>
-    <string name="error_authorization_failed">Autorizace se nezdařila</string>
+    <string name="error_http_401_authorization_failed">Autorizace se nezdařila</string>
     <string name="error_auto_toc_population_failed">Automatické naplnění titulů selhalo.</string>
     <string name="error_backup_failed">Zálohování selhalo.</string>
     <string name="error_certificate_invalid">Certifikát je neplatný nebo nedostupný.</string>
@@ -243,7 +243,7 @@
 \nZkontrolujte také nastavení sítě v zařízení.</string>
     <string name="error_search_x_failed_y">Hledání na %1$s se nezdařilo: %2$s</string>
     <string name="error_site_authentication_failed">Ověření %1$s se nezdařilo</string>
-    <string name="error_site_authorization_failed">%1$s autorizace skončila chybou.</string>
+    <string name="error_http_401_site_authorization_failed">%1$s autorizace skončila chybou.</string>
     <string name="error_storage_no_space_left">Nedostatečné úložiště.</string>
     <string name="error_storage_not_accessible">Zkontrolujte, zda je úložiště přístupné.</string>
     <string name="error_storage_not_writable">Zkontrolujte, zda je úložiště zapisovatelné a má dostatek místa.</string>

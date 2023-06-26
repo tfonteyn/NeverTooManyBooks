@@ -210,7 +210,7 @@
     <string name="disabled">Kapalı</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dinamik</string>
     <string name="enabled">Etkin</string>
-    <string name="error_authorization_failed">Yetkilendirme başarısız oldu</string>
+    <string name="error_http_401_authorization_failed">Yetkilendirme başarısız oldu</string>
     <string name="error_auto_toc_population_failed">Kitap adlarının kendiliğinden doldurulması başarısız oldu.</string>
     <string name="error_backup_failed">Yedekleme başarısız.</string>
     <string name="error_certificate_invalid">Sertifika geçersiz veya erişilemez.</string>
@@ -234,7 +234,7 @@
     <string name="error_search_failed_network">Lütfen Ayarlar’ı açın ve ağ ve Arama Sitesi tercihlerinizi kontrol edin.\nAyrıca cihaz ağ ayarlarınızı da kontrol edin.</string>
     <string name="error_search_x_failed_y">%1$s’de arama başarısız oldu: %2$s</string>
     <string name="error_site_authentication_failed">%1$s kimlik doğrulaması başarısız oldu</string>
-    <string name="error_site_authorization_failed">%1$s yetkilendirmesi bir hataya neden oldu.</string>
+    <string name="error_http_401_site_authorization_failed">%1$s yetkilendirmesi bir hataya neden oldu.</string>
     <string name="error_storage_no_space_left">Mevcut depolama yetersiz.</string>
     <string name="error_storage_not_accessible">Lütfen depolamanın erişilebilir olduğunu kontrol edin.</string>
     <string name="error_storage_not_writable">Lütfen deponun yazılabilir olduğunu ve yeterli alana sahip olduğunu kontrol edin.</string>

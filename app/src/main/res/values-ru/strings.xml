@@ -220,7 +220,7 @@
     <string name="disabled">Выключен</string>
     <string name="pe_fast_scroller_overlay_dynamic">динамический</string>
     <string name="enabled">Включено</string>
-    <string name="error_authorization_failed">Авторизация не удалась</string>
+    <string name="error_http_401_authorization_failed">Авторизация не удалась</string>
     <string name="error_auto_toc_population_failed">Автоматическое заполнение названий не удалось.</string>
     <string name="error_backup_failed">Резервное копирование не удалось.</string>
     <string name="error_certificate_invalid">Сертификат недействителен или недоступен.</string>
@@ -244,7 +244,7 @@
     <string name="error_search_failed_network">Пожалуйста, откройте «Настройки» и проверьте настройки сети и поиска на сайте.\nТакже проверьте настройки сети вашего устройства.</string>
     <string name="error_search_x_failed_y">Поиск по %1$s не удался: %2$s</string>
     <string name="error_site_authentication_failed">%1$s аутентификация не удалась</string>
-    <string name="error_site_authorization_failed">Авторизация %1$s завершилась с ошибкой.</string>
+    <string name="error_http_401_site_authorization_failed">Авторизация %1$s завершилась с ошибкой.</string>
     <string name="error_storage_no_space_left">Недостаточно места.</string>
     <string name="error_storage_not_accessible">Пожалуйста, проверьте, что хранилище доступно.</string>
     <string name="error_storage_not_writable">Пожалуйста, проверьте, что хранилище доступно для записи и имеет достаточно места.</string>

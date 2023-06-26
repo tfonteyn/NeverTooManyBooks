@@ -111,6 +111,7 @@ public abstract class FutureHttpBase<T> {
      *
      * @throws IOException               on connect
      * @throws HttpUnauthorizedException 401: Unauthorized.
+     * @throws HttpForbiddenException    403: Forbidden
      * @throws HttpNotFoundException     404: Not Found.
      * @throws SocketTimeoutException    408: Request Time-Out.
      * @throws HttpStatusException       on any other HTTP failures
@@ -134,6 +135,11 @@ public abstract class FutureHttpBase<T> {
                 throw new HttpUnauthorizedException(siteResId,
                                                     request.getResponseMessage(),
                                                     request.getURL());
+
+            case HttpURLConnection.HTTP_FORBIDDEN:
+                throw new HttpForbiddenException(siteResId,
+                                                 request.getResponseMessage(),
+                                                 request.getURL());
 
             case HttpURLConnection.HTTP_NOT_FOUND:
                 throw new HttpNotFoundException(siteResId,

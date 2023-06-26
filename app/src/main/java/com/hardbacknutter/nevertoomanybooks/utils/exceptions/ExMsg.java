@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.UpgradeFailedException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpForbiddenException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpStatusException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpUnauthorizedException;
@@ -181,10 +182,18 @@ public final class ExMsg {
         } else if (e instanceof HttpUnauthorizedException) {
             final HttpUnauthorizedException he = (HttpUnauthorizedException) e;
             if (he.getSiteResId() != 0) {
-                return context.getString(R.string.error_site_authorization_failed,
+                return context.getString(R.string.error_http_401_site_authorization_failed,
                                          context.getString(he.getSiteResId()));
             } else {
-                return context.getString(R.string.error_authorization_failed);
+                return context.getString(R.string.error_http_401_authorization_failed);
+            }
+        } else if (e instanceof HttpForbiddenException) {
+            final HttpForbiddenException he = (HttpForbiddenException) e;
+            if (he.getSiteResId() != 0) {
+                return context.getString(R.string.error_http_403_site_forbidden,
+                                         context.getString(he.getSiteResId()));
+            } else {
+                return context.getString(R.string.error_http_403_forbidden);
             }
         } else if (e instanceof HttpStatusException) {
             final HttpStatusException he = (HttpStatusException) e;

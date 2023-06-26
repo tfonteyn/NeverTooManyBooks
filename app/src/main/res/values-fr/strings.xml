@@ -208,7 +208,7 @@
     <string name="disabled">Désactivé</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dynamique</string>
     <string name="enabled">Activée</string>
-    <string name="error_authorization_failed">L’autorisation à échouée</string>
+    <string name="error_http_401_authorization_failed">L’autorisation à échouée</string>
     <string name="error_auto_toc_population_failed">La recherche automatique des titres a échoué.</string>
     <string name="error_backup_failed">Sauvegarde échouée.</string>
     <string name="error_certificate_invalid">Le certificat est incorrect ou inaccessible.</string>
@@ -232,7 +232,7 @@
     <string name="error_search_failed_network">Ouvrez les paramètres et vérifiez les préférences de votre réseau et de votre site de recherche.\nVérifiez également les paramètres réseau de votre appareil.</string>
     <string name="error_search_x_failed_y">Échec de la recherche sur %1$s : %2$s</string>
     <string name="error_site_authentication_failed">L’authentification %1$s a échoué</string>
-    <string name="error_site_authorization_failed">Autorisation %1$s en erreur.</string>
+    <string name="error_http_401_site_authorization_failed">Autorisation %1$s en erreur.</string>
     <string name="error_storage_no_space_left">Stockage insuffisant disponible.</string>
     <string name="error_storage_not_accessible">Veuillez vérifier que le stockage est accessible.</string>
     <string name="error_storage_not_writable">Veuillez vérifier que le stockage est accessible en écriture et qu’il dispose d’un espace suffisant.</string>

@@ -223,7 +223,7 @@
     <string name="disabled">Wyłączony</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dynamiczny</string>
     <string name="enabled">Włączone</string>
-    <string name="error_authorization_failed">Autoryzacja nie powiodła się</string>
+    <string name="error_http_401_authorization_failed">Autoryzacja nie powiodła się</string>
     <string name="error_auto_toc_population_failed">Automatyczne obsadzanie pozycji antologii nie powiodło się.</string>
     <string name="error_backup_failed">Kopia zapasowa nie powiodła się.</string>
     <string name="error_certificate_invalid">Certyfikat jest nieważny lub niedostępny.</string>
@@ -247,7 +247,7 @@
     <string name="error_search_failed_network">Otwórz Ustawienia i sprawdź preferencje sieci i witryny wyszukiwania.\nSprawdź także ustawienia sieciowe urządzenia.</string>
     <string name="error_search_x_failed_y">Wyszukiwanie w %1$s nie powiodło się: %2$s</string>
     <string name="error_site_authentication_failed">Uwierzytelnienie %1$s nie powiodło się</string>
-    <string name="error_site_authorization_failed">Autoryzacja %1$s spowodowała błąd.</string>
+    <string name="error_http_401_site_authorization_failed">Autoryzacja %1$s spowodowała błąd.</string>
     <string name="error_storage_no_space_left">Niewystarczająca pamięć dostępna.</string>
     <string name="error_storage_not_accessible">Sprawdź, czy pamięć jest dostępna.</string>
     <string name="error_storage_not_writable">Sprawdź, czy pamięć jest zapisywalna i czy ma wystarczającą ilość miejsca.</string>

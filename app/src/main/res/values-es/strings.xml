@@ -217,7 +217,7 @@
     <string name="disabled">Apagado</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dinámica</string>
     <string name="enabled">Habilitado</string>
-    <string name="error_authorization_failed">Autorización fallida</string>
+    <string name="error_http_401_authorization_failed">Autorización fallida</string>
     <string name="error_auto_toc_population_failed">La actualización automática de títulos ha fallado.</string>
     <string name="error_backup_failed">Copia de seguridad errónea.</string>
     <string name="error_certificate_invalid">El certificado no es válido o no se puede acceder a él.</string>
@@ -242,7 +242,7 @@
 \nComprueba también la configuración de red de tu dispositivo.</string>
     <string name="error_search_x_failed_y">La búsqueda en %1$s falló: %2$s</string>
     <string name="error_site_authentication_failed">%1$s autenticación fallida</string>
-    <string name="error_site_authorization_failed">Error de autorización en %1$s.</string>
+    <string name="error_http_401_site_authorization_failed">Error de autorización en %1$s.</string>
     <string name="error_storage_no_space_left">Almacenamiento insuficiente disponible.</string>
     <string name="error_storage_not_accessible">Por favor, compruebe que el almacenamiento es accesible.</string>
     <string name="error_storage_not_writable">Por favor, compruebe que el almacenamiento es grabable y tiene espacio suficiente.</string>

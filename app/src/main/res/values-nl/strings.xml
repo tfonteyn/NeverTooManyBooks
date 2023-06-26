@@ -203,7 +203,7 @@
     <string name="debug_send_info_text">Dit maakt een back-up van je hele database en van alle log-bestanden en zend deze naar de ontwikkelaars. Als je deze bestanden niet wilt opsturen, kan je ze van de bijlagen lijst in het e-mailbericht verwijderen voordat je dit verstuurt.</string>
     <string name="disabled">Uitgeschakeld</string>
     <string name="enabled">Ingeschakeld</string>
-    <string name="error_authorization_failed">Autorisatie mislukt</string>
+    <string name="error_http_401_authorization_failed">Autorisatie mislukt</string>
     <string name="error_auto_toc_population_failed">Automatisch titels invullen mislukt.</string>
     <string name="error_backup_failed">Back-up mislukt.</string>
     <string name="error_certificate_invalid">Het certificaat is ongeldig of niet toegankelijk.</string>
@@ -228,7 +228,7 @@
     <string name="error_search_failed_network">Open de instellingen en controleer uw netwerk- en zoeksite-voorkeuren.\nControleer ook de netwerkinstellingen van uw apparaat.</string>
     <string name="error_search_x_failed_y">Zoeken op %1$s is mislukt: %2$s</string>
     <string name="error_site_authentication_failed">%1$s authenticatie mislukt</string>
-    <string name="error_site_authorization_failed">%1$s autorisatie leidde tot een fout.</string>
+    <string name="error_http_401_site_authorization_failed">%1$s autorisatie leidde tot een fout.</string>
     <string name="error_storage_no_space_left">Onvoldoende opslag beschikbaar.</string>
     <string name="error_storage_not_accessible">Controleer aub of opslag toegankelijk is.</string>
     <string name="error_storage_not_writable">Controleer aub of opslag beschrijfbaar is en voldoende vrije ruimte heeft.</string>

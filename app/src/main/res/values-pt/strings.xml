@@ -167,7 +167,7 @@
     <string name="warning_book_not_always_found">Nem todos os sites devolveram dados válidos.</string>
     <string name="warning_book_not_found">Não é possível localizar o livro especificado.</string>
     <string name="X_error_network_site_has_problems">O site não está a funcionar conforme o esperado.</string>
-    <string name="error_authorization_failed">Falha na autorização</string>
+    <string name="error_http_401_authorization_failed">Falha na autorização</string>
     <string name="X_error_authentication_failed">Falha na autenticação</string>
     <string name="error_storage_not_accessible">Por favor verifique se o armazenamento está disponível.</string>
     <string name="error_storage_no_space_left">Espaço de armazenamento insuficiente.</string>
@@ -184,7 +184,7 @@
 \n e outras.</string>
     <string name="warning_export_contains_no_data">Não havia nada para exportar.</string>
     <string name="error_network_site_access_failed">Ocorreu um problema de rede ao aceder a %1$s. Verifique se o site está no ar e, se o problema persistir, entre em contacto com o suporte.</string>
-    <string name="error_site_authorization_failed">A autorização %1$s resultou num erro.</string>
+    <string name="error_http_401_site_authorization_failed">A autorização %1$s resultou num erro.</string>
     <string name="error_storage_not_writable">Por favor verifique se o armazenamento tem permissões de gravação e se tem espaço suficiente.</string>
     <string name="error_search_failed_network">Abra as Configurações e verifique as preferências de rede e do Site de Pesquisa.
 \nVerifique também as configurações de rede do seu dispositivo.</string>

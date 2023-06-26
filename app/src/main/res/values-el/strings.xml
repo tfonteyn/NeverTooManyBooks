@@ -204,7 +204,7 @@
     <string name="disabled">Απενεργοποιημένο</string>
     <string name="pe_fast_scroller_overlay_dynamic">Δυναμικός</string>
     <string name="enabled">Ενεργοποιήθηκε</string>
-    <string name="error_authorization_failed">Η εξουσιοδότηση απέτυχε</string>
+    <string name="error_http_401_authorization_failed">Η εξουσιοδότηση απέτυχε</string>
     <string name="error_auto_toc_population_failed">Η αυτόματη συμπλήρωση τίτλων απέτυχε.</string>
     <string name="error_backup_failed">Αντίγραφο απέτυχε.</string>
     <string name="error_certificate_invalid">Το πιστοποιητικό δεν είναι έγκυρο ή δεν είναι δυνατή η πρόσβαση σε αυτό.</string>
@@ -229,7 +229,7 @@
 \nΕλέγξτε επίσης τις ρυθμίσεις δικτύου της συσκευής σας.</string>
     <string name="error_search_x_failed_y">Η αναζήτηση στο %1$s απέτυχε: %2$s</string>
     <string name="error_site_authentication_failed">Ο έλεγχος ταυτότητας %1$s απέτυχε</string>
-    <string name="error_site_authorization_failed">Η αδειοδότηση του %1$s οδήγησε σε λάθος.</string>
+    <string name="error_http_401_site_authorization_failed">Η αδειοδότηση του %1$s οδήγησε σε λάθος.</string>
     <string name="error_storage_no_space_left">Ανεπαρκής χώρος αποθήκευσης.</string>
     <string name="error_storage_not_accessible">Βεβαιωθείτε ότι έχετε πρόσβαση στο χώρο αποθήκευσης.</string>
     <string name="error_storage_not_writable">Ελέγξτε ότι η αποθήκευση είναι εγγράψιμη και έχει αρκετό χώρο.</string>

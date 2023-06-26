@@ -204,7 +204,7 @@
     <string name="disabled">Deaktiviert</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dynamisch</string>
     <string name="enabled">Aktiviert</string>
-    <string name="error_authorization_failed">Autorisation fehlgeschlagen</string>
+    <string name="error_http_401_authorization_failed">Autorisation fehlgeschlagen</string>
     <string name="error_auto_toc_population_failed">Das automatische Ausfüllen der Anthologie-Titel ist fehlgeschlagen.</string>
     <string name="error_backup_failed">Sicherungskopie erstellen fehlgeschlagen.</string>
     <string name="error_certificate_invalid">Das Zertifikat ist ungültig oder nicht aufrufbar.</string>
@@ -228,7 +228,7 @@
     <string name="error_search_failed_network">Öffnen Sie die Einstellungen und überprüfen Sie Ihre Netzwerk- und Site-Sucheinstellungen.\nÜberprüfen Sie auch die Netzwerkeinstellungen Ihres Geräts.</string>
     <string name="error_search_x_failed_y">Suche auf %1$s fehlgeschlagen: %2$s</string>
     <string name="error_site_authentication_failed">Authentifizierung bei %1$s fehlgeschlagen</string>
-    <string name="error_site_authorization_failed">Die Autorisierung bei %1$s endete fehlerhaft.</string>
+    <string name="error_http_401_site_authorization_failed">Die Autorisierung bei %1$s endete fehlerhaft.</string>
     <string name="error_storage_no_space_left">Nicht genügend Speicher verfügbar.</string>
     <string name="error_storage_not_accessible">Bitte überprüfen Sie, ob der Speicher verfügbar ist.</string>
     <string name="error_storage_not_writable">Bitte überprüfen Sie, ob der Speicher beschreibbar ist und über ausreichend Speicherplatz verfügt.</string>
