@@ -118,7 +118,7 @@ android {
                             .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "\"")
 
             // under development
-            buildConfigField("boolean", "ENABLE_BERTRAND_PT", "false")
+            buildConfigField("boolean", "ENABLE_BERTRAND_PT", "true")
             // under development
             buildConfigField("boolean", "ENABLE_BOOKFINDER", "false")
             // under development
