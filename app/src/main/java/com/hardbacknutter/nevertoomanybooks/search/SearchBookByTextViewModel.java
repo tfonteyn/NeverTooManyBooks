@@ -76,6 +76,8 @@ public class SearchBookByTextViewModel
         if (usePublisher == null) {
             // Hardcoded to ISFDB only for now, as that's the only site supporting this flag.
             // This will be refactored/moved/... at some point.
+            // Reminder to self: for other sites, the user can enter a publisher name
+            // in the 'keyword' field.
             usePublisher = PreferenceManager.getDefaultSharedPreferences(context)
                                             .getBoolean(IsfdbSearchEngine.PK_USE_PUBLISHER, false);
         }
