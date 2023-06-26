@@ -144,7 +144,7 @@ public enum EngineId
     BertrandPt("bertrandpt",
                R.string.site_bertrand_pt,
                R.string.site_info_bertrand_pt,
-               "https://www.bertrand.pt/",
+               "https://www.bertrand.pt",
                new Locale("pt", "PT"),
                BertrandPtSearchEngine.class,
                BuildConfig.ENABLE_BERTRAND_PT),
