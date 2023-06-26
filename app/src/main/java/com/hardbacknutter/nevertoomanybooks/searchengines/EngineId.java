@@ -50,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.bertrandpt.BertrandPtSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bol.BolSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bookfinder.BookFinderSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.goodreads.GoodreadsSearchEngine;
@@ -139,15 +138,6 @@ public enum EngineId
                Locale.FRANCE,
                BedethequeSearchEngine.class,
                BuildConfig.ENABLE_BEDETHEQUE),
-
-    /** Portuguese (and Spanish/French). */
-    BertrandPt("bertrandpt",
-               R.string.site_bertrand_pt,
-               R.string.site_info_bertrand_pt,
-               "https://www.bertrand.pt",
-               new Locale("pt", "PT"),
-               BertrandPtSearchEngine.class,
-               BuildConfig.ENABLE_BERTRAND_PT),
 
     /**
      * All genres; dutch and many other languages.
@@ -353,10 +343,6 @@ public enum EngineId
                       .setReadTimeoutMs(60_000)
                       .build();
         }
-        if (BertrandPt.isEnabled()) {
-            BertrandPt.createConfiguration()
-                      .build();
-        }
         if (Bol.isEnabled()) {
             Bol.createConfiguration()
                .build();
@@ -453,7 +439,6 @@ public enum EngineId
         // matches the site language.
         final boolean activateIfDutch = languages.isUserLanguage(context, "nld");
         final boolean activateIfFrench = languages.isUserLanguage(context, "fra");
-        final boolean activateIfPortuguese = languages.isUserLanguage(context, "por");
 
         //NEWTHINGS: adding a new search engine: add to the list type as needed.
 
@@ -478,7 +463,6 @@ public enum EngineId
                 type.addSite(Bedetheque, activateIfFrench);
                 type.addSite(KbNl, activateIfDutch);
                 type.addSite(Bol, activateIfDutch);
-                type.addSite(BertrandPt, activateIfPortuguese);
                 type.addSite(OpenLibrary, true);
                 break;
             }

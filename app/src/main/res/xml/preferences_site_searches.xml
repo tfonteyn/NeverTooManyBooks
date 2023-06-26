@@ -60,12 +60,6 @@
         </Preference>
 
         <Preference
-            android:fragment="com.hardbacknutter.nevertoomanybooks.searchengines.bertrandpt.BertrandPtPreferencesFragment"
-            android:key="psk_search_site_bertrand_pt"
-            android:title="@string/site_bertrand_pt">
-        </Preference>
-
-        <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.searchengines.bol.BolPreferencesFragment"
             android:key="psk_search_site_bol"
             android:title="@string/site_bol_com">

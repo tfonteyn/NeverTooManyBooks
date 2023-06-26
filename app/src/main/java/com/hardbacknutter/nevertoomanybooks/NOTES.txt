@@ -47,7 +47,6 @@ Booklist style sorting by date-read or date-added etc...:
 4.5.0
 
 NEW:
-- added Bertrand.pt as a search-source. This is a shopping site in Portugal.
 - Amazon parsing has been brought up-to-date + amazon.es has been added to the tests.
 
 - Deleted books will now be 'remembered'. This will allow importing a backup on a second device

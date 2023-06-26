@@ -117,8 +117,6 @@ android {
                     "\"" + LocalDateTime.now(ZoneOffset.UTC)
                             .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "\"")
 
-            // Blocked by Cloudflare
-            buildConfigField("boolean", "ENABLE_BERTRAND_PT", "false")
             // under development
             buildConfigField("boolean", "ENABLE_BOOKFINDER", "false")
             // under development
@@ -141,8 +139,6 @@ android {
             resValue("string", "fileProviderAuthority",
                     "${applicationId}.GenericFileProvider.beta")
 
-            // Blocked by Cloudflare
-            buildConfigField("boolean", "ENABLE_BERTRAND_PT", "false")
             // under development
             buildConfigField("boolean", "ENABLE_BOOKFINDER", "true")
         }
@@ -156,8 +152,6 @@ android {
             resValue("string", "fileProviderAuthority",
                     "${applicationId}.GenericFileProvider.debug")
 
-            // Blocked by Cloudflare
-            buildConfigField("boolean", "ENABLE_BERTRAND_PT", "false")
             // under development
             buildConfigField("boolean", "ENABLE_BOOKFINDER", "true")
             // under development

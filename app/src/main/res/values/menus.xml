@@ -75,7 +75,6 @@
 
     <integer name="MENU_ORDER_AMAZON">900</integer>
     <integer name="MENU_ORDER_BOL">910</integer>
-    <integer name="MENU_ORDER_BERTRAND">920</integer>
 
     <integer name="MENU_ORDER_NEXT_MISSING_COVER">999</integer>
 
