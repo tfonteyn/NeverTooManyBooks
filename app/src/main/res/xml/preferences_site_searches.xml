@@ -60,7 +60,7 @@
         </Preference>
 
         <Preference
-            android:fragment="com.hardbacknutter.nevertoomanybooks.searchengines.bertrandpt.BertrandPrPreferencesFragment"
+            android:fragment="com.hardbacknutter.nevertoomanybooks.searchengines.bertrandpt.BertrandPtPreferencesFragment"
             android:key="psk_search_site_bertrand_pt"
             android:title="@string/site_bertrand_pt">
         </Preference>

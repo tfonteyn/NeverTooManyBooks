@@ -23,10 +23,12 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 import androidx.annotation.NonNull;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ViewBookOnWebsiteHandler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bol.BolMenuHandler;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
 public final class MenuHandlerFactory {
@@ -37,12 +39,16 @@ public final class MenuHandlerFactory {
     /**
      * Create the list of handlers.
      *
+     * @param languagesSupplier deferred supplier for the {@link Languages}
+     *
      * @return unmodifiable list
      */
     @NonNull
-    public static List<MenuHandler> create() {
+    public static List<MenuHandler> create(@NonNull final Supplier<Languages> languagesSupplier) {
+
+
         return List.of(new ViewBookOnWebsiteHandler(),
                        new AmazonMenuHandler(),
-                       new BolMenuHandler());
+                       new BolMenuHandler(languagesSupplier));
     }
 }

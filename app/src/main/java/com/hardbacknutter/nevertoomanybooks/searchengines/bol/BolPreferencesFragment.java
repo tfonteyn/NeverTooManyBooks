@@ -25,11 +25,16 @@ import android.os.Bundle;
 import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 import androidx.preference.ListPreference;
+import androidx.preference.SwitchPreference;
 
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.ShoppingMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 @Keep
 public class BolPreferencesFragment
@@ -64,5 +69,13 @@ public class BolPreferencesFragment
         if (p.getValue() == null) {
             p.setValue(DEF_COUNTRY);
         }
+
+        // We need to set this manually, as the default depends on the user language.
+        final SwitchPreference showShoppingMenu = findPreference(
+                EngineId.Bol.getPreferenceKey() + '.' + Prefs.pk_search_show_shopping_menu);
+        final ShoppingMenuHandler shoppingMenuHandler = new BolMenuHandler(
+                ServiceLocator.getInstance()::getLanguages);
+        //noinspection DataFlowIssue
+        showShoppingMenu.setChecked(shoppingMenuHandler.isShowMenu(getContext()));
     }
 }

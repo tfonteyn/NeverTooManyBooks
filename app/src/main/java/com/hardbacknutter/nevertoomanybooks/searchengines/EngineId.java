@@ -140,6 +140,7 @@ public enum EngineId
                BedethequeSearchEngine.class,
                BuildConfig.ENABLE_BEDETHEQUE),
 
+    /** Portuguese (and Spanish/French). */
     BertrandPt("bertrandpt",
                R.string.site_bertrand_pt,
                R.string.site_info_bertrand_pt,

@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.searchengines.bol;
+package com.hardbacknutter.nevertoomanybooks.searchengines.bertrandpt;
 
 import android.content.Context;
 import android.content.Intent;
@@ -43,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.ShoppingMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
-public class BolMenuHandler
+public class BertrandMenuHandler
         extends ShoppingMenuHandler {
 
     @NonNull
@@ -54,25 +54,25 @@ public class BolMenuHandler
      *
      * @param languagesSupplier deferred supplier for the {@link Languages}
      */
-    public BolMenuHandler(@NonNull final Supplier<Languages> languagesSupplier) {
-        super(R.menu.sm_search_on_bol,
-              R.id.SUBMENU_BOL_SEARCH,
-              R.id.MENU_BOL_BOOKS_BY_AUTHOR,
-              R.id.MENU_BOL_BOOKS_BY_AUTHOR_IN_SERIES,
-              R.id.MENU_BOL_BOOKS_IN_SERIES);
+    public BertrandMenuHandler(@NonNull final Supplier<Languages> languagesSupplier) {
+        super(R.menu.sm_search_on_bertrand,
+              R.id.SUBMENU_BERTRAND_SEARCH,
+              R.id.MENU_BERTRAND_BOOKS_BY_AUTHOR,
+              R.id.MENU_BERTRAND_BOOKS_BY_AUTHOR_IN_SERIES,
+              R.id.MENU_BERTRAND_BOOKS_IN_SERIES);
         this.languagesSupplier = languagesSupplier;
     }
 
     @Override
     public boolean isShowMenu(@NonNull final Context context) {
-        final String key = EngineId.Bol.getPreferenceKey()
+        final String key = EngineId.BertrandPt.getPreferenceKey()
                            + '.' + Prefs.pk_search_show_shopping_menu;
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.contains(key)) {
             return prefs.getBoolean(key, false);
         } else {
-            return languagesSupplier.get().isUserLanguage(context, "nld");
+            return languagesSupplier.get().isUserLanguage(context, "por");
         }
     }
 
@@ -92,7 +92,7 @@ public class BolMenuHandler
             final String cAuthor = encodeSearchString(author.getFormattedName(true));
             if (!cAuthor.isEmpty()) {
                 try {
-                    fields.add(URLEncoder.encode(cAuthor, BolSearchEngine.CHARSET));
+                    fields.add(URLEncoder.encode(cAuthor, BertrandPtSearchEngine.CHARSET));
                 } catch (@NonNull final UnsupportedEncodingException ignore) {
                     // ignore
                 }
@@ -103,7 +103,7 @@ public class BolMenuHandler
             final String cSeries = encodeSearchString(series.getTitle());
             if (!cSeries.isEmpty()) {
                 try {
-                    fields.add(URLEncoder.encode(cSeries, BolSearchEngine.CHARSET));
+                    fields.add(URLEncoder.encode(cSeries, BertrandPtSearchEngine.CHARSET));
                 } catch (@NonNull final UnsupportedEncodingException ignore) {
                     // ignore
                 }
@@ -113,10 +113,8 @@ public class BolMenuHandler
         // Start the intent even if for some reason the fields string is empty.
         // If we don't the user will not see anything happen / we'd need to popup
         // an explanation why we cannot search.
-        final String url = EngineId.Bol.requireConfig().getHostUrl(context)
-                           + String.format(BolSearchEngine.BY_TEXT,
-                                           BolSearchEngine.getCountry(context),
-                                           fields);
+        final String url = EngineId.BertrandPt.requireConfig().getHostUrl(context)
+                           + BertrandPtSearchEngine.SEARCH + fields;
         context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 }

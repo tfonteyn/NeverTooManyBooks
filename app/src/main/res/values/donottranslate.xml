@@ -100,9 +100,12 @@
     <!-- Shopping submenu title -->
     <string name="option_amazon_ellipsis"
             translatable="false">Amazon…</string>
-    <!-- submenu title -->
+    <!-- Shopping submenu title -->
     <string name="option_bol_ellipsis"
             translatable="false">BOL…</string>
+    <!-- Shopping submenu title -->
+    <string name="option_bertrand_ellipsis"
+            translatable="false">Bertrand.pt…</string>
 
     <string name="brackets"
             translatable="false">(%1$s)</string>

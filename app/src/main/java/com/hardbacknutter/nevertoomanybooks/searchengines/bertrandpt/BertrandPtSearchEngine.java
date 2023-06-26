@@ -31,10 +31,12 @@ import androidx.annotation.WorkerThread;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -61,8 +63,13 @@ public class BertrandPtSearchEngine
 
     private static final String TAG = "BertrandPtSearchEngine";
 
-    private static final String SEARCH = "/pesquisa/";
+    /** Website character encoding. */
+    static final String CHARSET = "UTF-8";
+
+    static final String SEARCH = "/pesquisa/";
     private static final String DELIM = "+";
+
+    private final Map<String, String> extraRequestProperties;
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
@@ -74,6 +81,10 @@ public class BertrandPtSearchEngine
     public BertrandPtSearchEngine(@NonNull final Context appContext,
                                   @NonNull final SearchEngineConfig config) {
         super(appContext, config);
+
+        extraRequestProperties = Map.of(HttpConstants.REFERER, getHostUrl(appContext),
+                                        HttpConstants.SEC_FETCH_SITE, "same-origin");
+
     }
 
     @NonNull
@@ -83,7 +94,7 @@ public class BertrandPtSearchEngine
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
         final String url = getHostUrl(context) + SEARCH + DELIM + validIsbn;
-        final Document document = loadDocument(context, url, null);
+        final Document document = loadDocument(context, url, extraRequestProperties);
 
         final Book book = new Book();
         if (!isCancelled()) {
@@ -117,7 +128,7 @@ public class BertrandPtSearchEngine
         }
 
         final String url = getHostUrl(context) + SEARCH + words;
-        final Document document = loadDocument(context, url, null);
+        final Document document = loadDocument(context, url, extraRequestProperties);
         final Book book = new Book();
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
@@ -159,7 +170,7 @@ public class BertrandPtSearchEngine
                     if (url.startsWith("/")) {
                         url = getHostUrl(context) + url;
                     }
-                    final Document redirected = loadDocument(context, url, null);
+                    final Document redirected = loadDocument(context, url, extraRequestProperties);
                     if (!isCancelled()) {
                         parse(context, redirected, fetchCovers, book);
                     }

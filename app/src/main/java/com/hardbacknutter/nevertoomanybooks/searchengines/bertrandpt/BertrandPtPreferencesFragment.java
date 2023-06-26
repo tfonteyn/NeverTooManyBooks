@@ -23,12 +23,17 @@ import android.os.Bundle;
 
 import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
+import androidx.preference.SwitchPreference;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.ShoppingMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 @Keep
-public class BertrandPrPreferencesFragment
+public class BertrandPtPreferencesFragment
         extends BasePreferenceFragment {
 
     @Override
@@ -36,5 +41,13 @@ public class BertrandPrPreferencesFragment
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_site_bertrandpt, rootKey);
+
+        // We need to set this manually, as the default depends on the user language.
+        final SwitchPreference showShoppingMenu = findPreference(
+                EngineId.BertrandPt.getPreferenceKey() + '.' + Prefs.pk_search_show_shopping_menu);
+        final ShoppingMenuHandler shoppingMenuHandler = new BertrandMenuHandler(
+                ServiceLocator.getInstance()::getLanguages);
+        //noinspection DataFlowIssue
+        showShoppingMenu.setChecked(shoppingMenuHandler.isShowMenu(getContext()));
     }
 }

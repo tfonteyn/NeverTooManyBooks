@@ -72,7 +72,7 @@ public abstract class ShoppingMenuHandler
         this.midBySeries = midBySeries;
     }
 
-    protected abstract boolean isShowMenu(@NonNull Context context);
+    public abstract boolean isShowMenu(@NonNull Context context);
 
     @Override
     public void onCreateMenu(@NonNull final Context context,

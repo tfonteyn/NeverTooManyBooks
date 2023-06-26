@@ -77,7 +77,7 @@ public class AmazonMenuHandler
     }
 
     @Override
-    protected boolean isShowMenu(@NonNull final Context context) {
+    public boolean isShowMenu(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(EngineId.Amazon.getPreferenceKey()
                                             + '.' + Prefs.pk_search_show_shopping_menu,

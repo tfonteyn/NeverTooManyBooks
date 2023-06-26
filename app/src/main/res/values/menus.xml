@@ -74,15 +74,8 @@
     <integer name="MENU_ORDER_VIEW_BOOK_AT_AMAZON">890</integer>
 
     <integer name="MENU_ORDER_AMAZON">900</integer>
-    <integer name="MENU_ORDER_AMAZON_AUTHOR">905</integer>
-    <integer name="MENU_ORDER_AMAZON_SERIES">910</integer>
-    <integer name="MENU_ORDER_AMAZON_AUTHOR_IN_SERIES">915</integer>
-
-    <integer name="MENU_ORDER_BOL">900</integer>
-    <integer name="MENU_ORDER_BOL_AUTHOR">905</integer>
-    <integer name="MENU_ORDER_BOL_SERIES">910</integer>
-    <integer name="MENU_ORDER_BOL_AUTHOR_IN_SERIES">915</integer>
-
+    <integer name="MENU_ORDER_BOL">910</integer>
+    <integer name="MENU_ORDER_BERTRAND">920</integer>
 
     <integer name="MENU_ORDER_NEXT_MISSING_COVER">999</integer>
 
@@ -250,26 +243,6 @@
     <item name="MENU_VIEW_BOOK_AT_OPEN_LIBRARY"
           type="id" />
     <item name="MENU_VIEW_BOOK_AT_STRIP_INFO_BE"
-          type="id" />
-
-    <!-- Book - Amazon search -->
-    <item name="SUBMENU_AMAZON_SEARCH"
-          type="id" />
-    <item name="MENU_AMAZON_BOOKS_IN_SERIES"
-          type="id" />
-    <item name="MENU_AMAZON_BOOKS_BY_AUTHOR"
-          type="id" />
-    <item name="MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES"
-          type="id" />
-
-    <!-- Book - BOL search -->
-    <item name="SUBMENU_BOL_SEARCH"
-          type="id" />
-    <item name="MENU_BOL_BOOKS_IN_SERIES"
-          type="id" />
-    <item name="MENU_BOL_BOOKS_BY_AUTHOR"
-          type="id" />
-    <item name="MENU_BOL_BOOKS_BY_AUTHOR_IN_SERIES"
           type="id" />
 
     <!-- Book - Calibre -->

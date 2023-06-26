@@ -22,28 +22,25 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:id="@id/MENU_GROUP_BOOK">
         <item
-            android:id="@id/SUBMENU_BOL_SEARCH"
+            android:id="@+id/SUBMENU_BOL_SEARCH"
             android:icon="@drawable/ic_baseline_search_24"
             android:orderInCategory="@integer/MENU_ORDER_BOL"
             android:title="@string/option_bol_ellipsis"
             >
             <menu>
                 <item
-                    android:id="@id/MENU_BOL_BOOKS_BY_AUTHOR"
+                    android:id="@+id/MENU_BOL_BOOKS_BY_AUTHOR"
                     android:icon="@drawable/ic_baseline_search_24"
-                    android:orderInCategory="@integer/MENU_ORDER_BOL_AUTHOR"
                     android:title="@string/option_shop_books_by_author" />
 
                 <item
-                    android:id="@id/MENU_BOL_BOOKS_BY_AUTHOR_IN_SERIES"
+                    android:id="@+id/MENU_BOL_BOOKS_BY_AUTHOR_IN_SERIES"
                     android:icon="@drawable/ic_baseline_search_24"
-                    android:orderInCategory="@integer/MENU_ORDER_BOL_AUTHOR_IN_SERIES"
                     android:title="@string/option_shop_books_by_author_in_series" />
 
                 <item
-                    android:id="@id/MENU_BOL_BOOKS_IN_SERIES"
+                    android:id="@+id/MENU_BOL_BOOKS_IN_SERIES"
                     android:icon="@drawable/ic_baseline_search_24"
-                    android:orderInCategory="@integer/MENU_ORDER_BOL_SERIES"
                     android:title="@string/option_shop_books_in_series" />
             </menu>
         </item>
