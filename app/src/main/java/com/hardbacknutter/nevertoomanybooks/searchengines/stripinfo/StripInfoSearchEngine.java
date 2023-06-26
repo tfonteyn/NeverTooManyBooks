@@ -34,7 +34,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.CookieManager;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -188,7 +187,6 @@ public class StripInfoSearchEngine
 
         if (StripInfoAuth.isLoginToSearch(context)) {
             if (loginHelper == null) {
-                final CookieManager cookieManager = ServiceLocator.getInstance().getCookieManager();
                 loginHelper = new StripInfoAuth(context, cookieManager);
                 try {
                     loginHelper.login();

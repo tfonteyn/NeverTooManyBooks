@@ -81,10 +81,8 @@ public class BertrandPtSearchEngine
     public BertrandPtSearchEngine(@NonNull final Context appContext,
                                   @NonNull final SearchEngineConfig config) {
         super(appContext, config);
-
         extraRequestProperties = Map.of(HttpConstants.REFERER, getHostUrl(appContext),
                                         HttpConstants.SEC_FETCH_SITE, "same-origin");
-
     }
 
     @NonNull

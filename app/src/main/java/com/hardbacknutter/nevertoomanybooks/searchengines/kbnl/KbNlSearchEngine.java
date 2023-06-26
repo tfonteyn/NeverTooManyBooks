@@ -114,7 +114,7 @@ public class KbNlSearchEngine
     public KbNlSearchEngine(@NonNull final Context appContext,
                             @NonNull final SearchEngineConfig config) {
         super(appContext, config);
-
+        // we need to bootstrap the cookie manager, but don't need to interact with it.
         ServiceLocator.getInstance().getCookieManager();
     }
 

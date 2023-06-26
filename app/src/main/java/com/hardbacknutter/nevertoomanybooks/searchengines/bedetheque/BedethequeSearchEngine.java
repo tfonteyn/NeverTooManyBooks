@@ -31,7 +31,6 @@ import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.net.CookieManager;
 import java.net.HttpCookie;
 import java.util.List;
 import java.util.Map;
@@ -84,7 +83,7 @@ public class BedethequeSearchEngine
     /** A text indicating it's a softcover. Can occur in more than one field. */
     private static final String FORMAT_COUVERTURE_SOUPLE = "Couverture souple";
     private static final String SEARCH_URL = "/search";
-    private final CookieManager cookieManager;
+
     private final Map<String, String> extraRequestProperties;
     @Nullable
     private HttpCookie csrfCookie;
@@ -99,8 +98,6 @@ public class BedethequeSearchEngine
     public BedethequeSearchEngine(@NonNull final Context appContext,
                                   @NonNull final SearchEngineConfig config) {
         super(appContext, config);
-
-        cookieManager = ServiceLocator.getInstance().getCookieManager();
         extraRequestProperties = Map.of(HttpConstants.REFERER, getHostUrl(appContext) + SEARCH_URL);
     }
 

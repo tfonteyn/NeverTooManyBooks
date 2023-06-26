@@ -26,8 +26,10 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
+import java.net.CookieManager;
 import java.util.Map;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
 
@@ -41,6 +43,9 @@ public abstract class JsoupSearchEngineBase
     /** Responsible for loading and parsing the web page. */
     @Nullable
     private JsoupLoader jsoupLoader;
+
+    @NonNull
+    protected final CookieManager cookieManager;
 
     /**
      * Constructor.
@@ -66,6 +71,8 @@ public abstract class JsoupSearchEngineBase
                                     @Nullable final String charSetName) {
         super(appContext, config);
         this.charSetName = charSetName;
+
+        cookieManager = ServiceLocator.getInstance().getCookieManager();
     }
 
     /**

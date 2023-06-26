@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpHead;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -113,8 +112,6 @@ public class KbNlHtmlSearchEngine
     public KbNlHtmlSearchEngine(@NonNull final Context appContext,
                                 @NonNull final SearchEngineConfig config) {
         super(appContext, config);
-
-        ServiceLocator.getInstance().getCookieManager();
     }
 
     @Override
