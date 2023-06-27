@@ -169,6 +169,8 @@
     <string name="X_error_network_site_has_problems">O site não está a funcionar conforme o esperado.</string>
     <string name="error_http_401_authorization_failed">Falha na autorização</string>
     <string name="X_error_authentication_failed">Falha na autenticação</string>
+    <string name="error_http_403_site_forbidden">%1$s bloqueou o acesso.</string>
+    <string name="error_http_403_forbidden">O sítio Web bloqueou o acesso.</string>
     <string name="error_storage_not_accessible">Por favor verifique se o armazenamento está disponível.</string>
     <string name="error_storage_no_space_left">Espaço de armazenamento insuficiente.</string>
     <string name="error_email_failed">Falha ao enviar o e-mail.</string>

@@ -246,6 +246,8 @@
     <string name="error_site_authentication_failed">%1$s аутентификация не удалась</string>
     <string name="error_http_401_site_authorization_failed">Авторизация %1$s завершилась с ошибкой.</string>
     <string name="error_storage_no_space_left">Недостаточно места.</string>
+    <string name="error_http_403_site_forbidden">%1$s заблокировал доступ.</string>
+    <string name="error_http_403_forbidden">Веб-сайт заблокировал доступ.</string>
     <string name="error_storage_not_accessible">Пожалуйста, проверьте, что хранилище доступно.</string>
     <string name="error_storage_not_writable">Пожалуйста, проверьте, что хранилище доступно для записи и имеет достаточно места.</string>
     <string name="error_unexpected">Произошла неизвестная ошибка.</string>

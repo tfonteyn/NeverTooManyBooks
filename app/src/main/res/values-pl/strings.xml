@@ -249,6 +249,8 @@
     <string name="error_site_authentication_failed">Uwierzytelnienie %1$s nie powiodło się</string>
     <string name="error_http_401_site_authorization_failed">Autoryzacja %1$s spowodowała błąd.</string>
     <string name="error_storage_no_space_left">Niewystarczająca pamięć dostępna.</string>
+    <string name="error_http_403_site_forbidden">%1$s zablokował dostęp.</string>
+    <string name="error_http_403_forbidden">Witryna zablokowała dostęp.</string>
     <string name="error_storage_not_accessible">Sprawdź, czy pamięć jest dostępna.</string>
     <string name="error_storage_not_writable">Sprawdź, czy pamięć jest zapisywalna i czy ma wystarczającą ilość miejsca.</string>
     <string name="error_unexpected">Wystąpił nieznany błąd.</string>

@@ -236,6 +236,8 @@
     <string name="error_site_authentication_failed">%1$s kimlik doğrulaması başarısız oldu</string>
     <string name="error_http_401_site_authorization_failed">%1$s yetkilendirmesi bir hataya neden oldu.</string>
     <string name="error_storage_no_space_left">Mevcut depolama yetersiz.</string>
+    <string name="error_http_403_site_forbidden">%1$s erişimi engelledi.</string>
+    <string name="error_http_403_forbidden">Web sitesi erişimi engelledi.</string>
     <string name="error_storage_not_accessible">Lütfen depolamanın erişilebilir olduğunu kontrol edin.</string>
     <string name="error_storage_not_writable">Lütfen deponun yazılabilir olduğunu ve yeterli alana sahip olduğunu kontrol edin.</string>
     <string name="error_unexpected">Bilinmeyen bir hata oluştu.</string>

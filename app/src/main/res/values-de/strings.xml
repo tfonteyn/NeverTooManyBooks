@@ -230,6 +230,8 @@
     <string name="error_site_authentication_failed">Authentifizierung bei %1$s fehlgeschlagen</string>
     <string name="error_http_401_site_authorization_failed">Die Autorisierung bei %1$s endete fehlerhaft.</string>
     <string name="error_storage_no_space_left">Nicht genügend Speicher verfügbar.</string>
+    <string name="error_http_403_site_forbidden">%1$s hat den Zugriff blockiert.</string>
+    <string name="error_http_403_forbidden">Die Website hat den Zugang gesperrt.</string>
     <string name="error_storage_not_accessible">Bitte überprüfen Sie, ob der Speicher verfügbar ist.</string>
     <string name="error_storage_not_writable">Bitte überprüfen Sie, ob der Speicher beschreibbar ist und über ausreichend Speicherplatz verfügt.</string>
     <string name="error_unexpected">Es ist ein unbekannter Fehler aufgetreten.</string>

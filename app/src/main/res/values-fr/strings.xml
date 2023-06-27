@@ -234,6 +234,8 @@
     <string name="error_site_authentication_failed">L’authentification %1$s a échoué</string>
     <string name="error_http_401_site_authorization_failed">Autorisation %1$s en erreur.</string>
     <string name="error_storage_no_space_left">Stockage insuffisant disponible.</string>
+    <string name="error_http_403_site_forbidden">%1$s a bloqué l’accès.</string>
+    <string name="error_http_403_forbidden">Le site web a bloqué l’accès.</string>
     <string name="error_storage_not_accessible">Veuillez vérifier que le stockage est accessible.</string>
     <string name="error_storage_not_writable">Veuillez vérifier que le stockage est accessible en écriture et qu’il dispose d’un espace suffisant.</string>
     <string name="error_unexpected">Une erreur inconnue s’est produite.</string>

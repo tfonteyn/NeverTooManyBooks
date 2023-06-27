@@ -244,6 +244,8 @@
     <string name="error_site_authentication_failed">%1$s autenticación fallida</string>
     <string name="error_http_401_site_authorization_failed">Error de autorización en %1$s.</string>
     <string name="error_storage_no_space_left">Almacenamiento insuficiente disponible.</string>
+    <string name="error_http_403_site_forbidden">%1$s ha bloqueado el acceso.</string>
+    <string name="error_http_403_forbidden">El sitio web ha bloqueado el acceso.</string>
     <string name="error_storage_not_accessible">Por favor, compruebe que el almacenamiento es accesible.</string>
     <string name="error_storage_not_writable">Por favor, compruebe que el almacenamiento es grabable y tiene espacio suficiente.</string>
     <string name="error_unexpected">Se ha producido un error desconocido.</string>

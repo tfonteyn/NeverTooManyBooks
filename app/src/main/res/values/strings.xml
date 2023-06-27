@@ -157,7 +157,7 @@
     <string name="error_site_authentication_failed">%1$s authentication failed</string>
     <!-- 'Site' Forbidden. Param 1: the website name -->
     <string name="error_http_403_site_forbidden">%1$s has blocked access.</string>
-    <string name="error_http_403_forbidden">Access was blocked.</string>
+    <string name="error_http_403_forbidden">The website has blocked access.</string>
     <!-- Shared Storage file system access fails for some reason. No specifics. -->
     <string name="error_storage_not_accessible">Please check that storage is accessible.</string>
     <!-- Displayed when any write operation to the database, or to Shared Storage fails
