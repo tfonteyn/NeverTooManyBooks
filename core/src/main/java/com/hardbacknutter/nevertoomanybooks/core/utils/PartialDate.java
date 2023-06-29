@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 
 /**
  * Provides storage for an partial/incomplete date.
- * A partial date can consist of just a year, a year+mont, or year+month+day value.
+ * A partial date can consist of just a year, a year+month, or year+month+day value.
  * <p>
  * TEST: <a href="https://issuetracker.google.com/issues/158417777">DateTimeParseException</a>
  * seems to be fixed, but the bug was never closed?
