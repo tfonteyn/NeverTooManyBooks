@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils;
+package com.hardbacknutter.nevertoomanybooks.core.utils;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -59,11 +59,26 @@ public class UriInfo {
         this.uri = uri;
     }
 
+    /**
+     * Retrieve the original uri.
+     *
+     * @return uri
+     */
     @NonNull
     public Uri getUri() {
         return uri;
     }
 
+    /**
+     * Resolve and get the display-name of the data.
+     *
+     * @param context Current context
+     *
+     * @return human readable label
+     *
+     * @throws IllegalStateException for an unsupported uri scheme
+     * @throws NullPointerException  if the name could not be retrieved
+     */
     @NonNull
     public String getDisplayName(@NonNull final Context context) {
         if (!resolved) {
@@ -72,6 +87,15 @@ public class UriInfo {
         return Objects.requireNonNull(displayName, "displayName");
     }
 
+    /**
+     * Resolve and get the size of the data. Can be {@code 0} (i.e. 'unknown') for remote schemes.
+     *
+     * @param context Current context
+     *
+     * @return size in bytes
+     *
+     * @throws IllegalStateException for an unsupported uri scheme
+     */
     public long getSize(@NonNull final Context context) {
         if (!resolved) {
             resolve(context);
@@ -87,8 +111,7 @@ public class UriInfo {
 
         if (ContentResolver.SCHEME_CONTENT.equals(scheme)) {
             final ContentResolver contentResolver = context.getContentResolver();
-            final String[] columns = {OpenableColumns.DISPLAY_NAME,
-                                      OpenableColumns.SIZE};
+            final String[] columns = {OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE};
             try (Cursor cursor = contentResolver.query(uri, columns, null, null, null)) {
                 if (cursor != null && cursor.moveToFirst()) {
 
