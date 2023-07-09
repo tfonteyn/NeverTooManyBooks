@@ -71,7 +71,7 @@ android {
         minSdk = rootProject.ext.min_sdk_version
         targetSdk = rootProject.ext.target_sdk_version
 
-        signingConfig signingConfigs.release
+        signingConfig(signingConfigs.release)
 
         resourceConfigurations += ["de", "en", "en_GB", "es", "fr", "it", "nl", "pt",
                                    "cs", "el", "pl", "ru", "tr"]
@@ -125,7 +125,7 @@ android {
             buildConfigField("boolean", "EMBEDDED_BARCODE_SCANNER", "false")
         }
         beta {
-            initWith release
+            initWith(release)
             versionNameSuffix = "-beta"
             // applicationIdSuffix: same as release to be able to update rel->beta
 
