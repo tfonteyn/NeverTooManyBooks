@@ -39,13 +39,14 @@ ext {
 
     // see NOTES.txt
     // https://gs.statcounter.com/os-version-market-share/android/mobile-tablet/worldwide
-    // 2022-12-04 world wide:
-    // 12.0     30.07
-    // 11.0     55.26
-    // 10.0     73.82
-    // 9.0      82.99
-    // 8.1      88.09
-    // 8.0      90.15
+    // 2023-07-12 world wide:
+    // 13.0     22.38
+    // 12.0     40.26
+    // 11.0     58.06
+    // 10.0     81.39
+    // 9.0      88.15
+    // 8.1      91.01
+    // 8.0      93.77
     min_sdk_version = 26
     target_sdk_version = 33
     compile_sdk_version = 33
