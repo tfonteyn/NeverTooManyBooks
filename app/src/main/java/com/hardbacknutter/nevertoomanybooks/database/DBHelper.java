@@ -47,6 +47,7 @@ import java.util.stream.Stream;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
+import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
@@ -704,6 +705,7 @@ public class DBHelper
         }
         if (oldVersion < 25) {
             TBL_DELETED_BOOKS.create(db, true);
+            StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_FTS, true);
         }
 
         //TODO: if at a future time we make a change that requires to copy/reload the books table:
