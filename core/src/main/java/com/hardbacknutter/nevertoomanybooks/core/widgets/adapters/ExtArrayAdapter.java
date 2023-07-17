@@ -761,7 +761,8 @@ public class ExtArrayAdapter<T>
     private class DiacriticArrayFilter
             extends AbstractArrayFilter {
 
-        private final Pattern diacriticsPattern = Pattern.compile("[^\\p{ASCII}]");
+        /** Keep only alpha/digit and space characters. */
+        private final Pattern diacriticsPattern = Pattern.compile("[^\\p{Alpha}\\d ]");
 
         @Override
         @NonNull
@@ -781,7 +782,7 @@ public class ExtArrayAdapter<T>
                 results.count = values.size();
             } else {
                 final String prefixString = prefix.toString().toLowerCase(Locale.getDefault());
-                final String ndPrefixString = toAsciiLowerCase(prefixString);
+                final String ndPrefixString = normalizeAndLowercase(prefixString);
 
                 final int count = values.size();
                 final Collection<T> newValues = new ArrayList<>();
@@ -793,13 +794,13 @@ public class ExtArrayAdapter<T>
 
                     // First match against the whole, non-split value
                     if (valueText.startsWith(prefixString)
-                        || toAsciiLowerCase(valueText).startsWith(ndPrefixString)) {
+                        || normalizeAndLowercase(valueText).startsWith(ndPrefixString)) {
                         newValues.add(value);
                     } else {
                         final String[] words = valueText.split(" ");
                         for (final String word : words) {
                             if (word.startsWith(prefixString)
-                                || toAsciiLowerCase(word).startsWith(ndPrefixString)) {
+                                || normalizeAndLowercase(word).startsWith(ndPrefixString)) {
                                 newValues.add(value);
                                 break;
                             }
@@ -815,15 +816,16 @@ public class ExtArrayAdapter<T>
         }
 
         /**
-         * Normalize a given string to contain only lower case ASCII characters.
+         * Normalize a given string to contain only lower case alpha/digit and space characters.
          *
          * @param text to normalize
          *
-         * @return ascii text
+         * @return normalized text
          */
         @NonNull
-        private String toAsciiLowerCase(@NonNull final CharSequence text) {
-            return diacriticsPattern.matcher(Normalizer.normalize(text, Normalizer.Form.NFD))
+        private String normalizeAndLowercase(@NonNull final CharSequence text) {
+            final String normalized = Normalizer.normalize(text, Normalizer.Form.NFD);
+            return diacriticsPattern.matcher(normalized)
                                     .replaceAll("")
                                     .toLowerCase(Locale.getDefault());
         }
