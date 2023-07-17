@@ -560,6 +560,19 @@ public class Author
     }
 
     /**
+     * Get the global preference: should an Author be shown with the given first.
+     *
+     * @param context Current context
+     *
+     * @return {@code true} if the given name should be shown before family name
+     */
+    public static boolean isGivenNameFirst(@NonNull final Context context) {
+        return PreferenceManager
+                .getDefaultSharedPreferences(context)
+                .getBoolean(PK_SHOW_AUTHOR_NAME_GIVEN_FIRST, false);
+    }
+
+    /**
      * Return the formatted version of the name.
      *
      * @param givenNameFirst {@code true} if we want "given-names family-name" formatted name.
@@ -595,8 +608,7 @@ public class Author
         if (style != null) {
             givenNameFirst = style.isShowAuthorByGivenName();
         } else {
-            givenNameFirst = PreferenceManager.getDefaultSharedPreferences(context)
-                                              .getBoolean(PK_SHOW_AUTHOR_NAME_GIVEN_FIRST, false);
+            givenNameFirst = isGivenNameFirst(context);
         }
 
         return getFormattedName(givenNameFirst);
@@ -756,9 +768,7 @@ public class Author
                     if (style != null) {
                         givenNameFirst = style.isShowAuthorByGivenName();
                     } else {
-                        givenNameFirst = PreferenceManager
-                                .getDefaultSharedPreferences(context)
-                                .getBoolean(PK_SHOW_AUTHOR_NAME_GIVEN_FIRST, false);
+                        givenNameFirst = isGivenNameFirst(context);
                     }
 
                     if (givenNameFirst) {
