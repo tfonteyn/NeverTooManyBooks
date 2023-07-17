@@ -29,8 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
-
 /**
  * Holder class for search criteria with some methods to bulk manipulate them.
  */
@@ -55,6 +53,7 @@ public class SearchCriteria
     /** Log tag. */
     private static final String TAG = "SearchCriteria";
     public static final String BKEY = TAG + ":a";
+
     /**
      * Bundle key for Author search text
      * (all DB KEY's and the ARRAY key is for authors with verified names).
@@ -231,17 +230,6 @@ public class SearchCriteria
     @SuppressWarnings("unused")
     void setLoanee(@Nullable final String loanee) {
         this.loanee = loanee;
-    }
-
-    void search(@NonNull final FtsDao dao,
-                final int maxSuggestions) {
-        bookIdList.clear();
-        bookIdList.addAll(dao.search(ftsAuthor,
-                                     ftsBookTitle,
-                                     ftsSeriesTitle,
-                                     ftsPublisher,
-                                     ftsKeywords,
-                                     maxSuggestions));
     }
 
     /**

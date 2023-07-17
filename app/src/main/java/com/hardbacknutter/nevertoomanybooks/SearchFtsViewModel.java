@@ -79,8 +79,14 @@ public class SearchFtsViewModel
     }
 
     public void search() {
-        //noinspection DataFlowIssue
-        criteria.search(dao, MAX_SUGGESTIONS);
+        Objects.requireNonNull(criteria);
+        final List<Long> list = dao.search(criteria.getFtsAuthor(),
+                                           criteria.getFtsBookTitle(),
+                                           criteria.getFtsSeriesTitle(),
+                                           criteria.getFtsPublisher(),
+                                           criteria.getFtsKeywords(),
+                                           MAX_SUGGESTIONS);
+        criteria.setBookIdList(list);
         onBooklistUpdate.postValue(criteria.getBookIdList());
     }
 }
