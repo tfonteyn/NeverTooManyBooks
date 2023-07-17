@@ -31,8 +31,8 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.AlphabeticNormalizer;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BedethequeCacheDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -100,7 +100,7 @@ public class BedethequeAuthorResolver
      * @return [0A-Z] of the first character
      */
     private char firstChar(@NonNull final CharSequence name) {
-        final String normalized = AlphabeticNormalizer.normalize(String.valueOf(name.charAt(0)));
+        final String normalized = SqlEncode.normalize(String.valueOf(name.charAt(0)));
         if (normalized.isEmpty()) {
             return '0';
         }
