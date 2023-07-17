@@ -27,7 +27,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
-import com.hardbacknutter.nevertoomanybooks.core.utils.AlphabeticNormalizer;
 
 
 public interface Mergeable {
@@ -35,7 +34,7 @@ public interface Mergeable {
     /**
      * Create a hash on the {@link #getNameFields()} of the given Mergeable.
      * <p>
-     * Uses the ascii version of the names.
+     * Uses the {@link SqlEncode#normalize(CharSequence)} version of the names.
      *
      * @param x to hash
      *
@@ -45,7 +44,7 @@ public interface Mergeable {
         return Objects.hash(
                 x.getNameFields()
                  .stream()
-                 .map(AlphabeticNormalizer::normalize)
+                 .map(SqlEncode::normalize)
                  .collect(Collectors.toList()));
     }
 
