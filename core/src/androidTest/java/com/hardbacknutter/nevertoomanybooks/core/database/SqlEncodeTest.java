@@ -24,18 +24,15 @@ import androidx.annotation.NonNull;
 
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.AlphabeticNormalizer;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-
+/**
+ * REMINDER: this test <strong>MUST</strong> run as "androidTest" as we're
+ * interacting with Android JDK specific changes.
+ */
 public class SqlEncodeTest {
-
-    private static String normalize(@NonNull final CharSequence text) {
-        return AlphabeticNormalizer.normalize(text);
-    }
 
     private static String orderByColumn(@NonNull final CharSequence text,
                                         @NonNull final Locale locale) {
@@ -51,19 +48,19 @@ public class SqlEncodeTest {
         String source;
 
         source = "aBc Def";
-        assertEquals("aBcDef", normalize(source));
+        assertEquals("aBcDef", SqlEncode.normalize(source));
         assertEquals("abcdef", orderByColumn(source, locale));
 
         source = "États";
-        assertEquals("Etats", normalize(source));
+        assertEquals("Etats", SqlEncode.normalize(source));
         assertEquals("etats", orderByColumn(source, locale));
 
         source = "Première République française";
-        assertEquals("PremiereRepubliquefrancaise", normalize(source));
+        assertEquals("PremiereRepubliquefrancaise", SqlEncode.normalize(source));
         assertEquals("premiererepubliquefrancaise", orderByColumn(source, locale));
 
         source = "États, (française) \"République\"";
-        assertEquals("EtatsfrancaiseRepublique", normalize(source));
+        assertEquals("EtatsfrancaiseRepublique", SqlEncode.normalize(source));
         assertEquals("etatsfrancaiserepublique", orderByColumn(source, locale));
     }
 
@@ -76,15 +73,15 @@ public class SqlEncodeTest {
         String source;
 
         source = "aBc Def";
-        assertEquals("aBcDef", normalize(source));
+        assertEquals("aBcDef", SqlEncode.normalize(source));
         assertEquals("abcdef", orderByColumn(source, locale));
 
         source = "Jäger";
-        assertEquals("Jager", normalize(source));
+        assertEquals("Jager", SqlEncode.normalize(source));
         assertEquals("jager", orderByColumn(source, locale));
 
         source = "Jäger, (größte)";
-        assertEquals("Jagergroßte", normalize(source));
+        assertEquals("Jagergroßte", SqlEncode.normalize(source));
         assertEquals("jagergroßte", orderByColumn(source, locale));
     }
 
@@ -97,11 +94,11 @@ public class SqlEncodeTest {
         String source;
 
         source = "aBc Def";
-        assertEquals("aBcDef", normalize(source));
+        assertEquals("aBcDef", SqlEncode.normalize(source));
         assertEquals("abcdef", orderByColumn(source, locale));
 
         source = "Luís de Camões";
-        assertEquals("LuisdeCamoes", normalize(source));
+        assertEquals("LuisdeCamoes", SqlEncode.normalize(source));
         assertEquals("luisdecamoes", orderByColumn(source, locale));
     }
 
@@ -115,11 +112,11 @@ public class SqlEncodeTest {
         String source;
 
         source = "aBc Def";
-        assertEquals("aBcDef", normalize(source));
+        assertEquals("aBcDef", SqlEncode.normalize(source));
         assertEquals("abcdef", orderByColumn(source, locale));
 
         source = "ალექსანდრე ამილახვარი";
-        assertEquals("ალექსანდრეამილახვარი", normalize(source));
+        assertEquals("ალექსანდრეამილახვარი", SqlEncode.normalize(source));
         assertEquals("ალექსანდრეამილახვარი", orderByColumn(source, locale));
     }
 
@@ -132,11 +129,11 @@ public class SqlEncodeTest {
         String source;
 
         source = "aBc Def";
-        assertEquals("aBcDef", normalize(source));
+        assertEquals("aBcDef", SqlEncode.normalize(source));
         assertEquals("abcdef", orderByColumn(source, locale));
 
         source = "Ἀνδρέας Κάλβος";
-        assertEquals("ΑνδρεαςΚαλβος", normalize(source));
+        assertEquals("ΑνδρεαςΚαλβος", SqlEncode.normalize(source));
         assertEquals("ανδρεαςκαλβος", orderByColumn(source, locale));
     }
 
@@ -149,11 +146,11 @@ public class SqlEncodeTest {
         String source;
 
         source = "aBc Def";
-        assertEquals("aBcDef", normalize(source));
+        assertEquals("aBcDef", SqlEncode.normalize(source));
         assertEquals("abcdef", orderByColumn(source, locale));
 
         source = "Фёдор Алекса́ндрович Абра́мов";
-        assertEquals("ФедорАлександровичАбрамов", normalize(source));
+        assertEquals("ФедорАлександровичАбрамов", SqlEncode.normalize(source));
         assertEquals("федоралександровичабрамов", orderByColumn(source, locale));
     }
 }

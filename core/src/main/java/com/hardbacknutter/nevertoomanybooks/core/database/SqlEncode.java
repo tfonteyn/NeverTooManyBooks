@@ -21,19 +21,47 @@ package com.hardbacknutter.nevertoomanybooks.core.database;
 
 import androidx.annotation.NonNull;
 
+import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.AlphabeticNormalizer;
-
+/**
+ * Used to create {@code ORDER BY} suitable strings, quotes, dates etc.
+ * <p>
+ * This class (and similar UNICODE handling classes) MUST be tested with "androidTest"
+ * as unit-testing will cause false positives/failures due to the lack/presence
+ * of the flag {@code use the flag: Pattern.UNICODE_CHARACTER_CLASS}.
+ * <p>
+ * See <a href="https://issuetracker.google.com/issues/181655428">Google bug 181655428</a>
+ * <pre>
+ *  1. Normally we should use the flag: Pattern.UNICODE_CHARACTER_CLASS
+ *     but android does not need/support it as it always uses unicode (it says...)
+ *     When using {Alnum} Android will NOT use unicode contradicting the above.
+ *
+ *  2. Combining explicit unicode {IsAlphabetic} with 'd' for digits
+ *     Pattern.compile("[^\\p{IsAlphabetic}\\d]");
+ *     and unit testing on JDK 17 (Windows) works fine, but fails with on-device test.
+ *     google bug: https://issuetracker.google.com/issues/181655428
+ *
+ *  3. Using as per google bug:
+ *     Pattern.compile("[^\\p{Alpha}\\d]");
+ *     unit testing fails on the hosting JDK 17 for non-latin (but works for latin),
+ *     but works with on-device test.
+ * </pre>
+ * <p>
+ * Passes "androidTest" on API 26,27,31,33
+ */
 public final class SqlEncode {
 
     /** See {@link #singleQuotes}. */
     private static final Pattern SINGLE_QUOTE_LITERAL = Pattern.compile("'", Pattern.LITERAL);
     /** See {@link #date(LocalDateTime)}. */
     private static final Pattern T = Pattern.compile("T");
+
+    /** Keep only alpha/digit characters. */
+    private static final Pattern NORMALIZER_PATTERN = Pattern.compile("[^\\p{Alpha}\\d]");
 
     private SqlEncode() {
     }
@@ -62,7 +90,7 @@ public final class SqlEncode {
     @NonNull
     public static String orderByColumn(@NonNull final CharSequence text,
                                        @NonNull final Locale locale) {
-        return AlphabeticNormalizer.normalize(text).toLowerCase(locale);
+        return normalize(text).toLowerCase(locale);
     }
 
     /**
@@ -81,5 +109,19 @@ public final class SqlEncode {
         // We should just create a formatter which uses a ' '...
         final String date = dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         return T.matcher(date).replaceFirst(" ");
+    }
+
+    /**
+     * Normalize the given string and remove any non-alpha/digit characters.
+     * The case is preserved.
+     *
+     * @param text to normalize
+     *
+     * @return normalized text
+     */
+    @NonNull
+    public static String normalize(@NonNull final CharSequence text) {
+        final String normalized = Normalizer.normalize(text, Normalizer.Form.NFD);
+        return NORMALIZER_PATTERN.matcher(normalized).replaceAll("");
     }
 }
