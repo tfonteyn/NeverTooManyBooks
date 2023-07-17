@@ -26,9 +26,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:maxWidth="340dp"
-    android:minWidth="300dp"
-    android:padding="16dp"
+    android:maxWidth="@dimen/startup_splash_max_width"
+    android:minWidth="@dimen/startup_splash_min_width"
+    android:padding="@dimen/startup_splash_border"
     tools:context=".StartupActivity"
     >
 
@@ -66,7 +66,15 @@
         android:textIsSelectable="false"
         app:layout_constraintEnd_toEndOf="@id/app"
         app:layout_constraintTop_toBottomOf="@id/app"
-        tools:text="3.4.1"
+        tools:text="4.5.0"
+        />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/top_of_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="app_icon,version"
         />
 
     <TextView
@@ -79,7 +87,7 @@
         app:layout_constraintBottom_toTopOf="@id/progress_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/version"
+        app:layout_constraintTop_toBottomOf="@id/top_of_message"
         />
 
     <com.google.android.material.progressindicator.LinearProgressIndicator

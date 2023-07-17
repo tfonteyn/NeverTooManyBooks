@@ -55,4 +55,8 @@
     <!--    <dimen name="btn_open_toc_height">@dimen/wrap_content</dimen>-->
     <!--    <dimen name="btn_open_toc_text_size">14sp</dimen>-->
 
+    <dimen name="startup_splash_border">16dp</dimen>
+    <dimen name="startup_splash_min_width">300dp</dimen>
+    <dimen name="startup_splash_max_width">340dp</dimen>
+
 </resources>
