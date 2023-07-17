@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,10 +32,15 @@ public class FtsMatchFilter
         implements Filter {
 
     @NonNull
-    private final String query;
+    private final String matchClause;
 
-    public FtsMatchFilter(@NonNull final String query) {
-        this.query = query;
+    /**
+     * Constructor.
+     *
+     * @param matchClause the string to use for the {@code MATCH}
+     */
+    public FtsMatchFilter(@NonNull final String matchClause) {
+        this.matchClause = matchClause;
     }
 
     @NonNull
@@ -46,12 +51,12 @@ public class FtsMatchFilter
                + "SELECT " + DBKey.FTS_BOOK_ID
                + " FROM " + TBL_FTS_BOOKS.getName()
                + " WHERE " + TBL_FTS_BOOKS.getName()
-               + " MATCH '" + query + "')"
+               + " MATCH '" + matchClause + "')"
                + ')';
     }
 
     @Override
     public boolean isActive(@NonNull final Context context) {
-        return !query.isEmpty();
+        return !matchClause.isEmpty();
     }
 }
