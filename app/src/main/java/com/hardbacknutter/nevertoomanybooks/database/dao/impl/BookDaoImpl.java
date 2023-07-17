@@ -275,7 +275,7 @@ public class BookDaoImpl
             insertBookLinks(context, book, flags);
 
             // and populate the search suggestions table
-            ftsDaoSupplier.get().insert(newBookId);
+            ftsDaoSupplier.get().insert(context, newBookId);
 
             // lastly we move the covers from the cache dir to their permanent dir/name
             try {
@@ -356,7 +356,7 @@ public class BookDaoImpl
 
                 insertBookLinks(context, book, flags);
 
-                ftsDaoSupplier.get().update(book.getId());
+                ftsDaoSupplier.get().update(context, book.getId());
 
                 try {
                     bookDaoHelper.persistCovers();

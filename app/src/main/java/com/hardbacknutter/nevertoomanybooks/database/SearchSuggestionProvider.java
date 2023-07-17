@@ -33,7 +33,7 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.FtsDaoHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 
 /**
@@ -121,7 +121,7 @@ public class SearchSuggestionProvider
                 return null;
             }
 
-            final String query = FtsDao.prepareSearchText(selectionArgs[0], null);
+            final String query = FtsDaoHelper.prepareSearchText(selectionArgs[0], null);
             if (!query.isEmpty()) {
                 return ServiceLocator.getInstance().getDb()
                                      .rawQuery(SEARCH_SUGGESTIONS, new String[]{query});

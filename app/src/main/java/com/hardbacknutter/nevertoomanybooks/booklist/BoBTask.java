@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.FtsDaoHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
@@ -322,15 +323,21 @@ public class BoBTask
         // if we have a list of ID's, we'll ignore other criteria
         if (searchCriteria.getBookIdList().isEmpty()) {
             // Criteria supported by FTS
-            searchCriteria.getFtsMatchQuery().ifPresent(
-                    query -> builder.addFilter(new FtsMatchFilter(query)));
+            FtsDaoHelper.createMatchClause(searchCriteria.getFtsBookTitle(),
+                                           searchCriteria.getFtsSeriesTitle(),
+                                           searchCriteria.getFtsAuthor(),
+                                           searchCriteria.getFtsPublisher(),
+                                           searchCriteria.getFtsKeywords())
+                        .map(FtsMatchFilter::new)
+                        .ifPresent(builder::addFilter);
 
             // Add a filter to retrieve only books lend to the given person (exact name).
             // We want to use the exact string, so do not normalize the value,
             // but we do need to handle single quotes as we are concatenating.
-            searchCriteria.getLoanee().ifPresent(loanee -> builder.addFilter(
-                    c -> String.format(LOAN_FILTER, SqlEncode.singleQuotes(loanee))));
-
+            final String loanee = searchCriteria.getLoanee();
+            if (loanee != null && !loanee.isBlank()) {
+                builder.addFilter(c -> String.format(LOAN_FILTER, SqlEncode.singleQuotes(loanee)));
+            }
         } else {
             // Add a where clause for: "AND books._id IN (list)".
             builder.addFilter(new NumberListFilter<>(

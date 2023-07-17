@@ -27,7 +27,6 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Holder class for search criteria with some methods to bulk manipulate them.
@@ -66,6 +65,7 @@ public class SearchCriteria
     public static final String BKEY_SEARCH_TEXT_PUBLISHER = TAG + ":publisher";
     /** Bundle key for generic search text. */
     private static final String BKEY_SEARCH_TEXT_KEYWORDS = TAG + ":keywords";
+
     /**
      * List of book ID's to display.
      * The RESULT of a search with {@link SearchFtsFragment}
@@ -132,6 +132,9 @@ public class SearchCriteria
         return 0;
     }
 
+    /**
+     * Clear all criteria.
+     */
     public void clear() {
         bookIdList.clear();
         ftsBookTitle = null;
@@ -155,17 +158,8 @@ public class SearchCriteria
         }
     }
 
-    @NonNull
-    public Optional<String> getFtsMatchQuery() {
-        return FtsDao.createMatchString(ftsBookTitle,
-                                        ftsSeriesTitle,
-                                        ftsAuthor,
-                                        ftsPublisher,
-                                        ftsKeywords);
-    }
-
     @Nullable
-    String getFtsBookTitle() {
+    public String getFtsBookTitle() {
         return ftsBookTitle;
     }
 
@@ -174,7 +168,7 @@ public class SearchCriteria
     }
 
     @Nullable
-    String getFtsSeriesTitle() {
+    public String getFtsSeriesTitle() {
         return ftsSeriesTitle;
     }
 
@@ -183,7 +177,7 @@ public class SearchCriteria
     }
 
     @Nullable
-    String getFtsAuthor() {
+    public String getFtsAuthor() {
         return ftsAuthor;
     }
 
@@ -192,7 +186,7 @@ public class SearchCriteria
     }
 
     @Nullable
-    String getFtsPublisher() {
+    public String getFtsPublisher() {
         return ftsPublisher;
     }
 
@@ -201,7 +195,7 @@ public class SearchCriteria
     }
 
     @Nullable
-    String getFtsKeywords() {
+    public String getFtsKeywords() {
         return ftsKeywords;
     }
 
@@ -216,15 +210,11 @@ public class SearchCriteria
     /**
      * Not supported by FTS.
      *
-     * @return {@link Optional} with a non-blank UUID
+     * @return the loanee name, or {@code null} if none set
      */
-    @NonNull
-    public Optional<String> getLoanee() {
-        if (loanee != null && !loanee.trim().isEmpty()) {
-            return Optional.of(loanee.trim());
-        } else {
-            return Optional.empty();
-        }
+    @Nullable
+    public String getLoanee() {
+        return loanee;
     }
 
     @SuppressWarnings("unused")

@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.database.Cursor;
 
 import androidx.annotation.IntRange;
@@ -36,11 +37,11 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.AlphabeticNormalizer;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -178,13 +179,28 @@ public class FtsDaoImpl
      * @param position to bind
      * @param text     to bind
      */
-    private static void bindStringOrNull(@NonNull final SynchronizedStatement stmt,
-                                         final int position,
-                                         @Nullable final CharSequence text) {
-        if (text == null) {
+    private void bindStringOrNull(@NonNull final SynchronizedStatement stmt,
+                                  final int position,
+                                  @Nullable final String text) {
+        if (text == null || text.isBlank()) {
             stmt.bindNull(position);
         } else {
-            stmt.bindString(position, AlphabeticNormalizer.normalize(text));
+            stmt.bindString(position, FtsDaoHelper.normalize(text));
+        }
+    }
+
+    private void bindStringOrNull(@NonNull final SynchronizedStatement stmt,
+                                  final int position,
+                                  @NonNull final List<String> list) {
+        if (list.isEmpty()) {
+            stmt.bindNull(position);
+        } else {
+            final String normalized = FtsDaoHelper.normalize(list);
+            if (normalized.isBlank()) {
+                stmt.bindNull(position);
+            } else {
+                stmt.bindString(position, normalized);
+            }
         }
     }
 
@@ -199,21 +215,21 @@ public class FtsDaoImpl
 
         final List<Long> result = new ArrayList<>();
 
-        FtsDao.createMatchString(title, seriesTitle, author, publisherName, keywords)
-              .ifPresent(query -> {
-                  try (Cursor cursor = db.rawQuery(SEARCH, new String[]
-                          {query, String.valueOf(limit)})) {
-                      while (cursor.moveToNext()) {
-                          result.add(cursor.getLong(0));
-                      }
-                  }
-              });
+        FtsDaoHelper.createMatchClause(title, seriesTitle, author, publisherName, keywords)
+                    .ifPresent(matchClause -> {
+                        try (Cursor cursor = db.rawQuery(SEARCH, new String[]
+                                {matchClause, String.valueOf(limit)})) {
+                            while (cursor.moveToNext()) {
+                                result.add(cursor.getLong(0));
+                            }
+                        }
+                    });
 
         return result;
     }
 
     @Override
-    public void rebuild() {
+    public void rebuild(@NonNull final Context context) {
         // This can take several seconds with many books or a slow device.
         long t0 = 0;
         if (BuildConfig.DEBUG /* always */) {
@@ -235,7 +251,7 @@ public class FtsDaoImpl
             db.recreate(ftsTemp, false);
 
             try (Cursor cursor = db.rawQuery(ALL_BOOKS, null)) {
-                processBooks(cursor, INSERT_INTO_ + tmpTableName + INSERT_BODY);
+                processBooks(context, cursor, INSERT_INTO_ + tmpTableName + INSERT_BODY);
             }
             if (txLock != null) {
                 db.setTransactionSuccessful();
@@ -272,7 +288,8 @@ public class FtsDaoImpl
     }
 
     @Override
-    public void insert(@IntRange(from = 1) final long bookId)
+    public void insert(@NonNull final Context context,
+                       @IntRange(from = 1) final long bookId)
             throws TransactionException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -283,7 +300,7 @@ public class FtsDaoImpl
 
         //noinspection CheckStyle,OverlyBroadCatchBlock
         try (Cursor cursor = db.rawQuery(BOOK_BY_ID, new String[]{String.valueOf(bookId)})) {
-            processBooks(cursor, INSERT);
+            processBooks(context, cursor, INSERT);
 
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
@@ -292,7 +309,8 @@ public class FtsDaoImpl
     }
 
     @Override
-    public void update(@IntRange(from = 1) final long bookId)
+    public void update(@NonNull final Context context,
+                       @IntRange(from = 1) final long bookId)
             throws TransactionException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -303,7 +321,7 @@ public class FtsDaoImpl
 
         //noinspection CheckStyle,OverlyBroadCatchBlock
         try (Cursor cursor = db.rawQuery(BOOK_BY_ID, new String[]{String.valueOf(bookId)})) {
-            processBooks(cursor, UPDATE);
+            processBooks(context, cursor, UPDATE);
 
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
@@ -315,18 +333,19 @@ public class FtsDaoImpl
      * Process the book details from the cursor using the passed fts query.
      * <p>
      * <strong>Note:</strong> This assumes a specific order for query parameters.
-     * If modified, also modify {@link FtsDaoImpl#INSERT_BODY}
-     * and {@link FtsDaoImpl#UPDATE}
+     * If modified, also modify {@link #INSERT_BODY} and {@link #UPDATE}
      * <p>
      * <strong>Transaction:</strong> required
      *
-     * @param cursor Cursor of books to update
-     * @param sql    Statement to execute (insert or update)
+     * @param context Current context
+     * @param cursor  Cursor of books to update
+     * @param sql     Statement to execute (insert or update)
      *
      * @throws TransactionException a transaction must be started before calling this method
      */
     @SuppressLint("Range")
-    private void processBooks(@NonNull final Cursor cursor,
+    private void processBooks(@NonNull final Context context,
+                              @NonNull final Cursor cursor,
                               @NonNull final String sql)
             throws TransactionException {
 
@@ -337,13 +356,15 @@ public class FtsDaoImpl
         }
 
         // Accumulator for author names for each book
-        final StringBuilder authorText = new StringBuilder();
+        final List<String> authorList = new ArrayList<>();
         // Accumulator for series titles for each book
-        final StringBuilder seriesText = new StringBuilder();
+        final List<String> seriesList = new ArrayList<>();
         // Accumulator for publisher names for each book
-        final StringBuilder publisherText = new StringBuilder();
+        final List<String> publisherList = new ArrayList<>();
         // Accumulator for TOCEntry titles for each book
-        final StringBuilder tocTitles = new StringBuilder();
+        final List<String> tocList = new ArrayList<>();
+
+        final boolean givenNameFirst = Author.isGivenNameFirst(context);
 
         // Indexes of fields in the inner-loop cursors, -2 for 'not initialised yet'
         int colGivenNames = -2;
@@ -355,10 +376,10 @@ public class FtsDaoImpl
         final CursorRow rowData = new CursorRow(cursor);
         // Process each book
         while (cursor.moveToNext()) {
-            authorText.setLength(0);
-            seriesText.setLength(0);
-            publisherText.setLength(0);
-            tocTitles.setLength(0);
+            authorList.clear();
+            seriesList.clear();
+            publisherList.clear();
+            tocList.clear();
 
             final long bookId = rowData.getLong(DBKey.PK_ID);
             // Query Parameter
@@ -375,10 +396,16 @@ public class FtsDaoImpl
                 }
 
                 while (authors.moveToNext()) {
-                    authorText.append(authors.getString(colGivenNames))
-                              .append(' ')
-                              .append(authors.getString(colFamilyName))
-                              .append(';');
+                    final String givenName = authors.getString(colGivenNames);
+                    final String familyName = authors.getString(colFamilyName);
+                    final String name;
+                    if (givenNameFirst) {
+                        name = givenName.isBlank() ? familyName : givenName + ' ' + familyName;
+                    } else {
+                        // don't add comma, it would be removed when normalizing anyhow
+                        name = familyName + (givenName.isBlank() ? "" : " " + givenName);
+                    }
+                    authorList.add(name);
                 }
             }
 
@@ -390,20 +417,19 @@ public class FtsDaoImpl
                 }
 
                 while (series.moveToNext()) {
-                    seriesText.append(series.getString(colSeriesTitle)).append(';');
+                    seriesList.add(series.getString(colSeriesTitle));
                 }
             }
 
             // Get list of publishers
-            try (Cursor publishers = db
-                    .rawQuery(GET_PUBLISHERS_BY_BOOK_ID, qpBookId)) {
+            try (Cursor publishers = db.rawQuery(GET_PUBLISHERS_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
                 if (colPublisherName < 0) {
                     colPublisherName = publishers.getColumnIndexOrThrow(DBKey.PUBLISHER_NAME);
                 }
 
                 while (publishers.moveToNext()) {
-                    publisherText.append(publishers.getString(colPublisherName)).append(';');
+                    publisherList.add(publishers.getString(colPublisherName));
                 }
             }
 
@@ -415,24 +441,28 @@ public class FtsDaoImpl
                 }
 
                 while (toc.moveToNext()) {
-                    tocTitles.append(toc.getString(colTOCEntryTitle)).append(';');
+                    tocList.add(toc.getString(colTOCEntryTitle));
                 }
             }
 
             try (SynchronizedStatement stmt = db.compileStatement(sql)) {
                 bindStringOrNull(stmt, 1, rowData.getString(DBKey.TITLE));
                 // FTS_AUTHOR_NAME
-                bindStringOrNull(stmt, 2, authorText.toString());
+                bindStringOrNull(stmt, 2, authorList);
                 // SERIES_TITLE
-                bindStringOrNull(stmt, 3, seriesText.toString());
+                bindStringOrNull(stmt, 3, seriesList);
+
                 bindStringOrNull(stmt, 4, rowData.getString(DBKey.DESCRIPTION));
                 bindStringOrNull(stmt, 5, rowData.getString(DBKey.PERSONAL_NOTES));
-                bindStringOrNull(stmt, 6, publisherText.toString());
+
+                bindStringOrNull(stmt, 6, publisherList);
+
                 bindStringOrNull(stmt, 7, rowData.getString(DBKey.GENRE));
                 bindStringOrNull(stmt, 8, rowData.getString(DBKey.LOCATION));
                 bindStringOrNull(stmt, 9, rowData.getString(DBKey.BOOK_ISBN));
+
                 // FTS_TOC_ENTRY_TITLE
-                bindStringOrNull(stmt, 10, tocTitles.toString());
+                bindStringOrNull(stmt, 10, tocList);
 
                 // FTS_BOOK_ID : in a where clause, or as insert parameter
                 stmt.bindLong(11, bookId);
