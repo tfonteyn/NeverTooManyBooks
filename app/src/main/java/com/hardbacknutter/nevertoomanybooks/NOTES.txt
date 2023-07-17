@@ -52,6 +52,8 @@ NEW:
 - Deleted books will now be 'remembered'. This will allow importing a backup on a second device
   to automatically synchronize/mirror these deletions.
 
+- improved displaying full-text-search results.
+
 - added support for importing the "books.json" file from a backup-archive directly.
 
 - add preference setting for a single barcode scan to automatically restart the scanner.
