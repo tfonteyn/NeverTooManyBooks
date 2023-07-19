@@ -81,7 +81,7 @@ public class BolTest
 
         assertEquals("nijntjes voorleesfeest", book.getString(DBKey.TITLE, null));
         assertEquals("9789056478193", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("2019-01-31", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("31 januari 2019", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("144", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
@@ -124,7 +124,7 @@ public class BolTest
 
         assertEquals("Foundation Trilogy", book.getString(DBKey.TITLE, null));
         assertEquals("9781841593326", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("2010-10-29", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("29 oktober 2010", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("664", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("en", book.getString(DBKey.LANGUAGE, null));
@@ -185,7 +185,7 @@ public class BolTest
 
         assertEquals("Alter Ego", book.getString(DBKey.TITLE, null));
         assertEquals("9789044652901", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("2023-03-28", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("28 maart 2023", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("400", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
@@ -277,7 +277,7 @@ public class BolTest
 
         assertEquals("Europa", book.getString(DBKey.TITLE, null));
         assertEquals("9789044544725", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("2023-03-14", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("14 maart 2023", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("408", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
@@ -336,7 +336,7 @@ public class BolTest
 
         assertEquals("nijntjes voorleesfeest", book.getString(DBKey.TITLE, null));
         assertEquals("9789056478193", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("2019-01-31", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("31 januari 2019", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("144", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
@@ -377,7 +377,7 @@ public class BolTest
 
         assertEquals("Foundation Trilogy", book.getString(DBKey.TITLE, null));
         assertEquals("9781841593326", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("2010-10-29", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("29 oktober 2010", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("664", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("en", book.getString(DBKey.LANGUAGE, null));
