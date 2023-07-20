@@ -28,7 +28,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
@@ -111,8 +110,7 @@ public class PublisherBooklistGroup
     public void setPreferencesVisible(@NonNull final PreferenceScreen screen,
                                       final boolean visible) {
 
-        final PreferenceCategory category =
-                screen.findPreference(StyleDataStore.PSK_STYLE_PUBLISHER);
+        final PreferenceCategory category = screen.findPreference("psk_style_publisher");
         if (category != null) {
             setPreferenceVisibility(category, PREF_KEYS, visible);
         }

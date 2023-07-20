@@ -143,7 +143,7 @@ public class AuthorBooklistGroup
     public void setPreferencesVisible(@NonNull final PreferenceScreen screen,
                                       final boolean visible) {
 
-        final PreferenceCategory category = screen.findPreference(StyleDataStore.PSK_STYLE_AUTHOR);
+        final PreferenceCategory category = screen.findPreference("psk_style_author");
         if (category != null) {
             setPreferenceVisibility(category, PREF_KEYS, visible);
         }

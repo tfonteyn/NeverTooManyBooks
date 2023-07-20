@@ -28,7 +28,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
@@ -114,8 +113,7 @@ public class BookshelfBooklistGroup
     public void setPreferencesVisible(@NonNull final PreferenceScreen screen,
                                       final boolean visible) {
 
-        final PreferenceCategory category =
-                screen.findPreference(StyleDataStore.PSK_STYLE_BOOKSHELF);
+        final PreferenceCategory category = screen.findPreference("psk_style_bookshelf");
         if (category != null) {
             setPreferenceVisibility(category, PREF_KEYS, visible);
         }
