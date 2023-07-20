@@ -33,7 +33,9 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Random;
@@ -47,7 +49,12 @@ import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpHead;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -206,6 +213,27 @@ public abstract class SearchEngineBase
         }
     }
 
+    @NonNull
+    protected RealNumberParser getRealNumberParser(@NonNull final Context context,
+                                                   @NonNull final Locale siteLocale) {
+        final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
+        return new RealNumberParser(locales);
+    }
+
+    @NonNull
+    protected MoneyParser getMoneyParser(@NonNull final Context context,
+                                         @NonNull final Locale siteLocale) {
+        return new MoneyParser(siteLocale, getRealNumberParser(context, siteLocale));
+    }
+
+    @NonNull
+    protected DateParser getDateParser(@NonNull final Context context,
+                                       @NonNull final Locale siteLocale) {
+        final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
+        final Locale systemLocale = ServiceLocator
+                .getInstance().getSystemLocaleList().get(0);
+        return new FullDateParser(systemLocale, locales);
+    }
 
     @AnyThread
     @Override
