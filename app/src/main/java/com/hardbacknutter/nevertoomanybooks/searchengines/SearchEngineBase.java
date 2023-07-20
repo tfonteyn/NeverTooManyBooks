@@ -469,4 +469,25 @@ public abstract class SearchEngineBase
             book.add(currentAuthor);
         }
     }
+
+    /**
+     * Process the publication-date field according to the given site locale.
+     *
+     * @param context    Current context
+     * @param siteLocale for parsing
+     * @param dateStr    the date field as retrieved
+     * @param book       Bundle to update
+     */
+    public void processPublicationDate(@NonNull final Context context,
+                                       @NonNull final Locale siteLocale,
+                                       @Nullable final String dateStr,
+                                       @NonNull final Book book) {
+
+        if (dateStr != null && !dateStr.isBlank()) {
+            final LocalDateTime date = getDateParser(context, siteLocale).parse(dateStr);
+            if (date != null) {
+                book.setPublicationDate(date);
+            }
+        }
+    }
 }
