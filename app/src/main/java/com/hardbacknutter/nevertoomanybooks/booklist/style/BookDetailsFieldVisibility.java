@@ -30,6 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 public class BookDetailsFieldVisibility
         extends FieldVisibility {
 
+    /** The fields which will be visible by default. */
     public static final long DEFAULT = getBitValue(Set.of(
             DBKey.COVER[0],
             DBKey.COVER[1]));

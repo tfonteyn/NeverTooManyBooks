@@ -97,19 +97,28 @@
         <item name="android:textAppearance">?attr/textAppearanceBodySmall</item>
     </style>
 
-    <style name="BoB.Group.Book.Text" parent="Base.BoB.Group.Book">
+    <style name="BoB.Group.Book.Text"
+           parent="Base.BoB.Group.Book">
     </style>
 
-    <style name="BoB.Group.Book.Title" parent="Base.BoB.Group.Book">
+    <style name="BoB.Group.Book.Title"
+           parent="Base.BoB.Group.Book">
         <item name="android:layout_marginStart">@dimen/field_margin_start</item>
         <item name="android:textStyle">italic</item>
         <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
     </style>
 
-    <style name="BoB.Group.Book.SeriesTitle" parent="Base.BoB.Group.Book">
+    <style name="BoB.Group.Book.OriginalTitle"
+           parent="BoB.Group.Book.Title">
+        <item name="android:textAppearance">?attr/textAppearanceBodySmall</item>
     </style>
 
-    <style name="BoB.Group.Book.SeriesNum" parent="Base.BoB.Group.Book">
+    <style name="BoB.Group.Book.SeriesTitle"
+           parent="Base.BoB.Group.Book">
+    </style>
+
+    <style name="BoB.Group.Book.SeriesNum"
+           parent="Base.BoB.Group.Book">
     </style>
 
     <style name="BoB.Group.Book.SeriesNum.Inline">

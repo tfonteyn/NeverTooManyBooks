@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -116,6 +116,14 @@
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_bookshelves"
+            />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="style.booklist.show.original.title"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_original_title"
             />
     </PreferenceCategory>
 </PreferenceScreen>

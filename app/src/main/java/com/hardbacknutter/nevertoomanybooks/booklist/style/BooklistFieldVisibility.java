@@ -30,6 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 public class BooklistFieldVisibility
         extends FieldVisibility {
 
+    /** The fields which will be visible by default. */
     public static final long DEFAULT = getBitValue(Set.of(
             DBKey.COVER[0],
             DBKey.FK_SERIES));
@@ -42,6 +43,7 @@ public class BooklistFieldVisibility
             DBKey.FK_PUBLISHER,
             DBKey.FK_BOOKSHELF,
 
+            DBKey.TITLE_ORIGINAL_LANG,
             DBKey.BOOK_CONDITION,
             DBKey.BOOK_ISBN,
             DBKey.BOOK_PUBLICATION__DATE,

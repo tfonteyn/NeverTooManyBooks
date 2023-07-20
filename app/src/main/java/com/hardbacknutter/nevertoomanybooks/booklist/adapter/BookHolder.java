@@ -202,6 +202,10 @@ public class BookHolder
         // {@link BoBTask#fixedDomainList}
         vb.title.setText(rowData.getString(DBKey.TITLE));
 
+        if (use.originalTitle) {
+            vb.originalTitle.setText(rowData.getString(DBKey.TITLE_ORIGINAL_LANG));
+        }
+
         // {@link BoBTask#fixedDomainList}
         vb.iconRead.setVisibility(
                 rowData.getBoolean(DBKey.READ__BOOL) ? View.VISIBLE : View.GONE);
@@ -461,6 +465,7 @@ public class BookHolder
      * Cache the 'use' flags for {@link #onBind(DataHolder)}.
      */
     private static class UseFields {
+        final boolean originalTitle;
         final boolean isbn;
         final boolean signed;
         final boolean edition;
@@ -480,6 +485,10 @@ public class BookHolder
         UseFields(@NonNull final Context context,
                   @NonNull final DataHolder rowData,
                   @NonNull final Style style) {
+
+            originalTitle = style.isShowField(context, Style.Screen.List, DBKey.TITLE_ORIGINAL_LANG)
+                            && rowData.contains(DBKey.TITLE_ORIGINAL_LANG);
+
             isbn = style.isShowField(context, Style.Screen.List, DBKey.BOOK_ISBN);
             series = style.isShowField(context, Style.Screen.List, DBKey.FK_SERIES);
 

@@ -251,6 +251,12 @@ public class BoBTask
                                                    DBDefinitions.TBL_BOOKS));
         }
 
+        if (style.isShowField(context, Style.Screen.List, DBKey.TITLE_ORIGINAL_LANG)) {
+            builder.addDomain(new DomainExpression(DBDefinitions.DOM_TITLE_ORIGINAL_LANG,
+                                                   DBDefinitions.TBL_BOOKS));
+        }
+
+
         if (style.isShowField(context, Style.Screen.List, DBKey.LOANEE_NAME)) {
             // Used to display/hide the 'lend' icon for each book.
             builder.addLeftOuterJoin(DBDefinitions.TBL_BOOK_LOANEE);
@@ -264,6 +270,7 @@ public class BoBTask
                                                    BooklistBuilder.EXP_BOOKSHELF_NAME_CSV,
                                                    Sort.Unsorted));
         }
+
 
         // we fetch ONLY the primary author to show on the Book level
         if (style.isShowField(context, Style.Screen.List, DBKey.FK_AUTHOR)) {
