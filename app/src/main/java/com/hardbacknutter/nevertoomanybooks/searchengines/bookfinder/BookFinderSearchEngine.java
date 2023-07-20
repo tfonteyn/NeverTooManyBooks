@@ -129,8 +129,7 @@ public class BookFinderSearchEngine
         final String title = titleElement.text();
         book.putString(DBKey.TITLE, title);
 
-        // Use the site locale for all parsing!
-        final Locale siteLocale = getLocale(context, document.location().split("/")[2]);
+        final Locale siteLocale = getLocale(context);
         final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
         final RealNumberParser realNumberParser = new RealNumberParser(locales);
 
