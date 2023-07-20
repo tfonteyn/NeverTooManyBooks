@@ -474,6 +474,9 @@ class KbNlBookHandler
     }
 
     /**
+     * Process a year field. Once again the data is not structured, but at least
+     * it's guessable. Some examples:
+     *
      * <pre>{@code
      * <psi:labelledData>
      *   <psi:line>
@@ -513,6 +516,9 @@ class KbNlBookHandler
     }
 
     /**
+     * Process the number-of-pages field. Once again the data is not structured, but at least
+     * it's guessable. Some examples:
+     *
      * <pre>{@code
      * <psi:labelledData>
      *   <psi:line>
