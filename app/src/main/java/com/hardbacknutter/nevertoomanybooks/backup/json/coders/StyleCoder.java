@@ -29,6 +29,8 @@ import java.util.stream.IntStream;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BaseStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BookDetailsFieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
@@ -42,6 +44,11 @@ import com.hardbacknutter.org.json.JSONObject;
 
 public class StyleCoder
         implements JsonCoder<Style> {
+
+    /** The combined bitmask value for the PK_DETAILS_SHOW* values. */
+    private static final String PK_DETAILS_FIELD_VISIBILITY = "style.details.show.fields";
+    /** The combined bitmask value for the PK_LIST_SHOW* values. */
+    private static final String PK_LIST_FIELD_VISIBILITY = "style.list.show.fields";
 
     /** The sub-tag for the array with the style settings. */
     private static final String STYLE_SETTINGS = "settings";
@@ -99,10 +106,10 @@ public class StyleCoder
             dest.put(StyleDataStore.PK_LIST_HEADER, userStyle.getHeaderFieldVisibility());
 
             // since v3 stored as bitmask and no longer as individual flags
-            dest.put(StyleDataStore.PK_DETAILS_FIELD_VISIBILITY,
+            dest.put(PK_DETAILS_FIELD_VISIBILITY,
                      userStyle.getFieldVisibility(Style.Screen.Detail));
             // since v3 stored as bitmask and no longer as individual flags
-            dest.put(StyleDataStore.PK_LIST_FIELD_VISIBILITY,
+            dest.put(PK_LIST_FIELD_VISIBILITY,
                      userStyle.getFieldVisibility(Style.Screen.List));
 
             out.put(STYLE_SETTINGS, dest);
@@ -174,15 +181,17 @@ public class StyleCoder
                 }
 
 
-                if (source.has(StyleDataStore.PK_DETAILS_FIELD_VISIBILITY)) {
+                if (source.has(PK_DETAILS_FIELD_VISIBILITY)) {
                     userStyle.setFieldVisibility(Style.Screen.Detail, source.getLong(
-                            StyleDataStore.PK_DETAILS_FIELD_VISIBILITY));
+                            PK_DETAILS_FIELD_VISIBILITY));
                 } else {
+                    // backwards compatibility
                     decodeV2DetailVisibility(userStyle, source);
                 }
-                if (source.has(StyleDataStore.PK_LIST_FIELD_VISIBILITY)) {
+
+                if (source.has(PK_LIST_FIELD_VISIBILITY)) {
                     userStyle.setFieldVisibility(Style.Screen.List, source.getLong(
-                            StyleDataStore.PK_LIST_FIELD_VISIBILITY));
+                            PK_LIST_FIELD_VISIBILITY));
                 } else {
                     // backwards compatibility
                     decodeV2ListVisibility(userStyle, source);
