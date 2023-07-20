@@ -175,7 +175,12 @@ public final class DBKey {
     public static final String DATE_LAST_UPDATED__UTC = "last_update_date";
 
     public static final String BOOK_UUID = "book_uuid";
+    /**
+     * The actual title of the book (as printed on the cover).
+     * This will either be a translated title or the original title.
+     */
     public static final String TITLE = "title";
+    /** The original-language title of a translated book. */
     public static final String TITLE_ORIGINAL_LANG = "title_original_lang";
 
     public static final String BOOK_ISBN = "isbn";

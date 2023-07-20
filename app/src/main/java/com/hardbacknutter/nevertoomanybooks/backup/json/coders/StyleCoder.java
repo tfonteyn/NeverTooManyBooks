@@ -184,6 +184,7 @@ public class StyleCoder
                     userStyle.setFieldVisibility(Style.Screen.List, source.getLong(
                             StyleDataStore.PK_LIST_FIELD_VISIBILITY));
                 } else {
+                    // backwards compatibility
                     decodeV2ListVisibility(userStyle, source);
                 }
             }
@@ -269,6 +270,7 @@ public class StyleCoder
             style.setShowField(Style.Screen.List, DBKey.BOOK_ISBN,
                                source.getBoolean(StyleDataStore.PK_LIST_SHOW_ISBN));
         }
+        // reminder: this is for backwards compatibility - don't add new fields here!
     }
 
 }
