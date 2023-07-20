@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.jsoup.nodes.Document;
@@ -422,7 +423,7 @@ public class KbNlHtmlSearchEngine
             if (!spans.isEmpty()) {
                 // oh boy... aside of actual/valid ISBN numbers we've also seen things like
                 // " : 42.00F"
-                final String digits = digits(spans.get(0).text(), true);
+                final String digits = SearchEngineUtils.isbn(spans.get(0).text());
                 // so we do a crude test on the length and hope for the best
                 // (don't do a full ISBN test here, no need)
                 if (digits != null && (digits.length() == 10 || digits.length() == 13)) {
@@ -490,32 +491,6 @@ public class KbNlHtmlSearchEngine
                 }
             }
         }
-    }
-
-    /**
-     * Filter a string of all non-digits. Used to clean isbn strings, years... etc.
-     *
-     * @param s      string to parse
-     * @param isIsbn When set will also allow 'X' and 'x'
-     *
-     * @return stripped string
-     */
-    @Nullable
-    private String digits(@Nullable final CharSequence s,
-                          final boolean isIsbn) {
-        if (s == null) {
-            return null;
-        }
-        final StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < s.length(); i++) {
-            final char c = s.charAt(i);
-            // allows an X anywhere instead of just at the end;
-            // Doesn't really matter, we'll check for being a valid ISBN later anyhow.
-            if (Character.isDigit(c) || isIsbn && (c == 'X' || c == 'x')) {
-                sb.append(c);
-            }
-        }
-        return sb.toString();
     }
 
     /**

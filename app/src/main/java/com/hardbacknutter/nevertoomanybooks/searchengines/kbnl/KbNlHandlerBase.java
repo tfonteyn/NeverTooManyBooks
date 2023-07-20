@@ -79,32 +79,6 @@ abstract class KbNlHandlerBase
         this.book = book;
     }
 
-    /**
-     * Filter a string of all non-digits. Used to clean isbn strings, years... etc.
-     *
-     * @param s      string to parse
-     * @param isIsbn When set will also allow 'X' and 'x'
-     *
-     * @return stripped string
-     */
-    @Nullable
-    String digits(@Nullable final CharSequence s,
-                  final boolean isIsbn) {
-        if (s == null) {
-            return null;
-        }
-        final StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < s.length(); i++) {
-            final char c = s.charAt(i);
-            // allows an X anywhere instead of just at the end;
-            // Doesn't really matter, we'll check for being a valid ISBN later anyhow.
-            if (Character.isDigit(c) || isIsbn && (c == 'X' || c == 'x')) {
-                sb.append(c);
-            }
-        }
-        return sb.toString();
-    }
-
     @Override
     public void startDocument()
             throws SAXException {
