@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -95,8 +95,8 @@ public class UserStyle
         setCoverScale(rowData.getInt(DBKey.STYLE_COVER_SCALE));
 
         setHeaderFieldVisibility(rowData.getInt(DBKey.STYLE_LIST_HEADER));
-        setFieldVisibility(Screen.List, rowData.getInt(DBKey.STYLE_LIST_SHOW_FIELDS));
-        setFieldVisibility(Screen.Detail, rowData.getInt(DBKey.STYLE_DETAILS_SHOW_FIELDS));
+        setFieldVisibility(Screen.List, rowData.getLong(DBKey.STYLE_LIST_SHOW_FIELDS));
+        setFieldVisibility(Screen.Detail, rowData.getLong(DBKey.STYLE_DETAILS_SHOW_FIELDS));
     }
 
     /**
