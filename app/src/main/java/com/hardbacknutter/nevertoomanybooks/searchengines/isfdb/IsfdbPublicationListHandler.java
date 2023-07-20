@@ -286,9 +286,7 @@ class IsfdbPublicationListHandler
                 }
 
                 case XML_YEAR: {
-                    final String test = publicationData
-                            .getString(DBKey.BOOK_PUBLICATION__DATE, null);
-                    if (test == null || test.isEmpty()) {
+                    if (!publicationData.contains(DBKey.BOOK_PUBLICATION__DATE)) {
                         final String text = builder.toString().strip();
                         searchEngine.processPublicationDate(context,
                                                             searchEngine.getLocale(context),

@@ -385,8 +385,7 @@ class GoogleBooksEntryHandler
                 break;
 
             case XML_DATE_PUBLISHED:
-                final String test = book.getString(DBKey.BOOK_PUBLICATION__DATE, null);
-                if (test == null || test.isEmpty()) {
+                if (!book.contains(DBKey.BOOK_PUBLICATION__DATE)) {
                     final String text = builder.toString().strip();
                     searchEngine.processPublicationDate(context, searchEngine.getLocale(context),
                                                         text, book);
