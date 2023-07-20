@@ -81,17 +81,8 @@ public class StyleCoder
             // The set 'dest' will go under a new JSON object 'STYLE_SETTINGS'
             final JSONObject dest = new JSONObject();
 
-            dest.put(StyleDataStore.PK_GROUPS, new JSONArray(
-                    userStyle.getGroupList()
-                             .stream()
-                             .map(BooklistGroup::getId)
-                             .collect(Collectors.toList())));
-            dest.put(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE,
-                     userStyle.getPrimaryAuthorType());
+            encodeGroups(userStyle, dest);
 
-            for (final Style.UnderEach item : Style.UnderEach.values()) {
-                dest.put(item.getPrefKey(), userStyle.isShowBooks(item));
-            }
             dest.put(StyleDataStore.PK_EXPANSION_LEVEL,
                      userStyle.getExpansionLevel());
             dest.put(StyleDataStore.PK_GROUP_ROW_HEIGHT,
@@ -115,6 +106,22 @@ public class StyleCoder
             out.put(STYLE_SETTINGS, dest);
         }
         return out;
+    }
+
+    private void encodeGroups(@NonNull final UserStyle userStyle,
+                              @NonNull final JSONObject dest) {
+        final JSONArray groupArray = new JSONArray(userStyle.getGroupList()
+                                                            .stream()
+                                                            .map(BooklistGroup::getId)
+                                                            .collect(Collectors.toList()));
+        dest.put(StyleDataStore.PK_GROUPS, groupArray);
+
+        dest.put(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE,
+                 userStyle.getPrimaryAuthorType());
+
+        for (final Style.UnderEach item : Style.UnderEach.values()) {
+            dest.put(item.getPrefKey(), userStyle.isShowBooks(item));
+        }
     }
 
     @NonNull
@@ -179,7 +186,6 @@ public class StyleCoder
                     userStyle.setHeaderFieldVisibility(
                             source.getInt(StyleDataStore.PK_LIST_HEADER));
                 }
-
 
                 if (source.has(PK_DETAILS_FIELD_VISIBILITY)) {
                     userStyle.setFieldVisibility(Style.Screen.Detail, source.getLong(
