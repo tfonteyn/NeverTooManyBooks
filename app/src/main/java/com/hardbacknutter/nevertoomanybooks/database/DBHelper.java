@@ -562,7 +562,7 @@ public class DBHelper
                             StyleDataStore.PK_GROUPS, null));
 
                     stmt.bindLong(++c, stylePrefs.getBoolean(
-                            StyleDataStore.PK_GROUPS_AUTHOR_SHOW_BOOKS_UNDER_EACH, false) ? 1 : 0);
+                            Style.UnderEach.Author.getPrefKey(), false) ? 1 : 0);
 
                     stmt.bindLong(++c, StyleDataStore.convert(
                             stylePrefs.getStringSet(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE,
@@ -570,13 +570,11 @@ public class DBHelper
                             Author.TYPE_UNKNOWN));
 
                     stmt.bindLong(++c, stylePrefs.getBoolean(
-                            StyleDataStore.PK_GROUPS_SERIES_SHOW_BOOKS_UNDER_EACH, false) ? 1 : 0);
+                            Style.UnderEach.Series.getPrefKey(), false) ? 1 : 0);
                     stmt.bindLong(++c, stylePrefs.getBoolean(
-                            StyleDataStore.PK_GROUPS_PUBLISHER_SHOW_BOOKS_UNDER_EACH,
-                            false) ? 1 : 0);
+                            Style.UnderEach.Publisher.getPrefKey(), false) ? 1 : 0);
                     stmt.bindLong(++c, stylePrefs.getBoolean(
-                            StyleDataStore.PK_GROUPS_BOOKSHELF_SHOW_BOOKS_UNDER_EACH,
-                            false) ? 1 : 0);
+                            Style.UnderEach.Bookshelf.getPrefKey(), false) ? 1 : 0);
 
                     stmt.bindLong(++c, stylePrefs.getInt(
                             StyleDataStore.PK_EXPANSION_LEVEL, 1));

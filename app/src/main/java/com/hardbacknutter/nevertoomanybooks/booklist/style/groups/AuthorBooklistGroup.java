@@ -52,8 +52,9 @@ public class AuthorBooklistGroup
         implements UnderEachGroup {
 
     private static final String[] PREF_KEYS = {
-            StyleDataStore.PK_GROUPS_AUTHOR_SHOW_BOOKS_UNDER_EACH,
-            StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE};
+            Style.UnderEach.Author.getPrefKey(),
+            StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE
+    };
 
     /** DomainExpression for displaying the data. Style dependent. */
     @NonNull
