@@ -321,7 +321,7 @@ public class FieldVisibility {
 
         for (int i = 0; i < DB_KEYS.size(); i++) {
             final String key = DB_KEYS.get(i);
-            if (isShowField(key)) {
+            if (keys.contains(key) && isShowField(key)) {
                 labels.add(context.getString(LABELS.get(i)));
             }
         }
