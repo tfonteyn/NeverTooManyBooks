@@ -24,9 +24,11 @@ import android.content.Context;
 import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -371,25 +373,25 @@ public interface Style {
         /** {@link AuthorBooklistGroup}. */
         Author(BooklistGroup.AUTHOR,
                DBKey.STYLE_GROUPS_AUTHOR_SHOW_UNDER_EACH,
-               StyleDataStore.PK_GROUPS_AUTHOR_SHOW_BOOKS_UNDER_EACH
+               "style.booklist.group.authors.show.all"
         ),
 
         /** {@link SeriesBooklistGroup} . */
         Series(BooklistGroup.SERIES,
                DBKey.STYLE_GROUPS_SERIES_SHOW_UNDER_EACH,
-               StyleDataStore.PK_GROUPS_SERIES_SHOW_BOOKS_UNDER_EACH
+               "style.booklist.group.series.show.all"
         ),
 
         /** {@link PublisherBooklistGroup}. */
         Publisher(BooklistGroup.PUBLISHER,
                   DBKey.STYLE_GROUPS_PUBLISHER_SHOW_UNDER_EACH,
-                  StyleDataStore.PK_GROUPS_PUBLISHER_SHOW_BOOKS_UNDER_EACH
+                  "style.booklist.group.publisher.show.all"
         ),
 
         /** {@link BookshelfBooklistGroup}. */
         Bookshelf(BooklistGroup.BOOKSHELF,
                   DBKey.STYLE_GROUPS_BOOKSHELF_SHOW_UNDER_EACH,
-                  StyleDataStore.PK_GROUPS_BOOKSHELF_SHOW_BOOKS_UNDER_EACH
+                  "style.booklist.group.bookshelf.show.all"
         );
 
         @NonNull
@@ -405,6 +407,14 @@ public interface Style {
             this.groupId = groupId;
             this.dbKey = dbKey;
             this.prefKey = prefKey;
+        }
+
+        @Nullable
+        static UnderEach findByPrefKey(@NonNull final String prefKey) {
+            return Arrays.stream(values())
+                         .filter(v -> v.getPrefKey().equals(prefKey))
+                         .findFirst()
+                         .orElse(null);
         }
 
         /**
