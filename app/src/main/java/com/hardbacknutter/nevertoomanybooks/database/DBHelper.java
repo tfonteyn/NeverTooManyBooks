@@ -49,6 +49,8 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BookDetailsFieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
@@ -598,9 +600,11 @@ public class DBHelper
                             BooklistHeader.BITMASK_ALL));
 
                     final long detailFields =
-                            (stylePrefs.getBoolean(StyleDataStore.PK_DETAILS_SHOW_COVER[0], true)
+                            (stylePrefs.getBoolean(
+                                    BookDetailsFieldVisibility.PK_DETAILS_SHOW_COVER[0], true)
                              ? FieldVisibility.getBitValue(DBKey.COVER[0]) : 0)
-                            | (stylePrefs.getBoolean(StyleDataStore.PK_DETAILS_SHOW_COVER[1], true)
+                            | (stylePrefs.getBoolean(
+                                    BookDetailsFieldVisibility.PK_DETAILS_SHOW_COVER[1], true)
                                ? FieldVisibility.getBitValue(DBKey.COVER[1]) : 0);
 
                     stmt.bindLong(++c, detailFields);
@@ -608,23 +612,32 @@ public class DBHelper
                     final long listFields =
                             FieldVisibility.getBitValue(DBKey.FK_SERIES)
 
-                            | (stylePrefs.getBoolean(StyleDataStore.PK_LIST_SHOW_COVERS, true)
+                            | (stylePrefs.getBoolean(BooklistFieldVisibility.PK_LIST_SHOW_COVERS,
+                                                     true)
                                ? FieldVisibility.getBitValue(DBKey.COVER[0]) : 0)
-                            | (stylePrefs.getBoolean(StyleDataStore.PK_LIST_SHOW_AUTHOR, true)
+                            | (stylePrefs.getBoolean(BooklistFieldVisibility.PK_LIST_SHOW_AUTHOR,
+                                                     true)
                                ? FieldVisibility.getBitValue(DBKey.FK_AUTHOR) : 0)
-                            | (stylePrefs.getBoolean(StyleDataStore.PK_LIST_SHOW_PUBLISHER, true)
+                            | (stylePrefs.getBoolean(BooklistFieldVisibility.PK_LIST_SHOW_PUBLISHER,
+                                                     true)
                                ? FieldVisibility.getBitValue(DBKey.FK_PUBLISHER) : 0)
-                            | (stylePrefs.getBoolean(StyleDataStore.PK_LIST_SHOW_PUB_DATE, true)
+                            | (stylePrefs.getBoolean(BooklistFieldVisibility.PK_LIST_SHOW_PUB_DATE,
+                                                     true)
                                ? FieldVisibility.getBitValue(DBKey.BOOK_PUBLICATION__DATE) : 0)
-                            | (stylePrefs.getBoolean(StyleDataStore.PK_LIST_SHOW_FORMAT, true)
+                            | (stylePrefs.getBoolean(BooklistFieldVisibility.PK_LIST_SHOW_FORMAT,
+                                                     true)
                                ? FieldVisibility.getBitValue(DBKey.FORMAT) : 0)
-                            | (stylePrefs.getBoolean(StyleDataStore.PK_LIST_SHOW_LOCATION, true)
+                            | (stylePrefs.getBoolean(BooklistFieldVisibility.PK_LIST_SHOW_LOCATION,
+                                                     true)
                                ? FieldVisibility.getBitValue(DBKey.LOCATION) : 0)
-                            | (stylePrefs.getBoolean(StyleDataStore.PK_LIST_SHOW_RATING, true)
+                            | (stylePrefs.getBoolean(BooklistFieldVisibility.PK_LIST_SHOW_RATING,
+                                                     true)
                                ? FieldVisibility.getBitValue(DBKey.RATING) : 0)
-                            | (stylePrefs.getBoolean(StyleDataStore.PK_LIST_SHOW_BOOKSHELVES, true)
+                            | (stylePrefs.getBoolean(
+                                    BooklistFieldVisibility.PK_LIST_SHOW_BOOKSHELVES, true)
                                ? FieldVisibility.getBitValue(DBKey.FK_BOOKSHELF) : 0)
-                            | (stylePrefs.getBoolean(StyleDataStore.PK_LIST_SHOW_ISBN, true)
+                            | (stylePrefs.getBoolean(BooklistFieldVisibility.PK_LIST_SHOW_ISBN,
+                                                     true)
                                ? FieldVisibility.getBitValue(DBKey.BOOK_ISBN) : 0);
 
                     stmt.bindLong(++c, listFields);

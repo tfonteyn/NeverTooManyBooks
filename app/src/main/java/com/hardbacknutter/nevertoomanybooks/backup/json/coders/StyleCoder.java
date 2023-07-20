@@ -226,58 +226,59 @@ public class StyleCoder
     private void decodeV2DetailVisibility(@NonNull final BaseStyle style,
                                           @NonNull final JSONObject source) {
 
-        if (source.has(StyleDataStore.PK_DETAILS_SHOW_COVER[0])) {
+        if (source.has(BookDetailsFieldVisibility.PK_DETAILS_SHOW_COVER[0])) {
             style.setShowField(Style.Screen.Detail, DBKey.COVER[0], source.getBoolean(
-                    StyleDataStore.PK_DETAILS_SHOW_COVER[0]));
+                    BookDetailsFieldVisibility.PK_DETAILS_SHOW_COVER[0]));
         }
-        if (source.has(StyleDataStore.PK_DETAILS_SHOW_COVER[1])) {
+        if (source.has(BookDetailsFieldVisibility.PK_DETAILS_SHOW_COVER[1])) {
             style.setShowField(Style.Screen.Detail, DBKey.COVER[1], source.getBoolean(
-                    StyleDataStore.PK_DETAILS_SHOW_COVER[1]));
+                    BookDetailsFieldVisibility.PK_DETAILS_SHOW_COVER[1]));
         }
+        // reminder: this is for backwards compatibility - don't add new fields here!
     }
 
     private void decodeV2ListVisibility(@NonNull final BaseStyle style,
                                         @NonNull final JSONObject source) {
 
-        if (source.has(StyleDataStore.PK_LIST_SHOW_COVERS)) {
+        if (source.has(BooklistFieldVisibility.PK_LIST_SHOW_COVERS)) {
             style.setShowField(Style.Screen.List, DBKey.COVER[0],
-                               source.getBoolean(StyleDataStore.PK_LIST_SHOW_COVERS));
+                               source.getBoolean(BooklistFieldVisibility.PK_LIST_SHOW_COVERS));
         }
-        if (source.has(StyleDataStore.PK_LIST_SHOW_AUTHOR)) {
+        if (source.has(BooklistFieldVisibility.PK_LIST_SHOW_AUTHOR)) {
             style.setShowField(Style.Screen.List, DBKey.FK_AUTHOR,
-                               source.getBoolean(StyleDataStore.PK_LIST_SHOW_AUTHOR));
+                               source.getBoolean(BooklistFieldVisibility.PK_LIST_SHOW_AUTHOR));
         }
-        if (source.has(StyleDataStore.PK_LIST_SHOW_PUBLISHER)) {
+        if (source.has(BooklistFieldVisibility.PK_LIST_SHOW_PUBLISHER)) {
             style.setShowField(Style.Screen.List, DBKey.FK_PUBLISHER,
-                               source.getBoolean(StyleDataStore.PK_LIST_SHOW_PUBLISHER));
+                               source.getBoolean(BooklistFieldVisibility.PK_LIST_SHOW_PUBLISHER));
         }
-        if (source.has(StyleDataStore.PK_LIST_SHOW_PUB_DATE)) {
+        if (source.has(BooklistFieldVisibility.PK_LIST_SHOW_PUB_DATE)) {
             style.setShowField(Style.Screen.List, DBKey.BOOK_PUBLICATION__DATE,
-                               source.getBoolean(StyleDataStore.PK_LIST_SHOW_PUB_DATE));
+                               source.getBoolean(BooklistFieldVisibility.PK_LIST_SHOW_PUB_DATE));
         }
-        if (source.has(StyleDataStore.PK_LIST_SHOW_FORMAT)) {
+        if (source.has(BooklistFieldVisibility.PK_LIST_SHOW_FORMAT)) {
             style.setShowField(Style.Screen.List, DBKey.FORMAT,
-                               source.getBoolean(StyleDataStore.PK_LIST_SHOW_FORMAT));
+                               source.getBoolean(BooklistFieldVisibility.PK_LIST_SHOW_FORMAT));
         }
-        if (source.has(StyleDataStore.PK_LIST_SHOW_LANGUAGE)) {
+        if (source.has(BooklistFieldVisibility.PK_LIST_SHOW_LANGUAGE)) {
             style.setShowField(Style.Screen.List, DBKey.LANGUAGE,
-                               source.getBoolean(StyleDataStore.PK_LIST_SHOW_LANGUAGE));
+                               source.getBoolean(BooklistFieldVisibility.PK_LIST_SHOW_LANGUAGE));
         }
-        if (source.has(StyleDataStore.PK_LIST_SHOW_LOCATION)) {
+        if (source.has(BooklistFieldVisibility.PK_LIST_SHOW_LOCATION)) {
             style.setShowField(Style.Screen.List, DBKey.LOCATION,
-                               source.getBoolean(StyleDataStore.PK_LIST_SHOW_LOCATION));
+                               source.getBoolean(BooklistFieldVisibility.PK_LIST_SHOW_LOCATION));
         }
-        if (source.has(StyleDataStore.PK_LIST_SHOW_RATING)) {
+        if (source.has(BooklistFieldVisibility.PK_LIST_SHOW_RATING)) {
             style.setShowField(Style.Screen.List, DBKey.RATING,
-                               source.getBoolean(StyleDataStore.PK_LIST_SHOW_RATING));
+                               source.getBoolean(BooklistFieldVisibility.PK_LIST_SHOW_RATING));
         }
-        if (source.has(StyleDataStore.PK_LIST_SHOW_BOOKSHELVES)) {
+        if (source.has(BooklistFieldVisibility.PK_LIST_SHOW_BOOKSHELVES)) {
             style.setShowField(Style.Screen.List, DBKey.FK_BOOKSHELF,
-                               source.getBoolean(StyleDataStore.PK_LIST_SHOW_BOOKSHELVES));
+                               source.getBoolean(BooklistFieldVisibility.PK_LIST_SHOW_BOOKSHELVES));
         }
-        if (source.has(StyleDataStore.PK_LIST_SHOW_ISBN)) {
+        if (source.has(BooklistFieldVisibility.PK_LIST_SHOW_ISBN)) {
             style.setShowField(Style.Screen.List, DBKey.BOOK_ISBN,
-                               source.getBoolean(StyleDataStore.PK_LIST_SHOW_ISBN));
+                               source.getBoolean(BooklistFieldVisibility.PK_LIST_SHOW_ISBN));
         }
         // reminder: this is for backwards compatibility - don't add new fields here!
     }

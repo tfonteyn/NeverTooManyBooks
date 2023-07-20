@@ -26,20 +26,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 import androidx.preference.PreferenceDataStore;
-import androidx.preference.PreferenceScreen;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
 /**
  * Definitions and transmogrifying (Hi Calvin) API for preference keys and actual style values.
- * <p>
- * The PK_STYLE strings are still used during import/export for backwards compatibility.
+ *
+ * @see BooklistFieldVisibility
+ * @see BookDetailsFieldVisibility
+ * @see com.hardbacknutter.nevertoomanybooks.booklist.style.Style.UnderEach
  */
 public class StyleDataStore
         extends PreferenceDataStore {
@@ -51,14 +50,6 @@ public class StyleDataStore
     public static final String PK_GROUPS = "style.booklist.groups";
     public static final String PK_GROUPS_AUTHOR_PRIMARY_TYPE =
             "style.booklist.group.authors.primary.type";
-    public static final String PK_GROUPS_AUTHOR_SHOW_BOOKS_UNDER_EACH =
-            "style.booklist.group.authors.show.all";
-    public static final String PK_GROUPS_BOOKSHELF_SHOW_BOOKS_UNDER_EACH =
-            "style.booklist.group.bookshelf.show.all";
-    public static final String PK_GROUPS_PUBLISHER_SHOW_BOOKS_UNDER_EACH =
-            "style.booklist.group.publisher.show.all";
-    public static final String PK_GROUPS_SERIES_SHOW_BOOKS_UNDER_EACH =
-            "style.booklist.group.series.show.all";
 
 
     /** The default expansion level for the groups. */
@@ -78,40 +69,6 @@ public class StyleDataStore
     /** Style overrides global setting with the same key. */
     public static final String PK_SHOW_AUTHOR_NAME_GIVEN_FIRST = "show.author.name.given_first";
     public static final String PK_SORT_AUTHOR_NAME_GIVEN_FIRST = "sort.author.name.given_first";
-
-
-    /** The combined bitmask value for the PK_LIST_SHOW* values. */
-    public static final String PK_LIST_FIELD_VISIBILITY = "style.list.show.fields";
-    /** The combined bitmask value for the PK_DETAILS_SHOW* values. */
-    public static final String PK_DETAILS_FIELD_VISIBILITY = "style.details.show.fields";
-
-    /** Show the cover image (front only) for each book on the list screen. */
-    public static final String PK_LIST_SHOW_COVERS = "style.booklist.show.thumbnails";
-    /** Show/hide these fields for each book on the list screen. */
-    public static final String PK_LIST_SHOW_AUTHOR = "style.booklist.show.author";
-    public static final String PK_LIST_SHOW_PUBLISHER = "style.booklist.show.publisher";
-    public static final String PK_LIST_SHOW_SERIES = "style.booklist.show.series";
-    public static final String PK_LIST_SHOW_PUB_DATE = "style.booklist.show.publication.date";
-    public static final String PK_LIST_SHOW_FORMAT = "style.booklist.show.format";
-    public static final String PK_LIST_SHOW_LANGUAGE = "style.booklist.show.language";
-    public static final String PK_LIST_SHOW_LOCATION = "style.booklist.show.location";
-    public static final String PK_LIST_SHOW_CONDITION = "style.booklist.show.condition";
-    public static final String PK_LIST_SHOW_RATING = "style.booklist.show.rating";
-    public static final String PK_LIST_SHOW_BOOKSHELVES = "style.booklist.show.bookshelves";
-    public static final String PK_LIST_SHOW_ISBN = "style.booklist.show.isbn";
-
-    /** Show the cover images (front/back) for each book on the details screen. */
-    public static final String[] PK_DETAILS_SHOW_COVER = {
-            "style.details.show.thumbnail.0",
-            "style.details.show.thumbnail.1",
-    };
-
-
-    /** See {@link BooklistGroup#setPreferencesVisible(PreferenceScreen, boolean)}. */
-    public static final String PSK_STYLE_AUTHOR = "psk_style_author";
-    public static final String PSK_STYLE_SERIES = "psk_style_series";
-    public static final String PSK_STYLE_PUBLISHER = "psk_style_publisher";
-    public static final String PSK_STYLE_BOOKSHELF = "psk_style_bookshelf";
 
 
     @NonNull
@@ -242,81 +199,31 @@ public class StyleDataStore
     @Override
     public void putBoolean(@NonNull final String key,
                            final boolean value) {
-        switch (key) {
-            case PK_LIST_SHOW_COVERS:
-                style.setShowField(Style.Screen.List, DBKey.COVER[0], value);
-                break;
-            case PK_LIST_SHOW_AUTHOR:
-                style.setShowField(Style.Screen.List, DBKey.FK_AUTHOR, value);
-                break;
-            case PK_LIST_SHOW_PUBLISHER:
-                style.setShowField(Style.Screen.List, DBKey.FK_PUBLISHER, value);
-                break;
-            case PK_LIST_SHOW_SERIES:
-                style.setShowField(Style.Screen.List, DBKey.FK_SERIES, value);
-                break;
-            case PK_LIST_SHOW_PUB_DATE:
-                style.setShowField(Style.Screen.List, DBKey.BOOK_PUBLICATION__DATE, value);
-                break;
-            case PK_LIST_SHOW_FORMAT:
-                style.setShowField(Style.Screen.List, DBKey.FORMAT, value);
-                break;
-            case PK_LIST_SHOW_LANGUAGE:
-                style.setShowField(Style.Screen.List, DBKey.LANGUAGE, value);
-                break;
-            case PK_LIST_SHOW_LOCATION:
-                style.setShowField(Style.Screen.List, DBKey.LOCATION, value);
-                break;
-            case PK_LIST_SHOW_CONDITION:
-                style.setShowField(Style.Screen.List, DBKey.BOOK_CONDITION, value);
-                break;
-            case PK_LIST_SHOW_RATING:
-                style.setShowField(Style.Screen.List, DBKey.RATING, value);
-                break;
-            case PK_LIST_SHOW_BOOKSHELVES:
-                style.setShowField(Style.Screen.List, DBKey.FK_BOOKSHELF, value);
-                break;
-            case PK_LIST_SHOW_ISBN:
-                style.setShowField(Style.Screen.List, DBKey.BOOK_ISBN, value);
-                break;
 
-            case PK_GROUP_ROW_HEIGHT:
-                style.setGroupRowUsesPreferredHeight(value);
-                break;
+        if (PK_GROUP_ROW_HEIGHT.equals(key)) {
+            style.setGroupRowUsesPreferredHeight(value);
 
-            case PK_SHOW_AUTHOR_NAME_GIVEN_FIRST:
-                style.setShowAuthorByGivenName(value);
-                break;
+        } else if (PK_SHOW_AUTHOR_NAME_GIVEN_FIRST.equals(key)) {
+            style.setShowAuthorByGivenName(value);
 
-            case PK_SORT_AUTHOR_NAME_GIVEN_FIRST:
-                style.setSortAuthorByGivenName(value);
-                break;
+        } else if (PK_SORT_AUTHOR_NAME_GIVEN_FIRST.equals(key)) {
+            style.setSortAuthorByGivenName(value);
 
-            case PK_GROUPS_AUTHOR_SHOW_BOOKS_UNDER_EACH:
-                style.setShowBooks(Style.UnderEach.Author, value);
-                break;
+        } else if (BooklistFieldVisibility.containsKey(key)) {
+            style.setShowField(Style.Screen.List,
+                               BooklistFieldVisibility.getDBKeyForPrefKey(key), value);
 
-            case PK_GROUPS_SERIES_SHOW_BOOKS_UNDER_EACH:
-                style.setShowBooks(Style.UnderEach.Series, value);
-                break;
+        } else if (BookDetailsFieldVisibility.containsKey(key)) {
+            style.setShowField(Style.Screen.Detail,
+                               BookDetailsFieldVisibility.getDBKeyForPrefKey(key), value);
 
-            case PK_GROUPS_PUBLISHER_SHOW_BOOKS_UNDER_EACH:
-                style.setShowBooks(Style.UnderEach.Publisher, value);
-                break;
-
-            case PK_GROUPS_BOOKSHELF_SHOW_BOOKS_UNDER_EACH:
-                style.setShowBooks(Style.UnderEach.Bookshelf, value);
-                break;
-
-            default:
-                if (key.equals(PK_DETAILS_SHOW_COVER[0])) {
-                    style.setShowField(Style.Screen.Detail, DBKey.COVER[0], value);
-                } else if (key.equals(PK_DETAILS_SHOW_COVER[1])) {
-                    style.setShowField(Style.Screen.Detail, DBKey.COVER[1], value);
-                } else {
-                    throw new IllegalArgumentException(key);
-                }
-                break;
+        } else {
+            final Style.UnderEach underEach = Style.UnderEach.findByPrefKey(key);
+            if (underEach != null) {
+                style.setShowBooks(underEach, value);
+            } else {
+                throw new IllegalArgumentException(key);
+            }
         }
         setModified();
     }
@@ -324,74 +231,30 @@ public class StyleDataStore
     @Override
     public boolean getBoolean(@NonNull final String key,
                               final boolean defValue) {
-        switch (key) {
-            case PK_LIST_SHOW_COVERS:
-                return style.isShowField(appContext, Style.Screen.List, DBKey.COVER[0]);
+        if (PK_GROUP_ROW_HEIGHT.equals(key)) {
+            return style.isGroupRowUsesPreferredHeight();
 
-            case PK_LIST_SHOW_AUTHOR:
-                return style.isShowField(appContext, Style.Screen.List, DBKey.FK_AUTHOR);
+        } else if (PK_SHOW_AUTHOR_NAME_GIVEN_FIRST.equals(key)) {
+            return style.isShowAuthorByGivenName();
 
-            case PK_LIST_SHOW_PUBLISHER:
-                return style.isShowField(appContext, Style.Screen.List, DBKey.FK_PUBLISHER);
+        } else if (PK_SORT_AUTHOR_NAME_GIVEN_FIRST.equals(key)) {
+            return style.isSortAuthorByGivenName();
 
-            case PK_LIST_SHOW_SERIES:
-                return style.isShowField(appContext, Style.Screen.List, DBKey.FK_SERIES);
+        } else if (BooklistFieldVisibility.containsKey(key)) {
+            return style.isShowField(appContext, Style.Screen.List,
+                                     BooklistFieldVisibility.getDBKeyForPrefKey(key));
 
-            case PK_LIST_SHOW_PUB_DATE:
-                return style.isShowField(appContext, Style.Screen.List,
-                                         DBKey.BOOK_PUBLICATION__DATE);
-
-            case PK_LIST_SHOW_FORMAT:
-                return style.isShowField(appContext, Style.Screen.List, DBKey.FORMAT);
-
-            case PK_LIST_SHOW_LANGUAGE:
-                return style.isShowField(appContext, Style.Screen.List, DBKey.LANGUAGE);
-
-            case PK_LIST_SHOW_LOCATION:
-                return style.isShowField(appContext, Style.Screen.List, DBKey.LOCATION);
-
-            case PK_LIST_SHOW_CONDITION:
-                return style.isShowField(appContext, Style.Screen.List, DBKey.BOOK_CONDITION);
-
-            case PK_LIST_SHOW_RATING:
-                return style.isShowField(appContext, Style.Screen.List, DBKey.RATING);
-
-            case PK_LIST_SHOW_BOOKSHELVES:
-                return style.isShowField(appContext, Style.Screen.List, DBKey.FK_BOOKSHELF);
-
-            case PK_LIST_SHOW_ISBN:
-                return style.isShowField(appContext, Style.Screen.List, DBKey.BOOK_ISBN);
-
-            case PK_GROUP_ROW_HEIGHT:
-                return style.isGroupRowUsesPreferredHeight();
-
-            case PK_SHOW_AUTHOR_NAME_GIVEN_FIRST:
-                return style.isShowAuthorByGivenName();
-
-            case PK_SORT_AUTHOR_NAME_GIVEN_FIRST:
-                return style.isSortAuthorByGivenName();
-
-            case PK_GROUPS_AUTHOR_SHOW_BOOKS_UNDER_EACH:
-                return style.isShowBooks(Style.UnderEach.Author);
-
-            case PK_GROUPS_SERIES_SHOW_BOOKS_UNDER_EACH:
-                return style.isShowBooks(Style.UnderEach.Series);
-
-            case PK_GROUPS_PUBLISHER_SHOW_BOOKS_UNDER_EACH:
-                return style.isShowBooks(Style.UnderEach.Publisher);
-
-            case PK_GROUPS_BOOKSHELF_SHOW_BOOKS_UNDER_EACH:
-                return style.isShowBooks(Style.UnderEach.Bookshelf);
-
-            default:
-                if (key.equals(PK_DETAILS_SHOW_COVER[0])) {
-                    return style.isShowField(appContext, Style.Screen.Detail, DBKey.COVER[0]);
-
-                } else if (key.equals(PK_DETAILS_SHOW_COVER[1])) {
-                    return style.isShowField(appContext, Style.Screen.Detail, DBKey.COVER[1]);
-                }
-                throw new IllegalArgumentException(key);
+        } else if (BookDetailsFieldVisibility.containsKey(key)) {
+            return style.isShowField(appContext, Style.Screen.Detail,
+                                     BookDetailsFieldVisibility.getDBKeyForPrefKey(key));
+        } else {
+            final Style.UnderEach underEach = Style.UnderEach.findByPrefKey(key);
+            if (underEach != null) {
+                return style.isShowBooks(underEach);
+            }
         }
+
+        throw new IllegalArgumentException(key);
     }
 
     @Override

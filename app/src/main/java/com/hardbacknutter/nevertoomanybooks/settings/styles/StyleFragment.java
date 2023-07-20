@@ -38,6 +38,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BookDetailsFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
@@ -119,8 +120,10 @@ public class StyleFragment
         findPreference(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE)
                 .setSummaryProvider(MultiSelectListPreferenceSummaryProvider.getInstance());
 
-        pShowCoversOnDetailsScreen[0] = findPreference(StyleDataStore.PK_DETAILS_SHOW_COVER[0]);
-        pShowCoversOnDetailsScreen[1] = findPreference(StyleDataStore.PK_DETAILS_SHOW_COVER[1]);
+        pShowCoversOnDetailsScreen[0] = findPreference(
+                BookDetailsFieldVisibility.PK_DETAILS_SHOW_COVER[0]);
+        pShowCoversOnDetailsScreen[1] = findPreference(
+                BookDetailsFieldVisibility.PK_DETAILS_SHOW_COVER[1]);
 
         pShowCoversOnDetailsScreen[0].setOnPreferenceChangeListener((preference, newValue) -> {
             // Covers on DETAIL screen:
