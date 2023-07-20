@@ -35,7 +35,6 @@ import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -129,9 +128,7 @@ public class BookFinderSearchEngine
         final String title = titleElement.text();
         book.putString(DBKey.TITLE, title);
 
-        final Locale siteLocale = getLocale(context);
-        final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
+        final RealNumberParser realNumberParser = getRealNumberParser(context, getLocale(context));
 
         final Element authorElement = bookInfo.selectFirst(
                 "div.bf-content-header-book-author > p > strong > a");
@@ -171,7 +168,8 @@ public class BookFinderSearchEngine
                             if (s.length > 0 && !s[0].isBlank()) {
                                 book.add(Publisher.from(s[0].strip()));
                                 if (s.length > 1 && !s[1].isBlank()) {
-                                    book.putString(DBKey.BOOK_PUBLICATION__DATE, s[1].strip());
+                                    processPublicationDate(context, getLocale(context),
+                                                           s[1].strip(), book);
                                 }
                             }
                             break;

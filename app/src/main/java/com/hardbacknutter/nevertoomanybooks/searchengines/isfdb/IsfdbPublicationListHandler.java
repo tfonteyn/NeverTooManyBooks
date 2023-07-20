@@ -286,7 +286,14 @@ class IsfdbPublicationListHandler
                 }
 
                 case XML_YEAR: {
-                    addIfNotPresent(DBKey.BOOK_PUBLICATION__DATE, builder.toString());
+                    final String test = publicationData
+                            .getString(DBKey.BOOK_PUBLICATION__DATE, null);
+                    if (test == null || test.isEmpty()) {
+                        final String text = builder.toString().strip();
+                        searchEngine.processPublicationDate(context,
+                                                            searchEngine.getLocale(context),
+                                                            text, publicationData);
+                    }
                     break;
                 }
                 case XML_ISBN: {

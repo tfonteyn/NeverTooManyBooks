@@ -371,12 +371,12 @@ public class BedethequeSearchEngine
                     case "Dépot légal :": {
                         final Node textNode = label.nextSibling();
                         if (textNode != null) {
-                            String date = textNode.toString().trim();
+                            String date = textNode.toString().strip();
                             if (PUB_DATE.matcher(date).matches()) {
                                 // Flip to "YYYY-MM" (or use as-is)
                                 date = date.substring(3) + "-" + date.substring(0, 2);
                             }
-                            book.putString(DBKey.BOOK_PUBLICATION__DATE, date);
+                            processPublicationDate(context, getLocale(context), date, book);
                         }
                         break;
                     }

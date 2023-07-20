@@ -560,7 +560,7 @@ public class OpenLibrarySearchEngine
 
         s = document.optString("publish_date");
         if (s != null && !s.isEmpty()) {
-            book.putString(DBKey.BOOK_PUBLICATION__DATE, s);
+            processPublicationDate(context, getLocale(context), s, book);
         }
 
         // "subjects": [

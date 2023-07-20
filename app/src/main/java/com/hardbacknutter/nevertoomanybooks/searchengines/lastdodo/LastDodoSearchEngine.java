@@ -434,7 +434,10 @@ public class LastDodoSearchEngine
                         break;
 
                     case "Jaar":
-                        processText(td, DBKey.BOOK_PUBLICATION__DATE, book);
+                        final String text = SearchEngineUtils.cleanText(td.text());
+                        if (!text.isEmpty()) {
+                            processPublicationDate(context, getLocale(context), text, book);
+                        }
                         break;
 
                     case "Cover":

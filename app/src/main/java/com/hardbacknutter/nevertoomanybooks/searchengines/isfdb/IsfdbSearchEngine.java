@@ -34,7 +34,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -57,14 +56,11 @@ import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -794,15 +790,7 @@ public class IsfdbSearchEngine
             return;
         }
 
-        final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
-
-        // Use the site locale for all parsing!
         final Locale siteLocale = getLocale(context);
-        final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
-        final MoneyParser moneyParser = new MoneyParser(siteLocale, realNumberParser);
-        // the usual system locale for ISO parsing, and the site locale for all else
-        final DateParser dateParser = new FullDateParser(systemLocale, locales);
 
         final Element contentBox = allContentBoxes.first();
         // sanity check
@@ -871,15 +859,13 @@ public class IsfdbSearchEngine
                                 // e.g. "1975-04-00" or "1974-00-00" Cut that part off.
                                 tmpString = UNKNOWN_M_D_LITERAL.matcher(tmpString).replaceAll("");
                                 // and we're paranoid...
-                                final LocalDateTime date = dateParser.parse(tmpString,
-                                                                            siteLocale);
+                                // Note that partial dates, e.g. "1987", "1978-03"
+                                // will get 'completed' to "1987-01-01", "1978-03-01"
+                                // This should be acceptable IMHO.
+                                final LocalDateTime date = getDateParser(context, siteLocale)
+                                        .parse(tmpString, siteLocale);
                                 if (date != null) {
-                                    // Note that partial dates, e.g. "1987", "1978-03"
-                                    // will get 'completed' to "1987-01-01", "1978-03-01"
-                                    // This should be acceptable IMHO.
-                                    book.putString(DBKey.BOOK_PUBLICATION__DATE,
-                                                   date.format(
-                                                           DateTimeFormatter.ISO_LOCAL_DATE));
+                                    book.setPublicationDate(date);
                                 }
                             }
                             break;
@@ -939,7 +925,8 @@ public class IsfdbSearchEngine
                             if (nextElementSibling != null) {
                                 tmpString = nextElementSibling.ownText();
                                 if (!tmpString.isEmpty()) {
-                                    final Money money = moneyParser.parse(tmpString);
+                                    final Money money = getMoneyParser(context, siteLocale)
+                                            .parse(tmpString);
                                     if (money != null) {
                                         book.putMoney(DBKey.PRICE_LISTED, money);
                                     } else {
@@ -1078,15 +1065,11 @@ public class IsfdbSearchEngine
         if (toc.size() == 1) {
             // if the content table has only one entry,
             // then this will have the first publication year for sure
-            tmpString = SearchEngineUtils.digits(
-                    toc.get(0).getFirstPublicationDate().getIsoString());
-            if (!tmpString.isEmpty()) {
-                book.putString(DBKey.FIRST_PUBLICATION__DATE, tmpString);
-            }
+            book.setFirstPublicationDate(toc.get(0).getFirstPublicationDate());
         } else if (toc.size() > 1) {
             // we gamble and take what we found while parsing the TOC (first entry with a year)
             if (firstPublicationYear != null) {
-                book.putString(DBKey.FIRST_PUBLICATION__DATE, firstPublicationYear);
+                book.setFirstPublicationDate(new PartialDate(firstPublicationYear));
             }
         }
 
@@ -1456,11 +1439,7 @@ public class IsfdbSearchEngine
         //    return 0
         final String url = getHostUrl(context) + String.format(REST_BY_EXTERNAL_ID, externalId);
 
-        // Use the site locale for all parsing!
-        final Locale siteLocale = getLocale(context);
-        final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
-        final MoneyParser moneyParser = new MoneyParser(siteLocale, realNumberParser);
+        final MoneyParser moneyParser = getMoneyParser(context, getLocale(context));
 
         final List<Book> publicationsList = fetchPublications(context, url, fetchCovers, 1,
                                                               moneyParser);

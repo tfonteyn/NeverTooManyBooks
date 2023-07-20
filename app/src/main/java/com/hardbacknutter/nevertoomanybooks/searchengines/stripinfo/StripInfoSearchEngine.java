@@ -420,42 +420,71 @@ public class StripInfoSearchEngine
                                     i += processPublisher(td, book);
                                     break;
 
-                                case "Jaar":
-                                    i += processText(td, DBKey.BOOK_PUBLICATION__DATE, book);
+                                case "Jaar": {
+                                    final String text = extractText(td);
+                                    if (text != null) {
+                                        processPublicationDate(context, getLocale(context),
+                                                               text, book);
+                                        i++;
+                                    }
                                     break;
-
-                                case "Pagina's":
-                                    i += processText(td, DBKey.PAGE_COUNT, book);
+                                }
+                                case "Pagina's": {
+                                    final String text = extractText(td);
+                                    if (text != null) {
+                                        book.putString(DBKey.PAGE_COUNT, text);
+                                        i++;
+                                    }
                                     break;
-
-                                case "ISBN":
-                                    i += processText(td, DBKey.BOOK_ISBN, book);
+                                }
+                                case "ISBN": {
+                                    final String text = extractText(td);
+                                    if (text != null) {
+                                        book.putString(DBKey.BOOK_ISBN, text);
+                                        i++;
+                                    }
                                     break;
-
-                                case "Kaft":
-                                    i += processText(td, DBKey.FORMAT, book);
+                                }
+                                case "Kaft": {
+                                    final String text = extractText(td);
+                                    if (text != null) {
+                                        book.putString(DBKey.FORMAT, text);
+                                        i++;
+                                    }
                                     break;
-
-                                case "Taal":
-                                    i += processText(td, DBKey.LANGUAGE, book);
+                                }
+                                case "Taal": {
+                                    final String text = extractText(td);
+                                    if (text != null) {
+                                        book.putString(DBKey.LANGUAGE, text);
+                                        i++;
+                                    }
                                     break;
-
-                                case "Collectie":
+                                }
+                                case "Collectie": {
                                     i += processSeriesOrCollection(td, book);
                                     break;
-
-                                case "Oplage":
-                                    i += processText(td, DBKey.PRINT_RUN, book);
+                                }
+                                case "Oplage": {
+                                    final String text = extractText(td);
+                                    if (text != null) {
+                                        book.putString(DBKey.PRINT_RUN, text);
+                                        i++;
+                                    }
                                     break;
-
-                                case "Barcode":
-                                    i += processText(td, SiteField.BARCODE, book);
+                                }
+                                case "Barcode": {
+                                    final String text = extractText(td);
+                                    if (text != null) {
+                                        book.putString(SiteField.BARCODE, text);
+                                        i++;
+                                    }
                                     break;
-
-                                case "":
+                                }
+                                case "": {
                                     i += processEmptyLabel(td, book);
                                     break;
-
+                                }
                                 case "Cycli":
                                     // not currently used. Example: Cyclus 2 nr. 1
                                     // This is sub-series 2, book 1, inside a series.
@@ -803,21 +832,17 @@ public class StripInfoSearchEngine
     /**
      * Process a td which is pure text.
      *
-     * @param td   label td
-     * @param key  for this field
-     * @param book Bundle to update
+     * @param td label td
      *
-     * @return 1 if we found a value td; 0 otherwise.
+     * @return the text, or {@code null}
      */
-    private int processText(@NonNull final Element td,
-                            @NonNull final String key,
-                            @NonNull final Book book) {
+    @Nullable
+    private String extractText(@NonNull final Element td) {
         final Element dataElement = td.nextElementSibling();
         if (dataElement != null && dataElement.childNodeSize() == 1) {
-            book.putString(key, SearchEngineUtils.cleanText(dataElement.text()));
-            return 1;
+            return SearchEngineUtils.cleanText(dataElement.text());
         }
-        return 0;
+        return null;
     }
 
     /**

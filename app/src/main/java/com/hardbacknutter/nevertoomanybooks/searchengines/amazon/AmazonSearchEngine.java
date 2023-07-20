@@ -39,11 +39,8 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -352,19 +349,18 @@ public class AmazonSearchEngine
         book.putString(DBKey.TITLE, title);
 
         // Use the site locale for all parsing!
+        // Derive it from the actual url, as this might have been a redirect
+        // e.g. amazon.pt redirects to amazon.es
         final Locale siteLocale = getLocale(context, document.location().split("/")[2]);
-        final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
-        final MoneyParser moneyParser = new MoneyParser(siteLocale, realNumberParser);
 
-        parsePrice(document, book, moneyParser);
-        parseAuthors(document, book, siteLocale);
+        parsePrice(context, siteLocale, document, book);
+        parseAuthors(siteLocale, document, book);
 
         if (isCancelled()) {
             return;
         }
 
-        parseDetails(context, document, book, siteLocale);
+        parseDetails(context, siteLocale, document, book);
         parseASIN(document, book);
 
         checkForSeriesNameInTitle(book);
@@ -384,13 +380,15 @@ public class AmazonSearchEngine
      * <p>
      * We try a couple of but there is no guarantee.
      *
-     * @param document    to parse
-     * @param book        to update
-     * @param moneyParser shared parser
+     * @param context    Current context
+     * @param siteLocale to use
+     * @param document   to parse
+     * @param book       to update
      */
-    private void parsePrice(@NonNull final Document document,
-                            @NonNull final Book book,
-                            @NonNull final MoneyParser moneyParser) {
+    private void parsePrice(@NonNull final Context context,
+                            @NonNull final Locale siteLocale,
+                            @NonNull final Document document,
+                            @NonNull final Book book) {
         final Element mediaMatrix = document.selectFirst("div#MediaMatrix");
         if (mediaMatrix == null) {
             LoggerFactory.getLogger().w(TAG, "parsePrice", "no MediaMatrix?");
@@ -409,7 +407,7 @@ public class AmazonSearchEngine
             return;
         }
 
-        final Money money = moneyParser.parse(price.text().strip());
+        final Money money = getMoneyParser(context, siteLocale).parse(price.text().strip());
         if (money != null) {
             book.putMoney(DBKey.PRICE_LISTED, money);
         } else {
@@ -455,14 +453,14 @@ public class AmazonSearchEngine
      * Parse format last checked/updated: 2023-06-25
      *
      * @param context    Current context
+     * @param siteLocale to use for case manipulation
      * @param document   to parse
      * @param book       to update
-     * @param siteLocale to use for case manipulation
      */
     private void parseDetails(@NonNull final Context context,
+                              @NonNull final Locale siteLocale,
                               @NonNull final Document document,
-                              @NonNull final Book book,
-                              @NonNull final Locale siteLocale) {
+                              @NonNull final Book book) {
         final Elements lis = document
                 .select("div#detailBulletsWrapper_feature_div > div > ul > li");
         for (final Element li : lis) {
@@ -502,7 +500,7 @@ public class AmazonSearchEngine
 
                     final String pubDate = matcher.group(2);
                     if (pubDate != null) {
-                        book.putString(DBKey.BOOK_PUBLICATION__DATE, pubDate.strip());
+                        processPublicationDate(context, siteLocale, pubDate.strip(), book);
                     }
                 }
 
@@ -527,13 +525,13 @@ public class AmazonSearchEngine
     /**
      * Parse the Author list.
      *
+     * @param siteLocale to use for case manipulation
      * @param document   to parse
      * @param book       to update
-     * @param siteLocale to use for case manipulation
      */
-    private void parseAuthors(@NonNull final Document document,
-                              @NonNull final Book book,
-                              @NonNull final Locale siteLocale) {
+    private void parseAuthors(@NonNull final Locale siteLocale,
+                              @NonNull final Document document,
+                              @NonNull final Book book) {
         for (final Element span : document.select("div#bylineInfo > span.author")) {
             // If an author has a popup dialog linked, then it has an id with contributorNameID
             Element a = span.selectFirst("a.contributorNameID");

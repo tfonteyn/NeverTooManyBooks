@@ -34,6 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.ColorMapper;
 
 import org.xml.sax.SAXException;
@@ -416,7 +417,7 @@ class KbNlBookHandler
         for (final String text : currentData) {
             if (Character.isDigit(text.charAt(0))) {
                 if (!book.contains(DBKey.BOOK_ISBN)) {
-                    final String digits = digits(text.split(":")[0], true);
+                    final String digits = SearchEngineUtils.isbn(text.split(":")[0]);
                     // Do a crude test on the length and hope for the best
                     // (don't do a full ISBN test here, no need)
                     if (digits != null && (digits.length() == 10 || digits.length() == 13)) {
@@ -508,9 +509,13 @@ class KbNlBookHandler
     private void processDatePublished(@NonNull final List<String> currentData) {
         if (!book.contains(DBKey.BOOK_PUBLICATION__DATE)) {
             // Grab the first bit before a comma, and strip it for digits + hope for the best
-            final String year = digits(currentData.get(0).split(",")[0], false);
-            if (year != null && !year.isEmpty()) {
-                book.putString(DBKey.BOOK_PUBLICATION__DATE, year);
+            final String year = SearchEngineUtils.digits(currentData.get(0).split(",")[0]);
+            if (!year.isEmpty()) {
+                try {
+                    book.setPublicationDate(Integer.parseInt(year));
+                } catch (@NonNull final NumberFormatException ignore) {
+                    // ignore
+                }
             }
         }
     }

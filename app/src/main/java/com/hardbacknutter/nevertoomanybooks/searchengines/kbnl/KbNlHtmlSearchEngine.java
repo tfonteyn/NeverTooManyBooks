@@ -468,9 +468,13 @@ public class KbNlHtmlSearchEngine
                 // e.g.:  [2019]
                 // e.g.:  c1977, cover 1978
                 // Grab the first bit before a comma, and strip it for digits + hope for the best
-                final String year = digits(span.text().split(",")[0], false);
-                if (year != null && !year.isEmpty()) {
-                    book.putString(DBKey.BOOK_PUBLICATION__DATE, year);
+                final String year = SearchEngineUtils.digits(span.text().split(",")[0]);
+                if (!year.isEmpty()) {
+                    try {
+                        book.setPublicationDate(Integer.parseInt(year));
+                    } catch (@NonNull final NumberFormatException ignore) {
+                        // ignore
+                    }
                 }
             }
         }

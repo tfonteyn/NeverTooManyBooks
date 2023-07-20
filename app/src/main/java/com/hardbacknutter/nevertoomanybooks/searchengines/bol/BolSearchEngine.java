@@ -40,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -272,8 +271,7 @@ public class BolSearchEngine
             return;
         }
 
-        final List<Locale> locales = LocaleListUtils.asList(context, getLocale(context));
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
+        final RealNumberParser realNumberParser = getRealNumberParser(context, getLocale(context));
 
         for (final Element specRow : specs.select("div.specs__row")) {
             final Element label = specRow.selectFirst("dt.specs__title");
@@ -295,7 +293,7 @@ public class BolSearchEngine
                     case "Date de sortie initiale": {
                         final String text = SearchEngineUtils.cleanText(value.text());
                         if (!text.isEmpty()) {
-                            book.putString(DBKey.BOOK_PUBLICATION__DATE, text);
+                            processPublicationDate(context, getLocale(context), text, book);
                         }
                         break;
                     }
