@@ -34,6 +34,8 @@ import androidx.annotation.VisibleForTesting;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -494,10 +496,50 @@ public class Book
         }
     }
 
+    /**
+     * Set or remove the publication-date for this book.
+     *
+     * @param date to set; {@code null} to remove
+     */
+    public void setPublicationDate(@Nullable final LocalDateTime date) {
+        if (date != null) {
+            putString(DBKey.BOOK_PUBLICATION__DATE,
+                      date.format(DateTimeFormatter.ISO_LOCAL_DATE));
+        } else {
+            remove(DBKey.BOOK_PUBLICATION__DATE);
+        }
+    }
+
+    /**
+     * Set or remove the publication-date for this book.
+     *
+     * @param year to set; {@code 0} to remove
+     */
+    public void setPublicationDate(@IntRange(from = 0) final int year) {
+        if (year > 0) {
+            putString(DBKey.BOOK_PUBLICATION__DATE, String.valueOf(year));
+        } else {
+            remove(DBKey.BOOK_PUBLICATION__DATE);
+        }
+    }
+
     @Override
     @NonNull
     public PartialDate getFirstPublicationDate() {
         return new PartialDate(getString(DBKey.FIRST_PUBLICATION__DATE));
+    }
+
+    /**
+     * Set or remove the first-publication-date for this work.
+     *
+     * @param date to set; a {@code null} or a 'not-present' date will remove the field
+     */
+    public void setFirstPublicationDate(@Nullable final PartialDate date) {
+        if (date != null && date.isPresent()) {
+            putString(DBKey.FIRST_PUBLICATION__DATE, date.getIsoString());
+        } else {
+            remove(DBKey.FIRST_PUBLICATION__DATE);
+        }
     }
 
     /**
