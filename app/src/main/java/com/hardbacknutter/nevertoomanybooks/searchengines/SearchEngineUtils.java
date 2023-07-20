@@ -57,19 +57,42 @@ public final class SearchEngineUtils {
      * @return stripped string
      */
     @NonNull
-    public static String digits(@Nullable final String s) {
-        if (s == null || s.isEmpty()) {
+    public static String digits(@Nullable final CharSequence s) {
+        if (s == null || s.length() == 0) {
             return "";
         }
         final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
             final char c = s.charAt(i);
-            // allows an X anywhere instead of just at the end; doesn't really matter.
             if (Character.isDigit(c)) {
                 sb.append(c);
             }
         }
         // ... but let empty Strings here just return.
+        return sb.toString();
+    }
+
+    /**
+     * Filter a string of all non-digits but keep 'x'. Used to clean isbn strings
+     *
+     * @param s string to parse
+     *
+     * @return stripped string
+     */
+    @Nullable
+    public static String isbn(@Nullable final CharSequence s) {
+        if (s == null) {
+            return null;
+        }
+        final StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < s.length(); i++) {
+            final char c = s.charAt(i);
+            // allows an X anywhere instead of just at the end;
+            // Doesn't really matter, we'll check for being a valid ISBN later anyhow.
+            if (Character.isDigit(c) || c == 'X' || c == 'x') {
+                sb.append(c);
+            }
+        }
         return sb.toString();
     }
 
