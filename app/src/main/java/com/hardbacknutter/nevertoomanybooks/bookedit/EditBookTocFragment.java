@@ -450,12 +450,12 @@ public class EditBookTocFragment
                 book.setSeries(inBook);
             }
 
+            // if we don't have one yet,
             // update the book with the first publication date that was gathered from the TOC
-            final String bookFirstPublication =
-                    result.getString(DBKey.FIRST_PUBLICATION__DATE, null);
-            if (bookFirstPublication != null && !bookFirstPublication.isEmpty()) {
-                if (book.getString(DBKey.FIRST_PUBLICATION__DATE).isEmpty()) {
-                    book.putString(DBKey.FIRST_PUBLICATION__DATE, bookFirstPublication);
+            if (!book.getFirstPublicationDate().isPresent()) {
+                final PartialDate bookFirstPublication = result.getFirstPublicationDate();
+                if (bookFirstPublication.isPresent()) {
+                    book.setFirstPublicationDate(bookFirstPublication);
                 }
             }
 

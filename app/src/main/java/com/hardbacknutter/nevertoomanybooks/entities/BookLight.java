@@ -61,7 +61,7 @@ public class BookLight
         this.title = book.getTitle();
         this.language = book.getString(DBKey.LANGUAGE);
         this.primaryAuthor = book.getPrimaryAuthor();
-        this.firstPublicationDate = new PartialDate(book.getString(DBKey.FIRST_PUBLICATION__DATE));
+        this.firstPublicationDate = book.getFirstPublicationDate();
     }
 
     /**
