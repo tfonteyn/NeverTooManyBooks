@@ -149,7 +149,9 @@ public class FieldVisibility {
     private long bits;
 
     /**
-     * Constructor: use all fields which by default are all visible.
+     * Constructor.
+     * <p>
+     * Global visibility: use all fields which by default are all visible.
      */
     public FieldVisibility() {
         this.keys = Set.copyOf(DB_KEYS);
@@ -157,7 +159,9 @@ public class FieldVisibility {
     }
 
     /**
-     * Constructor: use the given subset of keys.
+     * Constructor.
+     * <p>
+     * Style conditional visibility: use the given subset of keys.
      *
      * @param keys     the (sub)set of keys supported for this instance
      * @param defValue the bitmask with the defaults for this instance

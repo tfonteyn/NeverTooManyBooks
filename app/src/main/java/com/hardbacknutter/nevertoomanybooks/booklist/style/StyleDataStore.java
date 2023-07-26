@@ -66,8 +66,18 @@ public class StyleDataStore
     public static final String PK_GROUP_ROW_HEIGHT = "style.booklist.group.height";
 
 
-    /** Style overrides global setting with the same key. */
+    /**
+     * Style overrides global setting with the same key.
+     *
+     * @see BaseStyle#setShowAuthorByGivenName(boolean)
+     */
     public static final String PK_SHOW_AUTHOR_NAME_GIVEN_FIRST = "show.author.name.given_first";
+
+    /**
+     * Style overrides global setting with the same key.
+     *
+     * @see BaseStyle#setSortAuthorByGivenName(boolean)
+     */
     public static final String PK_SORT_AUTHOR_NAME_GIVEN_FIRST = "sort.author.name.given_first";
 
 

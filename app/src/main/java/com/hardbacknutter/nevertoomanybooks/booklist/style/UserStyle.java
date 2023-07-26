@@ -144,21 +144,45 @@ public class UserStyle
         }
     }
 
+    /**
+     * Constructor - load a style from the database.
+     *
+     * @param rowData data
+     *
+     * @return the loaded UserStyle
+     */
     @NonNull
     public static UserStyle createFromDatabase(@NonNull final DataHolder rowData) {
         return new UserStyle(rowData);
     }
 
+    /**
+     * Constructor - load a style from an import (backup file).
+     *
+     * @param uuid data
+     *
+     * @return the loaded UserStyle
+     */
     @NonNull
     public static UserStyle createFromImport(@NonNull final String uuid) {
         return new UserStyle(uuid);
     }
 
+    /**
+     * Get the user-displayable name for this style.
+     *
+     * @return name
+     */
     @NonNull
     public String getName() {
         return Objects.requireNonNull(name, "name");
     }
 
+    /**
+     * Set the user-displayable name for this style.
+     *
+     * @param name for this style
+     */
     public void setName(@NonNull final String name) {
         this.name = name;
     }

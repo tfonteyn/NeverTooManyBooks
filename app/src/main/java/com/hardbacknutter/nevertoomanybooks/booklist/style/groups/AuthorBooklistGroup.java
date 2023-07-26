@@ -65,6 +65,7 @@ public class AuthorBooklistGroup
     /** Show a book under each item it is linked to. */
     private boolean underEach;
     /** The primary author type the user prefers. */
+    @Author.Type
     private int primaryAuthorType = Author.TYPE_UNKNOWN;
 
     /**
@@ -150,17 +151,22 @@ public class AuthorBooklistGroup
     }
 
     /**
-     * Get this preference.
+     * Get the type of author we consider the primary author.
      *
-     * @return the type of author we consider the primary author
+     * @return the Author type
      */
     @Author.Type
     public int getPrimaryType() {
         return primaryAuthorType;
     }
 
-    public void setPrimaryType(final int value) {
-        primaryAuthorType = value;
+    /**
+     * Set the type of author we consider the primary author.
+     *
+     * @param type the Author type
+     */
+    public void setPrimaryType(@Author.Type final int type) {
+        primaryAuthorType = type;
     }
 
     @Override

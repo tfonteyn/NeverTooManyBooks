@@ -61,6 +61,11 @@ public interface Style {
      * <strong>Never change these values</strong>, they get stored in the db.
      * The book title in the list is by default 'medium' (see styles.xml)
      * Other elements are always 1 size 'less' than the title.
+     * <p>
+     * These values are used as the index into a resource array.
+     *
+     * @see com.hardbacknutter.nevertoomanybooks.R.array#bob_text_size_in_sp
+     * @see com.hardbacknutter.nevertoomanybooks.R.array#bob_text_padding_in_percent
      */
     int TEXT_SCALE_0_VERY_SMALL = 0;
     int TEXT_SCALE_1_SMALL = 1;
@@ -73,6 +78,10 @@ public interface Style {
     /**
      * Cover Scaling.
      * <strong>Never change these values</strong>, they get stored in the db.
+     * <p>
+     * These values are used as the index into a resource array.
+     *
+     * @see com.hardbacknutter.nevertoomanybooks.R.array#cover_book_list_longest_side
      */
     int COVER_SCALE_HIDDEN = 0;
     int COVER_SCALE_SMALL = 1;

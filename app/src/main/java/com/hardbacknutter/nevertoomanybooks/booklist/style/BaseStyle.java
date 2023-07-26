@@ -224,6 +224,13 @@ public abstract class BaseStyle
         return showAuthorByGivenName;
     }
 
+    /**
+     * Set the preference whether to <strong>show</strong> the Author full name
+     * with their given-name first, or their family name first.
+     * i.e.
+     *
+     * @param value {@code true} for "given family", or {@code false} for "family, given"
+     */
     public void setShowAuthorByGivenName(final boolean value) {
         showAuthorByGivenName = value;
     }
@@ -233,6 +240,13 @@ public abstract class BaseStyle
         return sortAuthorByGivenName;
     }
 
+    /**
+     * Set the preference whether to <strong>sort</strong> the Author full name
+     * with their given-name first, or their family name first.
+     * i.e.
+     *
+     * @param value {@code true} for "given family", or {@code false} for "family, given"
+     */
     public void setSortAuthorByGivenName(final boolean value) {
         sortAuthorByGivenName = value;
     }
@@ -310,6 +324,9 @@ public abstract class BaseStyle
      * @param screen for which the value should be set
      * @param dbKey  to set
      * @param show   flag
+     *
+     * @throws IllegalArgumentException when trying to set {@link Screen#Global}
+     *                                  which is not allowed here
      */
     public void setShowField(@NonNull final Screen screen,
                              @NonNull final String dbKey,
@@ -489,9 +506,15 @@ public abstract class BaseStyle
                 .orElse(Author.TYPE_UNKNOWN);
     }
 
-    public void setPrimaryAuthorTypes(final int value) {
+    /**
+     * Wrapper that sets the primary-author-type from the {@link AuthorBooklistGroup},
+     * if we have this group.
+     *
+     * @param type the Author type
+     */
+    public void setPrimaryAuthorType(@Author.Type final int type) {
         getGroupById(BooklistGroup.AUTHOR)
-                .ifPresent(group -> ((AuthorBooklistGroup) group).setPrimaryType(value));
+                .ifPresent(group -> ((AuthorBooklistGroup) group).setPrimaryType(type));
     }
 
     public void setShowBooks(@NonNull final UnderEach item,
