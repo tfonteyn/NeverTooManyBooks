@@ -218,7 +218,7 @@ public class StyleCoder
         userStyle.setGroupIds(groupIds);
 
         if (source.has(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE)) {
-            userStyle.setPrimaryAuthorTypes(
+            userStyle.setPrimaryAuthorType(
                     source.getInt(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE));
         }
 

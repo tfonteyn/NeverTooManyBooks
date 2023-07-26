@@ -79,7 +79,7 @@ public class UserStyle
             groupIds = List.of(BooklistGroup.AUTHOR);
         }
         setGroupIds(groupIds);
-        setPrimaryAuthorTypes(rowData.getInt(DBKey.STYLE_GROUPS_AUTHOR_PRIMARY_TYPE));
+        setPrimaryAuthorType(rowData.getInt(DBKey.STYLE_GROUPS_AUTHOR_PRIMARY_TYPE));
 
         for (final Style.UnderEach item : Style.UnderEach.values()) {
             setShowBooks(item, rowData.getBoolean(item.getDbKey()));
@@ -123,7 +123,7 @@ public class UserStyle
         name = style.getLabel(context);
 
         setGroupList(style.getGroupList());
-        setPrimaryAuthorTypes(style.getPrimaryAuthorType());
+        setPrimaryAuthorType(style.getPrimaryAuthorType());
 
         for (final Style.UnderEach item : Style.UnderEach.values()) {
             setShowBooks(item, style.isShowBooks(item));

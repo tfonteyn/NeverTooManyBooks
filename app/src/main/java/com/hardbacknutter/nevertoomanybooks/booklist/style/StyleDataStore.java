@@ -298,7 +298,7 @@ public class StyleDataStore
                 break;
 
             case PK_GROUPS_AUTHOR_PRIMARY_TYPE:
-                style.setPrimaryAuthorTypes(convert(values, Author.TYPE_UNKNOWN));
+                style.setPrimaryAuthorType(convert(values, Author.TYPE_UNKNOWN));
                 break;
 
             default:
