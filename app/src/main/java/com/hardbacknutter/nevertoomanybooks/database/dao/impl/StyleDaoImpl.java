@@ -239,8 +239,8 @@ public class StyleDaoImpl
             stmt.bindLong(++c, style.getTextScale());
             stmt.bindLong(++c, style.getCoverScale());
             stmt.bindLong(++c, style.getHeaderFieldVisibility());
-            stmt.bindLong(++c, style.getFieldVisibility(Style.Screen.Detail));
-            stmt.bindLong(++c, style.getFieldVisibility(Style.Screen.List));
+            stmt.bindLong(++c, style.getFieldVisibility(Style.Screen.Detail).getValue());
+            stmt.bindLong(++c, style.getFieldVisibility(Style.Screen.List).getValue());
 
             final long iId = stmt.executeInsert();
             if (iId > 0) {
@@ -280,8 +280,10 @@ public class StyleDaoImpl
             cv.put(DBKey.STYLE_TEXT_SCALE, style.getTextScale());
             cv.put(DBKey.STYLE_COVER_SCALE, style.getCoverScale());
             cv.put(DBKey.STYLE_LIST_HEADER, userStyle.getHeaderFieldVisibility());
-            cv.put(DBKey.STYLE_DETAILS_SHOW_FIELDS, style.getFieldVisibility(Style.Screen.Detail));
-            cv.put(DBKey.STYLE_LIST_SHOW_FIELDS, style.getFieldVisibility(Style.Screen.List));
+            cv.put(DBKey.STYLE_DETAILS_SHOW_FIELDS, style.getFieldVisibility(Style.Screen.Detail)
+                                                         .getValue());
+            cv.put(DBKey.STYLE_LIST_SHOW_FIELDS, style.getFieldVisibility(Style.Screen.List)
+                                                      .getValue());
         }
 
         return 0 < db.update(DBDefinitions.TBL_BOOKLIST_STYLES.getName(), cv,

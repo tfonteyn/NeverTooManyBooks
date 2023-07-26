@@ -301,8 +301,10 @@ public final class BuiltinStyle
         if (id == ID_COMPACT) {
             // The predefined "Compact" style: smaller text, no images.
             style.setTextScale(Style.TEXT_SCALE_1_SMALL);
-            style.setShowField(Screen.List, DBKey.COVER[0], false);
-            style.setShowField(Screen.List, DBKey.COVER[1], false);
+
+            final FieldVisibility fieldVisibility = style.getFieldVisibility(Screen.List);
+            fieldVisibility.setShowField(DBKey.COVER[0], false);
+            fieldVisibility.setShowField(DBKey.COVER[1], false);
         }
         return Optional.of(style);
     }

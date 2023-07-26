@@ -145,7 +145,8 @@ public class FieldVisibility {
     );
 
     @NonNull
-    private final Set<String> keys;
+    private final Set<String> dbKeys;
+
     private long bits;
 
     /**
@@ -154,7 +155,7 @@ public class FieldVisibility {
      * Global visibility: use all fields which by default are all visible.
      */
     public FieldVisibility() {
-        this.keys = Set.copyOf(DB_KEYS);
+        dbKeys = Set.copyOf(DB_KEYS);
         bits = Long.MAX_VALUE;
     }
 
@@ -163,12 +164,12 @@ public class FieldVisibility {
      * <p>
      * Style conditional visibility: use the given subset of keys.
      *
-     * @param keys     the (sub)set of keys supported for this instance
+     * @param dbKeys   the (sub)set of keys supported for this instance
      * @param defValue the bitmask with the defaults for this instance
      */
-    FieldVisibility(@NonNull final Set<String> keys,
+    FieldVisibility(@NonNull final Set<String> dbKeys,
                     final long defValue) {
-        this.keys = keys;
+        this.dbKeys = dbKeys;
         bits = defValue;
     }
 
@@ -241,7 +242,7 @@ public class FieldVisibility {
      */
     @NonNull
     Optional<Boolean> isShowFieldOpt(@NonNull final String dbKey) {
-        if (keys.contains(dbKey)) {
+        if (dbKeys.contains(dbKey)) {
             final int index = DB_KEYS.indexOf(dbKey);
             if (index != -1) {
                 return Optional.of((bits & (1L << index)) != 0);
@@ -260,7 +261,7 @@ public class FieldVisibility {
      * @return boolean
      */
     public boolean isShowField(@NonNull final String dbKey) {
-        if (keys.contains(dbKey)) {
+        if (dbKeys.contains(dbKey)) {
             final int index = DB_KEYS.indexOf(dbKey);
             if (index != -1) {
                 return (bits & (1L << index)) != 0;
@@ -270,17 +271,17 @@ public class FieldVisibility {
     }
 
     /**
-     * Set/unset the bit-value for the given key.
+     * Set/unset the bit-value for the given {@link DBKey}.
      * <p>
      * An invalid key will be ignored.
      *
-     * @param dbKey to set
+     * @param dbKey to set - one of the {@link DBKey} constants.
      * @param show  flag
      */
     @SuppressWarnings("WeakerAccess")
     public void setShowField(@NonNull final String dbKey,
                              final boolean show) {
-        if (keys.contains(dbKey)) {
+        if (dbKeys.contains(dbKey)) {
             final int index = DB_KEYS.indexOf(dbKey);
             if (index >= 0) {
                 final long bit = 1L << index;
@@ -325,7 +326,7 @@ public class FieldVisibility {
 
         for (int i = 0; i < DB_KEYS.size(); i++) {
             final String key = DB_KEYS.get(i);
-            if (keys.contains(key) && isShowField(key)) {
+            if (dbKeys.contains(key) && isShowField(key)) {
                 labels.add(context.getString(LABELS.get(i)));
             }
         }
@@ -343,7 +344,7 @@ public class FieldVisibility {
      * @return summary text
      */
     @NonNull
-    String getSummaryText(@NonNull final Context context) {
+    public String getSummaryText(@NonNull final Context context) {
         final List<String> labels = getLabels(context);
         if (labels.isEmpty()) {
             return context.getString(R.string.none);
@@ -357,7 +358,7 @@ public class FieldVisibility {
     public String toString() {
         return "FieldVisibility{"
                + "bits=0b" + Long.toBinaryString(bits)
-               + ", keys=" + keys
+               + ", dbKeys=" + dbKeys
                + '}';
     }
 
@@ -371,11 +372,11 @@ public class FieldVisibility {
         }
         final FieldVisibility that = (FieldVisibility) o;
         return bits == that.bits
-               && Objects.equals(keys, that.keys);
+               && Objects.equals(dbKeys, that.dbKeys);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(bits, keys);
+        return Objects.hash(bits, dbKeys);
     }
 }

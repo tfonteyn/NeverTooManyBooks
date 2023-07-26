@@ -148,7 +148,7 @@ public class BooklistAdapter
 
         groupRowHeight = this.style.getGroupRowHeight(context);
 
-        if (this.style.isShowField(context, Style.Screen.List, DBKey.COVER[0])) {
+        if (this.style.isShowField(Style.Screen.List, DBKey.COVER[0])) {
             @Style.CoverScale
             final int frontCoverScale = this.style.getCoverScale();
 

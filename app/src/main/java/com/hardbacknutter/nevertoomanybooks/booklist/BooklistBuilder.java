@@ -56,13 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_EXPANDED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_GROUP;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_KEY;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_LEVEL;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_VISIBLE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
@@ -203,6 +196,8 @@ class BooklistBuilder {
      * Add a table to be added as a LEFT OUTER JOIN.
      *
      * @param tableDefinition TableDefinition to add
+     *
+     * @throws IllegalArgumentException if the table was already added
      */
     void addLeftOuterJoin(@SuppressWarnings("SameParameterValue")
                           @NonNull final TableDefinition tableDefinition) {
@@ -220,6 +215,8 @@ class BooklistBuilder {
      * Add a domain to the resulting flattened list based on the details provided.
      *
      * @param domainExpression Domain to add
+     *
+     * @throws IllegalArgumentException if the domain was already added
      */
     void addDomain(@NonNull final DomainExpression domainExpression) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
@@ -266,6 +263,8 @@ class BooklistBuilder {
      * @param context Current context
      *
      * @return the Booklist ready to use
+     *
+     * @throws IllegalArgumentException if the rebuild-mode is unknown
      */
     @NonNull
     public Booklist build(@NonNull final Context context) {
@@ -414,12 +413,13 @@ class BooklistBuilder {
              * We setup the tables here, but don't create them yet.
              */
             listTable = new TableDefinition("tmp_book_list_" + instanceId, "bl")
-                    .addDomains(DOM_PK_ID)
-                    .setPrimaryKey(DOM_PK_ID);
+                    .addDomains(DBDefinitions.DOM_PK_ID)
+                    .setPrimaryKey(DBDefinitions.DOM_PK_ID);
 
             navTable = new TableDefinition("tmp_book_nav_" + instanceId, "nav")
-                    .addDomains(DOM_PK_ID, DOM_FK_BOOK, DOM_FK_BL_ROW_ID)
-                    .setPrimaryKey(DOM_PK_ID);
+                    .addDomains(DBDefinitions.DOM_PK_ID, DBDefinitions.DOM_FK_BOOK,
+                                DOM_FK_BL_ROW_ID)
+                    .setPrimaryKey(DBDefinitions.DOM_PK_ID);
 
             // Allow debug mode to use a standard table so we can export and inspect the content.
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_USES_STANDARD_TABLE) {
@@ -453,31 +453,33 @@ class BooklistBuilder {
 
             // {@link BooklistGroup#GroupKey}.
             // The actual value is set on a by-group/book basis.
-            listTable.addDomains(DOM_BL_NODE_KEY)
-                     .addIndex(DBKey.BL_NODE_KEY, false, DOM_BL_NODE_KEY);
+            listTable.addDomains(DBDefinitions.DOM_BL_NODE_KEY)
+                     .addIndex(DBKey.BL_NODE_KEY, false, DBDefinitions.DOM_BL_NODE_KEY);
 
             // flags used by {@link BooklistNodeDao}.
-            listTable.addDomains(DOM_BL_NODE_EXPANDED)
-                     .addIndex(DBKey.BL_NODE_EXPANDED, false, DOM_BL_NODE_EXPANDED)
-                     .addDomains(DOM_BL_NODE_VISIBLE)
-                     .addIndex(DBKey.BL_NODE_VISIBLE, false, DOM_BL_NODE_VISIBLE);
+            listTable.addDomains(DBDefinitions.DOM_BL_NODE_EXPANDED)
+                     .addIndex(DBKey.BL_NODE_EXPANDED, false,
+                               DBDefinitions.DOM_BL_NODE_EXPANDED)
+                     .addDomains(DBDefinitions.DOM_BL_NODE_VISIBLE)
+                     .addIndex(DBKey.BL_NODE_VISIBLE, false,
+                               DBDefinitions.DOM_BL_NODE_VISIBLE);
 
             // Always sort by level first; no expression, as this does not represent a value.
-            addDomainExpression(new DomainExpression(DOM_BL_NODE_LEVEL, Sort.Asc));
+            addDomainExpression(new DomainExpression(DBDefinitions.DOM_BL_NODE_LEVEL, Sort.Asc));
 
             // The level expression; for a book this is always 1 below the #groups obviously
-            addDomainExpression(new DomainExpression(DOM_BL_NODE_LEVEL,
+            addDomainExpression(new DomainExpression(DBDefinitions.DOM_BL_NODE_LEVEL,
                                                      String.valueOf(style.getGroupCount() + 1),
                                                      Sort.Unsorted));
 
             // The BooklistGroup for a book is always BooklistGroup.BOOK (duh)
-            addDomainExpression(new DomainExpression(DOM_BL_NODE_GROUP,
+            addDomainExpression(new DomainExpression(DBDefinitions.DOM_BL_NODE_GROUP,
                                                      String.valueOf(BooklistGroup.BOOK),
                                                      Sort.Unsorted));
-            listTable.addIndex(DBKey.BL_NODE_GROUP, false, DOM_BL_NODE_GROUP);
+            listTable.addIndex(DBKey.BL_NODE_GROUP, false, DBDefinitions.DOM_BL_NODE_GROUP);
 
             // The book id itself
-            addDomainExpression(new DomainExpression(DOM_FK_BOOK,
+            addDomainExpression(new DomainExpression(DBDefinitions.DOM_FK_BOOK,
                                                      TBL_BOOKS.dot(DBKey.PK_ID),
                                                      Sort.Unsorted));
 
@@ -500,27 +502,27 @@ class BooklistBuilder {
             });
 
             // Add the node key column
-            destColumns.add(DOM_BL_NODE_KEY.getName());
-            sourceColumns.add(buildNodeKey() + _AS_ + DOM_BL_NODE_KEY.getName());
+            destColumns.add(DBDefinitions.DOM_BL_NODE_KEY.getName());
+            sourceColumns.add(buildNodeKey() + _AS_ + DBDefinitions.DOM_BL_NODE_KEY.getName());
 
             // Add the node state columns
-            destColumns.add(DOM_BL_NODE_EXPANDED.getName());
-            destColumns.add(DOM_BL_NODE_VISIBLE.getName());
+            destColumns.add(DBDefinitions.DOM_BL_NODE_EXPANDED.getName());
+            destColumns.add(DBDefinitions.DOM_BL_NODE_VISIBLE.getName());
             if (rebuildMode == RebuildBooklist.Expanded) {
                 // Expanded nodes must explicitly be set to 1/1
-                sourceColumns.add("1" + _AS_ + DOM_BL_NODE_EXPANDED.getName())
-                             .add("1" + _AS_ + DOM_BL_NODE_VISIBLE.getName());
+                sourceColumns.add("1" + _AS_ + DBDefinitions.DOM_BL_NODE_EXPANDED.getName())
+                             .add("1" + _AS_ + DBDefinitions.DOM_BL_NODE_VISIBLE.getName());
 
             } else {
                 // All others must be set to 0/0. The actual state will be set afterwards.
-                sourceColumns.add("0" + _AS_ + DOM_BL_NODE_EXPANDED.getName())
-                             .add("0" + _AS_ + DOM_BL_NODE_VISIBLE.getName());
+                sourceColumns.add("0" + _AS_ + DBDefinitions.DOM_BL_NODE_EXPANDED.getName())
+                             .add("0" + _AS_ + DBDefinitions.DOM_BL_NODE_VISIBLE.getName());
             }
 
             final String sqlForInitialInsert =
                     INSERT_INTO_ + listTable.getName() + " (" + destColumns + ") "
                     + SELECT_ + sourceColumns
-                    + _FROM_ + buildFrom(context, leftOuterJoins) + buildWhere(context, filters)
+                    + _FROM_ + buildFrom(leftOuterJoins) + buildWhere(context, filters)
                     + _ORDER_BY_ + buildOrderBy(db.isCollationCaseSensitive());
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
@@ -856,6 +858,8 @@ class BooklistBuilder {
          * Add the domains for the given group.
          *
          * @param group to add
+         *
+         * @throws IllegalArgumentException when trying to group by book
          */
         private void addGroup(@NonNull final BooklistGroup group) {
             // dev sanity check
@@ -930,14 +934,12 @@ class BooklistBuilder {
          *      <li>{@link #leftOuterJoins}</li>
          * </ul>
          *
-         * @param context Current context
          * @param leftOuterJoins tables to be added as a LEFT OUTER JOIN
          *
          * @return FROM clause
          */
         @NonNull
-        private String buildFrom(@NonNull final Context context,
-                                 @NonNull final Collection<TableDefinition> leftOuterJoins) {
+        private String buildFrom(@NonNull final Collection<TableDefinition> leftOuterJoins) {
             final StringBuilder sb = new StringBuilder();
 
             // If there is a bookshelf specified (either as group or as a filter),
@@ -952,12 +954,12 @@ class BooklistBuilder {
             joinWithAuthors(sb);
 
             if (style.hasGroup(BooklistGroup.SERIES)
-                || style.isShowField(context, Style.Screen.List, DBKey.FK_SERIES)) {
+                || style.isShowField(Style.Screen.List, DBKey.FK_SERIES)) {
                 joinWithSeries(sb);
             }
 
             if (style.hasGroup(BooklistGroup.PUBLISHER)
-                || style.isShowField(context, Style.Screen.List, DBKey.FK_PUBLISHER)) {
+                || style.isShowField(Style.Screen.List, DBKey.FK_PUBLISHER)) {
                 joinWithPublishers(sb);
             }
 

@@ -139,7 +139,7 @@ public class BookHolder
 
         a_bracket_b_bracket = context.getString(R.string.a_bracket_b_bracket);
 
-        if (this.style.isShowField(context, Style.Screen.List, DBKey.COVER[0])) {
+        if (this.style.isShowField(Style.Screen.List, DBKey.COVER[0])) {
             // Do not go overkill here by adding a full-blown CoverHandler.
             // We only provide zooming by clicking on the image.
             vb.coverImage0.setOnClickListener(this::onZoomCover);
@@ -192,7 +192,7 @@ public class BookHolder
     public void onBind(@NonNull final DataHolder rowData) {
         if (use == null) {
             // init once
-            use = new UseFields(itemView.getContext(), rowData, this.style);
+            use = new UseFields(rowData, this.style);
         }
 
         // Titles (book/series) are NOT reordered here.
@@ -482,41 +482,39 @@ public class BookHolder
         final boolean bookshelves;
         final boolean series;
 
-        UseFields(@NonNull final Context context,
-                  @NonNull final DataHolder rowData,
+        UseFields(@NonNull final DataHolder rowData,
                   @NonNull final Style style) {
 
-            originalTitle = style.isShowField(context, Style.Screen.List, DBKey.TITLE_ORIGINAL_LANG)
+            originalTitle = style.isShowField(Style.Screen.List, DBKey.TITLE_ORIGINAL_LANG)
                             && rowData.contains(DBKey.TITLE_ORIGINAL_LANG);
 
-            isbn = style.isShowField(context, Style.Screen.List, DBKey.BOOK_ISBN);
-            series = style.isShowField(context, Style.Screen.List, DBKey.FK_SERIES);
+            isbn = style.isShowField(Style.Screen.List, DBKey.BOOK_ISBN);
+            series = style.isShowField(Style.Screen.List, DBKey.FK_SERIES);
 
-            signed = style.isShowField(context, Style.Screen.List, DBKey.SIGNED__BOOL)
+            signed = style.isShowField(Style.Screen.List, DBKey.SIGNED__BOOL)
                      && rowData.contains(DBKey.SIGNED__BOOL);
-            edition = style.isShowField(context, Style.Screen.List, DBKey.EDITION__BITMASK)
+            edition = style.isShowField(Style.Screen.List, DBKey.EDITION__BITMASK)
                       && rowData.contains(DBKey.EDITION__BITMASK);
-            loanee = style.isShowField(context, Style.Screen.List, DBKey.LOANEE_NAME)
+            loanee = style.isShowField(Style.Screen.List, DBKey.LOANEE_NAME)
                      && rowData.contains(DBKey.LOANEE_NAME);
-            cover0 = style.isShowField(context, Style.Screen.List, DBKey.COVER[0])
+            cover0 = style.isShowField(Style.Screen.List, DBKey.COVER[0])
                      && rowData.contains(DBKey.BOOK_UUID);
-            rating = style.isShowField(context, Style.Screen.List, DBKey.RATING)
+            rating = style.isShowField(Style.Screen.List, DBKey.RATING)
                      && rowData.contains(DBKey.RATING);
-            author = style.isShowField(context, Style.Screen.List, DBKey.FK_AUTHOR)
+            author = style.isShowField(Style.Screen.List, DBKey.FK_AUTHOR)
                      && rowData.contains(DBKey.AUTHOR_FORMATTED);
-            publisher = style.isShowField(context, Style.Screen.List, DBKey.FK_PUBLISHER)
+            publisher = style.isShowField(Style.Screen.List, DBKey.FK_PUBLISHER)
                         && rowData.contains(DBKey.PUBLISHER_NAME_CSV);
-            publicationDate = style.isShowField(context, Style.Screen.List,
-                                                DBKey.BOOK_PUBLICATION__DATE)
+            publicationDate = style.isShowField(Style.Screen.List, DBKey.BOOK_PUBLICATION__DATE)
                               && rowData.contains(DBKey.BOOK_PUBLICATION__DATE);
-            format = style.isShowField(context, Style.Screen.List, DBKey.FORMAT)
+            format = style.isShowField(Style.Screen.List, DBKey.FORMAT)
                      && rowData.contains(DBKey.FORMAT);
-            condition = style.isShowField(context, Style.Screen.List, DBKey.BOOK_CONDITION)
+            condition = style.isShowField(Style.Screen.List, DBKey.BOOK_CONDITION)
                         && rowData.contains(DBKey.BOOK_CONDITION);
-            language = style.isShowField(context, Style.Screen.List, DBKey.LANGUAGE);
-            location = style.isShowField(context, Style.Screen.List, DBKey.LOCATION)
+            language = style.isShowField(Style.Screen.List, DBKey.LANGUAGE);
+            location = style.isShowField(Style.Screen.List, DBKey.LOCATION)
                        && rowData.contains(DBKey.LOCATION);
-            bookshelves = style.isShowField(context, Style.Screen.List, DBKey.FK_BOOKSHELF)
+            bookshelves = style.isShowField(Style.Screen.List, DBKey.FK_BOOKSHELF)
                           && rowData.contains(DBKey.BOOKSHELF_NAME_CSV);
         }
     }

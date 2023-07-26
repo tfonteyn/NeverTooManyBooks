@@ -95,8 +95,10 @@ public class UserStyle
         setCoverScale(rowData.getInt(DBKey.STYLE_COVER_SCALE));
 
         setHeaderFieldVisibility(rowData.getInt(DBKey.STYLE_LIST_HEADER));
-        setFieldVisibility(Screen.List, rowData.getLong(DBKey.STYLE_LIST_SHOW_FIELDS));
-        setFieldVisibility(Screen.Detail, rowData.getLong(DBKey.STYLE_DETAILS_SHOW_FIELDS));
+        getFieldVisibility(Screen.List)
+                .setValue(rowData.getLong(DBKey.STYLE_LIST_SHOW_FIELDS));
+        getFieldVisibility(Screen.Detail)
+                .setValue(rowData.getLong(DBKey.STYLE_DETAILS_SHOW_FIELDS));
     }
 
     /**
@@ -140,7 +142,7 @@ public class UserStyle
 
         setHeaderFieldVisibility(style.getHeaderFieldVisibility());
         for (final Screen screen : Screen.values()) {
-            setFieldVisibility(screen, style.getFieldVisibility(screen));
+            getFieldVisibility(screen).setValue(style.getFieldVisibility(screen).getValue());
         }
     }
 

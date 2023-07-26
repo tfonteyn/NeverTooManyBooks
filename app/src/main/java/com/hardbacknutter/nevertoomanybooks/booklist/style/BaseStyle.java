@@ -36,7 +36,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
@@ -54,16 +53,14 @@ import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 public abstract class BaseStyle
         implements Style {
 
-    private static final String ERROR_SCREEN_GLOBAL_NOT_ALLOWED_HERE =
-            "Screen.Global not allowed here";
     private static final String ERROR_UUID_IS_EMPTY = "uuid.isEmpty()";
     /** Configuration for the fields shown on the Book level in the book list. */
     @NonNull
-    private final BooklistFieldVisibility listFieldVisibility;
+    private final FieldVisibility listFieldVisibility;
 
     /** Configuration for the fields shown on the Book details screen. */
     @NonNull
-    private final BookDetailsFieldVisibility detailsFieldVisibility;
+    private final FieldVisibility detailsFieldVisibility;
 
     /** All groups; <strong>ordered</strong>. */
     private final Map<Integer, BooklistGroup> groups = new LinkedHashMap<>();
@@ -288,8 +285,7 @@ public abstract class BaseStyle
     }
 
     @Override
-    public boolean isShowField(@NonNull final Context context,
-                               @NonNull final Screen screen,
+    public boolean isShowField(@NonNull final Screen screen,
                                @NonNull final String dbKey) {
         // First check the style!
         // If we have a field which is simply not defined on the style, use the global
@@ -316,90 +312,16 @@ public abstract class BaseStyle
         throw new IllegalArgumentException();
     }
 
-    /**
-     * Set/unset the bit-value for the given key.
-     * <p>
-     * An invalid key will be ignored.
-     *
-     * @param screen for which the value should be set
-     * @param dbKey  to set
-     * @param show   flag
-     *
-     * @throws IllegalArgumentException when trying to set {@link Screen#Global}
-     *                                  which is not allowed here
-     */
-    public void setShowField(@NonNull final Screen screen,
-                             @NonNull final String dbKey,
-                             final boolean show) {
-        switch (screen) {
-            case List:
-                listFieldVisibility.setShowField(dbKey, show);
-                break;
-
-            case Detail:
-                detailsFieldVisibility.setShowField(dbKey, show);
-                break;
-
-            case Global:
-                if (BuildConfig.DEBUG /* always */) {
-                    throw new IllegalArgumentException(ERROR_SCREEN_GLOBAL_NOT_ALLOWED_HERE);
-                }
-                // ignore
-                break;
-        }
-    }
-
-    @Override
-    public long getFieldVisibility(@NonNull final Screen screen) {
-        switch (screen) {
-            case List:
-                return listFieldVisibility.getValue();
-            case Detail:
-                return detailsFieldVisibility.getValue();
-            case Global:
-                return ServiceLocator.getInstance().getGlobalFieldVisibility().getValue();
-        }
-        throw new IllegalArgumentException();
-    }
-
-    /**
-     * Set the current configured combined bit-value.
-     * <p>
-     * Setting the {@link Screen#Global} will be <strong>IGNORED</strong>.
-     *
-     * @param screen  for which the value should be set
-     * @param bitmask to set
-     */
-    public void setFieldVisibility(@NonNull final Screen screen,
-                                   final long bitmask) {
-        switch (screen) {
-            case List:
-                listFieldVisibility.setValue(bitmask);
-                break;
-            case Detail:
-                detailsFieldVisibility.setValue(bitmask);
-                break;
-            case Global:
-                // ignore
-                break;
-        }
-    }
-
     @Override
     @NonNull
-    public String getFieldVisibilitySummaryText(@NonNull final Context context,
-                                                @NonNull final Screen screen) {
+    public FieldVisibility getFieldVisibility(@NonNull final Screen screen) {
         switch (screen) {
             case List:
-                return listFieldVisibility.getSummaryText(context);
+                return listFieldVisibility;
             case Detail:
-                return detailsFieldVisibility.getSummaryText(context);
+                return detailsFieldVisibility;
             case Global:
-                if (BuildConfig.DEBUG /* always */) {
-                    throw new IllegalArgumentException(ERROR_SCREEN_GLOBAL_NOT_ALLOWED_HERE);
-                }
-                // ignore
-                return "";
+                return ServiceLocator.getInstance().getGlobalFieldVisibility();
         }
         throw new IllegalArgumentException();
     }

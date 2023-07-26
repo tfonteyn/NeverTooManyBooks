@@ -88,7 +88,7 @@ public class StyleViewModel
                 style.setPreferred(true);
             }
 
-            styleDataStore = new StyleDataStore(context, style, onModified);
+            styleDataStore = new StyleDataStore(style, onModified);
         }
     }
 

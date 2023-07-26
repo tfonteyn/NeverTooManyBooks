@@ -227,24 +227,23 @@ public interface Style {
     /**
      * Check if the given field should be displayed.
      *
-     * @param context Current context
-     * @param screen  to get the setting for
-     * @param dbKey   to check - one of the {@link DBKey} constants.
+     * @param screen to get the setting for
+     * @param dbKey  to check - one of the {@link DBKey} constants.
      *
      * @return {@code true} if in use
      */
-    boolean isShowField(@NonNull Context context,
-                        @NonNull Screen screen,
+    boolean isShowField(@NonNull Screen screen,
                         @NonNull String dbKey);
 
     /**
-     * Get the bitmask value which defines book-field visibility.
+     * Get the {@link FieldVisibility} for the given screen.
      *
      * @param screen to get the setting for
      *
-     * @return bitmask
+     * @return visibility
      */
-    long getFieldVisibility(@NonNull Screen screen);
+    @NonNull
+    FieldVisibility getFieldVisibility(@NonNull Screen screen);
 
     /**
      * Get the group row <strong>height</strong> to be applied to
@@ -348,20 +347,6 @@ public interface Style {
      */
     @NonNull
     String getGroupsSummaryText(@NonNull Context context);
-
-    /**
-     * Convenience method for use in the Preferences screen.
-     * Get the summary text for the visible fields as a CSV String.
-     *
-     * @param context Current context
-     * @param screen  to get the setting for
-     *
-     * @return summary text
-     */
-    @NonNull
-    String getFieldVisibilitySummaryText(@NonNull Context context,
-                                         @NonNull Screen screen);
-
 
     /**
      * Which visibility options to use from the user preferences/style.
