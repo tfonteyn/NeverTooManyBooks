@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 
@@ -37,8 +36,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * Sanity check for duplicate prefix names and any missing keys.
  */
-class BooklistGroupTest
-        extends Base {
+class BooklistGroupTest {
 
     @Test
     void duplicates() {
