@@ -64,11 +64,11 @@ public class UserStyle
     private UserStyle(@NonNull final DataHolder rowData) {
         super(rowData.getString(DBKey.STYLE_UUID), rowData.getLong(DBKey.PK_ID));
 
+        name = rowData.getString(DBKey.STYLE_NAME);
         setPreferred(rowData.getBoolean(DBKey.STYLE_IS_PREFERRED));
         setMenuPosition(rowData.getInt(DBKey.STYLE_MENU_POSITION));
 
-        name = rowData.getString(DBKey.STYLE_NAME);
-
+        // set the groups first !
         List<Integer> groupIds;
         try {
             groupIds = Arrays.stream(rowData.getString(DBKey.STYLE_GROUPS).split(","))
@@ -79,6 +79,7 @@ public class UserStyle
             groupIds = List.of(BooklistGroup.AUTHOR);
         }
         setGroupIds(groupIds);
+
         setPrimaryAuthorType(rowData.getInt(DBKey.STYLE_GROUPS_AUTHOR_PRIMARY_TYPE));
 
         for (final Style.UnderEach item : Style.UnderEach.values()) {
@@ -108,9 +109,9 @@ public class UserStyle
      * see {@link #clone(Context)}.
      *
      * @param context Current context
-     * @param style   to clone
      * @param id      for the new style
      * @param uuid    for the new style
+     * @param style   to clone
      */
     protected UserStyle(@NonNull final Context context,
                         @NonNull final BaseStyle style,

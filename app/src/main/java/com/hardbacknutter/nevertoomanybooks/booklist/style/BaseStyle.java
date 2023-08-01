@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import androidx.core.math.MathUtils;
 
 import java.util.ArrayList;
@@ -62,7 +63,7 @@ public abstract class BaseStyle
     @NonNull
     private final FieldVisibility detailsFieldVisibility;
 
-    /** All groups; <strong>ordered</strong>. */
+    /** The <strong>ordered</strong> groups shown/handled by this style. */
     private final Map<Integer, BooklistGroup> groups = new LinkedHashMap<>();
 
     @NonNull
@@ -115,7 +116,12 @@ public abstract class BaseStyle
      */
     private boolean groupRowUsesPreferredHeight = true;
 
-    /** Cached pixel value. */
+    /**
+     * Cached pixel value.
+     *
+     * @see #getGroupRowHeight(Context)
+     */
+    @Px
     private int listPreferredItemHeightSmall;
 
     /**
@@ -391,6 +397,11 @@ public abstract class BaseStyle
         return new ArrayList<>(groups.values());
     }
 
+    /**
+     * Set the list of groups.
+     *
+     * @param list to set
+     */
     public void setGroupList(@Nullable final List<BooklistGroup> list) {
         groups.clear();
         if (list != null) {
@@ -398,6 +409,11 @@ public abstract class BaseStyle
         }
     }
 
+    /**
+     * Using the given group-ids, create and set the group list.
+     *
+     * @param groupIds to create groups for
+     */
     public void setGroupIds(@NonNull final List<Integer> groupIds) {
         final List<BooklistGroup> list = groupIds
                 .stream()
@@ -416,8 +432,8 @@ public abstract class BaseStyle
     }
 
     /**
-     * Wrapper that gets the primary-author-type from the {@link AuthorBooklistGroup},
-     * if we have this group; or the default.
+     * Wrapper that gets the primary-author-type from the {@link AuthorBooklistGroup}
+     * (if we have it); or the default {@link Author#TYPE_UNKNOWN}.
      *
      * @return the type of author we consider the primary author
      */
@@ -429,8 +445,7 @@ public abstract class BaseStyle
     }
 
     /**
-     * Wrapper that sets the primary-author-type from the {@link AuthorBooklistGroup},
-     * if we have this group.
+     * Wrapper to set the primary-author-type from the {@link AuthorBooklistGroup} (if we have it).
      *
      * @param type the Author type
      */
@@ -439,6 +454,12 @@ public abstract class BaseStyle
                 .ifPresent(group -> ((AuthorBooklistGroup) group).setPrimaryType(type));
     }
 
+    /**
+     * Wrapper to set the show-book-under-each for the given wrapped group (if we have it).
+     *
+     * @param item  the wrapped group
+     * @param value to set
+     */
     public void setShowBooks(@NonNull final UnderEach item,
                              final boolean value) {
         getGroupById(item.getGroupId())
@@ -446,8 +467,10 @@ public abstract class BaseStyle
     }
 
     /**
-     * Wrapper that gets the show-book-under-each from {@link AuthorBooklistGroup}
-     * if we have this group; or the default.
+     * Wrapper that gets the show-book-under-each for the given wrapped group (if we have it);
+     * or by default {@code false}.
+     *
+     * @param item the wrapped group
      *
      * @return {@code true} if we want to show a book under each of its Authors
      */
@@ -502,20 +525,20 @@ public abstract class BaseStyle
                + ", uuid=`" + uuid + '`'
                + ", preferred=" + preferred
                + ", menuPosition=" + menuPosition
-               + ", groupMap=" + groups
+               + ", groups=" + groups
 
                + ", showAuthorByGivenName=" + showAuthorByGivenName
                + ", sortAuthorByGivenName=" + sortAuthorByGivenName
 
                + ", expansionLevel=" + expansionLevel
-               + ", groupsUseListPreferredHeight=" + groupRowUsesPreferredHeight
+               + ", groupRowUsesPreferredHeight=" + groupRowUsesPreferredHeight
                + ", listPreferredItemHeightSmall=" + listPreferredItemHeightSmall
-               + ", showHeaderInfo=" + headerFieldVisibility
+               + ", headerFieldVisibility=" + headerFieldVisibility
 
                + ", coverScale=" + coverScale
                + ", textScale=" + textScale
-               + ", listScreenBookFields=" + listFieldVisibility
-               + ", detailScreenBookFields=" + detailsFieldVisibility
+               + ", listFieldVisibility=" + listFieldVisibility
+               + ", detailsFieldVisibility=" + detailsFieldVisibility
                + '}';
     }
 
