@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
  * For better or worse... this class and it's children implementations
- * are passed around a lot, and hence thighly coupled.
+ * are passed around a lot, and hence tightly coupled.
  * The alternative was a lot of duplicate code and a LOT of individual parameter passing.
  *
  * <ul>

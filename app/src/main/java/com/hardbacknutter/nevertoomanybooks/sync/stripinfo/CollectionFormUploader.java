@@ -78,6 +78,8 @@ public class CollectionFormUploader {
 
     private static final String FF_STRIP_ID = "stripId";
     private static final String FF_STRIP_COLLECTIE_ID = "stripCollectieId";
+    private static final String ERROR_EXTERNAL_ID_0 = "externalId == 0";
+    private static final String ERROR_COLLECTION_ID_0 = "collectionId == 0";
 
     /** Delegate common Element handling. */
     private final JSoupHelper jSoupHelper = new JSoupHelper();
@@ -185,12 +187,12 @@ public class CollectionFormUploader {
 
         final long externalId = book.getLong(DBKey.SID_STRIP_INFO);
         if (externalId == 0) {
-            throw new IllegalArgumentException("externalId == 0");
+            throw new IllegalArgumentException(ERROR_EXTERNAL_ID_0);
         }
 
         final long collectionId = book.getLong(DBKey.STRIP_INFO_COLL_ID);
         if (collectionId == 0) {
-            throw new IllegalArgumentException("collectionId == 0");
+            throw new IllegalArgumentException(ERROR_COLLECTION_ID_0);
         }
 
         final String postBody = new Uri.Builder()
@@ -230,7 +232,7 @@ public class CollectionFormUploader {
 
         final long externalId = book.getLong(DBKey.SID_STRIP_INFO);
         if (externalId == 0) {
-            throw new IllegalArgumentException("externalId == 0");
+            throw new IllegalArgumentException(ERROR_EXTERNAL_ID_0);
         }
 
         long collectionId = book.getLong(DBKey.STRIP_INFO_COLL_ID);
@@ -240,7 +242,7 @@ public class CollectionFormUploader {
             collectionId = book.getLong(DBKey.STRIP_INFO_COLL_ID);
             // sanity check
             if (collectionId == 0) {
-                throw new IllegalArgumentException("collectionId == 0");
+                throw new IllegalArgumentException(ERROR_COLLECTION_ID_0);
             }
         }
 
@@ -309,12 +311,12 @@ public class CollectionFormUploader {
 
         final long externalId = book.getLong(DBKey.SID_STRIP_INFO);
         if (externalId == 0) {
-            throw new IllegalArgumentException("externalId=0");
+            throw new IllegalArgumentException(ERROR_EXTERNAL_ID_0);
         }
 
         final long collectionId = book.getLong(DBKey.STRIP_INFO_COLL_ID);
         if (collectionId == 0) {
-            throw new IllegalArgumentException("collectionId=0");
+            throw new IllegalArgumentException(ERROR_COLLECTION_ID_0);
         }
 
         // We first get the delete-form to make sure the server still has our book
@@ -378,7 +380,7 @@ public class CollectionFormUploader {
 
         final long externalId = book.getLong(DBKey.SID_STRIP_INFO);
         if (externalId == 0) {
-            throw new IllegalArgumentException("externalId=0");
+            throw new IllegalArgumentException(ERROR_EXTERNAL_ID_0);
         }
 
         long collectionId = book.getLong(DBKey.STRIP_INFO_COLL_ID);
