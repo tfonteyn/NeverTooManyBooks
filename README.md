@@ -258,7 +258,7 @@ NEW:
     and of course Bedetheque itself. This means the majority of european non-english comics
     (and a fairly large amount of English) are supported.
 - Easier access to context menu's on the book list (button and/or long-click configurable).
-- Booklist groups for author and publisher provide gouping/sorting on 1st character of the name.
+- Booklist groups for author and publisher provide grouping/sorting on 1st character of the name.
 - Update-from-internet is now available for a number of date based booklist groups
 - Refitted support for importing Book Catalogue "bcbk" backup file
 - New scanner code from 3.4 is considered stable.
