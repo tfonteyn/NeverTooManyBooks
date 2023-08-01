@@ -145,6 +145,48 @@ public abstract class BaseStyle
     }
 
     /**
+     * Copy constructor. Used for cloning.
+     * <p>
+     * The id and uuid are passed in to allow testing,
+     * see {@link #clone(Context)}.
+     *
+     * @param id    for the new style
+     * @param uuid  for the new style
+     * @param style to clone
+     */
+    BaseStyle(@NonNull final String uuid,
+              @IntRange(from = 0) final long id,
+              @NonNull final BaseStyle style) {
+        this(uuid, id);
+
+        preferred = style.isPreferred();
+        menuPosition = style.getMenuPosition();
+
+        expansionLevel = style.getExpansionLevel();
+        groupRowUsesPreferredHeight = style.isGroupRowUsesPreferredHeight();
+
+        showAuthorByGivenName = style.isShowAuthorByGivenName();
+        sortAuthorByGivenName = style.isSortAuthorByGivenName();
+
+        textScale = style.getTextScale();
+        coverScale = style.getCoverScale();
+
+        setHeaderFieldVisibilityValue(style.getHeaderFieldVisibilityValue());
+        for (final Screen screen : Screen.values()) {
+            getFieldVisibility(screen).setValue(style.getFieldVisibility(screen).getValue());
+        }
+
+        // set groups first!
+        setGroupList(style.getGroupList());
+
+        setPrimaryAuthorType(style.getPrimaryAuthorType());
+
+        for (final Style.UnderEach item : Style.UnderEach.values()) {
+            setShowBooks(item, style.isShowBooks(item));
+        }
+    }
+
+    /**
      * Construct a clone of this object with id==0, and a new uuid.
      *
      * @param context Current context
@@ -162,7 +204,7 @@ public abstract class BaseStyle
         }
         // A cloned style is *always* a UserStyle/persistent regardless of the original
         // being a UserStyle or BuiltinStyle.
-        return new UserStyle(context, this, 0, UUID.randomUUID().toString());
+        return new UserStyle(context, 0, UUID.randomUUID().toString(), this);
     }
 
     @Override

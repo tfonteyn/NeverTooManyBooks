@@ -114,37 +114,11 @@ public class UserStyle
      * @param style   to clone
      */
     protected UserStyle(@NonNull final Context context,
-                        @NonNull final BaseStyle style,
                         final long id,
-                        @NonNull final String uuid) {
-        super(uuid, id);
-
-        setPreferred(style.isPreferred());
-        setMenuPosition(style.getMenuPosition());
-
-        // Store the new name.
+                        @NonNull final String uuid,
+                        @NonNull final BaseStyle style) {
+        super(uuid, id, style);
         name = style.getLabel(context);
-
-        setGroupList(style.getGroupList());
-        setPrimaryAuthorType(style.getPrimaryAuthorType());
-
-        for (final Style.UnderEach item : Style.UnderEach.values()) {
-            setShowBooks(item, style.isShowBooks(item));
-        }
-
-        setExpansionLevel(style.getExpansionLevel());
-        setGroupRowUsesPreferredHeight(style.isGroupRowUsesPreferredHeight());
-
-        setShowAuthorByGivenName(style.isShowAuthorByGivenName());
-        setSortAuthorByGivenName(style.isSortAuthorByGivenName());
-
-        setTextScale(style.getTextScale());
-        setCoverScale(style.getCoverScale());
-
-        setHeaderFieldVisibility(style.getHeaderFieldVisibility());
-        for (final Screen screen : Screen.values()) {
-            getFieldVisibility(screen).setValue(style.getFieldVisibility(screen).getValue());
-        }
     }
 
     /**
