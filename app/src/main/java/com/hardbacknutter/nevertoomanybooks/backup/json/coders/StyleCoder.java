@@ -90,7 +90,7 @@ public class StyleCoder
 
             dest.put(StyleDataStore.PK_TEXT_SCALE, userStyle.getTextScale());
             dest.put(StyleDataStore.PK_COVER_SCALE, userStyle.getCoverScale());
-            dest.put(StyleDataStore.PK_LIST_HEADER, userStyle.getHeaderFieldVisibility());
+            dest.put(StyleDataStore.PK_LIST_HEADER, userStyle.getHeaderFieldVisibilityValue());
 
             // since v3 stored as bitmask and no longer as individual flags
             dest.put(PK_DETAILS_FIELD_VISIBILITY,
@@ -179,7 +179,7 @@ public class StyleCoder
                     userStyle.setCoverScale(source.getInt(StyleDataStore.PK_COVER_SCALE));
                 }
                 if (source.has(StyleDataStore.PK_LIST_HEADER)) {
-                    userStyle.setHeaderFieldVisibility(
+                    userStyle.setHeaderFieldVisibilityValue(
                             source.getInt(StyleDataStore.PK_LIST_HEADER));
                 }
 

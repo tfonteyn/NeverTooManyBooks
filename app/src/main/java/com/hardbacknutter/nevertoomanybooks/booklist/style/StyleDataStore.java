@@ -366,7 +366,7 @@ public class StyleDataStore
                              @Nullable final Set<String> values) {
         switch (key) {
             case PK_LIST_HEADER:
-                style.setHeaderFieldVisibility(convert(values, BooklistHeader.BITMASK_ALL));
+                style.setHeaderFieldVisibilityValue(convert(values, BooklistHeader.BITMASK_ALL));
                 break;
 
             case PK_GROUPS_AUTHOR_PRIMARY_TYPE:
@@ -385,7 +385,7 @@ public class StyleDataStore
                                     @Nullable final Set<String> defValues) {
         switch (key) {
             case PK_LIST_HEADER:
-                return convert(style.getHeaderFieldVisibility());
+                return convert(style.getHeaderFieldVisibilityValue());
 
             case PK_GROUPS_AUTHOR_PRIMARY_TYPE:
                 return convert(style.getPrimaryAuthorType());

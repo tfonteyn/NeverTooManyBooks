@@ -276,11 +276,11 @@ public abstract class BaseStyle
     }
 
     @BooklistHeader.Option
-    public int getHeaderFieldVisibility() {
+    public int getHeaderFieldVisibilityValue() {
         return headerFieldVisibility;
     }
 
-    public void setHeaderFieldVisibility(@BooklistHeader.Option final int bitmask) {
+    public void setHeaderFieldVisibilityValue(@BooklistHeader.Option final int bitmask) {
         headerFieldVisibility = bitmask & BooklistHeader.BITMASK_ALL;
     }
 

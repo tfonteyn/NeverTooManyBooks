@@ -94,7 +94,7 @@ public class UserStyle
         setTextScale(rowData.getInt(DBKey.STYLE_TEXT_SCALE));
         setCoverScale(rowData.getInt(DBKey.STYLE_COVER_SCALE));
 
-        setHeaderFieldVisibility(rowData.getInt(DBKey.STYLE_LIST_HEADER));
+        setHeaderFieldVisibilityValue(rowData.getInt(DBKey.STYLE_LIST_HEADER));
         getFieldVisibility(Screen.List)
                 .setValue(rowData.getLong(DBKey.STYLE_LIST_SHOW_FIELDS));
         getFieldVisibility(Screen.Detail)
