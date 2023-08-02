@@ -309,7 +309,7 @@ dependencies {
     //    public TestRule rule = new InstantTaskExecutorRule();
     androidTestImplementation("androidx.arch.core:core-testing:${androidx_arch_core_testing}")
 
-    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${kotlinx_coroutines_core}")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${kotlinx_coroutines_android}")
 
 //    testImplementation("org.robolectric:robolectric:4.4")
 //    androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")

@@ -114,5 +114,5 @@ dependencies {
     androidTestImplementation("androidx.test:runner:${androidx_test_runner_version}")
     androidTestImplementation("androidx.test:rules:${androidx_test_rules_version}")
 
-    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${kotlinx_coroutines_core}")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${kotlinx_coroutines_android}")
 }
