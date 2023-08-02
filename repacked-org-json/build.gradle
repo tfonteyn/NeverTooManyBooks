@@ -24,11 +24,11 @@ plugins {
 
 android {
     namespace = "com.hardbacknutter.org.json"
-    compileSdk = rootProject.ext.compile_sdk_version
+    compileSdk = rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        minSdk = rootProject.ext.min_sdk_version
-        targetSdk = rootProject.ext.target_sdk_version
+        minSdk = rootProject.ext.minSdkVersion
+        targetSdk = rootProject.ext.targetSdkVersion
     }
 
     buildTypes {
@@ -54,6 +54,6 @@ android {
 }
 
 dependencies {
-    implementation("androidx.annotation:annotation:${androidx_annotation_version}")
+    implementation("androidx.annotation:annotation:${androidxAnnotationVersion}")
 }
 

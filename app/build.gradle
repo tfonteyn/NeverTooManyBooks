@@ -52,7 +52,7 @@ if (project.hasProperty("NeverTooManyBooks.properties")) {
 
 android {
     namespace = "com.hardbacknutter.nevertoomanybooks"
-    compileSdk = rootProject.ext.compile_sdk_version
+    compileSdk = rootProject.ext.compileSdkVersion
 
     signingConfigs {
         release {
@@ -68,8 +68,8 @@ android {
         versionCode = rootProject.ext.applicationVersionCode
         versionName = rootProject.ext.applicationVersionName
 
-        minSdk = rootProject.ext.min_sdk_version
-        targetSdk = rootProject.ext.target_sdk_version
+        minSdk = rootProject.ext.minSdkVersion
+        targetSdk = rootProject.ext.targetSdkVersion
 
         signingConfig(signingConfigs.release)
 
@@ -237,79 +237,79 @@ dependencies {
     // https://github.com/stleary/JSON-java
     implementation project(path: ":repacked-org-json")
 
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:${desugar_version}")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:${desugarVersion}")
 
-    implementation("androidx.activity:activity:${androidx_activity_version}")
-    implementation("androidx.annotation:annotation:${androidx_annotation_version}")
-    implementation("androidx.appcompat:appcompat:${androidx_appcompat_version}")
-    implementation("androidx.cardview:cardview:${androidx_cardview_version}")
-    implementation("androidx.collection:collection:${androidx_collection_version}")
+    implementation("androidx.activity:activity:${androidxActivityVersion}")
+    implementation("androidx.annotation:annotation:${androidxAnnotationVersion}")
+    implementation("androidx.appcompat:appcompat:${androidxAppcompatVersion}")
+    implementation("androidx.cardview:cardview:${androidxCardviewVersion}")
+    implementation("androidx.collection:collection:${androidxCollectionVersion}")
     // core is only needed for custom constraint helpers
-    implementation("androidx.constraintlayout:constraintlayout-core:${androidx_constraintlayout_core_version}")
-    implementation("androidx.constraintlayout:constraintlayout:${androidx_constraintlayout_version}")
-    implementation("androidx.coordinatorlayout:coordinatorlayout:${androidx_coordinatorlayout_version}")
-    implementation("androidx.core:core:${androidx_core_version}")
-    implementation("androidx.customview:customview:${androidx_customview_version}")
-    implementation("androidx.documentfile:documentfile:${androidx_documentfile_version}")
-    implementation("androidx.drawerlayout:drawerlayout:${androidx_drawerlayout_version}")
-    implementation("androidx.exifinterface:exifinterface:${androidx_exifinterface_version}")
-    implementation("androidx.fragment:fragment:${androidx_fragment_version}")
+    implementation("androidx.constraintlayout:constraintlayout-core:${androidxConstraintlayoutCoreVersion}")
+    implementation("androidx.constraintlayout:constraintlayout:${androidxConstraintlayoutVersion}")
+    implementation("androidx.coordinatorlayout:coordinatorlayout:${androidxCoordinatorlayoutVersion}")
+    implementation("androidx.core:core:${androidxCoreVersion}")
+    implementation("androidx.customview:customview:${androidxCustomviewVersion}")
+    implementation("androidx.documentfile:documentfile:${androidxDocumentfileVersion}")
+    implementation("androidx.drawerlayout:drawerlayout:${androidxDrawerlayoutVersion}")
+    implementation("androidx.exifinterface:exifinterface:${androidxExifinterfaceVersion}")
+    implementation("androidx.fragment:fragment:${androidxFragmentVersion}")
 
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:${androidx_lifecycle_version}")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:${androidx_lifecycle_version}")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:${androidxLifecycleVersion}")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:${androidxLifecycleVersion}")
 
-    implementation("androidx.preference:preference:${androidx_preference_version}")
-    implementation("androidx.recyclerview:recyclerview:${androidx_recyclerview_version}")
-//    implementation("androidx.slidingpanelayout:slidingpanelayout:${androidx_slidingpanelayout_version}")
-    implementation("androidx.viewpager2:viewpager2:${androidx_viewpager2_version}")
-    implementation("androidx.window:window:${androidx_window_version}")
+    implementation("androidx.preference:preference:${androidxPreferenceVersion}")
+    implementation("androidx.recyclerview:recyclerview:${androidxRecyclerviewVersion}")
+//    implementation("androidx.slidingpanelayout:slidingpanelayout:${androidxSlidingpanelayoutVersion}")
+    implementation("androidx.viewpager2:viewpager2:${androidxViewpager2Version}")
+    implementation("androidx.window:window:${androidxWindowVersion}")
 
     // https://github.com/material-components/material-components-android/releases
-    implementation("com.google.android.material:material:${google_material_version}")
+    implementation("com.google.android.material:material:${googleMaterialVersion}")
 
     // jsoup HTML parser library @ https://jsoup.org/
-    implementation("org.jsoup:jsoup:${jsoup_version}")
+    implementation("org.jsoup:jsoup:${jsoupVersion}")
 
     // CameraX based scanner code from "TinyZXingWrapper"
-    releaseImplementation("com.hardbacknutter.tinyzxingwrapper:TinyZXingWrapper:${tiny_zxing_wrapper_version}:release@aar")
-    betaImplementation("com.hardbacknutter.tinyzxingwrapper:TinyZXingWrapper:${tiny_zxing_wrapper_version}:release@aar")
-    debugImplementation("com.hardbacknutter.tinyzxingwrapper:TinyZXingWrapper:${tiny_zxing_wrapper_version}:debug@aar")
+    releaseImplementation("com.hardbacknutter.tinyzxingwrapper:TinyZXingWrapper:${tinyZxingWrapperVersion}:release@aar")
+    betaImplementation("com.hardbacknutter.tinyzxingwrapper:TinyZXingWrapper:${tinyZxingWrapperVersion}:release@aar")
+    debugImplementation("com.hardbacknutter.tinyzxingwrapper:TinyZXingWrapper:${tinyZxingWrapperVersion}:debug@aar")
 
-    implementation "com.google.zxing:core:${zxing_core_version}"
+    implementation "com.google.zxing:core:${zxingCoreVersion}"
 
-    implementation("androidx.camera:camera-core:${androidx_camerax_version}")
-    implementation("androidx.camera:camera-camera2:${androidx_camerax_version}")
-    implementation("androidx.camera:camera-lifecycle:${androidx_camerax_version}")
-    implementation("androidx.camera:camera-view:${androidx_camerax_version}")
+    implementation("androidx.camera:camera-core:${androidxCameraxVersion}")
+    implementation("androidx.camera:camera-camera2:${androidxCameraxVersion}")
+    implementation("androidx.camera:camera-lifecycle:${androidxCameraxVersion}")
+    implementation("androidx.camera:camera-view:${androidxCameraxVersion}")
 
     // https://www.acra.ch/docs/Setup/
-    implementation("ch.acra:acra-core:${acra_version}")
-    implementation("ch.acra:acra-mail:${acra_version}")
-    implementation("ch.acra:acra-dialog:${acra_version}")
+    implementation("ch.acra:acra-core:${acraVersion}")
+    implementation("ch.acra:acra-mail:${acraVersion}")
+    implementation("ch.acra:acra-dialog:${acraVersion}")
     //implementation("com.google.auto.service:auto-service-annotations:${google_auto_service_version}")
     //annotationProcessor("com.google.auto.service:auto-service:${google_auto_service_version}")
 
     // local tests use JUnit5
-    testImplementation("org.mockito:mockito-core:${mockito_version}")
-    testImplementation("org.mockito:mockito-junit-jupiter:${mockito_version}")
+    testImplementation("org.mockito:mockito-core:${mockitoVersion}")
+    testImplementation("org.mockito:mockito-junit-jupiter:${mockitoVersion}")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:${jupiter_version}")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${jupiter_version}")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:${jupiter_version}")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${jupiterVersion}")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${jupiterVersion}")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:${jupiterVersion}")
 
-    androidTestImplementation("de.mannodermaus.junit5:android-test-core:${mannodermaus_version}")
-    androidTestRuntimeOnly("de.mannodermaus.junit5:android-test-runner:${mannodermaus_version}")
+    androidTestImplementation("de.mannodermaus.junit5:android-test-core:${mannodermausVersion}")
+    androidTestRuntimeOnly("de.mannodermaus.junit5:android-test-runner:${mannodermausVersion}")
 
     // device tests use JUnit4
-    androidTestImplementation("androidx.test:core:${androidx_test_core_version}")
-    androidTestImplementation("androidx.test:runner:${androidx_test_runner_version}")
-    androidTestImplementation("androidx.test:rules:${androidx_test_rules_version}")
+    androidTestImplementation("androidx.test:core:${androidxTestCoreVersion}")
+    androidTestImplementation("androidx.test:runner:${androidxTestRunnerVersion}")
+    androidTestImplementation("androidx.test:rules:${androidxTestRulesVersion}")
     // device tests with LiveData must add this class variable:
     //    @Rule
     //    public TestRule rule = new InstantTaskExecutorRule();
-    androidTestImplementation("androidx.arch.core:core-testing:${androidx_arch_core_testing}")
+    androidTestImplementation("androidx.arch.core:core-testing:${androidxArchCoreTestingVersion}")
 
-    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${kotlinx_coroutines_android}")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${kotlinxCoroutinesCoreVersion}")
 
 //    testImplementation("org.robolectric:robolectric:4.4")
 //    androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")

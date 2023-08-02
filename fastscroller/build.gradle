@@ -24,11 +24,11 @@ plugins {
 
 android {
     namespace = "com.hardbacknutter.fastscroller"
-    compileSdk = rootProject.ext.compile_sdk_version
+    compileSdk = rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        minSdk = rootProject.ext.min_sdk_version
-        targetSdk = rootProject.ext.target_sdk_version
+        minSdk = rootProject.ext.minSdkVersion
+        targetSdk = rootProject.ext.targetSdkVersion
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -56,13 +56,13 @@ android {
 }
 
 dependencies {
-    implementation("androidx.activity:activity:${androidx_activity_version}")
-    implementation("androidx.annotation:annotation:${androidx_annotation_version}")
-    implementation("androidx.appcompat:appcompat:${androidx_appcompat_version}")
-    implementation("androidx.core:core:${androidx_core_version}")
-    implementation("androidx.customview:customview:${androidx_customview_version}")
-    implementation("androidx.interpolator:interpolator:${androidx_interpolator_version}")
+    implementation("androidx.activity:activity:${androidxActivityVersion}")
+    implementation("androidx.annotation:annotation:${androidxAnnotationVersion}")
+    implementation("androidx.appcompat:appcompat:${androidxAppcompatVersion}")
+    implementation("androidx.core:core:${androidxCoreVersion}")
+    implementation("androidx.customview:customview:${androidxCustomviewVersion}")
+    implementation("androidx.interpolator:interpolator:${androidxInterpolatorVersion}")
 
-    implementation("androidx.recyclerview:recyclerview:${androidx_recyclerview_version}")
-    implementation("com.google.android.material:material:${google_material_version}")
+    implementation("androidx.recyclerview:recyclerview:${androidxRecyclerviewVersion}")
+    implementation("com.google.android.material:material:${googleMaterialVersion}")
 }
