@@ -195,7 +195,8 @@ public class ExportFragment
                 vb.cbxBooks.setEnabled(true);
 
                 vb.rbBooksGroup.setEnabled(true);
-                vb.rbExportNewAndUpdated.setChecked(true);
+                vb.rbExportAll.setChecked(true);
+                vb.rbExportNewAndUpdated.setChecked(false);
 
                 vb.cbxCovers.setChecked(true);
                 vb.cbxCovers.setEnabled(true);
@@ -213,6 +214,7 @@ public class ExportFragment
 
                 vb.rbBooksGroup.setEnabled(true);
                 vb.rbExportAll.setChecked(true);
+                vb.rbExportNewAndUpdated.setChecked(false);
 
                 vb.cbxCovers.setChecked(false);
                 vb.cbxCovers.setEnabled(false);
@@ -230,6 +232,7 @@ public class ExportFragment
 
                 vb.rbBooksGroup.setEnabled(false);
                 vb.rbExportAll.setChecked(true);
+                vb.rbExportNewAndUpdated.setChecked(false);
 
                 vb.cbxCovers.setChecked(false);
                 vb.cbxCovers.setEnabled(false);
