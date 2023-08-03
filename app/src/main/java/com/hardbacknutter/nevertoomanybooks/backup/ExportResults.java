@@ -146,6 +146,23 @@ public class ExportResults
     }
 
     /**
+     * Do we have <strong>anything</strong> at all, or is the export set empty.
+     *
+     * @return {@code true} if the results are all {@code 0}
+     */
+    public boolean isEmpty() {
+        return styles == 0
+               && preferences == 0
+               && certificates == 0
+               && bookshelves == 0
+               && calibreLibraries == 0
+               && calibreCustomFields == 0
+               && deletedBooks == 0
+               && getBookCount() == 0
+               && getCoverCount() == 0;
+    }
+
+    /**
      * Add a set of results to the current set of results.
      *
      * @param results to add

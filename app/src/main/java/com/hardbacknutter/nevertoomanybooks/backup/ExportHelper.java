@@ -69,6 +69,7 @@ public class ExportHelper
     private static final String PK_LAST_FULL_BACKUP_DATE = "backup.last.date";
     /** Log tag. */
     private static final String TAG = "ExportHelper";
+    private static final String ERROR_NO_URI = "uri";
     @NonNull
     private final DateParser dateParser;
     /** <strong>Where</strong> we write to. */
@@ -120,15 +121,32 @@ public class ExportHelper
         return encoding;
     }
 
+    /**
+     * Set the type of archive (file) to write to.
+     *
+     * @param encoding to use
+     */
     public void setEncoding(@NonNull final ArchiveEncoding encoding) {
         this.encoding = encoding;
     }
 
+    /**
+     * Get the uri to which we'll write.
+     *
+     * @return uri to write to
+     *
+     * @throws NullPointerException if the uri was not set previously
+     */
     @NonNull
     public Uri getUri() {
-        return Objects.requireNonNull(uri, "uri");
+        return Objects.requireNonNull(uri, ERROR_NO_URI);
     }
 
+    /**
+     * Set the uri to which we'll write.
+     *
+     * @param uri to write to
+     */
     public void setUri(@NonNull final Uri uri) {
         this.uri = uri;
     }
@@ -206,13 +224,15 @@ public class ExportHelper
                    StorageException,
                    IOException {
 
-        Objects.requireNonNull(uri, "uri");
+        Objects.requireNonNull(uri, ERROR_NO_URI);
 
         final ExportResults results = new ExportResults();
+        boolean isEmpty = false;
 
         try {
             dataWriter = encoding.createWriter(context, this);
             results.add(dataWriter.write(context, progressListener));
+            isEmpty = results.isEmpty();
 
         } catch (@NonNull final IOException e) {
             // The zip archiver (maybe others as well?) can throw an IOException
@@ -222,7 +242,17 @@ public class ExportHelper
                 throw e;
             }
         } finally {
-            close();
+            // Nasty... if the export finished exporting ZERO items,
+            // then trying to close the dataWriter will result
+            // in a ZipException.
+            // As a ZipException has no 'error-code' to tell us what was really wrong,
+            // other than reading the text... we avoid getting the ZipException
+            // by skipping the close() altogether.
+            // Due to how the JDK Zip code works, we'll still end up
+            // with a zero-bytes file being written to the uri location.
+            if (!isEmpty) {
+                close();
+            }
         }
 
         if (!progressListener.isCancelled()) {
@@ -236,6 +266,7 @@ public class ExportHelper
             }
         }
 
+        // Whether success, failure or an empty-result, the temp file is always cleaned up.
         FileUtils.delete(getTempFile(context));
         return results;
     }
