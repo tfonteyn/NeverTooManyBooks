@@ -70,10 +70,10 @@ public class JsonArchiveWriter
     /**
      * Constructor.
      *
-     * @param helper export configuration
+     * @param exportHelper options
      */
-    public JsonArchiveWriter(@NonNull final ExportHelper helper) {
-        exportHelper = helper;
+    public JsonArchiveWriter(@NonNull final ExportHelper exportHelper) {
+        this.exportHelper = exportHelper;
     }
 
     @NonNull

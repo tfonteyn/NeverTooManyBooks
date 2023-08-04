@@ -72,21 +72,22 @@ public class DbArchiveReader
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param helper  import configuration
+     * @param context      Current context
+     * @param importHelper options
      *
-     * @throws StorageException The covers directory is not available
-     * @throws IOException      on failure to copy the database file
+     * @throws IOException           on failure to copy the database file
+     * @throws FileNotFoundException if the uri cannot be resolved
      */
     public DbArchiveReader(@NonNull final Context context,
-                           @NonNull final ImportHelper helper)
-            throws StorageException, IOException {
+                           @NonNull final ImportHelper importHelper)
+            throws IOException {
 
-        importHelper = helper;
+        this.importHelper = importHelper;
 
-        try (InputStream is = context.getContentResolver().openInputStream(importHelper.getUri())) {
+        try (InputStream is = context.getContentResolver()
+                                     .openInputStream(this.importHelper.getUri())) {
             if (is == null) {
-                throw new FileNotFoundException(importHelper.getUri().toString());
+                throw new FileNotFoundException(this.importHelper.getUri().toString());
             }
 
             // Copy the file from the uri to a place where we can access it as a database.
@@ -113,8 +114,8 @@ public class DbArchiveReader
         }
 
         // Determine if the database file is a supported format
-//        delegateDataReader = SomeDatabaseArchiveReader.getReader(context, sqLiteDatabase,
-//                                                                 importHelper);
+        //  delegateDataReader = SomeDatabaseArchiveReader.getReader(context, sqLiteDatabase,
+        //                                                           importHelper);
         if (delegateDataReader != null) {
             delegateDataReader.validate(context);
             return;

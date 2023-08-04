@@ -68,13 +68,13 @@ public class JsonArchiveReader
      *
      * @param context      Current context
      * @param systemLocale to use for ISO date parsing
-     * @param helper       import configuration
+     * @param importHelper options
      */
     public JsonArchiveReader(@NonNull final Context context,
                              @NonNull final Locale systemLocale,
-                             @NonNull final ImportHelper helper) {
+                             @NonNull final ImportHelper importHelper) {
         this.systemLocale = systemLocale;
-        importHelper = helper;
+        this.importHelper = importHelper;
     }
 
     @WorkerThread
