@@ -133,12 +133,14 @@ public class JsonRecordReader
      * @param context      Current context
      * @param systemLocale to use for ISO date parsing
      * @param allowedTypes the record types we're allowed to read
+     * @param importHelper options
      */
     @AnyThread
     public JsonRecordReader(@NonNull final Context context,
                             @NonNull final Locale systemLocale,
-                            @NonNull final Set<RecordType> allowedTypes) {
-        super(context, systemLocale);
+                            @NonNull final Set<RecordType> allowedTypes,
+                            @NonNull final ImportHelper importHelper) {
+        super(systemLocale, importHelper);
         this.allowedTypes = allowedTypes;
     }
 
@@ -219,7 +221,6 @@ public class JsonRecordReader
     @NonNull
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ArchiveReaderRecord record,
-                              @NonNull final ImportHelper helper,
                               @NonNull final ProgressListener progressListener)
             throws DataReaderException,
                    StorageException,
@@ -269,17 +270,17 @@ public class JsonRecordReader
 
                     if (recordType == RecordType.Bookshelves
                         || recordType == RecordType.AutoDetect) {
-                        readBookshelves(context, root, helper, defaultStyle);
+                        readBookshelves(context, root, defaultStyle);
                     }
 
                     if (recordType == RecordType.CalibreLibraries
                         || recordType == RecordType.AutoDetect) {
-                        readCalibreLibraries(context, root, helper, defaultStyle);
+                        readCalibreLibraries(context, root, defaultStyle);
                     }
 
                     if (recordType == RecordType.CalibreCustomFields
                         || recordType == RecordType.AutoDetect) {
-                        readCalibreCustomFields(root, helper);
+                        readCalibreCustomFields(root);
                     }
 
                     if (recordType == RecordType.DeletedBooks
@@ -289,7 +290,7 @@ public class JsonRecordReader
 
                     if (recordType == RecordType.Books
                         || recordType == RecordType.AutoDetect) {
-                        readBooks(context, root, helper, defaultStyle,
+                        readBooks(context, root, defaultStyle,
                                   progressListener);
                     }
                 }
@@ -368,7 +369,6 @@ public class JsonRecordReader
 
     private void readBookshelves(@NonNull final Context context,
                                  @NonNull final JSONObject root,
-                                 @NonNull final ImportHelper helper,
                                  @NonNull final Style defaultStyle)
             throws JSONException,
                    UncheckedDaoWriteException {
@@ -382,7 +382,7 @@ public class JsonRecordReader
                         bookshelfDao.fixId(bookshelf);
                         if (bookshelf.getId() > 0) {
                             // The shelf already exists
-                            final DataReader.Updates updateOption = helper.getUpdateOption();
+                            final DataReader.Updates updateOption = importHelper.getUpdateOption();
                             switch (updateOption) {
                                 case Overwrite: {
                                     try {
@@ -410,7 +410,6 @@ public class JsonRecordReader
 
     private void readCalibreLibraries(@NonNull final Context context,
                                       @NonNull final JSONObject root,
-                                      @NonNull final ImportHelper helper,
                                       @NonNull final Style defaultStyle)
             throws JSONException {
         final JSONArray jsonRoot = root.optJSONArray(RecordType.CalibreLibraries.getName());
@@ -424,7 +423,7 @@ public class JsonRecordReader
                         libraryDao.fixId(context, library);
                         if (library.getId() > 0) {
                             // The library already exists
-                            final DataReader.Updates updateOption = helper.getUpdateOption();
+                            final DataReader.Updates updateOption = importHelper.getUpdateOption();
                             switch (updateOption) {
                                 case Overwrite: {
                                     libraryDao.update(library);
@@ -441,8 +440,7 @@ public class JsonRecordReader
         }
     }
 
-    private void readCalibreCustomFields(@NonNull final JSONObject root,
-                                         @NonNull final ImportHelper helper)
+    private void readCalibreCustomFields(@NonNull final JSONObject root)
             throws JSONException {
         final JSONArray jsonRoot = root.optJSONArray(RecordType.CalibreCustomFields.getName());
         if (jsonRoot != null) {
@@ -455,7 +453,7 @@ public class JsonRecordReader
                         dao.fixId(calibreCustomField);
                         if (calibreCustomField.getId() > 0) {
                             // The field already exists
-                            final DataReader.Updates updateOption = helper.getUpdateOption();
+                            final DataReader.Updates updateOption = importHelper.getUpdateOption();
                             switch (updateOption) {
                                 case Overwrite: {
                                     dao.update(calibreCustomField);
@@ -477,14 +475,15 @@ public class JsonRecordReader
         if (jsonRoot != null) {
             final List<Pair<String, String>> list = new DeletedBooksCoder().decode(jsonRoot);
             if (!list.isEmpty()) {
-                results.deletedBookRecords = deletedBooksDao.importRecords(list);
+                results.deletedBookRecords = ServiceLocator.getInstance()
+                                                           .getDeletedBooksDao()
+                                                           .importRecords(list);
             }
         }
     }
 
     private void readBooks(@NonNull final Context context,
                            @NonNull final JSONObject root,
-                           @NonNull final ImportHelper helper,
                            @NonNull final Style defaultStyle,
                            @NonNull final ProgressListener progressListener)
             throws StorageException,
@@ -530,7 +529,7 @@ public class JsonRecordReader
                 final long importNumericId = book.getLong(DBKey.PK_ID);
                 book.remove(DBKey.PK_ID);
 
-                importBookWithUuid(context, helper, book, importUuid, importNumericId);
+                importBookWithUuid(context, book, importUuid, importNumericId);
 
                 if (txLock != null) {
                     db.setTransactionSuccessful();

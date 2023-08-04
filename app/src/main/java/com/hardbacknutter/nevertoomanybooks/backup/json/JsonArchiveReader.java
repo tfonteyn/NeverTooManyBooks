@@ -107,7 +107,8 @@ public class JsonArchiveReader
 
             try (is; RecordReader recordReader =
                     new JsonRecordReader(context, systemLocale,
-                                         EnumSet.of(RecordType.MetaData))) {
+                                         EnumSet.of(RecordType.MetaData),
+                                         importHelper)) {
                 // wrap the entire input into a single record.
                 final ArchiveReaderRecord record = new JsonArchiveRecord(
                         importHelper.getUriInfo().getDisplayName(context), is);
@@ -143,12 +144,13 @@ public class JsonArchiveReader
         RecordType.addRelatedTypes(recordTypes);
 
         try (RecordReader recordReader = new JsonRecordReader(context, systemLocale,
-                                                              recordTypes)) {
+                                                              recordTypes,
+                                                              importHelper)) {
             // wrap the entire input into a single record.
             final ArchiveReaderRecord record = new JsonArchiveRecord(
                     importHelper.getUriInfo().getDisplayName(context), is);
 
-            return recordReader.read(context, record, importHelper, progressListener);
+            return recordReader.read(context, record, progressListener);
         } finally {
             is.close();
         }

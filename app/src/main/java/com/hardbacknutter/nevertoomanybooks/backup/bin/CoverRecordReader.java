@@ -56,14 +56,19 @@ public class CoverRecordReader
 
     @NonNull
     private final Supplier<CoverStorage> coverStorageSupplier;
+    @NonNull
+    private final ImportHelper importHelper;
 
     /**
      * Constructor.
      *
      * @param coverStorageSupplier deferred supplier for the {@link CoverStorage}
+     * @param importHelper         options
      */
-    public CoverRecordReader(@NonNull final Supplier<CoverStorage> coverStorageSupplier) {
+    public CoverRecordReader(@NonNull final Supplier<CoverStorage> coverStorageSupplier,
+                             @NonNull final ImportHelper importHelper) {
         this.coverStorageSupplier = coverStorageSupplier;
+        this.importHelper = importHelper;
     }
 
     @SuppressWarnings("OverlyBroadThrowsClause")
@@ -71,7 +76,6 @@ public class CoverRecordReader
     @Override
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ArchiveReaderRecord record,
-                              @NonNull final ImportHelper helper,
                               @NonNull final ProgressListener progressListener)
             throws StorageException, IOException {
 
@@ -90,7 +94,7 @@ public class CoverRecordReader
 
                     if (exists) {
                         // Are we allowed to overwrite at all ?
-                        switch (helper.getUpdateOption()) {
+                        switch (importHelper.getUpdateOption()) {
                             case Skip: {
                                 results.coversSkipped++;
                                 return results;

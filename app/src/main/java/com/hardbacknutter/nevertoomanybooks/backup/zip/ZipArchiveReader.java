@@ -204,7 +204,8 @@ public class ZipArchiveReader
                                 context.getString(R.string.error_file_not_recognized)));
 
                 reader = encoding
-                        .createReader(context, systemLocale, EnumSet.of(RecordType.MetaData))
+                        .createReader(context, systemLocale, EnumSet.of(RecordType.MetaData),
+                                      importHelper)
                         .orElseThrow(() -> new DataReaderException(
                                 context.getString(R.string.error_file_not_recognized)));
 
@@ -300,7 +301,8 @@ public class ZipArchiveReader
 
         final boolean readCovers = recordTypes.contains(RecordType.Cover);
         if (readCovers) {
-            coverReader = new CoverRecordReader(ServiceLocator.getInstance()::getCoverStorage);
+            coverReader = new CoverRecordReader(ServiceLocator.getInstance()::getCoverStorage,
+                                                importHelper);
 
             final Optional<Integer> coverCount = metaData.getCoverCount();
             if (coverCount.isPresent()) {
@@ -364,8 +366,7 @@ public class ZipArchiveReader
                         }
 
                         // there will be many covers... we're re-using a single RecordReader
-                        results.add(coverReader.read(context, record, importHelper,
-                                                     progressListener));
+                        results.add(coverReader.read(context, record, progressListener));
 
                     } else if (type == RecordType.Books && recordTypes.contains(type)) {
                         progressListener.publishProgress(
@@ -432,10 +433,11 @@ public class ZipArchiveReader
             RecordReader reader = null;
             try {
                 final Optional<RecordReader> optReader =
-                        recordEncoding.get().createReader(context, systemLocale, allowedTypes);
+                        recordEncoding.get().createReader(context, systemLocale, allowedTypes,
+                                                          importHelper);
                 if (optReader.isPresent()) {
                     reader = optReader.get();
-                    results.add(reader.read(context, record, importHelper, progressListener));
+                    results.add(reader.read(context, record, progressListener));
                 } else {
                     results.recordsSkipped++;
                 }

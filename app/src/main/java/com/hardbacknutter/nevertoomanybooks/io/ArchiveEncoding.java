@@ -50,8 +50,8 @@ import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.UriInfo;
+import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 
 /**
  * Archive encoding (formats) (partially) supported.
@@ -240,8 +240,8 @@ public enum ArchiveEncoding
     /**
      * Create an {@link DataWriter} based on the type.
      *
-     * @param context Current context
-     * @param helper  writer configuration
+     * @param context      Current context
+     * @param exportHelper options
      *
      * @return a new writer
      *
@@ -251,19 +251,19 @@ public enum ArchiveEncoding
     @WorkerThread
     @NonNull
     public DataWriter<ExportResults> createWriter(@NonNull final Context context,
-                                                  @NonNull final ExportHelper helper)
+                                                  @NonNull final ExportHelper exportHelper)
             throws FileNotFoundException {
 
         switch (this) {
-            case Zip:
-                return new ZipArchiveWriter(context, helper);
-
-            case SqLiteDb:
-                return new DbArchiveWriter(context, helper);
-
-            case Json:
-                return new JsonArchiveWriter(helper);
-
+            case Zip: {
+                return new ZipArchiveWriter(context, exportHelper);
+            }
+            case SqLiteDb: {
+                return new DbArchiveWriter(exportHelper, DBHelper.getDatabasePath(context));
+            }
+            case Json: {
+                return new JsonArchiveWriter(exportHelper);
+            }
             case Csv:
                 // writing to csv is no longer supported
             default:
@@ -276,12 +276,11 @@ public enum ArchiveEncoding
      *
      * @param context      Current context
      * @param systemLocale to use for ISO date parsing
-     * @param helper       import configuration
+     * @param importHelper options
      *
      * @return a new reader
      *
      * @throws DataReaderException  if the input is not recognized
-     * @throws StorageException     on storage related failures
      * @throws IOException          on generic/other IO failures
      * @throws CredentialsException on authentication/login failures
      * @see DataReader
@@ -291,30 +290,29 @@ public enum ArchiveEncoding
     public DataReader<ArchiveMetaData, ImportResults> createReader(
             @NonNull final Context context,
             @NonNull final Locale systemLocale,
-            @NonNull final ImportHelper helper)
+            @NonNull final ImportHelper importHelper)
             throws DataReaderException,
                    CredentialsException,
-                   StorageException,
                    IOException {
 
         final DataReader<ArchiveMetaData, ImportResults> reader;
         switch (this) {
-            case Zip:
-                reader = new ZipArchiveReader(context, systemLocale, helper);
+            case Zip: {
+                reader = new ZipArchiveReader(context, systemLocale, importHelper);
                 break;
-
-            case Csv:
-                reader = new CsvArchiveReader(systemLocale, helper);
+            }
+            case Csv: {
+                reader = new CsvArchiveReader(systemLocale, importHelper);
                 break;
-
-            case SqLiteDb:
-                reader = new DbArchiveReader(context, helper);
+            }
+            case SqLiteDb: {
+                reader = new DbArchiveReader(context, importHelper);
                 break;
-
-            case Json:
-                reader = new JsonArchiveReader(context, systemLocale, helper);
+            }
+            case Json: {
+                reader = new JsonArchiveReader(context, systemLocale, importHelper);
                 break;
-
+            }
             default:
                 throw new DataReaderException(context.getString(
                         R.string.error_file_not_recognized));

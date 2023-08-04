@@ -37,7 +37,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.DeletedBooksDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.RecordReader;
@@ -47,12 +46,10 @@ public abstract class BaseRecordReader
 
     private static final String TAG = "BaseRecordReader";
 
-    /** Database Access. */
+    @NonNull
+    protected final ImportHelper importHelper;
     @NonNull
     protected final BookDao bookDao;
-    @NonNull
-    protected final DeletedBooksDao deletedBooksDao;
-
     @NonNull
     protected final DateParser dateParser;
 
@@ -61,13 +58,13 @@ public abstract class BaseRecordReader
     /**
      * Constructor.
      *
-     * @param context      Current context
      * @param systemLocale to use for ISO date parsing
+     * @param importHelper options
      */
-    protected BaseRecordReader(@NonNull final Context context,
-                               @NonNull final Locale systemLocale) {
-        bookDao = ServiceLocator.getInstance().getBookDao();
-        deletedBooksDao = ServiceLocator.getInstance().getDeletedBooksDao();
+    protected BaseRecordReader(@NonNull final Locale systemLocale,
+                               @NonNull final ImportHelper importHelper) {
+        this.importHelper = importHelper;
+        this.bookDao = ServiceLocator.getInstance().getBookDao();
 
         this.dateParser = new ISODateParser(systemLocale);
     }
@@ -76,7 +73,6 @@ public abstract class BaseRecordReader
      * insert or update a single book which has a <strong>valid UUID</strong>.
      *
      * @param context         Current context
-     * @param helper          ImportHelper for options etc...
      * @param book            to import
      * @param uuid            the uuid as found in the import record
      * @param importNumericId (optional) the numeric id for the book as found in the import.
@@ -86,7 +82,6 @@ public abstract class BaseRecordReader
      * @throws DaoWriteException on failure
      */
     protected void importBookWithUuid(@NonNull final Context context,
-                                      @NonNull final ImportHelper helper,
                                       @NonNull final Book book,
                                       @NonNull final String uuid,
                                       final long importNumericId)
@@ -102,7 +97,7 @@ public abstract class BaseRecordReader
             book.putLong(DBKey.PK_ID, databaseBookId);
 
             // UPDATE the existing book (if allowed).
-            final DataReader.Updates updateOption = helper.getUpdateOption();
+            final DataReader.Updates updateOption = importHelper.getUpdateOption();
             switch (updateOption) {
                 case Overwrite: {
                     bookDao.update(context, book, Set.of(BookDao.BookFlag.RunInBatch,

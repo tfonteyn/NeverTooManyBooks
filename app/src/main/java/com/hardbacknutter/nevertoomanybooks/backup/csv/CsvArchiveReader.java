@@ -37,6 +37,7 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -68,12 +69,12 @@ public class CsvArchiveReader
      * Constructor.
      *
      * @param systemLocale to use for ISO date parsing
-     * @param helper       import configuration
+     * @param importHelper options
      */
     public CsvArchiveReader(@NonNull final Locale systemLocale,
-                            @NonNull final ImportHelper helper) {
+                            @NonNull final ImportHelper importHelper) {
         this.systemLocale = systemLocale;
-        importHelper = helper;
+        this.importHelper = importHelper;
     }
 
     @NonNull
@@ -101,15 +102,19 @@ public class CsvArchiveReader
                                  new File(serviceLocator.getUpgradesDir(), DB_BACKUP_NAME),
                                  DB_BACKUP_COPIES);
 
+        final Style defaultStyle = serviceLocator.getStyles().getDefault();
+
         try (InputStream is = context.getContentResolver().openInputStream(importHelper.getUri());
-             RecordReader recordReader = new CsvRecordReader(context, systemLocale)) {
+             RecordReader recordReader = new CsvRecordReader(context, systemLocale,
+                                                             importHelper,
+                                                             defaultStyle)) {
             if (is == null) {
                 throw new FileNotFoundException(importHelper.getUri().toString());
             }
             final ArchiveReaderRecord record = new CsvArchiveRecord(
                     importHelper.getUriInfo().getDisplayName(context), is);
 
-            return recordReader.read(context, record, importHelper, progressListener);
+            return recordReader.read(context, record, progressListener);
         }
     }
 

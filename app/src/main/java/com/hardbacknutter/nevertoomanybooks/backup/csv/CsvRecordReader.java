@@ -60,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
@@ -131,12 +132,15 @@ public class CsvRecordReader
      *
      * @param context      Current context
      * @param systemLocale to use for ISO date parsing
+     * @param importHelper options
+     * @param defaultStyle the default style to use for {@link Bookshelf}s
      */
     @AnyThread
     public CsvRecordReader(@NonNull final Context context,
-                           @NonNull final Locale systemLocale) {
-        super(context, systemLocale);
-        final Style defaultStyle = ServiceLocator.getInstance().getStyles().getDefault();
+                           @NonNull final Locale systemLocale,
+                           @NonNull final ImportHelper importHelper,
+                           @NonNull final Style defaultStyle) {
+        super(systemLocale, importHelper);
         bookCoder = new BookCoder(context, defaultStyle);
     }
 
@@ -144,7 +148,6 @@ public class CsvRecordReader
     @NonNull
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ArchiveReaderRecord record,
-                              @NonNull final ImportHelper helper,
                               @NonNull final ProgressListener progressListener)
             throws DataReaderException,
                    StorageException,
@@ -171,7 +174,7 @@ public class CsvRecordReader
                 }
 
                 if (!allLines.isEmpty()) {
-                    readBooks(context, helper, allLines, progressListener);
+                    readBooks(context, allLines, progressListener);
                 }
             }
         }
@@ -183,7 +186,6 @@ public class CsvRecordReader
     }
 
     private void readBooks(@NonNull final Context context,
-                           @NonNull final ImportHelper helper,
                            @NonNull final List<String> books,
                            @NonNull final ProgressListener progressListener)
             throws StorageException,
@@ -199,7 +201,7 @@ public class CsvRecordReader
         // check for required columns
         final List<String> csvColumnNamesList = Arrays.asList(csvColumnNames);
         // If a sync was requested, we'll need this column or cannot proceed.
-        if (helper.getUpdateOption() == DataReader.Updates.OnlyNewer) {
+        if (importHelper.getUpdateOption() == DataReader.Updates.OnlyNewer) {
             requireColumnOrThrow(context, csvColumnNamesList, DBKey.DATE_LAST_UPDATED__UTC);
         }
 
@@ -242,10 +244,10 @@ public class CsvRecordReader
                 // ALWAYS let the UUID trump the ID; we may be importing someone else's list
                 if (hasUuid) {
                     final String importUuid = book.getString(DBKey.BOOK_UUID);
-                    importBookWithUuid(context, helper, book, importUuid, importNumericId);
+                    importBookWithUuid(context, book, importUuid, importNumericId);
 
                 } else if (importNumericId > 0) {
-                    importBookWithId(context, helper, book, importNumericId);
+                    importBookWithId(context, book, importNumericId);
 
                 } else {
                     importBook(context, book);
@@ -284,7 +286,6 @@ public class CsvRecordReader
      * insert or update a single book which has a potentially usable id.
      *
      * @param context         Current context
-     * @param helper          import configuration
      * @param book            to import
      * @param importNumericId the numeric id for the book as found in the import.
      *
@@ -292,7 +293,6 @@ public class CsvRecordReader
      * @throws DaoWriteException on failure
      */
     private void importBookWithId(@NonNull final Context context,
-                                  @NonNull final ImportHelper helper,
                                   @NonNull final Book book,
                                   @IntRange(from = 1) final long importNumericId)
             throws StorageException, DaoWriteException {
@@ -306,7 +306,7 @@ public class CsvRecordReader
             // This is risky as we might overwrite a different book which happens
             // to have the same id, but other than skipping there is no other option for now.
             // Ideally, we should ask the user presenting a choice "skip/overwrite"
-            final DataReader.Updates updateOption = helper.getUpdateOption();
+            final DataReader.Updates updateOption = importHelper.getUpdateOption();
             switch (updateOption) {
                 case Overwrite: {
                     bookDao.update(context, book, Set.of(BookDao.BookFlag.RunInBatch,

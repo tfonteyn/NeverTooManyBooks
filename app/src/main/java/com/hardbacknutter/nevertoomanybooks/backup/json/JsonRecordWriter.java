@@ -36,6 +36,7 @@ import java.security.cert.X509Certificate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -87,17 +88,22 @@ import com.hardbacknutter.org.json.JSONObject;
 public class JsonRecordWriter
         implements RecordWriter {
 
+    @NonNull
+    private final Supplier<CoverStorage> coverStorageSupplier;
     @Nullable
     private final LocalDateTime utcSinceDateTime;
 
     /**
      * Constructor.
      *
-     * @param utcSinceDateTime (optional) UTC based date to select only items
-     *                         modified or added since.
+     * @param coverStorageSupplier deferred supplier for the {@link CoverStorage}
+     * @param utcSinceDateTime     (optional) UTC based date to select only items
+     *                             modified or added since.
      */
     @AnyThread
-    public JsonRecordWriter(@Nullable final LocalDateTime utcSinceDateTime) {
+    public JsonRecordWriter(@NonNull final Supplier<CoverStorage> coverStorageSupplier,
+                            @Nullable final LocalDateTime utcSinceDateTime) {
+        this.coverStorageSupplier = coverStorageSupplier;
         this.utcSinceDateTime = utcSinceDateTime;
     }
 
@@ -168,7 +174,7 @@ public class JsonRecordWriter
         final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
         final Style defaultStyle = stylesHelper.getDefault();
 
-        final CoverStorage coverStorage = ServiceLocator.getInstance().getCoverStorage();
+        final CoverStorage coverStorage = coverStorageSupplier.get();
 
         final ExportResults results = new ExportResults();
         final JSONObject jsonData = new JSONObject();

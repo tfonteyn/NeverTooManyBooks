@@ -31,7 +31,6 @@ import java.io.IOException;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
@@ -53,13 +52,13 @@ public class DbArchiveWriter
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param helper  export configuration
+     * @param exportHelper options
+     * @param databasePath the database file path
      */
-    public DbArchiveWriter(@NonNull final Context context,
-                           @NonNull final ExportHelper helper) {
-        exportHelper = helper;
-        databasePath = DBHelper.getDatabasePath(context);
+    public DbArchiveWriter(@NonNull final ExportHelper exportHelper,
+                           @NonNull final File databasePath) {
+        this.exportHelper = exportHelper;
+        this.databasePath = databasePath;
     }
 
     @NonNull

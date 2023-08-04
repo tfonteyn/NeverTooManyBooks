@@ -83,10 +83,14 @@ public class JsonArchiveWriter
             throws DataWriterException,
                    IOException {
 
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+
+        // do a cleanup before we start writing
+        serviceLocator.getMaintenanceDao().purge();
+
         final LocalDateTime dateSince = exportHelper.getLastDone(context);
 
-        final int booksToExport = ServiceLocator.getInstance().getBookDao()
-                                                .countBooksForExport(dateSince);
+        final int booksToExport = serviceLocator.getBookDao().countBooksForExport(dateSince);
 
         if (booksToExport > 0) {
             progressListener.setMaxPos(booksToExport);
@@ -99,7 +103,8 @@ public class JsonArchiveWriter
             try (OutputStream os = exportHelper.createOutputStream(context);
                  Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
                  Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
-                 RecordWriter recordWriter = new JsonRecordWriter(dateSince)) {
+                 RecordWriter recordWriter = new JsonRecordWriter(serviceLocator::getCoverStorage,
+                                                                  dateSince)) {
 
                 // manually concat
                 // 1. archive envelope
@@ -127,6 +132,7 @@ public class JsonArchiveWriter
 
             return results;
         } else {
+            // no books to backup. We ignore all other record types!
             return new ExportResults();
         }
     }

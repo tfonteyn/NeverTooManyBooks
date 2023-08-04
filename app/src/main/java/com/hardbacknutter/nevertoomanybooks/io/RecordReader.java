@@ -28,10 +28,9 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 @FunctionalInterface
 public interface RecordReader
@@ -65,7 +64,6 @@ public interface RecordReader
      *
      * @param context          Current context
      * @param record           to read data from
-     * @param helper           ImportHelper for options etc...
      * @param progressListener Progress and cancellation provider
      *
      * @return results summary
@@ -78,7 +76,6 @@ public interface RecordReader
     @NonNull
     ImportResults read(@NonNull Context context,
                        @NonNull ArchiveReaderRecord record,
-                       @NonNull ImportHelper helper,
                        @NonNull ProgressListener progressListener)
             throws DataReaderException,
                    StorageException,

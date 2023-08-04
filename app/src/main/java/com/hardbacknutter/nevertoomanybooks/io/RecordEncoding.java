@@ -31,10 +31,13 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlRecordReader;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 
 /**
@@ -79,7 +82,7 @@ public enum RecordEncoding {
         final String name = entryName.toLowerCase(Locale.ENGLISH);
 
         // (faster?) shortcut check for covers
-        if (name.endsWith(".jpg")) {
+        if (name.endsWith(Cover.extension)) {
             return Optional.of(Cover);
         }
 
@@ -113,12 +116,17 @@ public enum RecordEncoding {
      *                         modified or added since.
      *
      * @return {@link RecordWriter}
+     *
+     * @throws IllegalStateException if there is no writer available (which would be a bug)
      */
     @NonNull
     public RecordWriter createWriter(@Nullable final LocalDateTime utcSinceDateTime) {
         switch (this) {
-            case Json:
-                return new JsonRecordWriter(utcSinceDateTime);
+            case Json: {
+                final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+                return new JsonRecordWriter(serviceLocator::getCoverStorage,
+                                            utcSinceDateTime);
+            }
             case Cover:
                 // Not useful, won't implement. It's just a File copy operation
             case Xml:
@@ -139,6 +147,7 @@ public enum RecordEncoding {
      * @param allowedTypes the {@link RecordType}s which the reader
      *                     will be <strong>allowed</strong> to read.
      *                     This allows filtering/skipping unwanted entries
+     * @param importHelper options
      *
      * @return Optional reader
      *
@@ -148,13 +157,19 @@ public enum RecordEncoding {
     @NonNull
     public Optional<RecordReader> createReader(@NonNull final Context context,
                                                @NonNull final Locale systemLocale,
-                                               @NonNull final Set<RecordType> allowedTypes) {
+                                               @NonNull final Set<RecordType> allowedTypes,
+                                               @NonNull final ImportHelper importHelper) {
         switch (this) {
             case Json:
                 return Optional.of(new JsonRecordReader(context, systemLocale,
-                                                        allowedTypes));
-            case Csv:
-                return Optional.of(new CsvRecordReader(context, systemLocale));
+                                                        allowedTypes,
+                                                        importHelper));
+            case Csv: {
+                final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+                final Style defaultStyle = serviceLocator.getStyles().getDefault();
+                return Optional.of(new CsvRecordReader(context, systemLocale, importHelper,
+                                                       defaultStyle));
+            }
             case Xml:
                 //noinspection deprecation
                 return Optional.of(new XmlRecordReader(context));
