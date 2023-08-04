@@ -41,10 +41,9 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.backup.BaseRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.backupbase.ArchiveWriterAbstract;
-import com.hardbacknutter.nevertoomanybooks.backup.backupbase.BaseRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookshelfCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BundleCoder;
@@ -55,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.DeletedBooksCoder
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.StyleCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
@@ -198,7 +198,7 @@ public class JsonRecordReader
                         // in the current archiver version format.
                         // If it's not... then the import will fail at a later stage...
                         final ArchiveMetaData metaData = new ArchiveMetaData(
-                                ArchiveWriterAbstract.VERSION,
+                                ZipArchiveWriter.VERSION,
                                 ServiceLocator.getInstance().newBundle());
                         metaData.setBookCount(nrOfBooks);
                         // and now let's hope for the best...

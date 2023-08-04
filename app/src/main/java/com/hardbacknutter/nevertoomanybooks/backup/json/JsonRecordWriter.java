@@ -40,7 +40,6 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.backupbase.ArchiveWriterAbstract;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookshelfCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BundleCoder;
@@ -51,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.DeletedBooksCoder
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.StyleCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
@@ -108,7 +108,9 @@ public class JsonRecordWriter
             throws DataWriterException,
                    IOException {
         try {
-            writer.write(new BundleCoder(context).encode(metaData.getData()).toString());
+            writer.write(new BundleCoder(context)
+                                 .encode(metaData.getData())
+                                 .toString());
         } catch (@NonNull final JSONException e) {
             throw new DataWriterException(e);
         }
@@ -116,7 +118,7 @@ public class JsonRecordWriter
 
     /**
      * IMPORTANT:
-     * For the current supported backup version(s), {@link ArchiveWriterAbstract}
+     * For the current supported backup version(s), {@link ZipArchiveWriter}
      * will call this method with <strong>ONE</strong> RecordType at a time.
      * i.e. Styles OR Preferences OR ...
      * and hence the jsonData written will be several virtual files (records), one for each type.
