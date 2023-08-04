@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -84,7 +84,6 @@
  * <li>csv: books only</li>
  * <li>db: nothing actually implemented for now</li>
  * <li>json: all data (except covers)</li>
- * <li>tar: all data in json,xml,csv formats + covers</li>
  * <li>zip: all data in json,xml,csv formats + covers</li>
  * </ul>
  * <p>

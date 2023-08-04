@@ -152,7 +152,7 @@ public enum SyncServer
      *
      * @throws CertificateException     on failures related to a user installed CA.
      * @throws IllegalArgumentException if there are no record types set
-     * @throws IllegalStateException    if there is no writer available
+     * @throws IllegalStateException if there is no writer available (which would be a bug)
      */
     @NonNull
     DataWriter<SyncWriterResults> createWriter(@NonNull final Context context,
