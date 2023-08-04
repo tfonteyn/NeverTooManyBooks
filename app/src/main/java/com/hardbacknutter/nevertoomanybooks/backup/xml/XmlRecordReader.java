@@ -47,8 +47,8 @@ import javax.xml.parsers.SAXParserFactory;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.backupbase.ArchiveReaderAbstract;
-import com.hardbacknutter.nevertoomanybooks.backup.backupbase.ArchiveWriterAbstract;
+import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveReader;
+import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
@@ -70,8 +70,8 @@ import org.xml.sax.helpers.DefaultHandler;
  * @deprecated the main backup to a zip file is storing all text data in JSON
  *         This reader only supports reading {@link RecordType#MetaData}
  *         so we're able to read the info block from older backups;
- *         i.e. {@link ArchiveWriterAbstract} version 2.
- *         See {@link ArchiveReaderAbstract} class docs for the version descriptions.
+ *         i.e. {@link ZipArchiveReader} version 2.
+ *         See {@link ZipArchiveWriter} class docs for the version descriptions.
  *         <p>
  *         Most of the remaining code here is overkill and should be rationalized some day.
  */

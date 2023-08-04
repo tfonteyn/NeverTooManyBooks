@@ -111,7 +111,7 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
     /**
      * Get the Set of {@link RecordType}.
      *
-     * @return an immutable Set
+     * @return an new Set
      */
     @NonNull
     public Set<RecordType> getRecordTypes() {
