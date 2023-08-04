@@ -33,18 +33,14 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
- * <ul>
- *     <li>{@link CredentialsException}: We cannot authenticate to the site,
- *                                       the user MUST take action on it NOW.</li>
- *     <li>{@link StorageException}:     Specific local storage issues,
- *                                       the user MUST take action on it NOW.</li>
- *     <li>{@link DataReaderException}:  The embedded Exception has the details,
- *                                       should be reported to the user,
- *                                       but action is optional.</li>
- *    <li>{@link IOException}:           Generic IO issues.</li>
- * </ul>
+ * The interface for classes that read from file-based archives and/or
+ * download (sync) data from an external server.
+ *
+ * @param <METADATA> the result of the {@link #readMetaData} operation.
+ * @param <RESULT>   the result of the {@link #read} operation.
  */
-public interface DataReader<METADATA, RESULTS>
+@FunctionalInterface
+public interface DataReader<METADATA, RESULT>
         extends Closeable {
 
     /**
@@ -54,10 +50,15 @@ public interface DataReader<METADATA, RESULTS>
      *
      * @return Optional with {@link METADATA}
      *
-     * @throws DataReaderException  on a decoding/parsing of data issue
+     * @throws DataReaderException  on a decoding/parsing of data issue.
+     *                              The embedded Exception has the details,
+     *                              should be reported to the user,
+     *                              but action is optional.
      * @throws StorageException     on storage related failures
+     *                              The user MUST take action on it NOW.
      * @throws IOException          on generic/other IO failures
      * @throws CredentialsException on authentication/login failures
+     *                              The user MUST take action on it NOW.
      */
     @WorkerThread
     @NonNull
@@ -77,9 +78,13 @@ public interface DataReader<METADATA, RESULTS>
      *
      * @param context Current context
      *
-     * @throws DataReaderException  on a decoding/parsing of data issue
-     * @throws IOException on generic/other IO failures
+     * @throws DataReaderException  on a decoding/parsing of data issue.
+     *                              The embedded Exception has the details,
+     *                              should be reported to the user,
+     *                              but action is optional.
+     * @throws IOException          on generic/other IO failures
      * @throws CredentialsException on authentication/login failures
+     *                              The user MUST take action on it NOW.
      */
     @WorkerThread
     default void validate(@NonNull final Context context)
@@ -97,25 +102,37 @@ public interface DataReader<METADATA, RESULTS>
      *
      * @return results summary
      *
-     * @throws DataReaderException  on a decoding/parsing of data issue
+     * @throws DataReaderException  on a decoding/parsing of data issue.
+     *                              The embedded Exception has the details,
+     *                              should be reported to the user,
+     *                              but action is optional.
      * @throws StorageException     on storage related failures
-     * @throws IOException on generic/other IO failures
+     *                              The user MUST take action on it NOW.
+     * @throws IOException          on generic/other IO failures
      * @throws CredentialsException on authentication/login failures
+     *                              The user MUST take action on it NOW.
      */
     @WorkerThread
     @NonNull
-    RESULTS read(@NonNull Context context,
-                 @NonNull ProgressListener progressListener)
+    RESULT read(@NonNull Context context,
+                @NonNull ProgressListener progressListener)
             throws DataReaderException,
                    CredentialsException,
                    StorageException,
                    IOException;
 
+    /**
+     * Called when the operation is cancelled.
+     * <p>
+     * Override if the implementation needs to cleanup/cancel something.
+     */
     default void cancel() {
 
     }
 
     /**
+     * Called when the operation is finished.
+     * <p>
      * Override if the implementation needs to close something.
      *
      * @throws IOException on generic/other IO failures
@@ -127,7 +144,7 @@ public interface DataReader<METADATA, RESULTS>
     }
 
     /**
-     * Existing Books/Covers handling.
+     * How to handle already existing data.
      */
     enum Updates {
         /** skip updates entirely. Current data is untouched. */

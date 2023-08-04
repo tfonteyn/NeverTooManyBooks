@@ -32,16 +32,10 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
- * <ul>
- *     <li>{@link CredentialsException}: We cannot authenticate to the site,
- *                                       the user MUST take action on it NOW.</li>
- *     <li>{@link StorageException}:     Specific local storage issues,
- *                                       the user MUST take action on it NOW.</li>
- *     <li>{@link DataWriterException}:  The embedded Exception has the details,
- *                                       should be reported to the user,
- *                                       but action is optional.</li>
- *    <li>{@link IOException}:           Generic IO issues.</li>
- * </ul>
+ * The interface for classes that write to file-based archives and/or
+ * upload (sync) data to an external server.
+ *
+ * @param <RESULT> the result of the {@link #write} operation.
  */
 @FunctionalInterface
 public interface DataWriter<RESULT>
@@ -57,10 +51,15 @@ public interface DataWriter<RESULT>
      *
      * @return results summary
      *
-     * @throws DataWriterException  on a decoding/parsing of data issue
-     * @throws StorageException     on storage related failures
-     * @throws IOException          on generic/other IO failures
-     * @throws CredentialsException on authentication/login failures
+     * @throws DataWriterException  on a decoding/parsing of data issue.
+     *                              The embedded Exception has the details,
+     *                              should be reported to the user,
+     *                              but action is optional.
+     * @throws StorageException     on storage related failures.
+     *                              The user MUST take action on it NOW.
+     * @throws IOException          on generic/other IO failures.
+     * @throws CredentialsException on authentication/login failures.
+     *                              The user MUST take action on it NOW.
      */
     @WorkerThread
     @NonNull
@@ -71,11 +70,17 @@ public interface DataWriter<RESULT>
                    StorageException,
                    IOException;
 
-
+    /**
+     * Called when the operation is cancelled.
+     * <p>
+     * Override if the implementation needs to cleanup/cancel something.
+     */
     default void cancel() {
     }
 
     /**
+     * Called when the operation is finished.
+     * <p>
      * Override if the implementation needs to close something.
      *
      * @throws IOException on generic/other IO failures
