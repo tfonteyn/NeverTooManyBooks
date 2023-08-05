@@ -29,13 +29,13 @@ import java.io.InputStream;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
+import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
@@ -57,18 +57,18 @@ public class CoverRecordReader
     @NonNull
     private final Supplier<CoverStorage> coverStorageSupplier;
     @NonNull
-    private final ImportHelper importHelper;
+    private final DataReader.Updates updateOption;
 
     /**
      * Constructor.
      *
      * @param coverStorageSupplier deferred supplier for the {@link CoverStorage}
-     * @param importHelper         options
+     * @param updateOption         options
      */
     public CoverRecordReader(@NonNull final Supplier<CoverStorage> coverStorageSupplier,
-                             @NonNull final ImportHelper importHelper) {
+                             @NonNull final DataReader.Updates updateOption) {
         this.coverStorageSupplier = coverStorageSupplier;
-        this.importHelper = importHelper;
+        this.updateOption = updateOption;
     }
 
     @SuppressWarnings("OverlyBroadThrowsClause")
@@ -94,7 +94,7 @@ public class CoverRecordReader
 
                     if (exists) {
                         // Are we allowed to overwrite at all ?
-                        switch (importHelper.getUpdateOption()) {
+                        switch (updateOption) {
                             case Skip: {
                                 results.coversSkipped++;
                                 return results;

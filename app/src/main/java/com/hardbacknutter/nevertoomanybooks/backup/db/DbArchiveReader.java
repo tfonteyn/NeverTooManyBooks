@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.backup.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,7 +36,6 @@ import java.io.OutputStream;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
@@ -56,11 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 public class DbArchiveReader
         implements DataReader<ArchiveMetaData, ImportResults> {
 
-    /** Import configuration. */
-    @SuppressWarnings("FieldCanBeLocal")
-    @NonNull
-    private final ImportHelper importHelper;
-
     @Nullable
     private final SQLiteDatabase sqLiteDatabase;
 
@@ -72,22 +67,19 @@ public class DbArchiveReader
     /**
      * Constructor.
      *
-     * @param context      Current context
-     * @param importHelper options
+     * @param context Current context
+     * @param uri     to read from
      *
      * @throws IOException           on failure to copy the database file
      * @throws FileNotFoundException if the uri cannot be resolved
      */
     public DbArchiveReader(@NonNull final Context context,
-                           @NonNull final ImportHelper importHelper)
-            throws IOException {
+                           @NonNull final Uri uri)
+    throws IOException {
 
-        this.importHelper = importHelper;
-
-        try (InputStream is = context.getContentResolver()
-                                     .openInputStream(this.importHelper.getUri())) {
+        try (InputStream is = context.getContentResolver().openInputStream(uri)) {
             if (is == null) {
-                throw new FileNotFoundException(this.importHelper.getUri().toString());
+                throw new FileNotFoundException(uri.toString());
             }
 
             // Copy the file from the uri to a place where we can access it as a database.

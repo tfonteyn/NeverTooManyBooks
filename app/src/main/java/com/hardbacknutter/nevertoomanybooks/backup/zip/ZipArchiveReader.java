@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.backup.zip;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.net.Uri;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -43,7 +44,6 @@ import java.util.zip.ZipInputStream;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.bin.CoverRecordReader;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -111,10 +111,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 public class ZipArchiveReader
         implements DataReader<ArchiveMetaData, ImportResults> {
 
-    /** Import configuration. */
-    @NonNull
-    private final ImportHelper importHelper;
-
+    private static final String ERROR_META_DATA = "metaData";
     /** Provide access to the Uri InputStream. */
     @NonNull
     private final ContentResolver contentResolver;
@@ -125,6 +122,12 @@ public class ZipArchiveReader
 
     @NonNull
     private final Locale systemLocale;
+    @NonNull
+    private final Uri uri;
+    @NonNull
+    private final Updates updateOption;
+    @NonNull
+    private final Set<RecordType> recordTypes;
 
     /**
      * The data stream for the archive.
@@ -146,14 +149,21 @@ public class ZipArchiveReader
      *
      * @param context      Current context
      * @param systemLocale to use for ISO date parsing
-     * @param importHelper options
+     * @param uri          to read from
+     * @param updateOption options
+     * @param recordTypes  the record types to accept and read
      */
     public ZipArchiveReader(@NonNull final Context context,
                             @NonNull final Locale systemLocale,
-                            @NonNull final ImportHelper importHelper) {
+                            @NonNull final Uri uri,
+                            @NonNull final DataReader.Updates updateOption,
+                            @NonNull final Set<RecordType> recordTypes) {
         this.contentResolver = context.getContentResolver();
         this.systemLocale = systemLocale;
-        this.importHelper = importHelper;
+        this.uri = uri;
+        this.updateOption = updateOption;
+        this.recordTypes = recordTypes;
+        RecordType.addRelatedTypes(recordTypes);
 
         this.results = new ImportResults();
     }
@@ -204,8 +214,9 @@ public class ZipArchiveReader
                                 context.getString(R.string.error_file_not_recognized)));
 
                 reader = encoding
-                        .createReader(context, systemLocale, EnumSet.of(RecordType.MetaData),
-                                      importHelper)
+                        .createReader(context, systemLocale,
+                                      EnumSet.of(RecordType.MetaData),
+                                      updateOption)
                         .orElseThrow(() -> new DataReaderException(
                                 context.getString(R.string.error_file_not_recognized)));
 
@@ -263,7 +274,7 @@ public class ZipArchiveReader
 
         // Sanity check: the archive info should have been read during the validate phase
         // This is also a check that the validate method has been called.
-        Objects.requireNonNull(metaData, "metaData");
+        Objects.requireNonNull(metaData, ERROR_META_DATA);
 
         final int archiveVersion = metaData.getArchiveVersion();
         switch (archiveVersion) {
@@ -277,8 +288,6 @@ public class ZipArchiveReader
                 // Important: testing with v2 and up is exhaustive.
                 // v1 was the old BC format but reading books and covers from it SHOULD work fine.
                 // The v1 prefs and styles are simply ignored.
-                final Set<RecordType> recordTypes = importHelper.getRecordTypes();
-                RecordType.addRelatedTypes(recordTypes);
                 read(context, recordTypes, progressListener);
                 break;
 
@@ -295,14 +304,14 @@ public class ZipArchiveReader
                       @NonNull final ProgressListener progressListener)
             throws DataReaderException, IOException, StorageException {
 
-        Objects.requireNonNull(metaData, "metaData");
+        Objects.requireNonNull(metaData, ERROR_META_DATA);
 
         int estimatedSteps = 1 + metaData.getBookCount().orElse(0);
 
         final boolean readCovers = recordTypes.contains(RecordType.Cover);
         if (readCovers) {
             coverReader = new CoverRecordReader(ServiceLocator.getInstance()::getCoverStorage,
-                                                importHelper);
+                                                updateOption);
 
             final Optional<Integer> coverCount = metaData.getCoverCount();
             if (coverCount.isPresent()) {
@@ -433,8 +442,9 @@ public class ZipArchiveReader
             RecordReader reader = null;
             try {
                 final Optional<RecordReader> optReader =
-                        recordEncoding.get().createReader(context, systemLocale, allowedTypes,
-                                                          importHelper);
+                        recordEncoding.get().createReader(context, systemLocale,
+                                                          allowedTypes,
+                                                          updateOption);
                 if (optReader.isPresent()) {
                     reader = optReader.get();
                     results.add(reader.read(context, record, progressListener));
@@ -521,9 +531,9 @@ public class ZipArchiveReader
             throws FileNotFoundException {
 
         if (zipInputStream == null) {
-            final InputStream is = contentResolver.openInputStream(importHelper.getUri());
+            final InputStream is = contentResolver.openInputStream(uri);
             if (is == null) {
-                throw new FileNotFoundException(importHelper.getUri().toString());
+                throw new FileNotFoundException(uri.toString());
             }
             zipInputStream = new ZipInputStream(new BufferedInputStream(
                     is, RecordReader.BUFFER_SIZE));

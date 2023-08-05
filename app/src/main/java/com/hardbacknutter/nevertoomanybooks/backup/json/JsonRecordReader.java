@@ -42,7 +42,6 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.BaseRecordReader;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookshelfCoder;
@@ -133,14 +132,14 @@ public class JsonRecordReader
      * @param context      Current context
      * @param systemLocale to use for ISO date parsing
      * @param allowedTypes the record types we're allowed to read
-     * @param importHelper options
+     * @param updateOption options
      */
     @AnyThread
     public JsonRecordReader(@NonNull final Context context,
                             @NonNull final Locale systemLocale,
                             @NonNull final Set<RecordType> allowedTypes,
-                            @NonNull final ImportHelper importHelper) {
-        super(systemLocale, importHelper);
+                            @NonNull final DataReader.Updates updateOption) {
+        super(systemLocale, updateOption);
         this.allowedTypes = allowedTypes;
     }
 
@@ -382,8 +381,7 @@ public class JsonRecordReader
                         bookshelfDao.fixId(bookshelf);
                         if (bookshelf.getId() > 0) {
                             // The shelf already exists
-                            final DataReader.Updates updateOption = importHelper.getUpdateOption();
-                            switch (updateOption) {
+                            switch (getUpdateOption()) {
                                 case Overwrite: {
                                     try {
                                         bookshelfDao.update(context, bookshelf);
@@ -423,8 +421,7 @@ public class JsonRecordReader
                         libraryDao.fixId(context, library);
                         if (library.getId() > 0) {
                             // The library already exists
-                            final DataReader.Updates updateOption = importHelper.getUpdateOption();
-                            switch (updateOption) {
+                            switch (getUpdateOption()) {
                                 case Overwrite: {
                                     libraryDao.update(library);
                                     break;
@@ -453,8 +450,7 @@ public class JsonRecordReader
                         dao.fixId(calibreCustomField);
                         if (calibreCustomField.getId() > 0) {
                             // The field already exists
-                            final DataReader.Updates updateOption = importHelper.getUpdateOption();
-                            switch (updateOption) {
+                            switch (getUpdateOption()) {
                                 case Overwrite: {
                                     dao.update(calibreCustomField);
                                     break;

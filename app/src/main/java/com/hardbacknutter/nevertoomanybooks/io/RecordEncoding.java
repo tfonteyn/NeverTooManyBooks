@@ -32,7 +32,6 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordWriter;
@@ -147,7 +146,7 @@ public enum RecordEncoding {
      * @param allowedTypes the {@link RecordType}s which the reader
      *                     will be <strong>allowed</strong> to read.
      *                     This allows filtering/skipping unwanted entries
-     * @param importHelper options
+     * @param updateOption options
      *
      * @return Optional reader
      *
@@ -158,16 +157,17 @@ public enum RecordEncoding {
     public Optional<RecordReader> createReader(@NonNull final Context context,
                                                @NonNull final Locale systemLocale,
                                                @NonNull final Set<RecordType> allowedTypes,
-                                               @NonNull final ImportHelper importHelper) {
+                                               @NonNull final DataReader.Updates updateOption) {
         switch (this) {
             case Json:
                 return Optional.of(new JsonRecordReader(context, systemLocale,
                                                         allowedTypes,
-                                                        importHelper));
+                                                        updateOption));
             case Csv: {
                 final ServiceLocator serviceLocator = ServiceLocator.getInstance();
                 final Style defaultStyle = serviceLocator.getStyles().getDefault();
-                return Optional.of(new CsvRecordReader(context, systemLocale, importHelper,
+                return Optional.of(new CsvRecordReader(context, systemLocale,
+                                                       updateOption,
                                                        defaultStyle));
             }
             case Xml:

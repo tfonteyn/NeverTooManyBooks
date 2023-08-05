@@ -31,7 +31,6 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.UriInfo;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
@@ -46,13 +45,12 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 public final class ImportHelper
         extends DataReaderHelperBase<ArchiveMetaData, ImportResults> {
 
-    /** <strong>Where</strong> we read from. */
-    @NonNull
-    private final Uri uri;
+
     /** <strong>How</strong> we read from the uri. */
     @NonNull
     private final ArchiveEncoding encoding;
 
+    /** <strong>Where</strong> we read from. */
     @NonNull
     private final UriInfo uriInfo;
     @SuppressWarnings("FieldNotUsedInToString")
@@ -75,8 +73,7 @@ public final class ImportHelper
                         @NonNull final Uri uri)
             throws FileNotFoundException, DataReaderException {
 
-        this.uri = uri;
-        uriInfo = new UriInfo(this.uri);
+        uriInfo = new UriInfo(uri);
 
         this.systemLocale = systemLocale;
 
@@ -135,7 +132,7 @@ public final class ImportHelper
      */
     @NonNull
     public Uri getUri() {
-        return uri;
+        return uriInfo.getUri();
     }
 
     /**
@@ -144,7 +141,7 @@ public final class ImportHelper
      * @return info
      */
     @NonNull
-    public UriInfo getUriInfo() {
+    UriInfo getUriInfo() {
         return uriInfo;
     }
 
@@ -153,9 +150,10 @@ public final class ImportHelper
             @NonNull final Context context)
             throws DataReaderException,
                    CredentialsException,
-                   StorageException,
                    IOException {
-        return encoding.createReader(context, systemLocale, this);
+        return encoding.createReader(context, systemLocale, getUri(),
+                                     getUpdateOption(),
+                                     getRecordTypes());
     }
 
     @Override
@@ -163,7 +161,6 @@ public final class ImportHelper
     public String toString() {
         return "ImportHelper{"
                + super.toString()
-               + ", uri=" + uri
                + ", encoding=" + encoding
                + ", uriInfo=" + uriInfo
                + '}';

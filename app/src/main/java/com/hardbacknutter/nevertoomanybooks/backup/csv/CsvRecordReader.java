@@ -48,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.BaseRecordReader;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
@@ -132,15 +131,15 @@ public class CsvRecordReader
      *
      * @param context      Current context
      * @param systemLocale to use for ISO date parsing
-     * @param importHelper options
+     * @param updateOption options
      * @param defaultStyle the default style to use for {@link Bookshelf}s
      */
     @AnyThread
     public CsvRecordReader(@NonNull final Context context,
                            @NonNull final Locale systemLocale,
-                           @NonNull final ImportHelper importHelper,
+                           @NonNull final DataReader.Updates updateOption,
                            @NonNull final Style defaultStyle) {
-        super(systemLocale, importHelper);
+        super(systemLocale, updateOption);
         bookCoder = new BookCoder(context, defaultStyle);
     }
 
@@ -201,7 +200,7 @@ public class CsvRecordReader
         // check for required columns
         final List<String> csvColumnNamesList = Arrays.asList(csvColumnNames);
         // If a sync was requested, we'll need this column or cannot proceed.
-        if (importHelper.getUpdateOption() == DataReader.Updates.OnlyNewer) {
+        if (getUpdateOption() == DataReader.Updates.OnlyNewer) {
             requireColumnOrThrow(context, csvColumnNamesList, DBKey.DATE_LAST_UPDATED__UTC);
         }
 
@@ -306,8 +305,7 @@ public class CsvRecordReader
             // This is risky as we might overwrite a different book which happens
             // to have the same id, but other than skipping there is no other option for now.
             // Ideally, we should ask the user presenting a choice "skip/overwrite"
-            final DataReader.Updates updateOption = importHelper.getUpdateOption();
-            switch (updateOption) {
+            switch (getUpdateOption()) {
                 case Overwrite: {
                     bookDao.update(context, book, Set.of(BookDao.BookFlag.RunInBatch,
                                                          BookDao.BookFlag.UseUpdateDateIfPresent));

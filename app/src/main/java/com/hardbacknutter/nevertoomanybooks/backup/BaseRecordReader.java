@@ -47,11 +47,11 @@ public abstract class BaseRecordReader
     private static final String TAG = "BaseRecordReader";
 
     @NonNull
-    protected final ImportHelper importHelper;
-    @NonNull
     protected final BookDao bookDao;
     @NonNull
     protected final DateParser dateParser;
+    @NonNull
+    private final DataReader.Updates updateOption;
 
     protected ImportResults results;
 
@@ -59,14 +59,19 @@ public abstract class BaseRecordReader
      * Constructor.
      *
      * @param systemLocale to use for ISO date parsing
-     * @param importHelper options
+     * @param updateOption options
      */
     protected BaseRecordReader(@NonNull final Locale systemLocale,
-                               @NonNull final ImportHelper importHelper) {
-        this.importHelper = importHelper;
+                               @NonNull final DataReader.Updates updateOption) {
+        this.updateOption = updateOption;
         this.bookDao = ServiceLocator.getInstance().getBookDao();
 
         this.dateParser = new ISODateParser(systemLocale);
+    }
+
+    @NonNull
+    protected DataReader.Updates getUpdateOption() {
+        return updateOption;
     }
 
     /**
@@ -97,7 +102,6 @@ public abstract class BaseRecordReader
             book.putLong(DBKey.PK_ID, databaseBookId);
 
             // UPDATE the existing book (if allowed).
-            final DataReader.Updates updateOption = importHelper.getUpdateOption();
             switch (updateOption) {
                 case Overwrite: {
                     bookDao.update(context, book, Set.of(BookDao.BookFlag.RunInBatch,

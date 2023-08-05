@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.backup.json;
 
 import android.content.Context;
+import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,9 +38,9 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.UriInfo;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
@@ -55,9 +56,12 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 public class JsonArchiveReader
         implements DataReader<ArchiveMetaData, ImportResults> {
 
-    /** Import configuration. */
     @NonNull
-    private final ImportHelper importHelper;
+    private final Uri uri;
+    @NonNull
+    private final Updates updateOption;
+    @NonNull
+    private final Set<RecordType> recordTypes;
     private final Locale systemLocale;
 
     @Nullable
@@ -68,13 +72,20 @@ public class JsonArchiveReader
      *
      * @param context      Current context
      * @param systemLocale to use for ISO date parsing
-     * @param importHelper options
+     * @param uri          to read from
+     * @param updateOption options
+     * @param recordTypes  the record types to accept and read
      */
     public JsonArchiveReader(@NonNull final Context context,
                              @NonNull final Locale systemLocale,
-                             @NonNull final ImportHelper importHelper) {
+                             @NonNull final Uri uri,
+                             @NonNull final DataReader.Updates updateOption,
+                             @NonNull final Set<RecordType> recordTypes) {
         this.systemLocale = systemLocale;
-        this.importHelper = importHelper;
+        this.uri = uri;
+        this.updateOption = updateOption;
+        this.recordTypes = recordTypes;
+        RecordType.addRelatedTypes(recordTypes);
     }
 
     @WorkerThread
@@ -99,19 +110,18 @@ public class JsonArchiveReader
 
         if (metaData == null) {
             @Nullable
-            final InputStream is = context.getContentResolver()
-                                          .openInputStream(importHelper.getUri());
+            final InputStream is = context.getContentResolver().openInputStream(uri);
             if (is == null) {
-                throw new FileNotFoundException(importHelper.getUri().toString());
+                throw new FileNotFoundException(uri.toString());
             }
 
             try (is; RecordReader recordReader =
                     new JsonRecordReader(context, systemLocale,
                                          EnumSet.of(RecordType.MetaData),
-                                         importHelper)) {
+                                         updateOption)) {
                 // wrap the entire input into a single record.
                 final ArchiveReaderRecord record = new JsonArchiveRecord(
-                        importHelper.getUriInfo().getDisplayName(context), is);
+                        new UriInfo(uri).getDisplayName(context), is);
 
                 metaData = recordReader.readMetaData(context, record).orElse(null);
             }
@@ -135,20 +145,17 @@ public class JsonArchiveReader
                    IOException {
 
         @Nullable
-        final InputStream is = context.getContentResolver().openInputStream(importHelper.getUri());
+        final InputStream is = context.getContentResolver().openInputStream(uri);
         if (is == null) {
-            throw new FileNotFoundException(importHelper.getUri().toString());
+            throw new FileNotFoundException(uri.toString());
         }
-
-        final Set<RecordType> recordTypes = importHelper.getRecordTypes();
-        RecordType.addRelatedTypes(recordTypes);
 
         try (RecordReader recordReader = new JsonRecordReader(context, systemLocale,
                                                               recordTypes,
-                                                              importHelper)) {
+                                                              updateOption)) {
             // wrap the entire input into a single record.
             final ArchiveReaderRecord record = new JsonArchiveRecord(
-                    importHelper.getUriInfo().getDisplayName(context), is);
+                    new UriInfo(uri).getDisplayName(context), is);
 
             return recordReader.read(context, record, progressListener);
         } finally {

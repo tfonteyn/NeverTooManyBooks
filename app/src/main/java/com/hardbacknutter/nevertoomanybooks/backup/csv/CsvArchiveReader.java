@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.backup.csv;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -35,12 +36,12 @@ import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.UriInfo;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
@@ -61,20 +62,24 @@ public class CsvArchiveReader
 
     @NonNull
     private final Locale systemLocale;
-    /** Import configuration. */
     @NonNull
-    private final ImportHelper importHelper;
+    private final Uri uri;
+    @NonNull
+    private final DataReader.Updates updateOption;
 
     /**
      * Constructor.
      *
      * @param systemLocale to use for ISO date parsing
-     * @param importHelper options
+     * @param uri          to read from
+     * @param updateOption options
      */
     public CsvArchiveReader(@NonNull final Locale systemLocale,
-                            @NonNull final ImportHelper importHelper) {
+                            @NonNull final Uri uri,
+                            @NonNull final DataReader.Updates updateOption) {
         this.systemLocale = systemLocale;
-        this.importHelper = importHelper;
+        this.uri = uri;
+        this.updateOption = updateOption;
     }
 
     @NonNull
@@ -104,15 +109,15 @@ public class CsvArchiveReader
 
         final Style defaultStyle = serviceLocator.getStyles().getDefault();
 
-        try (InputStream is = context.getContentResolver().openInputStream(importHelper.getUri());
+        try (InputStream is = context.getContentResolver().openInputStream(uri);
              RecordReader recordReader = new CsvRecordReader(context, systemLocale,
-                                                             importHelper,
+                                                             updateOption,
                                                              defaultStyle)) {
             if (is == null) {
-                throw new FileNotFoundException(importHelper.getUri().toString());
+                throw new FileNotFoundException(uri.toString());
             }
             final ArchiveReaderRecord record = new CsvArchiveRecord(
-                    importHelper.getUriInfo().getDisplayName(context), is);
+                    new UriInfo(uri).getDisplayName(context), is);
 
             return recordReader.read(context, record, progressListener);
         }

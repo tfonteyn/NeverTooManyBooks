@@ -33,13 +33,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.db.DbArchiveReader;
@@ -124,7 +124,7 @@ public enum ArchiveEncoding
      *
      * @return ArchiveEncoding
      *
-     * @throws FileNotFoundException on...
+     * @throws FileNotFoundException if the uri cannot be resolved
      */
     @NonNull
     public static Optional<ArchiveEncoding> getEncoding(@NonNull final Context context,
@@ -276,7 +276,9 @@ public enum ArchiveEncoding
      *
      * @param context      Current context
      * @param systemLocale to use for ISO date parsing
-     * @param importHelper options
+     * @param uri          to read from
+     * @param updateOption options
+     * @param recordTypes  the record types to accept and read
      *
      * @return a new reader
      *
@@ -290,7 +292,9 @@ public enum ArchiveEncoding
     public DataReader<ArchiveMetaData, ImportResults> createReader(
             @NonNull final Context context,
             @NonNull final Locale systemLocale,
-            @NonNull final ImportHelper importHelper)
+            @NonNull final Uri uri,
+            @NonNull final DataReader.Updates updateOption,
+            @NonNull final Set<RecordType> recordTypes)
             throws DataReaderException,
                    CredentialsException,
                    IOException {
@@ -298,19 +302,22 @@ public enum ArchiveEncoding
         final DataReader<ArchiveMetaData, ImportResults> reader;
         switch (this) {
             case Zip: {
-                reader = new ZipArchiveReader(context, systemLocale, importHelper);
+                reader = new ZipArchiveReader(context, systemLocale, uri,
+                                              updateOption, recordTypes);
                 break;
             }
             case Csv: {
-                reader = new CsvArchiveReader(systemLocale, importHelper);
+                reader = new CsvArchiveReader(systemLocale, uri,
+                                              updateOption);
                 break;
             }
             case SqLiteDb: {
-                reader = new DbArchiveReader(context, importHelper);
+                reader = new DbArchiveReader(context, uri);
                 break;
             }
             case Json: {
-                reader = new JsonArchiveReader(context, systemLocale, importHelper);
+                reader = new JsonArchiveReader(context, systemLocale, uri,
+                                               updateOption, recordTypes);
                 break;
             }
             default:
