@@ -23,6 +23,7 @@ import android.annotation.SuppressLint;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 
@@ -56,7 +57,7 @@ public class XmlDumpParser
     private Locator locator;
 
     @CallSuper
-    public void setDocumentLocator(final Locator locator) {
+    public void setDocumentLocator(@NonNull final Locator locator) {
         this.locator = locator;
     }
 
@@ -74,8 +75,8 @@ public class XmlDumpParser
     }
 
     @CallSuper
-    public void startPrefixMapping(final String prefix,
-                                   final String uri)
+    public void startPrefixMapping(@NonNull final String prefix,
+                                   @NonNull final String uri)
             throws SAXException {
         namespaceBegin = true;
         currentNamespace = prefix;
@@ -105,15 +106,15 @@ public class XmlDumpParser
     }
 
     @CallSuper
-    public void endElement(final String namespaceURI,
-                           final String localName,
-                           final String qName)
+    public void endElement(@NonNull final String namespaceURI,
+                           @NonNull final String localName,
+                           @NonNull final String qName)
             throws SAXException {
         LoggerFactory.getLogger().d(TAG, "endElement", "</" + qName + ">");
     }
 
     @CallSuper
-    public void characters(final char[] ch,
+    public void characters(@NonNull final char[] ch,
                            final int start,
                            final int length)
             throws SAXException {
@@ -125,7 +126,7 @@ public class XmlDumpParser
     }
 
     @CallSuper
-    public void ignorableWhitespace(final char[] ch,
+    public void ignorableWhitespace(@NonNull final char[] ch,
                                     final int start,
                                     final int length)
             throws SAXException {
@@ -137,15 +138,15 @@ public class XmlDumpParser
     }
 
     @CallSuper
-    public void processingInstruction(final String target,
-                                      final String data)
+    public void processingInstruction(@NonNull final String target,
+                                      @Nullable final String data)
             throws SAXException {
         LoggerFactory.getLogger()
-                      .d(TAG, "processingInstruction", "<?" + target + " " + data + "?>");
+                     .d(TAG, "processingInstruction", "<?" + target + " " + data + "?>");
     }
 
     @CallSuper
-    public void skippedEntity(final String name)
+    public void skippedEntity(@NonNull final String name)
             throws SAXException {
         LoggerFactory.getLogger().d(TAG, "skippedEntity", "&" + name + ";");
     }

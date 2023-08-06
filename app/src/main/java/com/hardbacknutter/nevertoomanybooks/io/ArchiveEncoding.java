@@ -129,6 +129,7 @@ public enum ArchiveEncoding
      * @throws FileNotFoundException if the uri cannot be resolved
      * @throws IllegalStateException if the uri scheme is not supported
      */
+    @SuppressWarnings({"MagicNumber", "CheckStyle"})
     @NonNull
     public static Optional<ArchiveEncoding> getEncoding(@NonNull final Context context,
                                                         @NonNull final Uri uri)
