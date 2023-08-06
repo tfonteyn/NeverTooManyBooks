@@ -171,6 +171,8 @@ public class JsonRecordWriter
             throws DataWriterException,
                    IOException {
 
+        final Set<RecordType> resolvedRecordTypes = RecordType.addRelatedTypes(recordTypes);
+
         final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
         final Style defaultStyle = stylesHelper.getDefault();
 
@@ -183,7 +185,7 @@ public class JsonRecordWriter
             // Write styles first, and preferences next! This will facilitate & speedup
             // importing as we'll be seeking in the input archive for these.
 
-            if (recordTypes.contains(RecordType.Styles)
+            if (resolvedRecordTypes.contains(RecordType.Styles)
                 && !progressListener.isCancelled()) {
                 progressListener.publishProgress(1, context.getString(R.string.lbl_styles));
 
@@ -195,7 +197,7 @@ public class JsonRecordWriter
                 results.styles = styles.size();
             }
 
-            if (recordTypes.contains(RecordType.Preferences)
+            if (resolvedRecordTypes.contains(RecordType.Preferences)
                 && !progressListener.isCancelled()) {
                 progressListener.publishProgress(1, context.getString(R.string.lbl_settings));
 
@@ -205,7 +207,7 @@ public class JsonRecordWriter
                 results.preferences = 1;
             }
 
-            if (recordTypes.contains(RecordType.Certificates)
+            if (resolvedRecordTypes.contains(RecordType.Certificates)
                 && !progressListener.isCancelled()) {
                 progressListener.publishProgress(1, context.getString(
                         R.string.lbl_certificates));
@@ -227,7 +229,7 @@ public class JsonRecordWriter
                 }
             }
 
-            if (recordTypes.contains(RecordType.Bookshelves)
+            if (resolvedRecordTypes.contains(RecordType.Bookshelves)
                 && !progressListener.isCancelled()) {
                 progressListener.publishProgress(1, context.getString(
                         R.string.lbl_bookshelves));
@@ -241,7 +243,7 @@ public class JsonRecordWriter
                 results.bookshelves = bookshelves.size();
             }
 
-            if (recordTypes.contains(RecordType.CalibreLibraries)
+            if (resolvedRecordTypes.contains(RecordType.CalibreLibraries)
                 && !progressListener.isCancelled()) {
                 progressListener.publishProgress(1, context.getString(
                         R.string.site_calibre));
@@ -255,7 +257,7 @@ public class JsonRecordWriter
                 results.calibreLibraries = libraries.size();
             }
 
-            if (recordTypes.contains(RecordType.CalibreCustomFields)
+            if (resolvedRecordTypes.contains(RecordType.CalibreCustomFields)
                 && !progressListener.isCancelled()) {
                 progressListener.publishProgress(1, context.getString(
                         R.string.site_calibre));
@@ -269,7 +271,7 @@ public class JsonRecordWriter
                 results.calibreCustomFields = fields.size();
             }
 
-            if (recordTypes.contains(RecordType.DeletedBooks)
+            if (resolvedRecordTypes.contains(RecordType.DeletedBooks)
                 && !progressListener.isCancelled()) {
                 progressListener.publishProgress(1, context.getString(
                         R.string.lbl_books));
@@ -283,10 +285,11 @@ public class JsonRecordWriter
                 results.deletedBooks = list.size();
             }
 
-            if (recordTypes.contains(RecordType.Books)
+            if (resolvedRecordTypes.contains(RecordType.Books)
                 && !progressListener.isCancelled()) {
 
-                final boolean collectCoverFilenames = recordTypes.contains(RecordType.Cover);
+                final boolean collectCoverFilenames = resolvedRecordTypes.contains(
+                        RecordType.Cover);
 
                 final JsonCoder<Book> coder = new BookCoder(context, defaultStyle);
 

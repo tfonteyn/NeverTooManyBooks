@@ -162,8 +162,7 @@ public class ZipArchiveReader
         this.systemLocale = systemLocale;
         this.uri = uri;
         this.updateOption = updateOption;
-        this.recordTypes = recordTypes;
-        RecordType.addRelatedTypes(recordTypes);
+        this.recordTypes = RecordType.addRelatedTypes(recordTypes);
 
         this.results = new ImportResults();
     }

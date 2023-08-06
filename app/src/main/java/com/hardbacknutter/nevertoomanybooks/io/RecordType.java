@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.io;
 
 import androidx.annotation.NonNull;
 
+import java.util.EnumSet;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
@@ -177,19 +178,32 @@ public enum RecordType {
         return Optional.empty();
     }
 
-    // this is a quick hack.... we'll probably regret doing this in the future..
-    public static void addRelatedTypes(@NonNull final Set<RecordType> recordTypes) {
+    /**
+     * Resolve the given record types by adding any related ones.
+     * The incoming set is not modified.
+     * <p>
+     * Dev. note: this is a quick hack.... we'll probably regret doing this in the future.
+     *
+     * @param recordTypes the base set
+     *
+     * @return a copy/enhanced set
+     */
+    @NonNull
+    public static Set<RecordType> addRelatedTypes(@NonNull final Set<RecordType> recordTypes) {
+        final Set<RecordType> all = EnumSet.copyOf(recordTypes);
         // If we're doing preferences, then implicitly handle calibre custom fields as well
         if (recordTypes.contains(Preferences)) {
-            recordTypes.add(CalibreCustomFields);
+            all.add(CalibreCustomFields);
         }
 
         // If we're doing books, then we must do its dependencies:
         if (recordTypes.contains(Books)) {
-            recordTypes.add(Bookshelves);
-            recordTypes.add(CalibreLibraries);
-            recordTypes.add(DeletedBooks);
+            all.add(Bookshelves);
+            all.add(CalibreLibraries);
+            all.add(DeletedBooks);
         }
+
+        return all;
     }
 
     /**
