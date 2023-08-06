@@ -31,7 +31,6 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.UriInfo;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
@@ -50,12 +49,13 @@ public final class ImportHelper
     @NonNull
     private final ArchiveEncoding encoding;
 
-    /** <strong>Where</strong> we read from. */
-    @NonNull
-    private final UriInfo uriInfo;
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final Locale systemLocale;
+
+    /** <strong>Where</strong> we read from. */
+    @NonNull
+    private final Uri uri;
 
     /**
      * Constructor. The encoding will be determined from the Uri.
@@ -73,9 +73,8 @@ public final class ImportHelper
                         @NonNull final Uri uri)
             throws FileNotFoundException, DataReaderException {
 
-        uriInfo = new UriInfo(uri);
-
         this.systemLocale = systemLocale;
+        this.uri = uri;
 
         encoding = ArchiveEncoding.getEncoding(context, uri).orElseThrow(
                 () -> new DataReaderException(context.getString(
@@ -132,17 +131,7 @@ public final class ImportHelper
      */
     @NonNull
     public Uri getUri() {
-        return uriInfo.getUri();
-    }
-
-    /**
-     * Get the {@link UriInfo} of the archive (based on the Uri/Encoding).
-     *
-     * @return info
-     */
-    @NonNull
-    UriInfo getUriInfo() {
-        return uriInfo;
+        return uri;
     }
 
     @NonNull
@@ -151,7 +140,7 @@ public final class ImportHelper
             throws DataReaderException,
                    CredentialsException,
                    IOException {
-        return encoding.createReader(context, systemLocale, getUri(),
+        return encoding.createReader(context, systemLocale, uri,
                                      getUpdateOption(),
                                      getRecordTypes());
     }
@@ -162,7 +151,7 @@ public final class ImportHelper
         return "ImportHelper{"
                + super.toString()
                + ", encoding=" + encoding
-               + ", uriInfo=" + uriInfo
+               + ", uri=" + uri
                + '}';
     }
 }

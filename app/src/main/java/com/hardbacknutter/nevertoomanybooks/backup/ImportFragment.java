@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUr
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ImportContract;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
+import com.hardbacknutter.nevertoomanybooks.core.utils.UriInfo;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImportBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -286,7 +287,7 @@ public class ImportFragment
         final ImportHelper helper = vm.getDataReaderHelper();
 
         //noinspection DataFlowIssue
-        vb.archiveName.setText(helper.getUriInfo().getDisplayName(getContext()));
+        vb.archiveName.setText(new UriInfo(helper.getUri()).getDisplayName(getContext()));
 
         final Optional<ArchiveMetaData> metaData = helper.getMetaData();
         if (metaData.isPresent()) {
