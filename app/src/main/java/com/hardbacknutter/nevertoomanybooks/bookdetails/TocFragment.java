@@ -37,7 +37,6 @@ import java.util.ArrayList;
 
 import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.DisplayBookLauncher;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
@@ -99,16 +98,13 @@ public class TocFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        displayBookLauncher = new DisplayBookLauncher(
-                this,
-                ServiceLocator.getInstance()::getTocEntryDao,
-                o -> o.ifPresent(data -> {
-                    aVm.setDataModified(data);
-                    if (bookChangedListener != null && data.isModified()) {
-                        final Book book = Book.from(vm.getBookId());
-                        bookChangedListener.onBookUpdated(book, (String) null);
-                    }
-                }));
+        displayBookLauncher = new DisplayBookLauncher(this, o -> o.ifPresent(data -> {
+            aVm.setDataModified(data);
+            if (bookChangedListener != null && data.isModified()) {
+                final Book book = Book.from(vm.getBookId());
+                bookChangedListener.onBookUpdated(book, (String) null);
+            }
+        }));
 
         final Bundle args = requireArguments();
 

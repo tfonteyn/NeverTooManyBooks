@@ -103,7 +103,6 @@ public class AuthorWorksFragment
 
         displayBookLauncher = new DisplayBookLauncher(
                 this,
-                ServiceLocator.getInstance()::getTocEntryDao,
                 o -> o.ifPresent(data -> vm.setDataModified(data)));
 
         vm = new ViewModelProvider(this).get(AuthorWorksViewModel.class);

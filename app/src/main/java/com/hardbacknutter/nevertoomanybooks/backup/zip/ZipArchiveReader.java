@@ -309,8 +309,7 @@ public class ZipArchiveReader
 
         final boolean readCovers = recordTypes.contains(RecordType.Cover);
         if (readCovers) {
-            coverReader = new CoverRecordReader(ServiceLocator.getInstance()::getCoverStorage,
-                                                updateOption);
+            coverReader = new CoverRecordReader(updateOption);
 
             final Optional<Integer> coverCount = metaData.getCoverCount();
             if (coverCount.isPresent()) {

@@ -129,14 +129,12 @@ public class JsonRecordReader
     /**
      * Constructor.
      *
-     * @param context      Current context
      * @param systemLocale to use for ISO date parsing
      * @param allowedTypes the record types we're allowed to read
      * @param updateOption options
      */
     @AnyThread
-    public JsonRecordReader(@NonNull final Context context,
-                            @NonNull final Locale systemLocale,
+    public JsonRecordReader(@NonNull final Locale systemLocale,
                             @NonNull final Set<RecordType> allowedTypes,
                             @NonNull final DataReader.Updates updateOption) {
         super(systemLocale, updateOption);
@@ -233,6 +231,7 @@ public class JsonRecordReader
             final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
             final Style defaultStyle = stylesHelper.getDefault();
 
+            //noinspection CheckStyle
             try {
                 // Don't close this stream
                 final InputStream is = record.getInputStream();

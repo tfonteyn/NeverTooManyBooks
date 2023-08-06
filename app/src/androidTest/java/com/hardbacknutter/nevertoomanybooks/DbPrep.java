@@ -128,7 +128,7 @@ public class DbPrep {
         final ImportHelper helper = new ImportHelper(context, locale, Uri.fromFile(file));
         helper.setUpdateOption(DataReader.Updates.Overwrite);
 
-        try (final JsonArchiveReader reader = new JsonArchiveReader(context, locale,
+        try (final JsonArchiveReader reader = new JsonArchiveReader(locale,
                                                                     helper.getUri(),
                                                                     helper.getUpdateOption(),
                                                                     helper.getRecordTypes())) {

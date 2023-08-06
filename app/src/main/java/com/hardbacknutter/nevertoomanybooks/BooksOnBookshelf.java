@@ -1784,13 +1784,7 @@ public class BooksOnBookshelf
                                         new Throwable());
         }
 
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        adapter = new BooklistAdapter(this,
-                                      vm.getStyle(),
-                                      serviceLocator::getReorderHelper,
-                                      serviceLocator::getAuthorDao,
-                                      serviceLocator::getLanguages,
-                                      serviceLocator::getCoverStorage);
+        adapter = new BooklistAdapter(this, vm.getStyle());
         adapter.setOnRowClickListener(this::onRowClicked);
         ShowContextMenu preferredMode = ShowContextMenu.getPreferredMode(this);
         if (preferredMode == ShowContextMenu.ButtonIfSpace && hasEmbeddedDetailsFrame()) {

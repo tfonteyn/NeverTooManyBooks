@@ -38,24 +38,22 @@ import androidx.fragment.app.FragmentActivity;
 
 import java.io.File;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfRowBookBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
-import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 
@@ -88,10 +86,6 @@ public class BookHolder
     @NonNull
     private final Style style;
     @NonNull
-    private final Supplier<Languages> languagesSupplier;
-    @NonNull
-    private final Supplier<CoverStorage> coverStorageSupplier;
-    @NonNull
     private final RealNumberParser realNumberParser;
     /** Only active when running in debug mode; displays the "position/rowId" for a book. */
     @Nullable
@@ -108,29 +102,24 @@ public class BookHolder
      * <strong>Note:</strong> the itemView can be re-used.
      * Hence make sure to explicitly set visibility.
      *
-     * @param itemView             the view specific for this holder
-     * @param style                to use
-     * @param languagesSupplier    deferred supplier for the {@link Languages}
-     * @param coverStorageSupplier deferred supplier for the {@link CoverStorage}
-     * @param realNumberParser     the shared parser
-     * @param coverLongestSide     Longest side for a cover in pixels
+     * @param itemView         the view specific for this holder
+     * @param style            to use
+     * @param realNumberParser the shared parser
+     * @param coverLongestSide Longest side for a cover in pixels
      */
     BookHolder(@NonNull final View itemView,
                @NonNull final Style style,
-               @NonNull final Supplier<Languages> languagesSupplier,
-               @NonNull final Supplier<CoverStorage> coverStorageSupplier,
                @NonNull final RealNumberParser realNumberParser,
                @Dimension final int coverLongestSide) {
         super(itemView);
         this.style = style;
-        this.languagesSupplier = languagesSupplier;
-        this.coverStorageSupplier = coverStorageSupplier;
         this.realNumberParser = realNumberParser;
         this.coverLongestSide = coverLongestSide;
 
         final Context context = itemView.getContext();
 
-        imageCachingEnabled = this.coverStorageSupplier.get().isImageCachingEnabled();
+        imageCachingEnabled = ServiceLocator.getInstance().getCoverStorage()
+                                            .isImageCachingEnabled();
 
         final Resources res = context.getResources();
         conditionDescriptions = res.getStringArray(R.array.conditions_book);
@@ -182,10 +171,11 @@ public class BookHolder
      */
     private void onZoomCover(@NonNull final View coverView) {
         final String uuid = (String) coverView.getTag(R.id.TAG_THUMBNAIL_UUID);
-        coverStorageSupplier.get().getPersistedFile(uuid, 0).ifPresent(file -> {
-            final FragmentActivity activity = (FragmentActivity) coverView.getContext();
-            ZoomedImageDialogFragment.launch(activity.getSupportFragmentManager(), file);
-        });
+        ServiceLocator.getInstance().getCoverStorage().getPersistedFile(uuid, 0).ifPresent(
+                file -> {
+                    final FragmentActivity activity = (FragmentActivity) coverView.getContext();
+                    ZoomedImageDialogFragment.launch(activity.getSupportFragmentManager(), file);
+                });
     }
 
     @Override
@@ -281,8 +271,9 @@ public class BookHolder
 
         // {@link BoBTask#fixedDomainList}
         if (use.language) {
-            final String language = languagesSupplier.get().getDisplayNameFromISO3(
-                    vb.language.getContext(), rowData.getString(DBKey.LANGUAGE));
+            final String language = ServiceLocator
+                    .getInstance().getLanguages().getDisplayNameFromISO3(
+                            vb.language.getContext(), rowData.getString(DBKey.LANGUAGE));
             showOrHide(vb.language, language);
         }
 
@@ -420,9 +411,10 @@ public class BookHolder
 
         // 1. If caching is used, check it.
         if (imageCachingEnabled) {
-            final Bitmap bitmap = coverStorageSupplier.get().getCachedBitmap(uuid, 0,
-                                                                             coverLongestSide,
-                                                                             coverLongestSide);
+            final Bitmap bitmap = ServiceLocator.getInstance().getCoverStorage()
+                                                .getCachedBitmap(uuid, 0,
+                                                                 coverLongestSide,
+                                                                 coverLongestSide);
             if (bitmap != null) {
                 //noinspection DataFlowIssue
                 imageLoader.fromBitmap(vb.coverImage0, bitmap);
@@ -431,7 +423,8 @@ public class BookHolder
         }
 
         // 2. Cache did not have it, or we were not allowed to check.
-        final Optional<File> file = coverStorageSupplier.get().getPersistedFile(uuid, 0);
+        final Optional<File> file = ServiceLocator.getInstance().getCoverStorage()
+                                                  .getPersistedFile(uuid, 0);
         // Check if the file exists; if it does not...
         if (file.isEmpty()) {
             // leave the space blank, but preserve the width BASED on the coverLongestSide!
@@ -450,7 +443,7 @@ public class BookHolder
             //noinspection DataFlowIssue
             imageLoader.fromFile(vb.coverImage0, file.get(), bitmap -> {
                 if (bitmap != null) {
-                    coverStorageSupplier.get().saveToCache(
+                    ServiceLocator.getInstance().getCoverStorage().saveToCache(
                             uuid, 0, bitmap, coverLongestSide, coverLongestSide);
                 }
             });

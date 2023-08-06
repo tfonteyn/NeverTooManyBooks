@@ -59,7 +59,6 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
@@ -132,14 +131,14 @@ public class CsvRecordReader
      * @param context      Current context
      * @param systemLocale to use for ISO date parsing
      * @param updateOption options
-     * @param defaultStyle the default style to use for {@link Bookshelf}s
      */
     @AnyThread
     public CsvRecordReader(@NonNull final Context context,
                            @NonNull final Locale systemLocale,
-                           @NonNull final DataReader.Updates updateOption,
-                           @NonNull final Style defaultStyle) {
+                           @NonNull final DataReader.Updates updateOption) {
         super(systemLocale, updateOption);
+
+        final Style defaultStyle = ServiceLocator.getInstance().getStyles().getDefault();
         bookCoder = new BookCoder(context, defaultStyle);
     }
 

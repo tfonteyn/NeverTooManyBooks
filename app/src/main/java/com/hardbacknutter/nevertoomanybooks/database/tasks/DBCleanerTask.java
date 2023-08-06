@@ -62,21 +62,12 @@ public class DBCleanerTask
     @Override
     @NonNull
     protected Boolean doWork() {
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        final Context context = serviceLocator.getLocalizedAppContext();
+        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
         publishProgress(1, context.getString(R.string.progress_msg_optimizing));
 
         try {
-            new DBCleaner(
-                    serviceLocator.getDb(),
-                    serviceLocator::getAuthorDao,
-                    serviceLocator::getSeriesDao,
-                    serviceLocator::getPublisherDao,
-                    serviceLocator::getBookshelfDao,
-                    serviceLocator::getTocEntryDao,
-                    serviceLocator::getLanguageDao)
-                    .clean(context);
+            new DBCleaner().clean(context);
 
             return true;
 

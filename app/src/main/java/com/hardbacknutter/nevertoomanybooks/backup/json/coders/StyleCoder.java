@@ -23,7 +23,6 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -49,15 +48,6 @@ public class StyleCoder
 
     /** The sub-tag for the array with the style settings. */
     private static final String STYLE_SETTINGS = "settings";
-    @NonNull
-    private final Supplier<StylesHelper> stylesHelperSupplier;
-
-    /**
-     * Constructor.
-     */
-    public StyleCoder() {
-        stylesHelperSupplier = ServiceLocator.getInstance()::getStyles;
-    }
 
     @NonNull
     @Override
@@ -127,7 +117,7 @@ public class StyleCoder
 
         final String uuid = data.getString(DBKey.STYLE_UUID);
 
-        final StylesHelper stylesHelper = stylesHelperSupplier.get();
+        final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
 
         if (BuiltinStyle.isBuiltin(uuid)) {
             final Optional<Style> oStyle = stylesHelper.getStyle(uuid);

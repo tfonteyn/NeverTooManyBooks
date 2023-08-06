@@ -104,8 +104,7 @@ public class CoverHandler {
     private final CoverHandlerViewModel vm;
     @NonNull
     private final ImageViewLoader imageLoader;
-    @NonNull
-    private final Supplier<CoverStorage> coverStorageSupplier;
+
     /** The fragment root view; used for context, resources, Snackbar. */
     private View fragmentView;
     private ActivityResultLauncher<String> cameraPermissionLauncher;
@@ -145,8 +144,6 @@ public class CoverHandler {
 
         coverBrowserLauncher = new CoverBrowserDialogFragment
                 .Launcher(RK_COVER_BROWSER + cIdx, this::onFileSelected);
-
-        coverStorageSupplier = ServiceLocator.getInstance()::getCoverStorage;
     }
 
     @NonNull
@@ -361,7 +358,7 @@ public class CoverHandler {
 
         // the temp file we'll return
         // do NOT set BKEY_TMP_FILE_SPEC on the book in this method.
-        final File tempDir = coverStorageSupplier.get().getTempDir();
+        final File tempDir = ServiceLocator.getInstance().getCoverStorage().getTempDir();
         final File coverFile = new File(tempDir, System.nanoTime() + ".jpg");
 
         // If we have a permanent file, copy it into the temp location
@@ -502,7 +499,8 @@ public class CoverHandler {
         //noinspection OverlyBroadCatchBlock
         try (InputStream is = context.getContentResolver().openInputStream(uri)) {
             // copy the data, and retrieve the (potentially) resolved file
-            final File file = coverStorageSupplier.get().persist(is, getTempFile());
+            final File file = ServiceLocator.getInstance().getCoverStorage()
+                                            .persist(is, getTempFile());
 
             showProgress();
             vm.execute(new Transformation()
@@ -652,7 +650,8 @@ public class CoverHandler {
     @NonNull
     private File getTempFile()
             throws CoverStorageException {
-        return new File(coverStorageSupplier.get().getTempDir(), TAG + "_" + cIdx + ".jpg");
+        return new File(ServiceLocator.getInstance().getCoverStorage().getTempDir(),
+                        TAG + "_" + cIdx + ".jpg");
     }
 
     /**

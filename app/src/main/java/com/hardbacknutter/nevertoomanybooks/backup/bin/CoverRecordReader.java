@@ -26,9 +26,9 @@ import androidx.annotation.NonNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
@@ -55,19 +55,14 @@ public class CoverRecordReader
     private static final int FILE_LM_PRECISION = 16;
 
     @NonNull
-    private final Supplier<CoverStorage> coverStorageSupplier;
-    @NonNull
     private final DataReader.Updates updateOption;
 
     /**
      * Constructor.
      *
-     * @param coverStorageSupplier deferred supplier for the {@link CoverStorage}
-     * @param updateOption         options
+     * @param updateOption options
      */
-    public CoverRecordReader(@NonNull final Supplier<CoverStorage> coverStorageSupplier,
-                             @NonNull final DataReader.Updates updateOption) {
-        this.coverStorageSupplier = coverStorageSupplier;
+    public CoverRecordReader(@NonNull final DataReader.Updates updateOption) {
         this.updateOption = updateOption;
     }
 
@@ -88,8 +83,10 @@ public class CoverRecordReader
                 results.coversProcessed = 1;
 
                 try {
+                    final CoverStorage coverStorage = ServiceLocator.getInstance()
+                                                                    .getCoverStorage();
                     // see if we have this file already
-                    File dstFile = new File(coverStorageSupplier.get().getDir(), record.getName());
+                    File dstFile = new File(coverStorage.getDir(), record.getName());
                     final boolean exists = dstFile.exists();
 
                     if (exists) {
@@ -124,9 +121,9 @@ public class CoverRecordReader
                     // Don't close this stream; Also; this comes from a zip/tar archive
                     // which will give us a buffered stream; do not buffer twice.
                     final InputStream is = record.getInputStream();
-                    dstFile = coverStorageSupplier.get().persist(is, dstFile);
+                    dstFile = coverStorage.persist(is, dstFile);
 
-                    if (coverStorageSupplier.get().isAcceptableSize(dstFile)) {
+                    if (coverStorage.isAcceptableSize(dstFile)) {
                         //noinspection ResultOfMethodCallIgnored
                         dstFile.setLastModified(record.getLastModifiedEpochMilli());
                         if (exists) {

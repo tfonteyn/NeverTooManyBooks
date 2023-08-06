@@ -24,12 +24,10 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -42,9 +40,6 @@ public class BookshelfCoder
     @NonNull
     private final Context context;
 
-    @NonNull
-    private final Supplier<BookshelfDao> bookshelfDaoSupplier;
-
     /**
      * Constructor.
      *
@@ -55,8 +50,6 @@ public class BookshelfCoder
                           @NonNull final Style defaultStyle) {
         this.context = context;
         this.defaultStyle = defaultStyle;
-
-        bookshelfDaoSupplier = ServiceLocator.getInstance()::getBookshelfDao;
     }
 
     @Override
@@ -130,7 +123,8 @@ public class BookshelfCoder
 
         final String name = data.optString(DBKey.BOOKSHELF_NAME);
         if (name != null && !name.isEmpty()) {
-            final Optional<Bookshelf> bookshelf = bookshelfDaoSupplier.get().findByName(name);
+            final Optional<Bookshelf> bookshelf = ServiceLocator
+                    .getInstance().getBookshelfDao().findByName(name);
             if (bookshelf.isPresent()) {
                 return bookshelf;
             }

@@ -82,7 +82,7 @@ public class ShowBookDetailsActivityViewModel
             final String styleUuid = args.getString(Style.BKEY_UUID);
             style = ServiceLocator.getInstance().getStyles().getStyleOrDefault(styleUuid);
 
-            menuHandlers = MenuHandlerFactory.create(ServiceLocator.getInstance()::getLanguages);
+            menuHandlers = MenuHandlerFactory.create();
         }
     }
 

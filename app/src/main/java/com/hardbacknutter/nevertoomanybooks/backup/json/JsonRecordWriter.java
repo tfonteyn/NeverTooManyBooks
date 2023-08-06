@@ -36,7 +36,6 @@ import java.security.cert.X509Certificate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -72,6 +71,8 @@ import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
 /**
+ * Write JSON encoded {@link RecordType}s.
+ * <p>
  * Supports:
  * <ul>
  *      <li>{@link RecordType#MetaData}</li>
@@ -88,22 +89,17 @@ import com.hardbacknutter.org.json.JSONObject;
 public class JsonRecordWriter
         implements RecordWriter {
 
-    @NonNull
-    private final Supplier<CoverStorage> coverStorageSupplier;
     @Nullable
     private final LocalDateTime utcSinceDateTime;
 
     /**
      * Constructor.
      *
-     * @param coverStorageSupplier deferred supplier for the {@link CoverStorage}
-     * @param utcSinceDateTime     (optional) UTC based date to select only items
-     *                             modified or added since.
+     * @param utcSinceDateTime (optional) UTC based date to select only items
+     *                         modified or added since.
      */
     @AnyThread
-    public JsonRecordWriter(@NonNull final Supplier<CoverStorage> coverStorageSupplier,
-                            @Nullable final LocalDateTime utcSinceDateTime) {
-        this.coverStorageSupplier = coverStorageSupplier;
+    public JsonRecordWriter(@Nullable final LocalDateTime utcSinceDateTime) {
         this.utcSinceDateTime = utcSinceDateTime;
     }
 
@@ -171,12 +167,12 @@ public class JsonRecordWriter
             throws DataWriterException,
                    IOException {
 
-        final Set<RecordType> resolvedRecordTypes = RecordType.addRelatedTypes(recordTypes);
-
-        final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        final StylesHelper stylesHelper = serviceLocator.getStyles();
         final Style defaultStyle = stylesHelper.getDefault();
+        final CoverStorage coverStorage = serviceLocator.getCoverStorage();
 
-        final CoverStorage coverStorage = coverStorageSupplier.get();
+        final Set<RecordType> resolvedRecordTypes = RecordType.addRelatedTypes(recordTypes);
 
         final ExportResults results = new ExportResults();
         final JSONObject jsonData = new JSONObject();

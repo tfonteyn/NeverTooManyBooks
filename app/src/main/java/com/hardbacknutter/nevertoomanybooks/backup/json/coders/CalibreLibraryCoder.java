@@ -26,7 +26,6 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
@@ -34,7 +33,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreVirtualLibrary;
@@ -50,10 +48,6 @@ public class CalibreLibraryCoder
     private final Context context;
     @NonNull
     private final JsonCoder<Bookshelf> bookshelfCoder;
-    @NonNull
-    private final Supplier<BookshelfDao> bookshelfDaoSupplier;
-    @NonNull
-    private final Supplier<CalibreLibraryDao> calibreLibraryDaoSupplier;
 
     /**
      * Constructor.
@@ -65,9 +59,6 @@ public class CalibreLibraryCoder
                                @NonNull final Style defaultStyle) {
         this.context = context;
         bookshelfCoder = new BookshelfCoder(context, defaultStyle);
-
-        bookshelfDaoSupplier = ServiceLocator.getInstance()::getBookshelfDao;
-        calibreLibraryDaoSupplier = ServiceLocator.getInstance()::getCalibreLibraryDao;
     }
 
     @NonNull
@@ -159,7 +150,7 @@ public class CalibreLibraryCoder
         CalibreLibrary library;
         String s = data.optString(DBKey.CALIBRE_LIBRARY_UUID);
         if (s != null && !s.isEmpty()) {
-            library = calibreLibraryDaoSupplier.get().findLibraryByUuid(s);
+            library = ServiceLocator.getInstance().getCalibreLibraryDao().findLibraryByUuid(s);
             if (library != null) {
                 return Optional.of(library);
             }
@@ -167,7 +158,7 @@ public class CalibreLibraryCoder
 
         s = data.optString(DBKey.CALIBRE_LIBRARY_STRING_ID);
         if (s != null && !s.isEmpty()) {
-            library = calibreLibraryDaoSupplier.get().findLibraryByStringId(s);
+            library = ServiceLocator.getInstance().getCalibreLibraryDao().findLibraryByStringId(s);
             if (library != null) {
                 return Optional.of(library);
             }
@@ -189,7 +180,7 @@ public class CalibreLibraryCoder
             }
         }
 
-        final BookshelfDao bookshelfDao = bookshelfDaoSupplier.get();
+        final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
 
         final Bookshelf libraryBookshelf = bookshelfCoder
                 .decode(data.getJSONObject(DBKey.FK_BOOKSHELF));
@@ -278,7 +269,7 @@ public class CalibreLibraryCoder
     private long v3resolveBookshelf(@NonNull final JSONObject data,
                                     @NonNull final String libName)
             throws DaoWriteException {
-        final BookshelfDao bookshelfDao = bookshelfDaoSupplier.get();
+        final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
 
         // try original
         Bookshelf bookshelf = Bookshelf.getBookshelf(context, data.getLong(DBKey.FK_BOOKSHELF))

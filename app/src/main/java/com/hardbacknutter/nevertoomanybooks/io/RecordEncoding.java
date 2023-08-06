@@ -31,12 +31,10 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlRecordReader;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 
 /**
@@ -122,9 +120,7 @@ public enum RecordEncoding {
     public RecordWriter createWriter(@Nullable final LocalDateTime utcSinceDateTime) {
         switch (this) {
             case Json: {
-                final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-                return new JsonRecordWriter(serviceLocator::getCoverStorage,
-                                            utcSinceDateTime);
+                return new JsonRecordWriter(utcSinceDateTime);
             }
             case Cover:
                 // Not useful, won't implement. It's just a File copy operation
@@ -160,15 +156,12 @@ public enum RecordEncoding {
                                                @NonNull final DataReader.Updates updateOption) {
         switch (this) {
             case Json:
-                return Optional.of(new JsonRecordReader(context, systemLocale,
+                return Optional.of(new JsonRecordReader(systemLocale,
                                                         allowedTypes,
                                                         updateOption));
             case Csv: {
-                final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-                final Style defaultStyle = serviceLocator.getStyles().getDefault();
                 return Optional.of(new CsvRecordReader(context, systemLocale,
-                                                       updateOption,
-                                                       defaultStyle));
+                                                       updateOption));
             }
             case Xml:
                 //noinspection deprecation

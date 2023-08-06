@@ -326,7 +326,7 @@ public enum ArchiveEncoding
                 break;
             }
             case Json: {
-                reader = new JsonArchiveReader(context, systemLocale, uri,
+                reader = new JsonArchiveReader(systemLocale, uri,
                                                updateOption, recordTypes);
                 break;
             }

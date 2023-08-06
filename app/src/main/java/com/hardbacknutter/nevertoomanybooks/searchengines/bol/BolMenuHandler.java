@@ -32,35 +32,28 @@ import androidx.preference.PreferenceManager;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.StringJoiner;
-import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.ShoppingMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 public class BolMenuHandler
         extends ShoppingMenuHandler {
 
-    @NonNull
-    private final Supplier<Languages> languagesSupplier;
-
     /**
      * Constructor.
-     *
-     * @param languagesSupplier deferred supplier for the {@link Languages}
      */
-    public BolMenuHandler(@NonNull final Supplier<Languages> languagesSupplier) {
+    public BolMenuHandler() {
         super(R.menu.sm_search_on_bol,
               R.id.SUBMENU_BOL_SEARCH,
               R.id.MENU_BOL_BOOKS_BY_AUTHOR,
               R.id.MENU_BOL_BOOKS_BY_AUTHOR_IN_SERIES,
               R.id.MENU_BOL_BOOKS_IN_SERIES);
-        this.languagesSupplier = languagesSupplier;
     }
 
     @Override
@@ -72,7 +65,7 @@ public class BolMenuHandler
         if (prefs.contains(key)) {
             return prefs.getBoolean(key, false);
         } else {
-            return languagesSupplier.get().isUserLanguage(context, "nld");
+            return ServiceLocator.getInstance().getLanguages().isUserLanguage(context, "nld");
         }
     }
 

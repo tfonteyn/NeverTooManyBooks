@@ -37,7 +37,6 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -107,12 +106,9 @@ public class CsvArchiveReader
                                  new File(serviceLocator.getUpgradesDir(), DB_BACKUP_NAME),
                                  DB_BACKUP_COPIES);
 
-        final Style defaultStyle = serviceLocator.getStyles().getDefault();
-
         try (InputStream is = context.getContentResolver().openInputStream(uri);
              RecordReader recordReader = new CsvRecordReader(context, systemLocale,
-                                                             updateOption,
-                                                             defaultStyle)) {
+                                                             updateOption)) {
             if (is == null) {
                 throw new FileNotFoundException(uri.toString());
             }

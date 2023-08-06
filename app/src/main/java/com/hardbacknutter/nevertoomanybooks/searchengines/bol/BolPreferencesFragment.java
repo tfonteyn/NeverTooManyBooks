@@ -30,7 +30,6 @@ import androidx.preference.SwitchPreference;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.ShoppingMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
@@ -74,7 +73,7 @@ public class BolPreferencesFragment
         final SwitchPreference showShoppingMenu = findPreference(
                 EngineId.Bol.getPreferenceKey() + '.' + Prefs.pk_search_show_shopping_menu);
         final ShoppingMenuHandler shoppingMenuHandler = new BolMenuHandler(
-                ServiceLocator.getInstance()::getLanguages);
+        );
         //noinspection DataFlowIssue
         showShoppingMenu.setChecked(shoppingMenuHandler.isShowMenu(getContext()));
     }

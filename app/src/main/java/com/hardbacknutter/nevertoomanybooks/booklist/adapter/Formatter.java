@@ -29,7 +29,6 @@ import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -39,12 +38,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.BooleanParser;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
-import com.hardbacknutter.nevertoomanybooks.utils.Languages;
-import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 
 /**
@@ -66,12 +62,6 @@ class Formatter
     @NonNull
     private final Context context;
     @NonNull
-    private final Supplier<ReorderHelper> reorderHelperSupplier;
-    @NonNull
-    private final Supplier<Languages> languagesSupplier;
-    @NonNull
-    private final Supplier<AuthorDao> authorDaoSupplier;
-    @NonNull
     private final Style style;
 
     /** caching the book condition strings. */
@@ -81,15 +71,9 @@ class Formatter
     private final List<Locale> locales;
 
     Formatter(@NonNull final Context context,
-              @NonNull final Supplier<ReorderHelper> reorderHelperSupplier,
-              @NonNull final Supplier<Languages> languagesSupplier,
-              @NonNull final Supplier<AuthorDao> authorDaoSupplier,
               @NonNull final Style style,
               @NonNull final List<Locale> locales) {
         this.context = context;
-        this.reorderHelperSupplier = reorderHelperSupplier;
-        this.languagesSupplier = languagesSupplier;
-        this.authorDaoSupplier = authorDaoSupplier;
         this.style = style;
         this.locales = locales;
 
@@ -111,6 +95,8 @@ class Formatter
     public CharSequence format(@BooklistGroup.Id final int groupId,
                                @NonNull final DataHolder rowData,
                                @NonNull final String key) {
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+
         final String text = rowData.getString(key);
 
         // NEWTHINGS: BooklistGroup
@@ -119,15 +105,15 @@ class Formatter
                 if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_author);
 
-                } else if (ServiceLocator.getInstance().getGlobalFieldVisibility()
+                } else if (serviceLocator.getGlobalFieldVisibility()
                                          .isShowField(DBKey.AUTHOR_REAL_AUTHOR)
                            && rowData.contains(DBKey.AUTHOR_REAL_AUTHOR)) {
                     // Specifically check for AUTHOR_REAL_AUTHOR as it will usually be 0
                     // and no lookup will be needed.
                     final long realAuthorId = rowData.getLong(DBKey.AUTHOR_REAL_AUTHOR);
                     if (realAuthorId != 0) {
-                        final Optional<Author> realAuthor = authorDaoSupplier
-                                .get().getById(realAuthorId);
+                        final Optional<Author> realAuthor = serviceLocator.getAuthorDao()
+                                                                          .getById(realAuthorId);
                         if (realAuthor.isPresent()) {
                             return realAuthor.get().getStyledName(context, style, text);
                         }
@@ -140,7 +126,7 @@ class Formatter
                 if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_series);
 
-                } else if (reorderHelperSupplier.get().forDisplay(context)) {
+                } else if (serviceLocator.getReorderHelper().forDisplay(context)) {
                     // We don't have full Objects here for Series/Publisher so we can't use
                     // their methods for auto-reordering.
                     //
@@ -148,7 +134,7 @@ class Formatter
                     // It should be done using the Series language
                     // but as long as we don't store the Series language there is no point
                     final String lang = rowData.getString(DBKey.LANGUAGE);
-                    return reorderHelperSupplier.get().reorder(context, text, lang, locales);
+                    return serviceLocator.getReorderHelper().reorder(context, text, lang, locales);
                 } else {
                     return text;
                 }
@@ -157,12 +143,12 @@ class Formatter
                 if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_publisher);
 
-                } else if (reorderHelperSupplier.get().forDisplay(context)) {
+                } else if (serviceLocator.getReorderHelper().forDisplay(context)) {
                     // We don't have full Objects here for Series/Publisher so we can't use
                     // their methods for auto-reordering.
                     //
-                    return reorderHelperSupplier
-                            .get().reorder(context, text, (Locale) null, locales);
+                    return serviceLocator.getReorderHelper()
+                                         .reorder(context, text, (Locale) null, locales);
                 } else {
                     return text;
                 }
@@ -182,7 +168,7 @@ class Formatter
                 if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_language);
                 } else {
-                    return languagesSupplier.get().getDisplayNameFromISO3(context, text);
+                    return serviceLocator.getLanguages().getDisplayNameFromISO3(context, text);
                 }
             }
             case BooklistGroup.CONDITION: {

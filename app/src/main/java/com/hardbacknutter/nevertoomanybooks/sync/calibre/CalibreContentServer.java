@@ -1145,8 +1145,8 @@ public final class CalibreContentServer
         synchronized (this) {
             if (imageDownloader == null) {
                 imageDownloader =
-                        new ImageDownloader(createFutureGetRequest(true),
-                                            ServiceLocator.getInstance()::getCoverStorage);
+                        new ImageDownloader(createFutureGetRequest(true)
+                        );
             }
         }
 

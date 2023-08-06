@@ -198,7 +198,7 @@ public class EditBookViewModel
             errStrNonBlankRequired = context.getString(R.string.vldt_non_blank_required);
             errStrReadStartAfterEnd = context.getString(R.string.vldt_read_start_after_end);
 
-            menuHandlers = MenuHandlerFactory.create(ServiceLocator.getInstance()::getLanguages);
+            menuHandlers = MenuHandlerFactory.create();
 
             final Languages languages = ServiceLocator.getInstance().getLanguages();
             final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);

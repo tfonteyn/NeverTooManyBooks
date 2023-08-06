@@ -422,9 +422,7 @@ public abstract class SearchEngineBase
 
         synchronized (this) {
             if (imageDownloader == null) {
-                imageDownloader = new ImageDownloader(
-                        createFutureGetRequest(context, true),
-                        ServiceLocator.getInstance()::getCoverStorage);
+                imageDownloader = new ImageDownloader(createFutureGetRequest(context, true));
             }
         }
         final String tempFilename = ImageDownloader.getTempFilename(

@@ -70,14 +70,12 @@ public class JsonArchiveReader
     /**
      * Constructor.
      *
-     * @param context      Current context
      * @param systemLocale to use for ISO date parsing
      * @param uri          to read from
      * @param updateOption options
      * @param recordTypes  the record types to accept and read
      */
-    public JsonArchiveReader(@NonNull final Context context,
-                             @NonNull final Locale systemLocale,
+    public JsonArchiveReader(@NonNull final Locale systemLocale,
                              @NonNull final Uri uri,
                              @NonNull final DataReader.Updates updateOption,
                              @NonNull final Set<RecordType> recordTypes) {
@@ -115,7 +113,7 @@ public class JsonArchiveReader
             }
 
             try (is; RecordReader recordReader =
-                    new JsonRecordReader(context, systemLocale,
+                    new JsonRecordReader(systemLocale,
                                          EnumSet.of(RecordType.MetaData),
                                          updateOption)) {
                 // wrap the entire input into a single record.
@@ -149,7 +147,7 @@ public class JsonArchiveReader
             throw new FileNotFoundException(uri.toString());
         }
 
-        try (RecordReader recordReader = new JsonRecordReader(context, systemLocale,
+        try (RecordReader recordReader = new JsonRecordReader(systemLocale,
                                                               recordTypes,
                                                               updateOption)) {
             // wrap the entire input into a single record.

@@ -33,10 +33,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
@@ -67,20 +67,14 @@ public class ImageDownloader {
 
     @NonNull
     private final FutureHttpGet<File> futureHttpGet;
-    @NonNull
-    private final Supplier<CoverStorage> coverStorageSupplier;
 
     /**
      * Constructor.
      *
-     * @param futureHttpGet        to use
-     * @param coverStorageSupplier deferred supplier for the {@link CoverStorage}
+     * @param futureHttpGet to use
      */
-    public ImageDownloader(@NonNull final FutureHttpGet<File> futureHttpGet,
-                           @NonNull final Supplier<CoverStorage> coverStorageSupplier) {
+    public ImageDownloader(@NonNull final FutureHttpGet<File> futureHttpGet) {
         this.futureHttpGet = futureHttpGet;
-        this.coverStorageSupplier = coverStorageSupplier;
-
         this.futureHttpGet.setRequestProperty(HttpConstants.ACCEPT, HttpConstants.ACCEPT_IMAGE);
 
         this.futureHttpGet.setRequestProperty(HttpConstants.SEC_FETCH_DEST, "image");
@@ -132,7 +126,7 @@ public class ImageDownloader {
                                 @NonNull final String filename)
             throws StorageException, IOException {
 
-        final CoverStorage coverStorage = coverStorageSupplier.get();
+        final CoverStorage coverStorage = ServiceLocator.getInstance().getCoverStorage();
         final File tempDir = coverStorage.getTempDir();
 
         final File destFile = new File(tempDir, filename);

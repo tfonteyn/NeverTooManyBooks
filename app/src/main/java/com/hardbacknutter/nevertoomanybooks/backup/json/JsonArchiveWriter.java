@@ -123,8 +123,7 @@ public class JsonArchiveWriter
         try (OutputStream os = new FileOutputStream(destFile);
              Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
              Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
-             RecordWriter recordWriter = new JsonRecordWriter(serviceLocator::getCoverStorage,
-                                                              sinceDateTime)) {
+             RecordWriter recordWriter = new JsonRecordWriter(sinceDateTime)) {
 
             // manually concat
             // 1. archive envelope

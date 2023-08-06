@@ -42,7 +42,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.function.Supplier;
 
 import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -54,13 +53,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
-import com.hardbacknutter.nevertoomanybooks.utils.Languages;
-import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.OnRowClickListener;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
@@ -82,10 +77,6 @@ public class BooklistAdapter
     private final int levelIndent;
     @NonNull
     private final Style style;
-    @NonNull
-    private final Supplier<Languages> languagesSupplier;
-    @NonNull
-    private final Supplier<CoverStorage> coverStorageSupplier;
     @Dimension
     private final int groupRowHeight;
     /** Longest side for a cover in pixels. */
@@ -116,31 +107,17 @@ public class BooklistAdapter
     /**
      * Constructor.
      *
-     * @param context               Current context
-     * @param style                 to use
-     * @param reorderHelperSupplier deferred supplier for the {@link ReorderHelper}
-     * @param authorDaoSupplier     deferred supplier for the {@link AuthorDao}
-     * @param languagesSupplier     deferred supplier for the {@link Languages}
-     * @param coverStorageSupplier  deferred supplier for the {@link CoverStorage}
+     * @param context Current context
+     * @param style   to use
      */
     public BooklistAdapter(@NonNull final Context context,
-                           @NonNull final Style style,
-                           @NonNull final Supplier<ReorderHelper> reorderHelperSupplier,
-                           @NonNull final Supplier<AuthorDao> authorDaoSupplier,
-                           @NonNull final Supplier<Languages> languagesSupplier,
-                           @NonNull final Supplier<CoverStorage> coverStorageSupplier) {
+                           @NonNull final Style style) {
         this.inflater = LayoutInflater.from(context);
         this.style = style;
-        this.languagesSupplier = languagesSupplier;
-        this.coverStorageSupplier = coverStorageSupplier;
 
         final List<Locale> locales = LocaleListUtils.asList(context);
         realNumberParser = new RealNumberParser(locales);
-        formatter = new Formatter(context,
-                                  reorderHelperSupplier,
-                                  languagesSupplier,
-                                  authorDaoSupplier,
-                                  style, locales);
+        formatter = new Formatter(context, style, locales);
 
         final Resources res = context.getResources();
         levelIndent = res.getDimensionPixelSize(R.dimen.bob_group_level_padding_start);
@@ -336,8 +313,6 @@ public class BooklistAdapter
         switch (groupId) {
             case BooklistGroup.BOOK:
                 holder = new BookHolder(itemView, style,
-                                        languagesSupplier,
-                                        coverStorageSupplier,
                                         realNumberParser,
                                         coverLongestSide);
                 break;
