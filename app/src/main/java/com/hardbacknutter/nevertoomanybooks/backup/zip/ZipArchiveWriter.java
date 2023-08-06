@@ -53,7 +53,6 @@ import java.util.zip.ZipOutputStream;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -112,9 +111,13 @@ public class ZipArchiveWriter
     @NonNull
     private final ZipOutputStream zipOutputStream;
 
-    /** Export configuration. */
     @NonNull
-    private final ExportHelper exportHelper;
+    private final Set<RecordType> recordTypes;
+    @SuppressWarnings("FieldCanBeLocal")
+    @NonNull
+    private final File destFile;
+    @Nullable
+    private final LocalDateTime sinceDateTime;
 
     /** The accumulated results. */
     @NonNull
@@ -123,18 +126,24 @@ public class ZipArchiveWriter
     /**
      * Constructor.
      *
-     * @param context      Current context
-     * @param exportHelper options
+     * @param recordTypes   the record types to accept and read
+     * @param sinceDateTime (optional) select all books modified or added since that
+     *                      date/time (UTC based). Set to {@code null} for *all* books.
+     * @param destFile      {@link File} to write to
      *
      * @throws FileNotFoundException if the uri cannot be resolved
      */
-    public ZipArchiveWriter(@NonNull final Context context,
-                            @NonNull final ExportHelper exportHelper)
+    public ZipArchiveWriter(@NonNull final Set<RecordType> recordTypes,
+                            @Nullable final LocalDateTime sinceDateTime,
+                            @NonNull final File destFile)
             throws FileNotFoundException {
-        this.exportHelper = exportHelper;
+        this.recordTypes = RecordType.addRelatedTypes(recordTypes);
+        this.destFile = destFile;
+        this.sinceDateTime = sinceDateTime;
 
         zipOutputStream = new ZipOutputStream(new BufferedOutputStream(
-                exportHelper.createOutputStream(context), RecordWriter.BUFFER_SIZE));
+                new FileOutputStream(this.destFile),
+                RecordWriter.BUFFER_SIZE));
     }
 
     @NonNull
@@ -147,18 +156,14 @@ public class ZipArchiveWriter
                    IOException {
 
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+
         // do a cleanup before we start writing
         serviceLocator.getMaintenanceDao().purge();
-
-        final Set<RecordType> recordTypes = exportHelper.getRecordTypes();
-        RecordType.addRelatedTypes(recordTypes);
-
-        final LocalDateTime dateSince = exportHelper.getLastDone(context);
 
         try {
             int steps = 0;
             if (recordTypes.contains(RecordType.Books)) {
-                steps = serviceLocator.getBookDao().countBooksForExport(dateSince);
+                steps = serviceLocator.getBookDao().countBooksForExport(sinceDateTime);
                 if (steps == 0) {
                     // no books to backup. We ignore all other record types!
                     return results;
@@ -170,6 +175,7 @@ public class ZipArchiveWriter
                 // assume 1 book == 1 cover
                 steps = 2 * steps;
             }
+
             // set as an estimated max value
             progressListener.setMaxPos(steps + EXTRA_STEPS);
 
@@ -177,7 +183,7 @@ public class ZipArchiveWriter
             @Nullable
             final File tmpBooksFile;
             if (!progressListener.isCancelled() && recordTypes.contains(RecordType.Books)) {
-                tmpBooksFile = prepareBooks(context, dateSince, progressListener);
+                tmpBooksFile = prepareBooks(context, sinceDateTime, progressListener);
             } else {
                 tmpBooksFile = null;
             }
@@ -233,9 +239,6 @@ public class ZipArchiveWriter
             progressListener.setIndeterminate(null);
         }
 
-        // If the backup was a full backup remember that.
-        exportHelper.setLastDone(context);
-
         return results;
     }
 
@@ -265,13 +268,13 @@ public class ZipArchiveWriter
         final RecordEncoding encoding = getEncoding(RecordType.Books);
 
         // Filter to valid options for this step.
-        final Set<RecordType> recordTypes = EnumSet.noneOf(RecordType.class);
+        final Set<RecordType> filteredRecordTypes = EnumSet.noneOf(RecordType.class);
 
-        if (exportHelper.getRecordTypes().contains(RecordType.Books)) {
-            recordTypes.add(RecordType.Books);
+        if (recordTypes.contains(RecordType.Books)) {
+            filteredRecordTypes.add(RecordType.Books);
         }
-        if (exportHelper.getRecordTypes().contains(RecordType.Cover)) {
-            recordTypes.add(RecordType.Cover);
+        if (recordTypes.contains(RecordType.Cover)) {
+            filteredRecordTypes.add(RecordType.Cover);
         }
 
         final File file = File.createTempFile("books_", encoding.getFileExt());
@@ -280,7 +283,7 @@ public class ZipArchiveWriter
              Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
              Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
              RecordWriter recordWriter = encoding.createWriter(dateSince)) {
-            results.add(recordWriter.write(context, bw, recordTypes, progressListener));
+            results.add(recordWriter.write(context, bw, filteredRecordTypes, progressListener));
         }
 
         return file;

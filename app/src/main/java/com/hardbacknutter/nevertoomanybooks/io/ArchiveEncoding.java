@@ -25,12 +25,15 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
@@ -38,7 +41,6 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvArchiveReader;
@@ -125,6 +127,7 @@ public enum ArchiveEncoding
      * @return ArchiveEncoding
      *
      * @throws FileNotFoundException if the uri cannot be resolved
+     * @throws IllegalStateException if the uri scheme is not supported
      */
     @NonNull
     public static Optional<ArchiveEncoding> getEncoding(@NonNull final Context context,
@@ -240,8 +243,11 @@ public enum ArchiveEncoding
     /**
      * Create an {@link DataWriter} based on the type.
      *
-     * @param context      Current context
-     * @param exportHelper options
+     * @param context       Current context
+     * @param recordTypes   the record types to write
+     * @param sinceDateTime (optional) select all books modified or added since that
+     *                      date/time (UTC based). Set to {@code null} for *all* books.
+     * @param destFile      {@link File} to write to
      *
      * @return a new writer
      *
@@ -251,18 +257,21 @@ public enum ArchiveEncoding
     @WorkerThread
     @NonNull
     public DataWriter<ExportResults> createWriter(@NonNull final Context context,
-                                                  @NonNull final ExportHelper exportHelper)
+                                                  @NonNull final Set<RecordType> recordTypes,
+                                                  @Nullable final LocalDateTime sinceDateTime,
+                                                  @NonNull final File destFile)
             throws FileNotFoundException {
 
         switch (this) {
             case Zip: {
-                return new ZipArchiveWriter(context, exportHelper);
+                return new ZipArchiveWriter(recordTypes, sinceDateTime, destFile);
             }
             case SqLiteDb: {
-                return new DbArchiveWriter(exportHelper, DBHelper.getDatabasePath(context));
+                return new DbArchiveWriter(DBHelper.getDatabasePath(context), destFile);
             }
             case Json: {
-                return new JsonArchiveWriter(exportHelper);
+                return new JsonArchiveWriter(recordTypes, sinceDateTime, destFile
+                );
             }
             case Csv:
                 // writing to csv is no longer supported

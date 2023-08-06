@@ -28,23 +28,19 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
- * Export the main database file.
- * <p>
- * Note on testing: this class is purposely hardcoded to use the actual database file.
+ * Export a database file.
  */
 public class DbArchiveWriter
         implements DataWriter<ExportResults> {
 
-    /** Export configuration. */
     @NonNull
-    private final ExportHelper exportHelper;
+    private final File destFile;
 
     @NonNull
     private final File databasePath;
@@ -52,12 +48,12 @@ public class DbArchiveWriter
     /**
      * Constructor.
      *
-     * @param exportHelper options
      * @param databasePath the database file path
+     * @param destFile     {@link File} to write to
      */
-    public DbArchiveWriter(@NonNull final ExportHelper exportHelper,
-                           @NonNull final File databasePath) {
-        this.exportHelper = exportHelper;
+    public DbArchiveWriter(@NonNull final File databasePath,
+                           @NonNull final File destFile) {
+        this.destFile = destFile;
         this.databasePath = databasePath;
     }
 
@@ -68,7 +64,7 @@ public class DbArchiveWriter
             throws IOException {
 
         try (FileInputStream fis = new FileInputStream(databasePath);
-             FileOutputStream fos = exportHelper.createOutputStream(context)) {
+             FileOutputStream fos = new FileOutputStream(destFile)) {
             FileUtils.copy(fis, fos);
         }
 

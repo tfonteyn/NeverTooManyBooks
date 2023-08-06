@@ -31,8 +31,6 @@ import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -84,7 +82,7 @@ public class ExportHelper
      *
      * @param systemLocale to use for ISO date parsing
      */
-    public ExportHelper(@NonNull final Locale systemLocale) {
+    ExportHelper(@NonNull final Locale systemLocale) {
         // set the default
         this(ArchiveEncoding.Zip,
              EnumSet.of(RecordType.Styles,
@@ -161,6 +159,70 @@ public class ExportHelper
         return encoding == ArchiveEncoding.Zip;
     }
 
+    @WorkerThread
+    @Override
+    @NonNull
+    public ExportResults write(@NonNull final Context context,
+                               @NonNull final ProgressListener progressListener)
+            throws DataWriterException,
+                   CredentialsException,
+                   StorageException,
+                   IOException {
+
+        Objects.requireNonNull(uri, ERROR_NO_URI);
+
+        final ExportResults results = new ExportResults();
+        boolean isEmpty = false;
+
+        // Get a temporary file to write to.
+        final File tmpFile = new File(context.getCacheDir(), TAG + ".tmp");
+
+        try {
+            dataWriter = encoding.createWriter(context, getRecordTypes(),
+                                               getLastDone(context),
+                                               tmpFile);
+
+            results.add(dataWriter.write(context, progressListener));
+            isEmpty = results.isEmpty();
+            // If the backup was a full backup remember that.
+            setLastDone(context);
+
+        } catch (@NonNull final IOException e) {
+            // The zip archiver (maybe others as well?) can throw an IOException
+            // when the user cancels, so only throw when this is not the case
+            if (!progressListener.isCancelled()) {
+                FileUtils.delete(tmpFile);
+                throw e;
+            }
+        } finally {
+            // Nasty... if the export finished exporting ZERO items,
+            // then trying to close the dataWriter will result
+            // in a ZipException.
+            // As a ZipException has no 'error-code' to tell us what was really wrong,
+            // other than reading the text... we avoid getting the ZipException
+            // by skipping the close() altogether.
+            // Due to how the JDK Zip code works, we'll still end up
+            // with a zero-bytes file being written to the uri location.
+            if (!isEmpty) {
+                close();
+            }
+        }
+
+        if (!progressListener.isCancelled()) {
+            // The output file is now properly closed, export it to the user Uri
+            try (InputStream is = new FileInputStream(tmpFile);
+                 OutputStream os = context.getContentResolver().openOutputStream(uri)) {
+                if (os != null) {
+                    FileUtils.copy(is, os);
+                }
+            }
+        }
+
+        // Whether success, failure or an empty-result, the temp file is always cleaned up.
+        FileUtils.delete(tmpFile);
+        return results;
+    }
+
     /**
      * Get the last time we made a full export in the currently set encoding.
      *
@@ -169,7 +231,7 @@ public class ExportHelper
      * @return LocalDateTime(ZoneOffset.UTC), or {@code null} if not set
      */
     @Nullable
-    public LocalDateTime getLastDone(@NonNull final Context context) {
+    private LocalDateTime getLastDone(@NonNull final Context context) {
         if (isIncremental()) {
             final String key;
             if (encoding == ArchiveEncoding.Zip) {
@@ -194,7 +256,7 @@ public class ExportHelper
      *
      * @param context Current context
      */
-    public void setLastDone(@NonNull final Context context) {
+    private void setLastDone(@NonNull final Context context) {
         if (!isIncremental()) {
             final String date = LocalDateTime.now(ZoneOffset.UTC)
                                              .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
@@ -212,83 +274,6 @@ public class ExportHelper
             }
             editor.apply();
         }
-    }
-
-    @WorkerThread
-    @Override
-    @NonNull
-    public ExportResults write(@NonNull final Context context,
-                               @NonNull final ProgressListener progressListener)
-            throws DataWriterException,
-                   CredentialsException,
-                   StorageException,
-                   IOException {
-
-        Objects.requireNonNull(uri, ERROR_NO_URI);
-
-        final ExportResults results = new ExportResults();
-        boolean isEmpty = false;
-
-        try {
-            dataWriter = encoding.createWriter(context, this);
-            results.add(dataWriter.write(context, progressListener));
-            isEmpty = results.isEmpty();
-
-        } catch (@NonNull final IOException e) {
-            // The zip archiver (maybe others as well?) can throw an IOException
-            // when the user cancels, so only throw when this is not the case
-            if (!progressListener.isCancelled()) {
-                FileUtils.delete(getTempFile(context));
-                throw e;
-            }
-        } finally {
-            // Nasty... if the export finished exporting ZERO items,
-            // then trying to close the dataWriter will result
-            // in a ZipException.
-            // As a ZipException has no 'error-code' to tell us what was really wrong,
-            // other than reading the text... we avoid getting the ZipException
-            // by skipping the close() altogether.
-            // Due to how the JDK Zip code works, we'll still end up
-            // with a zero-bytes file being written to the uri location.
-            if (!isEmpty) {
-                close();
-            }
-        }
-
-        if (!progressListener.isCancelled()) {
-            // The output file is now properly closed, export it to the user Uri
-            final File tmpOutput = getTempFile(context);
-            try (InputStream is = new FileInputStream(tmpOutput);
-                 OutputStream os = context.getContentResolver().openOutputStream(uri)) {
-                if (os != null) {
-                    FileUtils.copy(is, os);
-                }
-            }
-        }
-
-        // Whether success, failure or an empty-result, the temp file is always cleaned up.
-        FileUtils.delete(getTempFile(context));
-        return results;
-    }
-
-    /**
-     * Create/get the OutputStream to write to.
-     *
-     * @param context Current context
-     *
-     * @return FileOutputStream
-     *
-     * @throws FileNotFoundException on ...
-     */
-    @NonNull
-    public FileOutputStream createOutputStream(@NonNull final Context context)
-            throws FileNotFoundException {
-        return new FileOutputStream(getTempFile(context));
-    }
-
-    @NonNull
-    private File getTempFile(@NonNull final Context context) {
-        return new File(context.getCacheDir(), TAG + ".tmp");
     }
 
     @Override

@@ -22,8 +22,11 @@ package com.hardbacknutter.nevertoomanybooks.backup.json;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -33,7 +36,6 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
@@ -63,17 +65,33 @@ public class JsonArchiveWriter
 
     private static final int VERSION = 1;
 
-    /** Export configuration. */
+    /**
+     * Arbitrary number of steps added to the progress max value.
+     * This covers the styles/prefs/etc... and a small extra safety.
+     */
+    private static final int EXTRA_STEPS = 10;
+
     @NonNull
-    private final ExportHelper exportHelper;
+    private final Set<RecordType> recordTypes;
+    @NonNull
+    private final File destFile;
+    @Nullable
+    private final LocalDateTime sinceDateTime;
 
     /**
      * Constructor.
      *
-     * @param exportHelper options
+     * @param recordTypes   the record types to accept and read
+     * @param sinceDateTime (optional) select all books modified or added since that
+     *                      date/time (UTC based). Set to {@code null} for *all* books.
+     * @param destFile      {@link File} to write to
      */
-    public JsonArchiveWriter(@NonNull final ExportHelper exportHelper) {
-        this.exportHelper = exportHelper;
+    public JsonArchiveWriter(@NonNull final Set<RecordType> recordTypes,
+                             @Nullable final LocalDateTime sinceDateTime,
+                             @NonNull final File destFile) {
+        this.recordTypes = recordTypes;
+        this.destFile = destFile;
+        this.sinceDateTime = sinceDateTime;
     }
 
     @NonNull
@@ -88,52 +106,47 @@ public class JsonArchiveWriter
         // do a cleanup before we start writing
         serviceLocator.getMaintenanceDao().purge();
 
-        final LocalDateTime dateSince = exportHelper.getLastDone(context);
-
-        final int booksToExport = serviceLocator.getBookDao().countBooksForExport(dateSince);
-
-        if (booksToExport > 0) {
-            progressListener.setMaxPos(booksToExport);
-
-            final ExportResults results;
-
-            final Set<RecordType> recordTypes = exportHelper.getRecordTypes();
-            RecordType.addRelatedTypes(recordTypes);
-
-            try (OutputStream os = exportHelper.createOutputStream(context);
-                 Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
-                 Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
-                 RecordWriter recordWriter = new JsonRecordWriter(serviceLocator::getCoverStorage,
-                                                                  dateSince)) {
-
-                // manually concat
-                // 1. archive envelope
-                bw.write("{\"" + JsonCoder.TAG_APPLICATION_ROOT + "\":{");
-                // add the archive version at the top to facilitate parsing
-                bw.write("\"" + ArchiveMetaData.INFO_ARCHIVER_VERSION + "\":" + VERSION);
-
-                // 2. container object
-                bw.write(",\"" + RecordType.AutoDetect.getName() + "\":");
-
-                // 3. the actual data inside the container
-                results = recordWriter.write(context, bw, recordTypes, progressListener);
-
-                // 4. the metadata
-                bw.write(",\"" + RecordType.MetaData.getName() + "\":");
-                recordWriter.writeMetaData(context, bw,
-                                           ArchiveMetaData.create(context, VERSION, results));
-
-                // 5. close the envelope
-                bw.write("}}");
+        int steps = 0;
+        if (recordTypes.contains(RecordType.Books)) {
+            steps = serviceLocator.getBookDao().countBooksForExport(sinceDateTime);
+            if (steps == 0) {
+                // no books to backup. We ignore all other record types!
+                return new ExportResults();
             }
-
-            // If the backup was a full backup remember that.
-            exportHelper.setLastDone(context);
-
-            return results;
-        } else {
-            // no books to backup. We ignore all other record types!
-            return new ExportResults();
         }
+
+        // set as an estimated max value
+        progressListener.setMaxPos(steps + EXTRA_STEPS);
+
+        final ExportResults results;
+
+        try (OutputStream os = new FileOutputStream(destFile);
+             Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
+             Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
+             RecordWriter recordWriter = new JsonRecordWriter(serviceLocator::getCoverStorage,
+                                                              sinceDateTime)) {
+
+            // manually concat
+            // 1. archive envelope
+            bw.write("{\"" + JsonCoder.TAG_APPLICATION_ROOT + "\":{");
+            // add the archive version at the top to facilitate parsing
+            bw.write("\"" + ArchiveMetaData.INFO_ARCHIVER_VERSION + "\":" + VERSION);
+
+            // 2. container object
+            bw.write(",\"" + RecordType.AutoDetect.getName() + "\":");
+
+            // 3. the actual data inside the container
+            results = recordWriter.write(context, bw, recordTypes, progressListener);
+
+            // 4. the metadata
+            bw.write(",\"" + RecordType.MetaData.getName() + "\":");
+            recordWriter.writeMetaData(context, bw,
+                                       ArchiveMetaData.create(context, VERSION, results));
+
+            // 5. close the envelope
+            bw.write("}}");
+        }
+
+        return results;
     }
 }
