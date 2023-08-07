@@ -53,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUr
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ImportContract;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
-import com.hardbacknutter.nevertoomanybooks.core.utils.UriInfo;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImportBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -160,7 +159,7 @@ public class ImportFragment
         vb.infAll.setOnClickListener(StandardDialogs::infoPopup);
 
         vb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            vm.getDataReaderHelper().setRecordType(isChecked, RecordType.Books);
+            vm.setRecordType(isChecked, RecordType.Books);
             vb.rbBooksGroup.setEnabled(isChecked);
             // follow the cbxBooks status
             vb.cbxDeleteRemovedBooks.setEnabled(isChecked);
@@ -170,24 +169,21 @@ public class ImportFragment
                 (buttonView, isChecked) -> vm.setRemoveDeletedBooksAfterImport(isChecked));
 
         vb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> vm
-                .getDataReaderHelper().setRecordType(isChecked, RecordType.Cover));
+                .setRecordType(isChecked, RecordType.Cover));
 
         vb.cbxStyles.setOnCheckedChangeListener((buttonView, isChecked) -> vm
-                .getDataReaderHelper().setRecordType(isChecked, RecordType.Styles));
+                .setRecordType(isChecked, RecordType.Styles));
 
-        vb.cbxPrefs.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            final ImportHelper helper = vm.getDataReaderHelper();
-            helper.setRecordType(isChecked, RecordType.Preferences, RecordType.Certificates);
-        });
+        vb.cbxPrefs.setOnCheckedChangeListener((buttonView, isChecked) -> vm
+                .setRecordType(isChecked, RecordType.Preferences, RecordType.Certificates));
 
         vb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            final ImportHelper helper = vm.getDataReaderHelper();
             if (checkedId == vb.rbImportNewOnly.getId()) {
-                helper.setUpdateOption(DataReader.Updates.Skip);
+                vm.setUpdateOption(DataReader.Updates.Skip);
             } else if (checkedId == vb.rbImportNewAndUpdated.getId()) {
-                helper.setUpdateOption(DataReader.Updates.OnlyNewer);
+                vm.setUpdateOption(DataReader.Updates.OnlyNewer);
             } else if (checkedId == vb.rbImportAll.getId()) {
-                helper.setUpdateOption(DataReader.Updates.Overwrite);
+                vm.setUpdateOption(DataReader.Updates.Overwrite);
             }
         });
 
@@ -197,12 +193,11 @@ public class ImportFragment
         fab.setOnClickListener(v -> startImport());
 
         if (!vm.isRunning()) {
-            if (vm.hasUri()) {
-                // if we already have a uri when called (from getArguments()),
-                // or e.g. after a screen rotation, just show the screen/options again
+            if (vm.hasSource()) {
+                // e.g. after a screen rotation, just show the screen/options again
                 showOptions();
             } else {
-                // start the import process by asking the user for a Uri
+                // start the import process by asking the user for a source Uri
                 openUriLauncher.launch(MIME_TYPES);
             }
         }
@@ -216,12 +211,12 @@ public class ImportFragment
      * @param uri file to read from
      */
     private void onOpenUri(@NonNull final Uri uri) {
-        final ImportHelper importHelper;
+
         try {
             //noinspection DataFlowIssue
-            importHelper = vm.createDataReaderHelper(getContext(), uri,
-                                                     ServiceLocator.getInstance()
-                                                                   .getSystemLocaleList().get(0));
+            vm.setSource(getContext(),
+                         uri,
+                         ServiceLocator.getInstance().getSystemLocaleList().get(0));
 
         } catch (@NonNull final DataReaderException e) {
             //noinspection DataFlowIssue
@@ -246,7 +241,7 @@ public class ImportFragment
             return;
         }
 
-        switch (importHelper.getEncoding()) {
+        switch (vm.getEncoding()) {
             case Csv:
                 // CsvArchiveReader will make a database backup before importing.
                 //noinspection DataFlowIssue
@@ -284,12 +279,10 @@ public class ImportFragment
      * Update the screen with archive specific options and values.
      */
     private void showOptions() {
-        final ImportHelper helper = vm.getDataReaderHelper();
-
         //noinspection DataFlowIssue
-        vb.archiveName.setText(new UriInfo(helper.getUri()).getDisplayName(getContext()));
+        vb.archiveName.setText(vm.getSourceDisplayName(getContext()));
 
-        final Optional<ArchiveMetaData> metaData = helper.getMetaData();
+        final Optional<ArchiveMetaData> metaData = vm.getMetaData();
         if (metaData.isPresent()) {
             showMetaData(metaData.get());
         } else {
@@ -297,13 +290,13 @@ public class ImportFragment
             showMetaData(null);
         }
 
-        final Set<RecordType> recordTypes = helper.getRecordTypes();
+        final Set<RecordType> recordTypes = vm.getRecordTypes();
         vb.cbxBooks.setChecked(recordTypes.contains(RecordType.Books));
         vb.cbxCovers.setChecked(recordTypes.contains(RecordType.Cover));
         vb.cbxStyles.setChecked(recordTypes.contains(RecordType.Styles));
         vb.cbxPrefs.setChecked(recordTypes.contains(RecordType.Preferences));
 
-        final DataReader.Updates updateOption = helper.getUpdateOption();
+        final DataReader.Updates updateOption = vm.getUpdateOption();
         vb.rbImportNewOnly.setChecked(updateOption == DataReader.Updates.Skip);
         vb.rbImportNewAndUpdated.setChecked(updateOption == DataReader.Updates.OnlyNewer);
         vb.rbImportAll.setChecked(updateOption == DataReader.Updates.Overwrite);
@@ -311,7 +304,7 @@ public class ImportFragment
         vb.cbxDeleteRemovedBooks.setChecked(vm.isRemoveDeletedBooksAfterImport());
 
         // Set the visibility depending on the encoding
-        switch (helper.getEncoding()) {
+        switch (vm.getEncoding()) {
             case Zip: {
                 // all options available
                 vb.cbxBooks.setVisibility(View.VISIBLE);

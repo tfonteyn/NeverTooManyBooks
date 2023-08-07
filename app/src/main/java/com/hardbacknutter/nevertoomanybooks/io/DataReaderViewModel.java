@@ -32,6 +32,7 @@ import androidx.lifecycle.ViewModel;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.util.Optional;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -117,11 +118,62 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
     public abstract boolean isReadyToGo();
 
     @NonNull
-    public abstract DataReaderHelperBase<METADATA, RESULTS> getDataReaderHelper();
+    protected abstract DataReaderHelperBase<METADATA, RESULTS> getDataReaderHelper();
+
+    /**
+     * Get a user-displayable name for the source of the read.
+     *
+     * @param context Current context
+     *
+     * @return name
+     */
+    @NonNull
+    public abstract String getSourceDisplayName(@NonNull Context context);
+
 
     @UiThread
     public void readMetaData() {
         metaDataTask.start(getDataReaderHelper());
+    }
+
+    /**
+     * Add or remove the given {@link RecordType}.
+     *
+     * @param add         {@code true} to add, {@code false} to remove
+     * @param recordTypes to add/remove
+     */
+    public void setRecordType(final boolean add,
+                              @NonNull final RecordType... recordTypes) {
+        getDataReaderHelper().setRecordType(add, recordTypes);
+    }
+
+    /**
+     * Get the Set of {@link RecordType}.
+     *
+     * @return an new Set
+     */
+    @NonNull
+    public Set<RecordType> getRecordTypes() {
+        return getDataReaderHelper().getRecordTypes();
+    }
+
+    /**
+     * Get the {@link DataReader.Updates} setting.
+     *
+     * @return setting
+     */
+    @NonNull
+    public DataReader.Updates getUpdateOption() {
+        return getDataReaderHelper().getUpdateOption();
+    }
+
+    public void setUpdateOption(@NonNull final DataReader.Updates updateOption) {
+        getDataReaderHelper().setUpdateOption(updateOption);
+    }
+
+    @NonNull
+    public Optional<METADATA> getMetaData() {
+        return getDataReaderHelper().getMetaData();
     }
 
     @UiThread

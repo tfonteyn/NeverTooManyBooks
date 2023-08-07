@@ -111,6 +111,8 @@ public final class SyncReaderHelper
      * If we want new-books-only {@link DataReader.Updates#Skip}
      * or new-books-and-updates {@link DataReader.Updates#OnlyNewer},
      * we limit the fetch to the sync-date.
+     *
+     * @param syncDate date
      */
     void setSyncDate(@Nullable final LocalDateTime syncDate) {
         this.syncDate = syncDate;

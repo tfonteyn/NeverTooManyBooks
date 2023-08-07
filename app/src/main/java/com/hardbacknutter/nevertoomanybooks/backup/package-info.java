@@ -43,10 +43,12 @@
  * <p>
  * *************************************************************************************
  * <p>
+ * {@link com.hardbacknutter.nevertoomanybooks.backup.ImportViewModel}
+ * serves as the glue between the UI and the
  * {@link com.hardbacknutter.nevertoomanybooks.backup.ImportHelper}
- * is setup by the user UI, inspects the Uri and determines the
+ * The helper inspects the Uri and determines the
  * {@link com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding}
- * of the given archive.
+ * of the given archive. Other options are carried forward as well.
  * <p>
  * The helper is passed to:
  * {@link com.hardbacknutter.nevertoomanybooks.io.DataReaderViewModel}.DataReaderTask
@@ -63,7 +65,7 @@
  * and finally passes the result back to the task... back to the user UI.
  * <p>
  * In short:
- * Uri -> Helper -> ArchiveEncoding -> Reader
+ * Uri -> ViewModel -> Helper -> ArchiveEncoding -> Reader
  * -> LOOP(ArchiveReaderRecord -> RecordReader) -> Results
  * <p>
  * The import/export classes are really <strong>too</strong> flexible.

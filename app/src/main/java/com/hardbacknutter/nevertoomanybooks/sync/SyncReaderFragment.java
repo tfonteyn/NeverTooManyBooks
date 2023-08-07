@@ -134,7 +134,8 @@ public class SyncReaderFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        getToolbar().setTitle(vm.getDataReaderHelper().getSyncServer().getLabelResId());
+        //noinspection DataFlowIssue
+        getToolbar().setTitle(vm.getSourceDisplayName(getContext()));
 
         //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()
@@ -151,24 +152,23 @@ public class SyncReaderFragment
         vm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
 
         vb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            vm.getDataReaderHelper().setRecordType(isChecked, RecordType.Books);
+            vm.setRecordType(isChecked, RecordType.Books);
             vb.rbBooksGroup.setEnabled(isChecked);
         });
         vb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> vm
-                .getDataReaderHelper().setRecordType(isChecked, RecordType.Cover));
+                .setRecordType(isChecked, RecordType.Cover));
 
         vb.infImportNewOnly.setOnClickListener(StandardDialogs::infoPopup);
         vb.infImportNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
         vb.infImportAll.setOnClickListener(StandardDialogs::infoPopup);
 
         vb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            final SyncReaderHelper helper = vm.getDataReaderHelper();
             if (checkedId == vb.rbImportNewOnly.getId()) {
-                helper.setUpdateOption(DataReader.Updates.Skip);
+                vm.setUpdateOption(DataReader.Updates.Skip);
             } else if (checkedId == vb.rbImportNewAndUpdated.getId()) {
-                helper.setUpdateOption(DataReader.Updates.OnlyNewer);
+                vm.setUpdateOption(DataReader.Updates.OnlyNewer);
             } else if (checkedId == vb.rbImportAll.getId()) {
-                helper.setUpdateOption(DataReader.Updates.Overwrite);
+                vm.setUpdateOption(DataReader.Updates.Overwrite);
             }
 
             updateSyncDateVisibility();
@@ -179,7 +179,7 @@ public class SyncReaderFragment
                                               vb.lblSyncDate.getId());
 
         vb.syncDate.setOnClickListener(v -> syncDatePicker.launch(
-                vm.getDataReaderHelper().getSyncDate(), this::onSyncDateSet));
+                vm.getSyncDate(), this::onSyncDateSet));
 
         final FloatingActionButton fab = getFab();
         fab.setImageResource(R.drawable.ic_baseline_import);
@@ -201,9 +201,8 @@ public class SyncReaderFragment
      * Update the screen with specific options and values.
      */
     private void showOptions() {
-        final SyncReaderHelper helper = vm.getDataReaderHelper();
 
-        final Optional<SyncReaderMetaData> metaData = helper.getMetaData();
+        final Optional<SyncReaderMetaData> metaData = vm.getMetaData();
         if (metaData.isPresent()) {
             showMetaData(metaData.get());
         } else {
@@ -211,17 +210,17 @@ public class SyncReaderFragment
             showMetaData(null);
         }
 
-        final Set<RecordType> recordTypes = helper.getRecordTypes();
+        final Set<RecordType> recordTypes = vm.getRecordTypes();
         vb.cbxBooks.setEnabled(false);
         vb.cbxBooks.setChecked(recordTypes.contains(RecordType.Books));
         vb.cbxCovers.setChecked(recordTypes.contains(RecordType.Cover));
 
-        final DataReader.Updates updateOption = helper.getUpdateOption();
+        final DataReader.Updates updateOption = vm.getUpdateOption();
         vb.rbImportNewOnly.setChecked(updateOption == DataReader.Updates.Skip);
         vb.rbImportAll.setChecked(updateOption == DataReader.Updates.Overwrite);
         vb.rbImportNewAndUpdated.setChecked(updateOption == DataReader.Updates.OnlyNewer);
 
-        final boolean hasLastUpdateDateField = helper.getSyncServer().hasLastUpdateDateField();
+        final boolean hasLastUpdateDateField = vm.getSyncServer().hasLastUpdateDateField();
         vb.rbImportNewAndUpdated.setEnabled(hasLastUpdateDateField);
         vb.infImportNewAndUpdated.setEnabled(hasLastUpdateDateField);
 
@@ -289,8 +288,7 @@ public class SyncReaderFragment
             vb.archiveContent.setVisibility(View.INVISIBLE);
             vb.lblCalibreLibrary.setVisibility(View.GONE);
         } else {
-            final SyncReaderHelper helper = vm.getDataReaderHelper();
-            switch (helper.getSyncServer()) {
+            switch (vm.getSyncServer()) {
                 case CalibreCS: {
                     vb.archiveContent.setVisibility(View.VISIBLE);
                     vb.lblCalibreLibrary.setVisibility(View.VISIBLE);
@@ -326,7 +324,7 @@ public class SyncReaderFragment
             vb.calibreLibrary.setOnItemClickListener(
                     (av, v, position, id) -> onCalibreLibrarySelected(libraries.get(position)));
 
-            CalibreLibrary library = vm.getDataReaderHelper().getExtraArgs()
+            CalibreLibrary library = vm.getExtraArgs()
                                        .getParcelable(CalibreContentServer.BKEY_LIBRARY);
             if (library == null) {
                 library = data.getParcelable(CalibreContentServer.BKEY_LIBRARY);
@@ -347,8 +345,7 @@ public class SyncReaderFragment
                                             getString(R.string.lbl_books),
                                             String.valueOf(library.getTotalBooks())));
 
-        vm.getDataReaderHelper().getExtraArgs()
-          .putParcelable(CalibreContentServer.BKEY_LIBRARY, library);
+        vm.getExtraArgs().putParcelable(CalibreContentServer.BKEY_LIBRARY, library);
     }
 
     private void onSyncDateSet(@NonNull final int[] fieldIds,
@@ -366,10 +363,9 @@ public class SyncReaderFragment
     }
 
     private void updateSyncDateVisibility() {
-        final SyncReaderHelper helper = vm.getDataReaderHelper();
-        final DataReader.Updates updateOption = helper.getUpdateOption();
+        final DataReader.Updates updateOption = vm.getUpdateOption();
         final boolean showSyncDateField =
-                helper.getSyncServer().isSyncDateUserEditable()
+                vm.getSyncServer().isSyncDateUserEditable()
                 && (updateOption == DataReader.Updates.Skip
                     || updateOption == DataReader.Updates.OnlyNewer);
         vb.infSyncDate.setVisibility(showSyncDateField ? View.VISIBLE : View.GONE);
@@ -383,7 +379,7 @@ public class SyncReaderFragment
      * @param lastSyncDate to use
      */
     private void updateSyncDate(@Nullable final LocalDateTime lastSyncDate) {
-        vm.getDataReaderHelper().setSyncDate(lastSyncDate);
+        vm.setSyncDate(lastSyncDate);
         //noinspection DataFlowIssue
         vb.syncDate.setText(DateUtils.displayDate(getContext(), lastSyncDate));
     }
