@@ -106,7 +106,7 @@ public class ExportHelper
                         @NonNull final Locale systemLocale) {
         this.encoding = encoding;
         this.dateParser = new ISODateParser(systemLocale);
-        addRecordType(recordTypes);
+        getRecordTypes().addAll(recordTypes);
     }
 
     /**

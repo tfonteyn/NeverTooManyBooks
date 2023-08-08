@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -63,8 +64,18 @@ public class SyncWriterViewModel
     }
 
     @NonNull
-    SyncWriterHelper getSyncWriterHelper() {
+    protected SyncWriterHelper getDataWriterHelper() {
         return syncWriterHelper;
+    }
+
+    void setDeleteLocalBooks(final boolean deleteLocalBooks) {
+        getDataWriterHelper().setDeleteLocalBooks(deleteLocalBooks);
+    }
+
+    @NonNull
+    @Override
+    public String getDestinationDisplayName(@NonNull final Context context) {
+        return context.getString(getDataWriterHelper().getSyncServer().getLabelResId());
     }
 
     @Override

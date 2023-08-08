@@ -27,7 +27,7 @@ import androidx.annotation.NonNull;
 import java.io.File;
 
 /**
- * Value class to report back what was witten.
+ * Value class to report back what was written.
  */
 public class SyncWriterResults
         implements Parcelable {

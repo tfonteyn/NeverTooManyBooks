@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.sync;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -104,7 +105,8 @@ public class SyncWriterFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        getToolbar().setTitle(vm.getSyncWriterHelper().getSyncServer().getLabelResId());
+        //noinspection DataFlowIssue
+        getToolbar().setTitle(vm.getDestinationDisplayName(getContext()));
 
         vm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
         vm.onWriteDataCancelled().observe(getViewLifecycleOwner(), this::onExportCancelled);
@@ -115,16 +117,15 @@ public class SyncWriterFragment
         vb.cbxBooks.setEnabled(true);
 
         vb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> vm
-                .getSyncWriterHelper().setRecordType(isChecked, RecordType.Cover));
+                .setRecordType(isChecked, RecordType.Cover));
 
         vb.infExportNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
 
         vb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> vm
-                .getSyncWriterHelper()
                 .setIncremental(checkedId == vb.rbExportNewAndUpdated.getId()));
 
         vb.cbxDeleteRemovedBooks.setOnCheckedChangeListener((v, isChecked) -> vm
-                .getSyncWriterHelper().setDeleteLocalBooks(isChecked));
+                .setDeleteLocalBooks(isChecked));
 
         final FloatingActionButton fab = getFab();
         fab.setImageResource(R.drawable.ic_baseline_export);
@@ -146,9 +147,10 @@ public class SyncWriterFragment
     private void showQuickOptions() {
         vm.setQuickOptionsAlreadyShown();
 
+        final Context context = getContext();
         //noinspection DataFlowIssue
-        new MaterialAlertDialogBuilder(getContext())
-                .setTitle(vm.getSyncWriterHelper().getSyncServer().getLabelResId())
+        new MaterialAlertDialogBuilder(context)
+                .setTitle(vm.getDestinationDisplayName(context))
                 .setMessage(R.string.action_synchronize)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
                 .setNeutralButton(R.string.action_show_options, (d, w) -> {
@@ -167,12 +169,10 @@ public class SyncWriterFragment
      * Show the full options screen to the user.
      */
     private void showOptions() {
-        final SyncWriterHelper helper = vm.getSyncWriterHelper();
-
-        final Set<RecordType> recordTypes = helper.getRecordTypes();
+        final Set<RecordType> recordTypes = vm.getRecordTypes();
         vb.cbxCovers.setChecked(recordTypes.contains(RecordType.Cover));
 
-        final boolean incremental = helper.isIncremental();
+        final boolean incremental = vm.isIncremental();
         vb.rbExportAll.setChecked(!incremental);
         vb.rbExportNewAndUpdated.setChecked(incremental);
 

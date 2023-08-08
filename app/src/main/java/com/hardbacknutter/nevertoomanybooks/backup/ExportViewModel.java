@@ -32,6 +32,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 
+import com.hardbacknutter.nevertoomanybooks.core.utils.UriInfo;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterViewModel;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
@@ -66,8 +67,61 @@ public class ExportViewModel
     }
 
     @NonNull
-    ExportHelper getExportHelper() {
+    protected ExportHelper getDataWriterHelper() {
         return Objects.requireNonNull(exportHelper);
+    }
+
+    /**
+     * Is this a backup or an export.
+     *
+     * @return {@code true} when this is considered a backup,
+     *         {@code false} when it's considered an export.
+     */
+    public boolean isBackup() {
+        return getDataWriterHelper().isBackup();
+    }
+
+    /**
+     * Get the uri to which we'll write.
+     *
+     * @return uri to write to
+     *
+     * @throws NullPointerException if the uri was not set previously
+     */
+    @NonNull
+    public Uri getUri() {
+        return getDataWriterHelper().getUri();
+    }
+
+    @NonNull
+    @Override
+    public String getDestinationDisplayName(@NonNull final Context context) {
+        return new UriInfo(getDataWriterHelper().getUri()).getDisplayName(context);
+    }
+
+    @NonNull
+    Pair<String, Long> getDestination(@NonNull final Context context) {
+        final UriInfo uriInfo = new UriInfo(getDataWriterHelper().getUri());
+        return new Pair<>(uriInfo.getDisplayName(context), uriInfo.getSize(context));
+    }
+
+    /**
+     * Set the type of archive (file) to write to.
+     *
+     * @param encoding to use
+     */
+    public void setEncoding(@NonNull final ArchiveEncoding encoding) {
+        getDataWriterHelper().setEncoding(encoding);
+    }
+
+    /**
+     * Get the type of archive (file) to write to.
+     *
+     * @return encoding
+     */
+    @NonNull
+    public ArchiveEncoding getEncoding() {
+        return getDataWriterHelper().getEncoding();
     }
 
     /**

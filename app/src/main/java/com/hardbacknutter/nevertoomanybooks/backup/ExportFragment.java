@@ -56,7 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
-import com.hardbacknutter.nevertoomanybooks.core.utils.UriInfo;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentExportBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
@@ -120,12 +119,12 @@ public class ExportFragment
         vm.onWriteDataFinished().observe(getViewLifecycleOwner(), this::onExportFinished);
 
         vb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> vm
-                .getExportHelper().setRecordType(isChecked, RecordType.Cover));
+                .setRecordType(isChecked, RecordType.Cover));
         vb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> vm
-                .getExportHelper().setIncremental(checkedId == vb.rbExportNewAndUpdated.getId()));
+                .setIncremental(checkedId == vb.rbExportNewAndUpdated.getId()));
 
         vb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            vm.getExportHelper().setRecordType(isChecked, RecordType.Books);
+            vm.setRecordType(isChecked, RecordType.Books);
             vb.rbBooksGroup.setEnabled(isChecked);
         });
 
@@ -149,13 +148,11 @@ public class ExportFragment
      * Show the full options screen to the user.
      */
     private void showOptions() {
-        final ExportHelper helper = vm.getExportHelper();
-
-        final Set<RecordType> recordTypes = helper.getRecordTypes();
+        final Set<RecordType> recordTypes = vm.getRecordTypes();
         vb.cbxBooks.setChecked(recordTypes.contains(RecordType.Books));
         vb.cbxCovers.setChecked(recordTypes.contains(RecordType.Cover));
 
-        final boolean incremental = helper.isIncremental();
+        final boolean incremental = vm.isIncremental();
         vb.rbExportAll.setChecked(!incremental);
         vb.rbExportNewAndUpdated.setChecked(incremental);
 
@@ -169,7 +166,7 @@ public class ExportFragment
                 ExtArrayAdapter.FilterType.Passthrough, list));
 
         vb.archiveFormat.setText(list.get(initialPos), false);
-        updateFormatSelection(helper.getEncoding());
+        updateFormatSelection(vm.getEncoding());
 
         getFab().setVisibility(View.VISIBLE);
         vb.getRoot().setVisibility(View.VISIBLE);
@@ -177,8 +174,7 @@ public class ExportFragment
 
     private void updateFormatSelection(@NonNull final ArchiveEncoding encoding) {
 
-        final ExportHelper helper = vm.getExportHelper();
-        helper.setEncoding(encoding);
+        vm.setEncoding(encoding);
 
         vb.archiveFormatInfo.setText(encoding.getShortDescResId());
 
@@ -187,9 +183,9 @@ public class ExportFragment
                 vb.archiveFormatInfoLong.setText("");
 
                 // Don't change Books/Covers, but add:
-                helper.addRecordType(EnumSet.of(RecordType.Styles,
-                                                RecordType.Preferences,
-                                                RecordType.Certificates));
+                vm.getRecordTypes().addAll(EnumSet.of(RecordType.Styles,
+                                                      RecordType.Preferences,
+                                                      RecordType.Certificates));
 
                 vb.cbxBooks.setChecked(true);
                 vb.cbxBooks.setEnabled(true);
@@ -205,9 +201,10 @@ public class ExportFragment
             case Json: {
                 vb.archiveFormatInfoLong.setText("");
 
-                helper.removeRecordType(EnumSet.of(RecordType.Styles,
-                                                   RecordType.Preferences,
-                                                   RecordType.Certificates));
+                final Set<RecordType> recordTypes = EnumSet.of(RecordType.Styles,
+                                                               RecordType.Preferences,
+                                                               RecordType.Certificates);
+                vm.getRecordTypes().removeAll(recordTypes);
 
                 vb.cbxBooks.setChecked(true);
                 vb.cbxBooks.setEnabled(false);
@@ -223,9 +220,10 @@ public class ExportFragment
             case SqLiteDb: {
                 vb.archiveFormatInfoLong.setText(R.string.option_info_lbl_archive_is_export_only);
 
-                helper.removeRecordType(EnumSet.of(RecordType.Styles,
-                                                   RecordType.Preferences,
-                                                   RecordType.Certificates));
+                final Set<RecordType> recordTypes = EnumSet.of(RecordType.Styles,
+                                                               RecordType.Preferences,
+                                                               RecordType.Certificates);
+                vm.getRecordTypes().removeAll(recordTypes);
 
                 vb.cbxBooks.setChecked(true);
                 vb.cbxBooks.setEnabled(false);
@@ -261,7 +259,7 @@ public class ExportFragment
         // Create the proposed name for the archive. The user can change it.
         final String fileName = "ntmb-" + LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
         final String mimeType = FileUtils.getMimeTypeFromExtension(
-                vm.getExportHelper().getEncoding().getFileExt());
+                vm.getEncoding().getFileExt());
 
         createDocumentLauncher.launch(new GetContentUriForWritingContract
                 .Input(mimeType, fileName));
@@ -280,7 +278,7 @@ public class ExportFragment
 
         message.getData().map(TaskResult::getResult).filter(Objects::nonNull).ifPresent(e -> {
             //noinspection DataFlowIssue
-            ErrorDialog.show(getContext(), e, getString(vm.getExportHelper().isBackup()
+            ErrorDialog.show(getContext(), e, getString(vm.isBackup()
                                                         ? R.string.error_backup_failed
                                                         : R.string.error_export_failed),
                              (d, w) -> getActivity().finish());
@@ -314,12 +312,9 @@ public class ExportFragment
                         .map(s -> getString(R.string.list_element, s))
                         .collect(Collectors.joining("\n"));
 
-                final ExportHelper helper = vm.getExportHelper();
-
-
                 @StringRes
-                final int title = helper.isBackup() ? R.string.info_backup_successful
-                                                    : R.string.info_export_successful;
+                final int title = vm.isBackup() ? R.string.info_backup_successful
+                                                : R.string.info_export_successful;
 
                 //URGENT: the report can be large - i.e. the user will need to scroll
                 //noinspection DataFlowIssue
@@ -332,20 +327,21 @@ public class ExportFragment
 
                 final StringBuilder msg = new StringBuilder(itemList);
 
-                final UriInfo uriInfo = new UriInfo(helper.getUri());
-                final long size = uriInfo.getSize(getContext());
+                final Pair<String, Long> destination = vm.getDestination(getContext());
+                final String destName = destination.first;
+                final long size = destination.second;
 
                 // Reminder: we can't get/display the folder name for the file.
                 msg.append("\n\n")
                    .append(getString(R.string.info_export_report,
                                      FileSize.format(getContext(), size),
-                                     uriInfo.getDisplayName(getContext())));
+                                     destName));
 
                 if (size > 0 && size < MAX_FILE_SIZE_FOR_EMAIL) {
                     msg.append("\n\n").append(getString(R.string.confirm_email_file));
 
                     dialogBuilder.setNeutralButton(R.string.action_email, (d, w) ->
-                            onExportEmail(uriInfo.getUri(), itemList));
+                            onExportEmail(vm.getUri(), itemList));
                 }
 
                 dialogBuilder.setMessage(msg)

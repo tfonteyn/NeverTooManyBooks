@@ -75,39 +75,6 @@ public abstract class DataWriterHelperBase<RESULTS> {
     private boolean incremental;
 
     /**
-     * Add the given set of {@link RecordType}s.
-     *
-     * @param recordTypes to add
-     */
-    public void addRecordType(@NonNull final Set<RecordType> recordTypes) {
-        this.recordTypes.addAll(recordTypes);
-    }
-
-    /**
-     * Remove the given set of {@link RecordType}s.
-     *
-     * @param recordTypes to add
-     */
-    public void removeRecordType(@NonNull final Set<RecordType> recordTypes) {
-        this.recordTypes.removeAll(recordTypes);
-    }
-
-    /**
-     * Add or remove the given {@link RecordType}.
-     *
-     * @param add        {@code true} to add, {@code false} to remove
-     * @param recordType to add/remove
-     */
-    public void setRecordType(final boolean add,
-                              @NonNull final RecordType recordType) {
-        if (add) {
-            recordTypes.add(recordType);
-        } else {
-            recordTypes.remove(recordType);
-        }
-    }
-
-    /**
      * Get the Set of RecordType.
      *
      * @return an immutable Set
@@ -119,11 +86,16 @@ public abstract class DataWriterHelperBase<RESULTS> {
         return EnumSet.copyOf(recordTypes);
     }
 
+    /**
+     * Will this write be incremental.
+     *
+     * @return {@code true} for incremental, {@code false} for full.
+     */
     public boolean isIncremental() {
         return incremental;
     }
 
-    public void setIncremental(final boolean incremental) {
+    void setIncremental(final boolean incremental) {
         this.incremental = incremental;
     }
 

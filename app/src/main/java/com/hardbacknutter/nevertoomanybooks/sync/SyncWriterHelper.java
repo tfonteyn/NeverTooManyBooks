@@ -68,8 +68,8 @@ public class SyncWriterHelper
         this.systemLocale = systemLocale;
 
         // set the default
-        addRecordType(EnumSet.of(RecordType.Books,
-                                 RecordType.Cover));
+        getRecordTypes().addAll(EnumSet.of(RecordType.Books,
+                                           RecordType.Cover));
     }
 
     @NonNull

@@ -31,6 +31,7 @@ import androidx.lifecycle.ViewModel;
 
 import java.io.IOException;
 import java.security.cert.CertificateException;
+import java.util.Set;
 import javax.net.ssl.SSLException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -85,12 +86,58 @@ public abstract class DataWriterViewModel<RESULTS>
         return writerTask.onFinished();
     }
 
+    @NonNull
+    protected abstract DataWriterHelperBase<RESULTS> getDataWriterHelper();
+
+    /**
+     * Get a user-displayable name for the destination of the write.
+     *
+     * @param context Current context
+     *
+     * @return name
+     */
+    @NonNull
+    public abstract String getDestinationDisplayName(@NonNull Context context);
+
     /**
      * Check if we have sufficient data to start an export.
      *
      * @return {@code true} if the "Go" button should be made available
      */
     public abstract boolean isReadyToGo();
+
+    /**
+     * Add or remove the given {@link RecordType}.
+     *
+     * @param add        {@code true} to add, {@code false} to remove
+     * @param recordType to add/remove
+     */
+    public void setRecordType(final boolean add,
+                              @NonNull final RecordType recordType) {
+        if (add) {
+            getDataWriterHelper().getRecordTypes().add(recordType);
+        } else {
+            getDataWriterHelper().getRecordTypes().remove(recordType);
+        }
+    }
+
+    /**
+     * Get the Set of RecordType.
+     *
+     * @return an immutable Set
+     */
+    @NonNull
+    public Set<RecordType> getRecordTypes() {
+        return getDataWriterHelper().getRecordTypes();
+    }
+
+    public boolean isIncremental() {
+        return getDataWriterHelper().isIncremental();
+    }
+
+    public void setIncremental(final boolean incremental) {
+        getDataWriterHelper().setIncremental(incremental);
+    }
 
     @UiThread
     protected void startWritingData(@NonNull final DataWriterHelperBase<RESULTS> helper) {

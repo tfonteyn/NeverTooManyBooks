@@ -19,12 +19,14 @@
  */
 
 /**
+ * {@link com.hardbacknutter.nevertoomanybooks.backup.ExportViewModel}
+ *  * serves as the glue between the UI and the
  * {@link com.hardbacknutter.nevertoomanybooks.backup.ExportHelper}
- * is setup by the user UI, and determines the
+ * iThe helper inspects the Uri and determines the
  * {@link com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding}
- * of the given archive.
+ * of the given archive. Other options are carried forward as well.
  * <p>
- * The ExportHelper is passed to:
+ * The helper is passed to:
  * {@link com.hardbacknutter.nevertoomanybooks.io.DataWriterViewModel}.DataWriterTask
  * The task gets an writer from the ExportHelper, and delegates the job to it:
  * {@link com.hardbacknutter.nevertoomanybooks.io.DataWriter}
