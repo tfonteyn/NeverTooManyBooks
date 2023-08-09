@@ -214,17 +214,8 @@ public class SearchBookUpdatesViewModel
                .addRelatedField(DBKey.COVER[1], Book.BKEY_TMP_FILE_SPEC[1])
                .addRelatedField(DBKey.PRICE_LISTED, DBKey.PRICE_LISTED_CURRENCY);
 
-
         // The (locally sorted) external-id fields are added at the end of the list.
-        // The label is the search engine name, the value is the external id field name
-        final SortedMap<String, String> sidMap = new TreeMap<>();
-        SearchEngineConfig.getAll().forEach(seConfig -> {
-            final Domain domain = seConfig.getExternalIdDomain();
-            if (domain != null) {
-                sidMap.put(seConfig.getEngineId().getName(context), domain.getName());
-            }
-        });
-        sidMap.forEach((label, key) -> builder.add(context, label, key, SyncAction.Overwrite));
+        builder.addSidFields(context);
 
         return builder;
     }

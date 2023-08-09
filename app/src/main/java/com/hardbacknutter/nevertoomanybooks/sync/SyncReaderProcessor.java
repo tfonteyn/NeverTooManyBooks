@@ -39,9 +39,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -53,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 
 /**
  * Handles importing data with each field controlled by a {@link SyncAction}.
@@ -138,7 +142,7 @@ public final class SyncReaderProcessor {
                             } else {
                                 // If the original was blank/zero, add to list
                                 final String value = localBook.getString(field.getKey(), null);
-                                if (value == null || value.isEmpty() || "0" .equals(value)) {
+                                if (value == null || value.isEmpty() || "0".equals(value)) {
                                     filteredMap.put(field.getKey(), field);
                                 }
                             }
@@ -283,7 +287,7 @@ public final class SyncReaderProcessor {
                 final Object o = localBook.get(key, realNumberParser);
                 if (o != null) {
                     final String value = o.toString().trim();
-                    return !value.isEmpty() && !"0" .equals(value);
+                    return !value.isEmpty() && !"0".equals(value);
                 }
                 break;
         }
@@ -567,6 +571,28 @@ public final class SyncReaderProcessor {
             // Don't check on key being present in the fields list. We'll do that at usage time.
             //This allows out-of-order adding.
             relatedFields.put(key, relatedKey);
+            return this;
+        }
+
+        /**
+         * Add the supported external-id fields.
+         * The label is the search engine name, the value is the external id field name
+         *
+         * @param context Current context
+         *
+         * @return {@code this} (for chaining)
+         */
+        @NonNull
+        public Builder addSidFields(@NonNull final Context context) {
+            final SortedMap<String, String> sidMap = new TreeMap<>();
+            SearchEngineConfig.getAll().forEach(seConfig -> {
+                final Domain domain = seConfig.getExternalIdDomain();
+                if (domain != null) {
+                    sidMap.put(seConfig.getEngineId().getName(context), domain.getName());
+                }
+            });
+            sidMap.forEach((label, key) -> add(context, label, key, SyncAction.Overwrite));
+
             return this;
         }
 
