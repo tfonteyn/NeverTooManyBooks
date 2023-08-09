@@ -37,18 +37,25 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
@@ -63,8 +70,9 @@ import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.ReaderResults;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderHelper;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderProcessor;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
@@ -103,7 +111,7 @@ import com.hardbacknutter.org.json.JSONObject;
 public class CalibreContentServerReader
         implements DataReader<SyncReaderMetaData, ReaderResults> {
 
-    public static final String SYNC_PROCESSOR_PREFIX =
+    private static final String SYNC_PROCESSOR_PREFIX =
             CalibreContentServer.PREF_KEY + ".fields.update.";
     /** Log tag. */
     private static final String TAG = "CalibreServerReader";
@@ -140,6 +148,14 @@ public class CalibreContentServerReader
 
     @NonNull
     private final CalibreContentServer server;
+
+    /** Which fields and how to process them for existing books. */
+    @NonNull
+    private final SyncReaderProcessor syncProcessor;
+
+    /** Reused for each call to the {@link SyncReaderProcessor#process}. */
+    private final RealNumberParser realNumberParser;
+
     @NonNull
     private final DateParser dateParser;
 
@@ -173,7 +189,9 @@ public class CalibreContentServerReader
         this.updateOption = updateOption;
         this.syncDate = syncDate;
 
-        //ENHANCE: add support for SyncProcessor
+        // Get either the custom passed-in, or the builtin default.
+        this.syncProcessor = syncProcessor != null ? syncProcessor
+                                                   : getDefaultSyncProcessor(context);
 
         doCovers = recordTypes.contains(RecordType.Cover);
         library = extraArgs.getParcelable(CalibreContentServer.BKEY_LIBRARY);
@@ -186,57 +204,96 @@ public class CalibreContentServerReader
 
         dateParser = new ISODateParser(systemLocale);
 
+        final List<Locale> locales = LocaleListUtils.asList(context);
+        realNumberParser = new RealNumberParser(locales);
+
         eBookString = context.getString(R.string.book_format_ebook);
     }
 
-    // This needs thought/work....
-    //    @NonNull
-    //    public static SyncReaderProcessor getDefaultSyncProcessor() {
-    //        return new SyncReaderProcessor.Builder(SYNC_PROCESSOR_PREFIX)
-    //
-    //                .add(R.string.lbl_cover_front, DBKey.COVER_IS_USED[0])
-    //                .addRelatedField(DBKey.COVER_IS_USED[0], Book.BKEY_TMP_FILE_SPEC[0])
-    //
-    //                .add(R.string.lbl_cover_back, DBKey.COVER_IS_USED[1])
-    //                .addRelatedField(DBKey.COVER_IS_USED[1], Book.BKEY_TMP_FILE_SPEC[1])
-    //
-    //                .add(R.string.lbl_title, DBKey.KEY_TITLE,
-    //                     SyncAction.Overwrite)
-    //
-    //                .addList(R.string.lbl_authors, DBKey.FK_AUTHOR, Book.BKEY_AUTHOR_LIST)
-    //                .addList(R.string.lbl_series_multiple, DBKey.KEY_SERIES_TITLE,
-    //                         Book.BKEY_SERIES_LIST)
-    //
-    //                .add(R.string.lbl_description, DBKey.KEY_DESCRIPTION,
-    //                     SyncAction.Overwrite)
-    //
-    //                .addList(R.string.lbl_publishers, DBKey.KEY_PUBLISHER_NAME,
-    //                         Book.BKEY_PUBLISHER_LIST)
-    //                .add(R.string.lbl_date_published, DBKey.DATE_BOOK_PUBLICATION)
-    //
-    //
-    //
-    //                .add(R.string.site_calibre, DBKey.KEY_CALIBRE_BOOK_ID)
-    //                .addRelatedField(DBKey.KEY_CALIBRE_BOOK_UUID, DBKey.KEY_CALIBRE_BOOK_ID)
-    //
-    //                .add(R.string.lbl_date_last_updated, DBKey.UTC_DATE_LAST_UPDATED,
-    //                     SyncAction.Overwrite)
-    //
-    //
-    //
-    //                .add(R.string.lbl_format, DBKey.KEY_FORMAT)
-    //                .add(R.string.lbl_language, DBKey.KEY_LANGUAGE)
-    //
-    //                .add(R.string.lbl_rating, DBKey.KEY_RATING)
-    //
-    //
-    //                // CustomFields
-    //                .add(R.string.lbl_read, DBKey.BOOL_READ)
-    //                .add(R.string.lbl_read_start, DBKey.DATE_READ_START)
-    //                .add(R.string.lbl_read_end, DBKey.DATE_READ_END)
-    //                .add(R.string.lbl_personal_notes, DBKey.KEY_PRIVATE_NOTES)
-    //                .build();
-    //    }
+    /**
+     * Get the default {@link SyncReaderProcessor}.
+     * <p>
+     * Simple fields are set to {@link SyncAction#CopyIfBlank}.
+     * List fields are set to {@link SyncAction#Append}.
+     *
+     * @param context Current context
+     *
+     * @return a {@link SyncReaderProcessor}
+     */
+    @NonNull
+    private static SyncReaderProcessor getDefaultSyncProcessor(@NonNull final Context context) {
+        final SortedMap<String, String[]> map = new TreeMap<>();
+        map.put(context.getString(R.string.site_calibre),
+                new String[]{DBKey.CALIBRE_BOOK_ID});
+
+        map.put(context.getString(R.string.lbl_date_last_updated),
+                new String[]{DBKey.DATE_LAST_UPDATED__UTC});
+
+        map.put(context.getString(R.string.lbl_cover_front),
+                new String[]{DBKey.COVER[0]});
+        map.put(context.getString(R.string.lbl_cover_back),
+                new String[]{DBKey.COVER[1]});
+
+        map.put(context.getString(R.string.lbl_title),
+                new String[]{DBKey.TITLE});
+        map.put(context.getString(R.string.lbl_authors),
+                new String[]{DBKey.FK_AUTHOR, Book.BKEY_AUTHOR_LIST});
+        map.put(context.getString(R.string.lbl_series_multiple),
+                new String[]{DBKey.FK_SERIES, Book.BKEY_SERIES_LIST});
+        map.put(context.getString(R.string.lbl_description),
+                new String[]{DBKey.DESCRIPTION});
+        map.put(context.getString(R.string.lbl_publishers),
+                new String[]{DBKey.FK_PUBLISHER, Book.BKEY_PUBLISHER_LIST});
+
+        map.put(context.getString(R.string.lbl_date_published),
+                new String[]{DBKey.BOOK_PUBLICATION__DATE});
+
+        map.put(context.getString(R.string.lbl_format),
+                new String[]{DBKey.FORMAT});
+        map.put(context.getString(R.string.lbl_language),
+                new String[]{DBKey.LANGUAGE});
+        map.put(context.getString(R.string.lbl_rating),
+                new String[]{DBKey.RATING});
+
+        map.put(context.getString(R.string.lbl_date_last_updated),
+                new String[]{DBKey.DATE_LAST_UPDATED__UTC});
+
+        // The site specific fields
+        map.put(context.getString(R.string.lbl_ebook_file_type),
+                new String[]{DBKey.CALIBRE_BOOK_MAIN_FORMAT});
+
+        // The site specific CustomFields
+        ServiceLocator.getInstance()
+                      .getCalibreCustomFieldDao()
+                      .getCustomFields().stream()
+                      .map(CalibreCustomField::getDbKey)
+                      .forEach(dbKey -> {
+                          // URGENT: converting DBKey to label needs to be universal.
+                          try {
+                              map.put(FieldVisibility.getLabel(context, dbKey),
+                                      new String[]{dbKey});
+
+                          } catch (@NonNull final IllegalArgumentException ignore) {
+                              // will currently never fail, as all custom fields are default
+                              // hardcoded.
+                          }
+                      });
+
+        final SyncReaderProcessor.Builder builder =
+                new SyncReaderProcessor.Builder(context, SYNC_PROCESSOR_PREFIX);
+
+        // add the sorted fields
+        map.forEach((label, keys) -> builder.add(context, label, keys));
+
+        builder.addRelatedField(DBKey.COVER[0], Book.BKEY_TMP_FILE_SPEC[0])
+               .addRelatedField(DBKey.COVER[1], Book.BKEY_TMP_FILE_SPEC[1])
+               .addRelatedField(DBKey.CALIBRE_BOOK_ID, DBKey.CALIBRE_BOOK_UUID);
+
+        // The (locally sorted) external-id fields are added at the end of the list.
+        builder.addSidFields(context);
+
+        return builder.build();
+    }
 
     @Override
     public void cancel() {
@@ -369,7 +426,7 @@ public class CalibreContentServerReader
                                                 bookListVirtualLibs.getJSONArray(key));
                             }
 
-                            handleBook(context, calibreBook);
+                            handleBook(context, convert(context, calibreBook));
 
                             results.booksProcessed++;
                             // Due to the network access, we're not adding
@@ -405,7 +462,7 @@ public class CalibreContentServerReader
      * @throws IOException      on generic/other IO failures
      */
     private void handleBook(@NonNull final Context context,
-                            @NonNull final JSONObject calibreBook)
+                            @NonNull final Book calibreBook)
             throws StorageException, IOException {
         try {
             final String calibreUuid = calibreBook.getString(CalibreBook.UUID);
@@ -465,6 +522,7 @@ public class CalibreContentServerReader
             } else {
                 insertBook(context, calibreBook);
             }
+
         } catch (@NonNull final DaoWriteException | SQLiteDoneException | JSONException e) {
             // log, but don't fail
             LoggerFactory.getLogger().e(TAG, e);
@@ -473,36 +531,43 @@ public class CalibreContentServerReader
     }
 
     private void updateBook(@NonNull final Context context,
-                            @NonNull final JSONObject calibreBook,
+                            @NonNull final Book calibreBook,
                             @NonNull final Book book)
             throws StorageException, IOException, DaoWriteException {
 
-        book.setStage(EntityStage.Stage.Dirty);
-        copyCalibreData(context, calibreBook, book);
+        // The delta values we'll be updating
+        final Book delta;
 
-        bookDao.update(context, book, Set.of(BookDao.BookFlag.RunInBatch,
-                                             BookDao.BookFlag.UseUpdateDateIfPresent));
-        results.booksUpdated++;
+        final Map<String, SyncField> fieldsWanted = syncProcessor.filter(book);
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
-            LoggerFactory.getLogger()
-                         .d(TAG, "updateBook", updateOption,
-                            "calibreUuid=" + calibreBook.getString(CalibreBook.UUID),
-                            "book=" + book.getId(),
-                            book.getTitle());
+        // Extract the delta from the dataToMerge
+        delta = syncProcessor.process(context, book.getId(), book,
+                                      fieldsWanted, calibreBook,
+                                      realNumberParser);
+
+        if (delta != null) {
+            bookDao.update(context, delta, Set.of(BookDao.BookFlag.RunInBatch,
+                                                  BookDao.BookFlag.UseUpdateDateIfPresent));
+            results.booksUpdated++;
+
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
+                LoggerFactory.getLogger()
+                             .d(TAG, "updateBook", updateOption,
+                                "calibreUuid=" + calibreBook.getString(CalibreBook.UUID),
+                                "book=" + book.getId(),
+                                book.getTitle());
+            }
         }
     }
 
     private void insertBook(@NonNull final Context context,
-                            @NonNull final JSONObject calibreBook)
-            throws StorageException, IOException, DaoWriteException {
+                            @NonNull final Book book)
+            throws StorageException,
+                   DaoWriteException {
 
-        // It's a new book; construct it using the calibre server data and insert it into the db
-        final Book book = new Book();
-        book.setStage(EntityStage.Stage.Dirty);
         // it's an eBook - duh!
         book.putString(DBKey.FORMAT, eBookString);
-        copyCalibreData(context, calibreBook, book);
+
         // sanity check, the book should always/already be on the mapped shelf.
         book.ensureBookshelf(context);
 
@@ -512,83 +577,126 @@ public class CalibreContentServerReader
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
             LoggerFactory.getLogger()
                          .d(TAG, "insertBook", updateOption,
-                            "calibreUuid=" + calibreBook.getString(CalibreBook.UUID),
+                            "calibreUuid=" + book.getString(CalibreBook.UUID),
                             "book=" + book.getId(),
                             book.getTitle());
         }
     }
 
     /**
-     * Copy or add data from Calibre to the local Book object.
+     * Convert the given JSON data to a {@link Book}.
      *
      * @param context     Current context
-     * @param calibreBook the book data to import
-     * @param localBook   the local book to add the data to
+     * @param calibreBook to convert
+     *
+     * @return a Book
      *
      * @throws StorageException         The covers directory is not available
      * @throws JSONException            upon any parsing error
      * @throws IOException              on generic/other IO failures
      * @throws IllegalArgumentException if a value has unexpectedly the text "null".
      */
-    private void copyCalibreData(@NonNull final Context context,
-                                 @NonNull final JSONObject calibreBook,
-                                 @NonNull final Book localBook)
-            throws StorageException, IOException, JSONException {
+    private Book convert(@NonNull final Context context,
+                         @NonNull final JSONObject calibreBook)
+            throws IOException, StorageException {
+        final Book book = new Book();
+        book.setStage(EntityStage.Stage.Dirty);
 
         final int calibreBookId = calibreBook.getInt(CalibreBook.ID);
-        localBook.putInt(DBKey.CALIBRE_BOOK_ID, calibreBookId);
-        localBook.putString(DBKey.CALIBRE_BOOK_UUID,
-                            calibreBook.getString(CalibreBook.UUID));
+        book.putInt(DBKey.CALIBRE_BOOK_ID, calibreBookId);
+        book.putString(DBKey.CALIBRE_BOOK_UUID,
+                       calibreBook.getString(CalibreBook.UUID));
+        // Always add the current library; i.e. the library the book came from.
+        book.setCalibreLibrary(library);
 
         // "last_modified": "2020-11-20T11:17:51+00:00",
-        // Note we copy the string as-is, and leave the normalisation to the book DAO routines.
-        // Reminder: we already checked this date being newer then the local one before we got here
-        localBook.putString(DBKey.DATE_LAST_UPDATED__UTC,
-                            calibreBook.getString(CalibreBook.LAST_MODIFIED));
+        final String calibreLastModified = calibreBook.getString(CalibreBook.LAST_MODIFIED);
+        final LocalDateTime lastUpDate = dateParser.parse(calibreLastModified);
+        if (lastUpDate != null) {
+            book.putString(DBKey.DATE_LAST_UPDATED__UTC, SqlEncode.date(lastUpDate));
+        }
 
         // paranoia ...
         if (!calibreBook.isNull(CalibreBook.TITLE)) {
             // always overwrite
-            localBook.putString(DBKey.TITLE, calibreBook.getString(CalibreBook.TITLE));
+            book.putString(DBKey.TITLE,
+                           calibreBook.getString(CalibreBook.TITLE));
         }
 
         if (!calibreBook.isNull(CalibreBook.DESCRIPTION)) {
             // always overwrite
-            localBook.putString(DBKey.DESCRIPTION,
-                                calibreBook.getString(CalibreBook.DESCRIPTION));
+            book.putString(DBKey.DESCRIPTION,
+                           calibreBook.getString(CalibreBook.DESCRIPTION));
         }
 
         if (!calibreBook.isNull(CalibreBook.RATING)) {
             final int rating = calibreBook.getInt(CalibreBook.RATING);
             // don't overwrite the local value with a remote 'not-set' value
             if (rating > 0) {
-                localBook.putFloat(DBKey.RATING, rating);
+                book.putFloat(DBKey.RATING, rating);
             }
         }
 
-        // "languages": [
-        //      "eng"
-        // ],
         if (!calibreBook.isNull(CalibreBook.LANGUAGES_ARRAY)) {
-            final JSONArray languages = calibreBook.optJSONArray(CalibreBook.LANGUAGES_ARRAY);
-            if (languages != null && !languages.isEmpty()) {
-                // We only support one language, so grab the first one
-                final String lang = languages.optString(0);
-                // don't overwrite the local value with a remote 'not-set' value
-                if (lang != null && !lang.isEmpty()) {
-                    localBook.putString(DBKey.LANGUAGE, lang);
-                }
-            }
+            convertLanguages(calibreBook, book);
         }
 
-        // "authors": [
-        //      "Charles Stross"
-        // ],
+        convertAuthors(context, calibreBook, book);
+
+        if (!calibreBook.isNull(CalibreBook.SERIES)) {
+            convertSeries(calibreBook, book);
+        }
+
+        if (!calibreBook.isNull(CalibreBook.PUBLISHER)) {
+            convertPublisher(calibreBook, book);
+        }
+
+        if (!calibreBook.isNull(CalibreBook.IDENTIFIERS)) {
+            convertIdentifiers(calibreBook, book);
+        }
+
+        if (doCovers) {
+            convertCovers(calibreBook, book, calibreBookId);
+        }
+
+        if (!calibreBook.isNull(CalibreBook.USER_METADATA)) {
+            convertCustomFields(calibreBook, book);
+        }
+
+        if (!calibreBook.isNull(CalibreBook.EBOOK_FORMAT)) {
+            convertFormat(calibreBook, book);
+        }
+
+        convertVirtualLibrariesToBookshelves(context, calibreBook, book);
+
+        return book;
+    }
+
+    // "languages": [
+    //      "eng"
+    // ],
+    private void convertLanguages(@NonNull final JSONObject calibreBook,
+                                  @NonNull final Book book) {
+        final JSONArray languages = calibreBook.optJSONArray(CalibreBook.LANGUAGES_ARRAY);
+        if (languages != null && !languages.isEmpty()) {
+            // We only support one language, so grab the first one
+            final String lang = languages.optString(0);
+            if (lang != null && !lang.isEmpty()) {
+                book.putString(DBKey.LANGUAGE, lang);
+            }
+        }
+    }
+
+    // "authors": [
+    //      "Charles Stross"
+    // ],
+    private void convertAuthors(@NonNull final Context context,
+                                @NonNull final JSONObject calibreBook,
+                                @NonNull final Book book) {
         final List<Author> bookAuthors = new ArrayList<>();
         if (!calibreBook.isNull(CalibreBook.AUTHOR_ARRAY)) {
             final JSONArray authors = calibreBook.optJSONArray(CalibreBook.AUTHOR_ARRAY);
             if (authors != null && !authors.isEmpty()) {
-
                 for (int i = 0; i < authors.length(); i++) {
                     final String author = authors.optString(i);
                     if (author != null && !author.isEmpty()) {
@@ -600,156 +708,143 @@ public class CalibreContentServerReader
         if (bookAuthors.isEmpty()) {
             bookAuthors.add(Author.createUnknownAuthor(context));
         }
-        localBook.setAuthors(bookAuthors);
+        book.setAuthors(bookAuthors);
+    }
 
-        // "series": null,
-        // "series": "Argos Mythos / The devil is dead",
-        if (!calibreBook.isNull(CalibreBook.SERIES)) {
-            final String seriesName = calibreBook.optString(CalibreBook.SERIES);
-            if (seriesName != null && !seriesName.isEmpty()) {
-                if (VALUE_IS_NULL.equals(seriesName)) {
-                    throw new IllegalArgumentException(ERROR_NULL_STRING);
-                }
-                final Series series = Series.from(seriesName);
-                // "series_index": null,
-                // "series_index": 2,  --> it's a float, but we grab it as a string
-                String seriesNr = calibreBook.optString(CalibreBook.SERIES_INDEX);
-                if (seriesNr != null && !seriesNr.isEmpty() && !"0.0".equals(seriesNr)) {
-                    // transform "3.0" to just "3" (and similar) but leave "3.1" alone
-                    if (seriesNr.endsWith(".0")) {
-                        seriesNr = seriesNr.substring(0, seriesNr.length() - 2);
-                    }
-                    series.setNumber(seriesNr);
-                }
-                final List<Series> bookSeries = new ArrayList<>();
-                bookSeries.add(series);
-                localBook.setSeries(bookSeries);
+    // "series": null,
+    // "series": "Argos Mythos / The devil is dead",
+    private void convertSeries(@NonNull final JSONObject calibreBook,
+                               @NonNull final Book book) {
+        final String seriesName = calibreBook.optString(CalibreBook.SERIES);
+        if (seriesName != null && !seriesName.isEmpty()) {
+            if (VALUE_IS_NULL.equals(seriesName)) {
+                throw new IllegalArgumentException(ERROR_NULL_STRING);
             }
-        }
-
-        if (!calibreBook.isNull(CalibreBook.PUBLISHER)) {
-            final String publisherName = calibreBook.optString(CalibreBook.PUBLISHER);
-            if (publisherName != null && !publisherName.isEmpty()) {
-                if (VALUE_IS_NULL.equals(publisherName)) {
-                    throw new IllegalArgumentException(ERROR_NULL_STRING);
+            final Series series = Series.from(seriesName);
+            // "series_index": null,
+            // "series_index": 2,  --> it's a float, but we grab it as a string
+            String seriesNr = calibreBook.optString(CalibreBook.SERIES_INDEX);
+            if (seriesNr != null && !seriesNr.isEmpty() && !"0.0".equals(seriesNr)) {
+                // transform "3.0" to just "3" (and similar) but leave "3.1" alone
+                if (seriesNr.endsWith(".0")) {
+                    seriesNr = seriesNr.substring(0, seriesNr.length() - 2);
                 }
-
-                final List<Publisher> bookPublishers = new ArrayList<>();
-                bookPublishers.add(Publisher.from(publisherName));
-                localBook.setPublishers(bookPublishers);
+                series.setNumber(seriesNr);
             }
+            final List<Series> bookSeries = new ArrayList<>();
+            bookSeries.add(series);
+            book.setSeries(bookSeries);
         }
+    }
 
-        if (!calibreBook.isNull(CalibreBook.IDENTIFIERS)) {
-            final JSONObject remotes = calibreBook.optJSONObject(CalibreBook.IDENTIFIERS);
-            if (remotes != null) {
-                final Iterator<String> it = remotes.keys();
-                while (it.hasNext()) {
-                    final String key = it.next();
-                    // always overwrite
-                    if (!remotes.isNull(key)) {
-                        final Identifier identifier = Identifier.MAP.get(key);
-                        final String idStr = remotes.optString(key);
-                        if (idStr != null && !idStr.isEmpty()) {
-                            if (identifier != null) {
-                                if (identifier.isLocalLong) {
-                                    try {
-                                        localBook.putLong(identifier.local,
-                                                          Long.parseLong(idStr));
-                                    } catch (@NonNull final NumberFormatException ignore) {
-                                        // ignore
-                                    }
-                                } else {
-                                    localBook.putString(identifier.local, idStr);
-                                }
+    private void convertPublisher(@NonNull final JSONObject calibreBook,
+                                  @NonNull final Book book) {
+        final String publisherName = calibreBook.optString(CalibreBook.PUBLISHER);
+        if (publisherName != null && !publisherName.isEmpty()) {
+            if (VALUE_IS_NULL.equals(publisherName)) {
+                throw new IllegalArgumentException(ERROR_NULL_STRING);
+            }
 
-                            } else if (key.startsWith(Identifier.AMAZON)) {
-                                // Other than strict "amazon", there are variants
-                                // for local sites; e.g. "amazon_nl", "amazon_fr",...
-                                // We always use the first one found.
-                                if (!localBook.contains(DBKey.SID_ASIN)) {
-                                    localBook.putString(DBKey.SID_ASIN, idStr);
+            final List<Publisher> bookPublishers = new ArrayList<>();
+            bookPublishers.add(Publisher.from(publisherName));
+            book.setPublishers(bookPublishers);
+        }
+    }
+
+    private void convertIdentifiers(@NonNull final JSONObject calibreBook,
+                                    @NonNull final Book book) {
+        final JSONObject remotes = calibreBook.optJSONObject(CalibreBook.IDENTIFIERS);
+        if (remotes != null) {
+            final Iterator<String> it = remotes.keys();
+            while (it.hasNext()) {
+                final String key = it.next();
+                if (!remotes.isNull(key)) {
+                    final Identifier identifier = Identifier.MAP.get(key);
+                    final String idStr = remotes.optString(key);
+                    if (idStr != null && !idStr.isEmpty()) {
+                        if (identifier != null) {
+                            if (identifier.isLocalLong) {
+                                try {
+                                    book.putLong(identifier.local,
+                                                 Long.parseLong(idStr));
+                                } catch (@NonNull final NumberFormatException ignore) {
+                                    // ignore
                                 }
+                            } else {
+                                book.putString(identifier.local, idStr);
+                            }
+
+                        } else if (key.startsWith(Identifier.AMAZON)) {
+                            // Other than strict "amazon", there are variants
+                            // for local sites; e.g. "amazon_nl", "amazon_fr",...
+                            // We always use the first one found.
+                            if (!book.contains(DBKey.SID_ASIN)) {
+                                book.putString(DBKey.SID_ASIN, idStr);
                             }
                         }
                     }
                 }
             }
         }
+    }
 
-        if (doCovers) {
-            if (!calibreBook.isNull(CalibreBook.COVER)) {
-                final String coverUrl = calibreBook.optString(CalibreBook.COVER);
-                if (coverUrl != null && !coverUrl.isEmpty()) {
-                    final File file = server.getCover(calibreBookId, coverUrl)
-                                            .orElse(null);
-                    try {
-                        localBook.setCover(0, file);
-                    } catch (@NonNull final IOException ignore) {
-                        // ignore
-                    }
-                }
-            }
-        }
+    private void convertCustomFields(@NonNull final JSONObject calibreBook,
+                                     @NonNull final Book book) {
+        final JSONObject userMetaData = calibreBook.optJSONObject(CalibreBook.USER_METADATA);
+        if (userMetaData != null && library != null) {
+            for (final CalibreCustomField cf : library.getCustomFields()) {
+                final JSONObject data = userMetaData.optJSONObject(cf.getCalibreKey());
 
-        if (!calibreBook.isNull(CalibreBook.USER_METADATA)) {
-            final JSONObject userMetaData = calibreBook.optJSONObject(CalibreBook.USER_METADATA);
-            if (userMetaData != null && library != null) {
-                for (final CalibreCustomField cf : library.getCustomFields()) {
-                    final JSONObject data = userMetaData.optJSONObject(cf.getCalibreKey());
+                // Sanity check, at this point it should always be true
+                if (data != null && cf.getType().equals(data.getString(
+                        CalibreCustomField.METADATA_DATATYPE))) {
 
-                    // Sanity check, at this point it should always be true
-                    if (data != null && cf.getType().equals(data.getString(
-                            CalibreCustomField.METADATA_DATATYPE))) {
-
-                        if (!data.isNull(CalibreCustomField.VALUE)) {
-                            switch (cf.getType()) {
-                                case CalibreCustomField.TYPE_BOOL: {
-                                    // always overwrite
-                                    localBook.putBoolean(cf.getDbKey(),
-                                                         data.getBoolean(CalibreCustomField.VALUE));
-                                    break;
-                                }
-                                case CalibreCustomField.TYPE_DATETIME:
-                                case CalibreCustomField.TYPE_COMMENTS:
-                                case CalibreCustomField.TYPE_TEXT: {
-                                    final String value = data.getString(CalibreCustomField.VALUE);
-                                    // don't overwrite the local value with a remote 'not-set' value
-                                    if (!CalibreContentServer.VALUE_IS_NONE.equals(value)) {
-                                        localBook.putString(cf.getDbKey(), value);
-                                    }
-                                    break;
-                                }
-                                default:
-                                    throw new IllegalArgumentException(cf.getType());
+                    if (!data.isNull(CalibreCustomField.VALUE)) {
+                        switch (cf.getType()) {
+                            case CalibreCustomField.TYPE_BOOL: {
+                                // always overwrite
+                                book.putBoolean(cf.getDbKey(),
+                                                data.getBoolean(CalibreCustomField.VALUE));
+                                break;
                             }
+                            case CalibreCustomField.TYPE_DATETIME:
+                            case CalibreCustomField.TYPE_COMMENTS:
+                            case CalibreCustomField.TYPE_TEXT: {
+                                final String value = data.getString(CalibreCustomField.VALUE);
+                                // don't overwrite the local value with a remote 'not-set' value
+                                if (!CalibreContentServer.VALUE_IS_NONE.equals(value)) {
+                                    book.putString(cf.getDbKey(), value);
+                                }
+                                break;
+                            }
+                            default:
+                                throw new IllegalArgumentException(cf.getType());
                         }
                     }
                 }
             }
         }
+    }
 
-        if (!calibreBook.isNull(CalibreBook.EBOOK_FORMAT)) {
-            final JSONObject mainFormat = calibreBook.optJSONObject(CalibreBook.EBOOK_FORMAT);
-            if (mainFormat != null) {
-                final Iterator<String> it = mainFormat.keys();
-                if (it.hasNext()) {
-                    final String format = it.next();
-                    if (format != null && !format.isEmpty()) {
-                        localBook.putString(DBKey.CALIBRE_BOOK_MAIN_FORMAT, format);
-                    }
+    private void convertFormat(@NonNull final JSONObject calibreBook,
+                               @NonNull final Book book) {
+        final JSONObject mainFormat = calibreBook.optJSONObject(CalibreBook.EBOOK_FORMAT);
+        if (mainFormat != null) {
+            final Iterator<String> it = mainFormat.keys();
+            if (it.hasNext()) {
+                final String format = it.next();
+                if (format != null && !format.isEmpty()) {
+                    book.putString(DBKey.CALIBRE_BOOK_MAIN_FORMAT, format);
                 }
             }
         }
+    }
 
-
-        // Bookshelves / Calibre Library & Virtual libraries.
-
-        // Always add the current library; i.e. the library the book came from.
-        localBook.setCalibreLibrary(library);
-
+    private void convertVirtualLibrariesToBookshelves(@NonNull final Context context,
+                                                      @NonNull final JSONObject calibreBook,
+                                                      @NonNull final Book book) {
         // Current list, will be empty for new books
-        final List<Bookshelf> bookShelves = localBook.getBookshelves();
+        final List<Bookshelf> bookShelves = book.getBookshelves();
 
         // Add the physical library mapped Bookshelf
         //noinspection DataFlowIssue
@@ -798,7 +893,25 @@ public class CalibreContentServerReader
                        });
             }
 
-            localBook.setBookshelves(bookShelves);
+            book.setBookshelves(bookShelves);
+        }
+    }
+
+    private void convertCovers(@NonNull final JSONObject calibreBook,
+                               @NonNull final Book book,
+                               final int calibreBookId)
+            throws StorageException, IOException {
+        if (!calibreBook.isNull(CalibreBook.COVER)) {
+            final String coverUrl = calibreBook.optString(CalibreBook.COVER);
+            if (coverUrl != null && !coverUrl.isEmpty()) {
+                final File file = server.getCover(calibreBookId, coverUrl)
+                                        .orElse(null);
+                try {
+                    book.setCover(0, file);
+                } catch (@NonNull final IOException ignore) {
+                    // ignore
+                }
+            }
         }
     }
 

@@ -971,6 +971,9 @@
     <string name="lbl_rating">Rating</string>
     <!-- the book format -->
     <string name="lbl_format">Format</string>
+    <!-- If it's an eBook, the file format (e.g. pdf, epub, ...) -->
+    <string name="lbl_ebook_file_type">eBook file type</string>
+
     <!-- [VERIFIED] -->
     <string name="lbl_color">Color</string>
     <!-- [VERIFIED] -->
