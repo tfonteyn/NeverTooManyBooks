@@ -294,6 +294,7 @@ public enum ArchiveEncoding
      *
      * @throws DataReaderException  if the input is not recognized
      * @throws IOException          on generic/other IO failures
+     * @throws IllegalArgumentException if there are no record types set
      * @throws CredentialsException on authentication/login failures
      * @see DataReader
      */
@@ -308,6 +309,10 @@ public enum ArchiveEncoding
             throws DataReaderException,
                    CredentialsException,
                    IOException {
+
+        if (recordTypes.isEmpty()) {
+            throw new IllegalArgumentException("no recordTypes set");
+        }
 
         final DataReader<ArchiveMetaData, ImportResults> reader;
         switch (this) {
