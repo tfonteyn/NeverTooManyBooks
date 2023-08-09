@@ -25,6 +25,7 @@ import android.database.sqlite.SQLiteDoneException;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
@@ -63,8 +64,8 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderHelper;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderProcessor;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
@@ -94,13 +95,17 @@ public class StripInfoReader
     private final Updates updateOption;
     @NonNull
     private final boolean[] coversForNewBooks;
+
     @NonNull
     private final StripInfoSearchEngine searchEngine;
+
     /** Which fields and how to process them for existing books. */
     @NonNull
     private final SyncReaderProcessor syncProcessor;
+
     @NonNull
     private final BookDao bookDao;
+
     /** Reused for each call to the {@link SyncReaderProcessor#process}. */
     private final RealNumberParser realNumberParser;
 
@@ -109,20 +114,24 @@ public class StripInfoReader
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param helper  reader configuration
+     * @param context       Current context
+     * @param updateOption  options
+     * @param recordTypes   the record types to accept and read
+     * @param syncProcessor synchronization configuration
      */
     public StripInfoReader(@NonNull final Context context,
-                           @NonNull final SyncReaderHelper helper) {
+                           @NonNull final DataReader.Updates updateOption,
+                           @NonNull final Set<RecordType> recordTypes,
+                           @Nullable final SyncReaderProcessor syncProcessor) {
 
-        updateOption = helper.getUpdateOption();
+        this.updateOption = updateOption;
 
-        final boolean doCovers = helper.getRecordTypes().contains(RecordType.Cover);
+        final boolean doCovers = recordTypes.contains(RecordType.Cover);
         coversForNewBooks = new boolean[]{doCovers, doCovers};
 
         // Get either the custom passed-in, or the builtin default.
-        final SyncReaderProcessor sp = helper.getSyncProcessor();
-        syncProcessor = sp != null ? sp : getDefaultSyncProcessor(context);
+        this.syncProcessor = syncProcessor != null ? syncProcessor
+                                                   : getDefaultSyncProcessor(context);
 
         bookDao = ServiceLocator.getInstance().getBookDao();
 
@@ -135,13 +144,14 @@ public class StripInfoReader
     }
 
     /**
-     * Get the default SyncProcessor. The simple fields are CopyIfBlank
+     * Get the default {@link SyncReaderProcessor}.
      * <p>
-     * //ENHANCE: pass an optional user configurable copy into the {@link SyncReaderHelper}
+     * Simple fields are set to {@link SyncAction#CopyIfBlank}.
+     * List fields are set to {@link SyncAction#Append}.
      *
      * @param context Current context
      *
-     * @return a CopyIfBlank SyncProcessor
+     * @return a {@link SyncReaderProcessor}
      */
     @NonNull
     private static SyncReaderProcessor getDefaultSyncProcessor(@NonNull final Context context) {
@@ -241,7 +251,18 @@ public class StripInfoReader
                     try {
                         txLock = db.beginTransaction(true);
 
-                        processPage(context, page, progressListener);
+                        for (final Book siBook : page) {
+                            if (!searchEngine.isCancelled()) {
+                                handleBook(context, siBook);
+
+                                results.booksProcessed++;
+
+                                // Due to the network access, we're not adding
+                                // any additional interval/delay for each message
+                                progressListener.publishProgress(
+                                        1, results.createBooksSummaryLine(context));
+                            }
+                        }
 
                         db.setTransactionSuccessful();
                     } finally {
@@ -273,65 +294,66 @@ public class StripInfoReader
         }
     }
 
-    private void processPage(@NonNull final Context context,
-                             @NonNull final List<Book> page,
-                             @NonNull final ProgressListener progressListener)
+    /**
+     * Process the book, and update the local data if allowed, or insert if not present.
+     *
+     * @param context Current context
+     * @param siBook  the book data to import
+     *
+     * @throws StorageException The covers directory is not available
+     * @throws IOException      on generic/other IO failures
+     */
+    private void handleBook(@NonNull final Context context,
+                            @NonNull final Book siBook)
             throws StorageException,
                    SearchException,
                    CredentialsException,
                    IOException {
 
-        for (final Book colBook : page) {
-            if (!searchEngine.isCancelled()) {
-                final long externalId = colBook.getLong(DBKey.SID_STRIP_INFO);
-                // lookup locally using the externalId column.
-                try (Cursor cursor = bookDao.fetchByKey(DBKey.SID_STRIP_INFO,
-                                                        String.valueOf(externalId))) {
-                    // check if we already have the StripInfo book in the local database
-                    if (cursor.moveToFirst()) {
-                        // yes, we do - handle the update according to the users choice
-                        switch (updateOption) {
-                            case Overwrite: {
-                                final Book book = Book.from(cursor);
-                                updateBook(context, externalId, colBook, book);
-                                break;
-                            }
-                            case OnlyNewer: {
-                                // The site does not provide a last-updated date.
-                                // This option is disabled in SyncServer#StripInfo class
-                                break;
-                            }
-                            case Skip: {
-                                results.booksSkipped++;
-                                if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_STRIP_INFO_BOOKS) {
-                                    LoggerFactory.getLogger().d(TAG, "processPage", updateOption,
-                                                                "externalId=" + externalId);
-                                }
-                                break;
-                            }
-                        }
-                    } else {
-                        insertBook(context, externalId);
+        final long externalId = siBook.getLong(DBKey.SID_STRIP_INFO);
+        // lookup locally using the externalId column.
+        try (Cursor cursor = bookDao.fetchByKey(DBKey.SID_STRIP_INFO,
+                                                String.valueOf(externalId))) {
+            // check if we already have the StripInfo book in the local database
+            if (cursor.moveToFirst()) {
+                // yes, we do - handle the update according to the users choice
+                switch (updateOption) {
+                    case Overwrite: {
+                        final Book book = Book.from(cursor);
+                        updateBook(context, externalId, siBook, book);
+                        break;
                     }
-
-                    results.booksProcessed++;
-
-                } catch (@NonNull final DaoWriteException | SQLiteDoneException | JSONException e) {
-                    // log, but don't fail
-                    LoggerFactory.getLogger().e(TAG, e);
-                    results.booksFailed++;
+                    case OnlyNewer: {
+                        // The site does not provide a last-updated date.
+                        // This option is disabled in SyncServer#StripInfo class
+                        break;
+                    }
+                    case Skip: {
+                        results.booksSkipped++;
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_STRIP_INFO_BOOKS) {
+                            LoggerFactory.getLogger().d(TAG, "processPage", updateOption,
+                                                        "externalId=" + externalId);
+                        }
+                        break;
+                    }
                 }
-
-                // Due to the network access, we're not adding
-                // any additional interval/delay for each message
-                progressListener.publishProgress(1, results.createBooksSummaryLine(context));
+            } else {
+                // It's a new book. Download the full data set from the server.
+                final Book book = searchEngine
+                        .searchByExternalId(context, String.valueOf(externalId), coversForNewBooks);
+                insertBook(context, book);
             }
+
+        } catch (@NonNull final DaoWriteException | SQLiteDoneException | JSONException e) {
+            // log, but don't fail
+            LoggerFactory.getLogger().e(TAG, e);
+            results.booksFailed++;
         }
     }
 
     private void updateBook(@NonNull final Context context,
                             final long externalId,
-                            @NonNull final Book colBook,
+                            @NonNull final Book siBook,
                             @NonNull final Book book)
             throws StorageException,
                    SearchException,
@@ -349,13 +371,16 @@ public class StripInfoReader
 
         final Book dataToMerge;
         if (coversWanted[1]) {
-            // The back cover is not available on the collection page
-            // Do a full download.
+            // The back cover is *not* available on the collection page.
+            // Download the full data set from the server.
+            // The siBook data is superseded by this new data.
             dataToMerge = searchEngine
                     .searchByExternalId(context, String.valueOf(externalId), coversWanted);
         } else {
-            dataToMerge = colBook;
-            // we don't need the back cover, but might need the front cover
+            // We have all we need in the incoming siBook
+            dataToMerge = siBook;
+            // but while we don't need the back cover, we might need the front cover
+            // which *is* available on the collection page.
             if (coversWanted[0]) {
                 downloadFrontCover(context, externalId, dataToMerge);
             }
@@ -381,14 +406,9 @@ public class StripInfoReader
     }
 
     private void insertBook(@NonNull final Context context,
-                            final long externalId)
+                            @NonNull final Book book)
             throws StorageException,
-                   SearchException,
-                   CredentialsException,
                    DaoWriteException {
-        // It's a new book; download it from the server and insert it into the db
-        final Book book = searchEngine
-                .searchByExternalId(context, String.valueOf(externalId), coversForNewBooks);
 
         // sanity check, the book should always/already be on the mapped shelf.
         book.ensureBookshelf(context);
@@ -398,7 +418,6 @@ public class StripInfoReader
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_STRIP_INFO_BOOKS) {
             LoggerFactory.getLogger().d(TAG, "insertBook", updateOption,
-                                        "externalId=" + externalId,
                                         "book=" + book.getId(),
                                         book.getTitle());
         }

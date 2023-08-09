@@ -20,16 +20,20 @@
 package com.hardbacknutter.nevertoomanybooks.sync;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.security.cert.CertificateException;
+import java.time.LocalDateTime;
 import java.util.Locale;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -37,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
 import com.hardbacknutter.nevertoomanybooks.io.ReaderResults;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServerReader;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServerWriter;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
@@ -152,7 +157,7 @@ public enum SyncServer
      *
      * @throws CertificateException     on failures related to a user installed CA.
      * @throws IllegalArgumentException if there are no record types set
-     * @throws IllegalStateException if there is no writer available (which would be a bug)
+     * @throws IllegalStateException    if there is no writer available (which would be a bug)
      */
     @NonNull
     DataWriter<SyncWriterResults> createWriter(@NonNull final Context context,
@@ -179,12 +184,17 @@ public enum SyncServer
     /**
      * Create an {@link DataReader} based on the type.
      *
-     * @param context      Current context
-     * @param systemLocale to use for ISO date parsing
-     * @param helper       import configuration
+     * @param context       Current context
+     * @param systemLocale  to use for ISO date parsing
+     * @param updateOption  options
+     * @param recordTypes   the record types to accept and read
+     * @param syncProcessor synchronization configuration
+     * @param syncDate      optional cut-off date
+     * @param extraArgs     Bundle with reader specific arguments
      *
      * @return a new reader
      *
+     * @throws DataReaderException      if the input is not recognized
      * @throws CredentialsException     on authentication/login failures
      * @throws IOException              on generic/other IO failures
      * @throws IllegalArgumentException if there are no record types set
@@ -196,24 +206,33 @@ public enum SyncServer
     DataReader<SyncReaderMetaData, ReaderResults> createReader(
             @NonNull final Context context,
             @NonNull final Locale systemLocale,
-            @NonNull final SyncReaderHelper helper)
+            @NonNull final DataReader.Updates updateOption,
+            @NonNull final Set<RecordType> recordTypes,
+            @Nullable final SyncReaderProcessor syncProcessor,
+            @Nullable final LocalDateTime syncDate,
+            @NonNull final Bundle extraArgs)
             throws DataReaderException,
                    CertificateException,
                    CredentialsException,
                    IOException {
 
-        if (helper.getRecordTypes().isEmpty()) {
-            throw new IllegalArgumentException("getRecordTypes.isEmpty()");
+        if (recordTypes.isEmpty()) {
+            throw new IllegalArgumentException("no recordTypes set");
         }
 
         final DataReader<SyncReaderMetaData, ReaderResults> reader;
         switch (this) {
             case CalibreCS:
-                reader = new CalibreContentServerReader(context, systemLocale, helper);
+                reader = new CalibreContentServerReader(context, systemLocale,
+                                                        updateOption, recordTypes,
+                                                        syncProcessor, syncDate,
+                                                        extraArgs);
                 break;
 
             case StripInfo:
-                reader = new StripInfoReader(context, helper);
+                reader = new StripInfoReader(context,
+                                             updateOption, recordTypes,
+                                             syncProcessor);
                 break;
 
             default:

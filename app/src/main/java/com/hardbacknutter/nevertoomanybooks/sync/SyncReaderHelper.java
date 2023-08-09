@@ -84,16 +84,16 @@ public final class SyncReaderHelper
     }
 
     @Nullable
-    public SyncReaderProcessor getSyncProcessor() {
+    SyncReaderProcessor getSyncProcessor() {
         return syncProcessor;
     }
 
-    public void setSyncProcessor(@Nullable final SyncReaderProcessor syncProcessor) {
+    void setSyncProcessor(@Nullable final SyncReaderProcessor syncProcessor) {
         this.syncProcessor = syncProcessor;
     }
 
     @NonNull
-    public Bundle getExtraArgs() {
+    Bundle getExtraArgs() {
         return extraArgs;
     }
 
@@ -103,7 +103,7 @@ public final class SyncReaderHelper
      * @return date or {@code null}
      */
     @Nullable
-    public LocalDateTime getSyncDate() {
+    LocalDateTime getSyncDate() {
         return syncDate;
     }
 
@@ -125,7 +125,10 @@ public final class SyncReaderHelper
                    CredentialsException,
                    CertificateException,
                    IOException {
-        return syncServer.createReader(context, systemLocale, this);
+        return syncServer.createReader(context, systemLocale,
+                                       getUpdateOption(), getRecordTypes(),
+                                       syncProcessor, syncDate,
+                                       extraArgs);
     }
 
     @Override

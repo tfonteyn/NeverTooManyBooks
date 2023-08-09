@@ -151,24 +151,32 @@ public class CalibreContentServerReader
     /**
      * Constructor.
      *
-     * @param context      Current context
-     * @param systemLocale to use for ISO date parsing
-     * @param helper       reader configuration
+     * @param context       Current context
+     * @param systemLocale  to use for ISO date parsing
+     * @param updateOption  options
+     * @param recordTypes   the record types to accept and read
+     * @param syncProcessor synchronization configuration
+     * @param syncDate      optional cut-off date
+     * @param extraArgs     Bundle with reader specific arguments
      *
      * @throws CertificateException on failures related to a user installed CA.
      */
     public CalibreContentServerReader(@NonNull final Context context,
                                       @NonNull final Locale systemLocale,
-                                      @NonNull final SyncReaderHelper helper)
+                                      @NonNull final DataReader.Updates updateOption,
+                                      @NonNull final Set<RecordType> recordTypes,
+                                      @Nullable final SyncReaderProcessor syncProcessor,
+                                      @Nullable final LocalDateTime syncDate,
+                                      @NonNull final Bundle extraArgs)
             throws CertificateException {
 
-        updateOption = helper.getUpdateOption();
-        syncDate = helper.getSyncDate();
+        this.updateOption = updateOption;
+        this.syncDate = syncDate;
 
         //ENHANCE: add support for SyncProcessor
 
-        doCovers = helper.getRecordTypes().contains(RecordType.Cover);
-        library = helper.getExtraArgs().getParcelable(CalibreContentServer.BKEY_LIBRARY);
+        doCovers = recordTypes.contains(RecordType.Cover);
+        library = extraArgs.getParcelable(CalibreContentServer.BKEY_LIBRARY);
 
         server = new CalibreContentServer.Builder(context).build();
 
