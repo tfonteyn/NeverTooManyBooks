@@ -319,8 +319,7 @@ public class CsvRecordReader
                 case OnlyNewer: {
                     final LocalDateTime localDate = bookDao.getLastUpdateDate(importNumericId);
                     if (localDate != null) {
-                        final LocalDateTime importDate = dateParser.parse(
-                                book.getString(DBKey.DATE_LAST_UPDATED__UTC, null));
+                        final LocalDateTime importDate = book.getLastModified(dateParser);
 
                         if (importDate != null && importDate.isAfter(localDate)) {
 

@@ -237,8 +237,7 @@ public class CalibreContentServerWriter
         // sanity check, the remote should always have this date field.
         if (remoteTime != null) {
             // is our data newer then the server data ?
-            final LocalDateTime localTime =
-                    dateParser.parse(book.getString(DBKey.DATE_LAST_UPDATED__UTC, null));
+            final LocalDateTime localTime = book.getLastModified(dateParser);
             if (localTime != null && localTime.isAfter(remoteTime)) {
                 final JSONObject identifiers = calibreBook.optJSONObject(CalibreBook.IDENTIFIERS);
                 final JSONObject changes = collectChanges(library, identifiers, book);

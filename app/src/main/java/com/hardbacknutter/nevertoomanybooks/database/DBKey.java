@@ -305,6 +305,13 @@ public final class DBKey {
             READ_START__DATE,
             READ_END__DATE);
 
+    /**
+     * All datetime keys (i.e. NOT date!).
+     */
+    public static final Set<String> DATETIME_KEYS = Set.of(
+            DATE_LAST_UPDATED__UTC,
+            DATE_ADDED__UTC);
+
     /** Suffix added to a column name to create a specific 'order by' copy of that column. */
     private static final String ORDER_BY_SUFFIX = "_ob";
     public static final String AUTHOR_FAMILY_NAME_OB = AUTHOR_FAMILY_NAME + ORDER_BY_SUFFIX;

@@ -118,11 +118,8 @@ public abstract class BaseRecordReader
                 case OnlyNewer: {
                     final LocalDateTime localDate = bookDao.getLastUpdateDate(databaseBookId);
                     if (localDate != null) {
-                        final LocalDateTime importDate = dateParser.parse(
-                                book.getString(DBKey.DATE_LAST_UPDATED__UTC, null));
-
+                        final LocalDateTime importDate = book.getLastModified(dateParser);
                         if (importDate != null && importDate.isAfter(localDate)) {
-
                             bookDao.update(context, book,
                                            Set.of(BookDao.BookFlag.RunInBatch,
                                                   BookDao.BookFlag.UseUpdateDateIfPresent));

@@ -50,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
@@ -254,9 +253,6 @@ public class CalibreContentServerReader
                 new String[]{DBKey.LANGUAGE});
         map.put(context.getString(R.string.lbl_rating),
                 new String[]{DBKey.RATING});
-
-        map.put(context.getString(R.string.lbl_date_last_updated),
-                new String[]{DBKey.DATE_LAST_UPDATED__UTC});
 
         // The site specific fields
         map.put(context.getString(R.string.lbl_ebook_file_type),
@@ -483,8 +479,7 @@ public class CalibreContentServerReader
                         // as needed, and update. We don't use a delta.
                         final Book book = Book.from(databaseBookId);
                         // Should always be Non Null
-                        final LocalDateTime localDate = dateParser.parse(
-                                book.getString(DBKey.DATE_LAST_UPDATED__UTC, null));
+                        final LocalDateTime localDate = book.getLastModified(dateParser);
                         // Should not be null, but paranoia
                         final LocalDateTime remoteDate = dateParser.parse(
                                 calibreBook.getString(CalibreBook.LAST_MODIFIED));
@@ -611,9 +606,9 @@ public class CalibreContentServerReader
 
         // "last_modified": "2020-11-20T11:17:51+00:00",
         final String calibreLastModified = calibreBook.getString(CalibreBook.LAST_MODIFIED);
-        final LocalDateTime lastUpDate = dateParser.parse(calibreLastModified);
-        if (lastUpDate != null) {
-            book.putString(DBKey.DATE_LAST_UPDATED__UTC, SqlEncode.date(lastUpDate));
+        final LocalDateTime lastModified = dateParser.parse(calibreLastModified);
+        if (lastModified != null) {
+            book.setLastModified(lastModified);
         }
 
         // paranoia ...

@@ -193,8 +193,7 @@ public class BookDaoImpl
             result = 0 < stmt.executeUpdateDelete();
         }
         if (result) {
-            book.putString(DBKey.DATE_LAST_UPDATED__UTC,
-                           SqlEncode.date(LocalDateTime.now(ZoneOffset.UTC)));
+            book.setLastModified(LocalDateTime.now(ZoneOffset.UTC));
             return true;
 
         } else {
@@ -684,8 +683,8 @@ public class BookDaoImpl
         } else {
             return getBookCursor(TBL_CALIBRE_BOOKS.dot(DBKey.FK_CALIBRE_LIBRARY) + "=?"
                                  + _AND_ + TBL_BOOKS.dot(DBKey.DATE_LAST_UPDATED__UTC) + ">=?",
-                                 new String[]{String.valueOf(libraryId), SqlEncode.date(
-                                         sinceDateTime)},
+                                 new String[]{String.valueOf(libraryId),
+                                         SqlEncode.date(sinceDateTime)},
                                  TBL_BOOKS.dot(DBKey.PK_ID));
         }
     }

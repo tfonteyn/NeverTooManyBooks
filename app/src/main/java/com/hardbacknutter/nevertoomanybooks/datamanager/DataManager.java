@@ -31,13 +31,16 @@ import androidx.annotation.VisibleForTesting;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.BooleanParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
@@ -467,7 +470,7 @@ public class DataManager
      * @param key    Key of data object
      * @param parser to use for number parsing
      *
-     * @return value or {@code null} if parsing did not produce a Money object
+     * @return value or {@code null} if parsing did not produce a {@link Money} object
      *
      * @throws NumberFormatException if parsing the value itself failed.
      */
@@ -498,6 +501,34 @@ public class DataManager
         }
     }
 
+    /**
+     * Get a {@link LocalDateTime} value.
+     *
+     * @param key        Key of data object
+     * @param dateParser to use for date parsing
+     *
+     * @return value or {@code null} if parsing did not produce a {@link LocalDateTime} object
+     */
+    @Nullable
+    protected LocalDateTime getLocalDateTime(@NonNull final String key,
+                                             @NonNull final DateParser dateParser) {
+        if (rawData.containsKey(key)) {
+            return dateParser.parse(rawData.getString(key));
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Store a {@link LocalDateTime} value.
+     *
+     * @param key      Key of data object
+     * @param dateTime to store
+     */
+    protected void putLocalDateTime(@NonNull final String key,
+                                    @NonNull final LocalDateTime dateTime) {
+        rawData.putString(key, SqlEncode.date(dateTime));
+    }
 
     /**
      * Get a {@link String} {@link ArrayList} from the collection.

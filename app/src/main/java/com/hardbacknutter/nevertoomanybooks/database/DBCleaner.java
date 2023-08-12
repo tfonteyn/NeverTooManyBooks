@@ -113,16 +113,11 @@ public class DBCleaner {
      * {@link FullDateParser}
      */
     private void datetimeFormat() {
-        final String[] columns = {
-                DBKey.DATE_LAST_UPDATED__UTC,
-                DBKey.DATE_ADDED__UTC,
-        };
-
         final Pattern T = Pattern.compile("T");
 
         final Collection<Pair<Long, String>> rows = new ArrayList<>();
 
-        for (final String key : columns) {
+        for (final String key : DBKey.DATETIME_KEYS) {
             try (Cursor cursor = db.rawQuery(
                     SELECT_ + DBKey.PK_ID + ',' + key
                     + _FROM_ + DBDefinitions.TBL_BOOKS.getName()

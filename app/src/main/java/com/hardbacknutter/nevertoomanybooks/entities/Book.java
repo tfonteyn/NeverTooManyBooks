@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
@@ -1289,6 +1290,28 @@ public class Book
         } else {
             return List.of();
         }
+    }
+
+    /**
+     * Get the last date-time that this book was modified.
+     *
+     * @param dateParser to use
+     *
+     * @return the last date-time; or {@code null} if never saved.
+     */
+    @Nullable
+    public LocalDateTime getLastModified(@NonNull final DateParser dateParser) {
+        return getLocalDateTime(DBKey.DATE_LAST_UPDATED__UTC, dateParser);
+    }
+
+    /**
+     * Set the last date-time that this book was modified.
+     * If not set, a default of 'now' will be used when saved.
+     *
+     * @param dateTime to use
+     */
+    public void setLastModified(@NonNull final LocalDateTime dateTime) {
+        putLocalDateTime(DBKey.DATE_LAST_UPDATED__UTC, dateTime);
     }
 
     /**
