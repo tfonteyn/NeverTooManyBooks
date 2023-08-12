@@ -278,8 +278,8 @@ public class CoverStorage {
      * We first write to a temporary file, so an existing 'out' file is not destroyed
      * if the stream somehow fails.
      *
-     * @param is      InputStream to read
-     * @param dstFile the File to write to
+     * @param is          InputStream to read
+     * @param destination the File to write to
      *
      * @return File written to (the one passed in)
      *
@@ -289,7 +289,7 @@ public class CoverStorage {
      */
     @NonNull
     public File persist(@Nullable final InputStream is,
-                        @NonNull final File dstFile)
+                        @NonNull final File destination)
             throws CoverStorageException,
                    FileNotFoundException,
                    IOException {
@@ -301,8 +301,8 @@ public class CoverStorage {
         try (OutputStream os = new FileOutputStream(tmpFile)) {
             FileUtils.copy(is, os);
             // rename to real output file
-            FileUtils.rename(tmpFile, dstFile);
-            return dstFile;
+            FileUtils.rename(tmpFile, destination);
+            return destination;
         } finally {
             FileUtils.delete(tmpFile);
         }
