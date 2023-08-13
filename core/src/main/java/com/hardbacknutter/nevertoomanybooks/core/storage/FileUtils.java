@@ -131,41 +131,38 @@ public final class FileUtils {
     }
 
     /**
-     * Copy the source file to the destFilename; keeping 'copies' of the old file.
+     * Rename the given "file" to "file.1", keeping 'copies' of the old file,
+     * i.e. the number of the copy is added as a SUFFIX to the name.
      * <p>
-     * The number of the copy is added as a SUFFIX to the name.
+     * Upon return, the "file" is no longer available.
      *
-     * @param source      file to copy
-     * @param destination final destination file
-     * @param copies      #copies of the previous one to keep
+     * <strong>Important:</strong> it's a 'rename', so single volume use only!
+     *
+     * @param file   file to rename
+     * @param copies #copies of the previous one to keep
      *
      * @throws IOException on generic/other IO failures
      */
-    public static void copyWithBackup(@NonNull final File source,
-                                      @NonNull final File destination,
+    public static void renameAsBackup(@NonNull final File file,
                                       final int copies)
             throws IOException {
-
         // remove the oldest copy
-        File previous = new File(destination + "." + copies);
+        File previous = new File(file + "." + copies);
         delete(previous);
 
         // now bump each copy up one suffix.
         for (int i = copies - 1; i > 0; i--) {
-            final File current = new File(destination + "." + i);
+            final File current = new File(file + "." + i);
             if (current.exists()) {
                 rename(current, previous);
             }
             previous = current;
         }
 
-        // Give the previous file a suffix.
-        if (destination.exists()) {
-            rename(destination, previous);
+        // Rename the current file giving it a suffix.
+        if (file.exists()) {
+            rename(file, previous);
         }
-
-        // and write the new copy.
-        copy(source, destination);
     }
 
     /**

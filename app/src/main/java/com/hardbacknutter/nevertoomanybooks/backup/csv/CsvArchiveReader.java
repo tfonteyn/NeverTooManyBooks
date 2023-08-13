@@ -102,9 +102,14 @@ public class CsvArchiveReader
         // ENHANCE: For now we don't inform the user of this nor offer a restore.
 
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        FileUtils.copyWithBackup(new File(serviceLocator.getDb().getDatabasePath()),
-                                 new File(serviceLocator.getUpgradesDir(), DB_BACKUP_NAME),
-                                 DB_BACKUP_COPIES);
+
+        final File source = new File(serviceLocator.getDb().getDatabasePath());
+        final File destination = new File(serviceLocator.getUpgradesDir(), DB_BACKUP_NAME);
+
+        // Move/rename the previous/original file
+        FileUtils.renameAsBackup(destination, DB_BACKUP_COPIES);
+        // and write the new copy.
+        FileUtils.copy(source, destination);
 
         try (InputStream is = context.getContentResolver().openInputStream(uri);
              RecordReader recordReader = new CsvRecordReader(context, systemLocale,

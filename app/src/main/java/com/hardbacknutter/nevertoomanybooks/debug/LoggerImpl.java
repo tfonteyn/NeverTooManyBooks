@@ -232,7 +232,10 @@ public class LoggerImpl
             logFile = new File(logDir, ERROR_LOG_FILE);
             if (logFile.exists() && logFile.length() > 0) {
                 final File backup = new File(logFile.getPath() + ".bak");
-                FileUtils.copyWithBackup(logFile, backup, LOGFILE_COPIES);
+                // Move/rename the previous/original file
+                FileUtils.renameAsBackup(backup, LOGFILE_COPIES);
+                // and write the new copy.
+                FileUtils.copy(logFile, backup);
             }
         } catch (@NonNull final Exception ignore) {
             // do nothing - we can't log an error in the logger
