@@ -585,7 +585,6 @@
     <string name="pt_bob_list_rebuild_state">Kitap listesi başlangıç durumu</string>
     <string name="pt_bob_list_state_expansion_level">Varsayılan Kitap listesi genişletme</string>
     <string name="pt_collect_series_info_from_toc">Seri bilgilerini içindekiler tablosundan toplayın</string>
-    <string name="pt_cropper_frame_is_whole_image">Öntanımlı kırpma alanı bütün görseldir</string>
     <string name="pt_edit_book_isbn_checks">ISBN geçerlilik kontrolleri</string>
     <string name="pt_bob_row_menu">Satır bağlam menüsü</string>
     <string name="pe_bob_row_menu_button">Her zaman bir düğme göster.</string>

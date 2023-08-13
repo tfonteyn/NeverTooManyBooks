@@ -45,6 +45,18 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:title="@string/option_cover_replace">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_baseline_undo_24"
+            android:key="image.undo.enabled"
+            android:title="@string/pt_cover_undo_enabled"
+            android:summaryOff="@string/ps_cover_undo_disabled"
+            android:summaryOn="@string/ps_cover_undo_enabled"
+            />
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:title="@string/pc_image_cache">
 
         <SwitchPreference

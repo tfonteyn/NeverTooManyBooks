@@ -595,7 +595,6 @@
     <string name="pt_bob_list_rebuild_state">Состояние запуска списка книг</string>
     <string name="pt_bob_list_state_expansion_level">Расширение списка книг по умолчанию</string>
     <string name="pt_collect_series_info_from_toc">Собрать информацию серии из оглавления</string>
-    <string name="pt_cropper_frame_is_whole_image">Рамка по умолчанию: всё изображение</string>
     <string name="pt_edit_book_isbn_checks">ISBN проверки достоверности</string>
     <string name="pt_bob_row_menu">Контекстное меню строки</string>
     <string name="pe_bob_row_menu_button">Всегда показывать кнопку.</string>

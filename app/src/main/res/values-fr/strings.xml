@@ -583,7 +583,6 @@
     <string name="pt_bob_list_rebuild_state">Etat de démarrage de la liste de lecture</string>
     <string name="pt_bob_list_state_expansion_level">Liste de livres d’expansion par défaut</string>
     <string name="pt_collect_series_info_from_toc">Recueillir des informations sur la série de la table des matières</string>
-    <string name="pt_cropper_frame_is_whole_image">Le cadre par défaut de l’image à recadrer sera l’image complète</string>
     <string name="pt_edit_book_isbn_checks">Vérifications de validité ISBN</string>
     <string name="pt_bob_row_menu">Menu contextuel de ligne</string>
     <string name="pe_bob_row_menu_button">Toujours afficher un bouton.</string>

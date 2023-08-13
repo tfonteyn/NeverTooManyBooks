@@ -582,7 +582,6 @@
     <string name="pt_bob_list_rebuild_state">Stato di avvio dell’elenco libri</string>
     <string name="pt_bob_list_state_expansion_level">Espansione elenco libri predefinito</string>
     <string name="pt_collect_series_info_from_toc">Raccogli informazioni sulla serie dalla tabella dei contenuti</string>
-    <string name="pt_cropper_frame_is_whole_image">Area di ritaglio predefinita uguale all’intera immagine</string>
     <string name="pt_edit_book_isbn_checks">Controlli di validità del codice ISBN</string>
     <string name="pt_bob_row_menu">Menu contestuale riga</string>
     <string name="pe_bob_row_menu_button">Mostra sempre un pulsante.</string>

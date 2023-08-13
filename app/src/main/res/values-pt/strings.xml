@@ -593,7 +593,6 @@
     <string name="pt_thumbnails_cache_resized">As imagens redimensionadas são armazenadas em cache</string>
     <string name="pe_thumbnails_cache_resized_each_time">Redimensione as imagens sempre que forem necessárias (usa menos armazenamento, a deslocação será mais lenta)</string>
     <string name="pe_thumbnails_cache_resized_stored">Colocar as imagens redimensionadas em cache (a deslocação será mais rápida, usa mais armazenamento)</string>
-    <string name="pt_cropper_frame_is_whole_image">A moldura de recorte padrão é a imagem inteira</string>
     <string name="pt_search_reformat_color">Padronize nomes de “cores de livros”</string>
     <string name="pt_search_reformat_format">Padronizar nomes de “formatos de livros”</string>
     <string name="pt_search_uses_publisher">A pesquisa usa o editor</string>

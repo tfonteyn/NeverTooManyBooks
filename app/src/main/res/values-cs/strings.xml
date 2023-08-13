@@ -594,7 +594,6 @@
     <string name="pt_bob_list_rebuild_state">Stav spuštění seznamu knih</string>
     <string name="pt_bob_list_state_expansion_level">Výchozí seznam rozšiřujících knih</string>
     <string name="pt_collect_series_info_from_toc">Sbírejte informace o sériích z obsahu</string>
-    <string name="pt_cropper_frame_is_whole_image">Výchozí rámeček oříznutí je celý obraz</string>
     <string name="pt_edit_book_isbn_checks">Kontroly platnosti ISBN</string>
     <string name="pt_bob_row_menu">Kontextová nabídka řádku</string>
     <string name="pe_bob_row_menu_button">Vždy ukažte tlačítko.</string>

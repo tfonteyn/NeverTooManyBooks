@@ -579,7 +579,6 @@
     <string name="pt_bob_list_rebuild_state">Startstatus der Buchliste</string>
     <string name="pt_bob_list_state_expansion_level">Standard-Buchlistenebene</string>
     <string name="pt_collect_series_info_from_toc">Sammeln Sie Serieninformationen aus dem Inhaltsverzeichnis</string>
-    <string name="pt_cropper_frame_is_whole_image">Standardbeschnitt besteht aus dem gesamten Bild</string>
     <string name="pt_edit_book_isbn_checks">ISBN-Gültigkeitsprüfungen</string>
     <string name="pt_bob_row_menu">Kontextmenü der Zeile</string>
     <string name="pe_bob_row_menu_button">Immer eine Schaltfläche anzeigen.</string>

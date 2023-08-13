@@ -1204,8 +1204,7 @@
     <string name="pt_thumbnails_cache_resized">Resized images are cached</string>
     <string name="pe_thumbnails_cache_resized_each_time">Resize images each time they are needed (uses less storage, scrolling will be slower)</string>
     <string name="pe_thumbnails_cache_resized_stored">Cache resized images (scrolling will be faster, uses more storage)</string>
-    <!-- SwitchPreference title: start the image crop utility with the cropper frame set to the whole image -->
-    <string name="pt_cropper_frame_is_whole_image">Default crop frame is whole image</string>
+
     <!-- SwitchPreference title -->
     <string name="pt_search_reformat_format">Standardize “book format” names</string>
     <!-- SwitchPreference title -->

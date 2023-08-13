@@ -593,7 +593,6 @@
     <string name="pt_bob_list_rebuild_state">Estado de inicio de la lista de libros</string>
     <string name="pt_bob_list_state_expansion_level">Expansión predeterminada de la lista de libros</string>
     <string name="pt_collect_series_info_from_toc">Recopilar información de la serie de la tabla de contenido</string>
-    <string name="pt_cropper_frame_is_whole_image">Por defecto, la imagen se guarda completa</string>
     <string name="pt_edit_book_isbn_checks">Comprobaciones de validez de ISBN</string>
     <string name="pt_bob_row_menu">Menú contextual de fila</string>
     <string name="pe_bob_row_menu_button">Mostrar siempre un botón.</string>

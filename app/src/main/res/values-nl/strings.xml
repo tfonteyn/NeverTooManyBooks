@@ -625,7 +625,6 @@
     <string name="pt_bob_row_menu">Context-menu van een lijn</string>
     <string name="pt_bob_show_details">Boekdetails weergegeven in de lijst</string>
     <string name="pt_collect_series_info_from_toc">Verzamel reeks-informatie van de inhouds tabel</string>
-    <string name="pt_cropper_frame_is_whole_image">Standaard kader voor bijsnijden is hele afbeelding</string>
     <string name="pt_edit_book_isbn_checks">ISBN geldigheidscontroles</string>
     <string name="pt_fast_scroller_overlay">Tekstballon tijdens het scrollen.</string>
     <string name="pt_field_visibility">Zichtbaarheid velden beheren</string>

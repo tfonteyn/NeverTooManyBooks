@@ -598,7 +598,6 @@
     <string name="pt_bob_list_rebuild_state">Stan uruchamiania listy książek</string>
     <string name="pt_bob_list_state_expansion_level">Domyślne rozszerzenie listy książek</string>
     <string name="pt_collect_series_info_from_toc">Zbierz informacje o serii z spisu treści</string>
-    <string name="pt_cropper_frame_is_whole_image">Domyślna ramka przycinania to cały obraz</string>
     <string name="pt_edit_book_isbn_checks">Kontrole ważności ISBN</string>
     <string name="pt_bob_row_menu">Menu kontekstowe wiersza</string>
     <string name="pe_bob_row_menu_button">Zawsze pokazuj przycisk.</string>
