@@ -761,4 +761,5 @@
     <string name="info_maintenance_clear_deleted_book_records">Αυτό θα διαγράψει το ιστορικό διαγραμμένων βιβλίων. Δεν θα διαγραφούν πραγματικά βιβλία.</string>
     <string name="info_books_deleted">Βιβλία που διαγράφηκαν: %1$d</string>
     <string name="progress_msg_x_deleted">%1$d διαγράφηκε</string>
+    <string name="action_undo">Αναίρεση</string>
 </resources>

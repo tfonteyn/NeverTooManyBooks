@@ -772,4 +772,5 @@
     <string name="error_type_not_supported">Type not supported: %1$s …</string>
     <string name="info_books_deleted">Smazané knihy: %1$d</string>
     <string name="progress_msg_x_deleted">%1$d smazáno</string>
+    <string name="action_undo">Vrátit zpět</string>
 </resources>

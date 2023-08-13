@@ -767,4 +767,5 @@
     <string name="error_type_not_supported">Tür desteklenmiyor: %1$s …</string>
     <string name="info_books_deleted">Silinen kitaplar: %1$d</string>
     <string name="progress_msg_x_deleted">%1$d silindi</string>
+    <string name="action_undo">Geri al</string>
 </resources>

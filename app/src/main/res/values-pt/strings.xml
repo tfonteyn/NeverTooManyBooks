@@ -794,4 +794,5 @@
     <string name="info_maintenance_clear_deleted_book_records">Esta ação limpa o histórico de livros eliminados. Não serão eliminados quaisquer livros actuais.</string>
     <string name="info_books_deleted">Livros eliminados: %1$d</string>
     <string name="progress_msg_x_deleted">%1$d eliminado</string>
+    <string name="action_undo">Desfazer</string>
 </resources>

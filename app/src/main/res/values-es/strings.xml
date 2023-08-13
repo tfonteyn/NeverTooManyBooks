@@ -774,4 +774,5 @@
     <string name="site_description_portuguese_shopping">Portugués y más; Compras</string>
     <string name="info_books_deleted">Libros borrados: %1$d</string>
     <string name="progress_msg_x_deleted">%1$d borrado</string>
+    <string name="action_undo">Deshacer</string>
 </resources>

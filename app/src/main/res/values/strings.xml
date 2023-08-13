@@ -818,6 +818,8 @@
     <string name="X_action_previous">Prev</string>
     <!-- [VERIFIED] -->
     <string name="action_done">Done</string>
+    <!-- [VERIFIED] -->
+    <string name="action_undo">Undo</string>
     <!-- [VERIFIED] buttons on the "sorting / styles" dialog -->
     <string name="action_more_ellipsis">More…</string>
     <string name="action_less_ellipsis">Less…</string>

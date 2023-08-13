@@ -776,4 +776,5 @@
     <string name="error_type_not_supported">Typ nie jest obsługiwany: %1$s …</string>
     <string name="info_books_deleted">Książki usunięte: %1$d</string>
     <string name="progress_msg_x_deleted">%1$d usunięty</string>
+    <string name="action_undo">Cofnij</string>
 </resources>

@@ -760,4 +760,5 @@
     <string name="info_maintenance_clear_deleted_book_records">Hiermit wird der Verlauf der gelöschten Bücher gelöscht. Es werden keine aktuellen Bücher gelöscht.</string>
     <string name="info_books_deleted">Bücher gelöscht: %1$d</string>
     <string name="progress_msg_x_deleted">%1$d gelöscht</string>
+    <string name="action_undo">Rückgängig machen</string>
 </resources>

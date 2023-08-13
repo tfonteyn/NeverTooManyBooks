@@ -764,4 +764,5 @@
     <string name="info_maintenance_clear_deleted_book_records">Cette option permet d’effacer l’historique des livres supprimés. Aucun livre ne sera supprimé.</string>
     <string name="info_books_deleted">Livres supprimés : %1$d</string>
     <string name="progress_msg_x_deleted">%1$d supprimé</string>
+    <string name="action_undo">Annuler</string>
 </resources>

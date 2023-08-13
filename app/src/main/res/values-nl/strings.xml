@@ -760,4 +760,5 @@
     <string name="option_clear_deleted_book_records">Wis de geschiedenis van verwijderde boeken</string>
     <string name="info_maintenance_clear_deleted_book_records">Hiermee wordt de geschiedenis van verwijderde boeken gewist. Er worden geen boeken verwijderd.</string>
     <string name="info_books_deleted">Boeken verwijdered: %1$d</string>
+    <string name="action_undo">Ongedaan maken</string>
 </resources>
