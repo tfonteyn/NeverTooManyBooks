@@ -556,7 +556,7 @@ public class BookDaoHelper {
                     coverStorageSupplier.get().delete(uuid, cIdx);
                 } else {
                     // Rename the temp file to the uuid permanent file name
-                    coverStorageSupplier.get().persist(uuid, cIdx, new File(fileSpec));
+                    coverStorageSupplier.get().persist(new File(fileSpec), uuid, cIdx);
                 }
 
                 book.remove(Book.BKEY_TMP_FILE_SPEC[cIdx]);

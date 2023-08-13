@@ -306,7 +306,7 @@ public final class SyncReaderProcessor {
             try {
                 final String uuid = localBook.getString(DBKey.BOOK_UUID);
                 ServiceLocator.getInstance().getCoverStorage()
-                              .persist(uuid, cIdx, new File(fileSpec));
+                              .persist(new File(fileSpec), uuid, cIdx);
 
             } catch (@NonNull final StorageException | IOException e) {
                 // We're called in a loop, and the chance of an exception here is very low

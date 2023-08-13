@@ -1235,7 +1235,7 @@ public class Book
                 } else {
                     // Rename the temp file to the uuid permanent file name
                     destination = ServiceLocator.getInstance().getCoverStorage()
-                                                .persist(uuid, cIdx, file);
+                                                .persist(file, uuid, cIdx);
                 }
             } else {
                 ServiceLocator.getInstance().getCoverStorage().delete(uuid, cIdx);

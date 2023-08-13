@@ -246,10 +246,13 @@ public class CoverStorage {
 
     /**
      * Persist the given temporary file to a permanent location.
+     * <p>
+     * The uuid and cover-index will be used to construct the destination
+     * file name.
      *
-     * @param uuid the book UUID
-     * @param cIdx 0..n image index
-     * @param file temp file to persist
+     * @param source temp file to persist
+     * @param uuid   the book UUID
+     * @param cIdx   0..n image index
      *
      * @return permanent file
      *
@@ -257,9 +260,9 @@ public class CoverStorage {
      * @throws CoverStorageException The covers directory is not available
      */
     @NonNull
-    public File persist(@NonNull final String uuid,
-                        final int cIdx,
-                        @NonNull final File file)
+    public File persist(@NonNull final File source,
+                        @NonNull final String uuid,
+                        final int cIdx)
             throws IOException, CoverStorageException {
         final String name;
         if (cIdx > 0) {
