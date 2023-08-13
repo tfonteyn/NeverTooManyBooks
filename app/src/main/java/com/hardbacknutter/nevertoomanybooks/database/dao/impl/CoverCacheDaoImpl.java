@@ -266,9 +266,10 @@ public class CoverCacheDaoImpl
                 // do not crash... ever! This is just a cache!
                 LoggerFactory.getLogger().e(TAG, e);
                 // and disable the cache
-                // We don't bother cancelling any pending tasks... oh well...
+                //FIXME: we should let the user know,
+                // and cancel any pending tasks...
                 coverStorageSupplier.get().setImageCachingEnabled(false);
-                //FIXME: we should let the user know....
+
             }
 
             RUNNING_TASKS.decrementAndGet();
