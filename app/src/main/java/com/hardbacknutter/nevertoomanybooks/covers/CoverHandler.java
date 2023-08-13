@@ -653,7 +653,7 @@ public class CoverHandler {
     private File getTempFile()
             throws CoverStorageException {
         return new File(ServiceLocator.getInstance().getCoverStorage().getTempDir(),
-                        TAG + "_" + cIdx + ".jpg");
+                        TAG + "_" + cIdx + CoverStorage.EXT_JPG);
     }
 
     /**
