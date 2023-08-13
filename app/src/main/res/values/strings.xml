@@ -1200,6 +1200,12 @@
     <string name="pt_scanning_beep_on_valid">Beep if scanned ISBN is valid</string>
     <!-- SwitchPreference title -->
     <string name="pt_scanning_beep_on_invalid">Beep if scanned ISBN is invalid</string>
+
+    <!-- SwitchPreference title: support undoing an edit or replacement of a cover image. -->
+    <string name="pt_cover_undo_enabled">Allow ‘undo’ operation for covers</string>
+    <string name="ps_cover_undo_disabled">A cover edit/replace cannot be undone (uses less storage)</string>
+    <string name="ps_cover_undo_enabled">A cover edit/replace can be undone (uses more storage)</string>
+
     <!-- SwitchPreference title: Thumbnails are cached in a database to avoid resizing all the time -->
     <string name="pt_thumbnails_cache_resized">Resized images are cached</string>
     <string name="pe_thumbnails_cache_resized_each_time">Resize images each time they are needed (uses less storage, scrolling will be slower)</string>

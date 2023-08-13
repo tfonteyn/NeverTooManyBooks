@@ -48,6 +48,7 @@ public final class Prefs {
 
     public static final String PK_SCAN_MODE_SINGLE = "scan.mode.single";
 
+    public static final String pk_image_undo_enabled = "image.undo.enabled";
     public static final String pk_image_cache_resized = "image.cache.resized";
     public static final String pk_storage_volume = "storage.volume.index";
 

@@ -272,7 +272,10 @@ public class CoverStorage {
         }
 
         final File destination = new File(getDir(appContextSupplier.get()), name);
-        FileUtils.rename(file, destination);
+        if (isUndoEnabled()) {
+            FileUtils.renameAsBackup(destination, 1);
+        }
+        FileUtils.rename(source, destination);
         return destination;
     }
 
@@ -303,6 +306,9 @@ public class CoverStorage {
         final File tmpFile = new File(getTempDir(), System.nanoTime() + EXT_JPG);
         try (OutputStream os = new FileOutputStream(tmpFile)) {
             FileUtils.copy(is, os);
+            if (isUndoEnabled()) {
+                FileUtils.renameAsBackup(destination, 1);
+            }
             // rename to real output file
             FileUtils.rename(tmpFile, destination);
             return destination;
@@ -327,6 +333,11 @@ public class CoverStorage {
         if (isImageCachingEnabled()) {
             coverCacheDaoSupplier.get().delete(uuid);
         }
+    }
+
+    private boolean isUndoEnabled() {
+        return PreferenceManager.getDefaultSharedPreferences(appContextSupplier.get())
+                                .getBoolean(Prefs.pk_image_undo_enabled, false);
     }
 
     /**
