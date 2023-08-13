@@ -235,13 +235,15 @@ public class CoverHandler {
         final ExtPopupMenu popupMenu = new ExtPopupMenu(anchor.getContext())
                 .inflate(R.menu.image);
 
-        final Optional<File> uuidCoverFile = bookSupplier.get().getCover(cIdx);
-        if (uuidCoverFile.isPresent()) {
+        final Book book = bookSupplier.get();
+
+        final Optional<File> coverFile = book.getCover(cIdx);
+        if (coverFile.isPresent()) {
             if (BuildConfig.DEBUG /* always */) {
                 // show the size of the image in the title bar
                 final BitmapFactory.Options opts = new BitmapFactory.Options();
                 opts.inJustDecodeBounds = true;
-                BitmapFactory.decodeFile(uuidCoverFile.get().getAbsolutePath(), opts);
+                BitmapFactory.decodeFile(coverFile.get().getAbsolutePath(), opts);
             }
         } else {
             // there is no current image; only show the replace menu
