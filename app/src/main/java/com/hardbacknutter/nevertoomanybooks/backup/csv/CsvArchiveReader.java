@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.VersionedFileService;
 import com.hardbacknutter.nevertoomanybooks.core.utils.UriInfo;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
@@ -107,7 +108,7 @@ public class CsvArchiveReader
         final File destination = new File(serviceLocator.getUpgradesDir(), DB_BACKUP_NAME);
 
         // Move/rename the previous/original file
-        FileUtils.renameAsBackup(destination, DB_BACKUP_COPIES);
+        new VersionedFileService(DB_BACKUP_COPIES).save(destination);
         // and write the new copy.
         FileUtils.copy(source, destination);
 

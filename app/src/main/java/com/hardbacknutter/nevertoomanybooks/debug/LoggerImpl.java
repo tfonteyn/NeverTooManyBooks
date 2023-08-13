@@ -51,6 +51,7 @@ import java.time.format.DateTimeFormatter;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.Logger;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.core.storage.VersionedFileService;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 public class LoggerImpl
@@ -233,7 +234,7 @@ public class LoggerImpl
             if (logFile.exists() && logFile.length() > 0) {
                 final File backup = new File(logFile.getPath() + ".bak");
                 // Move/rename the previous/original file
-                FileUtils.renameAsBackup(backup, LOGFILE_COPIES);
+                new VersionedFileService(LOGFILE_COPIES).save(backup);
                 // and write the new copy.
                 FileUtils.copy(logFile, backup);
             }
