@@ -183,10 +183,10 @@ public class EditBookFieldsFragment
                     //noinspection DataFlowIssue
                     coverHandler[cIdx] = new CoverHandler(this, cIdx, maxWidth, maxHeight)
                             .setBookSupplier(() -> vm.getBook())
-                            .setProgressView(vb.coverOperationProgressBar)
-                            .onFragmentViewCreated(this)
                             .setCoverBrowserTitleSupplier(() -> vb.title.getText().toString())
-                            .setCoverBrowserIsbnSupplier(() -> vb.isbn.getText().toString());
+                            .setCoverBrowserIsbnSupplier(() -> vb.isbn.getText().toString())
+                            .setProgressView(vb.coverOperationProgressBar)
+                            .onFragmentViewCreated(this);
                 } else {
                     // This is silly... ViewBinding has no arrays.
                     if (cIdx == 0) {
