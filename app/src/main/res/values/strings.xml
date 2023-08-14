@@ -110,7 +110,8 @@
     <string name="acra_resDialogCommentPrompt">Your comments (or just leave blank):</string>
     <!-- endregion -->
     <!-- region ========== HTTP(S) error messages. -->
-    <!-- copied from: "https://github.com/aosp-mirror/platform_frameworks_base/blob/master/core/res/res/values/strings.xml" -->
+    <!-- All the httpError strings were copied from:
+        "https://github.com/aosp-mirror/platform_frameworks_base/blob/master/core/res/res/values/strings.xml" -->
     <!-- [VERIFIED] - Displayed when a web request failed because there was an input or output error. -->
     <string name="X_httpErrorIO">Couldn’t communicate with the server. Try again later.</string>
     <!-- [VERIFIED] - Displayed when a web request failed because the request timed out -->
@@ -411,9 +412,9 @@
     <string name="tip_authors_works_single_book">The title is present in a single book.</string>
     <!-- endregion -->
     <!-- region ========== BoB specific place holder text for empty fields. -->
-    <!-- BoB generic place holder text for EMPTY fields.
-         The actual text is different from info_not_set in Translations.
-         [VERIFIED] Copy from android-29#keyguard_accessibility_widget_empty_slot -->
+    <!-- [VERIFIED] from android-29#keyguard_accessibility_widget_empty_slot
+        BoB generic place holder text for EMPTY fields.
+        The actual text is different from info_not_set in Translations. -->
     <string name="bob_empty_field">(Not Set)</string>
     <!-- BoB specific place holder text for Author rows.
      Theoretically this string will never be shown unless there is ever bad data. -->
@@ -471,8 +472,7 @@
     <string name="book_format_other">Other</string>
     <!--  book format - mostly used for magazines like 'readers digest'
           A lot of english monthly magazines use the same format.
-          In French this is semi-officially known as "Petit format" or "Small size".
- . -->
+          In French this is semi-officially known as "Petit format" or "Small size". -->
     <string name="book_format_digest">Digest</string>
     <!--  book format - string used if a website indicates it's an eBook -->
     <string name="book_format_ebook">eBook</string>
@@ -654,7 +654,8 @@
     <string name="option_cover_crop">Crop</string>
     <!-- Cover image context menu option -->
     <string name="option_cover_edit">Start editor</string>
-    <!-- [VERIFIED] Context menu for a cover image submenu title -->
+    <!-- [VERIFIED] from "platform_frameworks_base_strings.xml#replace"
+        Context menu for a cover image submenu title -->
     <string name="option_cover_replace">Replace…</string>
     <!-- Cover image context menu option -->
     <string name="option_cover_replace_from_gallery">From Gallery…</string>
@@ -820,7 +821,8 @@
     <string name="action_done">Done</string>
     <!-- [VERIFIED] -->
     <string name="action_undo">Undo</string>
-    <!-- [VERIFIED] buttons on the "sorting / styles" dialog -->
+    <!-- [VERIFIED] from "platform_packages_apps_settings_strings.xml#nfc_more_title"
+        buttons on the "sorting / styles" dialog -->
     <string name="action_more_ellipsis">More…</string>
     <string name="action_less_ellipsis">Less…</string>
     <!-- [VERIFIED] - Title of wizard button prompting user to start data migration [CHAR LIMIT=32] -->
@@ -1467,24 +1469,24 @@
     <string name="lbl_tab_alternative_editions">Alt. Ed.</string>
     <!-- endregion -->
     <!-- region ========== Single words used for multiple purposes. -->
-    <!-- [VERIFIED] -->
+    <!-- [VERIFIED] from "platform_packages_apps_contacts_strings.xml#yes_button" -->
     <string name="yes">Yes</string>
-    <!-- [VERIFIED] -->
+    <!-- [VERIFIED] from "platform_packages_apps_contacts_strings.xml#no_button" -->
     <string name="no">No</string>
-    <!-- [VERIFIED] Generic string. e.g. "the reason is unknown"; "condition is unknown"; "status is unknown" -->
+    <!-- [VERIFIED] from "platform_packages_apps_packageinstaller_strings.xml#app_name_unknown"
+        Generic string. e.g. "the reason is unknown"; "condition is unknown"; "status is unknown" -->
     <string name="unknown">Unknown</string>
-    <!-- [VERIFIED] -->
+    <!-- [VERIFIED] from "platform_frameworks_base_strings.xml#write_fail_reason_cancelled" -->
     <string name="cancelled">Cancelled</string>
-    <!-- [VERIFIED] -->
+    <!-- [VERIFIED] from "platform_packages_apps_settings_strings.xml#vpn_username" -->
     <string name="username">Username</string>
-    <!-- [VERIFIED] -->
+    <!-- [VERIFIED] from "platform_packages_apps_settings_strings.xml#vpn_password"  -->
     <string name="password">Password</string>
     <!-- Generic string. -->
     <string name="enabled">Enabled</string>
     <string name="disabled">Disabled</string>
-    <!-- [VERIFIED]
-        taken from "platform_packages_apps_settings_strings.xml/notification_log_details_none"
-        e.g. indicates nothing was selected; nothing was done. -->
+    <!-- [VERIFIED] from "platform_packages_apps_settings_strings.xml#notification_log_details_none"
+        e.g. indicates nothing was selected; nothing was found; .... -->
     <string name="none">None</string>
     <!-- whether to enforce certain checks. Opposite of 'loose' -->
     <string name="strict">Strict</string>
@@ -1591,4 +1593,6 @@
     <string name="info_nothing_to_do">Nothing to do</string>
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
+    <string name="option_restore_cover">Restore previous image</string>
+
 </resources>

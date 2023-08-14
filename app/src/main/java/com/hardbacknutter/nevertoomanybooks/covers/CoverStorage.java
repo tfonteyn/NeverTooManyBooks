@@ -46,35 +46,39 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.storage.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.core.storage.VersionedFileService;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CoverCacheDao;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
  * Handles persistence for cover files.
  * <p>
- * Storing is done as jpg; loading tries jpg first, png second.
+ * Storing is generally done as png, but filenames use the ".jpg" extension for historic reasons.
+ * Loading an image will always try ".jpg" first, ".png" second.
  * <p>
  * Serves as a wrapper over the file system AND the covers cache dao.
  */
 public class CoverStorage {
 
     /** Sub directory of the Covers directory. */
-    static final String DIR_TMP = "tmp";
-
+    static final String TMP_SUB_DIR = "tmp";
+    static final String EXT_JPG = ".jpg";
     private static final String TAG = "CoverStorage";
-
     /** The minimum side (height/width) an image must be to be considered valid; in pixels. */
     private static final int MIN_VALID_IMAGE_SIDE = 10;
-
     /** The minimum size an image file on disk must be to be considered valid; in bytes. */
     private static final int MIN_VALID_IMAGE_FILE_SIZE = 2048;
-    private static final String EXT_JPG = ".jpg";
-
+    private static final String EXT_PNG = ".png";
+    /** Compression percentage. */
+    private static final int QUALITY = 100;
     @NonNull
     private final Supplier<Context> appContextSupplier;
-
     @NonNull
     private final Supplier<CoverCacheDao> coverCacheDaoSupplier;
+
+    /** Use {@link #getVersionedFileService()}. */
+    @Nullable
+    private VersionedFileService versionedFileService;
 
     /**
      * Constructor.
@@ -93,7 +97,7 @@ public class CoverStorage {
     }
 
     /**
-     * Get the *permanent* directory where we store covers.
+     * Get the <strong>permanent</strong> directory where we store covers.
      *
      * @param context Current context
      *
@@ -118,6 +122,27 @@ public class CoverStorage {
         }
 
         return externalFilesDirs[volume];
+    }
+
+    @NonNull
+    private static String createName(@NonNull final String uuid,
+                                     final int cIdx) {
+        final String name;
+        if (cIdx > 0) {
+            name = uuid + "_" + cIdx;
+        } else {
+            name = uuid;
+        }
+        return name;
+    }
+
+    @NonNull
+    private VersionedFileService getVersionedFileService()
+            throws CoverStorageException {
+        if (versionedFileService == null) {
+            versionedFileService = new VersionedFileService(getTempDir(), 1);
+        }
+        return versionedFileService;
     }
 
     /**
@@ -159,7 +184,7 @@ public class CoverStorage {
     }
 
     /**
-     * Get the *permanent* directory where we store covers.
+     * Get the <strong>permanent</strong> directory where we store covers.
      *
      * @return directory
      *
@@ -173,7 +198,7 @@ public class CoverStorage {
     }
 
     /**
-     * Get the *temporary* directory where we store covers.
+     * Get the <strong>temporary</strong> directory where we store covers.
      * Currently this is a sub directory of the permanent one to facilitate move==renames.
      *
      * @return directory
@@ -183,7 +208,20 @@ public class CoverStorage {
     @NonNull
     public File getTempDir()
             throws CoverStorageException {
-        return new File(getDir(), DIR_TMP);
+        return new File(getDir(), TMP_SUB_DIR);
+    }
+
+    /**
+     * Get a temporary file.
+     *
+     * @return file
+     *
+     * @throws CoverStorageException The covers directory is not available
+     */
+    @NonNull
+    File getTempFile()
+            throws CoverStorageException {
+        return new File(getTempDir(), System.nanoTime() + EXT_JPG);
     }
 
     /**
@@ -210,12 +248,7 @@ public class CoverStorage {
             return Optional.empty();
         }
 
-        final String name;
-        if (cIdx > 0) {
-            name = uuid + "_" + cIdx;
-        } else {
-            name = uuid;
-        }
+        final String name = createName(uuid, cIdx);
 
         @Nullable
         File coverFile;
@@ -223,8 +256,17 @@ public class CoverStorage {
         coverFile = new File(coverDir, name + EXT_JPG);
         if (!coverFile.exists()) {
             // not found, try finding a png
-            coverFile = new File(coverDir, name + ".png");
-            if (!coverFile.exists()) {
+            coverFile = new File(coverDir, name + EXT_PNG);
+            if (coverFile.exists()) {
+                // rename it to the standard extension regardless of type
+                // #isUndoEnabled(String,int) relies on this
+                try {
+                    FileUtils.rename(coverFile, new File(coverDir, name + EXT_JPG));
+                    coverFile = new File(coverDir, name + EXT_JPG);
+                } catch (@NonNull final IOException ignore) {
+                    // ignore
+                }
+            } else {
                 coverFile = null;
             }
         }
@@ -264,20 +306,52 @@ public class CoverStorage {
                         @NonNull final String uuid,
                         final int cIdx)
             throws IOException, CoverStorageException {
-        final String name;
-        if (cIdx > 0) {
-            name = uuid + "_" + cIdx + EXT_JPG;
-        } else {
-            name = uuid + EXT_JPG;
+
+        final String name = createName(uuid, cIdx) + EXT_JPG;
+        final File destination = new File(getDir(appContextSupplier.get()), name);
+
+        if (isUndoEnabled()) {
+            getVersionedFileService().save(destination);
         }
 
-        final File destination = new File(getDir(appContextSupplier.get()), name);
-        if (isUndoEnabled()) {
-            FileUtils.renameAsBackup(destination, 1);
-        }
         FileUtils.rename(source, destination);
         return destination;
     }
+
+    /**
+     * Given a bitmap, compress/encode it and write it to the destination file.
+     *
+     * @param bitmap      to handle
+     * @param destination the File to write to
+     *
+     * @return File written to (the one passed in)
+     *
+     * @throws IOException           on generic/other IO failures
+     * @throws CoverStorageException The covers directory is not available
+     */
+    @NonNull
+    public File persist(@NonNull final Bitmap bitmap,
+                        @NonNull final File destination)
+            throws IOException, CoverStorageException {
+
+        if (isUndoEnabled()) {
+            getVersionedFileService().save(destination);
+        }
+
+        try (OutputStream os = new FileOutputStream(destination)) {
+            if (bitmap.compress(Bitmap.CompressFormat.PNG, QUALITY, os)) {
+                return destination;
+            }
+        }
+        throw new IOException("Bitmap compression failed");
+    }
+
+    @NonNull
+    public File persist(@Nullable final InputStream is)
+            throws CoverStorageException, IOException {
+        return persist(is, getTempFile());
+    }
+
 
     /**
      * Given a InputStream with an image, write it to a file in the temp directory.
@@ -303,11 +377,12 @@ public class CoverStorage {
             throw new FileNotFoundException("InputStream was NULL");
         }
 
-        final File tmpFile = new File(getTempDir(), System.nanoTime() + EXT_JPG);
+        final File tmpFile = getTempFile();
         try (OutputStream os = new FileOutputStream(tmpFile)) {
             FileUtils.copy(is, os);
+
             if (isUndoEnabled()) {
-                FileUtils.renameAsBackup(destination, 1);
+                getVersionedFileService().save(destination);
             }
             // rename to real output file
             FileUtils.rename(tmpFile, destination);
@@ -325,7 +400,20 @@ public class CoverStorage {
      */
     public void delete(@NonNull final String uuid,
                        final int cIdx) {
-        getPersistedFile(uuid, cIdx).ifPresent(FileUtils::delete);
+
+        final Optional<File> persistedFile = getPersistedFile(uuid, cIdx);
+        if (persistedFile.isPresent()) {
+            final File file = persistedFile.get();
+            if (isUndoEnabled()) {
+                try {
+                    getVersionedFileService().save(file);
+                } catch (@NonNull final CoverStorageException e) {
+                    LoggerFactory.getLogger().e(TAG, e);
+                }
+            }
+            FileUtils.delete(file);
+        }
+
         // Delete from the cache. And yes, we also delete the ones
         // where != index, but we don't care; it's a cache.
         // If the user flipped the cache on/off we'll
@@ -335,9 +423,73 @@ public class CoverStorage {
         }
     }
 
+    /**
+     * Restore the previous version of the given file.
+     *
+     * @param uuid UUID of the book
+     * @param cIdx 0..n image index
+     *
+     * @return {@code true} if the restore was successfully
+     *
+     * @throws IOException on generic/other IO failures
+     */
+    public boolean restore(@NonNull final String uuid,
+                           final int cIdx)
+            throws IOException {
+        if (!isUndoEnabled()) {
+            return false;
+        }
+
+        final File coverDir;
+        try {
+            coverDir = getDir(appContextSupplier.get());
+        } catch (@NonNull final CoverStorageException e) {
+            return false;
+        }
+
+        // We're relying on the fact that #getPersistedFile
+        // would have renamed any remaining png files to jpg by now.
+        final String name = createName(uuid, cIdx) + EXT_JPG;
+
+        try {
+            return getVersionedFileService().restore(new File(coverDir, name));
+        } catch (@NonNull final CoverStorageException ignore) {
+            return false;
+        }
+    }
+
+    /**
+     * Check if we need to enable support for 'undo' after cover manipulations.
+     *
+     * @return {@code true} if enabled
+     */
     private boolean isUndoEnabled() {
         return PreferenceManager.getDefaultSharedPreferences(appContextSupplier.get())
                                 .getBoolean(Prefs.pk_image_undo_enabled, false);
+    }
+
+    boolean isUndoEnabled(@NonNull final String uuid,
+                          final int cIdx) {
+        if (!isUndoEnabled()) {
+            return false;
+        }
+
+        final File coverDir;
+        try {
+            coverDir = getDir(appContextSupplier.get());
+        } catch (@NonNull final CoverStorageException e) {
+            return false;
+        }
+
+        // We're relying on the fact that #getPersistedFile
+        // would have renamed any remaining png files to jpg by now.
+        final String name = createName(uuid, cIdx) + EXT_JPG;
+
+        try {
+            return getVersionedFileService().hasBackup(new File(coverDir, name));
+        } catch (@NonNull final CoverStorageException ignore) {
+            return false;
+        }
     }
 
     /**

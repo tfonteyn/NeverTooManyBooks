@@ -301,6 +301,10 @@
           type="id" />
     <item name="MENU_THUMB_CROP"
           type="id" />
+    <item name="MENU_GROUP_UNDO"
+          type="id" />
+    <item name="MENU_UNDO"
+          type="id" />
 
     <!-- Toolbar menu: on-the-fly access to setting search order -->
     <item name="MENU_PREFS_SEARCH_SITES"

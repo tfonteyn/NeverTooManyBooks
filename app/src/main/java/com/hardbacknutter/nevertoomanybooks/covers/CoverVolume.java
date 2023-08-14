@@ -140,7 +140,7 @@ public final class CoverVolume {
         }
 
         // Make sure we can get the directory, and create the sub directory if needed
-        final File tmpDir = new File(coverDir, CoverStorage.DIR_TMP);
+        final File tmpDir = new File(coverDir, CoverStorage.TMP_SUB_DIR);
         if (!(tmpDir.isDirectory() || tmpDir.mkdirs())) {
             throw new CoverStorageException("Failed to create covers directory: Pictures/tmp");
         }

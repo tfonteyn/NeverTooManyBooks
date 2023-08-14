@@ -26,14 +26,13 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.storage.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 
 /**
@@ -53,9 +52,6 @@ public class TransformationTask
 
     /** Log tag. */
     private static final String TAG = "TransformationTask";
-
-    /** Compression percentage. */
-    private static final int QUALITY = 100;
 
     private Transformation transformation;
     private File destFile;
@@ -87,20 +83,14 @@ public class TransformationTask
     @NonNull
     @Override
     @WorkerThread
-    protected TransformedData doWork() {
-        final Optional<Bitmap> optBitmap = transformation.transform();
+    protected TransformedData doWork()
+            throws CoverStorageException, IOException {
 
+        final Optional<Bitmap> optBitmap = transformation.transform();
         if (optBitmap.isPresent()) {
-            try {
-                final Bitmap bitmap = optBitmap.get();
-                try (OutputStream os = new FileOutputStream(destFile.getAbsoluteFile())) {
-                    if (bitmap.compress(Bitmap.CompressFormat.PNG, QUALITY, os)) {
-                        return new TransformedData(bitmap, destFile, nextAction);
-                    }
-                }
-            } catch (@NonNull final IOException e) {
-                LoggerFactory.getLogger().e(TAG, e);
-            }
+            final Bitmap bitmap = optBitmap.get();
+            ServiceLocator.getInstance().getCoverStorage().persist(bitmap, destFile);
+            return new TransformedData(bitmap, destFile, nextAction);
         }
 
         return new TransformedData(null, null, CoverHandler.NextAction.Done);

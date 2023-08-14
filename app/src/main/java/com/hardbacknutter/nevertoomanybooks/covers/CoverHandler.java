@@ -193,9 +193,16 @@ public class CoverHandler {
         return this;
     }
 
+    /**
+     * Tell the handler where it can get the current Book from.
+     *
+     * @param supplier which can provide the current Book
+     *
+     * @return {@code this} (for chaining)
+     */
     @NonNull
-    public CoverHandler setBookSupplier(@NonNull final Supplier<Book> bookSupplier) {
-        this.bookSupplier = bookSupplier;
+    public CoverHandler setBookSupplier(@NonNull final Supplier<Book> supplier) {
+        this.bookSupplier = supplier;
         return this;
     }
 
@@ -255,6 +262,14 @@ public class CoverHandler {
         // we only support alternative edition covers for the front cover.
         popupMenu.getMenu().findItem(R.id.MENU_THUMB_ADD_FROM_ALT_EDITIONS).setVisible(cIdx == 0);
 
+        // Add the potential undo-menu
+        if (ServiceLocator.getInstance().getCoverStorage()
+                          .isUndoEnabled(book.getString(DBKey.BOOK_UUID), cIdx)) {
+            popupMenu.setGroupDividerEnabled();
+            popupMenu.getMenu()
+                     .add(R.id.MENU_GROUP_UNDO, R.id.MENU_UNDO, 0, R.string.option_restore_cover);
+        }
+
         popupMenu.showAsDropDown(anchor, this::onMenuItemSelected);
 
         return true;
@@ -302,11 +317,12 @@ public class CoverHandler {
         } else if (itemId == R.id.MENU_THUMB_CROP) {
             //noinspection OverlyBroadCatchBlock
             try {
+                final File tmpFile = ServiceLocator.getInstance().getCoverStorage().getTempFile();
                 cropPictureLauncher.launch(new CropImageActivity.ResultContract.Input(
                         // source
                         createTempCoverFile(book),
                         // destination
-                        getTempFile()));
+                        tmpFile));
 
             } catch (@NonNull final StorageException e) {
                 ErrorDialog.show(context, TAG, e);
@@ -338,14 +354,27 @@ public class CoverHandler {
         } else if (itemId == R.id.MENU_THUMB_ADD_FROM_ALT_EDITIONS) {
             startCoverBrowser();
             return true;
+
+        } else if (itemId == R.id.MENU_UNDO) {
+            try {
+                if (ServiceLocator.getInstance().getCoverStorage()
+                                  .restore(book.getString(DBKey.BOOK_UUID), cIdx)) {
+                    coverHandlerOwner.reloadImage(cIdx);
+                }
+            } catch (@NonNull final IOException e) {
+                ErrorDialog.show(context, TAG, e);
+            }
+            return true;
         }
         return false;
     }
 
     /**
-     * Create a temporary cover file for the given book.
+     * Create a temporary cover File for the given book.
+     * <p>
      * If there is a permanent cover, we get a <strong>copy of that one</strong>.
-     * If there is no cover, we get a new File object with a temporary name.
+     * If there is no cover, we get a new File object.
+     * Either way, the File returned will have a new temporary name.
      *
      * @param book for which we want a cover
      *
@@ -360,13 +389,12 @@ public class CoverHandler {
 
         // the temp file we'll return
         // do NOT set BKEY_TMP_FILE_SPEC on the book in this method.
-        final File tempDir = ServiceLocator.getInstance().getCoverStorage().getTempDir();
-        final File coverFile = new File(tempDir, System.nanoTime() + ".jpg");
+        final File tmpFile = ServiceLocator.getInstance().getCoverStorage().getTempFile();
 
         // If we have a permanent file, copy it into the temp location
         final Optional<File> uuidFile = book.getCover(cIdx);
         if (uuidFile.isPresent()) {
-            FileUtils.copy(uuidFile.get(), coverFile);
+            FileUtils.copy(uuidFile.get(), tmpFile);
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
@@ -374,19 +402,35 @@ public class CoverHandler {
                          .e("TAG", new Throwable("createTempCoverFile"),
                             "bookId=" + book.getId()
                             + "|cIdx=" + cIdx
-                            + "|exists=" + coverFile.exists()
-                            + "|file=" + coverFile.getAbsolutePath()
+                            + "|exists=" + tmpFile.exists()
+                            + "|file=" + tmpFile.getAbsolutePath()
                          );
         }
-        return coverFile;
+        return tmpFile;
     }
 
+    /**
+     * Tell the handler where it can get the current ISBN from.
+     * This is normally a Supplier which reads it from a TextView on the screen.
+     *
+     * @param supplier which can provide the current ISBN
+     *
+     * @return {@code this} (for chaining)
+     */
     @NonNull
     public CoverHandler setCoverBrowserIsbnSupplier(@NonNull final Supplier<String> supplier) {
         coverBrowserIsbnSupplier = supplier;
         return this;
     }
 
+    /**
+     * Tell the handler where it can get the current book-title from.
+     * This is normally a Supplier which reads it from a TextView on the screen.
+     *
+     * @param supplier which can provide the current book-title
+     *
+     * @return {@code this} (for chaining)
+     */
     @NonNull
     public CoverHandler setCoverBrowserTitleSupplier(@NonNull final Supplier<String> supplier) {
         coverBrowserTitleSupplier = supplier;
@@ -462,10 +506,9 @@ public class CoverHandler {
     private void editPicture(@NonNull final File srcFile)
             throws CoverStorageException {
 
-        final File dstFile = getTempFile();
-        FileUtils.delete(dstFile);
+        final File tmpFile = ServiceLocator.getInstance().getCoverStorage().getTempFile();
         try {
-            editPictureLauncher.launch(new EditPictureContract.Input(srcFile, dstFile));
+            editPictureLauncher.launch(new EditPictureContract.Input(srcFile, tmpFile));
         } catch (@NonNull final ActivityNotFoundException e) {
             Snackbar.make(fragmentView, R.string.error_no_image_editor, Snackbar.LENGTH_LONG)
                     .show();
@@ -484,10 +527,7 @@ public class CoverHandler {
                                .setFile(file)
                                .setScale(true),
                        file);
-            return;
         }
-
-        removeTempFile();
     }
 
     /**
@@ -500,15 +540,16 @@ public class CoverHandler {
         final Context context = fragmentView.getContext();
         //noinspection OverlyBroadCatchBlock
         try (InputStream is = context.getContentResolver().openInputStream(uri)) {
-            // copy the data, and retrieve the (potentially) resolved file
-            final File file = ServiceLocator.getInstance().getCoverStorage()
-                                            .persist(is, getTempFile());
-
             showProgress();
+
+            // copy the data to a temporary file
+            final File tmpFile = ServiceLocator.getInstance().getCoverStorage()
+                                               .persist(is);
+
             vm.execute(new Transformation()
-                               .setFile(file)
+                               .setFile(tmpFile)
                                .setScale(true),
-                       file);
+                       tmpFile);
 
         } catch (@NonNull final StorageException e) {
             ErrorDialog.show(context, TAG, e);
@@ -534,9 +575,8 @@ public class CoverHandler {
 
             //noinspection OverlyBroadCatchBlock
             try {
-                final File dstFile = getTempFile();
-                FileUtils.delete(dstFile);
-                takePictureLauncher.launch(dstFile);
+                takePictureLauncher.launch(
+                        ServiceLocator.getInstance().getCoverStorage().getTempFile());
 
             } catch (@NonNull final StorageException e) {
                 ErrorDialog.show(context, TAG, e);
@@ -614,20 +654,24 @@ public class CoverHandler {
         if (null != result.getBitmap()) {
             try {
                 switch (result.getNextAction()) {
-                    case Crop:
-                        cropPictureLauncher.launch(new CropImageActivity.ResultContract.Input(
-                                result.getFile(), getTempFile()));
-                        return;
+                    case Crop: {
+                        final File tmpFile = ServiceLocator.getInstance().getCoverStorage()
+                                                           .getTempFile();
 
-                    case Edit:
+                        cropPictureLauncher.launch(new CropImageActivity.ResultContract.Input(
+                                result.getFile(), tmpFile));
+                        return;
+                    }
+                    case Edit: {
                         editPicture(result.getFile());
                         return;
-
-                    case Done:
+                    }
+                    case Done: {
                         bookSupplier.get().setCover(cIdx, result.getFile());
                         // must use a post to force the View to update.
                         fragmentView.post(() -> coverHandlerOwner.reloadImage(cIdx));
                         return;
+                    }
                 }
             } catch (@NonNull final StorageException e) {
                 ErrorDialog.show(fragmentView.getContext(), TAG, e);
@@ -640,31 +684,6 @@ public class CoverHandler {
         bookSupplier.get().removeCover(cIdx);
         // must use a post to force the View to update.
         fragmentView.post(() -> coverHandlerOwner.reloadImage(cIdx));
-    }
-
-    /**
-     * Get the temporary file.
-     *
-     * @return file
-     *
-     * @throws CoverStorageException The covers directory is not available
-     */
-    @NonNull
-    private File getTempFile()
-            throws CoverStorageException {
-        return new File(ServiceLocator.getInstance().getCoverStorage().getTempDir(),
-                        TAG + "_" + cIdx + CoverStorage.EXT_JPG);
-    }
-
-    /**
-     * remove any orphaned file.
-     */
-    private void removeTempFile() {
-        try {
-            FileUtils.delete(getTempFile());
-        } catch (@NonNull final CoverStorageException ignore) {
-            // safe to ignore, just a delete
-        }
     }
 
     private void showProgress() {

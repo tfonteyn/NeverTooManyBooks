@@ -56,7 +56,6 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -65,6 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.storage.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityCropimageBinding;
@@ -97,9 +97,6 @@ public class CropImageActivity
     /** used to calculate free space on Shared Storage, 100kb per picture is an overestimation. */
     private static final long ESTIMATED_PICTURE_SIZE = 100_000L;
     private static final int QUALITY = 100;
-
-    /** The destination URI where to write the result to. */
-    private Uri destinationUri;
 
     /** View Binding. */
     private ActivityCropimageBinding vb;
@@ -156,9 +153,8 @@ public class CropImageActivity
         }
 
         if (bitmap != null) {
-            final String dstPath = Objects.requireNonNull(args.getString(BKEY_DESTINATION),
-                                                          BKEY_DESTINATION);
-            destinationUri = Uri.fromFile(new File(dstPath));
+            // sanity check
+            Objects.requireNonNull(args.getString(BKEY_DESTINATION), BKEY_DESTINATION);
 
             vb.coverImage0.initCropView(bitmap);
 
@@ -177,12 +173,16 @@ public class CropImageActivity
         @Nullable
         Bitmap bitmap = vb.coverImage0.getCroppedBitmap();
         if (bitmap != null) {
-            try (OutputStream os = getContentResolver().openOutputStream(destinationUri)) {
-                if (os != null) {
-                    bitmap.compress(Bitmap.CompressFormat.PNG, QUALITY, os);
-                    setResult(Activity.RESULT_OK, new Intent().setData(destinationUri));
-                }
-            } catch (@NonNull final IOException e) {
+            try {
+                //noinspection DataFlowIssue
+                final File destination = new File(
+                        getIntent().getExtras().getString(BKEY_DESTINATION));
+                ServiceLocator.getInstance().getCoverStorage().persist(bitmap, destination);
+
+                setResult(Activity.RESULT_OK, new Intent().setData(Uri.fromFile(destination)));
+                finish();
+
+            } catch (@NonNull final IOException | CoverStorageException e) {
                 LoggerFactory.getLogger().e(TAG, e);
                 bitmap = null;
             }
@@ -196,9 +196,7 @@ public class CropImageActivity
                     .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
                     .create()
                     .show();
-            return;
         }
-        finish();
     }
 
     public static class ResultContract
