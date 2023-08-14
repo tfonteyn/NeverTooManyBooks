@@ -134,41 +134,6 @@ public final class FileUtils {
     }
 
     /**
-     * Rename the given "file" to "file.1", keeping 'copies' of the old file,
-     * i.e. the number of the copy is added as a SUFFIX to the name.
-     * <p>
-     * Upon return, the "file" is no longer available.
-     *
-     * <strong>Important:</strong> it's a 'rename', so single volume use only!
-     *
-     * @param file   file to rename
-     * @param copies #copies of the previous one to keep
-     *
-     * @throws IOException on generic/other IO failures
-     */
-    public static void renameAsBackup(@NonNull final File file,
-                                      final int copies)
-            throws IOException {
-        // remove the oldest copy
-        File previous = new File(file + "." + copies);
-        delete(previous);
-
-        // now bump each copy up one suffix.
-        for (int i = copies - 1; i > 0; i--) {
-            final File current = new File(file + "." + i);
-            if (current.exists()) {
-                rename(current, previous);
-            }
-            previous = current;
-        }
-
-        // Rename the current file giving it a suffix.
-        if (file.exists()) {
-            rename(file, previous);
-        }
-    }
-
-    /**
      * ENHANCE: make suitable for multiple filesystems using {@link #copy(File, File)}
      * Android docs {@link File#renameTo(File)}: Both paths be on the same mount point.
      * But we use the external app directory solely, so a 'rename' works as is for now.
