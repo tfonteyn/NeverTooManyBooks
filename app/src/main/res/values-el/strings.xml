@@ -312,6 +312,7 @@
     <string name="X_lbl_clear_filters">Διαγραφή φίλτρων</string>
     <string name="lbl_clone_style">Αντιγραφή στυλ</string>
     <string name="lbl_book_type_collection">Συλλογή</string>
+    <string name="lbl_ebook_file_type">Τύπος αρχείου eBook</string>
     <string name="lbl_color">Χρώμα</string>
     <string name="lbl_condition">Κατάσταση</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Λείπει/δεκτός</string>
@@ -603,6 +604,9 @@
     <string name="ps_show_titles_reordered_on">τίτλος, Ο</string>
     <string name="pt_sort_author_name_given_first">Ταξινόμηση ονόματος συγγραφέα</string>
     <string name="pt_sort_title_reordered">Ταξινόμηση τίτλων με βάση</string>
+    <string name="pt_cover_undo_enabled">Αναίρεση λειτουργιών σε εξώφυλλα βιβλίων</string>
+    <string name="ps_cover_undo_disabled">Μια επεξεργασία/αντικατάσταση εξωφύλλου δεν μπορεί να αναιρεθεί (χρησιμοποιεί λιγότερο αποθηκευτικό χώρο)</string>
+    <string name="ps_cover_undo_enabled">Μια επεξεργασία/αντικατάσταση εξωφύλλου μπορεί να αναιρεθεί (χρησιμοποιεί περισσότερο αποθηκευτικό χώρο)</string>
     <string name="pt_thumbnails_cache_resized">Η μνήμη cache επέστρεψε τις μικρογραφίες</string>
     <string name="pt_thumbnails_rotate_auto">Περιστρέψτε τις εικόνες</string>
     <string name="pt_ui_language">Γλώσσα</string>
@@ -762,4 +766,6 @@
     <string name="info_books_deleted">Βιβλία που διαγράφηκαν: %1$d</string>
     <string name="progress_msg_x_deleted">%1$d διαγράφηκε</string>
     <string name="action_undo">Αναίρεση</string>
+    <string name="info_nothing_to_do">Δεν χρειάζεται να κάνετε τίποτα.</string>
+    <string name="option_restore_cover">Επαναφορά προηγούμενης εικόνας</string>
 </resources>

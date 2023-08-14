@@ -44,12 +44,12 @@
     </plurals>
     <string name="X_acra_resToastText">&APP_NAME;" завершилось с ошибкой. Пожалуйста, помогите нам сделать приложение лучше, отправив эту ошибку."</string>
     <string name="X_action_clear_credentials">Очистить учетные данные</string>
-    <string name="X_action_execute">"Выполнить"</string>
+    <string name="X_action_execute">Выполнить</string>
     <string name="X_action_move">Перенести</string>
-    <string name="X_action_next">"Далее"</string>
-    <string name="X_action_previous">"Пред."</string>
+    <string name="X_action_next">Далее</string>
+    <string name="X_action_previous">Пред.</string>
     <string name="X_action_reset">Сбросить</string>
-    <string name="X_action_send">"Отправить"</string>
+    <string name="X_action_send">Отправить</string>
     <string name="X_action_swap">обменивать</string>
     <string name="X_action_try_again">Повторить попытку</string>
     <string name="X_action_update">Обновить</string>
@@ -109,12 +109,12 @@
     <string name="action_create">Создать</string>
     <string name="action_delete">Удалить</string>
     <string name="action_discard">Отменить</string>
-    <string name="action_done">"Готово"</string>
+    <string name="action_done">Готово</string>
     <string name="action_duplicate">копия</string>
     <string name="action_edit">Изменить</string>
     <string name="action_edit_ellipsis">Изменить…</string>
     <string name="action_export">Экспорт</string>
-    <string name="X_action_go">"Выбрать"</string>
+    <string name="X_action_go">Выбрать</string>
     <string name="action_help">Справка</string>
     <string name="action_import">Импортировать</string>
     <string name="action_merge">сливаться</string>
@@ -122,7 +122,7 @@
     <string name="action_reset_to_default">Сбросить настройки</string>
     <string name="action_retry">Повторить\n попытку</string>
     <string name="action_save">Сохранить</string>
-    <string name="action_search">"Поиск"</string>
+    <string name="action_search">Поиск</string>
     <string name="action_select">Выбрать</string>
     <string name="option_select_all">Выбрать все</string>
     <string name="option_select_none">Снять все</string>
@@ -327,6 +327,7 @@
     <string name="X_lbl_clear_filters">Сбросить фильтры</string>
     <string name="lbl_clone_style">Клонировать стиль</string>
     <string name="lbl_book_type_collection">Коллекция</string>
+    <string name="lbl_ebook_file_type">Тип файла электронной книги</string>
     <string name="lbl_color">Цвет</string>
     <string name="lbl_condition">Условие</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Отсутствует/приемлемо</string>
@@ -615,6 +616,9 @@
     <string name="pt_show_title_reordered">Показать названия как…</string>
     <string name="pt_sort_author_name_given_first">Сортировка имени автора</string>
     <string name="pt_sort_title_reordered">Сортировать названия по</string>
+    <string name="pt_cover_undo_enabled">Отмена операций на обложках книг</string>
+    <string name="ps_cover_undo_disabled">Редактирование/замена обложки не может быть отменено (используется меньший объем памяти)</string>
+    <string name="ps_cover_undo_enabled">Редактирование/замена обложки может быть отменено (используется больше памяти)</string>
     <string name="pt_thumbnails_cache_resized">Миниатюры кэша с измененным размером</string>
     <string name="pt_thumbnails_rotate_auto">Повернуть фотографии</string>
     <string name="pt_ui_language">язык</string>
@@ -774,4 +778,6 @@
     <string name="info_books_deleted">Книги удалены: %1$d</string>
     <string name="progress_msg_x_deleted">%1$d удалено</string>
     <string name="action_undo">Отменить</string>
+    <string name="info_nothing_to_do">Ничего не делать.</string>
+    <string name="option_restore_cover">Восстановить предыдущее изображение</string>
 </resources>

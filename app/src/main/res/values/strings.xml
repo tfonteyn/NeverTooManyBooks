@@ -1206,7 +1206,7 @@
     <string name="pt_scanning_beep_on_invalid">Beep if scanned ISBN is invalid</string>
 
     <!-- SwitchPreference title: support undoing an edit or replacement of a cover image. -->
-    <string name="pt_cover_undo_enabled">Allow ‘undo’ operation for covers</string>
+    <string name="pt_cover_undo_enabled">Undoing operations on book covers</string>
     <string name="ps_cover_undo_disabled">A cover edit/replace cannot be undone (uses less storage)</string>
     <string name="ps_cover_undo_enabled">A cover edit/replace can be undone (uses more storage)</string>
 
@@ -1590,7 +1590,7 @@
     <string name="X_lbl_folder">Folder</string>
     <!-- endregion -->
 
-    <string name="info_nothing_to_do">Nothing to do</string>
+    <string name="info_nothing_to_do">Nothing to do.</string>
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
     <string name="option_restore_cover">Restore previous image</string>

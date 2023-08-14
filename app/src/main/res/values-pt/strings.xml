@@ -107,6 +107,7 @@
     <string name="lbl_certificate_issued_by">Emitido por: %1$s</string>
     <string name="lbl_certificate_issued_to">Emitido para: %1$s</string>
     <string name="lbl_certificates">Certificados</string>
+    <string name="lbl_ebook_file_type">Tipo de ficheiro de livro eletrónico</string>
     <string name="lbl_color">Cor</string>
     <string name="lbl_country">País</string>
     <string name="lbl_credentials">Credenciais do usuário</string>
@@ -590,6 +591,9 @@
     <string name="option_import_books_option_all">Todos os livros</string>
     <string name="option_info_delete_removed_books">Os livros eliminados no outro dispositivo também serão eliminados neste dispositivo.</string>
     <string name="info_import_complete">Importação concluída</string>
+    <string name="pt_cover_undo_enabled">Desfazer operações em capas de livros</string>
+    <string name="ps_cover_undo_disabled">A edição/substituição de uma capa não pode ser anulada (utiliza menos espaço de armazenamento)</string>
+    <string name="ps_cover_undo_enabled">Uma edição/substituição de capa pode ser anulada (utiliza mais espaço de armazenamento)</string>
     <string name="pt_thumbnails_cache_resized">As imagens redimensionadas são armazenadas em cache</string>
     <string name="pe_thumbnails_cache_resized_each_time">Redimensione as imagens sempre que forem necessárias (usa menos armazenamento, a deslocação será mais lenta)</string>
     <string name="pe_thumbnails_cache_resized_stored">Colocar as imagens redimensionadas em cache (a deslocação será mais rápida, usa mais armazenamento)</string>
@@ -795,4 +799,6 @@
     <string name="info_books_deleted">Livros eliminados: %1$d</string>
     <string name="progress_msg_x_deleted">%1$d eliminado</string>
     <string name="action_undo">Desfazer</string>
+    <string name="info_nothing_to_do">Não há nada a fazer.</string>
+    <string name="option_restore_cover">Restaurar imagem anterior</string>
 </resources>

@@ -314,6 +314,7 @@
     <string name="X_lbl_clear_filters">Cancella filtri</string>
     <string name="lbl_clone_style">Duplica stile</string>
     <string name="lbl_book_type_collection">Collezione</string>
+    <string name="lbl_ebook_file_type">Tipo di file eBook</string>
     <string name="lbl_color">Colore</string>
     <string name="lbl_condition">Condizione</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Mancante/accettabile</string>
@@ -605,6 +606,9 @@
     <string name="ps_show_titles_reordered_on">titolo, Il</string>
     <string name="pt_sort_author_name_given_first">Ordinamento dei nomi degli autori</string>
     <string name="pt_sort_title_reordered">Ordina titoli per</string>
+    <string name="pt_cover_undo_enabled">Annullare le operazioni sulle copertine dei libri</string>
+    <string name="ps_cover_undo_disabled">Una modifica/sostituzione della copertina non può essere annullata (utilizza meno memoria)</string>
+    <string name="ps_cover_undo_enabled">Una modifica/sostituzione della copertina può essere annullata (utilizza più memoria)</string>
     <string name="pt_thumbnails_cache_resized">Memorizza le miniature ridimensionate</string>
     <string name="pt_thumbnails_rotate_auto">Ruota le immagini</string>
     <string name="pt_ui_language">Lingua</string>
@@ -764,4 +768,6 @@
     <string name="info_books_deleted">Libri cancellati: %1$d</string>
     <string name="progress_msg_x_deleted">%1$d cancellato</string>
     <string name="action_undo">Annulla</string>
+    <string name="info_nothing_to_do">Non c’è niente da fare.</string>
+    <string name="option_restore_cover">Ripristinare l’immagine precedente</string>
 </resources>

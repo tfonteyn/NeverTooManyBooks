@@ -38,12 +38,12 @@
     </plurals>
     <string name="X_acra_resToastText">&APP_NAME; bilinmeyen bir nedenle çöktü. Uygulamanın kalitesini iyileştirebilmemiz için lütfen bu çökmeyi rapor edin.</string>
     <string name="X_action_clear_credentials">Kimlik bilgilerini temizle</string>
-    <string name="X_action_execute">"Çalıştır"</string>
+    <string name="X_action_execute">Çalıştır</string>
     <string name="X_action_move">Taşı</string>
-    <string name="X_action_next">"İleri"</string>
-    <string name="X_action_previous">"Önceki"</string>
+    <string name="X_action_next">İleri</string>
+    <string name="X_action_previous">Önceki</string>
     <string name="X_action_reset">Sıfırla</string>
-    <string name="X_action_send">"Gönder"</string>
+    <string name="X_action_send">Gönder</string>
     <string name="X_action_swap">Değiştirmek</string>
     <string name="X_action_try_again">Tekrar dene</string>
     <string name="X_action_update">Güncelle</string>
@@ -103,12 +103,12 @@
     <string name="action_create">Oluştur</string>
     <string name="action_delete">Sil</string>
     <string name="action_discard">Sil</string>
-    <string name="action_done">"Bitti"</string>
+    <string name="action_done">Bitti</string>
     <string name="action_duplicate">Çift</string>
     <string name="action_edit">Düzenle</string>
     <string name="action_edit_ellipsis">Düzenle…</string>
     <string name="action_export">İhracat</string>
-    <string name="X_action_go">"Git"</string>
+    <string name="X_action_go">Git</string>
     <string name="action_help">Yardım</string>
     <string name="action_import">Ithal etmek</string>
     <string name="action_merge">Birleşmek</string>
@@ -116,7 +116,7 @@
     <string name="action_reset_to_default">Varsayılana sıfırla</string>
     <string name="action_retry">Tekrar dene</string>
     <string name="action_save">Kaydet</string>
-    <string name="action_search">"Ara"</string>
+    <string name="action_search">Ara</string>
     <string name="action_select">Seç</string>
     <string name="option_select_all">Hepsini seç</string>
     <string name="option_select_none">Tümünün seçimini kaldır</string>
@@ -317,6 +317,7 @@
     <string name="X_lbl_clear_filters">Filtreleri Temizle</string>
     <string name="lbl_clone_style">Biçemi çoğalt</string>
     <string name="lbl_book_type_collection">Toplamak</string>
+    <string name="lbl_ebook_file_type">e-Kitap dosya türü</string>
     <string name="lbl_color">Renk</string>
     <string name="lbl_condition">Şart</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Eksik/kabul edilebilir</string>
@@ -605,6 +606,9 @@
     <string name="pt_show_title_reordered">Başlıkları farklı göster…</string>
     <string name="pt_sort_author_name_given_first">Yazar adı sıralama</string>
     <string name="pt_sort_title_reordered">Başlıkları sırala</string>
+    <string name="pt_cover_undo_enabled">Kitap kapaklarındaki işlemleri geri alma</string>
+    <string name="ps_cover_undo_disabled">Kapak düzenleme/değiştirme geri alınamaz (daha az depolama alanı kullanır)</string>
+    <string name="ps_cover_undo_enabled">Kapak düzenleme/değiştirme geri alınabilir (daha fazla depolama alanı kullanır)</string>
     <string name="pt_thumbnails_cache_resized">Önbellek yeniden boyutlandırılmış küçük resimler</string>
     <string name="pt_thumbnails_rotate_auto">Fotoğrafları döndür</string>
     <string name="pt_ui_language">Dil</string>
@@ -768,4 +772,6 @@
     <string name="info_books_deleted">Silinen kitaplar: %1$d</string>
     <string name="progress_msg_x_deleted">%1$d silindi</string>
     <string name="action_undo">Geri al</string>
+    <string name="info_nothing_to_do">Yapacak bir şey yok.</string>
+    <string name="option_restore_cover">Önceki görüntüyü geri yükle</string>
 </resources>

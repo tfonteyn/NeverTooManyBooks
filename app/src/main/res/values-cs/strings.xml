@@ -326,6 +326,7 @@
     <string name="X_lbl_clear_filters">Vymazat filtry</string>
     <string name="lbl_clone_style">Klonovat styl</string>
     <string name="lbl_book_type_collection">Sbírka</string>
+    <string name="lbl_ebook_file_type">Typ souboru elektronické knihy</string>
     <string name="lbl_color">Barva</string>
     <string name="lbl_condition">Stav</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Chybějící/přijatelný</string>
@@ -614,6 +615,9 @@
     <string name="pt_show_title_reordered">Zobrazit tituly jako…</string>
     <string name="pt_sort_author_name_given_first">Třídění autorských jmen</string>
     <string name="pt_sort_title_reordered">Seřadit tituly podle</string>
+    <string name="pt_cover_undo_enabled">Zrušení operací na obálkách knih</string>
+    <string name="ps_cover_undo_disabled">Úpravu/záměnu obálky nelze vrátit zpět (využívá méně úložného prostoru)</string>
+    <string name="ps_cover_undo_enabled">Úpravu/záměnu obálky lze vrátit zpět (využívá více paměti)</string>
     <string name="pt_thumbnails_cache_resized">Změněné snímky jsou uloženy do mezipaměti</string>
     <string name="pt_thumbnails_rotate_auto">Otočit obrázky</string>
     <string name="pt_ui_language">Jazyk</string>
@@ -773,4 +777,6 @@
     <string name="info_books_deleted">Smazané knihy: %1$d</string>
     <string name="progress_msg_x_deleted">%1$d smazáno</string>
     <string name="action_undo">Vrátit zpět</string>
+    <string name="info_nothing_to_do">Nic nedělat.</string>
+    <string name="option_restore_cover">Obnovit předchozí obrázek</string>
 </resources>

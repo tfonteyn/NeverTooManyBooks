@@ -311,6 +311,7 @@
     <string name="X_lbl_clear_filters">Filter löschen</string>
     <string name="lbl_clone_style">Stil klonen</string>
     <string name="lbl_book_type_collection">Sammlung</string>
+    <string name="lbl_ebook_file_type">eBook-Dateityp</string>
     <string name="lbl_color">Farbe</string>
     <string name="lbl_condition">Bedingung</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Vermisst/akzeptabel</string>
@@ -602,6 +603,9 @@
     <string name="ps_show_titles_reordered_on">Titel, Der</string>
     <string name="pt_sort_author_name_given_first">Autorennamen sortieren</string>
     <string name="pt_sort_title_reordered">Titel sortieren nach</string>
+    <string name="pt_cover_undo_enabled">Rückgängigmachen von Operationen auf Buchumschläge</string>
+    <string name="ps_cover_undo_disabled">Ein Buchumschlag bearbeiten/ersetzen kann nicht rückgängig gemacht werden (verbraucht weniger Speicherplatz)</string>
+    <string name="ps_cover_undo_enabled">Ein Buchumschlag bearbeiten/ersetzen kann rückgängig gemacht werden (verbraucht mehr Speicherplatz)</string>
     <string name="pt_thumbnails_cache_resized">Größe der Buchumschläge zwischenspeichern</string>
     <string name="pt_thumbnails_rotate_auto">Bilder drehen</string>
     <string name="pt_ui_language">Sprache</string>
@@ -761,4 +765,6 @@
     <string name="info_books_deleted">Bücher gelöscht: %1$d</string>
     <string name="progress_msg_x_deleted">%1$d gelöscht</string>
     <string name="action_undo">Rückgängig machen</string>
+    <string name="info_nothing_to_do">Nichts zu tun.</string>
+    <string name="option_restore_cover">Vorheriges Bild wiederherstellen</string>
 </resources>

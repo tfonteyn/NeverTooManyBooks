@@ -310,6 +310,7 @@
     <string name="lbl_certificate_issued_to">Uitgegeven voor: %1$s</string>
     <string name="lbl_certificates">Certificaten</string>
     <string name="lbl_clone_style">Stijl klonen</string>
+    <string name="lbl_ebook_file_type">Bestandstype eBook</string>
     <string name="lbl_color">Kleur</string>
     <string name="lbl_condition">Staat</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Missend/pover</string>
@@ -644,6 +645,9 @@
     <string name="pt_sort_author_name_given_first">Sorteren op auteursnaam</string>
     <string name="pt_sort_title_reordered">Sorteer titels op</string>
     <string name="pt_storage_volume">Opslagvolume</string>
+    <string name="pt_cover_undo_enabled">Bewerkingen op boekomslagen ongedaan maken</string>
+    <string name="ps_cover_undo_disabled">Een bewerking/vervanging van een omslag kan niet ongedaan worden gemaakt (gebruikt minder opslagruimte)</string>
+    <string name="ps_cover_undo_enabled">Een bewerking/vervanging van een omslag kan ongedaan worden gemaakt (gebruikt meer opslagruimte)</string>
     <string name="pt_thumbnails_cache_resized">Cache herschaalde afbeeldingen</string>
     <string name="pt_thumbnails_rotate_auto">Roteer afbeeldingen</string>
     <string name="pt_ui_language">Taal</string>
@@ -761,4 +765,6 @@
     <string name="info_maintenance_clear_deleted_book_records">Hiermee wordt de geschiedenis van verwijderde boeken gewist. Er worden geen boeken verwijderd.</string>
     <string name="info_books_deleted">Boeken verwijdered: %1$d</string>
     <string name="action_undo">Ongedaan maken</string>
+    <string name="info_nothing_to_do">Niets te doen.</string>
+    <string name="option_restore_cover">Vorige afbeelding herstellen</string>
 </resources>
