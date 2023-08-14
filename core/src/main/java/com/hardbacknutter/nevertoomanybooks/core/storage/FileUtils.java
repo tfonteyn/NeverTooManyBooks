@@ -65,6 +65,9 @@ public final class FileUtils {
     private static final int FILE_COPY_BUFFER_SIZE = 8192;
     private static final String ERROR_SOURCE_MISSING = "Source does not exist: ";
     private static final String ERROR_FAILED_TO_RENAME = "Failed to rename: ";
+    private static final int ASCII_DEL = 0x7F;
+    private static final int ASCII_CONTROL = 0x1f;
+    private static final int MAX_FILENAME_BYTES = 255;
 
     private FileUtils() {
     }
@@ -394,7 +397,7 @@ public final class FileUtils {
         }
         // Even though vfat allows 255 UCS-2 chars, we might eventually write to
         // ext4 through a FUSE layer, so use that limit.
-        int maxBytes = 255;
+        int maxBytes = MAX_FILENAME_BYTES;
         byte[] raw = sb.toString().getBytes(StandardCharsets.UTF_8);
         if (raw.length > maxBytes) {
             maxBytes -= 3;
@@ -421,7 +424,7 @@ public final class FileUtils {
      * @return flag
      */
     private static boolean isValidFilenameChar(final char c) {
-        if (c <= 0x1f) {
+        if (c <= ASCII_CONTROL) {
             return false;
         }
         switch (c) {
@@ -434,7 +437,7 @@ public final class FileUtils {
             case '?':
             case '\\':
             case '|':
-            case 0x7F:
+            case ASCII_DEL:
                 return false;
             default:
                 return true;
