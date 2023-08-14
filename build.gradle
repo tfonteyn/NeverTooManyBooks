@@ -100,7 +100,7 @@ ext {
     zxingCoreVersion = "3.5.2"
 
     // https://github.com/ACRA/acra
-    acraVersion = "5.11.0"
+    acraVersion = '5.11.1'
 
     // https://github.com/mockito/mockito
     mockitoVersion = "5.4.0"
