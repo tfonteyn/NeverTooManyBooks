@@ -31,9 +31,11 @@
     <string name="whichSendApplication">分享</string>
     <string name="whichViewApplication">打开方式</string>
     <string name="x_of_y">%1$d本 • 共%2$d本</string>
+    <string name="option_cover_replace">替换…</string>
     <string name="action_add">添加</string>
     <string name="action_clear">创建</string>
     <string name="action_create">创建</string>
+    <string name="action_edit">修改</string>
     <string name="action_delete">删除</string>
     <string name="action_discard">舍弃</string>
     <string name="action_done">完成</string>
@@ -68,6 +70,7 @@
     <string name="error_network_failed_try_again">请检查您的网络连接后重试。</string>
     <string name="error_http_401_authorization_failed">验证失败</string>
     <string name="error_http_401_site_authorization_failed">%1$s 验证导致错误。</string>
+    <string name="X_action_send">发送</string>
     <string name="X_action_next">下一步</string>
     <string name="X_action_previous">上一页</string>
     <string name="X_error_authentication_failed">验证失败</string>
@@ -183,6 +186,7 @@
     <string name="progress_msg_upgrading">更新中…</string>
     <string name="progress_msg_rebuilding_search_index">重建搜索索引…</string>
     <string name="info_authorized">已授权</string>
+    <string name="preference_not_set">未设置</string>
     <string name="yes">确定</string>
     <string name="info_story_in_single_book">“%1$s” 存在与一本书中：
 \n
@@ -262,4 +266,10 @@
     <string name="book_color_black_and_white">黑白本</string>
     <string name="style_builtin_author_series">作者，系列</string>
     <string name="action_undo">撤消</string>
+    <string name="unknown">未知</string>
+    <string name="cancelled">已取消</string>
+    <string name="username">用户名</string>
+    <string name="password">密码</string>
+    <string name="none">无</string>
+    <string name="action_more_ellipsis">更多…</string>
 </resources>
