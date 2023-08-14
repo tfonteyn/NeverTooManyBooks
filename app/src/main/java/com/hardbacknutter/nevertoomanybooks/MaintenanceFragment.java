@@ -181,30 +181,35 @@ public class MaintenanceFragment
             return;
         }
 
-        final String msg = getString(R.string.info_cleanup_files,
-                                     FileSize.format(context, bytes),
-                                     getString(R.string.option_bug_report));
+        if (bytes > 0) {
+            final String msg = getString(R.string.info_cleanup_files,
+                                         FileSize.format(context, bytes),
+                                         getString(R.string.option_bug_report));
 
-        new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.ic_baseline_warning_24)
-                .setTitle(R.string.option_purge_files)
-                .setMessage(msg)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(android.R.string.ok, (d, w) -> {
-                    try {
-                        FileUtils.deleteDirectory(LoggerFactory.getLogger().getLogDir(), null);
-                        FileUtils.deleteDirectory(serviceLocator.getUpgradesDir(), null);
-                        FileUtils.deleteDirectory(coverStorage.getTempDir(), null);
-                        FileUtils.deleteDirectory(coverStorage.getDir(), coverFilter);
+            new MaterialAlertDialogBuilder(context)
+                    .setIcon(R.drawable.ic_baseline_warning_24)
+                    .setTitle(R.string.option_purge_files)
+                    .setMessage(msg)
+                    .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                    .setPositiveButton(android.R.string.ok, (d, w) -> {
+                        try {
+                            FileUtils.deleteDirectory(LoggerFactory.getLogger().getLogDir(), null);
+                            FileUtils.deleteDirectory(serviceLocator.getUpgradesDir(), null);
+                            FileUtils.deleteDirectory(coverStorage.getTempDir(), null);
+                            FileUtils.deleteDirectory(coverStorage.getDir(), coverFilter);
 
-                    } catch (@NonNull final CoverStorageException e) {
-                        ErrorDialog.show(context, TAG, e);
-                    } catch (@NonNull final SecurityException e) {
-                        ErrorDialog.show(context, TAG, e);
-                    }
-                })
-                .create()
-                .show();
+                        } catch (@NonNull final CoverStorageException e) {
+                            ErrorDialog.show(context, TAG, e);
+                        } catch (@NonNull final SecurityException e) {
+                            ErrorDialog.show(context, TAG, e);
+                        }
+                    })
+                    .create()
+                    .show();
+        } else {
+            //noinspection DataFlowIssue
+            Snackbar.make(getView(), R.string.info_nothing_to_do, Snackbar.LENGTH_SHORT).show();
+        }
     }
 
     private void onSyncDeletedBooks(@NonNull final View v) {
