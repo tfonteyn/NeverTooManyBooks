@@ -25,7 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
-import java.io.File;
+import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -72,9 +72,11 @@ public class OptimizeDbTask
 
         publishProgress(1, context.getString(R.string.progress_msg_optimizing));
 
-        // Cleanup temp files. Out of precaution we only trash jpg files
-        final File tempDir = serviceLocator.getCoverStorage().getTempDir();
-        TaskFileUtils.deleteDirectory(tempDir, file -> file.getName().endsWith(".jpg"),
+        // Cleanup temp files. Out of precaution we only trash ".jpg", ".jpg.1", ... files
+        final Pattern p = Pattern.compile(".+\\.jpg\\d*|.+\\.jpg\\.\\d*",
+                                          Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+        TaskFileUtils.deleteDirectory(serviceLocator.getCoverStorage().getTempDir(),
+                                      file -> p.matcher(file.getName()).matches(),
                                       this);
 
         serviceLocator.getDb().optimize();
