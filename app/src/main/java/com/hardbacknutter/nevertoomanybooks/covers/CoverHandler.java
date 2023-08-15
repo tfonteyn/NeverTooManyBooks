@@ -146,6 +146,60 @@ public class CoverHandler {
                 .Launcher(RK_COVER_BROWSER + cIdx, this::onFileSelected);
     }
 
+    /**
+     * Set the progress View to use.
+     *
+     * @param progressView to use
+     *
+     * @return {@code this} (for chaining)
+     */
+    @NonNull
+    public CoverHandler setProgressView(@Nullable final CircularProgressIndicator progressView) {
+        progressIndicator = progressView;
+        return this;
+    }
+
+    /**
+     * Tell the handler where it can get the current Book from.
+     *
+     * @param supplier which can provide the current Book
+     *
+     * @return {@code this} (for chaining)
+     */
+    @NonNull
+    public CoverHandler setBookSupplier(@NonNull final Supplier<Book> supplier) {
+        this.bookSupplier = supplier;
+        return this;
+    }
+
+    /**
+     * Tell the handler where it can get the current ISBN from.
+     * This is normally a Supplier which reads it from a TextView on the screen.
+     *
+     * @param supplier which can provide the current ISBN
+     *
+     * @return {@code this} (for chaining)
+     */
+    @NonNull
+    public CoverHandler setCoverBrowserIsbnSupplier(@NonNull final Supplier<String> supplier) {
+        coverBrowserIsbnSupplier = supplier;
+        return this;
+    }
+
+    /**
+     * Tell the handler where it can get the current book-title from.
+     * This is normally a Supplier which reads it from a TextView on the screen.
+     *
+     * @param supplier which can provide the current book-title
+     *
+     * @return {@code this} (for chaining)
+     */
+    @NonNull
+    public CoverHandler setCoverBrowserTitleSupplier(@NonNull final Supplier<String> supplier) {
+        coverBrowserTitleSupplier = supplier;
+        return this;
+    }
+
     @NonNull
     public CoverHandler onFragmentViewCreated(@NonNull final Fragment fragment) {
         fragmentView = fragment.requireView();
@@ -164,7 +218,7 @@ public class CoverHandler {
                 new PickVisualMediaContract(), o -> o.ifPresent(this::onPictureResult));
 
         editPictureLauncher = ((ActivityResultCaller) fragment).registerForActivityResult(
-                new EditPictureContract(), o -> o.ifPresent(this::onEditPictureResult));
+                new EditPictureContract(), o -> o.ifPresent(this::onPictureResult));
 
         cropPictureLauncher = ((ActivityResultCaller) fragment).registerForActivityResult(
                 new CropImageActivity.ResultContract(), o -> o.ifPresent(this::onPictureResult));
@@ -187,25 +241,11 @@ public class CoverHandler {
         return this;
     }
 
-    @NonNull
-    public CoverHandler setProgressView(@Nullable final CircularProgressIndicator progressView) {
-        progressIndicator = progressView;
-        return this;
-    }
-
     /**
-     * Tell the handler where it can get the current Book from.
+     * Populate the view.
      *
-     * @param supplier which can provide the current Book
-     *
-     * @return {@code this} (for chaining)
+     * @param view to update
      */
-    @NonNull
-    public CoverHandler setBookSupplier(@NonNull final Supplier<Book> supplier) {
-        this.bookSupplier = supplier;
-        return this;
-    }
-
     public void onBindView(@NonNull final ImageView view) {
         // dev warning: in NO circumstances keep a reference to the view!
         final Optional<File> file = bookSupplier.get().getCover(cIdx);
@@ -218,13 +258,19 @@ public class CoverHandler {
         }
     }
 
-    public void attachOnClickListeners(@NonNull final FragmentManager fm,
+    /**
+     * Set the click-listeners on the view.
+     *
+     * @param fragmentManager The FragmentManager
+     * @param view            to update
+     */
+    public void attachOnClickListeners(@NonNull final FragmentManager fragmentManager,
                                        @NonNull final ImageView view) {
         // dev warning: in NO circumstances keep a reference to the view!
         view.setOnClickListener(v -> {
             // Allow zooming by clicking on the image;
-            bookSupplier.get().getCover(cIdx)
-                        .ifPresent(file -> ZoomedImageDialogFragment.launch(fm, file));
+            bookSupplier.get().getCover(cIdx).ifPresent(
+                    file -> ZoomedImageDialogFragment.launch(fragmentManager, file));
         });
 
         view.setOnLongClickListener(this::onCreateContextMenu);
@@ -315,16 +361,12 @@ public class CoverHandler {
             return true;
 
         } else if (itemId == R.id.MENU_THUMB_CROP) {
-            //noinspection OverlyBroadCatchBlock
             try {
-                final File tmpFile = ServiceLocator.getInstance().getCoverStorage().getTempFile();
                 cropPictureLauncher.launch(new CropImageActivity.ResultContract.Input(
-                        // source
                         createTempCoverFile(book),
-                        // destination
-                        tmpFile));
+                        ServiceLocator.getInstance().getCoverStorage().getTempFile()));
 
-            } catch (@NonNull final StorageException e) {
+            } catch (@NonNull final CoverStorageException e) {
                 ErrorDialog.show(context, TAG, e);
             } catch (@NonNull final IOException e) {
                 ErrorDialog.show(context, TAG, e);
@@ -332,11 +374,10 @@ public class CoverHandler {
             return true;
 
         } else if (itemId == R.id.MENU_EDIT) {
-            //noinspection OverlyBroadCatchBlock
             try {
                 editPicture(createTempCoverFile(book));
 
-            } catch (@NonNull final StorageException e) {
+            } catch (@NonNull final CoverStorageException e) {
                 ErrorDialog.show(context, TAG, e);
             } catch (@NonNull final IOException e) {
                 ErrorDialog.show(context, TAG, e);
@@ -409,33 +450,6 @@ public class CoverHandler {
         return tmpFile;
     }
 
-    /**
-     * Tell the handler where it can get the current ISBN from.
-     * This is normally a Supplier which reads it from a TextView on the screen.
-     *
-     * @param supplier which can provide the current ISBN
-     *
-     * @return {@code this} (for chaining)
-     */
-    @NonNull
-    public CoverHandler setCoverBrowserIsbnSupplier(@NonNull final Supplier<String> supplier) {
-        coverBrowserIsbnSupplier = supplier;
-        return this;
-    }
-
-    /**
-     * Tell the handler where it can get the current book-title from.
-     * This is normally a Supplier which reads it from a TextView on the screen.
-     *
-     * @param supplier which can provide the current book-title
-     *
-     * @return {@code this} (for chaining)
-     */
-    @NonNull
-    public CoverHandler setCoverBrowserTitleSupplier(@NonNull final Supplier<String> supplier) {
-        coverBrowserTitleSupplier = supplier;
-        return this;
-    }
 
     /**
      * Use the isbn to fetch other possible images from the internet
@@ -505,10 +519,10 @@ public class CoverHandler {
      */
     private void editPicture(@NonNull final File srcFile)
             throws CoverStorageException {
-
-        final File tmpFile = ServiceLocator.getInstance().getCoverStorage().getTempFile();
         try {
-            editPictureLauncher.launch(new EditPictureContract.Input(srcFile, tmpFile));
+            editPictureLauncher.launch(new EditPictureContract.Input(
+                    srcFile,
+                    ServiceLocator.getInstance().getCoverStorage().getTempFile()));
         } catch (@NonNull final ActivityNotFoundException e) {
             Snackbar.make(fragmentView, R.string.error_no_image_editor, Snackbar.LENGTH_LONG)
                     .show();
@@ -520,7 +534,7 @@ public class CoverHandler {
      *
      * @param file edited image file
      */
-    private void onEditPictureResult(@NonNull final File file) {
+    private void onPictureResult(@NonNull final File file) {
         if (file.exists()) {
             showProgress();
             vm.execute(new Transformation()
@@ -531,27 +545,25 @@ public class CoverHandler {
     }
 
     /**
-     * Called when the user selected an image from storage,
-     * or after cropping an image.
+     * Called when the user selected an image from storage.
      *
      * @param uri to load the new image from
      */
     private void onPictureResult(@NonNull final Uri uri) {
         final Context context = fragmentView.getContext();
-        //noinspection OverlyBroadCatchBlock
         try (InputStream is = context.getContentResolver().openInputStream(uri)) {
             showProgress();
 
             // copy the data to a temporary file
             final File tmpFile = ServiceLocator.getInstance().getCoverStorage()
-                                               .persist(is);
+                                               .writeTempFile(is);
 
             vm.execute(new Transformation()
                                .setSource(tmpFile)
                                .setScale(true),
                        tmpFile);
 
-        } catch (@NonNull final StorageException e) {
+        } catch (@NonNull final CoverStorageException e) {
             ErrorDialog.show(context, TAG, e);
         } catch (@NonNull final IOException e) {
             // Don't call generic IOException; we *know* what went wrong
@@ -573,12 +585,11 @@ public class CoverHandler {
             || ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
                == PackageManager.PERMISSION_GRANTED) {
 
-            //noinspection OverlyBroadCatchBlock
             try {
                 takePictureLauncher.launch(
                         ServiceLocator.getInstance().getCoverStorage().getTempFile());
 
-            } catch (@NonNull final StorageException e) {
+            } catch (@NonNull final CoverStorageException e) {
                 ErrorDialog.show(context, TAG, e);
             } catch (@NonNull final ActivityNotFoundException e) {
                 // No Camera? we should not get here... flw
@@ -629,7 +640,6 @@ public class CoverHandler {
      * @param angle to rotate.
      */
     private void startRotation(final int angle) {
-        //noinspection OverlyBroadCatchBlock
         try {
             final File file = createTempCoverFile(bookSupplier.get());
             showProgress();
@@ -638,7 +648,7 @@ public class CoverHandler {
                                .setRotation(angle),
                        file);
 
-        } catch (@NonNull final StorageException e) {
+        } catch (@NonNull final CoverStorageException e) {
             ErrorDialog.show(fragmentView.getContext(), TAG, e);
         } catch (@NonNull final IOException e) {
             ErrorDialog.show(fragmentView.getContext(), TAG, e);
