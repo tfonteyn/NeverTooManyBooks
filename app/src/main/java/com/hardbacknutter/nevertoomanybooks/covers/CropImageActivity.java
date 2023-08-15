@@ -36,12 +36,10 @@
 package com.hardbacknutter.nevertoomanybooks.covers;
 
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.activity.result.contract.ActivityResultContract;
@@ -54,6 +52,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
@@ -66,7 +65,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.storage.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityCropimageBinding;
 
 /**
@@ -82,8 +80,6 @@ import com.hardbacknutter.nevertoomanybooks.databinding.ActivityCropimageBinding
  * </pre>
  * <p>
  * Depends on / works in conjunction with {@link CropImageView}.
- * <p>
- * Note this code consistently uses a {@link ContentResolver} for input/output.
  */
 public class CropImageActivity
         extends AppCompatActivity {
@@ -96,10 +92,10 @@ public class CropImageActivity
 
     /** used to calculate free space on Shared Storage, 100kb per picture is an overestimation. */
     private static final long ESTIMATED_PICTURE_SIZE = 100_000L;
-    private static final int QUALITY = 100;
 
     /** View Binding. */
     private ActivityCropimageBinding vb;
+    private String destinationPath;
 
     @Override
     protected void attachBaseContext(@NonNull final Context base) {
@@ -114,17 +110,16 @@ public class CropImageActivity
         vb = ActivityCropimageBinding.inflate(getLayoutInflater());
         setContentView(vb.getRoot());
 
-        // make an educated guess how many pics we can store.
-        //noinspection OverlyBroadCatchBlock
         try {
             final File coverDir = ServiceLocator.getInstance().getCoverStorage().getDir();
+            // make an educated guess how many pics we can store.
             if (FileUtils.getFreeSpace(coverDir) / ESTIMATED_PICTURE_SIZE < 1) {
                 // Shouldn't we 'finish()' the activity? i.e. handle like an exception?
                 Snackbar.make(vb.coverImage0, R.string.error_storage_no_space_left,
                               Snackbar.LENGTH_LONG).show();
             }
 
-        } catch (@NonNull final StorageException | IOException e) {
+        } catch (@NonNull final CoverStorageException | IOException e) {
             // just log, do not display exception data
             LoggerFactory.getLogger().e(TAG, e);
             new MaterialAlertDialogBuilder(this)
@@ -141,20 +136,10 @@ public class CropImageActivity
 
         final String srcPath = Objects.requireNonNull(args.getString(BKEY_SOURCE),
                                                       BKEY_SOURCE);
-        final Uri srcUri = Uri.fromFile(new File(srcPath));
-
-        Bitmap bitmap = null;
-        try (InputStream is = getContentResolver().openInputStream(srcUri)) {
-            bitmap = BitmapFactory.decodeStream(is);
-        } catch (@NonNull final IOException e) {
-            if (BuildConfig.DEBUG /* always */) {
-                LoggerFactory.getLogger().d(TAG, "onCreate", e);
-            }
-        }
-
+        final Bitmap bitmap = getBitmap(srcPath);
         if (bitmap != null) {
-            // sanity check
-            Objects.requireNonNull(args.getString(BKEY_DESTINATION), BKEY_DESTINATION);
+            destinationPath = Objects.requireNonNull(args.getString(BKEY_DESTINATION),
+                                                     BKEY_DESTINATION);
 
             vb.coverImage0.initCropView(bitmap);
 
@@ -166,6 +151,19 @@ public class CropImageActivity
         }
     }
 
+    @Nullable
+    private Bitmap getBitmap(@NonNull final String srcPath) {
+        Bitmap bitmap = null;
+        try (InputStream is = new FileInputStream(srcPath)) {
+            bitmap = BitmapFactory.decodeStream(is);
+        } catch (@NonNull final IOException e) {
+            if (BuildConfig.DEBUG /* always */) {
+                LoggerFactory.getLogger().d(TAG, "getBitmap", e);
+            }
+        }
+        return bitmap;
+    }
+
     private void onSave() {
         // prevent multiple saves (cropping the bitmap might take some time)
         vb.fab.setEnabled(false);
@@ -174,12 +172,11 @@ public class CropImageActivity
         Bitmap bitmap = vb.coverImage0.getCroppedBitmap();
         if (bitmap != null) {
             try {
-                //noinspection DataFlowIssue
-                final File destination = new File(
-                        getIntent().getExtras().getString(BKEY_DESTINATION));
+                final File destination = new File(destinationPath);
                 ServiceLocator.getInstance().getCoverStorage().persist(bitmap, destination);
 
-                setResult(Activity.RESULT_OK, new Intent().setData(Uri.fromFile(destination)));
+                setResult(Activity.RESULT_OK, new Intent().putExtra(BKEY_DESTINATION,
+                                                                    destinationPath));
                 finish();
 
             } catch (@NonNull final IOException | CoverStorageException e) {
@@ -200,9 +197,7 @@ public class CropImageActivity
     }
 
     public static class ResultContract
-            extends ActivityResultContract<ResultContract.Input, Optional<Uri>> {
-
-        private File dstFile;
+            extends ActivityResultContract<ResultContract.Input, Optional<File>> {
 
         @CallSuper
         @NonNull
@@ -210,30 +205,28 @@ public class CropImageActivity
         public Intent createIntent(@NonNull final Context context,
                                    @NonNull final ResultContract.Input input) {
 
-            dstFile = input.dstFile;
             // do NOT delete the destination file in case source and destination was the same file
 
             return new Intent(context, CropImageActivity.class)
                     .putExtra(BKEY_SOURCE, input.srcFile.getAbsolutePath())
-                    .putExtra(BKEY_DESTINATION, dstFile.getAbsolutePath());
+                    .putExtra(BKEY_DESTINATION, input.dstFile.getAbsolutePath());
         }
 
         @NonNull
         @Override
-        public final Optional<Uri> parseResult(final int resultCode,
-                                               @Nullable final Intent intent) {
+        public final Optional<File> parseResult(final int resultCode,
+                                                @Nullable final Intent intent) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                 LoggerFactory.getLogger().d(TAG, "parseResult",
                                             "resultCode=" + resultCode, "intent=" + intent);
             }
 
             if (intent == null || resultCode != Activity.RESULT_OK) {
-                FileUtils.delete(dstFile);
                 return Optional.empty();
             }
-            final Uri uri = intent.getData();
-            if (uri != null) {
-                return Optional.of(uri);
+            final String filename = intent.getStringExtra(BKEY_DESTINATION);
+            if (filename != null && !filename.isEmpty()) {
+                return Optional.of(new File(filename));
             } else {
                 return Optional.empty();
             }
