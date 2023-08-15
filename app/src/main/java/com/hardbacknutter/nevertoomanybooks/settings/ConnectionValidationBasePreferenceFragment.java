@@ -176,10 +176,10 @@ public abstract class ConnectionValidationBasePreferenceFragment
         });
     }
 
-    private void onFailure(@NonNull final LiveDataEvent<TaskResult<Throwable>> message) {
+    private void onFailure(@NonNull final LiveDataEvent<Throwable> message) {
         closeProgressDialog();
 
-        message.getData().map(TaskResult::getResult).filter(Objects::nonNull).ifPresent(e -> {
+        message.getData().ifPresent(e -> {
             //noinspection DataFlowIssue
             ErrorDialog.show(getContext(), e,
                              getString(R.string.httpError),

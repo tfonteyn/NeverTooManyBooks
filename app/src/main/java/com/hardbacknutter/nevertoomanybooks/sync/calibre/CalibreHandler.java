@@ -44,7 +44,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.io.FileNotFoundException;
 import java.security.cert.CertificateException;
-import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -308,10 +307,10 @@ public class CalibreHandler {
                 .make(hostView, R.string.cancelled, Snackbar.LENGTH_LONG).show());
     }
 
-    private void onFailure(@NonNull final LiveDataEvent<TaskResult<Throwable>> message) {
+    private void onFailure(@NonNull final LiveDataEvent<Throwable> message) {
         closeProgressDialog();
 
-        message.getData().map(TaskResult::getResult).filter(Objects::nonNull).ifPresent(e -> {
+        message.getData().ifPresent(e -> {
             final Context context = hostView.getContext();
             ErrorDialog.show(context, e,
                              context.getString(R.string.lbl_calibre_content_server),

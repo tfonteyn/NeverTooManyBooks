@@ -61,11 +61,10 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
     /**
      * Observable to receive failure.
      *
-     * @return the result is the Exception; {@link TaskResult#getResult()} will always
-     *         return a valid {@link Throwable} and never {@code null}
+     * @return the result is the Exception
      */
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<Throwable>>> onReadMetaDataFailure() {
+    public LiveData<LiveDataEvent<Throwable>> onReadMetaDataFailure() {
         return metaDataTask.onFailure();
     }
 
@@ -92,11 +91,10 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
     /**
      * Observable to receive failure.
      *
-     * @return the result is the Exception; {@link TaskResult#getResult()} will always
-     *         return a valid {@link Throwable} and never {@code null}
+     * @return the result is the Exception
      */
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<Throwable>>> onReadDataFailure() {
+    public LiveData<LiveDataEvent<Throwable>> onReadDataFailure() {
         return readerTask.onFailure();
     }
 

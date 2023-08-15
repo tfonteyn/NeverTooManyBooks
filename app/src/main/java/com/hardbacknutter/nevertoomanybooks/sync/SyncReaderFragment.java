@@ -42,7 +42,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -400,10 +399,10 @@ public class SyncReaderFragment
         });
     }
 
-    private void onImportFailure(@NonNull final LiveDataEvent<TaskResult<Throwable>> message) {
+    private void onImportFailure(@NonNull final LiveDataEvent<Throwable> message) {
         closeProgressDialog();
 
-        message.getData().map(TaskResult::getResult).filter(Objects::nonNull).ifPresent(e -> {
+        message.getData().ifPresent(e -> {
             //noinspection DataFlowIssue
             ErrorDialog.show(getContext(), e, getString(R.string.error_import_failed),
                              (d, w) -> getActivity().finish());

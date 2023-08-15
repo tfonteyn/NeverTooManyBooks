@@ -33,7 +33,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
@@ -184,10 +183,10 @@ public class CalibreLibraryMappingFragment
                 data -> showMessageAndFinishActivity(getString(R.string.cancelled)));
     }
 
-    private void onMetaDataFailure(@NonNull final LiveDataEvent<TaskResult<Throwable>> message) {
+    private void onMetaDataFailure(@NonNull final LiveDataEvent<Throwable> message) {
         closeProgressDialog();
 
-        message.getData().map(TaskResult::getResult).filter(Objects::nonNull).ifPresent(e -> {
+        message.getData().ifPresent(e -> {
             final Context context = getContext();
             //noinspection DataFlowIssue
             ErrorDialog.show(context, e,

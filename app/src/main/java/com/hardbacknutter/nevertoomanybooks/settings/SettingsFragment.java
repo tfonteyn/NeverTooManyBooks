@@ -46,7 +46,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -478,10 +477,10 @@ public class SettingsFragment
         }
     }
 
-    private void onMoveFailure(@NonNull final LiveDataEvent<TaskResult<Throwable>> message) {
+    private void onMoveFailure(@NonNull final LiveDataEvent<Throwable> message) {
         closeProgressDialog();
 
-        message.getData().map(TaskResult::getResult).filter(Objects::nonNull).ifPresent(e -> {
+        message.getData().ifPresent(e -> {
             //noinspection DataFlowIssue
             ErrorDialog.show(getContext(), e,
                              getString(R.string.lbl_moving_data),

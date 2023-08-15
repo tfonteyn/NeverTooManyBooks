@@ -38,7 +38,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -198,10 +197,10 @@ public class SyncWriterFragment
                 data -> showMessageAndFinishActivity(getString(R.string.cancelled)));
     }
 
-    private void onExportFailure(@NonNull final LiveDataEvent<TaskResult<Throwable>> message) {
+    private void onExportFailure(@NonNull final LiveDataEvent<Throwable> message) {
         closeProgressDialog();
 
-        message.getData().map(TaskResult::getResult).filter(Objects::nonNull).ifPresent(e -> {
+        message.getData().ifPresent(e -> {
             //noinspection DataFlowIssue
             ErrorDialog.show(getContext(), e, getString(R.string.error_export_failed),
                              (d, w) -> getActivity().finish());

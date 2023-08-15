@@ -1724,9 +1724,9 @@ public class BooksOnBookshelf
      *
      * @param message from the task
      */
-    private void onBuildFailed(@NonNull final LiveDataEvent<TaskResult<Throwable>> message) {
+    private void onBuildFailed(@NonNull final LiveDataEvent<Throwable> message) {
         vb.progressCircle.hide();
-        message.getData().map(TaskResult::getResult).filter(Objects::nonNull).ifPresent(data -> {
+        message.getData().ifPresent(data -> {
             LoggerFactory.getLogger().e(TAG, data);
 
             vm.onBuildFailed();

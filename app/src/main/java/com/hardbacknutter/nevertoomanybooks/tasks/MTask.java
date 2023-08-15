@@ -41,7 +41,7 @@ public abstract class MTask<Result>
             new MutableLiveData<>();
     private final MutableLiveData<LiveDataEvent<TaskResult<Result>>> onCanceled =
             new MutableLiveData<>();
-    private final MutableLiveData<LiveDataEvent<TaskResult<Throwable>>> onFailure =
+    private final MutableLiveData<LiveDataEvent<Throwable>> onFailure =
             new MutableLiveData<>();
     private final MutableLiveData<LiveDataEvent<TaskProgress>> onProgress =
             new MutableLiveData<>();
@@ -95,18 +95,17 @@ public abstract class MTask<Result>
     /**
      * Observable to receive failure.
      *
-     * @return the result is the Exception; {@link TaskResult#getResult()} will always
-     *         return a valid {@link Throwable} and never {@code null}
+     * @return the result is the Exception
      */
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<Throwable>>> onFailure() {
+    public LiveData<LiveDataEvent<Throwable>> onFailure() {
         return onFailure;
     }
 
     @Override
     @WorkerThread
     protected void setTaskFailure(@NonNull final Throwable e) {
-        onFailure.postValue(new LiveDataEvent<>(new TaskResult<>(e)));
+        onFailure.postValue(new LiveDataEvent<>(e));
     }
 
     /**

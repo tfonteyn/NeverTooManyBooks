@@ -99,11 +99,10 @@ public class SettingsViewModel
     /**
      * Observable to receive failure.
      *
-     * @return the result is the Exception; {@link TaskResult#getResult()} will always
-     *         return a valid {@link Throwable} and never {@code null}
+     * @return the result is the Exception
      */
     @NonNull
-    LiveData<LiveDataEvent<TaskResult<Throwable>>> onMoveFailure() {
+    LiveData<LiveDataEvent<Throwable>> onMoveFailure() {
         return storageMoverTask.onFailure();
     }
 
