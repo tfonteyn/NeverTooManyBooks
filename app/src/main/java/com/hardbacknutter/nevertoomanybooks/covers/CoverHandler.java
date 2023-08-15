@@ -50,6 +50,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -65,7 +66,6 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -235,7 +235,9 @@ public class CoverHandler {
                                             "vm.onFinished()|event=" + message);
             }
             hideProgress();
-            message.getData().map(TaskResult::requireResult).ifPresent(this::onAfterTransform);
+            message.getData()
+                   .map(data -> Objects.requireNonNull(data.getResult()))
+                   .ifPresent(this::onAfterTransform);
         });
 
         return this;

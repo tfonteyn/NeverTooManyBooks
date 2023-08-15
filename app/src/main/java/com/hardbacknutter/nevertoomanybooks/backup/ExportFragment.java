@@ -293,17 +293,18 @@ public class ExportFragment
     private void onExportFinished(@NonNull final LiveDataEvent<TaskResult<ExportResults>> message) {
         closeProgressDialog();
 
-        message.getData().map(TaskResult::requireResult).ifPresent(result -> {
-            final List<String> items = extractExportedItems(result);
-            if (items.isEmpty()) {
-                //noinspection DataFlowIssue
-                new MaterialAlertDialogBuilder(getContext())
-                        .setIcon(R.drawable.ic_baseline_info_24)
-                        .setTitle(R.string.title_backup_and_export)
-                        .setMessage(R.string.warning_export_contains_no_data)
-                        .setPositiveButton(R.string.action_done, (d, w)
-                                -> getActivity().finish())
-                        .create()
+        message.getData().map(data -> Objects.requireNonNull(data.getResult()))
+               .ifPresent(result -> {
+                   final List<String> items = extractExportedItems(result);
+                   if (items.isEmpty()) {
+                       //noinspection DataFlowIssue
+                       new MaterialAlertDialogBuilder(getContext())
+                               .setIcon(R.drawable.ic_baseline_info_24)
+                               .setTitle(R.string.title_backup_and_export)
+                               .setMessage(R.string.warning_export_contains_no_data)
+                               .setPositiveButton(R.string.action_done, (d, w)
+                                       -> getActivity().finish())
+                               .create()
                         .show();
             } else {
 

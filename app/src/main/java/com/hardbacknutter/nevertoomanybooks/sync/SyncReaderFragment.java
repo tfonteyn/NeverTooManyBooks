@@ -266,7 +266,9 @@ public class SyncReaderFragment
             Optional<SyncReaderMetaData>>> message) {
         closeProgressDialog();
 
-        message.getData().flatMap(TaskResult::requireResult).ifPresent(this::showMetaData);
+        message.getData()
+               .flatMap(data -> Objects.requireNonNull(data.getResult()))
+               .ifPresent(this::showMetaData);
     }
 
     @SuppressWarnings("WeakerAccess")
@@ -432,7 +434,7 @@ public class SyncReaderFragment
             ReaderResults>> message) {
         closeProgressDialog();
 
-        message.getData().map(TaskResult::requireResult).ifPresent(
+        message.getData().map(data -> Objects.requireNonNull(data.getResult())).ifPresent(
                 result -> onImportFinished(R.string.info_import_complete, result));
     }
 

@@ -22,8 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.core.tasks;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Objects;
-
 /**
  * Value class holding Task Result data.
  *
@@ -52,16 +50,6 @@ public class TaskResult<Result> {
     @Nullable
     public Result getResult() {
         return result;
-    }
-
-    /**
-     * Data WILL/MUST be present.
-     *
-     * @return Result
-     */
-    @NonNull
-    public Result requireResult() {
-        return Objects.requireNonNull(result, MISSING_TASK_RESULTS);
     }
 
     @Override

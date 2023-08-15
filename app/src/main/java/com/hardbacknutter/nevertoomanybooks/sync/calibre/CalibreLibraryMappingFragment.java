@@ -167,12 +167,14 @@ public class CalibreLibraryMappingFragment
             Optional<SyncReaderMetaData>>> message) {
         closeProgressDialog();
 
-        message.getData().flatMap(TaskResult::requireResult).ifPresent(result -> {
-            vm.extractLibraryData(result);
-            libraryAdapter.notifyDataSetChanged();
+        message.getData()
+               .flatMap(data -> Objects.requireNonNull(data.getResult()))
+               .ifPresent(result -> {
+                   vm.extractLibraryData(result);
+                   libraryAdapter.notifyDataSetChanged();
 
-            showOptions();
-        });
+                   showOptions();
+               });
     }
 
     private void onMetaDataCancelled(@NonNull final LiveDataEvent<TaskResult<

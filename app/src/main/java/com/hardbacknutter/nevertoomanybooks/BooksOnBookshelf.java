@@ -1761,13 +1761,14 @@ public class BooksOnBookshelf
             @NonNull final LiveDataEvent<TaskResult<BoBTask.Outcome>> message) {
         vb.progressCircle.hide();
 
-        message.getData().map(TaskResult::requireResult).ifPresent(result -> {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
-                Debug.stopMethodTracing();
-            }
-            vm.onBuildFinished(result);
-            displayList(result.getTargetNodes());
-        });
+        message.getData().map(data -> Objects.requireNonNull(data.getResult()))
+               .ifPresent(result -> {
+                   if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
+                       Debug.stopMethodTracing();
+                   }
+                   vm.onBuildFinished(result);
+                   displayList(result.getTargetNodes());
+               });
     }
 
     /**

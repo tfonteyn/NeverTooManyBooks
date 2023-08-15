@@ -295,10 +295,11 @@ public class CalibreHandler {
     private void onFinished(@NonNull final LiveDataEvent<TaskResult<Uri>> message) {
         closeProgressDialog();
 
-        message.getData().map(TaskResult::requireResult).ifPresent(result -> Snackbar
-                .make(hostView, R.string.info_download_successful, Snackbar.LENGTH_LONG)
-                .setAction(R.string.lbl_read, v -> openBookUri(v.getContext(), result))
-                .show());
+        message.getData().map(data -> Objects.requireNonNull(data.getResult())).ifPresent(
+                result -> Snackbar
+                        .make(hostView, R.string.info_download_successful, Snackbar.LENGTH_LONG)
+                        .setAction(R.string.lbl_read, v -> openBookUri(v.getContext(), result))
+                        .show());
     }
 
     private void onCancelled(@NonNull final LiveDataEvent<TaskResult<Uri>> message) {

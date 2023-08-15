@@ -455,12 +455,14 @@ public class SettingsFragment
     private void onMoveFinished(@NonNull final LiveDataEvent<TaskResult<Integer>> message) {
         closeProgressDialog();
 
-        message.getData().map(TaskResult::requireResult).ifPresent(result -> {
-            if (setStorageVolume(result)) {
-                //noinspection DataFlowIssue
-                Snackbar.make(getView(), R.string.action_done, Snackbar.LENGTH_LONG).show();
-            }
-        });
+        message.getData()
+               .map(data -> Objects.requireNonNull(data.getResult()))
+               .ifPresent(result -> {
+                   if (setStorageVolume(result)) {
+                       //noinspection DataFlowIssue
+                       Snackbar.make(getView(), R.string.action_done, Snackbar.LENGTH_LONG).show();
+                   }
+               });
     }
 
     private boolean setStorageVolume(final int volume) {

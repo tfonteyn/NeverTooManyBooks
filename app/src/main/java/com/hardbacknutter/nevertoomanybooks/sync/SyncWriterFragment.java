@@ -217,17 +217,18 @@ public class SyncWriterFragment
             @NonNull final LiveDataEvent<TaskResult<SyncWriterResults>> message) {
         closeProgressDialog();
 
-        message.getData().map(TaskResult::requireResult).ifPresent(results -> {
-            final List<String> items = extractExportedItems(results);
-            if (items.isEmpty()) {
-                //noinspection DataFlowIssue
-                new MaterialAlertDialogBuilder(getContext())
-                        .setIcon(R.drawable.ic_baseline_info_24)
-                        .setTitle(R.string.title_backup_and_export)
-                        .setMessage(R.string.warning_no_matching_book_found)
-                        .setPositiveButton(R.string.action_done, (d, w) -> {
-                            //noinspection DataFlowIssue
-                            getActivity().setResult(Activity.RESULT_OK);
+        message.getData().map(data -> Objects.requireNonNull(data.getResult()))
+               .ifPresent(results -> {
+                   final List<String> items = extractExportedItems(results);
+                   if (items.isEmpty()) {
+                       //noinspection DataFlowIssue
+                       new MaterialAlertDialogBuilder(getContext())
+                               .setIcon(R.drawable.ic_baseline_info_24)
+                               .setTitle(R.string.title_backup_and_export)
+                               .setMessage(R.string.warning_no_matching_book_found)
+                               .setPositiveButton(R.string.action_done, (d, w) -> {
+                                   //noinspection DataFlowIssue
+                                   getActivity().setResult(Activity.RESULT_OK);
                             getActivity().finish();
                         })
                         .create()

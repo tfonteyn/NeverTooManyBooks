@@ -42,6 +42,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.List;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -228,17 +229,20 @@ public abstract class SearchBookBaseFragment
 
     private void onSearchFinished(@NonNull final LiveDataEvent<TaskResult<Book>> message) {
         closeProgressDialog();
-        message.getData().map(TaskResult::requireResult).ifPresent(result -> {
-            final String searchErrors = result.getString(SearchCoordinator.BKEY_SEARCH_ERROR, null);
-            result.remove(SearchCoordinator.BKEY_SEARCH_ERROR);
-            final boolean hasData = !result.isEmpty();
+        message.getData()
+               .map(data -> Objects.requireNonNull(data.getResult()))
+               .ifPresent(result -> {
+                   final String searchErrors = result.getString(SearchCoordinator.BKEY_SEARCH_ERROR,
+                                                                null);
+                   result.remove(SearchCoordinator.BKEY_SEARCH_ERROR);
+                   final boolean hasData = !result.isEmpty();
 
-            if (searchErrors != null && !searchErrors.isEmpty()) {
-                //noinspection DataFlowIssue
-                new MaterialAlertDialogBuilder(getContext())
-                        .setIcon(R.drawable.ic_baseline_warning_24)
-                        .setTitle(hasData ? R.string.warning_book_not_always_found
-                                          : R.string.warning_book_not_found)
+                   if (searchErrors != null && !searchErrors.isEmpty()) {
+                       //noinspection DataFlowIssue
+                       new MaterialAlertDialogBuilder(getContext())
+                               .setIcon(R.drawable.ic_baseline_warning_24)
+                               .setTitle(hasData ? R.string.warning_book_not_always_found
+                                                 : R.string.warning_book_not_found)
                         .setMessage(searchErrors)
                         .setPositiveButton(android.R.string.ok, (d, w) -> {
                             d.dismiss();
