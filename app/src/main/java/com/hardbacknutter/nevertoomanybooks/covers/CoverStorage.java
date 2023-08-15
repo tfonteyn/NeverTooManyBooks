@@ -62,15 +62,17 @@ public class CoverStorage {
 
     /** Sub directory of the Covers directory. */
     static final String TMP_SUB_DIR = "tmp";
-    static final String EXT_JPG = ".jpg";
+
     private static final String TAG = "CoverStorage";
     /** The minimum side (height/width) an image must be to be considered valid; in pixels. */
     private static final int MIN_VALID_IMAGE_SIDE = 10;
     /** The minimum size an image file on disk must be to be considered valid; in bytes. */
     private static final int MIN_VALID_IMAGE_FILE_SIZE = 2048;
+    private static final String EXT_JPG = ".jpg";
     private static final String EXT_PNG = ".png";
-    /** Compression percentage. */
+    /** Compression percentage is actually ignored as we're using PNG. */
     private static final int QUALITY = 100;
+    private static final String ERROR_INPUT_STREAM_WAS_NULL = "InputStream was NULL";
     @NonNull
     private final Supplier<Context> appContextSupplier;
     @NonNull
@@ -310,18 +312,13 @@ public class CoverStorage {
         final String name = createName(uuid, cIdx) + EXT_JPG;
         final File destination = new File(getDir(appContextSupplier.get()), name);
 
-        if (isUndoEnabled()) {
-            getVersionedFileService().save(destination);
-        }
-
-        FileUtils.rename(source, destination);
-        return destination;
+        return persist(source, destination);
     }
 
     /**
-     * Given a bitmap, compress/encode it and write it to the destination file.
+     * Write the given Bitmap to the given destination File.
      *
-     * @param bitmap      to handle
+     * @param source      to handle
      * @param destination the File to write to
      *
      * @return File written to (the one passed in)
@@ -330,35 +327,23 @@ public class CoverStorage {
      * @throws CoverStorageException The covers directory is not available
      */
     @NonNull
-    public File persist(@NonNull final Bitmap bitmap,
+    public File persist(@NonNull final Bitmap source,
                         @NonNull final File destination)
             throws IOException, CoverStorageException {
 
-        if (isUndoEnabled()) {
-            getVersionedFileService().save(destination);
-        }
-
-        try (OutputStream os = new FileOutputStream(destination)) {
-            if (bitmap.compress(Bitmap.CompressFormat.PNG, QUALITY, os)) {
-                return destination;
+        final File tmpFile = getTempFile();
+        try (OutputStream os = new FileOutputStream(tmpFile)) {
+            if (!source.compress(Bitmap.CompressFormat.PNG, QUALITY, os)) {
+                throw new IOException("Bitmap compression failed");
             }
         }
-        throw new IOException("Bitmap compression failed");
+        return persist(tmpFile, destination);
     }
-
-    @NonNull
-    public File persist(@Nullable final InputStream is)
-            throws CoverStorageException, IOException {
-        return persist(is, getTempFile());
-    }
-
 
     /**
-     * Given a InputStream with an image, write it to a file in the temp directory.
-     * We first write to a temporary file, so an existing 'out' file is not destroyed
-     * if the stream somehow fails.
+     * Write the given InputStream to the given destination File.
      *
-     * @param is          InputStream to read
+     * @param source      InputStream to read
      * @param destination the File to write to
      *
      * @return File written to (the one passed in)
@@ -368,27 +353,58 @@ public class CoverStorage {
      * @throws IOException           on generic/other IO failures
      */
     @NonNull
-    public File persist(@Nullable final InputStream is,
+    public File persist(@Nullable final InputStream source,
                         @NonNull final File destination)
             throws CoverStorageException,
                    FileNotFoundException,
                    IOException {
-        if (is == null) {
-            throw new FileNotFoundException("InputStream was NULL");
+
+        final File tmpFile = writeTempFile(source);
+        return persist(tmpFile, destination);
+    }
+
+    @NonNull
+    private File persist(@NonNull final File source,
+                         @NonNull final File destination)
+            throws CoverStorageException, IOException {
+        try {
+            if (isUndoEnabled()) {
+                getVersionedFileService().save(destination);
+            }
+            FileUtils.rename(source, destination);
+            return destination;
+        } finally {
+            FileUtils.delete(source);
+        }
+    }
+
+    /**
+     * Write the given InputStream to a temporary File.
+     *
+     * @param source InputStream to read
+     *
+     * @return the File
+     *
+     * @throws CoverStorageException The covers directory is not available
+     * @throws FileNotFoundException if the input stream was {@code null}
+     * @throws IOException           on generic/other IO failures
+     */
+    @NonNull
+    File writeTempFile(@Nullable final InputStream source)
+            throws CoverStorageException, IOException {
+
+        if (source == null) {
+            throw new FileNotFoundException(ERROR_INPUT_STREAM_WAS_NULL);
         }
 
         final File tmpFile = getTempFile();
         try (OutputStream os = new FileOutputStream(tmpFile)) {
-            FileUtils.copy(is, os);
+            FileUtils.copy(source, os);
+            return tmpFile;
 
-            if (isUndoEnabled()) {
-                getVersionedFileService().save(destination);
-            }
-            // rename to real output file
-            FileUtils.rename(tmpFile, destination);
-            return destination;
-        } finally {
+        } catch (@NonNull final IOException e) {
             FileUtils.delete(tmpFile);
+            throw e;
         }
     }
 
@@ -424,7 +440,7 @@ public class CoverStorage {
     }
 
     /**
-     * Restore the previous version of the given file.
+     * Restore the previous version of the given cover.
      *
      * @param uuid UUID of the book
      * @param cIdx 0..n image index
@@ -459,15 +475,14 @@ public class CoverStorage {
     }
 
     /**
-     * Check if we need to enable support for 'undo' after cover manipulations.
+     * Check if we <strong>can</strong> restore a previous version
+     * of the given cover.
      *
-     * @return {@code true} if enabled
+     * @param uuid the book UUID
+     * @param cIdx 0..n image index
+     *
+     * @return {@code true} if there is a previous version
      */
-    private boolean isUndoEnabled() {
-        return PreferenceManager.getDefaultSharedPreferences(appContextSupplier.get())
-                                .getBoolean(Prefs.pk_image_undo_enabled, false);
-    }
-
     boolean isUndoEnabled(@NonNull final String uuid,
                           final int cIdx) {
         if (!isUndoEnabled()) {
@@ -490,6 +505,16 @@ public class CoverStorage {
         } catch (@NonNull final CoverStorageException ignore) {
             return false;
         }
+    }
+
+    /**
+     * Check if we need to enable support for 'undo' after cover manipulations.
+     *
+     * @return {@code true} if enabled
+     */
+    private boolean isUndoEnabled() {
+        return PreferenceManager.getDefaultSharedPreferences(appContextSupplier.get())
+                                .getBoolean(Prefs.pk_image_undo_enabled, false);
     }
 
     /**
