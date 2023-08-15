@@ -44,6 +44,7 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 
+import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.UncheckedSAXException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedStorageException;
@@ -100,7 +101,7 @@ public abstract class FutureHttpBase<T> {
 
         // Set the default user agent.
         // Potentially overridden by calling #setRequestProperty.
-        requestProperties.put(HttpConstants.USER_AGENT, HttpConstants.USER_AGENT_VALUE);
+        requestProperties.put(HttpConstants.USER_AGENT, BuildConfig.BROWSER_USER_AGENT);
     }
 
     /**

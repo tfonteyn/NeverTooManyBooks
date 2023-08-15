@@ -150,14 +150,6 @@ public final class HttpConstants {
      * User-Agent</a>
      */
     public static final String USER_AGENT = "User-Agent";
-    /**
-     * RELEASE: 2023-05-26. Continuously update to latest version. Now set to Firefox.
-     * Some sites don't return full data unless the user agent is set to a valid browser.
-     */
-    public static final String USER_AGENT_VALUE =
-            // "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36";
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0";
-
 
     /** HTTP Response Header. */
     public static final String RESPONSE_HEADER_LOCATION = "location";
