@@ -27,7 +27,6 @@ import androidx.annotation.WorkerThread;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -88,12 +87,13 @@ public class TransformationTask
 
         final Optional<Bitmap> optBitmap = transformation.transform();
         if (optBitmap.isPresent()) {
-            final Bitmap bitmap = optBitmap.get();
-            ServiceLocator.getInstance().getCoverStorage().persist(bitmap, destFile);
-            return new TransformedData(bitmap, destFile, nextAction);
+            final Bitmap source = optBitmap.get();
+            ServiceLocator.getInstance().getCoverStorage().persist(source, destFile);
+
+            return new TransformedData(destFile, nextAction);
         }
 
-        return new TransformedData(null, null, CoverHandler.NextAction.Done);
+        return new TransformedData(null, CoverHandler.NextAction.Done);
     }
 
     /**
@@ -102,8 +102,6 @@ public class TransformationTask
     static class TransformedData {
 
         @Nullable
-        private final Bitmap bitmap;
-        @Nullable
         private final File file;
         @NonNull
         private final CoverHandler.NextAction nextAction;
@@ -111,26 +109,18 @@ public class TransformationTask
         /**
          * Constructor.
          *
-         * @param bitmap resulting bitmap; or {@code null} on failure
-         * @param file   If the bitmap is set, the transformed file
+         * @param file   the transformed file, or {@code null} on failure
          * @param action what to do with the result.
          */
-        TransformedData(@Nullable final Bitmap bitmap,
-                        @Nullable final File file,
+        TransformedData(@Nullable final File file,
                         @NonNull final CoverHandler.NextAction action) {
-            this.bitmap = bitmap;
             this.file = file;
             nextAction = action;
         }
 
         @Nullable
-        Bitmap getBitmap() {
-            return bitmap;
-        }
-
-        @NonNull
         File getFile() {
-            return Objects.requireNonNull(file, "file");
+            return file;
         }
 
         @NonNull
@@ -142,8 +132,7 @@ public class TransformationTask
         @NonNull
         public String toString() {
             return "TransformedData{"
-                   + "bitmap=" + (bitmap != null)
-                   + ", file=" + (file == null ? null : file.getAbsolutePath())
+                   + "file=" + (file == null ? null : file.getAbsolutePath())
                    + ", nextAction=" + nextAction
                    + '}';
         }

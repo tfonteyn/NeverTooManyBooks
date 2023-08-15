@@ -650,24 +650,22 @@ public class CoverHandler {
             LoggerFactory.getLogger().d(TAG, "onAfterTransform", result);
         }
 
-        // The bitmap != null decides if the operation was successful.
-        if (null != result.getBitmap()) {
+        final File file = result.getFile();
+        if (file != null) {
             try {
                 switch (result.getNextAction()) {
                     case Crop: {
-                        final File tmpFile = ServiceLocator.getInstance().getCoverStorage()
-                                                           .getTempFile();
-
                         cropPictureLauncher.launch(new CropImageActivity.ResultContract.Input(
-                                result.getFile(), tmpFile));
+                                file,
+                                ServiceLocator.getInstance().getCoverStorage().getTempFile()));
                         return;
                     }
                     case Edit: {
-                        editPicture(result.getFile());
+                        editPicture(file);
                         return;
                     }
                     case Done: {
-                        bookSupplier.get().setCover(cIdx, result.getFile());
+                        bookSupplier.get().setCover(cIdx, file);
                         // must use a post to force the View to update.
                         fragmentView.post(() -> coverHandlerOwner.reloadImage(cIdx));
                         return;
