@@ -42,7 +42,6 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.List;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -51,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookCont
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchSitesSingleListContract;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
@@ -221,16 +219,15 @@ public abstract class SearchBookBaseFragment
     }
 
     @CallSuper
-    void onSearchCancelled(@NonNull final LiveDataEvent<TaskResult<Book>> message) {
+    void onSearchCancelled(@NonNull final LiveDataEvent<Book> message) {
         closeProgressDialog();
         //noinspection DataFlowIssue
         Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
     }
 
-    private void onSearchFinished(@NonNull final LiveDataEvent<TaskResult<Book>> message) {
+    private void onSearchFinished(@NonNull final LiveDataEvent<Book> message) {
         closeProgressDialog();
         message.getData()
-               .map(data -> Objects.requireNonNull(data.getResult()))
                .ifPresent(result -> {
                    final String searchErrors = result.getString(SearchCoordinator.BKEY_SEARCH_ERROR,
                                                                 null);

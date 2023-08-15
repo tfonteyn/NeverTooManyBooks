@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -79,9 +78,9 @@ public class SearchBookUpdatesViewModel
     /** Ask confirmation if the number of covers to download exceeds this number. */
     private static final int WARN_FOR_NUMBER_OF_COVERS = 10;
 
-    private final MutableLiveData<LiveDataEvent<TaskResult<Book>>> listFinished =
+    private final MutableLiveData<LiveDataEvent<Book>> listFinished =
             new MutableLiveData<>();
-    private final MutableLiveData<LiveDataEvent<TaskResult<Throwable>>> listFailed =
+    private final MutableLiveData<LiveDataEvent<Throwable>> listFailed =
             new MutableLiveData<>();
 
     /**
@@ -121,12 +120,12 @@ public class SearchBookUpdatesViewModel
     private int cachedSize;
 
     @NonNull
-    LiveData<LiveDataEvent<TaskResult<Book>>> onAllDone() {
+    LiveData<LiveDataEvent<Book>> onAllDone() {
         return listFinished;
     }
 
     @NonNull
-    LiveData<LiveDataEvent<TaskResult<Throwable>>> onAbort() {
+    LiveData<LiveDataEvent<Throwable>> onAbort() {
         return listFailed;
     }
 
@@ -535,8 +534,8 @@ public class SearchBookUpdatesViewModel
             book.putLong(DBKey.FK_BOOK, bookIdList.get(0));
         }
 
-        final LiveDataEvent<TaskResult<Book>> message =
-                new LiveDataEvent<>(new TaskResult<>(book));
+
+        final LiveDataEvent<Book> message = new LiveDataEvent<>(book);
         if (success) {
             listFinished.setValue(message);
         } else {
@@ -572,8 +571,8 @@ public class SearchBookUpdatesViewModel
         //            results.putLong(DBKey.FK_BOOK, bookIdList.get(0));
         //        }
 
-        final LiveDataEvent<TaskResult<Throwable>> message =
-                new LiveDataEvent<>(new TaskResult<>(e));
+        final LiveDataEvent<Throwable> message =
+                new LiveDataEvent<>(e);
         listFailed.setValue(message);
     }
 

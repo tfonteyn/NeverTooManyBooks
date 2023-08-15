@@ -57,7 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -92,9 +91,9 @@ public class SearchCoordinator
 
     protected final MutableLiveData<LiveDataEvent<TaskProgress>>
             searchCoordinatorProgress = new MutableLiveData<>();
-    protected final MutableLiveData<LiveDataEvent<TaskResult<Book>>>
+    protected final MutableLiveData<LiveDataEvent<Book>>
             searchCoordinatorCancelled = new MutableLiveData<>();
-    private final MutableLiveData<LiveDataEvent<TaskResult<Book>>>
+    private final MutableLiveData<LiveDataEvent<Book>>
             searchCoordinatorFinished = new MutableLiveData<>();
 
 
@@ -257,8 +256,8 @@ public class SearchCoordinator
                 book.putString(BKEY_SEARCH_ERROR, searchErrors);
             }
 
-            final LiveDataEvent<TaskResult<Book>> message =
-                    new LiveDataEvent<>(new TaskResult<>(book));
+
+            final LiveDataEvent<Book> message = new LiveDataEvent<>(book);
             if (cancelRequested.get()) {
                 searchCoordinatorCancelled.setValue(message);
             } else {
@@ -290,7 +289,7 @@ public class SearchCoordinator
      * @return book data
      */
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<Book>>> onSearchFinished() {
+    public LiveData<LiveDataEvent<Book>> onSearchFinished() {
         return searchCoordinatorFinished;
     }
 
@@ -300,7 +299,7 @@ public class SearchCoordinator
      * @return book data found so far
      */
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<Book>>> onSearchCancelled() {
+    public LiveData<LiveDataEvent<Book>> onSearchCancelled() {
         return searchCoordinatorCancelled;
     }
 

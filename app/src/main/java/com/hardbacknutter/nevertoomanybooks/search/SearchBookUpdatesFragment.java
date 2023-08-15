@@ -45,7 +45,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -53,14 +52,12 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchSitesSingleListContract;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.GridDividerItemDecoration;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentUpdateFromInternetBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowUpdateFromInternetBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
@@ -156,6 +153,7 @@ public class SearchBookUpdatesFragment
             // report up what work did get done + the last book we did.
             onAllDone(message);
         });
+
         // The full list was processed
         vm.onAllDone().observe(getViewLifecycleOwner(), this::onAllDone);
         // Something really bad happened and we're aborting
@@ -254,31 +252,26 @@ public class SearchBookUpdatesFragment
         }
     }
 
-    private void onOneDone(@NonNull final LiveDataEvent<TaskResult<Book>> message) {
+    private void onOneDone(@NonNull final LiveDataEvent<Book> message) {
         //noinspection DataFlowIssue
-        message.getData().ifPresent(data -> vm.processOne(getContext(), data.getResult()));
+        message.getData().ifPresent(data -> vm.processOne(getContext(), data));
     }
 
-    private void onAllDone(@NonNull final LiveDataEvent<TaskResult<Book>> message) {
+    private void onAllDone(@NonNull final LiveDataEvent<Book> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(data -> {
-            final DataHolder result = data.getResult();
-            if (result != null) {
-                //noinspection DataFlowIssue
-                getActivity().setResult(Activity.RESULT_OK,
-                                        EditBookOutput.createResultIntent(result));
-            }
-
+        message.getData().ifPresent(result -> {
             //noinspection DataFlowIssue
+            getActivity().setResult(Activity.RESULT_OK,
+                                    EditBookOutput.createResultIntent(result));
             getActivity().finish();
         });
     }
 
-    private void onAbort(@NonNull final LiveDataEvent<TaskResult<Throwable>> message) {
+    private void onAbort(@NonNull final LiveDataEvent<Throwable> message) {
         closeProgressDialog();
 
-        message.getData().map(TaskResult::getResult).filter(Objects::nonNull).ifPresent(e -> {
+        message.getData().ifPresent(e -> {
             //noinspection DataFlowIssue
             ErrorDialog.show(getContext(), e, getString(R.string.error_updates_aborted),
                              (d, w) -> {
