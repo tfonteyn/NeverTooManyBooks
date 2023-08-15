@@ -71,7 +71,7 @@ public abstract class MTask<Result>
     @Override
     @WorkerThread
     protected void setTaskFinished(@Nullable final Result result) {
-        onFinished.postValue(new LiveDataEvent<>(new TaskResult<>(getTaskId(), result)));
+        onFinished.postValue(new LiveDataEvent<>(new TaskResult<>(result)));
     }
 
     /**
@@ -89,7 +89,7 @@ public abstract class MTask<Result>
     @Override
     @WorkerThread
     protected void setTaskCancelled(@Nullable final Result result) {
-        onCanceled.postValue(new LiveDataEvent<>(new TaskResult<>(getTaskId(), result)));
+        onCanceled.postValue(new LiveDataEvent<>(new TaskResult<>(result)));
     }
 
     /**
@@ -106,7 +106,7 @@ public abstract class MTask<Result>
     @Override
     @WorkerThread
     protected void setTaskFailure(@NonNull final Throwable e) {
-        onFailure.postValue(new LiveDataEvent<>(new TaskResult<>(getTaskId(), e)));
+        onFailure.postValue(new LiveDataEvent<>(new TaskResult<>(e)));
     }
 
     /**

@@ -258,8 +258,7 @@ public class SearchCoordinator
             }
 
             final LiveDataEvent<TaskResult<Book>> message =
-                    new LiveDataEvent<>(new TaskResult<>(R.id.TASK_ID_SEARCH_COORDINATOR,
-                                                         book));
+                    new LiveDataEvent<>(new TaskResult<>(book));
             if (cancelRequested.get()) {
                 searchCoordinatorCancelled.setValue(message);
             } else {

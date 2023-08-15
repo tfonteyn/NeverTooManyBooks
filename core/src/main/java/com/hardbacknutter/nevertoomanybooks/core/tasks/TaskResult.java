@@ -33,8 +33,6 @@ public class TaskResult<Result> {
 
     private static final String MISSING_TASK_RESULTS = "message.result";
 
-    private final int taskId;
-
     /**
      * The result object from the task.
      * It can be {@code null} regardless of the task implementation.
@@ -42,14 +40,8 @@ public class TaskResult<Result> {
     @Nullable
     private final Result result;
 
-    public TaskResult(final int taskId,
-                      @Nullable final Result result) {
-        this.taskId = taskId;
+    public TaskResult(@Nullable final Result result) {
         this.result = result;
-    }
-
-    public int getTaskId() {
-        return taskId;
     }
 
     /**
@@ -76,8 +68,7 @@ public class TaskResult<Result> {
     @NonNull
     public String toString() {
         return "TaskResult{"
-               + "taskId=" + taskId
-               + ", result=" + result
+               + "result=" + result
                + '}';
     }
 }

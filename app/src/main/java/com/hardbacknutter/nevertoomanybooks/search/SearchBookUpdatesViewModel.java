@@ -536,7 +536,7 @@ public class SearchBookUpdatesViewModel
         }
 
         final LiveDataEvent<TaskResult<Book>> message =
-                new LiveDataEvent<>(new TaskResult<>(R.id.TASK_ID_UPDATE_FIELDS, book));
+                new LiveDataEvent<>(new TaskResult<>(book));
         if (success) {
             listFinished.setValue(message);
         } else {
@@ -573,7 +573,7 @@ public class SearchBookUpdatesViewModel
         //        }
 
         final LiveDataEvent<TaskResult<Throwable>> message =
-                new LiveDataEvent<>(new TaskResult<>(R.id.TASK_ID_UPDATE_FIELDS, e));
+                new LiveDataEvent<>(new TaskResult<>(e));
         listFailed.setValue(message);
     }
 
