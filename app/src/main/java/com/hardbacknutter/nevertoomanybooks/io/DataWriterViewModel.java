@@ -82,7 +82,7 @@ public abstract class DataWriterViewModel<RESULTS>
     }
 
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<RESULTS>>> onWriteDataFinished() {
+    public LiveData<LiveDataEvent<RESULTS>> onWriteDataFinished() {
         return writerTask.onFinished();
     }
 

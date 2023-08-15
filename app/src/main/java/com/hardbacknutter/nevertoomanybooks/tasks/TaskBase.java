@@ -133,6 +133,7 @@ abstract class TaskBase<Result>
 
             //noinspection CheckStyle
             try {
+                @NonNull
                 final Result result = doWork();
                 if (isCancelled()) {
                     status = Status.Cancelled;
@@ -167,7 +168,7 @@ abstract class TaskBase<Result>
      * @throws CancellationException if the user cancelled us
      * @throws Exception             depending on implementation
      */
-    @Nullable
+    @NonNull
     @WorkerThread
     protected abstract Result doWork()
             throws CancellationException, Exception;
@@ -175,9 +176,9 @@ abstract class TaskBase<Result>
     /**
      * Called when the task successfully finishes.
      *
-     * @param result potential result
+     * @param result valid result
      */
-    protected abstract void setTaskFinished(@Nullable Result result);
+    protected abstract void setTaskFinished(@NonNull Result result);
 
     /**
      * Called when the task was cancelled.

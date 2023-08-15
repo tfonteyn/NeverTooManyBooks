@@ -1757,11 +1757,10 @@ public class BooksOnBookshelf
      *
      * @param message from the task; contains the (optional) target rows.
      */
-    private void onBuildFinished(
-            @NonNull final LiveDataEvent<TaskResult<BoBTask.Outcome>> message) {
+    private void onBuildFinished(@NonNull final LiveDataEvent<BoBTask.Outcome> message) {
         vb.progressCircle.hide();
 
-        message.getData().map(data -> Objects.requireNonNull(data.getResult()))
+        message.getData()
                .ifPresent(result -> {
                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
                        Debug.stopMethodTracing();

@@ -58,7 +58,6 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
@@ -413,10 +412,8 @@ public class EditBookTocFragment
      *
      * @param message list of editions
      */
-    private void onIsfdbEditions(@NonNull final LiveDataEvent<TaskResult<List<Edition>>> message) {
-        message.getData().ifPresent(data -> {
-            final List<Edition> result = data.getResult();
-
+    private void onIsfdbEditions(@NonNull final LiveDataEvent<List<Edition>> message) {
+        message.getData().ifPresent(result -> {
             isfdbEditions.clear();
             if (result != null) {
                 isfdbEditions.addAll(result);
@@ -425,19 +422,12 @@ public class EditBookTocFragment
         });
     }
 
-    private void onIsfdbBook(@NonNull final LiveDataEvent<TaskResult<Book>> message) {
-        message.getData().ifPresent(data -> {
-            final Book result = data.getResult();
-
-            if (result == null) {
-                Snackbar.make(vb.getRoot(), R.string.warning_book_not_found,
-                              Snackbar.LENGTH_LONG).show();
-                return;
-            }
+    private void onIsfdbBook(@NonNull final LiveDataEvent<Book> message) {
+        message.getData().ifPresent(result -> {
 
             final Book book = vm.getBook();
 
-            // update the book with Series information that was gathered from the TOC
+            // update the book with Series information (if any) that was gathered from the TOC
             final List<Series> series = result.getSeries();
             if (!series.isEmpty()) {
                 final List<Series> inBook = book.getSeries();

@@ -262,12 +262,11 @@ public class SyncReaderFragment
         vm.readMetaData();
     }
 
-    private void onMetaDataRead(@NonNull final LiveDataEvent<TaskResult<
-            Optional<SyncReaderMetaData>>> message) {
+    private void onMetaDataRead(@NonNull final LiveDataEvent<Optional<SyncReaderMetaData>> message) {
         closeProgressDialog();
 
         message.getData()
-               .flatMap(data -> Objects.requireNonNull(data.getResult()))
+               .flatMap(data -> data)
                .ifPresent(this::showMetaData);
     }
 
@@ -430,12 +429,11 @@ public class SyncReaderFragment
      *
      * @param message to process
      */
-    private void onImportFinished(@NonNull final LiveDataEvent<TaskResult<
-            ReaderResults>> message) {
+    private void onImportFinished(@NonNull final LiveDataEvent<ReaderResults> message) {
         closeProgressDialog();
 
-        message.getData().map(data -> Objects.requireNonNull(data.getResult())).ifPresent(
-                result -> onImportFinished(R.string.info_import_complete, result));
+        message.getData()
+               .ifPresent(result -> onImportFinished(R.string.info_import_complete, result));
     }
 
     /**

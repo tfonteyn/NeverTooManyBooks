@@ -237,7 +237,7 @@ public class BooksOnBookshelfViewModel
      * @return the {@link BoBTask.Outcome} which can be considered to be complete and correct.
      */
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<BoBTask.Outcome>>> onFinished() {
+    public LiveData<LiveDataEvent<BoBTask.Outcome>> onFinished() {
         return boBTask.onFinished();
     }
 

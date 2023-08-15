@@ -84,7 +84,7 @@ public abstract class LTask<Result>
 
     @Override
     @WorkerThread
-    protected void setTaskFinished(@Nullable final Result result) {
+    protected void setTaskFinished(@NonNull final Result result) {
         handler.post(() -> {
             if (taskListener.get() != null) {
                 taskListener.get().onFinished(getTaskId(), result);

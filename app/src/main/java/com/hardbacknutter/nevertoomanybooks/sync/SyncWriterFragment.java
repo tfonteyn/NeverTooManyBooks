@@ -213,11 +213,10 @@ public class SyncWriterFragment
      *
      * @param message to process
      */
-    private void onExportFinished(
-            @NonNull final LiveDataEvent<TaskResult<SyncWriterResults>> message) {
+    private void onExportFinished(@NonNull final LiveDataEvent<SyncWriterResults> message) {
         closeProgressDialog();
 
-        message.getData().map(data -> Objects.requireNonNull(data.getResult()))
+        message.getData()
                .ifPresent(results -> {
                    final List<String> items = extractExportedItems(results);
                    if (items.isEmpty()) {

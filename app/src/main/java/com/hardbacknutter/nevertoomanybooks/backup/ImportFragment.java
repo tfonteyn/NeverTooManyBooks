@@ -355,12 +355,11 @@ public class ImportFragment
         vm.readMetaData();
     }
 
-    private void onMetaDataRead(@NonNull final LiveDataEvent<TaskResult<
-            Optional<ArchiveMetaData>>> message) {
+    private void onMetaDataRead(@NonNull final LiveDataEvent<Optional<ArchiveMetaData>> message) {
         closeProgressDialog();
 
         message.getData()
-               .flatMap(data -> Objects.requireNonNull(data.getResult()))
+               .flatMap(data -> data)
                .ifPresent(this::showMetaData);
     }
 
@@ -466,12 +465,11 @@ public class ImportFragment
      *
      * @param message to process
      */
-    private void onImportFinished(@NonNull final LiveDataEvent<TaskResult<
-            ImportResults>> message) {
+    private void onImportFinished(@NonNull final LiveDataEvent<ImportResults> message) {
         closeProgressDialog();
 
-        message.getData().map(data -> Objects.requireNonNull(data.getResult())).ifPresent(
-                result -> onImportFinished(R.string.info_import_complete, result));
+        message.getData()
+               .ifPresent(result -> onImportFinished(R.string.info_import_complete, result));
     }
 
     /**

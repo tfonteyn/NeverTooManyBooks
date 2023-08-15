@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.tasks;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -83,7 +82,7 @@ public class StorageMoverTask
         execute();
     }
 
-    @Nullable
+    @NonNull
     @Override
     protected Integer doWork()
             throws IOException {

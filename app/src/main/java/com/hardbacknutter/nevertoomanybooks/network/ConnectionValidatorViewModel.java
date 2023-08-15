@@ -50,7 +50,7 @@ public class ConnectionValidatorViewModel
     }
 
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<Boolean>>> onConnectionSuccessful() {
+    public LiveData<LiveDataEvent<Boolean>> onConnectionSuccessful() {
         return validatorTask.onFinished();
     }
 

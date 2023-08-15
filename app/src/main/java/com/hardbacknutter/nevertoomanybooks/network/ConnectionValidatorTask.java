@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.network;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
@@ -83,7 +84,7 @@ public class ConnectionValidatorTask
      * @throws StorageException     on storage related failures
      * @throws IOException          on generic/other IO failures
      */
-    @Nullable
+    @NonNull
     @Override
     protected Boolean doWork()
             throws IOException,

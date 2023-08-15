@@ -149,23 +149,20 @@ public abstract class ConnectionValidationBasePreferenceFragment
         }
     }
 
-    private void onSuccess(@NonNull final LiveDataEvent<TaskResult<Boolean>> message) {
+    private void onSuccess(@NonNull final LiveDataEvent<Boolean> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(data -> {
-            final Boolean result = data.getResult();
-            if (result != null) {
-                if (result) {
-                    //noinspection DataFlowIssue
-                    Snackbar.make(getView(), R.string.info_authorized, Snackbar.LENGTH_SHORT)
-                            .show();
-                    getView().postDelayed(this::popBackStackOrFinish, BaseActivity.DELAY_SHORT_MS);
-                } else {
-                    //For now we don't get here, instead we would be in onFailure.
-                    // But keeping this here to guard against future changes in the task logic
-                    //noinspection DataFlowIssue
-                    Snackbar.make(getView(), R.string.httpErrorAuth, Snackbar.LENGTH_LONG).show();
-                }
+        message.getData().ifPresent(result -> {
+            if (result) {
+                //noinspection DataFlowIssue
+                Snackbar.make(getView(), R.string.info_authorized, Snackbar.LENGTH_SHORT)
+                        .show();
+                getView().postDelayed(this::popBackStackOrFinish, BaseActivity.DELAY_SHORT_MS);
+            } else {
+                //For now we don't get here, instead we would be in onFailure.
+                // But keeping this here to guard against future changes in the task logic
+                //noinspection DataFlowIssue
+                Snackbar.make(getView(), R.string.httpErrorAuth, Snackbar.LENGTH_LONG).show();
             }
         });
     }

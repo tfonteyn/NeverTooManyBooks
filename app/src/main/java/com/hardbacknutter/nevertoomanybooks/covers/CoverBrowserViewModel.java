@@ -368,7 +368,7 @@ public class CoverBrowserViewModel
     }
 
     @NonNull
-    LiveData<LiveDataEvent<TaskResult<Collection<String>>>> onSearchEditionsTaskFinished() {
+    LiveData<LiveDataEvent<Collection<String>>> onSearchEditionsTaskFinished() {
         return searchEditionsTask.onFinished();
     }
 

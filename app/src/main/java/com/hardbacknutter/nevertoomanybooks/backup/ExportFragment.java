@@ -290,10 +290,10 @@ public class ExportFragment
      *
      * @param message to process
      */
-    private void onExportFinished(@NonNull final LiveDataEvent<TaskResult<ExportResults>> message) {
+    private void onExportFinished(@NonNull final LiveDataEvent<ExportResults> message) {
         closeProgressDialog();
 
-        message.getData().map(data -> Objects.requireNonNull(data.getResult()))
+        message.getData()
                .ifPresent(result -> {
                    final List<String> items = extractExportedItems(result);
                    if (items.isEmpty()) {

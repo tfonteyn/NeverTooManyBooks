@@ -75,7 +75,7 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
     }
 
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<Optional<METADATA>>>> onReadMetaDataFinished() {
+    public LiveData<LiveDataEvent<Optional<METADATA>>> onReadMetaDataFinished() {
         return metaDataTask.onFinished();
     }
 
@@ -106,7 +106,7 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
     }
 
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<RESULTS>>> onReadDataFinished() {
+    public LiveData<LiveDataEvent<RESULTS>> onReadDataFinished() {
         return readerTask.onFinished();
     }
 

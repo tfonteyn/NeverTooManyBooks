@@ -163,12 +163,11 @@ public class CalibreLibraryMappingFragment
         vm.readMetaData();
     }
 
-    private void onMetaDataRead(@NonNull final LiveDataEvent<TaskResult<
-            Optional<SyncReaderMetaData>>> message) {
+    private void onMetaDataRead(@NonNull final LiveDataEvent<Optional<SyncReaderMetaData>> message) {
         closeProgressDialog();
 
         message.getData()
-               .flatMap(data -> Objects.requireNonNull(data.getResult()))
+               .flatMap(data -> data)
                .ifPresent(result -> {
                    vm.extractLibraryData(result);
                    libraryAdapter.notifyDataSetChanged();

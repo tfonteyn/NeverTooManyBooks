@@ -50,7 +50,6 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -235,9 +234,7 @@ public class CoverHandler {
                                             "vm.onFinished()|event=" + message);
             }
             hideProgress();
-            message.getData()
-                   .map(data -> Objects.requireNonNull(data.getResult()))
-                   .ifPresent(this::onAfterTransform);
+            message.getData().ifPresent(this::onAfterTransform);
         });
 
         return this;

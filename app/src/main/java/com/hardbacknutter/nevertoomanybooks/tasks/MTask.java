@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 public abstract class MTask<Result>
         extends TaskBase<Result> {
 
-    private final MutableLiveData<LiveDataEvent<TaskResult<Result>>> onFinished =
+    private final MutableLiveData<LiveDataEvent<Result>> onFinished =
             new MutableLiveData<>();
     private final MutableLiveData<LiveDataEvent<TaskResult<Result>>> onCanceled =
             new MutableLiveData<>();
@@ -64,14 +64,14 @@ public abstract class MTask<Result>
      * @return the {@link Result} which can be considered to be complete and correct.
      */
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<Result>>> onFinished() {
+    public LiveData<LiveDataEvent<Result>> onFinished() {
         return onFinished;
     }
 
     @Override
     @WorkerThread
-    protected void setTaskFinished(@Nullable final Result result) {
-        onFinished.postValue(new LiveDataEvent<>(new TaskResult<>(result)));
+    protected void setTaskFinished(@NonNull final Result result) {
+        onFinished.postValue(new LiveDataEvent<>(result));
     }
 
     /**

@@ -108,7 +108,7 @@ public class SettingsViewModel
     }
 
     @NonNull
-    LiveData<LiveDataEvent<TaskResult<Integer>>> onMoveFinished() {
+    LiveData<LiveDataEvent<Integer>> onMoveFinished() {
         return storageMoverTask.onFinished();
     }
 

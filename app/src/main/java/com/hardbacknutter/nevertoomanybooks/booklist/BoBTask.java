@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.booklist;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.util.ArrayList;
@@ -110,7 +109,7 @@ public class BoBTask
         execute();
     }
 
-    @Nullable
+    @NonNull
     @Override
     @WorkerThread
     protected Outcome doWork() {

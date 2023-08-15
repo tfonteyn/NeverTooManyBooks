@@ -45,7 +45,7 @@ public class EditBookTocViewModel
     }
 
     @NonNull
-    LiveData<LiveDataEvent<TaskResult<List<Edition>>>> onIsfdbEditions() {
+    LiveData<LiveDataEvent<List<Edition>>> onIsfdbEditions() {
         return isfdbGetEditionsTask.onFinished();
     }
 
@@ -71,7 +71,7 @@ public class EditBookTocViewModel
     }
 
     @NonNull
-    LiveData<LiveDataEvent<TaskResult<Book>>> onIsfdbBook() {
+    LiveData<LiveDataEvent<Book>> onIsfdbBook() {
         return isfdbGetBookTask.onFinished();
     }
 

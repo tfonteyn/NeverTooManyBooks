@@ -25,7 +25,6 @@ import androidx.lifecycle.ViewModel;
 
 import java.io.File;
 
-import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 
 @SuppressWarnings("WeakerAccess")
@@ -37,7 +36,7 @@ public class CoverHandlerViewModel
     private boolean showTipAboutRotating = true;
 
     @NonNull
-    LiveData<LiveDataEvent<TaskResult<TransformationTask.TransformedData>>> onFinished() {
+    LiveData<LiveDataEvent<TransformationTask.TransformedData>> onFinished() {
         return transformationTask.onFinished();
     }
 

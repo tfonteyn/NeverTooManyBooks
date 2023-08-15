@@ -171,7 +171,7 @@ public class CalibreHandlerViewModel
     }
 
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<Uri>>> onFinished() {
+    public LiveData<LiveDataEvent<Uri>> onFinished() {
         return singleFileDownloadTask.onFinished();
     }
 }
