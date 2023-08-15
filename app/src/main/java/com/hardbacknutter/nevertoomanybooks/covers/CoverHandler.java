@@ -524,7 +524,7 @@ public class CoverHandler {
         if (file.exists()) {
             showProgress();
             vm.execute(new Transformation()
-                               .setFile(file)
+                               .setSource(file)
                                .setScale(true),
                        file);
         }
@@ -547,7 +547,7 @@ public class CoverHandler {
                                                .persist(is);
 
             vm.execute(new Transformation()
-                               .setFile(tmpFile)
+                               .setSource(tmpFile)
                                .setScale(true),
                        tmpFile);
 
@@ -614,7 +614,7 @@ public class CoverHandler {
 
             showProgress();
             vm.execute(new Transformation()
-                               .setFile(file)
+                               .setSource(file)
                                .setScale(true)
                                .setSurfaceRotation(surfaceRotation)
                                .setRotation(explicitRotation),
@@ -634,7 +634,7 @@ public class CoverHandler {
             final File file = createTempCoverFile(bookSupplier.get());
             showProgress();
             vm.execute(new Transformation()
-                               .setFile(file)
+                               .setSource(file)
                                .setRotation(angle),
                        file);
 

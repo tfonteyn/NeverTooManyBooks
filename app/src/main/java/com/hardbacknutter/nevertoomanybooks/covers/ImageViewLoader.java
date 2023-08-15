@@ -193,7 +193,7 @@ public class ImageViewLoader {
             Thread.currentThread().setName(TAG);
             Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
             // do the actual background work.
-            final Optional<Bitmap> oBitmap = scalableImageDecoder.setFile(file).transform();
+            final Optional<Bitmap> oBitmap = scalableImageDecoder.setSource(file).transform();
 
             // all done; back to the UI thread.
             handler.post(() -> {

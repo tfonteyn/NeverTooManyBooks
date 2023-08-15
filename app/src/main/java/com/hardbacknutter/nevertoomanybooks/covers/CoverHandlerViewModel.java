@@ -41,11 +41,24 @@ public class CoverHandlerViewModel
         return transformationTask.onFinished();
     }
 
+    /**
+     * Execute the given transformation.
+     *
+     * @param transformation to run
+     * @param destFile       file to write to
+     */
     void execute(@NonNull final Transformation transformation,
                  @NonNull final File destFile) {
         transformationTask.transform(transformation, destFile, CoverHandler.NextAction.Done);
     }
 
+    /**
+     * Execute the given transformation.
+     *
+     * @param transformation to run
+     * @param destFile       file to write to
+     * @param action         What action should we take after we're done?
+     */
     void execute(@NonNull final Transformation transformation,
                  @NonNull final File destFile,
                  @NonNull final CoverHandler.NextAction action) {

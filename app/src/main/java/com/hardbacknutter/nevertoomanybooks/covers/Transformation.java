@@ -77,16 +77,6 @@ class Transformation {
     }
 
     /**
-     * Get the source file.
-     *
-     * @return original source file or {@code null} if {@link #setFile(File)} was not called.
-     */
-    @Nullable
-    public File getFile() {
-        return srcFile;
-    }
-
-    /**
      * Set the source file.
      *
      * @param file to transform; The file will not be modified.
@@ -94,7 +84,7 @@ class Transformation {
      * @return {@code this} (for chaining)
      */
     @NonNull
-    public Transformation setFile(@Nullable final File file) {
+    public Transformation setSource(@Nullable final File file) {
         this.srcFile = file;
         return this;
     }
@@ -178,7 +168,7 @@ class Transformation {
      *
      * @return the transformed bitmap
      *
-     * @throws IllegalArgumentException if the file is not set / does not exist
+     * @throws IllegalArgumentException if the source file is not set / does not exist
      */
     @WorkerThread
     @NonNull
