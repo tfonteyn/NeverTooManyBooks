@@ -33,11 +33,11 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.network.ConnectionValidatorViewModel;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
@@ -167,7 +167,7 @@ public abstract class ConnectionValidationBasePreferenceFragment
         });
     }
 
-    private void onCancelled(@NonNull final LiveDataEvent<TaskResult<Boolean>> message) {
+    private void onCancelled(@NonNull final LiveDataEvent<Optional<Boolean>> message) {
         closeProgressDialog();
 
         message.getData().ifPresent(data -> {

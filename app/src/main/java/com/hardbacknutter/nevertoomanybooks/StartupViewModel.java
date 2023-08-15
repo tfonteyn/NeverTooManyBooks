@@ -43,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.DBCleanerTask;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.OptimizeDbTask;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildFtsTask;
@@ -83,7 +82,7 @@ public class StartupViewModel
 
     private final MutableLiveData<LiveDataEvent<Boolean>> onFinished =
             new MutableLiveData<>();
-    private final MutableLiveData<LiveDataEvent<TaskResult<Throwable>>> onFailure =
+    private final MutableLiveData<LiveDataEvent<Throwable>> onFailure =
             new MutableLiveData<>();
     private final MutableLiveData<TaskProgress> onProgress =
             new MutableLiveData<>();
@@ -287,7 +286,7 @@ public class StartupViewModel
      * @return the result is the Exception
      */
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<Throwable>>> onFailure() {
+    public LiveData<LiveDataEvent<Throwable>> onFailure() {
         return onFailure;
     }
 

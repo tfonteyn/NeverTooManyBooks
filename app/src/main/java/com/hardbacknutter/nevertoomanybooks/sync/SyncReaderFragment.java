@@ -52,7 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SyncContract
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker.DatePickerListener;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker.SingleDatePicker;
@@ -270,7 +269,7 @@ public class SyncReaderFragment
     }
 
     @SuppressWarnings("WeakerAccess")
-    protected void onMetaDataCancelled(@NonNull final LiveDataEvent<TaskResult<
+    protected void onMetaDataCancelled(@NonNull final LiveDataEvent<Optional<
             Optional<SyncReaderMetaData>>> message) {
         closeProgressDialog();
 
@@ -409,14 +408,13 @@ public class SyncReaderFragment
         });
     }
 
-    private void onImportCancelled(@NonNull final LiveDataEvent<TaskResult<
+    private void onImportCancelled(@NonNull final LiveDataEvent<Optional<
             ReaderResults>> message) {
         closeProgressDialog();
 
         message.getData().ifPresent(data -> {
-            final ReaderResults result = data.getResult();
-            if (result != null) {
-                onImportFinished(R.string.info_import_partially_complete, result);
+            if (data.isPresent()) {
+                onImportFinished(R.string.info_import_partially_complete, data.get());
             } else {
                 showMessageAndFinishActivity(getString(R.string.cancelled));
             }

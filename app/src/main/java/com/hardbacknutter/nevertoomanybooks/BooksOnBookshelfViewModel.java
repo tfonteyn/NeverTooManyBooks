@@ -55,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -216,7 +215,7 @@ public class BooksOnBookshelfViewModel
     }
 
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<BoBTask.Outcome>>> onCancelled() {
+    public LiveData<LiveDataEvent<Optional<BoBTask.Outcome>>> onCancelled() {
         return boBTask.onCancelled();
     }
 

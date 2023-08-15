@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -43,7 +44,6 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -383,7 +383,7 @@ public class CoverBrowserViewModel
     }
 
     @NonNull
-    LiveData<LiveDataEvent<TaskResult<Collection<String>>>> onSearchEditionsTaskCancelled() {
+    LiveData<LiveDataEvent<Optional<Collection<String>>>> onSearchEditionsTaskCancelled() {
         return searchEditionsTask.onCancelled();
     }
 

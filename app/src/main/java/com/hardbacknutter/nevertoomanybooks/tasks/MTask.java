@@ -26,8 +26,9 @@ import androidx.annotation.WorkerThread;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import java.util.Optional;
+
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 
 /**
  * The base for a task which uses {@link MutableLiveData} for the results.
@@ -39,7 +40,7 @@ public abstract class MTask<Result>
 
     private final MutableLiveData<LiveDataEvent<Result>> onFinished =
             new MutableLiveData<>();
-    private final MutableLiveData<LiveDataEvent<TaskResult<Result>>> onCanceled =
+    private final MutableLiveData<LiveDataEvent<Optional<Result>>> onCanceled =
             new MutableLiveData<>();
     private final MutableLiveData<LiveDataEvent<Throwable>> onFailure =
             new MutableLiveData<>();
@@ -81,7 +82,7 @@ public abstract class MTask<Result>
      *         complete/correct (if at all) this result is.
      */
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<Result>>> onCancelled() {
+    public LiveData<LiveDataEvent<Optional<Result>>> onCancelled() {
         return onCanceled;
     }
 
@@ -89,7 +90,7 @@ public abstract class MTask<Result>
     @Override
     @WorkerThread
     protected void setTaskCancelled(@Nullable final Result result) {
-        onCanceled.postValue(new LiveDataEvent<>(new TaskResult<>(result)));
+        onCanceled.postValue(new LiveDataEvent<>(Optional.ofNullable(result)));
     }
 
     /**

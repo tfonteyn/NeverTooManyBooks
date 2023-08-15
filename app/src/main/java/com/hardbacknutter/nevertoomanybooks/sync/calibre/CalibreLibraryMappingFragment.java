@@ -38,7 +38,6 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentCalibreLibraryMapperBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditCalibreLibraryBinding;
@@ -175,7 +174,7 @@ public class CalibreLibraryMappingFragment
                });
     }
 
-    private void onMetaDataCancelled(@NonNull final LiveDataEvent<TaskResult<
+    private void onMetaDataCancelled(@NonNull final LiveDataEvent<Optional<
             Optional<SyncReaderMetaData>>> message) {
         closeProgressDialog();
 

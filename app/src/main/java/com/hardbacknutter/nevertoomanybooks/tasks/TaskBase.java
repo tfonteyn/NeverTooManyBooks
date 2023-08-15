@@ -182,6 +182,8 @@ abstract class TaskBase<Result>
 
     /**
      * Called when the task was cancelled.
+     * <p>
+     * The result passed in will be {@code null} if the task was cancelled before it started.
      *
      * @param result potential/partial result
      */

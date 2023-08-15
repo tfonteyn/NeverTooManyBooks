@@ -98,7 +98,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.SpinnerInteractionListener;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -1705,7 +1704,7 @@ public class BooksOnBookshelf
      * @param message from the task
      */
     private void onBuildCancelled(
-            @NonNull final LiveDataEvent<TaskResult<BoBTask.Outcome>> message) {
+            @NonNull final LiveDataEvent<Optional<BoBTask.Outcome>> message) {
         vb.progressCircle.hide();
 
         message.getData().ifPresent(data -> {

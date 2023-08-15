@@ -31,6 +31,7 @@ import androidx.lifecycle.ViewModel;
 
 import java.io.IOException;
 import java.security.cert.CertificateException;
+import java.util.Optional;
 import java.util.Set;
 import javax.net.ssl.SSLException;
 
@@ -39,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 
@@ -76,7 +76,7 @@ public abstract class DataWriterViewModel<RESULTS>
     }
 
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<RESULTS>>> onWriteDataCancelled() {
+    public LiveData<LiveDataEvent<Optional<RESULTS>>> onWriteDataCancelled() {
         return writerTask.onCancelled();
     }
 

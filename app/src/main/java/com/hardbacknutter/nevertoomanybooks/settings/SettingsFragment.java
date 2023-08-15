@@ -46,6 +46,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -54,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchSitesA
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
@@ -488,7 +488,7 @@ public class SettingsFragment
         });
     }
 
-    private void onMoveCancelled(@NonNull final LiveDataEvent<TaskResult<Integer>> message) {
+    private void onMoveCancelled(@NonNull final LiveDataEvent<Optional<Integer>> message) {
         closeProgressDialog();
 
         message.getData().ifPresent(data -> {

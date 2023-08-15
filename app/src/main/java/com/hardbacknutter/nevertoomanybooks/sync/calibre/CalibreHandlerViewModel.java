@@ -35,7 +35,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 
@@ -155,7 +154,7 @@ public class CalibreHandlerViewModel
     }
 
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<Uri>>> onCancelled() {
+    public LiveData<LiveDataEvent<Optional<Uri>>> onCancelled() {
         return singleFileDownloadTask.onCancelled();
     }
 

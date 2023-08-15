@@ -25,8 +25,9 @@ import androidx.annotation.StringRes;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
+import java.util.Optional;
+
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 
 public class ConnectionValidatorViewModel
@@ -55,7 +56,7 @@ public class ConnectionValidatorViewModel
     }
 
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<Boolean>>> onConnectionCancelled() {
+    public LiveData<LiveDataEvent<Optional<Boolean>>> onConnectionCancelled() {
         return validatorTask.onCancelled();
     }
 

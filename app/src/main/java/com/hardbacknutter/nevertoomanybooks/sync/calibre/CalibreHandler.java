@@ -49,7 +49,6 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetDirectoryUriContract;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -300,7 +299,7 @@ public class CalibreHandler {
                 .show());
     }
 
-    private void onCancelled(@NonNull final LiveDataEvent<TaskResult<Uri>> message) {
+    private void onCancelled(@NonNull final LiveDataEvent<Optional<Uri>> message) {
         closeProgressDialog();
 
         message.getData().ifPresent(data -> Snackbar

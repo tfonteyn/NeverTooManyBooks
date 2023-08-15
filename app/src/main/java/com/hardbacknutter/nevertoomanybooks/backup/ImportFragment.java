@@ -51,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForReadingContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ImportContract;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImportBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -362,7 +361,7 @@ public class ImportFragment
                .ifPresent(this::showMetaData);
     }
 
-    private void onMetaDataCancelled(@NonNull final LiveDataEvent<TaskResult<
+    private void onMetaDataCancelled(@NonNull final LiveDataEvent<Optional<
             Optional<ArchiveMetaData>>> message) {
         closeProgressDialog();
 
@@ -444,15 +443,12 @@ public class ImportFragment
         });
     }
 
-    private void onImportCancelled(@NonNull final LiveDataEvent<TaskResult<
-            ImportResults>> message) {
+    private void onImportCancelled(@NonNull final LiveDataEvent<Optional<ImportResults>> message) {
         closeProgressDialog();
 
         message.getData().ifPresent(data -> {
-            final ImportResults result = data.getResult();
-
-            if (result != null) {
-                onImportFinished(R.string.info_import_partially_complete, result);
+            if (data.isPresent()) {
+                onImportFinished(R.string.info_import_partially_complete, data.get());
             } else {
                 showMessageAndFinishActivity(getString(R.string.cancelled));
             }
