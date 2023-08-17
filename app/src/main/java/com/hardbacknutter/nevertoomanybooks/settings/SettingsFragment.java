@@ -46,7 +46,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -429,17 +428,17 @@ public class SettingsFragment
     }
 
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
-        message.getData().ifPresent(data -> {
+        message.process(progress -> {
             if (progressDelegate == null) {
                 //noinspection DataFlowIssue
                 progressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.lbl_moving_data)
                         .setPreventSleep(true)
                         .setIndeterminate(true)
-                        .setOnCancelListener(v -> vm.cancelTask(data.taskId))
+                        .setOnCancelListener(v -> vm.cancelTask(progress.taskId))
                         .show(() -> getActivity().getWindow());
             }
-            progressDelegate.onProgress(data);
+            progressDelegate.onProgress(progress);
         });
     }
 
@@ -454,8 +453,8 @@ public class SettingsFragment
     private void onMoveFinished(@NonNull final LiveDataEvent<Integer> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(result -> {
-            if (setStorageVolume(result)) {
+        message.process(volume -> {
+            if (setStorageVolume(volume)) {
                 //noinspection DataFlowIssue
                 Snackbar.make(getView(), R.string.action_done, Snackbar.LENGTH_LONG).show();
             }
@@ -480,7 +479,7 @@ public class SettingsFragment
     private void onMoveFailure(@NonNull final LiveDataEvent<Throwable> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(e -> {
+        message.process(e -> {
             //noinspection DataFlowIssue
             ErrorDialog.show(getContext(), e,
                              getString(R.string.lbl_moving_data),
@@ -488,10 +487,10 @@ public class SettingsFragment
         });
     }
 
-    private void onMoveCancelled(@NonNull final LiveDataEvent<Optional<Integer>> message) {
+    private void onMoveCancelled(@NonNull final LiveDataEvent<Integer> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(data -> {
+        message.process(ignored -> {
             // FIXME: need better msg + tell user to clean up the destination
             showMessageAndFinishActivity(getString(R.string.cancelled));
         });

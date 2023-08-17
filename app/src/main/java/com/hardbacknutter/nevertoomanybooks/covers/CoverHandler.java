@@ -234,7 +234,7 @@ public class CoverHandler {
                                             "vm.onFinished()|event=" + message);
             }
             hideProgress();
-            message.getData().ifPresent(this::onAfterTransform);
+            message.process(this::onAfterTransform);
         });
 
         return this;

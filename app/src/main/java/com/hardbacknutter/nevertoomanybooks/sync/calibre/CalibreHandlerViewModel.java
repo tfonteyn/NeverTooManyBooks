@@ -154,7 +154,7 @@ public class CalibreHandlerViewModel
     }
 
     @NonNull
-    public LiveData<LiveDataEvent<Optional<Uri>>> onCancelled() {
+    public LiveData<LiveDataEvent<Uri>> onCancelled() {
         return singleFileDownloadTask.onCancelled();
     }
 

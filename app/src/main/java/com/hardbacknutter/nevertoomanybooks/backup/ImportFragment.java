@@ -285,6 +285,8 @@ public class ImportFragment
             showMetaData(metaData.get());
         } else {
             readMetaData();
+            // Hide anything which might be there. Once readMetaData()'s task
+            // is done it will call showMetaData again with the results.
             showMetaData(null);
         }
 
@@ -356,17 +358,14 @@ public class ImportFragment
     private void onMetaDataRead(@NonNull final LiveDataEvent<Optional<ArchiveMetaData>> message) {
         closeProgressDialog();
 
-        message.getData()
-               .flatMap(data -> data)
-               .ifPresent(this::showMetaData);
+        message.process(optMetaData -> optMetaData.ifPresent(this::showMetaData));
     }
 
-    private void onMetaDataCancelled(@NonNull final LiveDataEvent<Optional<
-            Optional<ArchiveMetaData>>> message) {
+    private void onMetaDataCancelled(@NonNull final LiveDataEvent<Optional<ArchiveMetaData>>
+                                             message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(
-                data -> showMessageAndFinishActivity(getString(R.string.cancelled)));
+        message.process(ignored -> showMessageAndFinishActivity(getString(R.string.cancelled)));
     }
 
     /**
@@ -420,35 +419,35 @@ public class ImportFragment
     }
 
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
-        message.getData().ifPresent(data -> {
+        message.process(progress -> {
             if (progressDelegate == null) {
                 //noinspection DataFlowIssue
                 progressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.lbl_importing)
                         .setPreventSleep(true)
-                        .setOnCancelListener(v -> vm.cancelTask(data.taskId))
+                        .setOnCancelListener(v -> vm.cancelTask(progress.taskId))
                         .show(() -> getActivity().getWindow());
             }
-            progressDelegate.onProgress(data);
+            progressDelegate.onProgress(progress);
         });
     }
 
     private void onImportFailure(@NonNull final LiveDataEvent<Throwable> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(e -> {
+        message.process(e -> {
             //noinspection DataFlowIssue
             ErrorDialog.show(getContext(), e, getString(R.string.error_import_failed),
                              (d, w) -> getActivity().finish());
         });
     }
 
-    private void onImportCancelled(@NonNull final LiveDataEvent<Optional<ImportResults>> message) {
+    private void onImportCancelled(@NonNull final LiveDataEvent<ImportResults> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(data -> {
-            if (data.isPresent()) {
-                onImportFinished(R.string.info_import_partially_complete, data.get());
+        message.process(importResults -> {
+            if (importResults != null) {
+                onImportFinished(R.string.info_import_partially_complete, importResults);
             } else {
                 showMessageAndFinishActivity(getString(R.string.cancelled));
             }
@@ -463,8 +462,8 @@ public class ImportFragment
     private void onImportFinished(@NonNull final LiveDataEvent<ImportResults> message) {
         closeProgressDialog();
 
-        message.getData()
-               .ifPresent(result -> onImportFinished(R.string.info_import_complete, result));
+        message.process(importResults ->
+                                onImportFinished(R.string.info_import_complete, importResults));
     }
 
     /**

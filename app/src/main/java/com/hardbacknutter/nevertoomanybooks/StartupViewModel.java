@@ -119,7 +119,7 @@ public class StartupViewModel
             synchronized (allTasks) {
                 allTasks.remove(taskId);
                 if (!isRunning()) {
-                    onFinished.setValue(new LiveDataEvent<>(true));
+                    onFinished.setValue(LiveDataEvent.of(true));
                 }
             }
         }

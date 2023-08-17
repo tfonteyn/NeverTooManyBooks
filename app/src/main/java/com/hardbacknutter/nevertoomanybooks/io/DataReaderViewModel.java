@@ -68,7 +68,7 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
     }
 
     @NonNull
-    public LiveData<LiveDataEvent<Optional<Optional<METADATA>>>> onReadMetaDataCancelled() {
+    public LiveData<LiveDataEvent<Optional<METADATA>>> onReadMetaDataCancelled() {
         return metaDataTask.onCancelled();
     }
 
@@ -98,7 +98,7 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
     }
 
     @NonNull
-    public LiveData<LiveDataEvent<Optional<RESULTS>>> onReadDataCancelled() {
+    public LiveData<LiveDataEvent<RESULTS>> onReadDataCancelled() {
         return readerTask.onCancelled();
     }
 

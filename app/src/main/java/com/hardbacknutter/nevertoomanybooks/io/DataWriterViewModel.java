@@ -31,7 +31,6 @@ import androidx.lifecycle.ViewModel;
 
 import java.io.IOException;
 import java.security.cert.CertificateException;
-import java.util.Optional;
 import java.util.Set;
 import javax.net.ssl.SSLException;
 
@@ -76,7 +75,7 @@ public abstract class DataWriterViewModel<RESULTS>
     }
 
     @NonNull
-    public LiveData<LiveDataEvent<Optional<RESULTS>>> onWriteDataCancelled() {
+    public LiveData<LiveDataEvent<RESULTS>> onWriteDataCancelled() {
         return writerTask.onCancelled();
     }
 

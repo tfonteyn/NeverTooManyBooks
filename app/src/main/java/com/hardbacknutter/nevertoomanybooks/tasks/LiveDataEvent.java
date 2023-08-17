@@ -20,8 +20,10 @@
 package com.hardbacknutter.nevertoomanybooks.tasks;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-import java.util.Optional;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * TODO: our use of observables is not always best-practice. Maybe look at RxJava
@@ -36,32 +38,74 @@ import java.util.Optional;
  * <a href = "https://developer.android.com/topic/architecture/ui-layer/events#consuming-trigger-updates">
  * consuming-trigger-updates</a>
  * Problem: the UI layer must perform a handshake with the VM for each and every UI update.
+ *
+ * @param <T> type of payload
  */
-public class LiveDataEvent<T> {
+public final class LiveDataEvent<T> {
 
-    @NonNull
+    @Nullable
     private final T data;
-    private boolean hasBeenHandled;
+    private boolean processed;
 
-    public LiveDataEvent(@NonNull final T data) {
+    /**
+     * Private constructor. Use factory methods instead.
+     *
+     * @param data the payload
+     */
+    private LiveDataEvent(@Nullable final T data) {
         this.data = data;
     }
 
     /**
-     * Get the payload.
+     * Create a LiveDataEvent with an optional payload.
      * <p>
-     * This method will return a {@code Optional.of(data)} the first time it's called.
-     * Any subsequent calls will return an {@code Optional.empty()}.
+     * Used for operation {@link MTask#onCancelled()}.
      *
-     * @return data as an Optional
+     * @param data the payload
+     * @param <T>  type of payload
+     *
+     * @return LiveDataEvent
      */
     @NonNull
-    public Optional<T> getData() {
-        if (hasBeenHandled) {
-            return Optional.empty();
-        } else {
-            hasBeenHandled = true;
-            return Optional.of(data);
+    static <T> LiveDataEvent<T> ofNullable(@Nullable final T data) {
+        return new LiveDataEvent<>(data);
+    }
+
+    /**
+     * Create a LiveDataEvent with a valid non-null payload.
+     * <p>
+     * Used for operations {@link MTask#onFinished()} and {@link MTask#onFailure()}.
+     *
+     * @param data the payload
+     * @param <T>  type of payload
+     *
+     * @return LiveDataEvent
+     *
+     * @throws NullPointerException if the payload is {@code null}
+     */
+    @NonNull
+    public static <T> LiveDataEvent<T> of(@NonNull final T data) {
+        Objects.requireNonNull(data);
+        return new LiveDataEvent<>(data);
+    }
+
+    /**
+     * Process the payload.
+     * <p>
+     * For a {@link MTask#onFinished()} and {@link MTask#onFailure()},
+     * the payload will never be {@code null}.
+     * <p>
+     * For a {@link MTask#onCancelled()}, the payload <strong>may</strong> be {@code null}.
+     * <p>
+     * The payload is <strong>only</strong> passed to the given Consumer the first time
+     * this method is called. Subsequent calls are simply ignored.
+     *
+     * @param consumer to process the payload
+     */
+    public void process(@NonNull final Consumer<T> consumer) {
+        if (!processed) {
+            this.processed = true;
+            consumer.accept(data);
         }
     }
 
@@ -69,7 +113,7 @@ public class LiveDataEvent<T> {
     @NonNull
     public String toString() {
         return "LiveDataEvent{"
-               + "hasBeenHandled=" + hasBeenHandled
+               + "processed=" + processed
                + ", data=" + data
                + '}';
     }

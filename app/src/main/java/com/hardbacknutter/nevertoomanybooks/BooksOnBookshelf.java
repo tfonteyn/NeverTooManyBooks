@@ -1703,11 +1703,10 @@ public class BooksOnBookshelf
      *
      * @param message from the task
      */
-    private void onBuildCancelled(
-            @NonNull final LiveDataEvent<Optional<BoBTask.Outcome>> message) {
+    private void onBuildCancelled(@NonNull final LiveDataEvent<BoBTask.Outcome> message) {
         vb.progressCircle.hide();
 
-        message.getData().ifPresent(data -> {
+        message.process(ignored -> {
             vm.onBuildCancelled();
 
             if (vm.isListLoaded()) {
@@ -1725,8 +1724,8 @@ public class BooksOnBookshelf
      */
     private void onBuildFailed(@NonNull final LiveDataEvent<Throwable> message) {
         vb.progressCircle.hide();
-        message.getData().ifPresent(data -> {
-            LoggerFactory.getLogger().e(TAG, data);
+        message.process(e -> {
+            LoggerFactory.getLogger().e(TAG, e);
 
             vm.onBuildFailed();
 
@@ -1759,14 +1758,13 @@ public class BooksOnBookshelf
     private void onBuildFinished(@NonNull final LiveDataEvent<BoBTask.Outcome> message) {
         vb.progressCircle.hide();
 
-        message.getData()
-               .ifPresent(result -> {
-                   if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
-                       Debug.stopMethodTracing();
-                   }
-                   vm.onBuildFinished(result);
-                   displayList(result.getTargetNodes());
-               });
+        message.process(outcome -> {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
+                Debug.stopMethodTracing();
+            }
+            vm.onBuildFinished(outcome);
+            displayList(outcome.getTargetNodes());
+        });
     }
 
     /**

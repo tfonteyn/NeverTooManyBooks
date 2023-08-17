@@ -215,7 +215,7 @@ public class BooksOnBookshelfViewModel
     }
 
     @NonNull
-    public LiveData<LiveDataEvent<Optional<BoBTask.Outcome>>> onCancelled() {
+    public LiveData<LiveDataEvent<BoBTask.Outcome>> onCancelled() {
         return boBTask.onCancelled();
     }
 

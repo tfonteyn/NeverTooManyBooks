@@ -109,11 +109,11 @@ public class StartupActivity
         vm.onProgress().observe(this, message -> onProgress(message.text));
 
         // when all tasks are done, move on to next startup-stage
-        vm.onFinished().observe(this, message -> message.getData().ifPresent(
-                data -> nextStage(Stage.RunTasks)));
+        vm.onFinished().observe(this, message -> message.process(
+                success -> nextStage(Stage.RunTasks)));
 
         // Not called for now, see {@link StartupViewModel} #mTaskListener.
-        vm.onFailure().observe(this, message -> message.getData().ifPresent(this::onFailure));
+        vm.onFailure().observe(this, message -> message.process(this::onFailure));
 
         nextStage(Stage.Init);
     }

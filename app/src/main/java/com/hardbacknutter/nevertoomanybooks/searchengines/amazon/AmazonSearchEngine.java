@@ -251,6 +251,10 @@ public class AmazonSearchEngine
         // FIXME: Amazon is blocking more and more... we'll have to stop supporting it soon.
         final Element block = document.selectFirst("form[action='/errors/validateCaptcha']");
         if (block != null) {
+            if (BuildConfig.DEBUG /* always */) {
+                LoggerFactory.getLogger().d(TAG, "checkCaptcha", "Mr. B...");
+            }
+
             Site.Type.Data.getSite(getEngineId()).setActive(false);
             throw new SearchException(getEngineId(), "Amazon blocked url=" + url,
                                       context.getString(R.string.error_site_access_blocked));

@@ -254,16 +254,15 @@ public class SearchBookUpdatesFragment
 
     private void onOneDone(@NonNull final LiveDataEvent<Book> message) {
         //noinspection DataFlowIssue
-        message.getData().ifPresent(data -> vm.processOne(getContext(), data));
+        message.process(book -> vm.processOne(getContext(), book));
     }
 
     private void onAllDone(@NonNull final LiveDataEvent<Book> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(result -> {
+        message.process(book -> {
             //noinspection DataFlowIssue
-            getActivity().setResult(Activity.RESULT_OK,
-                                    EditBookOutput.createResultIntent(result));
+            getActivity().setResult(Activity.RESULT_OK, EditBookOutput.createResultIntent(book));
             getActivity().finish();
         });
     }
@@ -271,7 +270,7 @@ public class SearchBookUpdatesFragment
     private void onAbort(@NonNull final LiveDataEvent<Throwable> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(e -> {
+        message.process(e -> {
             //noinspection DataFlowIssue
             ErrorDialog.show(getContext(), e, getString(R.string.error_updates_aborted),
                              (d, w) -> {
@@ -283,17 +282,17 @@ public class SearchBookUpdatesFragment
     }
 
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
-        message.getData().ifPresent(data -> {
+        message.process(progress -> {
             if (progressDelegate == null) {
                 //noinspection DataFlowIssue
                 progressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.progress_msg_searching)
                         .setIndeterminate(true)
                         .setPreventSleep(true)
-                        .setOnCancelListener(v -> vm.cancelTask(data.taskId))
+                        .setOnCancelListener(v -> vm.cancelTask(progress.taskId))
                         .show(() -> getActivity().getWindow());
             }
-            progressDelegate.onProgress(data);
+            progressDelegate.onProgress(progress);
         });
     }
 

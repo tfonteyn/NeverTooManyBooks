@@ -212,7 +212,7 @@ public class SearchCoordinator
         boolean searchStarted = false;
         if (!cancelRequested.get()) {
             //  update our listener with the current progress status
-            searchCoordinatorProgress.setValue(new LiveDataEvent<>(accumulateProgress()));
+            searchCoordinatorProgress.setValue(LiveDataEvent.of(accumulateProgress()));
 
             if (waitingForIsbnOrCode) {
                 if (result != null && result.hasIsbn()) {
@@ -257,7 +257,7 @@ public class SearchCoordinator
             }
 
 
-            final LiveDataEvent<Book> message = new LiveDataEvent<>(book);
+            final LiveDataEvent<Book> message = LiveDataEvent.of(book);
             if (cancelRequested.get()) {
                 searchCoordinatorCancelled.setValue(message);
             } else {
@@ -1040,7 +1040,7 @@ public class SearchCoordinator
                 searchProgressBySite.put(engineId, message);
             }
             // forward the accumulated progress
-            searchCoordinatorProgress.setValue(new LiveDataEvent<>(accumulateProgress()));
+            searchCoordinatorProgress.setValue(LiveDataEvent.of(accumulateProgress()));
         }
 
         @Override

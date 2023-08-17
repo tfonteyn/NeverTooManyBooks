@@ -24,7 +24,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -50,7 +49,7 @@ public class EditBookTocViewModel
     }
 
     @NonNull
-    LiveData<LiveDataEvent<Optional<List<Edition>>>> onIsfdbEditionsCancelled() {
+    LiveData<LiveDataEvent<List<Edition>>> onIsfdbEditionsCancelled() {
         return isfdbGetEditionsTask.onCancelled();
     }
 
@@ -75,7 +74,7 @@ public class EditBookTocViewModel
     }
 
     @NonNull
-    LiveData<LiveDataEvent<Optional<Book>>> onIsfdbBookCancelled() {
+    LiveData<LiveDataEvent<Book>> onIsfdbBookCancelled() {
         return isfdbGetBookTask.onCancelled();
     }
 

@@ -27,7 +27,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
@@ -92,7 +91,7 @@ public class SettingsViewModel
     }
 
     @NonNull
-    LiveData<LiveDataEvent<Optional<Integer>>> onMoveCancelled() {
+    LiveData<LiveDataEvent<Integer>> onMoveCancelled() {
         return storageMoverTask.onCancelled();
     }
 

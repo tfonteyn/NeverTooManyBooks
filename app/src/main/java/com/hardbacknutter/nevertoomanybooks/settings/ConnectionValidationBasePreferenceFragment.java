@@ -33,7 +33,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
-import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -127,17 +126,17 @@ public abstract class ConnectionValidationBasePreferenceFragment
     }
 
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
-        message.getData().ifPresent(data -> {
+        message.process(progress -> {
             if (progressDelegate == null) {
                 //noinspection DataFlowIssue
                 progressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.lbl_test_connection)
                         .setPreventSleep(false)
                         .setIndeterminate(true)
-                        .setOnCancelListener(v -> vm.cancelTask(data.taskId))
+                        .setOnCancelListener(v -> vm.cancelTask(progress.taskId))
                         .show(() -> getActivity().getWindow());
             }
-            progressDelegate.onProgress(data);
+            progressDelegate.onProgress(progress);
         });
     }
 
@@ -152,8 +151,8 @@ public abstract class ConnectionValidationBasePreferenceFragment
     private void onSuccess(@NonNull final LiveDataEvent<Boolean> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(result -> {
-            if (result) {
+        message.process(success -> {
+            if (success) {
                 //noinspection DataFlowIssue
                 Snackbar.make(getView(), R.string.info_authorized, Snackbar.LENGTH_SHORT)
                         .show();
@@ -167,10 +166,10 @@ public abstract class ConnectionValidationBasePreferenceFragment
         });
     }
 
-    private void onCancelled(@NonNull final LiveDataEvent<Optional<Boolean>> message) {
+    private void onCancelled(@NonNull final LiveDataEvent<Boolean> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(data -> {
+        message.process(ignored -> {
             //noinspection DataFlowIssue
             Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
         });
@@ -179,7 +178,7 @@ public abstract class ConnectionValidationBasePreferenceFragment
     private void onFailure(@NonNull final LiveDataEvent<Throwable> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(e -> {
+        message.process(e -> {
             //noinspection DataFlowIssue
             ErrorDialog.show(getContext(), e,
                              getString(R.string.httpError),

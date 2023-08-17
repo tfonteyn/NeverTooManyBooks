@@ -212,20 +212,20 @@ public class EditBookTocFragment
         editTocVm.onIsfdbBook().observe(getViewLifecycleOwner(), this::onIsfdbBook);
 
         editTocVm.onIsfdbEditionsCancelled().observe(getViewLifecycleOwner(), message ->
-                message.getData().ifPresent(data -> Snackbar
+                message.process(ignored -> Snackbar
                         .make(vb.getRoot(), R.string.cancelled,
                               Snackbar.LENGTH_LONG).show()));
         editTocVm.onIsfdbEditionsFailure().observe(getViewLifecycleOwner(), message ->
-                message.getData().ifPresent(data -> Snackbar
+                message.process(e -> Snackbar
                         .make(vb.getRoot(), R.string.warning_no_editions,
                               Snackbar.LENGTH_LONG).show()));
 
         editTocVm.onIsfdbBookCancelled().observe(getViewLifecycleOwner(), message ->
-                message.getData().ifPresent(data -> Snackbar
+                message.process(ignored -> Snackbar
                         .make(vb.getRoot(), R.string.cancelled,
                               Snackbar.LENGTH_LONG).show()));
         editTocVm.onIsfdbBookFailure().observe(getViewLifecycleOwner(), message ->
-                message.getData().ifPresent(data -> Snackbar
+                message.process(e -> Snackbar
                         .make(vb.getRoot(), R.string.warning_book_not_found,
                               Snackbar.LENGTH_LONG).show()));
     }
@@ -413,22 +413,20 @@ public class EditBookTocFragment
      * @param message list of editions
      */
     private void onIsfdbEditions(@NonNull final LiveDataEvent<List<Edition>> message) {
-        message.getData().ifPresent(result -> {
+        message.process(editionList -> {
             isfdbEditions.clear();
-            if (result != null) {
-                isfdbEditions.addAll(result);
-            }
+            isfdbEditions.addAll(editionList);
             searchIsfdb();
         });
     }
 
     private void onIsfdbBook(@NonNull final LiveDataEvent<Book> message) {
-        message.getData().ifPresent(result -> {
+        message.process(bookData -> {
 
             final Book book = vm.getBook();
 
             // update the book with Series information (if any) that was gathered from the TOC
-            final List<Series> series = result.getSeries();
+            final List<Series> series = bookData.getSeries();
             if (!series.isEmpty()) {
                 final List<Series> inBook = book.getSeries();
                 // add, weeding out duplicates
@@ -443,7 +441,7 @@ public class EditBookTocFragment
             // if we don't have one yet,
             // update the book with the first publication date that was gathered from the TOC
             if (!book.getFirstPublicationDate().isPresent()) {
-                final PartialDate bookFirstPublication = result.getFirstPublicationDate();
+                final PartialDate bookFirstPublication = bookData.getFirstPublicationDate();
                 if (bookFirstPublication.isPresent()) {
                     book.setFirstPublicationDate(bookFirstPublication);
                 }
@@ -451,8 +449,8 @@ public class EditBookTocFragment
 
             // finally the TOC itself:  display it for the user to approve
             // If there are more editions, the neutral button will allow to fetch the next one.
-            confirmTocResultsLauncher.launch(result.getToc(),
-                                             result.getLong(DBKey.BOOK_CONTENT_TYPE),
+            confirmTocResultsLauncher.launch(bookData.getToc(),
+                                             bookData.getLong(DBKey.BOOK_CONTENT_TYPE),
                                              !isfdbEditions.isEmpty());
         });
     }

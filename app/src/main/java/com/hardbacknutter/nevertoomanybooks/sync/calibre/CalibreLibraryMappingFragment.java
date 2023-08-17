@@ -161,31 +161,29 @@ public class CalibreLibraryMappingFragment
         vm.readMetaData();
     }
 
-    private void onMetaDataRead(@NonNull final LiveDataEvent<Optional<SyncReaderMetaData>> message) {
+    private void onMetaDataRead(@NonNull final LiveDataEvent<Optional<SyncReaderMetaData>>
+                                        message) {
         closeProgressDialog();
 
-        message.getData()
-               .flatMap(data -> data)
-               .ifPresent(result -> {
-                   vm.extractLibraryData(result);
-                   libraryAdapter.notifyDataSetChanged();
+        message.process(optMetaData -> optMetaData.ifPresent(metaData -> {
+            vm.extractLibraryData(metaData);
+            libraryAdapter.notifyDataSetChanged();
 
-                   showOptions();
-               });
+            showOptions();
+        }));
     }
 
-    private void onMetaDataCancelled(@NonNull final LiveDataEvent<Optional<
-            Optional<SyncReaderMetaData>>> message) {
+    private void onMetaDataCancelled(@NonNull final LiveDataEvent<Optional<SyncReaderMetaData>>
+                                             message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(
-                data -> showMessageAndFinishActivity(getString(R.string.cancelled)));
+        message.process(ignored -> showMessageAndFinishActivity(getString(R.string.cancelled)));
     }
 
     private void onMetaDataFailure(@NonNull final LiveDataEvent<Throwable> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(e -> {
+        message.process(e -> {
             final Context context = getContext();
             //noinspection DataFlowIssue
             ErrorDialog.show(context, e,

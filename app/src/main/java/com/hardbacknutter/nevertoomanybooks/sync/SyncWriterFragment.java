@@ -38,7 +38,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -189,18 +188,16 @@ public class SyncWriterFragment
         }
     }
 
-    private void onExportCancelled(
-            @NonNull final LiveDataEvent<Optional<SyncWriterResults>> message) {
+    private void onExportCancelled(@NonNull final LiveDataEvent<SyncWriterResults> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(
-                data -> showMessageAndFinishActivity(getString(R.string.cancelled)));
+        message.process(ignored -> showMessageAndFinishActivity(getString(R.string.cancelled)));
     }
 
     private void onExportFailure(@NonNull final LiveDataEvent<Throwable> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(e -> {
+        message.process(e -> {
             //noinspection DataFlowIssue
             ErrorDialog.show(getContext(), e, getString(R.string.error_export_failed),
                              (d, w) -> getActivity().finish());
@@ -215,18 +212,17 @@ public class SyncWriterFragment
     private void onExportFinished(@NonNull final LiveDataEvent<SyncWriterResults> message) {
         closeProgressDialog();
 
-        message.getData()
-               .ifPresent(results -> {
-                   final List<String> items = extractExportedItems(results);
-                   if (items.isEmpty()) {
-                       //noinspection DataFlowIssue
-                       new MaterialAlertDialogBuilder(getContext())
-                               .setIcon(R.drawable.ic_baseline_info_24)
-                               .setTitle(R.string.title_backup_and_export)
-                               .setMessage(R.string.warning_no_matching_book_found)
-                               .setPositiveButton(R.string.action_done, (d, w) -> {
-                                   //noinspection DataFlowIssue
-                                   getActivity().setResult(Activity.RESULT_OK);
+        message.process(writerResults -> {
+            final List<String> items = extractExportedItems(writerResults);
+            if (items.isEmpty()) {
+                //noinspection DataFlowIssue
+                new MaterialAlertDialogBuilder(getContext())
+                        .setIcon(R.drawable.ic_baseline_info_24)
+                        .setTitle(R.string.title_backup_and_export)
+                        .setMessage(R.string.warning_no_matching_book_found)
+                        .setPositiveButton(R.string.action_done, (d, w) -> {
+                            //noinspection DataFlowIssue
+                            getActivity().setResult(Activity.RESULT_OK);
                             getActivity().finish();
                         })
                         .create()
@@ -273,16 +269,16 @@ public class SyncWriterFragment
     }
 
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
-        message.getData().ifPresent(data -> {
+        message.process(progress -> {
             if (progressDelegate == null) {
                 //noinspection DataFlowIssue
                 progressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.title_backup_and_export)
                         .setPreventSleep(true)
-                        .setOnCancelListener(v -> vm.cancelTask(data.taskId))
+                        .setOnCancelListener(v -> vm.cancelTask(progress.taskId))
                         .show(() -> getActivity().getWindow());
             }
-            progressDelegate.onProgress(data);
+            progressDelegate.onProgress(progress);
         });
     }
 

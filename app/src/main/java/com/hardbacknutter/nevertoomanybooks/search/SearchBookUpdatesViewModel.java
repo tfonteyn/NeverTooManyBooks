@@ -475,7 +475,7 @@ public class SearchBookUpdatesViewModel
             final TaskProgress taskProgress = new TaskProgress(
                     R.id.TASK_ID_UPDATE_FIELDS, null,
                     currentProgressCounter, currentCursorCount, null);
-            searchCoordinatorProgress.setValue(new LiveDataEvent<>(taskProgress));
+            searchCoordinatorProgress.setValue(LiveDataEvent.of(taskProgress));
 
             // On to the next book in the list.
             return nextBook(context);
@@ -535,7 +535,7 @@ public class SearchBookUpdatesViewModel
         }
 
 
-        final LiveDataEvent<Book> message = new LiveDataEvent<>(book);
+        final LiveDataEvent<Book> message = LiveDataEvent.of(book);
         if (success) {
             listFinished.setValue(message);
         } else {
@@ -571,8 +571,7 @@ public class SearchBookUpdatesViewModel
         //            results.putLong(DBKey.FK_BOOK, bookIdList.get(0));
         //        }
 
-        final LiveDataEvent<Throwable> message =
-                new LiveDataEvent<>(e);
+        final LiveDataEvent<Throwable> message = LiveDataEvent.of(e);
         listFailed.setValue(message);
     }
 

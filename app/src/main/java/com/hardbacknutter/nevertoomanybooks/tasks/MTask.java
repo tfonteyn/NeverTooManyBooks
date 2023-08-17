@@ -26,8 +26,6 @@ import androidx.annotation.WorkerThread;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import java.util.Optional;
-
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 
 /**
@@ -40,7 +38,7 @@ public abstract class MTask<Result>
 
     private final MutableLiveData<LiveDataEvent<Result>> onFinished =
             new MutableLiveData<>();
-    private final MutableLiveData<LiveDataEvent<Optional<Result>>> onCanceled =
+    private final MutableLiveData<LiveDataEvent<Result>> onCanceled =
             new MutableLiveData<>();
     private final MutableLiveData<LiveDataEvent<Throwable>> onFailure =
             new MutableLiveData<>();
@@ -72,7 +70,7 @@ public abstract class MTask<Result>
     @Override
     @WorkerThread
     protected void setTaskFinished(@NonNull final Result result) {
-        onFinished.postValue(new LiveDataEvent<>(result));
+        onFinished.postValue(LiveDataEvent.of(result));
     }
 
     /**
@@ -82,7 +80,7 @@ public abstract class MTask<Result>
      *         complete/correct (if at all) this result is.
      */
     @NonNull
-    public LiveData<LiveDataEvent<Optional<Result>>> onCancelled() {
+    public LiveData<LiveDataEvent<Result>> onCancelled() {
         return onCanceled;
     }
 
@@ -90,7 +88,7 @@ public abstract class MTask<Result>
     @Override
     @WorkerThread
     protected void setTaskCancelled(@Nullable final Result result) {
-        onCanceled.postValue(new LiveDataEvent<>(Optional.ofNullable(result)));
+        onCanceled.postValue(LiveDataEvent.ofNullable(result));
     }
 
     /**
@@ -106,7 +104,7 @@ public abstract class MTask<Result>
     @Override
     @WorkerThread
     protected void setTaskFailure(@NonNull final Throwable e) {
-        onFailure.postValue(new LiveDataEvent<>(e));
+        onFailure.postValue(LiveDataEvent.of(e));
     }
 
     /**
@@ -122,6 +120,6 @@ public abstract class MTask<Result>
     @Override
     @WorkerThread
     public void publishProgress(@NonNull final TaskProgress message) {
-        onProgress.postValue(new LiveDataEvent<>(message));
+        onProgress.postValue(LiveDataEvent.of(message));
     }
 }

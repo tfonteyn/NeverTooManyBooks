@@ -293,23 +293,23 @@ public class CalibreHandler {
     private void onFinished(@NonNull final LiveDataEvent<Uri> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(result -> Snackbar
+        message.process(uri -> Snackbar
                 .make(hostView, R.string.info_download_successful, Snackbar.LENGTH_LONG)
-                .setAction(R.string.lbl_read, v -> openBookUri(v.getContext(), result))
+                .setAction(R.string.lbl_read, v -> openBookUri(v.getContext(), uri))
                 .show());
     }
 
-    private void onCancelled(@NonNull final LiveDataEvent<Optional<Uri>> message) {
+    private void onCancelled(@NonNull final LiveDataEvent<Uri> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(data -> Snackbar
+        message.process(ignored -> Snackbar
                 .make(hostView, R.string.cancelled, Snackbar.LENGTH_LONG).show());
     }
 
     private void onFailure(@NonNull final LiveDataEvent<Throwable> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(e -> {
+        message.process(e -> {
             final Context context = hostView.getContext();
             ErrorDialog.show(context, e,
                              context.getString(R.string.lbl_calibre_content_server),
@@ -325,17 +325,17 @@ public class CalibreHandler {
     }
 
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
-        message.getData().ifPresent(data -> {
+        message.process(progress -> {
             if (progressFrame != null) {
                 if (progressDelegate == null) {
                     progressDelegate = new ProgressDelegate(progressFrame)
                             .setTitle(R.string.progress_msg_downloading)
                             .setPreventSleep(true)
                             .setIndeterminate(true)
-                            .setOnCancelListener(v -> vm.cancelTask(data.taskId))
+                            .setOnCancelListener(v -> vm.cancelTask(progress.taskId))
                             .show(() -> hostWindow);
                 }
-                progressDelegate.onProgress(data);
+                progressDelegate.onProgress(progress);
             }
         });
     }

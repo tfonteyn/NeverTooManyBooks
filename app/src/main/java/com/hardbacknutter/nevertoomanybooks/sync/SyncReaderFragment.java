@@ -263,18 +263,15 @@ public class SyncReaderFragment
     private void onMetaDataRead(@NonNull final LiveDataEvent<Optional<SyncReaderMetaData>> message) {
         closeProgressDialog();
 
-        message.getData()
-               .flatMap(data -> data)
-               .ifPresent(this::showMetaData);
+        message.process(optMetaData -> optMetaData.ifPresent(this::showMetaData));
     }
 
     @SuppressWarnings("WeakerAccess")
-    protected void onMetaDataCancelled(@NonNull final LiveDataEvent<Optional<
-            Optional<SyncReaderMetaData>>> message) {
+    protected void onMetaDataCancelled(@NonNull final LiveDataEvent<Optional<SyncReaderMetaData>>
+                                               message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(
-                data -> showMessageAndFinishActivity(getString(R.string.cancelled)));
+        message.process(ignored -> showMessageAndFinishActivity(getString(R.string.cancelled)));
     }
 
     /**
@@ -385,36 +382,35 @@ public class SyncReaderFragment
 
 
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
-        message.getData().ifPresent(data -> {
+        message.process(progress -> {
             if (progressDelegate == null) {
                 //noinspection DataFlowIssue
                 progressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.lbl_importing)
                         .setPreventSleep(true)
-                        .setOnCancelListener(v -> vm.cancelTask(data.taskId))
+                        .setOnCancelListener(v -> vm.cancelTask(progress.taskId))
                         .show(() -> getActivity().getWindow());
             }
-            progressDelegate.onProgress(data);
+            progressDelegate.onProgress(progress);
         });
     }
 
     private void onImportFailure(@NonNull final LiveDataEvent<Throwable> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(e -> {
+        message.process(e -> {
             //noinspection DataFlowIssue
             ErrorDialog.show(getContext(), e, getString(R.string.error_import_failed),
                              (d, w) -> getActivity().finish());
         });
     }
 
-    private void onImportCancelled(@NonNull final LiveDataEvent<Optional<
-            ReaderResults>> message) {
+    private void onImportCancelled(@NonNull final LiveDataEvent<ReaderResults> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(data -> {
-            if (data.isPresent()) {
-                onImportFinished(R.string.info_import_partially_complete, data.get());
+        message.process(optReaderResults -> {
+            if (optReaderResults != null) {
+                onImportFinished(R.string.info_import_partially_complete, optReaderResults);
             } else {
                 showMessageAndFinishActivity(getString(R.string.cancelled));
             }
@@ -429,8 +425,8 @@ public class SyncReaderFragment
     private void onImportFinished(@NonNull final LiveDataEvent<ReaderResults> message) {
         closeProgressDialog();
 
-        message.getData()
-               .ifPresent(result -> onImportFinished(R.string.info_import_complete, result));
+        message.process(readerResults ->
+                                onImportFinished(R.string.info_import_complete, readerResults));
     }
 
     /**

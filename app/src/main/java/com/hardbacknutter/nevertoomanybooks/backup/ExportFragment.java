@@ -43,7 +43,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -264,18 +263,16 @@ public class ExportFragment
                 .Input(mimeType, fileName));
     }
 
-    private void onExportCancelled(
-            @NonNull final LiveDataEvent<Optional<ExportResults>> message) {
+    private void onExportCancelled(@NonNull final LiveDataEvent<ExportResults> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(
-                data -> showMessageAndFinishActivity(getString(R.string.cancelled)));
+        message.process(ignored -> showMessageAndFinishActivity(getString(R.string.cancelled)));
     }
 
     private void onExportFailure(@NonNull final LiveDataEvent<Throwable> message) {
         closeProgressDialog();
 
-        message.getData().ifPresent(e -> {
+        message.process(e -> {
             //noinspection DataFlowIssue
             ErrorDialog.show(getContext(), e, getString(vm.isBackup()
                                                         ? R.string.error_backup_failed
@@ -292,18 +289,17 @@ public class ExportFragment
     private void onExportFinished(@NonNull final LiveDataEvent<ExportResults> message) {
         closeProgressDialog();
 
-        message.getData()
-               .ifPresent(result -> {
-                   final List<String> items = extractExportedItems(result);
-                   if (items.isEmpty()) {
-                       //noinspection DataFlowIssue
-                       new MaterialAlertDialogBuilder(getContext())
-                               .setIcon(R.drawable.ic_baseline_info_24)
-                               .setTitle(R.string.title_backup_and_export)
-                               .setMessage(R.string.warning_export_contains_no_data)
-                               .setPositiveButton(R.string.action_done, (d, w)
-                                       -> getActivity().finish())
-                               .create()
+        message.process(exportResults -> {
+            final List<String> items = extractExportedItems(exportResults);
+            if (items.isEmpty()) {
+                //noinspection DataFlowIssue
+                new MaterialAlertDialogBuilder(getContext())
+                        .setIcon(R.drawable.ic_baseline_info_24)
+                        .setTitle(R.string.title_backup_and_export)
+                        .setMessage(R.string.warning_export_contains_no_data)
+                        .setPositiveButton(R.string.action_done, (d, w)
+                                -> getActivity().finish())
+                        .create()
                         .show();
             } else {
 
@@ -396,16 +392,16 @@ public class ExportFragment
     }
 
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
-        message.getData().ifPresent(data -> {
+        message.process(progress -> {
             if (progressDelegate == null) {
                 //noinspection DataFlowIssue
                 progressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.title_backup_and_export)
                         .setPreventSleep(true)
-                        .setOnCancelListener(v -> vm.cancelTask(data.taskId))
+                        .setOnCancelListener(v -> vm.cancelTask(progress.taskId))
                         .show(() -> getActivity().getWindow());
             }
-            progressDelegate.onProgress(data);
+            progressDelegate.onProgress(progress);
         });
     }
 

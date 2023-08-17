@@ -132,16 +132,16 @@ public abstract class SearchBookBaseFragment
     }
 
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
-        message.getData().ifPresent(data -> {
+        message.process(progress -> {
             if (progressDelegate == null) {
                 //noinspection DataFlowIssue
                 progressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.progress_msg_searching)
                         .setIndeterminate(true)
-                        .setOnCancelListener(v -> coordinator.cancelTask(data.taskId))
+                        .setOnCancelListener(v -> coordinator.cancelTask(progress.taskId))
                         .show(() -> getActivity().getWindow());
             }
-            progressDelegate.onProgress(data);
+            progressDelegate.onProgress(progress);
         });
     }
 
@@ -227,31 +227,30 @@ public abstract class SearchBookBaseFragment
 
     private void onSearchFinished(@NonNull final LiveDataEvent<Book> message) {
         closeProgressDialog();
-        message.getData()
-               .ifPresent(result -> {
-                   final String searchErrors = result.getString(SearchCoordinator.BKEY_SEARCH_ERROR,
-                                                                null);
-                   result.remove(SearchCoordinator.BKEY_SEARCH_ERROR);
-                   final boolean hasData = !result.isEmpty();
+        message.process(book -> {
+            final String searchErrors = book.getString(SearchCoordinator.BKEY_SEARCH_ERROR,
+                                                       null);
+            book.remove(SearchCoordinator.BKEY_SEARCH_ERROR);
+            final boolean hasData = !book.isEmpty();
 
-                   if (searchErrors != null && !searchErrors.isEmpty()) {
-                       //noinspection DataFlowIssue
-                       new MaterialAlertDialogBuilder(getContext())
-                               .setIcon(R.drawable.ic_baseline_warning_24)
-                               .setTitle(hasData ? R.string.warning_book_not_always_found
-                                                 : R.string.warning_book_not_found)
+            if (searchErrors != null && !searchErrors.isEmpty()) {
+                //noinspection DataFlowIssue
+                new MaterialAlertDialogBuilder(getContext())
+                        .setIcon(R.drawable.ic_baseline_warning_24)
+                        .setTitle(hasData ? R.string.warning_book_not_always_found
+                                          : R.string.warning_book_not_found)
                         .setMessage(searchErrors)
                         .setPositiveButton(android.R.string.ok, (d, w) -> {
                             d.dismiss();
                             if (hasData) {
-                                onSearchResults(result);
+                                onSearchResults(book);
                             }
                         })
                         .create()
                         .show();
 
             } else if (hasData) {
-                onSearchResults(result);
+                onSearchResults(book);
 
             } else {
                 //noinspection DataFlowIssue
