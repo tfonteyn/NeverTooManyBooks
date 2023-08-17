@@ -65,7 +65,7 @@ ext {
     // 1.3 needs Android 14 !
     androidxCameraxVersion = "1.2.3"
     androidxCardviewVersion = "1.0.0"
-    androidxCollectionVersion = "1.3.0-alpha04"
+    androidxCollectionVersion = "1.3.0-beta01"
     androidxConstraintlayoutCoreVersion = "1.0.4"
     // 2.2 needs Android 14 !
     androidxConstraintlayoutVersion = "2.1.4"
