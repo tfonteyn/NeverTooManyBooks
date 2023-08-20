@@ -31,6 +31,7 @@ import androidx.annotation.VisibleForTesting;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -229,6 +230,7 @@ public class DataManager
                     @Nullable final Object value) {
         // This code is a subset of Bundle#putObject(String, Object)
         // which is not part of the public API.
+        // In addition we support BigInteger/BigDecimal
 
         if (value instanceof Money) {
             // special handling
@@ -246,6 +248,13 @@ public class DataManager
             rawData.putFloat(key, (float) value);
         } else if (value instanceof Boolean) {
             rawData.putBoolean(key, (boolean) value);
+
+        } else if (value instanceof BigInteger) {
+            // added since org.json:json:20201115
+            rawData.putLong(key, ((Number) value).longValue());
+        } else if (value instanceof BigDecimal) {
+            // added since org.json:json:20201115
+            rawData.putDouble(key, ((Number) value).doubleValue());
 
         } else if (value instanceof Parcelable) {
             rawData.putParcelable(key, (Parcelable) value);
@@ -265,7 +274,9 @@ public class DataManager
             putNull(key);
 
         } else {
-            throw new IllegalArgumentException("put|key=`" + key + "`|value=" + value);
+            throw new IllegalArgumentException("put|key=`" + key
+                                               + "|type=" + value.getClass().getName()
+                                               + "`|value=" + value);
         }
     }
 
