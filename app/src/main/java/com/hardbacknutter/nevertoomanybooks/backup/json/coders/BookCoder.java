@@ -25,8 +25,6 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -236,33 +234,8 @@ public class BookCoder
 
 
                 default: {
-                    final Object o = data.get(key);
-                    if (o instanceof String) {
-                        book.putString(key, (String) o);
-                    } else if (o instanceof Long) {
-                        book.putLong(key, (Long) o);
-                    } else if (o instanceof Integer) {
-                        book.putInt(key, (Integer) o);
-                    } else if (o instanceof Double) {
-                        // Double covers 'Money'. The currency is done with a separate String type.
-                        book.putDouble(key, (Double) o);
-                    } else if (o instanceof Float) {
-                        book.putFloat(key, (Float) o);
-                    } else if (o instanceof Boolean) {
-                        book.putBoolean(key, (Boolean) o);
-
-                    } else if (o instanceof BigInteger) {
-                        // added since org.json:json:20201115
-                        book.putLong(key, ((BigInteger) o).longValue());
-                    } else if (o instanceof BigDecimal) {
-                        // added since org.json:json:20201115
-                        book.putDouble(key, ((BigDecimal) o).doubleValue());
-
-                    } else {
-                        throw new IllegalArgumentException("key=" + key
-                                                           + "|type=" + o.getClass().getName()
-                                                           + "|o=" + o);
-                    }
+                    book.put(key, data.get(key));
+                    break;
                 }
             }
         }
