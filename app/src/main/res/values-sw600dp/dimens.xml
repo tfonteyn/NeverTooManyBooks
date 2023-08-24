@@ -41,5 +41,5 @@
 
     <dimen name="startup_splash_border">16dp</dimen>
     <dimen name="startup_splash_min_width">300dp</dimen>
-    <dimen name="startup_splash_max_width">380dp</dimen>
+    <dimen name="startup_splash_max_width">400dp</dimen>
 </resources>
