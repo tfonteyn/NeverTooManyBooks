@@ -509,12 +509,14 @@ public class CoverStorage {
 
     /**
      * Check if we need to enable support for 'undo' after cover manipulations.
+     * <p>
+     * The default is {@code true} unless changed in the user preferences.
      *
      * @return {@code true} if enabled
      */
     private boolean isUndoEnabled() {
         return PreferenceManager.getDefaultSharedPreferences(appContextSupplier.get())
-                                .getBoolean(Prefs.pk_image_undo_enabled, false);
+                                .getBoolean(Prefs.pk_image_undo_enabled, true);
     }
 
     /**
