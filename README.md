@@ -80,6 +80,23 @@ at the original creators.
 
 ## History
 
+### 4.6.0
+
+NEW:
+
+- Cover operations can now be undone (via the cover context menu).
+  This can be disabled in preferences if you are low on storage space.
+
+---
+
+### 4.5.1
+
+FIXES:
+
+- UI bug in export
+
+---
+
 ### 4.5.0
 
 NEW:
@@ -106,19 +123,22 @@ FIXES:
 - fixed obscure bug the list would not rebuild after editing multiple books.
 
 ---
-4.4.2
+
+### 4.4.2
 
 - fix #17 : Devices like the Pixel 6a which have a `height:expanded/width:compact` screen size
   should now display the filter and style-picker dialogs correctly.
 
 ---
-4.4.1
+
+### 4.4.1
 
 - fix GoogleBooks engine compression support.
 - fix setting a books read-status from from the book-list row menus.
 
 ---
-4.4.0
+
+### 4.4.0
 
 NEW:
 
@@ -157,18 +177,21 @@ REMOVED:
 - The crop option "whole picture" was removed and this behaviour is now always on.
 
 ---
-4.3.5
+
+### 4.3.5
 
 - fix #12; the cover browser is now fullscreen on medium screens.
 
 ---
-4.3.4
+
+### 4.3.4
 
 - fix #10 : when searching by Author/Title a search was quitting at the first "not-found".
   The search will now proceed to the next site.
 
 ---
-4.3.3
+
+### 4.3.3
 
 NEW:
 
@@ -188,7 +211,8 @@ FIXES:
   [Weblate](https://hosted.weblate.org/engage/nevertoomanybooks/).
 
 ---
-4.3.0
+
+### 4.3.0
 
 NEW:
 
@@ -203,7 +227,8 @@ FIXES:
   (e.g. multiple authors for a book are now accepted).
 
 ---
-4.2.0
+
+### 4.2.0
 
 NEW:
 
@@ -216,14 +241,16 @@ FIXES:
 - filter/style dialogs now expand properly on smaller screens.
 
 ---
-4.1.2
+
+### 4.1.2
 
 - fix: enable KBNL and BedeTheque globally making them actually available. When upgrading,
   you'll still need to manually enable them in Settings/Websites on the books and covers tabs.
 - Updated amazon price parsing for better results.
 
 ---
-4.1.1
+
+### 4.1.1
 
 - Added more defensive checks and extra logging to the parsers which should help with
   decimal separator conflicts.
@@ -231,7 +258,8 @@ FIXES:
 - fix for an issue with the debug-report.
 
 ---
-4.1.0
+
+### 4.1.0
 
 NEW:
 
@@ -246,7 +274,8 @@ FIXES:
 - Importing Calibre library data now correctly maps bookshelves
 
 ---
-4.0.0
+
+### 4.0.0
 
 NEW:
 
