@@ -32,6 +32,14 @@
 
         <SwitchPreference
             android:defaultValue="false"
+            android:key="style.booklist.show.pages"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_pages"
+            />
+
+        <SwitchPreference
+            android:defaultValue="false"
             android:key="style.booklist.show.rating"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"

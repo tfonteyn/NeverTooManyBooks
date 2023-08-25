@@ -203,12 +203,24 @@
                 />
 
             <TextView
-                android:id="@+id/condition"
+                android:id="@+id/pages"
                 style="@style/BoB.Group.Book.Text"
                 android:visibility="gone"
                 app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
                 app:layout_constraintStart_toEndOf="@id/col1"
                 app:layout_constraintTop_toBottomOf="@id/format"
+                tools:ignore="SelectableText"
+                tools:text="1073 pages"
+                tools:visibility="visible"
+                />
+
+            <TextView
+                android:id="@+id/condition"
+                style="@style/BoB.Group.Book.Text"
+                android:visibility="gone"
+                app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
+                app:layout_constraintStart_toEndOf="@id/col1"
+                app:layout_constraintTop_toBottomOf="@id/pages"
                 tools:ignore="SelectableText"
                 tools:text="@sample/data.json/condition/name"
                 tools:visibility="visible"

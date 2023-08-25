@@ -102,6 +102,7 @@ public class StyleDataStore
     private static final String PK_LIST_SHOW_LANGUAGE = "style.booklist.show.language";
     private static final String PK_LIST_SHOW_LOCATION = "style.booklist.show.location";
     private static final String PK_LIST_SHOW_RATING = "style.booklist.show.rating";
+    private static final String PK_LIST_SHOW_PAGE_COUNT = "style.booklist.show.pages";
     private static final String PK_LIST_SHOW_BOOKSHELVES = "style.booklist.show.bookshelves";
     private static final String PK_LIST_SHOW_ISBN = "style.booklist.show.isbn";
 
@@ -128,6 +129,7 @@ public class StyleDataStore
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(PK_LIST_SHOW_LANGUAGE, DBKey.LANGUAGE);
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(PK_LIST_SHOW_LOCATION, DBKey.LOCATION);
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(PK_LIST_SHOW_RATING, DBKey.RATING);
+        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(PK_LIST_SHOW_PAGE_COUNT, DBKey.PAGE_COUNT);
     }
 
     static {

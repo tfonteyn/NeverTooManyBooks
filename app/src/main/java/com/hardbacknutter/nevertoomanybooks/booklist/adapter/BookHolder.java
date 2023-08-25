@@ -54,6 +54,8 @@ import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfRowBookB
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.PagesFormatter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 
@@ -95,6 +97,8 @@ public class BookHolder
     private ImageViewLoader imageLoader;
     @Nullable
     private UseFields use;
+    @Nullable
+    private FieldFormatter<String> pagesFormatter;
 
     /**
      * Constructor.
@@ -183,6 +187,9 @@ public class BookHolder
         if (use == null) {
             // init once
             use = new UseFields(rowData, this.style);
+            if (use.pages) {
+                pagesFormatter = new PagesFormatter();
+            }
         }
 
         // Titles (book/series) are NOT reordered here.
@@ -239,6 +246,12 @@ public class BookHolder
             } else {
                 vb.rating.setVisibility(View.GONE);
             }
+        }
+
+        if (use.pages) {
+            final String pages = rowData.getString(DBKey.PAGE_COUNT);
+            //noinspection DataFlowIssue
+            showOrHide(vb.pages, pagesFormatter.format(itemView.getContext(), pages));
         }
 
         if (use.author) {
@@ -465,6 +478,7 @@ public class BookHolder
         final boolean loanee;
         final boolean cover0;
         final boolean rating;
+        final boolean pages;
         final boolean author;
         final boolean publisher;
         final boolean publicationDate;
@@ -494,6 +508,8 @@ public class BookHolder
                      && rowData.contains(DBKey.BOOK_UUID);
             rating = style.isShowField(Style.Screen.List, DBKey.RATING)
                      && rowData.contains(DBKey.RATING);
+            pages = style.isShowField(Style.Screen.List, DBKey.PAGE_COUNT)
+                    && rowData.contains(DBKey.PAGE_COUNT);
             author = style.isShowField(Style.Screen.List, DBKey.FK_AUTHOR)
                      && rowData.contains(DBKey.AUTHOR_FORMATTED);
             publisher = style.isShowField(Style.Screen.List, DBKey.FK_PUBLISHER)

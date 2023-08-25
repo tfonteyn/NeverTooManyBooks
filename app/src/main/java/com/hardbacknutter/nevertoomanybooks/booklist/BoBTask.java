@@ -97,6 +97,15 @@ public class BoBTask
         }
     }
 
+    /**
+     * Start the task.
+     *
+     * @param bookshelf            the shelf for which we're building the list
+     * @param mode                 see {@link RebuildBooklist}
+     * @param searchCriteria       filters
+     * @param desiredCentralBookId the book id we want the new list to display
+     *                             more-or-less in the center of the screen
+     */
     public void build(@NonNull final Bookshelf bookshelf,
                       @NonNull final RebuildBooklist mode,
                       @NonNull final SearchCriteria searchCriteria,
@@ -317,6 +326,16 @@ public class BoBTask
             builder.addDomain(new DomainExpression(DBDefinitions.DOM_BOOK_RATING,
                                                    DBDefinitions.TBL_BOOKS));
         }
+
+        if (style.isShowField(Style.Screen.List, DBKey.PAGE_COUNT)) {
+            // It's very unlikely that the sorting effect would ever be seen,
+            // but when it does, we simply list the highest number of pages first.
+            // This also means that non-numerical results for paging
+            // will be shown before pure numbers. Should be acceptable.
+            builder.addDomain(new DomainExpression(DBDefinitions.DOM_BOOK_PAGES,
+                                                   DBDefinitions.TBL_BOOKS,
+                                                   Sort.Desc));
+        }
     }
 
     private void addCriteria(@NonNull final BooklistBuilder builder) {
@@ -407,11 +426,21 @@ public class BoBTask
             this.targetNodes = targetNodes;
         }
 
+        /**
+         * The resulting list.
+         *
+         * @return list
+         */
         @NonNull
         public Booklist getList() {
             return booklist;
         }
 
+        /**
+         * One or more nodes representing the book which we should try and scroll-to/display.
+         *
+         * @return nodes
+         */
         @NonNull
         public List<BooklistNode> getTargetNodes() {
             return targetNodes;

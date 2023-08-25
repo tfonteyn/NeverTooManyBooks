@@ -52,7 +52,8 @@ public class BooklistFieldVisibility
             DBKey.FORMAT,
             DBKey.LANGUAGE,
             DBKey.LOCATION,
-            DBKey.RATING);
+            DBKey.RATING,
+            DBKey.PAGE_COUNT);
 
     /**
      * Constructor.
