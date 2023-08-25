@@ -103,7 +103,7 @@ public class FieldVisibilityPreferenceFragment
     @Override
     @CallSuper
     public void onSharedPreferenceChanged(@NonNull final SharedPreferences prefs,
-                                          @NonNull final String key) {
+                                          @Nullable final String key) {
         // Changing ANY field visibility will usually require recreating the activity
         vm.setOnBackRequiresActivityRecreation();
     }

@@ -384,17 +384,19 @@ public class SettingsFragment
     @Override
     @CallSuper
     public void onSharedPreferenceChanged(@NonNull final SharedPreferences prefs,
-                                          @NonNull final String key) {
-        //TODO: once these are on the style level, the below can be removed as well.
-        switch (key) {
-            case ReorderHelper.PK_SORT_TITLE_REORDERED:
-            case ReorderHelper.PK_SHOW_TITLE_REORDERED: {
-                // Set the activity result so our caller will recreate itself
-                vm.setOnBackRequiresActivityRecreation();
-                break;
+                                          @Nullable final String key) {
+        if (key != null) {
+            //TODO: once these are on the style level, the below can be removed as well.
+            switch (key) {
+                case ReorderHelper.PK_SORT_TITLE_REORDERED:
+                case ReorderHelper.PK_SHOW_TITLE_REORDERED: {
+                    // Set the activity result so our caller will recreate itself
+                    vm.setOnBackRequiresActivityRecreation();
+                    break;
+                }
+                default:
+                    break;
             }
-            default:
-                break;
         }
     }
 
