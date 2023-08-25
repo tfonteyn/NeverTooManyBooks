@@ -370,9 +370,14 @@ public class BookHolder
     private void showOrHidePublisher(@NonNull final DataHolder rowData,
                                      final boolean usePub,
                                      final boolean usePubDate) {
-        String text = null;
+
+        boolean showName = false;
+        boolean showDate = false;
+
+        String name = null;
         if (usePub) {
-            text = rowData.getString(DBKey.PUBLISHER_NAME_CSV);
+            name = rowData.getString(DBKey.PUBLISHER_NAME_CSV);
+            showName = !name.isBlank();
         }
 
         String date = null;
@@ -382,15 +387,17 @@ public class BookHolder
                                                               .getConfiguration().getLocales()
                                                               .get(0),
                                                       dateStr);
+            showDate = !date.isBlank();
         }
 
-        if (text != null && !text.isBlank() && date != null && !date.isBlank()) {
-            // Combine Publisher and date
-            showOrHide(vb.publisher, String.format(a_bracket_b_bracket, text, date));
-
-        } else {
-            // there was no publisher, just use the date
+        if (showName && showDate) {
+            showOrHide(vb.publisher, String.format(a_bracket_b_bracket, name, date));
+        } else if (showName) {
+            showOrHide(vb.publisher, name);
+        } else if (showDate) {
             showOrHide(vb.publisher, date);
+        } else {
+            vb.publisher.setVisibility(View.GONE);
         }
     }
 
