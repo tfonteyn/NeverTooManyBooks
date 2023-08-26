@@ -100,10 +100,10 @@ public abstract class BasePreferenceFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final Toolbar toolbar = getToolbar();
-        toolbar.setTitle(R.string.lbl_settings);
-        // preventative erasing of any existing subtitle
-        toolbar.setSubtitle("");
+        // The child class is responsible to set the toolbar title,
+        // but is not obliged to set the subtitle.
+        // So we must always erase any existing subtitle!
+        getToolbar().setSubtitle("");
     }
 
     /**

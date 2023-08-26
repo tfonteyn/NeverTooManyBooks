@@ -23,28 +23,9 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                   xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory
-        android:title="@string/lbl_standardize">
-        <SwitchPreference
-            android:defaultValue="true"
-            android:icon="@drawable/ic_baseline_edit_24"
-            android:key="search.reformat.format"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/pt_search_reformat_format" />
-
-        <SwitchPreference
-            android:defaultValue="true"
-            android:icon="@drawable/ic_baseline_edit_24"
-            android:key="search.reformat.color"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/pt_search_reformat_color" />
-    </PreferenceCategory>
-
     <!-- FIXME: orderingFromXml does not seem to work here ? -->
     <PreferenceCategory
-        android:title="@string/lbl_websites"
+        android:title="@string/lbl_settings"
         app:orderingFromXml="false">
 
         <Preference

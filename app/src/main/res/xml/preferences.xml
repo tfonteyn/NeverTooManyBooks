@@ -60,7 +60,7 @@
         android:title="@string/pc_search">
 
         <Preference
-            android:icon="@drawable/ic_baseline_sort_24"
+            android:icon="@drawable/ic_baseline_search_24"
             android:key="psk_search_site_order"
             android:summary="@string/pt_website_search_order_and_enable"
             android:title="@string/lbl_websites">
@@ -74,13 +74,21 @@
             android:summaryOn="@string/yes"
             android:title="@string/pt_allow_metered_network_data" />
 
-        <Preference
-            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.SearchInternetPreferenceFragment"
-            android:icon="@drawable/ic_baseline_search_24"
-            android:key="psk_web_searches"
-            android:title="@string/pt_more"
-            />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_baseline_edit_24"
+            android:key="search.reformat.format"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_search_reformat_format" />
 
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_baseline_edit_24"
+            android:key="search.reformat.color"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_search_reformat_color" />
     </PreferenceCategory>
 
     <PreferenceCategory

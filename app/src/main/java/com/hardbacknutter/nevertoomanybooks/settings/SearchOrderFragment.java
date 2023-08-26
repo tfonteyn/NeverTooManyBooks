@@ -23,18 +23,11 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.MenuProvider;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -48,7 +41,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditSearchOrderBinding;
@@ -56,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.databinding.RowEditSearchsiteBinding
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
-import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
@@ -86,13 +77,6 @@ public class SearchOrderFragment
     private Site.Type type;
 
     /**
-     * The list we're handling in this fragment (tab).
-     * Single-list mode: the list as passed in.
-     * All-list mode: a local <strong>deep-copy</strong> of the {@link #type} list.
-     */
-    private List<Site> siteList;
-
-    /**
      * Constructor.
      *
      * @param type of the list to edit
@@ -100,8 +84,8 @@ public class SearchOrderFragment
      * @return instance
      */
     @NonNull
-    public static Fragment create(@NonNull final Site.Type type) {
-        final Fragment fragment = new SearchOrderFragment();
+    public static SearchOrderFragment create(@NonNull final Site.Type type) {
+        final SearchOrderFragment fragment = new SearchOrderFragment();
         final Bundle args = new Bundle(1);
         args.putParcelable(BKEY_TYPE, type);
         fragment.setArguments(args);
@@ -125,26 +109,20 @@ public class SearchOrderFragment
         return vb.getRoot();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final Toolbar toolbar = getToolbar();
-        toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner(),
-                                Lifecycle.State.RESUMED);
-        toolbar.setTitle(R.string.lbl_settings);
-        toolbar.setSubtitle(R.string.lbl_websites);
-
         type = Objects.requireNonNull(requireArguments().getParcelable(BKEY_TYPE), BKEY_TYPE);
-        siteList = vm.getList(type);
 
         //noinspection DataFlowIssue
         vb.siteList.addItemDecoration(
                 new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL));
         vb.siteList.setHasFixedSize(true);
 
-        listAdapter = new SearchSiteListAdapter(getContext(), siteList,
+        listAdapter = new SearchSiteListAdapter(getContext(), vm.getList(type),
                                                 vh -> itemTouchHelper.startDrag(vh));
         vb.siteList.setAdapter(listAdapter);
 
@@ -152,6 +130,14 @@ public class SearchOrderFragment
                 new SimpleItemTouchHelperCallback(listAdapter);
         itemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         itemTouchHelper.attachToRecyclerView(vb.siteList);
+
+        //noinspection DataFlowIssue
+        vm.onSiteListUpdated().observe(getActivity(), updatedType -> {
+            // is it ours?
+            if (updatedType == type) {
+                listAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     /**
@@ -243,34 +229,6 @@ public class SearchOrderFragment
                                      final int position) {
             super.onBindViewHolder(holder, position);
             holder.onBind(getItem(position));
-        }
-    }
-
-    private class ToolbarMenuProvider
-            implements MenuProvider {
-
-        @Override
-        public void onCreateMenu(@NonNull final Menu menu,
-                                 @NonNull final MenuInflater menuInflater) {
-            menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.action_reset_to_default)
-                .setIcon(R.drawable.ic_baseline_undo_24);
-        }
-
-        @SuppressLint("NotifyDataSetChanged")
-        @Override
-        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            if (menuItem.getItemId() == R.id.MENU_RESET) {
-                final Languages languages = ServiceLocator.getInstance().getLanguages();
-                // Reset the global/original list for the type.
-                //noinspection DataFlowIssue
-                type.resetList(getContext(), languages);
-                // and replace the content of the local list with the (new) defaults.
-                siteList.clear();
-                siteList.addAll(type.getSites());
-                listAdapter.notifyDataSetChanged();
-                return true;
-            }
-            return false;
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,14 +28,14 @@ import androidx.preference.Preference;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 
-/**
- * Used/defined in xml/preferences.xml
- */
 @Keep
-public class SearchInternetPreferenceFragment
+public class SiteConfigPreferenceFragment
         extends BasePreferenceFragment {
 
-    private static final String PSK_SEARCH_SITE_ = "psk_search_site_";
+    public static final String TAG = "SiteConfigPrefFrag";
+
+    /** Preference key prefix for individual sites. */
+    private static final String PSK_SEARCH_SITE = "psk_search_site_";
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
@@ -45,7 +45,7 @@ public class SearchInternetPreferenceFragment
 
         for (final EngineId engineId : EngineId.values()) {
             final Preference preference = findPreference(
-                    PSK_SEARCH_SITE_ + engineId.getPreferenceKey());
+                    PSK_SEARCH_SITE + engineId.getPreferenceKey());
             if (preference != null) {
                 preference.setVisible(engineId.isEnabled());
             }

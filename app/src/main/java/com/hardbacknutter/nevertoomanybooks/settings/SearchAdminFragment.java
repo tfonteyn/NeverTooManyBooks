@@ -19,10 +19,14 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -30,8 +34,10 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
@@ -83,6 +89,7 @@ public class SearchAdminFragment
                     }
                 }
             };
+    private TabLayout tabPanel;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -111,15 +118,11 @@ public class SearchAdminFragment
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
-        final List<Site.Type> types = vm.getTypes();
-        tabAdapter = new TabAdapter(getActivity(), types);
+        getToolbar().addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner(),
+                                     Lifecycle.State.RESUMED);
 
-        final TabLayout tabPanel = getActivity().findViewById(R.id.tab_panel);
-
-        if (types.size() == 1) {
-            getToolbar().setSubtitle(types.get(0).getLabelResId());
-            tabPanel.setVisibility(View.GONE);
-        }
+        tabAdapter = new TabAdapter(getActivity(), vm.getTypes());
+        tabPanel = getActivity().findViewById(R.id.tab_panel);
 
         // We do NOT want any page recycled/reused - hence cache/keep ALL pages.
         vb.pager.setOffscreenPageLimit(tabAdapter.getItemCount());
@@ -128,6 +131,17 @@ public class SearchAdminFragment
         new TabLayoutMediator(tabPanel, vb.pager, (tab, position) ->
                 tab.setText(getString(tabAdapter.getTabTitle(position))))
                 .attach();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (vm.getTypes().size() == 1) {
+            tabPanel.setVisibility(View.GONE);
+        } else {
+            tabPanel.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
@@ -165,6 +179,51 @@ public class SearchAdminFragment
         @StringRes
         int getTabTitle(final int position) {
             return siteTypeList.get(position).getLabelResId();
+        }
+    }
+
+    private class ToolbarMenuProvider
+            implements MenuProvider {
+
+        @Override
+        public void onCreateMenu(@NonNull final Menu menu,
+                                 @NonNull final MenuInflater menuInflater) {
+            menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.action_reset_to_default)
+                .setIcon(R.drawable.ic_baseline_undo_24)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
+            menu.add(Menu.NONE, R.id.MENU_SETTINGS, 0, R.string.lbl_settings)
+                .setIcon(R.drawable.ic_baseline_settings_24)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        }
+
+        @SuppressLint("NotifyDataSetChanged")
+        @Override
+        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
+            final int itemId = menuItem.getItemId();
+            if (itemId == R.id.MENU_SETTINGS) {
+                final SiteConfigPreferenceFragment fragment =
+                        new SiteConfigPreferenceFragment();
+
+                tabPanel.setVisibility(View.GONE);
+
+                getParentFragmentManager()
+                        .beginTransaction()
+                        .setReorderingAllowed(true)
+                        .addToBackStack(SiteConfigPreferenceFragment.TAG)
+                        .replace(R.id.main_fragment, fragment, SiteConfigPreferenceFragment.TAG)
+                        .commit();
+                return true;
+
+            } else if (itemId == R.id.MENU_RESET) {
+                // See TabAdapter: the position will always match the index of the type
+                final int position = vb.pager.getCurrentItem();
+                //noinspection DataFlowIssue
+                vm.reset(getContext(), vm.getTypes().get(position));
+                return true;
+            }
+
+            return false;
         }
     }
 }

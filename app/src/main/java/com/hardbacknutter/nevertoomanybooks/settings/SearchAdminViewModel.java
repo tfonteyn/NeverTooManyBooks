@@ -26,6 +26,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
@@ -33,7 +34,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**
  * Shared between ALL tabs (fragments) and the hosting Activity.
@@ -52,6 +55,13 @@ public class SearchAdminViewModel
 
     /** Ordered list. */
     private final Map<Site.Type, List<Site>> typeAndSites = new LinkedHashMap<>();
+
+    private final MutableLiveData<Site.Type> siteListUpdated = new MutableLiveData<>();
+
+    @NonNull
+    MutableLiveData<Site.Type> onSiteListUpdated() {
+        return siteListUpdated;
+    }
 
     /**
      * Pseudo constructor.
@@ -80,6 +90,24 @@ public class SearchAdminViewModel
                                  Site.Type.AltEditions.getSites());
             }
         }
+    }
+
+    /**
+     * Reset the site list for the given type back to the default.
+     *
+     * @param context Current context
+     * @param type    to reset
+     */
+    public void reset(@NonNull final Context context,
+                      @NonNull final Site.Type type) {
+        final Languages languages = ServiceLocator.getInstance().getLanguages();
+        type.resetList(context, languages);
+        // and replace the content of the local list with the (new) defaults.
+        final List<Site> sites = getList(type);
+        sites.clear();
+        sites.addAll(type.getSites());
+
+        siteListUpdated.setValue(type);
     }
 
     /**
