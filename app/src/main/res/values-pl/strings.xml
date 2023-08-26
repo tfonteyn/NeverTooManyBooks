@@ -783,4 +783,5 @@
     <string name="action_undo">Cofnij</string>
     <string name="info_nothing_to_do">Nic do zrobienia.</string>
     <string name="option_restore_cover">Przywróć poprzedni obraz</string>
+    <string name="info_site_list">Wyszukiwanie jest ograniczone do: %1$s</string>
 </resources>

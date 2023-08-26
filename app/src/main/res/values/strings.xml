@@ -333,7 +333,10 @@
     <string name="progress_msg_cleaning_up">Cleaning up…</string>
     <!-- endregion -->
     <!-- region ========== Informational/Explanatory messages. -->
+    <!-- Shown after a successful connection or login to a remote service. -->
     <string name="info_authorized">Authorized</string>
+    <!-- Shown after a requested action when there was nothing to do. -->
+    <string name="info_nothing_to_do">Nothing to do.</string>
     <!-- Param 1: story title -->
     <string name="info_story_in_multiple_books">“%1$s” is present in multiple books:\n\n%2$s</string>
     <!-- Param 1: story title -->
@@ -364,6 +367,8 @@
      Some functionality is limited to the ISFDB web site only.
      This is displayed at the 'end' of a label, hence needs the brackets for clarity. -->
     <string name="info_isfdb_warning_limited_to">(only supported by the ISFDB web site)</string>
+    <!-- Information on which websites will be searched. Param 1: list of website names. -->
+    <string name="info_site_list">Searches are limited to: %1$s</string>
 
     <!-- website info: languages; type; specifics. -->
     <string name="site_description_dutch_catalogue">Dutch and more; Catalogue</string>
@@ -674,6 +679,7 @@
     <!-- Cover image context menu option -->
     <string name="option_cover_rotate_180"
             translatable="false">180°</string>
+    <string name="option_restore_cover">Restore previous image</string>
 
     <!-- Booklist FAB menu option; Start the barcode scanner and scan a single barcode/book. -->
     <string name="option_fab_add_book_by_barcode_scan">Scan a Barcode</string>
@@ -1590,9 +1596,7 @@
     <string name="X_lbl_folder">Folder</string>
     <!-- endregion -->
 
-    <string name="info_nothing_to_do">Nothing to do.</string>
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
-    <string name="option_restore_cover">Restore previous image</string>
 
 </resources>

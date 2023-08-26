@@ -771,4 +771,5 @@
     <string name="action_undo">Annuler</string>
     <string name="info_nothing_to_do">Rien à faire.</string>
     <string name="option_restore_cover">Restaurer l’image précédente</string>
+    <string name="info_site_list">Les recherches sont limitées à : %1$s</string>
 </resources>

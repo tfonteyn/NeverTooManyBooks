@@ -774,4 +774,5 @@
     <string name="action_undo">Geri al</string>
     <string name="info_nothing_to_do">Yapacak bir şey yok.</string>
     <string name="option_restore_cover">Önceki görüntüyü geri yükle</string>
+    <string name="info_site_list">Aramalar şunlarla sınırlıdır: %1$s</string>
 </resources>

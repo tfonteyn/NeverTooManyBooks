@@ -781,4 +781,5 @@
     <string name="action_undo">Deshacer</string>
     <string name="info_nothing_to_do">No hay nada que hacer.</string>
     <string name="option_restore_cover">Restaurar imagen anterior</string>
+    <string name="info_site_list">Las búsquedas se limitan a: %1$s</string>
 </resources>

@@ -767,4 +767,5 @@
     <string name="action_undo">Ongedaan maken</string>
     <string name="info_nothing_to_do">Niets te doen.</string>
     <string name="option_restore_cover">Vorige afbeelding herstellen</string>
+    <string name="info_site_list">Zoekopdrachten zijn beperkt tot: %1$s</string>
 </resources>

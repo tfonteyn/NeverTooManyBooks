@@ -801,4 +801,5 @@
     <string name="action_undo">Desfazer</string>
     <string name="info_nothing_to_do">Não há nada a fazer.</string>
     <string name="option_restore_cover">Restaurar imagem anterior</string>
+    <string name="info_site_list">As pesquisas são limitadas a: %1$s</string>
 </resources>

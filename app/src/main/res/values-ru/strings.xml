@@ -780,4 +780,5 @@
     <string name="action_undo">Отменить</string>
     <string name="info_nothing_to_do">Ничего не делать.</string>
     <string name="option_restore_cover">Восстановить предыдущее изображение</string>
+    <string name="info_site_list">Поиск ограничен: %1$s</string>
 </resources>
