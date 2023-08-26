@@ -246,6 +246,7 @@ public class DBHelper
               .remove("tips.tip.BOOKLIST_STYLE_GROUPS")
               .remove("tips.tip.BOOKLIST_STYLE_PROPERTIES")
               .remove("tips.tip.booklist_style_menu")
+              .remove("tips.tip.book_search_by_text")
 
               .remove("BookList.Style.Preferred.Order")
               .remove("bookList.style.preferred.order")
