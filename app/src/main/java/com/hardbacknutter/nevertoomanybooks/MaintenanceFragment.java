@@ -106,7 +106,6 @@ public class MaintenanceFragment
 
         final Toolbar toolbar = getToolbar();
         toolbar.setTitle(R.string.lbl_settings);
-        toolbar.setSubtitle(R.string.pt_maintenance);
 
         vb.btnResetTips.setOnClickListener(this::onResetTips);
         vb.btnPurgeFiles.setOnClickListener(this::onPurgeFiles);
