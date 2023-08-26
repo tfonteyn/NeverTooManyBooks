@@ -34,10 +34,10 @@
         <TextView
             android:id="@+id/txt_warning"
             style="@style/Text.Header"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
             android:layout_margin="@dimen/container_margin"
             android:text="@string/tip_book_search_by_text"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             />
@@ -45,10 +45,12 @@
         <TextView
             android:id="@+id/txt_limitations"
             style="@style/Text.Body"
+            android:layout_width="0dp"
             android:layout_marginStart="@dimen/container_margin"
             android:layout_marginTop="@dimen/section_margin_top"
             android:layout_marginEnd="@dimen/container_margin"
             android:textIsSelectable="true"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/txt_warning"
             tools:text="@string/warning_no_site_supports_this_method" />
@@ -115,11 +117,11 @@
         <Button
             android:id="@+id/btn_search"
             style="@style/Button.Action.Submit"
+            android:layout_marginEnd="12dp"
             android:text="@android:string/search_go"
             app:icon="@drawable/ic_baseline_search_24"
-            app:layout_constraintEnd_toEndOf="@id/lbl_publisher"
-            app:layout_constraintTop_toBottomOf="@id/lbl_publisher"
-            />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_publisher" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
