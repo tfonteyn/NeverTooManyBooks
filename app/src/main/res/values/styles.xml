@@ -44,29 +44,23 @@
     <!-- *************************************************************************************** -->
     <!-- Read-only, informative text -->
     <!-- *************************************************************************************** -->
-    <style name="Text.Header"
+    <style name="Text"
            parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
+    </style>
+
+    <style name="Text.Header">
         <item name="android:layout_marginTop">@dimen/section_margin_top</item>
         <item name="android:textColor">?android:attr/textColorSecondary</item>
-        <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
     </style>
 
-    <style name="Text.Body"
-           parent="Widget.MaterialComponents.TextView">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
+    <style name="Text.Body">
     </style>
 
-    <style name="Text.Error"
-           parent="Widget.MaterialComponents.TextView">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
+    <style name="Text.Error">
         <item name="android:textColor">?attr/colorError</item>
-        <item name="android:textIsSelectable">true</item>
     </style>
 
     <style name="Text.Header.PreferenceCategory">

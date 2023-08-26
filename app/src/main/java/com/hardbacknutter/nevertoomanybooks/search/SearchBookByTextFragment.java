@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.search;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -36,6 +37,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -44,13 +46,12 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutp
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByTextBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
+import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 
 public class SearchBookByTextFragment
         extends SearchBookBaseFragment {
@@ -125,30 +126,41 @@ public class SearchBookByTextFragment
 
         vb.btnSearch.setOnClickListener(v -> startSearch());
         explainSitesSupport(coordinator.getSiteList());
-
-        if (savedInstanceState == null) {
-            //noinspection DataFlowIssue
-            TipManager.getInstance().display(getContext(), R.string.tip_book_search_by_text, () ->
-                    EngineId.promptToRegister(getContext(), coordinator.getSiteList(),
-                                              "searchByText", null));
-        }
     }
 
     protected void explainSitesSupport(@Nullable final List<Site> sites) {
-        if (sites != null
-            && sites.stream()
+        final Context context = getContext();
+
+        if (sites != null) {
+            //noinspection DataFlowIssue
+            final List<String> engines = sites
+                    .stream()
                     .filter(Site::isActive)
                     .map(Site::getEngineId)
-                    .anyMatch(engineId -> engineId.supports(SearchEngine.SearchBy.Text))) {
-            vb.btnSearch.setEnabled(true);
-            vb.txtCanSearch.setVisibility(View.GONE);
-        } else {
-            vb.btnSearch.setEnabled(false);
-            vb.txtCanSearch.setVisibility(View.VISIBLE);
-            vb.txtCanSearch.setText(getString(R.string.warning_no_site_supports_this_method,
-                                              getString(R.string.lbl_author)
-                                              + " / " + getString(R.string.lbl_title)));
+                    .filter(engineId -> engineId.supports(SearchEngine.SearchBy.Text))
+                    .map(engineId -> engineId.getName(context))
+                    .collect(Collectors.toList());
+
+            if (!engines.isEmpty()) {
+                // Explicitly let the user known which sites will be searched.
+                vb.btnSearch.setEnabled(true);
+                final int textColor = AttrUtils
+                        .getColorInt(context, com.google.android.material.R.attr.colorOnBackground);
+                vb.txtLimitations.setTextColor(textColor);
+                vb.txtLimitations.setText(getString(R.string.info_site_list,
+                                                    String.join(", ", engines)));
+                return;
+            }
         }
+        // Null or no sites which support searching by Text
+        vb.btnSearch.setEnabled(false);
+        //noinspection DataFlowIssue
+        final int textColor = AttrUtils
+                .getColorInt(context, com.google.android.material.R.attr.colorError);
+        vb.txtLimitations.setTextColor(textColor);
+        vb.txtLimitations.setText(getString(R.string.warning_no_site_supports_this_method,
+                                            getString(R.string.lbl_author)
+                                            + " / " + getString(R.string.lbl_title)));
     }
 
     private boolean onEditorAction(@NonNull final TextView v,
