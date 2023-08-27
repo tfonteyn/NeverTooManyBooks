@@ -44,13 +44,11 @@ Booklist style sorting by date-read or date-added etc...:
  Does not happen on other devices/emulators. Won't pursue/fix.
 
 ----------------------------------------------------------------------------------------------------
-4.6.1
+4.7.0
 
 NEW:
-- Added "Page count" to the optional fields to show on the book card in the book list.
 
 FIXES:
-- #19 Publisher and PubDate are now fully independent to show/hide instead of partially linked as before.
 
 REMOVED:
 
