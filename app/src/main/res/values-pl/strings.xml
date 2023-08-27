@@ -784,4 +784,5 @@
     <string name="info_nothing_to_do">Nic do zrobienia.</string>
     <string name="option_restore_cover">Przywróć poprzedni obraz</string>
     <string name="info_site_list">Wyszukiwanie jest ograniczone do: %1$s</string>
+    <string name="tip_configure_sites">Poszczególne strony internetowe można konfigurować za pomocą ikony ustawień w górnej części ekranu.</string>
 </resources>

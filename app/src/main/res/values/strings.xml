@@ -404,9 +404,12 @@
     <!-- Tip text displayed when user enters the booklist -->
     <string name="tip_book_list">Tapping on a book will show you the details of the book. A long-press on an item in the list will give you more options.</string>
     <!-- Tip text displayed when user enters the 'Update fields from internet' screen
-     The referred "View on…" is "menu_view_book_at"
+     The referred "View on…" is "option_view_book_at"
      TODO: “View on…” should be a parameter. But that means modifying the Tip class -->
     <string name="tip_update_fields_from_internet">External site links are only processed if the site is actually contacted. As a result the menu “View on…” will likewise only show what is available.</string>
+
+    <string name="tip_configure_sites">Individual websites can be configured using the settings-icon at the top of the screen.</string>
+
     <!-- tip title and explanations for the icons used. -->
     <string name="tip_authors_works">Icons used</string>
     <!-- shown next to the Book icon -->

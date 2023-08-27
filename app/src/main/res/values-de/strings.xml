@@ -768,4 +768,5 @@
     <string name="info_nothing_to_do">Nichts zu tun.</string>
     <string name="option_restore_cover">Vorheriges Bild wiederherstellen</string>
     <string name="info_site_list">Die Suche ist beschränkt auf: %1$s</string>
+    <string name="tip_configure_sites">Einzelne Websites können über das Einstellungssymbol am oberen Bildschirmrand konfiguriert werden.</string>
 </resources>

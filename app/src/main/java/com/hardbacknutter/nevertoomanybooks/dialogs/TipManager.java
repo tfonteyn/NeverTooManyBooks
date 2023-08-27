@@ -105,6 +105,8 @@ public final class TipManager {
                 tip = new Tip(id, "book_search_by_text");
             } else if (id == R.string.tip_update_fields_from_internet) {
                 tip = new Tip(id, "update_fields_from_internet");
+            } else if (id == R.string.tip_configure_sites) {
+                tip = new Tip(id, "configure_sites");
             } else if (id == R.string.tip_authors_works) {
                 tip = new Tip(id, "authors_works")
                         .setLayoutId(R.layout.dialog_tip_author_works);

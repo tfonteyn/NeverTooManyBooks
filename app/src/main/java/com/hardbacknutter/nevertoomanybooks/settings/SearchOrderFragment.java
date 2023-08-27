@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleIte
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditSearchOrderBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditSearchsiteBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
@@ -96,6 +97,8 @@ public class SearchOrderFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        type = Objects.requireNonNull(requireArguments().getParcelable(BKEY_TYPE), BKEY_TYPE);
+
         //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(SearchAdminViewModel.class);
     }
@@ -114,8 +117,6 @@ public class SearchOrderFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        type = Objects.requireNonNull(requireArguments().getParcelable(BKEY_TYPE), BKEY_TYPE);
 
         //noinspection DataFlowIssue
         vb.siteList.addItemDecoration(
@@ -138,6 +139,10 @@ public class SearchOrderFragment
                 listAdapter.notifyDataSetChanged();
             }
         });
+
+        if (savedInstanceState == null) {
+            TipManager.getInstance().display(getContext(), R.string.tip_configure_sites, null);
+        }
     }
 
     /**

@@ -769,4 +769,5 @@
     <string name="info_nothing_to_do">Δεν χρειάζεται να κάνετε τίποτα.</string>
     <string name="option_restore_cover">Επαναφορά προηγούμενης εικόνας</string>
     <string name="info_site_list">Οι αναζητήσεις περιορίζονται σε: %1$s</string>
+    <string name="tip_configure_sites">Οι επιμέρους ιστότοποι μπορούν να διαμορφωθούν χρησιμοποιώντας το εικονίδιο ρυθμίσεων στο επάνω μέρος της οθόνης.</string>
 </resources>

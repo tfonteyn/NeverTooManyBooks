@@ -775,4 +775,5 @@
     <string name="info_nothing_to_do">Yapacak bir şey yok.</string>
     <string name="option_restore_cover">Önceki görüntüyü geri yükle</string>
     <string name="info_site_list">Aramalar şunlarla sınırlıdır: %1$s</string>
+    <string name="tip_configure_sites">Tek tek web siteleri ekranın üst kısmındaki ayarlar simgesi kullanılarak yapılandırılabilir.</string>
 </resources>
