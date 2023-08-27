@@ -80,6 +80,23 @@ at the original creators.
 
 ## History
 
+### 4.6.5
+
+NEW:
+
+- "page count" can now be shown on the booklist book level
+- restructured access to individual website configuration settings.
+  Instead of the more or less obscure "More..." preference menu,
+  they are now accessible straight from the main "Websites" ordering screen.
+- Clarified the limitations of "Search by title/author".
+
+FIXES:
+
+- fix #19 Publisher and PubDate are now fully independent to show/hide
+  instead of partially linked as before.
+
+---
+
 ### 4.6.0
 
 NEW:
