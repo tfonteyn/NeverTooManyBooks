@@ -103,15 +103,18 @@ public class AuthorBooklistGroup
                                                  Sort.Unsorted))
                 .addGroupDomain(
                         new DomainExpression(DBDefinitions.DOM_FK_AUTHOR,
-                                             DBDefinitions.TBL_BOOK_AUTHOR))
+                                             DBDefinitions.TBL_BOOK_AUTHOR,
+                                             Sort.Unsorted))
 
                 // Extra data we need:
                 .addGroupDomain(
                         new DomainExpression(DBDefinitions.DOM_AUTHOR_IS_COMPLETE,
-                                             DBDefinitions.TBL_AUTHORS))
+                                             DBDefinitions.TBL_AUTHORS,
+                                             Sort.Unsorted))
                 .addGroupDomain(
                         new DomainExpression(DBDefinitions.DOM_AUTHOR_REAL_AUTHOR,
-                                             DBDefinitions.TBL_PSEUDONYM_AUTHOR));
+                                             DBDefinitions.TBL_PSEUDONYM_AUTHOR,
+                                             Sort.Unsorted));
     }
 
     @Override

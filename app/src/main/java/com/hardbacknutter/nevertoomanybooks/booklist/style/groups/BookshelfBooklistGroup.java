@@ -90,7 +90,8 @@ public class BookshelfBooklistGroup
                                 Sort.Asc))
                 .addGroupDomain(
                         new DomainExpression(DBDefinitions.DOM_FK_BOOKSHELF,
-                                             DBDefinitions.TBL_BOOK_BOOKSHELF));
+                                             DBDefinitions.TBL_BOOK_BOOKSHELF,
+                                             Sort.Unsorted));
     }
 
     @Override
