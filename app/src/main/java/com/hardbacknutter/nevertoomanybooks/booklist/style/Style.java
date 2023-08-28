@@ -31,6 +31,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
@@ -363,7 +364,7 @@ public interface Style {
     List<DomainExpression> getBookLevelFieldsDomainExpressions();
 
     @NonNull
-    BookLevelFieldUsage getBookLevelFieldsUsage(
+    Set<String> getBookLevelFieldsUsage(
             @NonNull DataHolder rowData);
 
     /**

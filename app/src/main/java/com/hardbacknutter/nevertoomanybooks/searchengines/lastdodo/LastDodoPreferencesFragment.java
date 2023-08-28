@@ -40,7 +40,8 @@ public class LastDodoPreferencesFragment
         setPreferencesFromResource(R.xml.preferences_site_lastdodo, rootKey);
 
         final boolean useRealAuthor = ServiceLocator.getInstance().getGlobalFieldVisibility()
-                                                    .isShowField(DBKey.AUTHOR_REAL_AUTHOR);
+                                                    .isShowField(DBKey.AUTHOR_REAL_AUTHOR)
+                                                    .orElse(true);
         //noinspection DataFlowIssue
         findPreference(LastDodoSearchEngine.PK_RESOLVE_AUTHORS_ON_BEDETHEQUE)
                 .setEnabled(useRealAuthor);

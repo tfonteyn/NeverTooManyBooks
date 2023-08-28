@@ -59,7 +59,8 @@ public class StripInfoBePreferencesFragment
         setPreferencesFromResource(R.xml.preferences_site_stripinfo, rootKey);
 
         final boolean useRealAuthor = ServiceLocator.getInstance().getGlobalFieldVisibility()
-                                                    .isShowField(DBKey.AUTHOR_REAL_AUTHOR);
+                                                    .isShowField(DBKey.AUTHOR_REAL_AUTHOR)
+                                                    .orElse(true);
         //noinspection DataFlowIssue
         findPreference(StripInfoSearchEngine.PK_RESOLVE_AUTHORS_ON_BEDETHEQUE)
                 .setEnabled(useRealAuthor);

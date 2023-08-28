@@ -29,11 +29,13 @@ import androidx.annotation.Px;
 import androidx.core.math.MathUtils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -198,7 +200,7 @@ public abstract class BaseStyle
     private void initOptionalFieldOrderDefaults() {
         bookLevelFieldOrderBy.put(DBKey.TITLE, Sort.Asc);
 
-        // URGENT: merge BookLevelFieldVisibility, BookLevelFieldUsage
+        // URGENT: merge BookLevelFieldVisibility
         //  and BaseStyle#optionalFieldOrder
         // IMPORTANT: this is the same set as used by BookLevelFieldVisibility
         // but with ISBN & LANGUAGE removed !
@@ -383,21 +385,21 @@ public abstract class BaseStyle
         switch (screen) {
             case List:
                 return listFieldVisibility
-                        .isShowFieldOpt(dbKey)
+                        .isShowField(dbKey)
                         .orElseGet(() -> ServiceLocator.getInstance().getGlobalFieldVisibility()
-                                                       .isShowFieldOpt(dbKey)
+                                                       .isShowField(dbKey)
                                                        .orElse(true));
 
             case Detail:
                 return detailsFieldVisibility
-                        .isShowFieldOpt(dbKey)
+                        .isShowField(dbKey)
                         .orElseGet(() -> ServiceLocator.getInstance().getGlobalFieldVisibility()
-                                                       .isShowFieldOpt(dbKey)
+                                                       .isShowField(dbKey)
                                                        .orElse(true));
 
             case Global:
                 return ServiceLocator.getInstance().getGlobalFieldVisibility()
-                                     .isShowFieldOpt(dbKey)
+                                     .isShowField(dbKey)
                                      .orElse(true);
         }
         throw new IllegalArgumentException();
@@ -577,9 +579,49 @@ public abstract class BaseStyle
     }
 
     @NonNull
-    public BookLevelFieldUsage getBookLevelFieldsUsage(
-            @NonNull final DataHolder rowData) {
-        return new BookLevelFieldUsage(rowData, this);
+    public Set<String> getBookLevelFieldsUsage(@NonNull final DataHolder rowData) {
+        final Set<String> use = new HashSet<>();
+
+        checkUsage(rowData, use, DBKey.COVER[0], DBKey.BOOK_UUID);
+        checkUsage(rowData, use, DBKey.COVER[1], DBKey.BOOK_UUID);
+
+        checkUsage(rowData, use, DBKey.FK_AUTHOR, DBKey.AUTHOR_FORMATTED);
+        checkUsage(rowData, use, DBKey.FK_SERIES, DBKey.SERIES_TITLE);
+        checkUsage(rowData, use, DBKey.FK_PUBLISHER, DBKey.PUBLISHER_NAME);
+        checkUsage(rowData, use, DBKey.FK_BOOKSHELF, DBKey.BOOKSHELF_NAME_CSV);
+
+        checkUsage(rowData, use, DBKey.TITLE_ORIGINAL_LANG);
+        checkUsage(rowData, use, DBKey.BOOK_CONDITION);
+        checkUsage(rowData, use, DBKey.BOOK_ISBN);
+        checkUsage(rowData, use, DBKey.BOOK_PUBLICATION__DATE);
+        checkUsage(rowData, use, DBKey.FORMAT);
+        checkUsage(rowData, use, DBKey.LANGUAGE);
+        checkUsage(rowData, use, DBKey.LOCATION);
+        checkUsage(rowData, use, DBKey.RATING);
+        checkUsage(rowData, use, DBKey.PAGE_COUNT);
+
+        checkUsage(rowData, use, DBKey.SIGNED__BOOL);
+        checkUsage(rowData, use, DBKey.EDITION__BITMASK);
+        checkUsage(rowData, use, DBKey.LOANEE_NAME);
+
+        return use;
+    }
+
+    private void checkUsage(@NonNull final DataHolder rowData,
+                            @NonNull final Set<String> use,
+                            @NonNull final String key) {
+        if (isShowField(Screen.List, key) && rowData.contains(key)) {
+            use.add(key);
+        }
+    }
+
+    private void checkUsage(@NonNull final DataHolder rowData,
+                            @NonNull final Set<String> use,
+                            @NonNull final String key,
+                            @NonNull final String rdKey) {
+        if (isShowField(Screen.List, key) && rowData.contains(rdKey)) {
+            use.add(key);
+        }
     }
 
     @Override

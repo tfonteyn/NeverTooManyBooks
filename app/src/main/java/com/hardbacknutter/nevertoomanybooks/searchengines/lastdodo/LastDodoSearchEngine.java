@@ -167,7 +167,7 @@ public class LastDodoSearchEngine
     @Nullable
     private AuthorResolver getAuthorResolver(@NonNull final Context context) {
         if (ServiceLocator.getInstance().getGlobalFieldVisibility()
-                          .isShowField(DBKey.AUTHOR_REAL_AUTHOR)
+                          .isShowField(DBKey.AUTHOR_REAL_AUTHOR).orElse(true)
             && PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(PK_RESOLVE_AUTHORS_ON_BEDETHEQUE, false)) {
             return new BedethequeAuthorResolver(context, this);

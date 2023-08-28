@@ -91,7 +91,8 @@ public class PBitmaskFilter
     @Override
     public boolean isActive(@NonNull final Context context) {
         final String dbdKey = domain.getName();
-        if (ServiceLocator.getInstance().getGlobalFieldVisibility().isShowField(dbdKey)) {
+        if (ServiceLocator.getInstance().getGlobalFieldVisibility()
+                          .isShowField(dbdKey).orElse(true)) {
             return value != null;
         }
         return false;
