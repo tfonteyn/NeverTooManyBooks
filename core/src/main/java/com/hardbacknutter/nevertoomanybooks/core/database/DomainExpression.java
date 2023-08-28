@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -46,22 +46,6 @@ public class DomainExpression {
      * Constructor.
      * <p>
      * Auto-generates the expression using {@link TableDefinition#dot(Domain)}
-     * No sorting.
-     *
-     * @param domain underlying domain
-     * @param table  table owning the domain
-     */
-    public DomainExpression(@NonNull final Domain domain,
-                            @NonNull final TableDefinition table) {
-        this.domain = domain;
-        this.expression = table.dot(domain);
-        this.sort = Sort.Unsorted;
-    }
-
-    /**
-     * Constructor.
-     * <p>
-     * Auto-generates the expression using {@link TableDefinition#dot(Domain)}
      * Sorting as required.
      *
      * @param domain underlying domain
@@ -73,6 +57,24 @@ public class DomainExpression {
                             @NonNull final Sort sort) {
         this.domain = domain;
         this.expression = table.dot(domain);
+        this.sort = sort;
+    }
+
+    /**
+     * Constructor.
+     * <p>
+     * Customized expressions.
+     * Sorting as required.
+     *
+     * @param domain     underlying domain
+     * @param expression to use for fetching the data
+     * @param sort       flag
+     */
+    public DomainExpression(@NonNull final Domain domain,
+                            @Nullable final String expression,
+                            @NonNull final Sort sort) {
+        this.domain = domain;
+        this.expression = expression;
         this.sort = sort;
     }
 
@@ -95,24 +97,6 @@ public class DomainExpression {
         }
         this.domain = domain;
         this.expression = null;
-        this.sort = sort;
-    }
-
-    /**
-     * Constructor.
-     * <p>
-     * Customized expressions.
-     * Sorting as required.
-     *
-     * @param domain     underlying domain
-     * @param expression to use for fetching the data
-     * @param sort       flag
-     */
-    public DomainExpression(@NonNull final Domain domain,
-                            @Nullable final String expression,
-                            @NonNull final Sort sort) {
-        this.domain = domain;
-        this.expression = expression;
         this.sort = sort;
     }
 
