@@ -197,29 +197,38 @@ public abstract class BaseStyle
     private void initOptionalFieldOrderDefaults() {
         optionalFieldOrder.put(DBKey.TITLE, new FieldOrder(DBKey.TITLE, Sort.Asc));
 
-        final List<String> dbKeys = List.of(DBKey.COVER[0],
-                                            DBKey.EDITION__BITMASK,
-                                            DBKey.SIGNED__BOOL,
-                                            DBKey.BOOK_CONDITION,
-                                            DBKey.TITLE_ORIGINAL_LANG,
-                                            DBKey.LOANEE_NAME,
+        // URGENT: merge BooklistFieldVisibility and optionalFieldOrder
+        // IMPORTANT: this is the same set as used by BooklistFieldVisibility
+        // but with ISBN & LANGUAGE removed !
+        final List<String> dbKeys = List.of(
+                DBKey.COVER[0],
+                DBKey.COVER[1],
+                DBKey.FK_AUTHOR,
+                DBKey.FK_SERIES,
+                DBKey.FK_PUBLISHER,
+                DBKey.FK_BOOKSHELF,
 
-                                            DBKey.FK_BOOKSHELF,
-                                            DBKey.FK_AUTHOR,
-                                            DBKey.FK_SERIES,
-                                            DBKey.FK_PUBLISHER,
+                DBKey.TITLE_ORIGINAL_LANG,
+                DBKey.BOOK_CONDITION,
+                // ISBN will always be added as a domain
+                // but with optional visibility
+                // DBKey.BOOK_ISBN,
+                DBKey.BOOK_PUBLICATION__DATE,
+                DBKey.FORMAT,
+                // LANGUAGE will always be added as a domain
+                // but with optional visibility
+                // DBKey.LANGUAGE,
+                DBKey.LOCATION,
+                DBKey.RATING,
+                DBKey.PAGE_COUNT,
 
-                                            DBKey.BOOK_PUBLICATION__DATE,
-                                            DBKey.FORMAT,
-                                            DBKey.LOCATION,
-                                            DBKey.RATING,
-                                            DBKey.PAGE_COUNT);
+                DBKey.SIGNED__BOOL,
+                DBKey.EDITION__BITMASK,
+                DBKey.LOANEE_NAME
+        );
 
-        for (final String dbKey : dbKeys) {
-            if (isShowField(Screen.List, dbKey)) {
-                optionalFieldOrder.put(dbKey, new FieldOrder(dbKey, Sort.Unsorted));
-            }
-        }
+        dbKeys.forEach(dbKey -> optionalFieldOrder
+                .put(dbKey, new FieldOrder(dbKey, Sort.Unsorted)));
     }
 
     /**
@@ -412,7 +421,8 @@ public abstract class BaseStyle
                 .filter(fieldOrder -> isShowField(Screen.List, fieldOrder.dbKey))
                 .forEachOrdered(fieldOrder -> {
 
-                    if (DBKey.COVER[0].equals(fieldOrder.dbKey)) {
+                    if (DBKey.COVER[0].equals(fieldOrder.dbKey)
+                        || DBKey.COVER[1].equals(fieldOrder.dbKey)) {
                         // We need the UUID for the book to get covers
                         all.add(new DomainExpression(
                                 DBDefinitions.DOM_BOOK_UUID,
@@ -420,7 +430,7 @@ public abstract class BaseStyle
                                 fieldOrder.sort));
                     } else {
                         switch (fieldOrder.dbKey) {
-                            case DBKey.TITLE:
+                            case DBKey.TITLE: {
                                 // Title for displaying; do NOT sort on it
                                 // Example: "The Dream Master"
                                 all.add(new DomainExpression(
@@ -442,54 +452,8 @@ public abstract class BaseStyle
                                         DBDefinitions.TBL_BOOKS,
                                         fieldOrder.sort));
                                 break;
-
-                            case DBKey.EDITION__BITMASK:
-                                all.add(new DomainExpression(
-                                        DBDefinitions.DOM_BOOK_EDITION,
-                                        DBDefinitions.TBL_BOOKS,
-                                        fieldOrder.sort));
-                                break;
-
-                            case DBKey.SIGNED__BOOL:
-                                all.add(new DomainExpression(
-                                        DBDefinitions.DOM_BOOK_SIGNED,
-                                        DBDefinitions.TBL_BOOKS,
-                                        fieldOrder.sort));
-                                break;
-
-                            case DBKey.BOOK_CONDITION:
-                                all.add(new DomainExpression(
-                                        DBDefinitions.DOM_BOOK_CONDITION,
-                                        DBDefinitions.TBL_BOOKS,
-                                        fieldOrder.sort));
-                                break;
-
-                            case DBKey.TITLE_ORIGINAL_LANG:
-                                all.add(new DomainExpression(
-                                        DBDefinitions.DOM_TITLE_ORIGINAL_LANG,
-                                        DBDefinitions.TBL_BOOKS,
-                                        fieldOrder.sort));
-                                break;
-
-                            case DBKey.LOANEE_NAME:
-                                // Used to display/hide the 'lend' icon for each book.
-                                all.add(new DomainExpression(
-                                        DBDefinitions.DOM_LOANEE,
-                                        DBDefinitions.TBL_BOOK_LOANEE,
-                                        fieldOrder.sort));
-                                break;
-
-                            case DBKey.FK_BOOKSHELF:
-                                // Collect a CSV list of the bookshelves the book is on.
-                                // It is ALWAYS unsorted, as the list is build by SQLite internals
-                                // and the order returned is arbitrary.
-                                all.add(new DomainExpression(
-                                        DBDefinitions.DOM_BOOKSHELF_NAME_CSV,
-                                        DBDefinitions.EXP_BOOKSHELF_NAME_CSV,
-                                        Sort.Unsorted));
-                                break;
-
-                            case DBKey.FK_AUTHOR:
+                            }
+                            case DBKey.FK_AUTHOR: {
                                 // primary author only
                                 all.add(new DomainExpression(
                                         DBDefinitions.DOM_AUTHOR_FORMATTED_FAMILY_FIRST,
@@ -497,8 +461,8 @@ public abstract class BaseStyle
                                                 isShowAuthorByGivenName()),
                                         fieldOrder.sort));
                                 break;
-
-                            case DBKey.FK_SERIES:
+                            }
+                            case DBKey.FK_SERIES: {
                                 // primary series only
                                 all.add(new DomainExpression(
                                         DBDefinitions.DOM_SERIES_TITLE,
@@ -509,48 +473,97 @@ public abstract class BaseStyle
                                         DBDefinitions.TBL_BOOK_SERIES,
                                         fieldOrder.sort));
                                 break;
-
-                            case DBKey.FK_PUBLISHER:
+                            }
+                            case DBKey.FK_PUBLISHER: {
                                 // primary publisher only
                                 all.add(new DomainExpression(
                                         DBDefinitions.DOM_PUBLISHER_NAME,
                                         DBDefinitions.TBL_PUBLISHERS,
                                         fieldOrder.sort));
                                 break;
+                            }
+                            case DBKey.FK_BOOKSHELF: {
+                                // Collect a CSV list of the bookshelves the book is on.
+                                // It is ALWAYS unsorted, as the list is build by SQLite internals
+                                // and the order returned is arbitrary.
+                                all.add(new DomainExpression(
+                                        DBDefinitions.DOM_BOOKSHELF_NAME_CSV,
+                                        DBDefinitions.EXP_BOOKSHELF_NAME_CSV,
+                                        Sort.Unsorted));
+                                break;
+                            }
 
-                            case DBKey.BOOK_PUBLICATION__DATE:
+                            case DBKey.TITLE_ORIGINAL_LANG: {
+                                all.add(new DomainExpression(
+                                        DBDefinitions.DOM_TITLE_ORIGINAL_LANG,
+                                        DBDefinitions.TBL_BOOKS,
+                                        fieldOrder.sort));
+                                break;
+                            }
+                            case DBKey.BOOK_CONDITION: {
+                                all.add(new DomainExpression(
+                                        DBDefinitions.DOM_BOOK_CONDITION,
+                                        DBDefinitions.TBL_BOOKS,
+                                        fieldOrder.sort));
+                                break;
+                            }
+                            case DBKey.BOOK_PUBLICATION__DATE: {
                                 all.add(new DomainExpression(
                                         DBDefinitions.DOM_BOOK_DATE_PUBLISHED,
                                         DBDefinitions.TBL_BOOKS,
                                         fieldOrder.sort));
                                 break;
-
-                            case DBKey.FORMAT:
+                            }
+                            case DBKey.FORMAT: {
                                 all.add(new DomainExpression(
                                         DBDefinitions.DOM_BOOK_FORMAT,
                                         DBDefinitions.TBL_BOOKS,
                                         fieldOrder.sort));
                                 break;
-
-                            case DBKey.LOCATION:
+                            }
+                            case DBKey.LOCATION: {
                                 all.add(new DomainExpression(
                                         DBDefinitions.DOM_BOOK_LOCATION,
                                         DBDefinitions.TBL_BOOKS,
                                         fieldOrder.sort));
                                 break;
-
-                            case DBKey.RATING:
+                            }
+                            case DBKey.RATING: {
                                 all.add(new DomainExpression(
                                         DBDefinitions.DOM_BOOK_RATING,
                                         DBDefinitions.TBL_BOOKS,
                                         fieldOrder.sort));
                                 break;
-
-                            case DBKey.PAGE_COUNT:
+                            }
+                            case DBKey.PAGE_COUNT: {
                                 all.add(new DomainExpression(DBDefinitions.DOM_BOOK_PAGES,
                                                              DBDefinitions.TBL_BOOKS,
                                                              fieldOrder.sort));
                                 break;
+                            }
+
+                            case DBKey.SIGNED__BOOL: {
+                                all.add(new DomainExpression(
+                                        DBDefinitions.DOM_BOOK_SIGNED,
+                                        DBDefinitions.TBL_BOOKS,
+                                        fieldOrder.sort));
+                                break;
+                            }
+                            case DBKey.EDITION__BITMASK: {
+                                all.add(new DomainExpression(
+                                        DBDefinitions.DOM_BOOK_EDITION,
+                                        DBDefinitions.TBL_BOOKS,
+                                        fieldOrder.sort));
+                                break;
+                            }
+                            case DBKey.LOANEE_NAME: {
+                                // Used to display/hide the 'lend' icon for each book.
+                                all.add(new DomainExpression(
+                                        DBDefinitions.DOM_LOANEE,
+                                        DBDefinitions.TBL_BOOK_LOANEE,
+                                        fieldOrder.sort));
+                                break;
+                            }
 
                             default:
                                 throw new IllegalArgumentException("DBKey missing: "

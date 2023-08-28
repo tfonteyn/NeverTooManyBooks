@@ -27,7 +27,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
  * Encapsulate the Book fields which can be shown on the Book-list screen
  * as defined <strong>by the current style</strong>.
  * <p>
- * Preference keys must be kept in sync with "res/xml/preferences_style_book_details.xml"
+ * Keys must be kept in sync with "res/xml/preferences_style_book_details.xml"
  */
 public class BooklistFieldVisibility
         extends FieldVisibility {
@@ -35,7 +35,10 @@ public class BooklistFieldVisibility
     /** The fields which will be visible by default. */
     public static final long DEFAULT = getBitValue(Set.of(
             DBKey.COVER[0],
-            DBKey.FK_SERIES));
+            DBKey.FK_SERIES,
+            DBKey.SIGNED__BOOL,
+            DBKey.EDITION__BITMASK,
+            DBKey.LOANEE_NAME));
 
     private static final Set<String> DB_KEYS = Set.of(
             DBKey.COVER[0],
@@ -53,7 +56,12 @@ public class BooklistFieldVisibility
             DBKey.LANGUAGE,
             DBKey.LOCATION,
             DBKey.RATING,
-            DBKey.PAGE_COUNT);
+            DBKey.PAGE_COUNT,
+
+            DBKey.SIGNED__BOOL,
+            DBKey.EDITION__BITMASK,
+            DBKey.LOANEE_NAME
+    );
 
     /**
      * Constructor.
