@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BookLevelFieldUsage;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
@@ -96,7 +97,7 @@ public class BookHolder
     @Nullable
     private ImageViewLoader imageLoader;
     @Nullable
-    private UseFields use;
+    private BookLevelFieldUsage use;
     @Nullable
     private FieldFormatter<String> pagesFormatter;
 
@@ -186,7 +187,7 @@ public class BookHolder
     public void onBind(@NonNull final DataHolder rowData) {
         if (use == null) {
             // init once
-            use = new UseFields(rowData, this.style);
+            use = style.getBookLevelFieldsUsage(rowData);
             if (use.pages) {
                 pagesFormatter = new PagesFormatter();
             }
@@ -195,15 +196,12 @@ public class BookHolder
         // Titles (book/series) are NOT reordered here.
         // It does not make much sense in this particular view/holder,
         // and slows down scrolling to much.
-
-        // {@link BoBTask#fixedDomainList}
         vb.title.setText(rowData.getString(DBKey.TITLE));
 
         if (use.originalTitle) {
             vb.originalTitle.setText(rowData.getString(DBKey.TITLE_ORIGINAL_LANG));
         }
 
-        // {@link BoBTask#fixedDomainList}
         vb.iconRead.setVisibility(
                 rowData.getBoolean(DBKey.READ__BOOL) ? View.VISIBLE : View.GONE);
 
@@ -223,7 +221,7 @@ public class BookHolder
             vb.iconLendOut.setVisibility(isSet ? View.VISIBLE : View.GONE);
         }
 
-        if (use.cover0) {
+        if (use.cover[0]) {
             setImageView(rowData.getString(DBKey.BOOK_UUID));
         }
 
@@ -255,7 +253,7 @@ public class BookHolder
         }
 
         if (use.author) {
-            //TODO: maybe add support for real-name
+            //ENHANCE: maybe add support for real-name
             showOrHide(vb.author, rowData.getString(DBKey.AUTHOR_FORMATTED));
         }
 
@@ -263,7 +261,6 @@ public class BookHolder
             showOrHidePublisher(rowData, use.publisher, use.publicationDate);
         }
 
-        // {@link BoBTask#fixedDomainList}
         if (use.isbn) {
             showOrHide(vb.isbn, rowData.getString(DBKey.BOOK_ISBN));
         }
@@ -282,7 +279,6 @@ public class BookHolder
             }
         }
 
-        // {@link BoBTask#fixedDomainList}
         if (use.language) {
             final String language = ServiceLocator
                     .getInstance().getLanguages().getDisplayNameFromISO3(
@@ -471,67 +467,6 @@ public class BookHolder
             // Cache not used: Get the image from the file system and display it.
             //noinspection DataFlowIssue
             imageLoader.fromFile(vb.coverImage0, file.get(), null);
-        }
-    }
-
-    /**
-     * Cache the 'use' flags for {@link #onBind(DataHolder)}.
-     */
-    private static class UseFields {
-        final boolean originalTitle;
-        final boolean isbn;
-        final boolean signed;
-        final boolean edition;
-        final boolean loanee;
-        final boolean cover0;
-        final boolean rating;
-        final boolean pages;
-        final boolean author;
-        final boolean publisher;
-        final boolean publicationDate;
-        final boolean format;
-        final boolean condition;
-        final boolean language;
-        final boolean location;
-        final boolean bookshelves;
-        final boolean series;
-
-        UseFields(@NonNull final DataHolder rowData,
-                  @NonNull final Style style) {
-
-            originalTitle = style.isShowField(Style.Screen.List, DBKey.TITLE_ORIGINAL_LANG)
-                            && rowData.contains(DBKey.TITLE_ORIGINAL_LANG);
-
-            isbn = style.isShowField(Style.Screen.List, DBKey.BOOK_ISBN);
-            series = style.isShowField(Style.Screen.List, DBKey.FK_SERIES);
-
-            signed = style.isShowField(Style.Screen.List, DBKey.SIGNED__BOOL)
-                     && rowData.contains(DBKey.SIGNED__BOOL);
-            edition = style.isShowField(Style.Screen.List, DBKey.EDITION__BITMASK)
-                      && rowData.contains(DBKey.EDITION__BITMASK);
-            loanee = style.isShowField(Style.Screen.List, DBKey.LOANEE_NAME)
-                     && rowData.contains(DBKey.LOANEE_NAME);
-            cover0 = style.isShowField(Style.Screen.List, DBKey.COVER[0])
-                     && rowData.contains(DBKey.BOOK_UUID);
-            rating = style.isShowField(Style.Screen.List, DBKey.RATING)
-                     && rowData.contains(DBKey.RATING);
-            pages = style.isShowField(Style.Screen.List, DBKey.PAGE_COUNT)
-                    && rowData.contains(DBKey.PAGE_COUNT);
-            author = style.isShowField(Style.Screen.List, DBKey.FK_AUTHOR)
-                     && rowData.contains(DBKey.AUTHOR_FORMATTED);
-            publisher = style.isShowField(Style.Screen.List, DBKey.FK_PUBLISHER)
-                        && rowData.contains(DBKey.PUBLISHER_NAME);
-            publicationDate = style.isShowField(Style.Screen.List, DBKey.BOOK_PUBLICATION__DATE)
-                              && rowData.contains(DBKey.BOOK_PUBLICATION__DATE);
-            format = style.isShowField(Style.Screen.List, DBKey.FORMAT)
-                     && rowData.contains(DBKey.FORMAT);
-            condition = style.isShowField(Style.Screen.List, DBKey.BOOK_CONDITION)
-                        && rowData.contains(DBKey.BOOK_CONDITION);
-            language = style.isShowField(Style.Screen.List, DBKey.LANGUAGE);
-            location = style.isShowField(Style.Screen.List, DBKey.LOCATION)
-                       && rowData.contains(DBKey.LOCATION);
-            bookshelves = style.isShowField(Style.Screen.List, DBKey.FK_BOOKSHELF)
-                          && rowData.contains(DBKey.BOOKSHELF_NAME_CSV);
         }
     }
 }

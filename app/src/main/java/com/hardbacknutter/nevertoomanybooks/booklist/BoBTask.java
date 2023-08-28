@@ -141,7 +141,7 @@ public class BoBTask
                                                Sort.Unsorted));
 
         // The domains for the book level, visibility and ordering according to style.
-        style.getOptionalFieldDomainExpressions().forEach(builder::addDomain);
+        style.getBookLevelFieldsDomainExpressions().forEach(builder::addDomain);
 
         if (style.isShowField(Style.Screen.List, DBKey.LOANEE_NAME)) {
             builder.addLeftOuterJoin(DBDefinitions.TBL_BOOK_LOANEE);

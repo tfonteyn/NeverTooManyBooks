@@ -27,9 +27,12 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
  * Encapsulate the Book fields which can be shown on the Book-list screen
  * as defined <strong>by the current style</strong>.
  * <p>
+ * URGENT: merge BookLevelFieldVisibility, BookLevelFieldUsage
+ *  and BaseStyle#optionalFieldOrder
+ * <p>
  * Keys must be kept in sync with "res/xml/preferences_style_book_details.xml"
  */
-public class BooklistFieldVisibility
+public class BookLevelFieldVisibility
         extends FieldVisibility {
 
     /** The fields which will be visible by default. */
@@ -66,7 +69,7 @@ public class BooklistFieldVisibility
     /**
      * Constructor.
      */
-    BooklistFieldVisibility() {
+    BookLevelFieldVisibility() {
         super(DB_KEYS, DEFAULT);
     }
 }

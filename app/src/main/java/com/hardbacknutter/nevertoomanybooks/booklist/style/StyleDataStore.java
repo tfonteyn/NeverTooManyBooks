@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 /**
  * Definitions and transmogrifying (Hi Calvin) API for preference keys and actual style values.
  *
- * @see BooklistFieldVisibility
+ * @see BookLevelFieldVisibility
  * @see BookDetailsFieldVisibility
  * @see com.hardbacknutter.nevertoomanybooks.booklist.style.Style.UnderEach
  */

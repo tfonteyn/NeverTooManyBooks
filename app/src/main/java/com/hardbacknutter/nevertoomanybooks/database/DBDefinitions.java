@@ -27,7 +27,7 @@ import java.util.Map;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BookDetailsFieldVisibility;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistFieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BookLevelFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
@@ -1240,7 +1240,7 @@ public final class DBDefinitions {
         DOM_STYLE_LIST_SHOW_FIELDS =
                 new Domain.Builder(DBKey.STYLE_LIST_SHOW_FIELDS, SqLiteDataType.Integer)
                         .notNull()
-                        .withDefault(BooklistFieldVisibility.DEFAULT)
+                        .withDefault(BookLevelFieldVisibility.DEFAULT)
                         .build();
 
         /* ======================================================================================

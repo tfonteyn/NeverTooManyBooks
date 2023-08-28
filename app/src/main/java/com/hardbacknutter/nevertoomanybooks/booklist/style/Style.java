@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.SeriesBooklist
 import com.hardbacknutter.nevertoomanybooks.core.database.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
 public interface Style {
 
@@ -359,7 +360,11 @@ public interface Style {
      * @return list
      */
     @NonNull
-    List<DomainExpression> getOptionalFieldDomainExpressions();
+    List<DomainExpression> getBookLevelFieldsDomainExpressions();
+
+    @NonNull
+    BookLevelFieldUsage getBookLevelFieldsUsage(
+            @NonNull DataHolder rowData);
 
     /**
      * Which visibility options to use from the user preferences/style.

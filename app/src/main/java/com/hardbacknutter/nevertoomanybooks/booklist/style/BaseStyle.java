@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 
 /**
@@ -81,7 +82,7 @@ public abstract class BaseStyle
      * <p>
      * Key: the {@link DBKey} string.
      */
-    private final Map<String, FieldOrder> optionalFieldOrder = new LinkedHashMap<>();
+    private final Map<String, BookLevelFieldOrderBy> bookLevelFieldOrderBy = new LinkedHashMap<>();
     @NonNull
     private final String uuid;
     /**
@@ -145,7 +146,7 @@ public abstract class BaseStyle
         this.uuid = uuid;
         this.id = id;
 
-        listFieldVisibility = new BooklistFieldVisibility();
+        listFieldVisibility = new BookLevelFieldVisibility();
         detailsFieldVisibility = new BookDetailsFieldVisibility();
 
         initOptionalFieldOrderDefaults();
@@ -195,10 +196,11 @@ public abstract class BaseStyle
 
     /** load the default sorting options for the optional book-level fields. */
     private void initOptionalFieldOrderDefaults() {
-        optionalFieldOrder.put(DBKey.TITLE, new FieldOrder(DBKey.TITLE, Sort.Asc));
+        bookLevelFieldOrderBy.put(DBKey.TITLE, new BookLevelFieldOrderBy(DBKey.TITLE, Sort.Asc));
 
-        // URGENT: merge BooklistFieldVisibility and optionalFieldOrder
-        // IMPORTANT: this is the same set as used by BooklistFieldVisibility
+        // URGENT: merge BookLevelFieldVisibility, BookLevelFieldUsage
+        //  and BaseStyle#optionalFieldOrder
+        // IMPORTANT: this is the same set as used by BookLevelFieldVisibility
         // but with ISBN & LANGUAGE removed !
         final List<String> dbKeys = List.of(
                 DBKey.COVER[0],
@@ -227,8 +229,8 @@ public abstract class BaseStyle
                 DBKey.LOANEE_NAME
         );
 
-        dbKeys.forEach(dbKey -> optionalFieldOrder
-                .put(dbKey, new FieldOrder(dbKey, Sort.Unsorted)));
+        dbKeys.forEach(dbKey -> bookLevelFieldOrderBy
+                .put(dbKey, new BookLevelFieldOrderBy(dbKey, Sort.Unsorted)));
     }
 
     /**
@@ -412,24 +414,24 @@ public abstract class BaseStyle
      * @return list
      */
     @NonNull
-    public List<DomainExpression> getOptionalFieldDomainExpressions() {
+    public List<DomainExpression> getBookLevelFieldsDomainExpressions() {
         final List<DomainExpression> all = new ArrayList<>();
 
-        optionalFieldOrder
+        bookLevelFieldOrderBy
                 .values()
                 .stream()
-                .filter(fieldOrder -> isShowField(Screen.List, fieldOrder.dbKey))
-                .forEachOrdered(fieldOrder -> {
+                .filter(field -> isShowField(Screen.List, field.dbKey))
+                .forEachOrdered(field -> {
 
-                    if (DBKey.COVER[0].equals(fieldOrder.dbKey)
-                        || DBKey.COVER[1].equals(fieldOrder.dbKey)) {
+                    if (DBKey.COVER[0].equals(field.dbKey)
+                        || DBKey.COVER[1].equals(field.dbKey)) {
                         // We need the UUID for the book to get covers
                         all.add(new DomainExpression(
                                 DBDefinitions.DOM_BOOK_UUID,
                                 DBDefinitions.TBL_BOOKS,
-                                fieldOrder.sort));
+                                field.sort));
                     } else {
-                        switch (fieldOrder.dbKey) {
+                        switch (field.dbKey) {
                             case DBKey.TITLE: {
                                 // Title for displaying; do NOT sort on it
                                 // Example: "The Dream Master"
@@ -450,7 +452,7 @@ public abstract class BaseStyle
                                 all.add(new DomainExpression(
                                         DBDefinitions.DOM_TITLE_OB,
                                         DBDefinitions.TBL_BOOKS,
-                                        fieldOrder.sort));
+                                        field.sort));
                                 break;
                             }
                             case DBKey.FK_AUTHOR: {
@@ -459,7 +461,7 @@ public abstract class BaseStyle
                                         DBDefinitions.DOM_AUTHOR_FORMATTED_FAMILY_FIRST,
                                         AuthorDaoImpl.getDisplayDomainExpression(
                                                 isShowAuthorByGivenName()),
-                                        fieldOrder.sort));
+                                        field.sort));
                                 break;
                             }
                             case DBKey.FK_SERIES: {
@@ -467,11 +469,11 @@ public abstract class BaseStyle
                                 all.add(new DomainExpression(
                                         DBDefinitions.DOM_SERIES_TITLE,
                                         DBDefinitions.TBL_SERIES,
-                                        fieldOrder.sort));
+                                        field.sort));
                                 all.add(new DomainExpression(
                                         DBDefinitions.DOM_BOOK_NUM_IN_SERIES,
                                         DBDefinitions.TBL_BOOK_SERIES,
-                                        fieldOrder.sort));
+                                        field.sort));
                                 break;
                             }
                             case DBKey.FK_PUBLISHER: {
@@ -479,7 +481,7 @@ public abstract class BaseStyle
                                 all.add(new DomainExpression(
                                         DBDefinitions.DOM_PUBLISHER_NAME,
                                         DBDefinitions.TBL_PUBLISHERS,
-                                        fieldOrder.sort));
+                                        field.sort));
                                 break;
                             }
                             case DBKey.FK_BOOKSHELF: {
@@ -497,48 +499,48 @@ public abstract class BaseStyle
                                 all.add(new DomainExpression(
                                         DBDefinitions.DOM_TITLE_ORIGINAL_LANG,
                                         DBDefinitions.TBL_BOOKS,
-                                        fieldOrder.sort));
+                                        field.sort));
                                 break;
                             }
                             case DBKey.BOOK_CONDITION: {
                                 all.add(new DomainExpression(
                                         DBDefinitions.DOM_BOOK_CONDITION,
                                         DBDefinitions.TBL_BOOKS,
-                                        fieldOrder.sort));
+                                        field.sort));
                                 break;
                             }
                             case DBKey.BOOK_PUBLICATION__DATE: {
                                 all.add(new DomainExpression(
                                         DBDefinitions.DOM_BOOK_DATE_PUBLISHED,
                                         DBDefinitions.TBL_BOOKS,
-                                        fieldOrder.sort));
+                                        field.sort));
                                 break;
                             }
                             case DBKey.FORMAT: {
                                 all.add(new DomainExpression(
                                         DBDefinitions.DOM_BOOK_FORMAT,
                                         DBDefinitions.TBL_BOOKS,
-                                        fieldOrder.sort));
+                                        field.sort));
                                 break;
                             }
                             case DBKey.LOCATION: {
                                 all.add(new DomainExpression(
                                         DBDefinitions.DOM_BOOK_LOCATION,
                                         DBDefinitions.TBL_BOOKS,
-                                        fieldOrder.sort));
+                                        field.sort));
                                 break;
                             }
                             case DBKey.RATING: {
                                 all.add(new DomainExpression(
                                         DBDefinitions.DOM_BOOK_RATING,
                                         DBDefinitions.TBL_BOOKS,
-                                        fieldOrder.sort));
+                                        field.sort));
                                 break;
                             }
                             case DBKey.PAGE_COUNT: {
                                 all.add(new DomainExpression(DBDefinitions.DOM_BOOK_PAGES,
                                                              DBDefinitions.TBL_BOOKS,
-                                                             fieldOrder.sort));
+                                                             field.sort));
                                 break;
                             }
 
@@ -546,14 +548,14 @@ public abstract class BaseStyle
                                 all.add(new DomainExpression(
                                         DBDefinitions.DOM_BOOK_SIGNED,
                                         DBDefinitions.TBL_BOOKS,
-                                        fieldOrder.sort));
+                                        field.sort));
                                 break;
                             }
                             case DBKey.EDITION__BITMASK: {
                                 all.add(new DomainExpression(
                                         DBDefinitions.DOM_BOOK_EDITION,
                                         DBDefinitions.TBL_BOOKS,
-                                        fieldOrder.sort));
+                                        field.sort));
                                 break;
                             }
                             case DBKey.LOANEE_NAME: {
@@ -561,18 +563,24 @@ public abstract class BaseStyle
                                 all.add(new DomainExpression(
                                         DBDefinitions.DOM_LOANEE,
                                         DBDefinitions.TBL_BOOK_LOANEE,
-                                        fieldOrder.sort));
+                                        field.sort));
                                 break;
                             }
 
                             default:
                                 throw new IllegalArgumentException("DBKey missing: "
-                                                                   + fieldOrder.dbKey);
+                                                                   + field.dbKey);
                         }
                     }
                 });
 
         return all;
+    }
+
+    @NonNull
+    public BookLevelFieldUsage getBookLevelFieldsUsage(
+            @NonNull final DataHolder rowData) {
+        return new BookLevelFieldUsage(rowData, this);
     }
 
     @Override
@@ -799,16 +807,4 @@ public abstract class BaseStyle
                + '}';
     }
 
-    private static class FieldOrder {
-        @NonNull
-        final String dbKey;
-        @NonNull
-        final Sort sort;
-
-        FieldOrder(@NonNull final String dbKey,
-                   @NonNull final Sort sort) {
-            this.dbKey = dbKey;
-            this.sort = sort;
-        }
-    }
 }
