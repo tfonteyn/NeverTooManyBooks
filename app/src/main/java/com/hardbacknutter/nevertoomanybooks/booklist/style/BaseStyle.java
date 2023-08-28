@@ -29,7 +29,6 @@ import androidx.annotation.Px;
 import androidx.core.math.MathUtils;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,9 +62,10 @@ public abstract class BaseStyle
         implements Style {
 
     private static final String ERROR_UUID_IS_EMPTY = "uuid.isEmpty()";
+
     /** Configuration for the fields shown on the Book level in the book list. */
     @NonNull
-    private final FieldVisibility listFieldVisibility;
+    private final FieldVisibility bookLevelFieldVisibility;
 
     /** Configuration for the fields shown on the Book details screen. */
     @NonNull
@@ -148,7 +148,9 @@ public abstract class BaseStyle
         this.uuid = uuid;
         this.id = id;
 
-        listFieldVisibility = new BookLevelFieldVisibility();
+
+        bookLevelFieldVisibility = new BookLevelFieldVisibility();
+
         detailsFieldVisibility = new BookDetailsFieldVisibility();
 
         initOptionalFieldOrderDefaults();
@@ -200,10 +202,10 @@ public abstract class BaseStyle
     private void initOptionalFieldOrderDefaults() {
         bookLevelFieldOrderBy.put(DBKey.TITLE, Sort.Asc);
 
-        // URGENT: merge BookLevelFieldVisibility
-        //  and BaseStyle#optionalFieldOrder
+        // URGENT: merge with BookLevelFieldVisibility
         // IMPORTANT: this is the same set as used by BookLevelFieldVisibility
-        // but with ISBN & LANGUAGE removed !
+        // but with ISBN & LANGUAGE removed.
+        // Also not this is an ORDERED LIST!
         final List<String> dbKeys = List.of(
                 DBKey.COVER[0],
                 DBKey.COVER[1],
@@ -381,21 +383,20 @@ public abstract class BaseStyle
     public boolean isShowField(@NonNull final Screen screen,
                                @NonNull final String dbKey) {
         // First check the style!
-        // If we have a field which is simply not defined on the style, use the global
+        // If we have a field which is simply not defined on the respective FieldVisibility,
+        // use the global and if that fails, just return 'true'
         switch (screen) {
             case List:
-                return listFieldVisibility
-                        .isShowField(dbKey)
-                        .orElseGet(() -> ServiceLocator.getInstance().getGlobalFieldVisibility()
-                                                       .isShowField(dbKey)
-                                                       .orElse(true));
+                return bookLevelFieldVisibility.isShowField(dbKey).orElseGet(
+                        () -> ServiceLocator.getInstance().getGlobalFieldVisibility()
+                                            .isShowField(dbKey)
+                                            .orElse(true));
 
             case Detail:
-                return detailsFieldVisibility
-                        .isShowField(dbKey)
-                        .orElseGet(() -> ServiceLocator.getInstance().getGlobalFieldVisibility()
-                                                       .isShowField(dbKey)
-                                                       .orElse(true));
+                return detailsFieldVisibility.isShowField(dbKey).orElseGet(
+                        () -> ServiceLocator.getInstance().getGlobalFieldVisibility()
+                                            .isShowField(dbKey)
+                                            .orElse(true));
 
             case Global:
                 return ServiceLocator.getInstance().getGlobalFieldVisibility()
@@ -580,56 +581,22 @@ public abstract class BaseStyle
 
     @NonNull
     public Set<String> getBookLevelFieldsUsage(@NonNull final DataHolder rowData) {
-        final Set<String> use = new HashSet<>();
-
-        checkUsage(rowData, use, DBKey.COVER[0], DBKey.BOOK_UUID);
-        checkUsage(rowData, use, DBKey.COVER[1], DBKey.BOOK_UUID);
-
-        checkUsage(rowData, use, DBKey.FK_AUTHOR, DBKey.AUTHOR_FORMATTED);
-        checkUsage(rowData, use, DBKey.FK_SERIES, DBKey.SERIES_TITLE);
-        checkUsage(rowData, use, DBKey.FK_PUBLISHER, DBKey.PUBLISHER_NAME);
-        checkUsage(rowData, use, DBKey.FK_BOOKSHELF, DBKey.BOOKSHELF_NAME_CSV);
-
-        checkUsage(rowData, use, DBKey.TITLE_ORIGINAL_LANG);
-        checkUsage(rowData, use, DBKey.BOOK_CONDITION);
-        checkUsage(rowData, use, DBKey.BOOK_ISBN);
-        checkUsage(rowData, use, DBKey.BOOK_PUBLICATION__DATE);
-        checkUsage(rowData, use, DBKey.FORMAT);
-        checkUsage(rowData, use, DBKey.LANGUAGE);
-        checkUsage(rowData, use, DBKey.LOCATION);
-        checkUsage(rowData, use, DBKey.RATING);
-        checkUsage(rowData, use, DBKey.PAGE_COUNT);
-
-        checkUsage(rowData, use, DBKey.SIGNED__BOOL);
-        checkUsage(rowData, use, DBKey.EDITION__BITMASK);
-        checkUsage(rowData, use, DBKey.LOANEE_NAME);
-
-        return use;
+        return bookLevelFieldVisibility
+                .getVisibleFieldKeys()
+                .stream()
+                .filter(key -> rowData.contains(Objects.requireNonNull(
+                        BookLevelFieldVisibility.DB_KEY_WITH_DOMAIN_NAME.get(key),
+                        () -> "DB_KEY_TO_DOMAIN_NAME is missing key: " + key)))
+                .collect(Collectors.toSet());
     }
 
-    private void checkUsage(@NonNull final DataHolder rowData,
-                            @NonNull final Set<String> use,
-                            @NonNull final String key) {
-        if (isShowField(Screen.List, key) && rowData.contains(key)) {
-            use.add(key);
-        }
-    }
-
-    private void checkUsage(@NonNull final DataHolder rowData,
-                            @NonNull final Set<String> use,
-                            @NonNull final String key,
-                            @NonNull final String rdKey) {
-        if (isShowField(Screen.List, key) && rowData.contains(rdKey)) {
-            use.add(key);
-        }
-    }
 
     @Override
     @NonNull
     public FieldVisibility getFieldVisibility(@NonNull final Screen screen) {
         switch (screen) {
             case List:
-                return listFieldVisibility;
+                return bookLevelFieldVisibility;
             case Detail:
                 return detailsFieldVisibility;
             case Global:
@@ -808,7 +775,7 @@ public abstract class BaseStyle
                && coverScale == style.coverScale
                && textScale == style.textScale
 
-               && Objects.equals(listFieldVisibility, style.listFieldVisibility)
+               && Objects.equals(bookLevelFieldVisibility, style.bookLevelFieldVisibility)
                && Objects.equals(detailsFieldVisibility, style.detailsFieldVisibility)
                && LinkedMap.equals(groups, style.groups);
     }
@@ -819,7 +786,7 @@ public abstract class BaseStyle
                             showAuthorByGivenName, sortAuthorByGivenName,
                             expansionLevel, headerFieldVisibility, groupRowUsesPreferredHeight,
                             coverScale, textScale,
-                            listFieldVisibility, detailsFieldVisibility,
+                            bookLevelFieldVisibility, detailsFieldVisibility,
                             groups);
     }
 
@@ -843,7 +810,7 @@ public abstract class BaseStyle
 
                + ", coverScale=" + coverScale
                + ", textScale=" + textScale
-               + ", listFieldVisibility=" + listFieldVisibility
+               + ", listFieldVisibility=" + bookLevelFieldVisibility
                + ", detailsFieldVisibility=" + detailsFieldVisibility
                + '}';
     }

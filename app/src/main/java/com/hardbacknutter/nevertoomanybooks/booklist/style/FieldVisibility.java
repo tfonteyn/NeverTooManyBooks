@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -230,6 +231,18 @@ public class FieldVisibility {
                    .reduce(0, (a, b) -> a | b);
     }
 
+
+    /**
+     * Get a {code Set} of {@link DBKey}s representing visible fields.
+     *
+     * @return visible fields
+     */
+    @NonNull
+    Set<String> getVisibleFieldKeys() {
+        return dbKeys.stream()
+                     .filter(key -> isShowField(key).orElseThrow())
+                     .collect(Collectors.toSet());
+    }
 
     /**
      * Check if the given field should be displayed.

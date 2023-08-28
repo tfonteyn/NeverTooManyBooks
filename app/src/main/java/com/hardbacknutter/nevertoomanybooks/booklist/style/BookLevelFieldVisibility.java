@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
+import java.util.Map;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -27,15 +28,15 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
  * Encapsulate the Book fields which can be shown on the Book-list screen
  * as defined <strong>by the current style</strong>.
  * <p>
- * URGENT: merge BookLevelFieldVisibility
- *  and BaseStyle#optionalFieldOrder
+ * URGENT: merge with BaseStyle#bookLevelFieldOrderBy
  * <p>
- * Keys must be kept in sync with "res/xml/preferences_style_book_details.xml"
+ * Keys must be kept in sync with {@link StyleDataStore} preference keys
+ * and "res/xml/preferences_style_book_details.xml".
  */
 public class BookLevelFieldVisibility
         extends FieldVisibility {
 
-    /** The fields which will be visible by default. */
+    /** The {@link DBKey}s of the fields which will be visible by default. */
     public static final long DEFAULT = getBitValue(Set.of(
             DBKey.COVER[0],
             DBKey.FK_SERIES,
@@ -43,34 +44,40 @@ public class BookLevelFieldVisibility
             DBKey.EDITION__BITMASK,
             DBKey.LOANEE_NAME));
 
-    private static final Set<String> DB_KEYS = Set.of(
-            DBKey.COVER[0],
-            DBKey.COVER[1],
+    /**
+     * The {@link DBKey}s of the fields which are supported by this class
+     * and their column names (domains) in the
+     * {@link com.hardbacknutter.nevertoomanybooks.booklist.Booklist} table.
+     */
+    static final Map<String, String> DB_KEY_WITH_DOMAIN_NAME = Map.ofEntries(
+            Map.entry(DBKey.COVER[0], DBKey.BOOK_UUID),
+            Map.entry(DBKey.COVER[1], DBKey.BOOK_UUID),
 
-            DBKey.FK_AUTHOR,
-            DBKey.FK_SERIES,
-            DBKey.FK_PUBLISHER,
-            DBKey.FK_BOOKSHELF,
+            Map.entry(DBKey.FK_AUTHOR, DBKey.AUTHOR_FORMATTED),
+            Map.entry(DBKey.FK_SERIES, DBKey.SERIES_TITLE),
+            Map.entry(DBKey.FK_PUBLISHER, DBKey.PUBLISHER_NAME),
+            Map.entry(DBKey.FK_BOOKSHELF, DBKey.BOOKSHELF_NAME_CSV),
 
-            DBKey.TITLE_ORIGINAL_LANG,
-            DBKey.BOOK_CONDITION,
-            DBKey.BOOK_ISBN,
-            DBKey.BOOK_PUBLICATION__DATE,
-            DBKey.FORMAT,
-            DBKey.LANGUAGE,
-            DBKey.LOCATION,
-            DBKey.RATING,
-            DBKey.PAGE_COUNT,
+            Map.entry(DBKey.TITLE_ORIGINAL_LANG, DBKey.TITLE_ORIGINAL_LANG),
+            Map.entry(DBKey.BOOK_CONDITION, DBKey.BOOK_CONDITION),
+            Map.entry(DBKey.BOOK_ISBN, DBKey.BOOK_ISBN),
+            Map.entry(DBKey.BOOK_PUBLICATION__DATE, DBKey.BOOK_PUBLICATION__DATE),
+            Map.entry(DBKey.FORMAT, DBKey.FORMAT),
+            Map.entry(DBKey.LANGUAGE, DBKey.LANGUAGE),
+            Map.entry(DBKey.LOCATION, DBKey.LOCATION),
+            Map.entry(DBKey.RATING, DBKey.RATING),
+            Map.entry(DBKey.PAGE_COUNT, DBKey.PAGE_COUNT),
 
-            DBKey.SIGNED__BOOL,
-            DBKey.EDITION__BITMASK,
-            DBKey.LOANEE_NAME
+            Map.entry(DBKey.SIGNED__BOOL, DBKey.SIGNED__BOOL),
+            Map.entry(DBKey.EDITION__BITMASK, DBKey.EDITION__BITMASK),
+            Map.entry(DBKey.LOANEE_NAME, DBKey.LOANEE_NAME)
     );
+
 
     /**
      * Constructor.
      */
     BookLevelFieldVisibility() {
-        super(DB_KEYS, DEFAULT);
+        super(DB_KEY_WITH_DOMAIN_NAME.keySet(), DEFAULT);
     }
 }
