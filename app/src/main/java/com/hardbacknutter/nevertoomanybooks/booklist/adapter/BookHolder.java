@@ -376,7 +376,7 @@ public class BookHolder
 
         String name = null;
         if (usePub) {
-            name = rowData.getString(DBKey.PUBLISHER_NAME_CSV);
+            name = rowData.getString(DBKey.PUBLISHER_NAME);
             showName = !name.isBlank();
         }
 
@@ -520,7 +520,7 @@ public class BookHolder
             author = style.isShowField(Style.Screen.List, DBKey.FK_AUTHOR)
                      && rowData.contains(DBKey.AUTHOR_FORMATTED);
             publisher = style.isShowField(Style.Screen.List, DBKey.FK_PUBLISHER)
-                        && rowData.contains(DBKey.PUBLISHER_NAME_CSV);
+                        && rowData.contains(DBKey.PUBLISHER_NAME);
             publicationDate = style.isShowField(Style.Screen.List, DBKey.BOOK_PUBLICATION__DATE)
                               && rowData.contains(DBKey.BOOK_PUBLICATION__DATE);
             format = style.isShowField(Style.Screen.List, DBKey.FORMAT)
