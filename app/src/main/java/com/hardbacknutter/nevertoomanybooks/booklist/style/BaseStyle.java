@@ -42,7 +42,12 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.UnderEachGroup;
+import com.hardbacknutter.nevertoomanybooks.core.database.DomainExpression;
+import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LinkedMap;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 
@@ -63,59 +68,59 @@ public abstract class BaseStyle
     @NonNull
     private final FieldVisibility detailsFieldVisibility;
 
-    /** The <strong>ordered</strong> groups shown/handled by this style. */
+    /**
+     * The <strong>ordered</strong> {@link BooklistGroup}s shown/handled by this style.
+     * <p>
+     * Key: @BooklistGroup.Id
+     */
     private final Map<Integer, BooklistGroup> groups = new LinkedHashMap<>();
 
+    /**
+     * The <strong>ordered</strong> fields on the book-level shown/handled by this style
+     * with their sorting preference.
+     * <p>
+     * Key: the {@link DBKey} string.
+     */
+    private final Map<String, FieldOrder> optionalFieldOrder = new LinkedHashMap<>();
     @NonNull
     private final String uuid;
-
     /**
      * Row id of database row from which this object comes.
      * A '0' is for an as yet unsaved user-style.
      * Always NEGATIVE (e.g. <0 ) for a build-in style
      */
     private long id;
-
     /**
      * The menu position of this style as sorted by the user.
      * Preferred styles will be at the top.
      */
     private int menuPosition;
-
     /**
      * Is this style preferred by the user; i.e. should it be shown in the preferred-list.
      */
     private boolean preferred;
-
     /** Relative scaling factor for text on the list screen. */
     @Style.TextScale
     private int textScale = Style.DEFAULT_TEXT_SCALE;
-
     /** Relative scaling factor for covers on the list screen. */
     @Style.CoverScale
     private int coverScale = Style.DEFAULT_COVER_SCALE;
-
     /** Local override. */
     private boolean sortAuthorByGivenName;
-
     /** Local override. */
     private boolean showAuthorByGivenName;
-
     /** The default number of levels to expand the list tree to. */
     private int expansionLevel = 1;
-
     /**
      * Show list header info.
      */
     private int headerFieldVisibility = BooklistHeader.BITMASK_ALL;
-
     /**
      * Should rows be shown using
      * {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT} (false),
      * or as system "?attr/listPreferredItemHeightSmall" (true).
      */
     private boolean groupRowUsesPreferredHeight = true;
-
     /**
      * Cached pixel value.
      *
@@ -142,6 +147,8 @@ public abstract class BaseStyle
 
         listFieldVisibility = new BooklistFieldVisibility();
         detailsFieldVisibility = new BookDetailsFieldVisibility();
+
+        initOptionalFieldOrderDefaults();
     }
 
     /**
@@ -183,6 +190,35 @@ public abstract class BaseStyle
 
         for (final Style.UnderEach item : Style.UnderEach.values()) {
             setShowBooks(item, style.isShowBooks(item));
+        }
+    }
+
+    /** load the default sorting options for the optional book-level fields. */
+    private void initOptionalFieldOrderDefaults() {
+        optionalFieldOrder.put(DBKey.TITLE, new FieldOrder(DBKey.TITLE, Sort.Asc));
+
+        final List<String> dbKeys = List.of(DBKey.COVER[0],
+                                            DBKey.EDITION__BITMASK,
+                                            DBKey.SIGNED__BOOL,
+                                            DBKey.BOOK_CONDITION,
+                                            DBKey.TITLE_ORIGINAL_LANG,
+                                            DBKey.LOANEE_NAME,
+
+                                            DBKey.FK_BOOKSHELF,
+                                            DBKey.FK_AUTHOR,
+                                            DBKey.FK_SERIES,
+                                            DBKey.FK_PUBLISHER,
+
+                                            DBKey.BOOK_PUBLICATION__DATE,
+                                            DBKey.FORMAT,
+                                            DBKey.LOCATION,
+                                            DBKey.RATING,
+                                            DBKey.PAGE_COUNT);
+
+        for (final String dbKey : dbKeys) {
+            if (isShowField(Screen.List, dbKey)) {
+                optionalFieldOrder.put(dbKey, new FieldOrder(dbKey, Sort.Unsorted));
+            }
         }
     }
 
@@ -263,7 +299,6 @@ public abstract class BaseStyle
         expansionLevel = value;
     }
 
-
     @Override
     public boolean isShowAuthorByGivenName() {
         return showAuthorByGivenName;
@@ -296,7 +331,6 @@ public abstract class BaseStyle
         sortAuthorByGivenName = value;
     }
 
-
     @Style.TextScale
     @Override
     public int getTextScale() {
@@ -316,7 +350,6 @@ public abstract class BaseStyle
     public void setCoverScale(@Style.CoverScale final int coverScale) {
         this.coverScale = coverScale;
     }
-
 
     @Override
     public boolean isShowHeaderField(@BooklistHeader.Option final int bit) {
@@ -358,6 +391,175 @@ public abstract class BaseStyle
                                      .orElse(true);
         }
         throw new IllegalArgumentException();
+    }
+
+    /**
+     * Create the list of {@link DomainExpression}s for the optional fields to be shown
+     * on the book-level in the {@link com.hardbacknutter.nevertoomanybooks.booklist.Booklist}.
+     * <p>
+     * WARNING: the field {@link DBKey#LOANEE_NAME} requires the caller to do a {@code LEFT JOIN}
+     * with {@link DBDefinitions#TBL_BOOK_LOANEE}.
+     *
+     * @return list
+     */
+    @NonNull
+    public List<DomainExpression> getOptionalFieldDomainExpressions() {
+        final List<DomainExpression> all = new ArrayList<>();
+
+        optionalFieldOrder
+                .values()
+                .stream()
+                .filter(fieldOrder -> isShowField(Screen.List, fieldOrder.dbKey))
+                .forEachOrdered(fieldOrder -> {
+
+                    if (DBKey.COVER[0].equals(fieldOrder.dbKey)) {
+                        // We need the UUID for the book to get covers
+                        all.add(new DomainExpression(
+                                DBDefinitions.DOM_BOOK_UUID,
+                                DBDefinitions.TBL_BOOKS,
+                                fieldOrder.sort));
+                    } else {
+                        switch (fieldOrder.dbKey) {
+                            case DBKey.TITLE:
+                                // Title for displaying; do NOT sort on it
+                                // Example: "The Dream Master"
+                                all.add(new DomainExpression(
+                                        DBDefinitions.DOM_TITLE,
+                                        DBDefinitions.TBL_BOOKS,
+                                        Sort.Unsorted));
+                                // Title for sorting
+                                // Example: "dreammasterthe" OR "thedreammaster"
+                                // i.e. depending on user preference, the first format
+                                // consists of the original title stripped of whitespace and any
+                                // special characters, and with the article/prefix moved to the end.
+                                // The second format leaves the article/prefix in its original
+                                // location.
+                                // The choice between the two formats is a user preference which,
+                                // when changed, updates ALL rows in the database with the
+                                // newly formatted title.
+                                all.add(new DomainExpression(
+                                        DBDefinitions.DOM_TITLE_OB,
+                                        DBDefinitions.TBL_BOOKS,
+                                        fieldOrder.sort));
+                                break;
+
+                            case DBKey.EDITION__BITMASK:
+                                all.add(new DomainExpression(
+                                        DBDefinitions.DOM_BOOK_EDITION,
+                                        DBDefinitions.TBL_BOOKS,
+                                        fieldOrder.sort));
+                                break;
+
+                            case DBKey.SIGNED__BOOL:
+                                all.add(new DomainExpression(
+                                        DBDefinitions.DOM_BOOK_SIGNED,
+                                        DBDefinitions.TBL_BOOKS,
+                                        fieldOrder.sort));
+                                break;
+
+                            case DBKey.BOOK_CONDITION:
+                                all.add(new DomainExpression(
+                                        DBDefinitions.DOM_BOOK_CONDITION,
+                                        DBDefinitions.TBL_BOOKS,
+                                        fieldOrder.sort));
+                                break;
+
+                            case DBKey.TITLE_ORIGINAL_LANG:
+                                all.add(new DomainExpression(
+                                        DBDefinitions.DOM_TITLE_ORIGINAL_LANG,
+                                        DBDefinitions.TBL_BOOKS,
+                                        fieldOrder.sort));
+                                break;
+
+                            case DBKey.LOANEE_NAME:
+                                // Used to display/hide the 'lend' icon for each book.
+                                all.add(new DomainExpression(
+                                        DBDefinitions.DOM_LOANEE,
+                                        DBDefinitions.TBL_BOOK_LOANEE,
+                                        fieldOrder.sort));
+                                break;
+
+                            case DBKey.FK_BOOKSHELF:
+                                // Collect a CSV list of the bookshelves the book is on.
+                                // It is ALWAYS unsorted, as the list is build by SQLite internals
+                                // and the order returned is arbitrary.
+                                all.add(new DomainExpression(
+                                        DBDefinitions.DOM_BOOKSHELF_NAME_CSV,
+                                        DBDefinitions.EXP_BOOKSHELF_NAME_CSV,
+                                        Sort.Unsorted));
+                                break;
+
+                            case DBKey.FK_AUTHOR:
+                                // primary author only
+                                all.add(new DomainExpression(
+                                        DBDefinitions.DOM_AUTHOR_FORMATTED_FAMILY_FIRST,
+                                        AuthorDaoImpl.getDisplayDomainExpression(
+                                                isShowAuthorByGivenName()),
+                                        fieldOrder.sort));
+                                break;
+
+                            case DBKey.FK_SERIES:
+                                // primary series only
+                                all.add(new DomainExpression(
+                                        DBDefinitions.DOM_SERIES_TITLE,
+                                        DBDefinitions.TBL_SERIES,
+                                        fieldOrder.sort));
+                                all.add(new DomainExpression(
+                                        DBDefinitions.DOM_BOOK_NUM_IN_SERIES,
+                                        DBDefinitions.TBL_BOOK_SERIES,
+                                        fieldOrder.sort));
+                                break;
+
+                            case DBKey.FK_PUBLISHER:
+                                // primary publisher only
+                                all.add(new DomainExpression(
+                                        DBDefinitions.DOM_PUBLISHER_NAME,
+                                        DBDefinitions.TBL_PUBLISHERS,
+                                        fieldOrder.sort));
+                                break;
+
+                            case DBKey.BOOK_PUBLICATION__DATE:
+                                all.add(new DomainExpression(
+                                        DBDefinitions.DOM_BOOK_DATE_PUBLISHED,
+                                        DBDefinitions.TBL_BOOKS,
+                                        fieldOrder.sort));
+                                break;
+
+                            case DBKey.FORMAT:
+                                all.add(new DomainExpression(
+                                        DBDefinitions.DOM_BOOK_FORMAT,
+                                        DBDefinitions.TBL_BOOKS,
+                                        fieldOrder.sort));
+                                break;
+
+                            case DBKey.LOCATION:
+                                all.add(new DomainExpression(
+                                        DBDefinitions.DOM_BOOK_LOCATION,
+                                        DBDefinitions.TBL_BOOKS,
+                                        fieldOrder.sort));
+                                break;
+
+                            case DBKey.RATING:
+                                all.add(new DomainExpression(
+                                        DBDefinitions.DOM_BOOK_RATING,
+                                        DBDefinitions.TBL_BOOKS,
+                                        fieldOrder.sort));
+                                break;
+
+                            case DBKey.PAGE_COUNT:
+                                all.add(new DomainExpression(DBDefinitions.DOM_BOOK_PAGES,
+                                                             DBDefinitions.TBL_BOOKS,
+                                                             fieldOrder.sort));
+                                break;
+
+                            default:
+                                throw new IllegalArgumentException("DBKey missing: "
+                                                                   + fieldOrder.dbKey);
+                        }
+                    }
+                });
+
+        return all;
     }
 
     @Override
@@ -584,4 +786,16 @@ public abstract class BaseStyle
                + '}';
     }
 
+    private static class FieldOrder {
+        @NonNull
+        final String dbKey;
+        @NonNull
+        final Sort sort;
+
+        FieldOrder(@NonNull final String dbKey,
+                   @NonNull final Sort sort) {
+            this.dbKey = dbKey;
+            this.sort = sort;
+        }
+    }
 }
