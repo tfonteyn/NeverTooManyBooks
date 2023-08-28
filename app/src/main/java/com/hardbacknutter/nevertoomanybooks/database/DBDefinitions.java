@@ -452,6 +452,22 @@ public final class DBDefinitions {
     public static final Domain DOM_STYLE_UUID;
 
 
+    /**
+     * Expression for the domain {@link DBDefinitions#DOM_BOOKSHELF_NAME_CSV}.
+     * <p>
+     * The order of the returned names will be arbitrary.
+     * We could add an ORDER BY GROUP_CONCAT(... if we GROUP BY
+     */
+    public static final String EXP_BOOKSHELF_NAME_CSV;
+
+    /**
+     * Expression for the domain {@link DBDefinitions#DOM_PUBLISHER_NAME_CSV}.
+     * <p>
+     * The order of the returned names will be arbitrary.
+     * We could add an ORDER BY GROUP_CONCAT(... if we GROUP BY
+     */
+    public static final String EXP_PUBLISHER_NAME_CSV;
+
     /* ======================================================================================
      *  {@link BooklistNodeDao} domains.
      * ====================================================================================== */
@@ -1600,6 +1616,10 @@ public final class DBDefinitions {
 
     }
 
+    private static final String _FROM_ = " FROM ";
+
+    private static final String _WHERE_ = " WHERE ";
+
     static {
 
         TBL_BOOK_LIST_NODE_STATE = new TableDefinition("book_list_node_settings", "bl_ns");
@@ -1644,6 +1664,21 @@ public final class DBDefinitions {
                           DOM_FK_STYLE);
         ALL_TABLES.put(TBL_BOOK_LIST_NODE_STATE.getName(),
                        TBL_BOOK_LIST_NODE_STATE);
+
+
+        EXP_BOOKSHELF_NAME_CSV =
+                "(SELECT GROUP_CONCAT(" + TBL_BOOKSHELF.dot(DBKey.BOOKSHELF_NAME) + ",', ')"
+                + _FROM_ + TBL_BOOKSHELF.startJoin(TBL_BOOK_BOOKSHELF)
+                + _WHERE_
+                + TBL_BOOKS.dot(DBKey.PK_ID) + '=' + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOK)
+                + ')';
+
+        EXP_PUBLISHER_NAME_CSV =
+                "(SELECT GROUP_CONCAT(" + TBL_PUBLISHERS.dot(DBKey.PUBLISHER_NAME) + ",', ')"
+                + _FROM_ + TBL_PUBLISHERS.startJoin(TBL_BOOK_PUBLISHER)
+                + _WHERE_
+                + TBL_BOOKS.dot(DBKey.PK_ID) + '=' + TBL_BOOK_PUBLISHER.dot(DBKey.FK_BOOK)
+                + ')';
     }
 
     static {
