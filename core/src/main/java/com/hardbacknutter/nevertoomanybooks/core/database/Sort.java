@@ -51,6 +51,25 @@ public enum Sort
         this.expression = expression;
     }
 
+    /**
+     * Cycle to the next value.
+     *
+     * @return the next value
+     */
+    @NonNull
+    public Sort next() {
+        int next = ordinal() + 1;
+        if (next >= values().length) {
+            next = 0;
+        }
+        return values()[next];
+    }
+
+    /**
+     * Get the SQL clause.
+     *
+     * @return {@code ""} or {@code " DESC"}
+     */
     @NonNull
     public String getExpression() {
         return expression;
