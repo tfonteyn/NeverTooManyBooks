@@ -96,7 +96,10 @@ public class FieldVisibility {
             // bit 32..35
             DBKey.TITLE_ORIGINAL_LANG,
             // represents "show the real author if 'this' is a pen-name"
-            DBKey.AUTHOR_REAL_AUTHOR
+            DBKey.AUTHOR_REAL_AUTHOR,
+            // We're never going to hide the title, but this allows us
+            // to get a label just like for any other field
+            DBKey.TITLE
     );
 
     /** Simple mapping for {@link #DB_KEYS} to the label to show the user. */
@@ -142,7 +145,8 @@ public class FieldVisibility {
             R.string.lbl_date_last_updated,
 
             R.string.lbl_original_title,
-            R.string.lbl_author_pseudonym
+            R.string.lbl_author_pseudonym,
+            R.string.lbl_title
     );
 
     @NonNull
@@ -235,13 +239,20 @@ public class FieldVisibility {
     /**
      * Get a {code Set} of {@link DBKey}s representing visible fields.
      *
+     * @param all set to {@code true} to get all keys regardless of visibility;
+     *            Use {@code false} to get only the currently visible fields (keys).
+     *
      * @return visible fields
      */
     @NonNull
-    Set<String> getVisibleFieldKeys() {
-        return dbKeys.stream()
-                     .filter(key -> isShowField(key).orElseThrow())
-                     .collect(Collectors.toSet());
+    public Set<String> getVisibleFieldKeys(final boolean all) {
+        if (all) {
+            return Set.copyOf(dbKeys);
+        } else {
+            return dbKeys.stream()
+                         .filter(key -> isShowField(key).orElseThrow())
+                         .collect(Collectors.toSet());
+        }
     }
 
     /**

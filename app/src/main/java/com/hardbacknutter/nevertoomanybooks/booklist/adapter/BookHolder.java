@@ -27,6 +27,7 @@ import android.graphics.Color;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Dimension;
@@ -39,11 +40,13 @@ import androidx.fragment.app.FragmentActivity;
 import java.io.File;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BookLevelFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
@@ -74,6 +77,11 @@ public class BookHolder
      * @see #coverLongestSide
      */
     private static final float HW_RATIO = 0.6f;
+    /**
+     * The length of a series number is considered short if it's 4 character or less.
+     * E.g. "1.12" is considered short and "1|omnibus" is long.
+     */
+    private static final int SHORT_SERIES_NUMBER = 4;
 
     /** Format string. */
     @NonNull
@@ -150,6 +158,7 @@ public class BookHolder
             dbgRowIdView = new TextView(context);
             dbgRowIdView.setId(View.generateViewId());
             dbgRowIdView.setTextColor(Color.BLUE);
+            //noinspection CheckStyle
             dbgRowIdView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
 
             final ConstraintLayout parentLayout = itemView.findViewById(R.id.card_frame);
@@ -187,7 +196,13 @@ public class BookHolder
     public void onBind(@NonNull final DataHolder rowData) {
         if (use == null) {
             // init once
-            use = style.getBookLevelFieldsUsage(rowData);
+            use = style.getFieldVisibility(Style.Screen.List)
+                       .getVisibleFieldKeys(false)
+                       .stream()
+                       // Sanity check making sure the domain is present
+                       .filter(key -> rowData.contains(BookLevelFieldVisibility.getDomain(key)))
+                       .collect(Collectors.toSet());
+
             if (use.contains(DBKey.PAGE_COUNT)) {
                 pagesFormatter = new PagesFormatter();
             }
@@ -197,32 +212,19 @@ public class BookHolder
         // It does not make much sense in this particular view/holder,
         // and slows down scrolling to much.
         vb.title.setText(rowData.getString(DBKey.TITLE));
+        // Always show the 'read' icon.
+        showOrHide(vb.iconRead, rowData.getBoolean(DBKey.READ__BOOL));
 
-        if (use.contains(DBKey.TITLE_ORIGINAL_LANG)) {
-            vb.originalTitle.setText(rowData.getString(DBKey.TITLE_ORIGINAL_LANG));
-        }
-
-        vb.iconRead.setVisibility(
-                rowData.getBoolean(DBKey.READ__BOOL) ? View.VISIBLE : View.GONE);
-
-        if (use.contains(DBKey.SIGNED__BOOL)) {
-            final boolean isSet = rowData.getBoolean(DBKey.SIGNED__BOOL);
-            vb.iconSigned.setVisibility(isSet ? View.VISIBLE : View.GONE);
-        }
-
-        if (use.contains(DBKey.EDITION__BITMASK)) {
-            final boolean isSet = (rowData.getLong(DBKey.EDITION__BITMASK)
-                                   & Book.Edition.FIRST) != 0;
-            vb.iconFirstEdition.setVisibility(isSet ? View.VISIBLE : View.GONE);
-        }
-
-        if (use.contains(DBKey.LOANEE_NAME)) {
-            final boolean isSet = !rowData.getString(DBKey.LOANEE_NAME).isEmpty();
-            vb.iconLendOut.setVisibility(isSet ? View.VISIBLE : View.GONE);
-        }
-
+        /*
+         * USE SAME ORDER AS BookLevelFieldVisibility FOR EASE OF UPDATES
+         */
         if (use.contains(DBKey.COVER[0])) {
             setImageView(rowData.getString(DBKey.BOOK_UUID));
+        }
+
+        if (use.contains(DBKey.FK_AUTHOR)) {
+            //ENHANCE: maybe add support for real-name
+            showOrHide(vb.author, rowData.getString(DBKey.AUTHOR_FORMATTED));
         }
 
         if (use.contains(DBKey.FK_SERIES)) {
@@ -234,6 +236,49 @@ public class BookHolder
                 vb.seriesNumLong.setVisibility(View.GONE);
                 showOrHideSeriesText(rowData);
             }
+        }
+
+        final boolean usePub = use.contains(DBKey.FK_PUBLISHER);
+        final boolean usePubDate = use.contains(DBKey.BOOK_PUBLICATION__DATE);
+        if (usePub || usePubDate) {
+            showOrHidePublisher(rowData, usePub, usePubDate);
+        }
+
+        if (use.contains(DBKey.FK_BOOKSHELF)) {
+            showOrHide(vb.shelves, rowData.getString(DBKey.BOOKSHELF_NAME_CSV));
+        }
+
+        if (use.contains(DBKey.TITLE_ORIGINAL_LANG)) {
+            showOrHide(vb.originalTitle, rowData.getString(DBKey.TITLE_ORIGINAL_LANG));
+        }
+
+        if (use.contains(DBKey.BOOK_CONDITION)) {
+            final int condition = rowData.getInt(DBKey.BOOK_CONDITION);
+            if (condition > 0) {
+                showOrHide(vb.condition, conditionDescriptions[condition]);
+            } else {
+                // Hide "Unknown" condition
+                vb.condition.setVisibility(View.GONE);
+            }
+        }
+
+        if (use.contains(DBKey.BOOK_ISBN)) {
+            showOrHide(vb.isbn, rowData.getString(DBKey.BOOK_ISBN));
+        }
+
+        if (use.contains(DBKey.FORMAT)) {
+            showOrHide(vb.format, rowData.getString(DBKey.FORMAT));
+        }
+
+        if (use.contains(DBKey.LANGUAGE)) {
+            final String language = ServiceLocator
+                    .getInstance().getLanguages().getDisplayNameFromISO3(
+                            vb.language.getContext(), rowData.getString(DBKey.LANGUAGE));
+            showOrHide(vb.language, language);
+        }
+
+        if (use.contains(DBKey.LOCATION)) {
+            showOrHide(vb.location, rowData.getString(DBKey.LOCATION));
         }
 
         if (use.contains(DBKey.RATING)) {
@@ -252,48 +297,17 @@ public class BookHolder
             showOrHide(vb.pages, pagesFormatter.format(itemView.getContext(), pages));
         }
 
-        if (use.contains(DBKey.FK_AUTHOR)) {
-            //ENHANCE: maybe add support for real-name
-            showOrHide(vb.author, rowData.getString(DBKey.AUTHOR_FORMATTED));
+        if (use.contains(DBKey.SIGNED__BOOL)) {
+            showOrHide(vb.iconSigned, rowData.getBoolean(DBKey.SIGNED__BOOL));
         }
 
-        final boolean usePub = use.contains(DBKey.FK_PUBLISHER);
-        final boolean usePubDate = use.contains(DBKey.BOOK_PUBLICATION__DATE);
-        if (usePub || usePubDate) {
-            showOrHidePublisher(rowData, usePub, usePubDate);
+        if (use.contains(DBKey.EDITION__BITMASK)) {
+            showOrHide(vb.iconFirstEdition, (rowData.getLong(DBKey.EDITION__BITMASK)
+                                             & Book.Edition.FIRST) != 0);
         }
 
-        if (use.contains(DBKey.BOOK_ISBN)) {
-            showOrHide(vb.isbn, rowData.getString(DBKey.BOOK_ISBN));
-        }
-
-        if (use.contains(DBKey.FORMAT)) {
-            showOrHide(vb.format, rowData.getString(DBKey.FORMAT));
-        }
-
-        if (use.contains(DBKey.BOOK_CONDITION)) {
-            final int condition = rowData.getInt(DBKey.BOOK_CONDITION);
-            if (condition > 0) {
-                showOrHide(vb.condition, conditionDescriptions[condition]);
-            } else {
-                // Hide "Unknown" condition
-                vb.condition.setVisibility(View.GONE);
-            }
-        }
-
-        if (use.contains(DBKey.LANGUAGE)) {
-            final String language = ServiceLocator
-                    .getInstance().getLanguages().getDisplayNameFromISO3(
-                            vb.language.getContext(), rowData.getString(DBKey.LANGUAGE));
-            showOrHide(vb.language, language);
-        }
-
-        if (use.contains(DBKey.LOCATION)) {
-            showOrHide(vb.location, rowData.getString(DBKey.LOCATION));
-        }
-
-        if (use.contains(DBKey.FK_BOOKSHELF)) {
-            showOrHide(vb.shelves, rowData.getString(DBKey.BOOKSHELF_NAME_CSV));
+        if (use.contains(DBKey.LOANEE_NAME)) {
+            showOrHide(vb.iconLendOut, !rowData.getString(DBKey.LOANEE_NAME).isEmpty());
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
@@ -303,6 +317,33 @@ public class BookHolder
                 dbgRowIdView.setText(txt);
             }
         }
+    }
+
+    /**
+     * Conditionally display 'text'.
+     *
+     * @param view to populate
+     * @param text to set
+     */
+    private void showOrHide(@NonNull final TextView view,
+                            @Nullable final String text) {
+        if (text != null && !text.isEmpty()) {
+            view.setText(text);
+            view.setVisibility(View.VISIBLE);
+        } else {
+            view.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * Conditionally show an icon (Image).
+     *
+     * @param view to process
+     * @param show flag
+     */
+    private void showOrHide(@NonNull final ImageView view,
+                            final boolean show) {
+        view.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     /**
@@ -347,9 +388,7 @@ public class BookHolder
             final String number = rowData.getString(DBKey.SERIES_BOOK_NUMBER);
             if (!number.isBlank()) {
                 // Display it in one of the views, based on the size of the text.
-                // 4 characters is based on e.g. "1.12" being considered short
-                // and e.g. "1|omnibus" being long.
-                if (number.length() > 4) {
+                if (number.length() > SHORT_SERIES_NUMBER) {
                     vb.seriesNum.setVisibility(View.GONE);
                     vb.seriesNumLong.setText(number);
                     vb.seriesNumLong.setVisibility(View.VISIBLE);
@@ -365,21 +404,28 @@ public class BookHolder
         vb.seriesNumLong.setVisibility(View.GONE);
     }
 
+    /**
+     * Show a suitable combination of the publisher name and book publication date.
+     *
+     * @param rowData     with the data
+     * @param showPubName flag
+     * @param showPubDate flag
+     */
     private void showOrHidePublisher(@NonNull final DataHolder rowData,
-                                     final boolean usePub,
-                                     final boolean usePubDate) {
+                                     final boolean showPubName,
+                                     final boolean showPubDate) {
 
         boolean showName = false;
         boolean showDate = false;
 
         String name = null;
-        if (usePub) {
+        if (showPubName) {
             name = rowData.getString(DBKey.PUBLISHER_NAME);
             showName = !name.isBlank();
         }
 
         String date = null;
-        if (usePubDate) {
+        if (showPubDate) {
             final String dateStr = rowData.getString(DBKey.BOOK_PUBLICATION__DATE);
             date = new PartialDate(dateStr).toDisplay(itemView.getContext().getResources()
                                                               .getConfiguration().getLocales()
@@ -396,22 +442,6 @@ public class BookHolder
             showOrHide(vb.publisher, date);
         } else {
             vb.publisher.setVisibility(View.GONE);
-        }
-    }
-
-    /**
-     * Conditionally display 'text'.
-     *
-     * @param view to populate
-     * @param text to set
-     */
-    private void showOrHide(@NonNull final TextView view,
-                            @Nullable final String text) {
-        if (text != null && !text.isEmpty()) {
-            view.setText(text);
-            view.setVisibility(View.VISIBLE);
-        } else {
-            view.setVisibility(View.GONE);
         }
     }
 

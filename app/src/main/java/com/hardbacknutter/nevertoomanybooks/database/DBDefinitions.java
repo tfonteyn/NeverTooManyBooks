@@ -419,9 +419,9 @@ public final class DBDefinitions {
     public static final Domain DOM_STYLE_TEXT_SCALE;
     public static final Domain DOM_STYLE_COVER_SCALE;
     public static final Domain DOM_STYLE_LIST_HEADER;
-    public static final Domain DOM_STYLE_DETAILS_SHOW_FIELDS;
-    public static final Domain DOM_STYLE_LIST_SHOW_FIELDS;
-
+    public static final Domain DOM_STYLE_BOOK_DETAIL_FIELDS_VISIBILITY;
+    public static final Domain DOM_STYLE_BOOK_LEVEL_FIELDS_VISIBILITY;
+    public static final Domain DOM_STYLE_BOOK_LEVEL_FIELDS_ORDER_BY;
     public static final Domain DOM_STYLE_GROUPS;
     public static final Domain DOM_STYLE_GROUPS_AUTHOR_SHOW_UNDER_EACH;
     public static final Domain DOM_STYLE_GROUPS_AUTHOR_PRIMARY_TYPE;
@@ -1231,16 +1231,20 @@ public final class DBDefinitions {
                         .withDefault(BooklistHeader.BITMASK_ALL)
                         .build();
 
-        DOM_STYLE_DETAILS_SHOW_FIELDS =
+        DOM_STYLE_BOOK_DETAIL_FIELDS_VISIBILITY =
                 new Domain.Builder(DBKey.STYLE_DETAILS_SHOW_FIELDS, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(BookDetailsFieldVisibility.DEFAULT)
                         .build();
 
-        DOM_STYLE_LIST_SHOW_FIELDS =
-                new Domain.Builder(DBKey.STYLE_LIST_SHOW_FIELDS, SqLiteDataType.Integer)
+        DOM_STYLE_BOOK_LEVEL_FIELDS_VISIBILITY =
+                new Domain.Builder(DBKey.STYLE_BOOK_LEVEL_FIELDS_VISIBILITY, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(BookLevelFieldVisibility.DEFAULT)
+                        .build();
+
+        DOM_STYLE_BOOK_LEVEL_FIELDS_ORDER_BY =
+                new Domain.Builder(DBKey.STYLE_BOOK_LEVEL_FIELDS_ORDER_BY, SqLiteDataType.Text)
                         .build();
 
         /* ======================================================================================
@@ -1269,8 +1273,9 @@ public final class DBDefinitions {
                             DOM_STYLE_TEXT_SCALE,
                             DOM_STYLE_COVER_SCALE,
                             DOM_STYLE_LIST_HEADER,
-                            DOM_STYLE_DETAILS_SHOW_FIELDS,
-                            DOM_STYLE_LIST_SHOW_FIELDS)
+                            DOM_STYLE_BOOK_DETAIL_FIELDS_VISIBILITY,
+                            DOM_STYLE_BOOK_LEVEL_FIELDS_VISIBILITY,
+                            DOM_STYLE_BOOK_LEVEL_FIELDS_ORDER_BY)
                 .setPrimaryKey(DOM_PK_ID)
                 .addIndex(DBKey.STYLE_UUID, true, DOM_STYLE_UUID)
                 .addIndex(DBKey.STYLE_NAME, true, DOM_STYLE_NAME)

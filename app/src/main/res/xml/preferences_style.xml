@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -67,7 +67,7 @@
             />
 
         <Preference
-            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleBookDetailsFragment"
+            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleBookLevelColumnsFragment"
             android:icon="@drawable/ic_baseline_details_24"
             android:key="psk_style_show_details"
             android:title="@string/pt_bob_show_details"

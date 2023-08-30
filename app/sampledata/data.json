@@ -113,10 +113,18 @@
     {"name": "Series"},
     {"name": "Language"}
   ],
+  "sorting": [
+    {"name": "-"},
+    {"name": "Asc"},
+    {"name": "Desc"}
+  ],
   "field": [
-    {"name": "Table Of Content"},
+    {"name": "Author"},
+    {"name": "Series"},
     {"name": "Publisher"},
+    {"name": "Language"},
     {"name": "Location"},
+    {"name": "Table Of Content"},
     {"name": "Date Acquired"},
     {"name": "Genre"}
   ],

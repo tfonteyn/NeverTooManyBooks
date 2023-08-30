@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -50,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 
 /**
@@ -62,6 +60,50 @@ public abstract class BaseStyle
         implements Style {
 
     private static final String ERROR_UUID_IS_EMPTY = "uuid.isEmpty()";
+
+    /**
+     * IMPORTANT: this is the ALMOST the same set as used by BookLevelFieldVisibility
+     * and should be kept in sync.
+     * but note the differences:
+     * <ul>
+     *     <li>TITLE added: we ALWAYS display it.</li>
+     *     <li>ISBN & LANGUAGE removed: we already have it added during BooklistBuilder setup.</li>
+     * </ul>
+     * Also not this is an <strong>ORDERED LIST!</strong>
+     */
+    private static final Map<String, Sort> BOOK_LEVEL_FIELDS_DEFAULTS = new LinkedHashMap<>();
+
+    static {
+        // Sorted by title
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.TITLE, Sort.Asc);
+
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.COVER[0], null);
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.COVER[1], null);
+
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.FK_AUTHOR, Sort.Unsorted);
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.FK_SERIES, Sort.Unsorted);
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.FK_PUBLISHER, Sort.Unsorted);
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.FK_BOOKSHELF, null);
+
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.TITLE_ORIGINAL_LANG, Sort.Unsorted);
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.BOOK_CONDITION, Sort.Unsorted);
+        // ISBN will always be added as a domain
+        // but with optional visibility
+        // BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.BOOK_ISBN, Sort.Unsorted);
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.BOOK_PUBLICATION__DATE, Sort.Unsorted);
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.FORMAT, Sort.Unsorted);
+        // LANGUAGE will always be added as a domain
+        // but with optional visibility
+        // BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.LANGUAGE, Sort.Unsorted);
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.LOCATION, Sort.Unsorted);
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.RATING, Sort.Unsorted);
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.PAGE_COUNT, Sort.Unsorted);
+
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.SIGNED__BOOL, Sort.Unsorted);
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.EDITION__BITMASK, Sort.Unsorted);
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.LOANEE_NAME, Sort.Unsorted);
+    }
+
 
     /** Configuration for the fields shown on the Book level in the book list. */
     @NonNull
@@ -84,7 +126,8 @@ public abstract class BaseStyle
      * <p>
      * Key: the {@link DBKey} string.
      */
-    private final Map<String, Sort> bookLevelFieldOrderBy = new LinkedHashMap<>();
+    @NonNull
+    private final Map<String, Sort> bookLevelFieldsOrderBy = new LinkedHashMap<>();
     @NonNull
     private final String uuid;
     /**
@@ -153,7 +196,7 @@ public abstract class BaseStyle
 
         detailsFieldVisibility = new BookDetailsFieldVisibility();
 
-        initOptionalFieldOrderDefaults();
+        initBookLevelFieldsOrderByDefaults();
     }
 
     /**
@@ -199,41 +242,8 @@ public abstract class BaseStyle
     }
 
     /** load the default sorting options for the optional book-level fields. */
-    private void initOptionalFieldOrderDefaults() {
-        bookLevelFieldOrderBy.put(DBKey.TITLE, Sort.Asc);
-
-        // URGENT: merge with BookLevelFieldVisibility
-        // IMPORTANT: this is the same set as used by BookLevelFieldVisibility
-        // but with ISBN & LANGUAGE removed.
-        // Also not this is an ORDERED LIST!
-        final List<String> dbKeys = List.of(
-                DBKey.COVER[0],
-                DBKey.COVER[1],
-                DBKey.FK_AUTHOR,
-                DBKey.FK_SERIES,
-                DBKey.FK_PUBLISHER,
-                DBKey.FK_BOOKSHELF,
-
-                DBKey.TITLE_ORIGINAL_LANG,
-                DBKey.BOOK_CONDITION,
-                // ISBN will always be added as a domain
-                // but with optional visibility
-                // DBKey.BOOK_ISBN,
-                DBKey.BOOK_PUBLICATION__DATE,
-                DBKey.FORMAT,
-                // LANGUAGE will always be added as a domain
-                // but with optional visibility
-                // DBKey.LANGUAGE,
-                DBKey.LOCATION,
-                DBKey.RATING,
-                DBKey.PAGE_COUNT,
-
-                DBKey.SIGNED__BOOL,
-                DBKey.EDITION__BITMASK,
-                DBKey.LOANEE_NAME
-        );
-
-        dbKeys.forEach(dbKey -> bookLevelFieldOrderBy.put(dbKey, Sort.Unsorted));
+    private void initBookLevelFieldsOrderByDefaults() {
+        bookLevelFieldsOrderBy.putAll(BOOK_LEVEL_FIELDS_DEFAULTS);
     }
 
     /**
@@ -406,6 +416,19 @@ public abstract class BaseStyle
         throw new IllegalArgumentException();
     }
 
+    @NonNull
+    public Map<String, Sort> getBookLevelFieldsOrderBy() {
+        return bookLevelFieldsOrderBy;
+    }
+
+    public void setBookLevelFieldsOrderBy(@NonNull final Map<String, Sort> map) {
+        bookLevelFieldsOrderBy.clear();
+        bookLevelFieldsOrderBy.putAll(map);
+        // add any fields with their default which might be missing.
+        BOOK_LEVEL_FIELDS_DEFAULTS.forEach(bookLevelFieldsOrderBy::putIfAbsent);
+
+    }
+
     /**
      * Create the list of {@link DomainExpression}s for the optional fields to be shown
      * on the book-level in the {@link com.hardbacknutter.nevertoomanybooks.booklist.Booklist}.
@@ -416,10 +439,10 @@ public abstract class BaseStyle
      * @return list
      */
     @NonNull
-    public List<DomainExpression> getBookLevelFieldsDomainExpressions() {
+    public List<DomainExpression> getBookLevelFieldDomainExpressions() {
         final List<DomainExpression> all = new ArrayList<>();
 
-        bookLevelFieldOrderBy
+        bookLevelFieldsOrderBy
                 .entrySet()
                 .stream()
                 .filter(field -> isShowField(Screen.List, field.getKey()))
@@ -427,11 +450,11 @@ public abstract class BaseStyle
 
                     if (DBKey.COVER[0].equals(field.getKey())
                         || DBKey.COVER[1].equals(field.getKey())) {
-                        // We need the UUID for the book to get covers
+                        // We need the (unsorted duh!) UUID for the book to get covers
                         all.add(new DomainExpression(
                                 DBDefinitions.DOM_BOOK_UUID,
                                 DBDefinitions.TBL_BOOKS,
-                                field.getValue()));
+                                Sort.Unsorted));
                     } else {
                         switch (field.getKey()) {
                             case DBKey.TITLE: {
@@ -540,9 +563,10 @@ public abstract class BaseStyle
                                 break;
                             }
                             case DBKey.PAGE_COUNT: {
-                                all.add(new DomainExpression(DBDefinitions.DOM_BOOK_PAGES,
-                                                             DBDefinitions.TBL_BOOKS,
-                                                             field.getValue()));
+                                all.add(new DomainExpression(
+                                        DBDefinitions.DOM_BOOK_PAGES,
+                                        DBDefinitions.TBL_BOOKS,
+                                        field.getValue()));
                                 break;
                             }
 
@@ -578,18 +602,6 @@ public abstract class BaseStyle
 
         return all;
     }
-
-    @NonNull
-    public Set<String> getBookLevelFieldsUsage(@NonNull final DataHolder rowData) {
-        return bookLevelFieldVisibility
-                .getVisibleFieldKeys()
-                .stream()
-                .filter(key -> rowData.contains(Objects.requireNonNull(
-                        BookLevelFieldVisibility.DB_KEY_WITH_DOMAIN_NAME.get(key),
-                        () -> "DB_KEY_TO_DOMAIN_NAME is missing key: " + key)))
-                .collect(Collectors.toSet());
-    }
-
 
     @Override
     @NonNull

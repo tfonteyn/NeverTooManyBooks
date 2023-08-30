@@ -96,10 +96,15 @@ public class UserStyle
         setCoverScale(rowData.getInt(DBKey.STYLE_COVER_SCALE));
 
         setHeaderFieldVisibilityValue(rowData.getInt(DBKey.STYLE_LIST_HEADER));
+
         getFieldVisibility(Screen.List)
-                .setValue(rowData.getLong(DBKey.STYLE_LIST_SHOW_FIELDS));
+                .setValue(rowData.getLong(DBKey.STYLE_BOOK_LEVEL_FIELDS_VISIBILITY));
         getFieldVisibility(Screen.Detail)
                 .setValue(rowData.getLong(DBKey.STYLE_DETAILS_SHOW_FIELDS));
+
+        setBookLevelFieldsOrderBy(
+                StyleCoder.decodeBookLevelFieldsOrderBy(
+                        rowData.getString(DBKey.STYLE_BOOK_LEVEL_FIELDS_ORDER_BY)));
     }
 
     /**

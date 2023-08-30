@@ -90,7 +90,7 @@ public class DBHelper
         extends SQLiteOpenHelper {
 
     /** Current version. */
-    public static final int DATABASE_VERSION = 25;
+    public static final int DATABASE_VERSION = 26;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -515,8 +515,8 @@ public class DBHelper
                     DBDefinitions.DOM_STYLE_TEXT_SCALE,
                     DBDefinitions.DOM_STYLE_COVER_SCALE,
                     DBDefinitions.DOM_STYLE_LIST_HEADER,
-                    DBDefinitions.DOM_STYLE_DETAILS_SHOW_FIELDS,
-                    DBDefinitions.DOM_STYLE_LIST_SHOW_FIELDS);
+                    DBDefinitions.DOM_STYLE_BOOK_DETAIL_FIELDS_VISIBILITY,
+                    DBDefinitions.DOM_STYLE_BOOK_LEVEL_FIELDS_VISIBILITY);
 
             final List<String> uuids = new ArrayList<>();
             try (Cursor cursor = db.rawQuery(
@@ -546,7 +546,7 @@ public class DBHelper
                     + DBKey.STYLE_COVER_SCALE + "=?,"
                     + DBKey.STYLE_LIST_HEADER + "=?,"
                     + DBKey.STYLE_DETAILS_SHOW_FIELDS + "=?,"
-                    + DBKey.STYLE_LIST_SHOW_FIELDS + "=?"
+                    + DBKey.STYLE_BOOK_LEVEL_FIELDS_VISIBILITY + "=?"
 
                     + " WHERE " + DBKey.STYLE_UUID + "=?")) {
 
@@ -707,7 +707,10 @@ public class DBHelper
             TBL_DELETED_BOOKS.create(db, true);
             StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_FTS, true);
         }
-
+        if (oldVersion < 26) {
+            TBL_BOOKLIST_STYLES.alterTableAddColumns(
+                    db, DBDefinitions.DOM_STYLE_BOOK_LEVEL_FIELDS_ORDER_BY);
+        }
         //TODO: if at a future time we make a change that requires to copy/reload the books table:
         // 1. remove the column "books.clb_uuid"
         // 2. remove the column "books.last_goodreads_sync_date"

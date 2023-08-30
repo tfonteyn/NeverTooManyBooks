@@ -19,8 +19,13 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
+import androidx.annotation.NonNull;
+
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
@@ -28,7 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
  * Encapsulate the Book fields which can be shown on the Book-list screen
  * as defined <strong>by the current style</strong>.
  * <p>
- * URGENT: merge with BaseStyle#bookLevelFieldOrderBy
+ * URGENT: merge with BaseStyle#bookLevelFieldsOrderBy
  * <p>
  * Keys must be kept in sync with {@link StyleDataStore} preference keys
  * and "res/xml/preferences_style_book_details.xml".
@@ -48,8 +53,9 @@ public class BookLevelFieldVisibility
      * The {@link DBKey}s of the fields which are supported by this class
      * and their column names (domains) in the
      * {@link com.hardbacknutter.nevertoomanybooks.booklist.Booklist} table.
+     * Keep in sync with {@link BaseStyle}#BOOK_LEVEL_FIELDS_DEFAULTS.
      */
-    static final Map<String, String> DB_KEY_WITH_DOMAIN_NAME = Map.ofEntries(
+    private static final Map<String, String> DB_KEY_WITH_DOMAIN_NAME = Map.ofEntries(
             Map.entry(DBKey.COVER[0], DBKey.BOOK_UUID),
             Map.entry(DBKey.COVER[1], DBKey.BOOK_UUID),
 
@@ -73,11 +79,16 @@ public class BookLevelFieldVisibility
             Map.entry(DBKey.LOANEE_NAME, DBKey.LOANEE_NAME)
     );
 
-
     /**
      * Constructor.
      */
     BookLevelFieldVisibility() {
         super(DB_KEY_WITH_DOMAIN_NAME.keySet(), DEFAULT);
+    }
+
+    @NonNull
+    public static String getDomain(@NonNull final String dbKey) {
+        return Objects.requireNonNull(DB_KEY_WITH_DOMAIN_NAME.get(dbKey),
+                                      () -> "DB_KEY_TO_DOMAIN_NAME is missing key: " + dbKey);
     }
 }

@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.backup.json.coders.StyleCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
@@ -112,13 +113,13 @@ public class StyleDaoImpl
                    + ',' + DBKey.STYLE_COVER_SCALE
                    + ',' + DBKey.STYLE_LIST_HEADER
                    + ',' + DBKey.STYLE_DETAILS_SHOW_FIELDS
-                   + ',' + DBKey.STYLE_LIST_SHOW_FIELDS
+                   + ',' + DBKey.STYLE_BOOK_LEVEL_FIELDS_VISIBILITY
+                   + ',' + DBKey.STYLE_BOOK_LEVEL_FIELDS_ORDER_BY
                    + ") VALUES (");
 
-        // 7 + underEach + 9
-        final int v = 16 + Style.UnderEach.values().length;
+        final int count = (int) (tmp.chars().filter(ch -> ch == ',').count() + 1);
 
-        tmp.append(String.join(",", Collections.nCopies(v, "?"))).append(")");
+        tmp.append(String.join(",", Collections.nCopies(count, "?"))).append(")");
 
         INSERT_STYLE = tmp.toString();
     }
@@ -204,7 +205,6 @@ public class StyleDaoImpl
         return map;
     }
 
-
     @NonNull
     private String getGroupIdsAsCsv(@NonNull final Style style) {
         return style.getGroupList()
@@ -239,8 +239,10 @@ public class StyleDaoImpl
             stmt.bindLong(++c, style.getTextScale());
             stmt.bindLong(++c, style.getCoverScale());
             stmt.bindLong(++c, style.getHeaderFieldVisibilityValue());
+
             stmt.bindLong(++c, style.getFieldVisibility(Style.Screen.Detail).getValue());
             stmt.bindLong(++c, style.getFieldVisibility(Style.Screen.List).getValue());
+            stmt.bindString(++c, StyleCoder.encodeBookLevelFieldsOrderBy(style));
 
             final long iId = stmt.executeInsert();
             if (iId > 0) {
@@ -262,8 +264,7 @@ public class StyleDaoImpl
             cv.put(DBKey.STYLE_NAME, userStyle.getName());
 
             cv.put(DBKey.STYLE_GROUPS, getGroupIdsAsCsv(style));
-            cv.put(DBKey.STYLE_GROUPS_AUTHOR_PRIMARY_TYPE,
-                   style.getPrimaryAuthorType());
+            cv.put(DBKey.STYLE_GROUPS_AUTHOR_PRIMARY_TYPE, style.getPrimaryAuthorType());
 
             for (final Style.UnderEach item : Style.UnderEach.values()) {
                 cv.put(item.getDbKey(), style.isShowBooks(item));
@@ -280,17 +281,20 @@ public class StyleDaoImpl
             cv.put(DBKey.STYLE_TEXT_SCALE, style.getTextScale());
             cv.put(DBKey.STYLE_COVER_SCALE, style.getCoverScale());
             cv.put(DBKey.STYLE_LIST_HEADER, userStyle.getHeaderFieldVisibilityValue());
-            cv.put(DBKey.STYLE_DETAILS_SHOW_FIELDS, style.getFieldVisibility(Style.Screen.Detail)
-                                                         .getValue());
-            cv.put(DBKey.STYLE_LIST_SHOW_FIELDS, style.getFieldVisibility(Style.Screen.List)
-                                                      .getValue());
+
+            cv.put(DBKey.STYLE_DETAILS_SHOW_FIELDS,
+                   style.getFieldVisibility(Style.Screen.Detail).getValue());
+            cv.put(DBKey.STYLE_BOOK_LEVEL_FIELDS_VISIBILITY,
+                   style.getFieldVisibility(Style.Screen.List).getValue());
+
+            cv.put(DBKey.STYLE_BOOK_LEVEL_FIELDS_ORDER_BY,
+                   StyleCoder.encodeBookLevelFieldsOrderBy(style));
         }
 
         return 0 < db.update(DBDefinitions.TBL_BOOKLIST_STYLES.getName(), cv,
                              DBKey.PK_ID + "=?",
                              new String[]{String.valueOf(style.getId())});
     }
-
 
     @Override
     public boolean delete(@NonNull final Style style) {

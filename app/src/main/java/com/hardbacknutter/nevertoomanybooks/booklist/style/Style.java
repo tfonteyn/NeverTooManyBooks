@@ -30,8 +30,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
@@ -40,9 +40,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BookshelfBookl
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.PublisherBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.SeriesBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.database.DomainExpression;
+import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
 public interface Style {
 
@@ -248,6 +248,11 @@ public interface Style {
     @NonNull
     FieldVisibility getFieldVisibility(@NonNull Screen screen);
 
+    @NonNull
+    Map<String, Sort> getBookLevelFieldsOrderBy();
+
+    void setBookLevelFieldsOrderBy(@NonNull Map<String, Sort> map);
+
     /**
      * Get the group row <strong>height</strong> to be applied to
      * the {@link android.view.ViewGroup.LayoutParams}.
@@ -361,11 +366,7 @@ public interface Style {
      * @return list
      */
     @NonNull
-    List<DomainExpression> getBookLevelFieldsDomainExpressions();
-
-    @NonNull
-    Set<String> getBookLevelFieldsUsage(
-            @NonNull DataHolder rowData);
+    List<DomainExpression> getBookLevelFieldDomainExpressions();
 
     /**
      * Which visibility options to use from the user preferences/style.

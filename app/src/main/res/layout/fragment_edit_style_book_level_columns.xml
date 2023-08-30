@@ -23,40 +23,31 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_marginStart="@dimen/field_margin_start"
-    android:layout_marginEnd="@dimen/field_margin_end"
-    android:layout_height="wrap_content"
-    android:minHeight="?attr/listPreferredItemHeightSmall"
+    style="@style/TopCentered"
+    tools:context=".FragmentHostActivity"
     >
 
     <TextView
-        android:id="@+id/field"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textAppearance="?attr/textAppearanceListItemSecondary"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/cbx_usage"
-        app:layout_constraintHorizontal_weight="0.4"
+        android:id="@+id/header"
+        style="@style/Text.Header.PreferenceCategory"
+        android:text="@string/pt_bob_show_details"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="SelectableText"
-        tools:text="@sample/data.json/field/name"
         />
 
-    <!-- URGENT: use a TextInputLayout "Button.DropdownMenu" -->
-    <CheckBox
-        android:id="@+id/cbx_usage"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/column_list"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textAppearance="?attr/textAppearanceListItemSecondary"
-        android:textStyle="italic"
+        android:layout_height="0dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_weight="0.6"
-        app:layout_constraintStart_toEndOf="@id/field"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/option_field_usage_overwrite"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        tools:listitem="@layout/row_edit_style_book_level_column"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+

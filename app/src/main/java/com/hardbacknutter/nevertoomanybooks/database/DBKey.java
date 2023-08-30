@@ -234,7 +234,8 @@ public final class DBKey {
     public static final String STYLE_COVER_SCALE = "cover_scale";
     public static final String STYLE_LIST_HEADER = "list_header";
     public static final String STYLE_DETAILS_SHOW_FIELDS = "detail_fields_vis";
-    public static final String STYLE_LIST_SHOW_FIELDS = "list_fields_vis";
+    public static final String STYLE_BOOK_LEVEL_FIELDS_VISIBILITY = "list_fields_vis";
+    public static final String STYLE_BOOK_LEVEL_FIELDS_ORDER_BY = "list_fields_sort";
 
     public static final String STYLE_GROUPS = "groups";
     public static final String STYLE_GROUPS_AUTHOR_SHOW_UNDER_EACH =
