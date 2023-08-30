@@ -107,6 +107,11 @@ public abstract class BaseDragDropViewHolder
                 v -> setChecked(listener.apply(getBindingAdapterPosition())));
     }
 
+    public void enableDrag(final boolean enable) {
+        //noinspection DataFlowIssue
+        dragHandleView.setVisibility(enable ? View.VISIBLE : View.INVISIBLE);
+    }
+
     public void setChecked(final boolean checked) {
         //noinspection DataFlowIssue
         checkableButton.setChecked(checked);
