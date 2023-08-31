@@ -46,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BookLevelFieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.MapDBKey;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
@@ -197,10 +197,10 @@ public class BookHolder
         if (use == null) {
             // init once
             use = style.getFieldVisibility(Style.Screen.List)
-                       .getVisibleFieldKeys(false)
+                       .getKeys(false)
                        .stream()
                        // Sanity check making sure the domain is present
-                       .filter(key -> rowData.contains(BookLevelFieldVisibility.getDomain(key)))
+                       .filter(key -> rowData.contains(MapDBKey.getDomainName(key)))
                        .collect(Collectors.toSet());
 
             if (use.contains(DBKey.PAGE_COUNT)) {

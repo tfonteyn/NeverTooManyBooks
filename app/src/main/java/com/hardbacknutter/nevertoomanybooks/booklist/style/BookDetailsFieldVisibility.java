@@ -30,12 +30,13 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 public class BookDetailsFieldVisibility
         extends FieldVisibility {
 
-    /** The fields which will be visible by default. */
-    public static final long DEFAULT = getBitValue(Set.of(
+    /** The fields which are supported by this class. */
+    private static final Set<String> FIELDS = Set.of(
             DBKey.COVER[0],
-            DBKey.COVER[1]));
+            DBKey.COVER[1]);
 
-    private static final Set<String> DB_KEYS = Set.of(
+    /** The fields which will be visible by default. */
+    private static final Set<String> DEFAULT = Set.of(
             DBKey.COVER[0],
             DBKey.COVER[1]);
 
@@ -43,6 +44,10 @@ public class BookDetailsFieldVisibility
      * Constructor.
      */
     BookDetailsFieldVisibility() {
-        super(DB_KEYS, DEFAULT);
+        super(FIELDS, DEFAULT);
+    }
+
+    public static long getDefault() {
+        return getBitValue(DEFAULT);
     }
 }

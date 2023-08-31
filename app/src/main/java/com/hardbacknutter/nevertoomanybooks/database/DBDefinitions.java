@@ -1234,13 +1234,13 @@ public final class DBDefinitions {
         DOM_STYLE_BOOK_DETAIL_FIELDS_VISIBILITY =
                 new Domain.Builder(DBKey.STYLE_DETAILS_SHOW_FIELDS, SqLiteDataType.Integer)
                         .notNull()
-                        .withDefault(BookDetailsFieldVisibility.DEFAULT)
+                        .withDefault(BookDetailsFieldVisibility.getDefault())
                         .build();
 
         DOM_STYLE_BOOK_LEVEL_FIELDS_VISIBILITY =
                 new Domain.Builder(DBKey.STYLE_BOOK_LEVEL_FIELDS_VISIBILITY, SqLiteDataType.Integer)
                         .notNull()
-                        .withDefault(BookLevelFieldVisibility.DEFAULT)
+                        .withDefault(BookLevelFieldVisibility.getDefault())
                         .build();
 
         DOM_STYLE_BOOK_LEVEL_FIELDS_ORDER_BY =

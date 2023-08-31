@@ -200,7 +200,7 @@ public class StyleFragment
 
         //noinspection DataFlowIssue
         pListFieldVisibility.setSummary(style.getFieldVisibility(Style.Screen.List)
-                                             .getSummaryText(context));
+                                             .getPreferencesSummaryText(context));
 
         pGroups.setSummary(style.getGroupsSummaryText(context));
 

@@ -21,11 +21,13 @@
 package com.hardbacknutter.nevertoomanybooks.widgets.adapters;
 
 import android.view.View;
-import android.widget.Button;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.button.MaterialButton;
 
 import java.util.Objects;
 
@@ -56,7 +58,7 @@ public abstract class RowViewHolder
     private final View onClickTargetView;
 
     @Nullable
-    private final Button btnRowMenu;
+    private final MaterialButton btnRowMenu;
 
     /**
      * Constructor.
@@ -74,6 +76,11 @@ public abstract class RowViewHolder
 
     public void setClickTargetViewFocusable(final boolean focusable) {
         onClickTargetView.setFocusable(focusable);
+    }
+
+    public void setRowMenuButtonIconResource(@DrawableRes final int iconResourceId) {
+        //noinspection DataFlowIssue
+        btnRowMenu.setIconResource(iconResourceId);
     }
 
     /**

@@ -39,7 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BookshelfBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.PublisherBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.SeriesBooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.core.database.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -355,18 +354,6 @@ public interface Style {
      */
     @NonNull
     String getGroupsSummaryText(@NonNull Context context);
-
-
-    /**
-     * Create the list of {@link DomainExpression}s for the optional fields to be shown
-     * on the book-level in the {@link com.hardbacknutter.nevertoomanybooks.booklist.Booklist}.
-     * <p>
-     * WARNING: some fields may require a {@code LEFT JOIN} with another table.
-     *
-     * @return list
-     */
-    @NonNull
-    List<DomainExpression> getBookLevelFieldDomainExpressions();
 
     /**
      * Which visibility options to use from the user preferences/style.

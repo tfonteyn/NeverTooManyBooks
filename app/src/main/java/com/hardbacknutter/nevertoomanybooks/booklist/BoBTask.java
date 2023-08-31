@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.FtsMatchFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.NumberListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PEntityListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.MapDBKey;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
@@ -141,7 +142,15 @@ public class BoBTask
                                                Sort.Unsorted));
 
         // The domains for the book level, visibility and ordering according to style.
-        style.getBookLevelFieldDomainExpressions().forEach(builder::addDomain);
+        // WARNING: the field {@link DBKey#LOANEE_NAME} requires a {@code LEFT JOIN}
+        // with {@link DBDefinitions#TBL_BOOK_LOANEE}. See below
+        style.getBookLevelFieldsOrderBy().entrySet()
+             .stream()
+             .filter(field -> style.isShowField(Style.Screen.List, field.getKey()))
+             .map(field -> MapDBKey.createDomainExpressions(field.getKey(), field.getValue(),
+                                                            style))
+             .flatMap(List::stream)
+             .forEach(builder::addDomain);
 
         if (style.isShowField(Style.Screen.List, DBKey.LOANEE_NAME)) {
             builder.addLeftOuterJoin(DBDefinitions.TBL_BOOK_LOANEE);

@@ -94,57 +94,7 @@ public class FieldVisibility {
             // bit 32..35
             DBKey.TITLE_ORIGINAL_LANG,
             // represents "show the real author if 'this' is a pen-name"
-            DBKey.AUTHOR_REAL_AUTHOR,
-            // We're never going to hide the title, but this allows us
-            // to get a label just like for any other field
-            DBKey.TITLE
-    );
-
-    /** Simple mapping for {@link #DB_KEYS} to the label to show the user. */
-    private static final List<Integer> LABELS = List.of(
-            R.string.lbl_cover_front,
-            R.string.lbl_cover_back,
-            R.string.lbl_author,
-            R.string.lbl_bookshelves,
-
-            R.string.lbl_series,
-            R.string.lbl_publisher,
-            R.string.lbl_table_of_content,
-            R.string.lbl_lending,
-
-            R.string.lbl_author_type,
-            R.string.lbl_condition,
-            R.string.lbl_dust_cover,
-            R.string.lbl_isbn,
-
-            R.string.lbl_date_published,
-            R.string.lbl_color,
-            R.string.lbl_description,
-            R.string.lbl_edition,
-
-            R.string.lbl_date_first_publication,
-            R.string.lbl_format,
-            R.string.lbl_genre,
-            R.string.lbl_language,
-
-            R.string.lbl_location,
-            R.string.lbl_pages,
-            R.string.lbl_price_listed,
-            R.string.lbl_price_paid,
-
-            R.string.lbl_personal_notes,
-            R.string.lbl_rating,
-            R.string.lbl_signed,
-            R.string.lbl_read,
-
-            R.string.lbl_read_start,
-            R.string.lbl_read_end,
-            R.string.lbl_date_added,
-            R.string.lbl_date_last_updated,
-
-            R.string.lbl_original_title,
-            R.string.lbl_author_pseudonym,
-            R.string.lbl_title
+            DBKey.AUTHOR_REAL_AUTHOR
     );
 
     @NonNull
@@ -171,31 +121,9 @@ public class FieldVisibility {
      * @param defValue the bitmask with the defaults for this instance
      */
     FieldVisibility(@NonNull final Set<String> dbKeys,
-                    final long defValue) {
+                    @NonNull final Set<String> defValue) {
         this.dbKeys = dbKeys;
-        bits = defValue;
-    }
-
-    /**
-     * Get the matching label for the given key.
-     *
-     * @param context Current context
-     * @param dbKey   to fetch
-     *
-     * @return human readable label
-     *
-     * @throws IllegalArgumentException if the key is invalid
-     */
-    @NonNull
-    public static String getLabel(@NonNull final Context context,
-                                  @NonNull final String dbKey)
-            throws IllegalArgumentException {
-        final int index = DB_KEYS.indexOf(dbKey);
-        if (index == -1) {
-            throw new IllegalArgumentException(dbKey);
-        } else {
-            return context.getString(LABELS.get(index));
-        }
+        bits = getBitValue(defValue);
     }
 
     /**
@@ -249,7 +177,7 @@ public class FieldVisibility {
      * @return visible fields
      */
     @NonNull
-    public Set<String> getVisibleFieldKeys(final boolean all) {
+    public Set<String> getKeys(final boolean all) {
         if (all) {
             return Set.copyOf(dbKeys);
         } else {

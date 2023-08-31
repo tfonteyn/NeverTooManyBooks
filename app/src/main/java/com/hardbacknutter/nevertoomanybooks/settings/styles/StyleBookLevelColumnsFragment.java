@@ -39,11 +39,13 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStyleBookLevelColumnsBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditStyleBookLevelColumnBinding;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 
@@ -138,36 +140,59 @@ public class StyleBookLevelColumnsFragment
         void onBind(@NonNull final StyleViewModel.WrappedBookLevelColumn wrappedColumn) {
             final Context context = itemView.getContext();
             vb.columnName.setText(wrappedColumn.getLabel(context));
-            setChecked(wrappedColumn.isVisible());
 
-            final Sort current = wrappedColumn.getSort();
-            if (current != null) {
-                enableDrag(true);
-                vb.btnOrderBy.setVisibility(View.VISIBLE);
-                setIcon(current);
+            if (wrappedColumn.supportsVisibility()) {
+                enableCheck(true);
+                setChecked(wrappedColumn.isVisible());
+            } else {
+                enableCheck(false);
+                setChecked(true);
+            }
 
-                vb.btnOrderBy.setOnClickListener(v -> {
-                    final Sort nextValue = wrappedColumn.getSort().next();
-                    wrappedColumn.setSort(nextValue);
-                    setIcon(nextValue);
+            if (wrappedColumn.supportsSorting()) {
+                showDragHandle(true);
+                setIcon(wrappedColumn.getSort());
+
+                setOnRowShowContextMenuListener(ShowContextMenu.Button, (anchor, position) -> {
+                    final ExtPopupMenu popupMenu = new ExtPopupMenu(anchor.getContext())
+                            .inflate(R.menu.sorting_options)
+                            .setGroupDividerEnabled();
+
+                    popupMenu.showAsDropDown(anchor, menuItem -> {
+                        final int itemId = menuItem.getItemId();
+                        final Sort nextValue;
+                        if (itemId == R.id.MENU_SORT_UNSORTED) {
+                            nextValue = Sort.Unsorted;
+                        } else if (itemId == R.id.MENU_SORT_ASC) {
+                            nextValue = Sort.Asc;
+                        } else if (itemId == R.id.MENU_SORT_DESC) {
+                            nextValue = Sort.Desc;
+                        } else {
+                            // Should never get here... flw
+                            return false;
+                        }
+
+                        wrappedColumn.setSort(nextValue);
+                        setIcon(nextValue);
+                        return true;
+                    });
                 });
             } else {
-                enableDrag(false);
-                vb.btnOrderBy.setVisibility(View.INVISIBLE);
+                showDragHandle(false);
+                setOnRowShowContextMenuListener(null, null);
             }
         }
 
         private void setIcon(@NonNull final Sort sort) {
             switch (sort) {
                 case Unsorted:
-                    vb.btnOrderBy.setIconResource(R.drawable.ic_baseline_clear_24);
+                    setRowMenuButtonIconResource(R.drawable.ic_baseline_sort_unsorted);
                     break;
                 case Asc:
-                    vb.btnOrderBy.setIconResource(R.drawable.ic_baseline_sort_by_alpha_24);
+                    setRowMenuButtonIconResource(R.drawable.ic_baseline_sort_ascending);
                     break;
                 case Desc:
-                    vb.btnOrderBy.setIconResource(R.drawable.ic_baseline_sort_by_alpha_reversed_24);
-
+                    setRowMenuButtonIconResource(R.drawable.ic_baseline_sort_descending);
                     break;
             }
         }

@@ -35,6 +35,26 @@
         app:layout_constraintTop_toTopOf="parent"
         />
 
+    <TextView
+        android:id="@+id/header_vis"
+        style="@style/Text.Header"
+        android:text="@string/enabled"
+        android:layout_marginStart="@dimen/field_margin_start"
+        android:textColor="?attr/colorSecondary"
+        app:layout_constraintStart_toStartOf="@id/column_list"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        />
+
+    <TextView
+        android:id="@+id/header_sort"
+        style="@style/Text.Header"
+        android:text="@string/lbl_sorting"
+        android:layout_marginEnd="@dimen/field_margin_end"
+        android:textColor="?attr/colorSecondary"
+        app:layout_constraintEnd_toEndOf="@id/column_list"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/column_list"
         android:layout_width="0dp"
@@ -44,7 +64,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/header"
+        app:layout_constraintTop_toBottomOf="@id/header_vis"
         tools:listitem="@layout/row_edit_style_book_level_column"
         />
 

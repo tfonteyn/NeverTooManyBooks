@@ -170,9 +170,7 @@ public class StyleCoder
              .forEach((columnName, sort) -> {
                  final JSONObject column = new JSONObject();
                  column.put(COLUMN_NAME, columnName);
-                 if (sort != null) {
-                     column.put(COLUMN_SORT, sort.name());
-                 }
+                 column.put(COLUMN_SORT, sort.name());
                  columns.put(column);
              });
 
@@ -298,12 +296,8 @@ public class StyleCoder
         for (int i = 0; i < columns.length(); i++) {
             final JSONObject column = columns.getJSONObject(i);
             final String name = column.getString(COLUMN_NAME);
-            if (column.has(COLUMN_SORT)) {
-                final String value = column.getString(COLUMN_SORT);
-                result.put(name, Sort.valueOf(value));
-            } else {
-                result.put(name, null);
-            }
+            final String value = column.getString(COLUMN_SORT);
+            result.put(name, Sort.valueOf(value));
         }
         return result;
     }

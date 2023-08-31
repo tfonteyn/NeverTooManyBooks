@@ -30,7 +30,6 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -40,6 +39,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.MapDBKey;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
@@ -175,38 +175,51 @@ public class StyleViewModel
     List<WrappedBookLevelColumn> createWrappedBookLevelColumnList() {
         wrappedBookLevelColumnList.clear();
 
-        final Map<String, Sort> bookLevelFieldsOrderBy = style.getBookLevelFieldsOrderBy();
         final FieldVisibility fieldVisibility = style.getFieldVisibility(Style.Screen.List);
 
+        // ALL the fields upon which can be sorted.
+        final Map<String, Sort> bookLevelFieldsOrderBy = style.getBookLevelFieldsOrderBy();
 
-        // first get all the sortable keys with their current visibility.
-        final Set<String> visKeys = fieldVisibility.getVisibleFieldKeys(false);
+        // first get all the sortable fields with their current visibility.
         bookLevelFieldsOrderBy.forEach((dbKey, sort) -> wrappedBookLevelColumnList.add(
-                new WrappedBookLevelColumn(dbKey, visKeys.contains(dbKey), sort)));
+                new WrappedBookLevelColumn(dbKey,
+                                           fieldVisibility.isVisible(dbKey)
+                                                          .orElse(null),
+                                           sort)));
 
-        // now add the non-sortable keys
+        // now add the visibility-enabled fields which are not sortable
         final Set<String> orderKeys = bookLevelFieldsOrderBy.keySet();
-        fieldVisibility.getVisibleFieldKeys(true)
+        fieldVisibility.getKeys(true)
                        .stream()
+                       // Remove the sortable fields we already handled above
                        .filter(key -> !orderKeys.contains(key))
                        .forEach(key -> wrappedBookLevelColumnList.add(
-                               new WrappedBookLevelColumn(key, visKeys.contains(key), null)));
-
+                               new WrappedBookLevelColumn(key,
+                                                          fieldVisibility.isVisible(key)
+                                                                         .orElse(null),
+                                                          null)));
 
         return wrappedBookLevelColumnList;
     }
 
     void updateBookLevelColumnList() {
         final FieldVisibility fieldVisibility = style.getFieldVisibility(Style.Screen.List);
-        final Map<String, Sort> map = new LinkedHashMap<>();
 
-        wrappedBookLevelColumnList.forEach(
-                field -> {
-                    fieldVisibility.setShowField(field.getDbKey(), field.isVisible());
-                    map.put(field.getDbKey(), field.getSort());
-                });
+        wrappedBookLevelColumnList
+                .stream()
+                .filter(WrappedBookLevelColumn::supportsVisibility)
+                .forEach(field -> fieldVisibility.setVisible(field.getDbKey(),
+                                                             field.isVisible()));
 
-        style.setBookLevelFieldsOrderBy(map);
+        style.setBookLevelFieldsOrderBy(
+                wrappedBookLevelColumnList
+                        .stream()
+                        .filter(WrappedBookLevelColumn::supportsSorting)
+                        .collect(Collectors.toMap(WrappedBookLevelColumn::getDbKey,
+                                                  WrappedBookLevelColumn::getSort)));
+
+        //noinspection DataFlowIssue
+        styleDataStore.setModified();
     }
 
     /**
@@ -252,13 +265,14 @@ public class StyleViewModel
         @NonNull
         private final String dbKey;
 
-        private boolean visible;
+        @Nullable
+        private Boolean visible;
 
         @Nullable
         private Sort sort;
 
         WrappedBookLevelColumn(@NonNull final String dbKey,
-                               final boolean visible,
+                               @Nullable final Boolean visible,
                                @Nullable final Sort sort) {
             this.dbKey = dbKey;
             this.visible = visible;
@@ -271,23 +285,33 @@ public class StyleViewModel
         }
 
         public String getLabel(@NonNull final Context context) {
-            return FieldVisibility.getLabel(context, dbKey);
+            return MapDBKey.getLabel(context, dbKey);
+        }
+
+        boolean supportsVisibility() {
+            return visible != null;
         }
 
         public boolean isVisible() {
-            return visible;
+            return Objects.requireNonNull(visible);
         }
 
         public void setVisible(final boolean visible) {
+            Objects.requireNonNull(this.visible);
             this.visible = visible;
         }
 
-        @Nullable
+        boolean supportsSorting() {
+            return sort != null;
+        }
+
+        @NonNull
         public Sort getSort() {
-            return sort;
+            return Objects.requireNonNull(sort);
         }
 
         public void setSort(@NonNull final Sort sort) {
+            Objects.requireNonNull(this.sort);
             this.sort = sort;
         }
     }

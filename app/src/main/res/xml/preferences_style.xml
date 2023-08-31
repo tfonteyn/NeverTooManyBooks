@@ -159,7 +159,7 @@
 
         <SwitchPreference
             android:defaultValue="false"
-            android:icon="@drawable/ic_baseline_sort_by_alpha_24"
+            android:icon="@drawable/ic_baseline_sort_24"
             android:key="sort.author.name.given_first"
             android:summaryOff="@string/ps_author_name_family_first"
             android:summaryOn="@string/ps_author_name_given_first"

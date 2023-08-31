@@ -47,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.MapDBKey;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
@@ -266,7 +266,7 @@ public class CalibreContentServerReader
                       .forEach(dbKey -> {
                           // URGENT: converting DBKey to label needs to be universal.
                           try {
-                              map.put(FieldVisibility.getLabel(context, dbKey),
+                              map.put(MapDBKey.getLabel(context, dbKey),
                                       new String[]{dbKey});
 
                           } catch (@NonNull final IllegalArgumentException ignore) {
