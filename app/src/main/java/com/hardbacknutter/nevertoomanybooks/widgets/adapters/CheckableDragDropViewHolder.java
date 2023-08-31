@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
  *      <li>R.id.ROW_GRABBER_ICON</li>
  * </ul>
  */
-public abstract class BaseDragDropViewHolder
+public class CheckableDragDropViewHolder
         extends RowViewHolder
         implements ItemTouchHelperViewHolder {
 
@@ -68,7 +68,7 @@ public abstract class BaseDragDropViewHolder
     /** preserves the original background while dragging. */
     private Drawable originalItemSelectedBackground;
 
-    protected BaseDragDropViewHolder(@NonNull final View itemView) {
+    protected CheckableDragDropViewHolder(@NonNull final View itemView) {
         super(itemView);
         setClickTargetViewFocusable(false);
 
@@ -107,11 +107,31 @@ public abstract class BaseDragDropViewHolder
                 v -> setChecked(listener.apply(getBindingAdapterPosition())));
     }
 
-    public void enableDrag(final boolean enable) {
+    /**
+     * Show or hide the drag-handle.
+     *
+     * @param show flag
+     */
+    protected void showDragHandle(final boolean show) {
         //noinspection DataFlowIssue
-        dragHandleView.setVisibility(enable ? View.VISIBLE : View.INVISIBLE);
+        dragHandleView.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
     }
 
+    /**
+     * Enable/disable, but leave visible, the checkable-button.
+     *
+     * @param enable flag
+     */
+    protected void enableCheck(final boolean enable) {
+        //noinspection DataFlowIssue
+        checkableButton.setEnabled(enable);
+    }
+
+    /**
+     * Set the status of the checkable-button.
+     *
+     * @param checked flag
+     */
     public void setChecked(final boolean checked) {
         //noinspection DataFlowIssue
         checkableButton.setChecked(checked);
