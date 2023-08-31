@@ -98,9 +98,9 @@ public class UserStyle
         setHeaderFieldVisibilityValue(rowData.getInt(DBKey.STYLE_LIST_HEADER));
 
         getFieldVisibility(Screen.List)
-                .setValue(rowData.getLong(DBKey.STYLE_BOOK_LEVEL_FIELDS_VISIBILITY));
+                .setBitValue(rowData.getLong(DBKey.STYLE_BOOK_LEVEL_FIELDS_VISIBILITY));
         getFieldVisibility(Screen.Detail)
-                .setValue(rowData.getLong(DBKey.STYLE_DETAILS_SHOW_FIELDS));
+                .setBitValue(rowData.getLong(DBKey.STYLE_DETAILS_SHOW_FIELDS));
 
         setBookLevelFieldsOrderBy(
                 StyleCoder.decodeBookLevelFieldsOrderBy(

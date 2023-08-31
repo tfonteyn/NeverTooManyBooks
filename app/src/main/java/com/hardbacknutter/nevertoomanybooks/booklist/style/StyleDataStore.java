@@ -281,7 +281,7 @@ public class StyleDataStore
         final FieldVisibility listFV = style.getFieldVisibility(Style.Screen.List);
         final String listDbKey = PK_LIST_SHOW_FIELD_TO_DB_KEY.get(key);
         if (listDbKey != null) {
-            listFV.setShowField(listDbKey, value);
+            listFV.setVisible(listDbKey, value);
             setModified();
             return;
         }
@@ -289,7 +289,7 @@ public class StyleDataStore
         final FieldVisibility detailFV = style.getFieldVisibility(Style.Screen.Detail);
         final String detailDbKey = PK_DETAILS_SHOW_FIELD_TO_DB_KEY.get(key);
         if (detailDbKey != null) {
-            detailFV.setShowField(detailDbKey, value);
+            detailFV.setVisible(detailDbKey, value);
             setModified();
             return;
         }

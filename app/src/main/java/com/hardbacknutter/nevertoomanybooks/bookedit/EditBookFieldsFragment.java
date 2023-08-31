@@ -144,7 +144,7 @@ public class EditBookFieldsFragment
         vb.author.setOnClickListener(v -> editAuthor());
 
         if (ServiceLocator.getInstance().getGlobalFieldVisibility()
-                          .isShowField(DBKey.FK_SERIES).orElse(true)) {
+                          .isVisible(DBKey.FK_SERIES).orElse(true)) {
             // Series editor (screen)
             // no listener/callback. We share the book view model in the Activity scope
             vb.lblSeries.setEndIconOnClickListener(v -> editSeries());
@@ -176,7 +176,7 @@ public class EditBookFieldsFragment
 
             for (int cIdx = 0; cIdx < width.length(); cIdx++) {
                 // in edit mode, always show both covers unless globally disabled
-                if (fieldVisibility.isShowField(DBKey.COVER[cIdx]).orElse(true)) {
+                if (fieldVisibility.isVisible(DBKey.COVER[cIdx]).orElse(true)) {
                     final int maxWidth = width.getDimensionPixelSize(cIdx, 0);
                     final int maxHeight = height.getDimensionPixelSize(cIdx, 0);
 

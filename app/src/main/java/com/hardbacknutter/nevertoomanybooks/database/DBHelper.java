@@ -39,7 +39,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -223,12 +225,12 @@ public class DBHelper
              .forEach(oldKey -> {
                  final boolean value = prefs.getBoolean(oldKey, false);
                  final String dbKey = dot.split(oldKey, 3)[2];
-                 fieldVisibility.setShowField(dbKey, value);
+                 fieldVisibility.setVisible(dbKey, value);
              });
 
         prefs.edit()
              .putLong(FieldVisibilityPreferenceFragment.PK_FIELD_VISIBILITY,
-                      fieldVisibility.getValue())
+                      fieldVisibility.getBitValue())
              .apply();
 
 
@@ -599,37 +601,49 @@ public class DBHelper
                             stylePrefs.getStringSet("style.booklist.header", null),
                             BooklistHeader.BITMASK_ALL));
 
-                    final long detailFields =
-                            (stylePrefs.getBoolean("style.details.show.thumbnail.0", true)
-                             ? FieldVisibility.getBitValue(DBKey.COVER[0]) : 0)
-                            | (stylePrefs.getBoolean("style.details.show.thumbnail.1", true)
-                               ? FieldVisibility.getBitValue(DBKey.COVER[1]) : 0);
 
-                    stmt.bindLong(++c, detailFields);
+                    final Set<String> detailFields = new HashSet<>();
+                    if (stylePrefs.getBoolean("style.details.show.thumbnail.0", true)) {
+                        detailFields.add(DBKey.COVER[0]);
+                    }
+                    if (stylePrefs.getBoolean("style.details.show.thumbnail.1", true)) {
+                        detailFields.add(DBKey.COVER[1]);
+                    }
 
-                    final long listFields =
-                            FieldVisibility.getBitValue(DBKey.FK_SERIES)
+                    stmt.bindLong(++c, FieldVisibility.getBitValue(detailFields));
 
-                            | (stylePrefs.getBoolean("style.booklist.show.thumbnails", true)
-                               ? FieldVisibility.getBitValue(DBKey.COVER[0]) : 0)
-                            | (stylePrefs.getBoolean("style.booklist.show.author", true)
-                               ? FieldVisibility.getBitValue(DBKey.FK_AUTHOR) : 0)
-                            | (stylePrefs.getBoolean("style.booklist.show.publisher", true)
-                               ? FieldVisibility.getBitValue(DBKey.FK_PUBLISHER) : 0)
-                            | (stylePrefs.getBoolean("style.booklist.show.publication.date", true)
-                               ? FieldVisibility.getBitValue(DBKey.BOOK_PUBLICATION__DATE) : 0)
-                            | (stylePrefs.getBoolean("style.booklist.show.format", true)
-                               ? FieldVisibility.getBitValue(DBKey.FORMAT) : 0)
-                            | (stylePrefs.getBoolean("style.booklist.show.location", true)
-                               ? FieldVisibility.getBitValue(DBKey.LOCATION) : 0)
-                            | (stylePrefs.getBoolean("style.booklist.show.rating", true)
-                               ? FieldVisibility.getBitValue(DBKey.RATING) : 0)
-                            | (stylePrefs.getBoolean("style.booklist.show.bookshelves", true)
-                               ? FieldVisibility.getBitValue(DBKey.FK_BOOKSHELF) : 0)
-                            | (stylePrefs.getBoolean("style.booklist.show.isbn", true)
-                               ? FieldVisibility.getBitValue(DBKey.BOOK_ISBN) : 0);
+                    final Set<String> listFields = new HashSet<>();
+                    listFields.add(DBKey.FK_SERIES);
 
-                    stmt.bindLong(++c, listFields);
+                    if (stylePrefs.getBoolean("style.booklist.show.thumbnails", true)) {
+                        listFields.add(DBKey.COVER[0]);
+                    }
+                    if (stylePrefs.getBoolean("style.booklist.show.author", true)) {
+                        listFields.add(DBKey.FK_AUTHOR);
+                    }
+                    if (stylePrefs.getBoolean("style.booklist.show.publisher", true)) {
+                        listFields.add(DBKey.FK_PUBLISHER);
+                    }
+                    if (stylePrefs.getBoolean("style.booklist.show.publication.date", true)) {
+                        listFields.add(DBKey.BOOK_PUBLICATION__DATE);
+                    }
+                    if (stylePrefs.getBoolean("style.booklist.show.format", true)) {
+                        listFields.add(DBKey.FORMAT);
+                    }
+                    if (stylePrefs.getBoolean("style.booklist.show.location", true)) {
+                        listFields.add(DBKey.LOCATION);
+                    }
+                    if (stylePrefs.getBoolean("style.booklist.show.rating", true)) {
+                        listFields.add(DBKey.RATING);
+                    }
+                    if (stylePrefs.getBoolean("style.booklist.show.bookshelves", true)) {
+                        listFields.add(DBKey.FK_BOOKSHELF);
+                    }
+                    if (stylePrefs.getBoolean("style.booklist.show.isbn", true)) {
+                        listFields.add(DBKey.BOOK_ISBN);
+                    }
+
+                    stmt.bindLong(++c, FieldVisibility.getBitValue(listFields));
 
                     stmt.bindString(++c, uuid);
                     stmt.executeUpdateDelete();

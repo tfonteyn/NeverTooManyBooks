@@ -121,22 +121,22 @@ public class FieldVisibilityPreferenceFragment
         @Override
         public void putBoolean(@NonNull final String key,
                                final boolean value) {
-            fieldVisibility.setShowField(key, value);
+            fieldVisibility.setVisible(key, value);
         }
 
         @Override
         public boolean getBoolean(@NonNull final String key,
                                   final boolean defValue) {
-            return fieldVisibility.isShowField(key).orElse(true);
+            return fieldVisibility.isVisible(key).orElse(true);
         }
 
         void load(@NonNull final SharedPreferences prefs) {
-            fieldVisibility.setValue(prefs.getLong(PK_FIELD_VISIBILITY, Long.MAX_VALUE));
+            fieldVisibility.setBitValue(prefs.getLong(PK_FIELD_VISIBILITY, Long.MAX_VALUE));
         }
 
         void save(@NonNull final SharedPreferences prefs) {
             prefs.edit()
-                 .putLong(PK_FIELD_VISIBILITY, fieldVisibility.getValue())
+                 .putLong(PK_FIELD_VISIBILITY, fieldVisibility.getBitValue())
                  .apply();
         }
     }

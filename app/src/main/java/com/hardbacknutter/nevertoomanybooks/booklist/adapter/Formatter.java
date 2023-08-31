@@ -106,7 +106,7 @@ class Formatter
                     return context.getString(R.string.bob_empty_author);
 
                 } else if (serviceLocator.getGlobalFieldVisibility()
-                                         .isShowField(DBKey.AUTHOR_REAL_AUTHOR).orElse(true)
+                                         .isVisible(DBKey.AUTHOR_REAL_AUTHOR).orElse(true)
                            && rowData.contains(DBKey.AUTHOR_REAL_AUTHOR)) {
                     // Specifically check for AUTHOR_REAL_AUTHOR as it will usually be 0
                     // and no lookup will be needed.

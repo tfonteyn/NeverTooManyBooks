@@ -74,7 +74,7 @@ public class PBooleanFilter
     public boolean isActive(@NonNull final Context context) {
         final String dbdKey = domain.getName();
         if (ServiceLocator.getInstance().getGlobalFieldVisibility()
-                          .isShowField(dbdKey).orElse(true)) {
+                          .isVisible(dbdKey).orElse(true)) {
             return value != null;
         }
         return false;

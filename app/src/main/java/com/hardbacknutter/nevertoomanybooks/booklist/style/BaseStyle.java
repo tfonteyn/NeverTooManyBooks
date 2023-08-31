@@ -228,7 +228,7 @@ public abstract class BaseStyle
 
         setHeaderFieldVisibilityValue(style.getHeaderFieldVisibilityValue());
         for (final Screen screen : Screen.values()) {
-            getFieldVisibility(screen).setValue(style.getFieldVisibility(screen).getValue());
+            getFieldVisibility(screen).setBitValue(style.getFieldVisibility(screen).getBitValue());
         }
 
         // set groups first!
@@ -397,20 +397,20 @@ public abstract class BaseStyle
         // use the global and if that fails, just return 'true'
         switch (screen) {
             case List:
-                return bookLevelFieldVisibility.isShowField(dbKey).orElseGet(
+                return bookLevelFieldVisibility.isVisible(dbKey).orElseGet(
                         () -> ServiceLocator.getInstance().getGlobalFieldVisibility()
-                                            .isShowField(dbKey)
+                                            .isVisible(dbKey)
                                             .orElse(true));
 
             case Detail:
-                return detailsFieldVisibility.isShowField(dbKey).orElseGet(
+                return detailsFieldVisibility.isVisible(dbKey).orElseGet(
                         () -> ServiceLocator.getInstance().getGlobalFieldVisibility()
-                                            .isShowField(dbKey)
+                                            .isVisible(dbKey)
                                             .orElse(true));
 
             case Global:
                 return ServiceLocator.getInstance().getGlobalFieldVisibility()
-                                     .isShowField(dbKey)
+                                     .isVisible(dbKey)
                                      .orElse(true);
         }
         throw new IllegalArgumentException();

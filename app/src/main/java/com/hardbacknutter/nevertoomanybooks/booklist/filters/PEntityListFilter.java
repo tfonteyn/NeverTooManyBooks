@@ -91,7 +91,7 @@ public class PEntityListFilter<T extends Entity>
     public boolean isActive(@NonNull final Context context) {
         final String dbdKey = domain.getName();
         if (ServiceLocator.getInstance().getGlobalFieldVisibility()
-                          .isShowField(dbdKey).orElse(true)) {
+                          .isVisible(dbdKey).orElse(true)) {
             return !value.isEmpty();
         }
         return false;

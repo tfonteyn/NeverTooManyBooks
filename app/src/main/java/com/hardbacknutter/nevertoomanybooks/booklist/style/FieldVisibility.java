@@ -24,8 +24,6 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -201,25 +199,6 @@ public class FieldVisibility {
     }
 
     /**
-     * Get the matching bit-value for the given key.
-     *
-     * @param dbKey to fetch
-     *
-     * @return bit value
-     *
-     * @throws IllegalArgumentException if the key is invalid
-     */
-    public static long getBitValue(@NonNull final String dbKey)
-            throws IllegalArgumentException {
-        final int index = DB_KEYS.indexOf(dbKey);
-        if (index == -1) {
-            throw new IllegalArgumentException(dbKey);
-        } else {
-            return 1L << index;
-        }
-    }
-
-    /**
      * Get the combined bit-value for the given set of keys.
      *
      * @param keys to fetch
@@ -228,11 +207,36 @@ public class FieldVisibility {
      *
      * @throws IllegalArgumentException if any key is invalid
      */
-    static long getBitValue(@NonNull final Set<String> keys)
+    public static long getBitValue(@NonNull final Set<String> keys)
             throws IllegalArgumentException {
         return keys.stream()
-                   .mapToLong(FieldVisibility::getBitValue)
+                   .mapToLong(dbKey -> {
+                       final int index = DB_KEYS.indexOf(dbKey);
+                       if (index == -1) {
+                           throw new IllegalArgumentException(dbKey);
+                       } else {
+                           return 1L << index;
+                       }
+                   })
                    .reduce(0, (a, b) -> a | b);
+    }
+
+    /**
+     * Get the current configured combined bit-value.
+     *
+     * @return bitmask
+     */
+    public long getBitValue() {
+        return bits;
+    }
+
+    /**
+     * Set the current configured combined bit-value.
+     *
+     * @param value bitmask
+     */
+    public void setBitValue(final long value) {
+        bits = value;
     }
 
 
@@ -250,7 +254,7 @@ public class FieldVisibility {
             return Set.copyOf(dbKeys);
         } else {
             return dbKeys.stream()
-                         .filter(key -> isShowField(key).orElseThrow())
+                         .filter(key -> isVisible(key).orElseThrow())
                          .collect(Collectors.toSet());
         }
     }
@@ -265,7 +269,7 @@ public class FieldVisibility {
      * @return Optional
      */
     @NonNull
-    public Optional<Boolean> isShowField(@NonNull final String dbKey) {
+    public Optional<Boolean> isVisible(@NonNull final String dbKey) {
         if (dbKeys.contains(dbKey)) {
             final int index = DB_KEYS.indexOf(dbKey);
             if (index != -1) {
@@ -284,8 +288,8 @@ public class FieldVisibility {
      * @param show  flag
      */
     @SuppressWarnings("WeakerAccess")
-    public void setShowField(@NonNull final String dbKey,
-                             final boolean show) {
+    public void setVisible(@NonNull final String dbKey,
+                           final boolean show) {
         if (dbKeys.contains(dbKey)) {
             final int index = DB_KEYS.indexOf(dbKey);
             if (index >= 0) {
@@ -300,47 +304,6 @@ public class FieldVisibility {
     }
 
     /**
-     * Get the current configured combined bit-value.
-     *
-     * @return bitmask
-     */
-    public long getValue() {
-        return bits;
-    }
-
-    /**
-     * Set the current configured combined bit-value.
-     *
-     * @param value bitmask
-     */
-    public void setValue(final long value) {
-        bits = value;
-    }
-
-    /**
-     * Get the list of in-use book-detail-field names in a human readable format.
-     * This is used to set the summary of the PreferenceScreen.
-     *
-     * @param context Current context
-     *
-     * @return list of labels, can be empty, but never {@code null}
-     */
-    @NonNull
-    private List<String> getLabels(@NonNull final Context context) {
-        final List<String> labels = new ArrayList<>();
-
-        for (int i = 0; i < DB_KEYS.size(); i++) {
-            final String key = DB_KEYS.get(i);
-            if (dbKeys.contains(key) && isShowField(key).orElse(true)) {
-                labels.add(context.getString(LABELS.get(i)));
-            }
-        }
-
-        Collections.sort(labels);
-        return labels;
-    }
-
-    /**
      * Convenience method for use in the Preferences screen.
      * Get the summary text for the book fields to show in lists.
      *
@@ -349,12 +312,17 @@ public class FieldVisibility {
      * @return summary text
      */
     @NonNull
-    public String getSummaryText(@NonNull final Context context) {
-        final List<String> labels = getLabels(context);
+    public String getPreferencesSummaryText(@NonNull final Context context) {
+        final String labels = DB_KEYS
+                .stream()
+                .filter(key -> dbKeys.contains(key) && isVisible(key).orElse(true))
+                .map(key -> MapDBKey.getLabel(context, key)).sorted()
+                .collect(Collectors.joining(", "));
+
         if (labels.isEmpty()) {
             return context.getString(R.string.none);
         } else {
-            return String.join(", ", labels);
+            return labels;
         }
     }
 

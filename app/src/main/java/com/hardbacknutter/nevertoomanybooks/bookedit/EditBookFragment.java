@@ -308,7 +308,7 @@ public class EditBookFragment
             }
 
             if (ServiceLocator.getInstance().getGlobalFieldVisibility()
-                              .isShowField(DBKey.FK_TOC_ENTRY).orElse(true)) {
+                              .isVisible(DBKey.FK_TOC_ENTRY).orElse(true)) {
                 tabList.add(new TabInfo(EditBookTocFragment.class,
                                         R.string.lbl_tab_table_of_content,
                                         R.string.lbl_table_of_content));

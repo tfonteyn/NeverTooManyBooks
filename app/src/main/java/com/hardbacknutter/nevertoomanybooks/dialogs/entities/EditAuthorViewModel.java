@@ -86,9 +86,9 @@ public class EditAuthorViewModel
 
             final FieldVisibility fieldVisibility = ServiceLocator.getInstance()
                                                                   .getGlobalFieldVisibility();
-            useRealAuthorName = fieldVisibility.isShowField(DBKey.AUTHOR_REAL_AUTHOR)
+            useRealAuthorName = fieldVisibility.isVisible(DBKey.AUTHOR_REAL_AUTHOR)
                                                .orElse(true);
-            useAuthorType = fieldVisibility.isShowField(DBKey.AUTHOR_TYPE__BITMASK)
+            useAuthorType = fieldVisibility.isVisible(DBKey.AUTHOR_TYPE__BITMASK)
                                            .orElse(true);
 
             currentEdit = new Author(author);

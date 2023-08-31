@@ -240,8 +240,8 @@ public class StyleDaoImpl
             stmt.bindLong(++c, style.getCoverScale());
             stmt.bindLong(++c, style.getHeaderFieldVisibilityValue());
 
-            stmt.bindLong(++c, style.getFieldVisibility(Style.Screen.Detail).getValue());
-            stmt.bindLong(++c, style.getFieldVisibility(Style.Screen.List).getValue());
+            stmt.bindLong(++c, style.getFieldVisibility(Style.Screen.Detail).getBitValue());
+            stmt.bindLong(++c, style.getFieldVisibility(Style.Screen.List).getBitValue());
             stmt.bindString(++c, StyleCoder.encodeBookLevelFieldsOrderBy(style));
 
             final long iId = stmt.executeInsert();
@@ -283,9 +283,9 @@ public class StyleDaoImpl
             cv.put(DBKey.STYLE_LIST_HEADER, userStyle.getHeaderFieldVisibilityValue());
 
             cv.put(DBKey.STYLE_DETAILS_SHOW_FIELDS,
-                   style.getFieldVisibility(Style.Screen.Detail).getValue());
+                   style.getFieldVisibility(Style.Screen.Detail).getBitValue());
             cv.put(DBKey.STYLE_BOOK_LEVEL_FIELDS_VISIBILITY,
-                   style.getFieldVisibility(Style.Screen.List).getValue());
+                   style.getFieldVisibility(Style.Screen.List).getBitValue());
 
             cv.put(DBKey.STYLE_BOOK_LEVEL_FIELDS_ORDER_BY,
                    StyleCoder.encodeBookLevelFieldsOrderBy(style));
