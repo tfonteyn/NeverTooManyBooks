@@ -80,6 +80,12 @@ at the original creators.
 
 ## History
 
+### 4.6.6
+
+FIXES
+
+-fix #21 regression bug in UI in export
+
 ### 4.6.5
 
 NEW:
