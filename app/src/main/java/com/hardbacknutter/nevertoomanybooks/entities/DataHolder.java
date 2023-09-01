@@ -45,7 +45,7 @@ public interface DataHolder {
      * Returns a Set containing the Strings used as keys in this DataHolder.
      * Note: this method is not strictly needed.
      *
-     * @return an immutable Set with the keys
+     * @return a new unmodifiable Set with the keys
      */
     @NonNull
     Set<String> keySet();

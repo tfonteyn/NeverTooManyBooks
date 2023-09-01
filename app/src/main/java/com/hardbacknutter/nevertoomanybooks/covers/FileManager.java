@@ -120,7 +120,8 @@ public class FileManager {
                                 @NonNull final Size... sizes)
             throws StorageException, CredentialsException {
 
-        // We will disable sites on the fly for the *current* search without modifying the list
+        // We need to disable sites on the fly for the *current* search without modifying the list
+        // so take a COPY of the set of engines
         final Set<EngineId> currentSearch = EnumSet.copyOf(engineIds);
 
         final Map<EngineId, SearchEngine> engineCache = new EnumMap<>(EngineId.class);

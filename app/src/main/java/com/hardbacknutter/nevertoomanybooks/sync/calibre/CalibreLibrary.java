@@ -208,7 +208,7 @@ public class CalibreLibrary
     /**
      * Get the defined custom fields.
      *
-     * @return an immutable Set
+     * @return a new unmodifiable Set
      */
     @NonNull
     Set<CalibreCustomField> getCustomFields() {

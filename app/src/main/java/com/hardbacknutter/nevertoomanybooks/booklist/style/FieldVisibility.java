@@ -174,7 +174,7 @@ public class FieldVisibility {
      * @param all set to {@code true} to get all keys regardless of visibility;
      *            Use {@code false} to get only the currently visible fields (keys).
      *
-     * @return visible fields
+     * @return a new unmodifiable Set
      */
     @NonNull
     public Set<String> getKeys(final boolean all) {

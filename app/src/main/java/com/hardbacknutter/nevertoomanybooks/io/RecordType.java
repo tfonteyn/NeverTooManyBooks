@@ -186,7 +186,7 @@ public enum RecordType {
      *
      * @param recordTypes the base set
      *
-     * @return a copy/enhanced set
+     * @return a new unmodifiable Set
      */
     @NonNull
     public static Set<RecordType> addRelatedTypes(@NonNull final Set<RecordType> recordTypes) {
