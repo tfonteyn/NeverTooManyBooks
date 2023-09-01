@@ -97,7 +97,7 @@ public class ZipArchiveWriter
      * <p>
      * RELEASE: set correct archiver version
      */
-    public static final int VERSION = 6;
+    public static final int VERSION = 7;
 
     /**
      * Arbitrary number of steps added to the progress max value.

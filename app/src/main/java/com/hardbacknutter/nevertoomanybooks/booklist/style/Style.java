@@ -30,6 +30,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
@@ -38,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BookshelfBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.PublisherBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.SeriesBooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
@@ -244,6 +246,11 @@ public interface Style {
      */
     @NonNull
     FieldVisibility getFieldVisibility(@NonNull Screen screen);
+
+    @NonNull
+    Map<String, Sort> getBookLevelFieldsOrderBy();
+
+    void setBookLevelFieldsOrderBy(@NonNull Map<String, Sort> map);
 
     /**
      * Get the group row <strong>height</strong> to be applied to

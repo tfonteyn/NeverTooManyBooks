@@ -95,8 +95,8 @@ public class UserStyleTest
         }
 
         for (final Style.Screen item : Style.Screen.values()) {
-            assertEquals(s1.getFieldVisibility(item).getValue(),
-                         s2.getFieldVisibility(item).getValue());
+            assertEquals(s1.getFieldVisibility(item).getBitValue(),
+                         s2.getFieldVisibility(item).getBitValue());
         }
 
     }

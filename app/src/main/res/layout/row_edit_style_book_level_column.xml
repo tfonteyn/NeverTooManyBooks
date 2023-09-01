@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="?attr/listPreferredItemHeightSmall"
+    >
+
+    <CheckBox
+        android:id="@id/ROW_CHECKABLE_BTN"
+        style="@style/RowEditor.Button.Checkable"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/ROW_ONCLICK_TARGET"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:checked="true"
+        />
+
+    <LinearLayout
+        android:id="@id/ROW_ONCLICK_TARGET"
+        style="@style/RowEditor.TextSection"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/ROW_GRABBER_ICON"
+        app:layout_constraintStart_toEndOf="@id/ROW_CHECKABLE_BTN"
+        app:layout_constraintTop_toTopOf="parent"
+        >
+
+        <TextView
+            android:id="@+id/column_name"
+            style="@style/RowEditor.Text.Primary"
+            tools:ignore="SelectableText"
+            tools:text="@sample/data.json/field/name"
+            />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@id/ROW_GRABBER_ICON"
+        style="@style/RowEditor.Button.DragHandle"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_row_menu"
+        app:layout_constraintStart_toEndOf="@id/ROW_ONCLICK_TARGET"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription"
+        />
+
+    <!-- full size icon; so add a margin at the end to avoid overlap with scrollbar -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_row_menu"
+        style="@style/Button.MenuPopup.Sorting"
+        android:layout_marginEnd="@dimen/field_margin_end"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

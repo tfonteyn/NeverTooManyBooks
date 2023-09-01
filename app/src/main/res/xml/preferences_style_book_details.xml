@@ -32,22 +32,6 @@
 
         <SwitchPreference
             android:defaultValue="false"
-            android:key="style.booklist.show.pages"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/lbl_pages"
-            />
-
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="style.booklist.show.rating"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/lbl_rating"
-            />
-
-        <SwitchPreference
-            android:defaultValue="false"
             android:key="style.booklist.show.author"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
@@ -72,10 +56,26 @@
 
         <SwitchPreference
             android:defaultValue="false"
-            android:key="style.booklist.show.publication.date"
+            android:key="style.booklist.show.bookshelves"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
-            android:title="@string/lbl_date_published"
+            android:title="@string/lbl_bookshelves"
+            />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="style.booklist.show.original.title"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_original_title"
+            />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="style.booklist.show.condition"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_condition"
             />
 
         <SwitchPreference
@@ -88,18 +88,18 @@
 
         <SwitchPreference
             android:defaultValue="false"
-            android:key="style.booklist.show.format"
+            android:key="style.booklist.show.publication.date"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
-            android:title="@string/lbl_format"
+            android:title="@string/lbl_date_published"
             />
 
         <SwitchPreference
             android:defaultValue="false"
-            android:key="style.booklist.show.condition"
+            android:key="style.booklist.show.format"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
-            android:title="@string/lbl_condition"
+            android:title="@string/lbl_format"
             />
 
         <SwitchPreference
@@ -120,18 +120,43 @@
 
         <SwitchPreference
             android:defaultValue="false"
-            android:key="style.booklist.show.bookshelves"
+            android:key="style.booklist.show.rating"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
-            android:title="@string/lbl_bookshelves"
+            android:title="@string/lbl_rating"
             />
 
         <SwitchPreference
             android:defaultValue="false"
-            android:key="style.booklist.show.original.title"
+            android:key="style.booklist.show.pages"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
-            android:title="@string/lbl_original_title"
+            android:title="@string/lbl_pages"
             />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="style.booklist.show.signed"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_signed"
+            />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="style.booklist.show.edition"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_edition"
+            />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="style.booklist.show.loanee"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_lend_out"
+            />
+
     </PreferenceCategory>
 </PreferenceScreen>

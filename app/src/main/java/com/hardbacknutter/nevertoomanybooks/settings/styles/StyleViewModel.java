@@ -29,28 +29,37 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.MapDBKey;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 
 public class StyleViewModel
         extends ViewModel {
 
     private final MutableLiveData<Void> onModified = new MutableLiveData<>();
+    @NonNull
+    private final List<WrappedBookLevelColumn> wrappedBookLevelColumnList = new ArrayList<>();
     private String templateUuid;
     /** The style we're editing. */
     private UserStyle style;
     /** The list of groups with a boolean flag for when the user is editing the groups. */
     @Nullable
     private List<WrappedGroup> wrappedGroupList;
+
     @Nullable
     private StyleDataStore styleDataStore;
 
@@ -163,6 +172,56 @@ public class StyleViewModel
         styleDataStore.setModified();
     }
 
+    List<WrappedBookLevelColumn> createWrappedBookLevelColumnList() {
+        wrappedBookLevelColumnList.clear();
+
+        final FieldVisibility fieldVisibility = style.getFieldVisibility(Style.Screen.List);
+
+        // ALL the fields upon which can be sorted.
+        final Map<String, Sort> bookLevelFieldsOrderBy = style.getBookLevelFieldsOrderBy();
+
+        // first get all the sortable fields with their current visibility.
+        bookLevelFieldsOrderBy.forEach((dbKey, sort) -> wrappedBookLevelColumnList.add(
+                new WrappedBookLevelColumn(dbKey,
+                                           fieldVisibility.isVisible(dbKey)
+                                                          .orElse(null),
+                                           sort)));
+
+        // now add the visibility-enabled fields which are not sortable
+        final Set<String> orderKeys = bookLevelFieldsOrderBy.keySet();
+        fieldVisibility.getKeys(true)
+                       .stream()
+                       // Remove the sortable fields we already handled above
+                       .filter(key -> !orderKeys.contains(key))
+                       .forEach(key -> wrappedBookLevelColumnList.add(
+                               new WrappedBookLevelColumn(key,
+                                                          fieldVisibility.isVisible(key)
+                                                                         .orElse(null),
+                                                          null)));
+
+        return wrappedBookLevelColumnList;
+    }
+
+    void updateBookLevelColumnList() {
+        final FieldVisibility fieldVisibility = style.getFieldVisibility(Style.Screen.List);
+
+        wrappedBookLevelColumnList
+                .stream()
+                .filter(WrappedBookLevelColumn::supportsVisibility)
+                .forEach(field -> fieldVisibility.setVisible(field.getDbKey(),
+                                                             field.isVisible()));
+
+        style.setBookLevelFieldsOrderBy(
+                wrappedBookLevelColumnList
+                        .stream()
+                        .filter(WrappedBookLevelColumn::supportsSorting)
+                        .collect(Collectors.toMap(WrappedBookLevelColumn::getDbKey,
+                                                  WrappedBookLevelColumn::getSort)));
+
+        //noinspection DataFlowIssue
+        styleDataStore.setModified();
+    }
+
     /**
      * Wraps a {@link BooklistGroup} and a 'present' flag.
      */
@@ -198,6 +257,62 @@ public class StyleViewModel
 
         public void setPresent(final boolean present) {
             this.present = present;
+        }
+    }
+
+    static class WrappedBookLevelColumn {
+
+        @NonNull
+        private final String dbKey;
+
+        @Nullable
+        private Boolean visible;
+
+        @Nullable
+        private Sort sort;
+
+        WrappedBookLevelColumn(@NonNull final String dbKey,
+                               @Nullable final Boolean visible,
+                               @Nullable final Sort sort) {
+            this.dbKey = dbKey;
+            this.visible = visible;
+            this.sort = sort;
+        }
+
+        @NonNull
+        public String getDbKey() {
+            return dbKey;
+        }
+
+        public String getLabel(@NonNull final Context context) {
+            return MapDBKey.getLabel(context, dbKey);
+        }
+
+        boolean supportsVisibility() {
+            return visible != null;
+        }
+
+        public boolean isVisible() {
+            return Objects.requireNonNull(visible);
+        }
+
+        public void setVisible(final boolean visible) {
+            Objects.requireNonNull(this.visible);
+            this.visible = visible;
+        }
+
+        boolean supportsSorting() {
+            return sort != null;
+        }
+
+        @NonNull
+        public Sort getSort() {
+            return Objects.requireNonNull(sort);
+        }
+
+        public void setSort(@NonNull final Sort sort) {
+            Objects.requireNonNull(this.sort);
+            this.sort = sort;
         }
     }
 }

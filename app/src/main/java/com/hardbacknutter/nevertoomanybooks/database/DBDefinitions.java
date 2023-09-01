@@ -27,7 +27,7 @@ import java.util.Map;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BookDetailsFieldVisibility;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistFieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BookLevelFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
@@ -419,9 +419,9 @@ public final class DBDefinitions {
     public static final Domain DOM_STYLE_TEXT_SCALE;
     public static final Domain DOM_STYLE_COVER_SCALE;
     public static final Domain DOM_STYLE_LIST_HEADER;
-    public static final Domain DOM_STYLE_DETAILS_SHOW_FIELDS;
-    public static final Domain DOM_STYLE_LIST_SHOW_FIELDS;
-
+    public static final Domain DOM_STYLE_BOOK_DETAIL_FIELDS_VISIBILITY;
+    public static final Domain DOM_STYLE_BOOK_LEVEL_FIELDS_VISIBILITY;
+    public static final Domain DOM_STYLE_BOOK_LEVEL_FIELDS_ORDER_BY;
     public static final Domain DOM_STYLE_GROUPS;
     public static final Domain DOM_STYLE_GROUPS_AUTHOR_SHOW_UNDER_EACH;
     public static final Domain DOM_STYLE_GROUPS_AUTHOR_PRIMARY_TYPE;
@@ -451,6 +451,22 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOKLIST_STYLES} java.util.UUID value stored as a string. */
     public static final Domain DOM_STYLE_UUID;
 
+
+    /**
+     * Expression for the domain {@link DBDefinitions#DOM_BOOKSHELF_NAME_CSV}.
+     * <p>
+     * The order of the returned names will be arbitrary.
+     * We could add an ORDER BY GROUP_CONCAT(... if we GROUP BY
+     */
+    public static final String EXP_BOOKSHELF_NAME_CSV;
+
+    /**
+     * Expression for the domain {@link DBDefinitions#DOM_PUBLISHER_NAME_CSV}.
+     * <p>
+     * The order of the returned names will be arbitrary.
+     * We could add an ORDER BY GROUP_CONCAT(... if we GROUP BY
+     */
+    public static final String EXP_PUBLISHER_NAME_CSV;
 
     /* ======================================================================================
      *  {@link BooklistNodeDao} domains.
@@ -1215,16 +1231,20 @@ public final class DBDefinitions {
                         .withDefault(BooklistHeader.BITMASK_ALL)
                         .build();
 
-        DOM_STYLE_DETAILS_SHOW_FIELDS =
+        DOM_STYLE_BOOK_DETAIL_FIELDS_VISIBILITY =
                 new Domain.Builder(DBKey.STYLE_DETAILS_SHOW_FIELDS, SqLiteDataType.Integer)
                         .notNull()
-                        .withDefault(BookDetailsFieldVisibility.DEFAULT)
+                        .withDefault(BookDetailsFieldVisibility.getDefault())
                         .build();
 
-        DOM_STYLE_LIST_SHOW_FIELDS =
-                new Domain.Builder(DBKey.STYLE_LIST_SHOW_FIELDS, SqLiteDataType.Integer)
+        DOM_STYLE_BOOK_LEVEL_FIELDS_VISIBILITY =
+                new Domain.Builder(DBKey.STYLE_BOOK_LEVEL_FIELDS_VISIBILITY, SqLiteDataType.Integer)
                         .notNull()
-                        .withDefault(BooklistFieldVisibility.DEFAULT)
+                        .withDefault(BookLevelFieldVisibility.getDefault())
+                        .build();
+
+        DOM_STYLE_BOOK_LEVEL_FIELDS_ORDER_BY =
+                new Domain.Builder(DBKey.STYLE_BOOK_LEVEL_FIELDS_ORDER_BY, SqLiteDataType.Text)
                         .build();
 
         /* ======================================================================================
@@ -1253,8 +1273,9 @@ public final class DBDefinitions {
                             DOM_STYLE_TEXT_SCALE,
                             DOM_STYLE_COVER_SCALE,
                             DOM_STYLE_LIST_HEADER,
-                            DOM_STYLE_DETAILS_SHOW_FIELDS,
-                            DOM_STYLE_LIST_SHOW_FIELDS)
+                            DOM_STYLE_BOOK_DETAIL_FIELDS_VISIBILITY,
+                            DOM_STYLE_BOOK_LEVEL_FIELDS_VISIBILITY,
+                            DOM_STYLE_BOOK_LEVEL_FIELDS_ORDER_BY)
                 .setPrimaryKey(DOM_PK_ID)
                 .addIndex(DBKey.STYLE_UUID, true, DOM_STYLE_UUID)
                 .addIndex(DBKey.STYLE_NAME, true, DOM_STYLE_NAME)
@@ -1600,6 +1621,10 @@ public final class DBDefinitions {
 
     }
 
+    private static final String _FROM_ = " FROM ";
+
+    private static final String _WHERE_ = " WHERE ";
+
     static {
 
         TBL_BOOK_LIST_NODE_STATE = new TableDefinition("book_list_node_settings", "bl_ns");
@@ -1644,6 +1669,21 @@ public final class DBDefinitions {
                           DOM_FK_STYLE);
         ALL_TABLES.put(TBL_BOOK_LIST_NODE_STATE.getName(),
                        TBL_BOOK_LIST_NODE_STATE);
+
+
+        EXP_BOOKSHELF_NAME_CSV =
+                "(SELECT GROUP_CONCAT(" + TBL_BOOKSHELF.dot(DBKey.BOOKSHELF_NAME) + ",', ')"
+                + _FROM_ + TBL_BOOKSHELF.startJoin(TBL_BOOK_BOOKSHELF)
+                + _WHERE_
+                + TBL_BOOKS.dot(DBKey.PK_ID) + '=' + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOK)
+                + ')';
+
+        EXP_PUBLISHER_NAME_CSV =
+                "(SELECT GROUP_CONCAT(" + TBL_PUBLISHERS.dot(DBKey.PUBLISHER_NAME) + ",', ')"
+                + _FROM_ + TBL_PUBLISHERS.startJoin(TBL_BOOK_PUBLISHER)
+                + _WHERE_
+                + TBL_BOOKS.dot(DBKey.PK_ID) + '=' + TBL_BOOK_PUBLISHER.dot(DBKey.FK_BOOK)
+                + ')';
     }
 
     static {

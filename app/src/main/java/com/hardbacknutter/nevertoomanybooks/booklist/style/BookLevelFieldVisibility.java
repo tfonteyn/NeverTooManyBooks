@@ -27,38 +27,52 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
  * Encapsulate the Book fields which can be shown on the Book-list screen
  * as defined <strong>by the current style</strong>.
  * <p>
- * Preference keys must be kept in sync with "res/xml/preferences_style_book_details.xml"
+ * URGENT: merge with BaseStyle#bookLevelFieldsOrderBy
+ * <p>
+ * Keys must be kept in sync with {@link StyleDataStore} preference keys
+ * and "res/xml/preferences_style_book_details.xml".
  */
-public class BooklistFieldVisibility
+public class BookLevelFieldVisibility
         extends FieldVisibility {
 
-    /** The fields which will be visible by default. */
-    public static final long DEFAULT = getBitValue(Set.of(
-            DBKey.COVER[0],
-            DBKey.FK_SERIES));
 
-    private static final Set<String> DB_KEYS = Set.of(
-            DBKey.COVER[0],
-            DBKey.COVER[1],
-            DBKey.FK_AUTHOR,
-            DBKey.FK_SERIES,
-            DBKey.FK_PUBLISHER,
-            DBKey.FK_BOOKSHELF,
-
-            DBKey.TITLE_ORIGINAL_LANG,
+    /** The fields which are supported by this class. */
+    private static final Set<String> FIELDS = Set.of(
             DBKey.BOOK_CONDITION,
             DBKey.BOOK_ISBN,
             DBKey.BOOK_PUBLICATION__DATE,
+            DBKey.COVER[0],
+            DBKey.EDITION__BITMASK,
+            DBKey.FK_AUTHOR,
+            DBKey.FK_BOOKSHELF,
+            DBKey.FK_PUBLISHER,
+            DBKey.FK_SERIES,
             DBKey.FORMAT,
             DBKey.LANGUAGE,
+            DBKey.LOANEE_NAME,
             DBKey.LOCATION,
+            DBKey.PAGE_COUNT,
             DBKey.RATING,
-            DBKey.PAGE_COUNT);
+            DBKey.SIGNED__BOOL,
+            DBKey.TITLE_ORIGINAL_LANG
+    );
+
+    /** The fields which will be visible by default. */
+    private static final Set<String> DEFAULT = Set.of(
+            DBKey.COVER[0],
+            DBKey.FK_SERIES,
+            DBKey.SIGNED__BOOL,
+            DBKey.EDITION__BITMASK,
+            DBKey.LOANEE_NAME);
 
     /**
      * Constructor.
      */
-    BooklistFieldVisibility() {
-        super(DB_KEYS, DEFAULT);
+    BookLevelFieldVisibility() {
+        super(FIELDS, DEFAULT);
+    }
+
+    public static long getDefault() {
+        return getBitValue(DEFAULT);
     }
 }

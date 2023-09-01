@@ -24,12 +24,11 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -98,52 +97,6 @@ public class FieldVisibility {
             DBKey.AUTHOR_REAL_AUTHOR
     );
 
-    /** Simple mapping for {@link #DB_KEYS} to the label to show the user. */
-    private static final List<Integer> LABELS = List.of(
-            R.string.lbl_cover_front,
-            R.string.lbl_cover_back,
-            R.string.lbl_author,
-            R.string.lbl_bookshelves,
-
-            R.string.lbl_series,
-            R.string.lbl_publisher,
-            R.string.lbl_table_of_content,
-            R.string.lbl_lending,
-
-            R.string.lbl_author_type,
-            R.string.lbl_condition,
-            R.string.lbl_dust_cover,
-            R.string.lbl_isbn,
-
-            R.string.lbl_date_published,
-            R.string.lbl_color,
-            R.string.lbl_description,
-            R.string.lbl_edition,
-
-            R.string.lbl_date_first_publication,
-            R.string.lbl_format,
-            R.string.lbl_genre,
-            R.string.lbl_language,
-
-            R.string.lbl_location,
-            R.string.lbl_pages,
-            R.string.lbl_price_listed,
-            R.string.lbl_price_paid,
-
-            R.string.lbl_personal_notes,
-            R.string.lbl_rating,
-            R.string.lbl_signed,
-            R.string.lbl_read,
-
-            R.string.lbl_read_start,
-            R.string.lbl_read_end,
-            R.string.lbl_date_added,
-            R.string.lbl_date_last_updated,
-
-            R.string.lbl_original_title,
-            R.string.lbl_author_pseudonym
-    );
-
     @NonNull
     private final Set<String> dbKeys;
 
@@ -168,50 +121,9 @@ public class FieldVisibility {
      * @param defValue the bitmask with the defaults for this instance
      */
     FieldVisibility(@NonNull final Set<String> dbKeys,
-                    final long defValue) {
+                    @NonNull final Set<String> defValue) {
         this.dbKeys = dbKeys;
-        bits = defValue;
-    }
-
-    /**
-     * Get the matching label for the given key.
-     *
-     * @param context Current context
-     * @param dbKey   to fetch
-     *
-     * @return human readable label
-     *
-     * @throws IllegalArgumentException if the key is invalid
-     */
-    @NonNull
-    public static String getLabel(@NonNull final Context context,
-                                  @NonNull final String dbKey)
-            throws IllegalArgumentException {
-        final int index = DB_KEYS.indexOf(dbKey);
-        if (index == -1) {
-            throw new IllegalArgumentException(dbKey);
-        } else {
-            return context.getString(LABELS.get(index));
-        }
-    }
-
-    /**
-     * Get the matching bit-value for the given key.
-     *
-     * @param dbKey to fetch
-     *
-     * @return bit value
-     *
-     * @throws IllegalArgumentException if the key is invalid
-     */
-    public static long getBitValue(@NonNull final String dbKey)
-            throws IllegalArgumentException {
-        final int index = DB_KEYS.indexOf(dbKey);
-        if (index == -1) {
-            throw new IllegalArgumentException(dbKey);
-        } else {
-            return 1L << index;
-        }
+        bits = getBitValue(defValue);
     }
 
     /**
@@ -223,13 +135,57 @@ public class FieldVisibility {
      *
      * @throws IllegalArgumentException if any key is invalid
      */
-    static long getBitValue(@NonNull final Set<String> keys)
+    public static long getBitValue(@NonNull final Set<String> keys)
             throws IllegalArgumentException {
         return keys.stream()
-                   .mapToLong(FieldVisibility::getBitValue)
+                   .mapToLong(dbKey -> {
+                       final int index = DB_KEYS.indexOf(dbKey);
+                       if (index == -1) {
+                           throw new IllegalArgumentException(dbKey);
+                       } else {
+                           return 1L << index;
+                       }
+                   })
                    .reduce(0, (a, b) -> a | b);
     }
 
+    /**
+     * Get the current configured combined bit-value.
+     *
+     * @return bitmask
+     */
+    public long getBitValue() {
+        return bits;
+    }
+
+    /**
+     * Set the current configured combined bit-value.
+     *
+     * @param value bitmask
+     */
+    public void setBitValue(final long value) {
+        bits = value;
+    }
+
+
+    /**
+     * Get a {code Set} of {@link DBKey}s representing visible fields.
+     *
+     * @param all set to {@code true} to get all keys regardless of visibility;
+     *            Use {@code false} to get only the currently visible fields (keys).
+     *
+     * @return visible fields
+     */
+    @NonNull
+    public Set<String> getKeys(final boolean all) {
+        if (all) {
+            return Set.copyOf(dbKeys);
+        } else {
+            return dbKeys.stream()
+                         .filter(key -> isVisible(key).orElseThrow())
+                         .collect(Collectors.toSet());
+        }
+    }
 
     /**
      * Check if the given field should be displayed.
@@ -241,7 +197,7 @@ public class FieldVisibility {
      * @return Optional
      */
     @NonNull
-    Optional<Boolean> isShowFieldOpt(@NonNull final String dbKey) {
+    public Optional<Boolean> isVisible(@NonNull final String dbKey) {
         if (dbKeys.contains(dbKey)) {
             final int index = DB_KEYS.indexOf(dbKey);
             if (index != -1) {
@@ -249,25 +205,6 @@ public class FieldVisibility {
             }
         }
         return Optional.empty();
-    }
-
-    /**
-     * Check if the given field should be displayed.
-     * <p>
-     * An invalid key will return {@code true}
-     *
-     * @param dbKey to check - one of the {@link DBKey} constants.
-     *
-     * @return boolean
-     */
-    public boolean isShowField(@NonNull final String dbKey) {
-        if (dbKeys.contains(dbKey)) {
-            final int index = DB_KEYS.indexOf(dbKey);
-            if (index != -1) {
-                return (bits & (1L << index)) != 0;
-            }
-        }
-        return true;
     }
 
     /**
@@ -279,8 +216,8 @@ public class FieldVisibility {
      * @param show  flag
      */
     @SuppressWarnings("WeakerAccess")
-    public void setShowField(@NonNull final String dbKey,
-                             final boolean show) {
+    public void setVisible(@NonNull final String dbKey,
+                           final boolean show) {
         if (dbKeys.contains(dbKey)) {
             final int index = DB_KEYS.indexOf(dbKey);
             if (index >= 0) {
@@ -295,47 +232,6 @@ public class FieldVisibility {
     }
 
     /**
-     * Get the current configured combined bit-value.
-     *
-     * @return bitmask
-     */
-    public long getValue() {
-        return bits;
-    }
-
-    /**
-     * Set the current configured combined bit-value.
-     *
-     * @param value bitmask
-     */
-    public void setValue(final long value) {
-        bits = value;
-    }
-
-    /**
-     * Get the list of in-use book-detail-field names in a human readable format.
-     * This is used to set the summary of the PreferenceScreen.
-     *
-     * @param context Current context
-     *
-     * @return list of labels, can be empty, but never {@code null}
-     */
-    @NonNull
-    private List<String> getLabels(@NonNull final Context context) {
-        final List<String> labels = new ArrayList<>();
-
-        for (int i = 0; i < DB_KEYS.size(); i++) {
-            final String key = DB_KEYS.get(i);
-            if (dbKeys.contains(key) && isShowField(key)) {
-                labels.add(context.getString(LABELS.get(i)));
-            }
-        }
-
-        Collections.sort(labels);
-        return labels;
-    }
-
-    /**
      * Convenience method for use in the Preferences screen.
      * Get the summary text for the book fields to show in lists.
      *
@@ -344,12 +240,17 @@ public class FieldVisibility {
      * @return summary text
      */
     @NonNull
-    public String getSummaryText(@NonNull final Context context) {
-        final List<String> labels = getLabels(context);
+    public String getPreferencesSummaryText(@NonNull final Context context) {
+        final String labels = DB_KEYS
+                .stream()
+                .filter(key -> dbKeys.contains(key) && isVisible(key).orElse(true))
+                .map(key -> MapDBKey.getLabel(context, key)).sorted()
+                .collect(Collectors.joining(", "));
+
         if (labels.isEmpty()) {
             return context.getString(R.string.none);
         } else {
-            return String.join(", ", labels);
+            return labels;
         }
     }
 

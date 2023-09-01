@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 /**
  * Definitions and transmogrifying (Hi Calvin) API for preference keys and actual style values.
  *
- * @see BooklistFieldVisibility
+ * @see BookLevelFieldVisibility
  * @see BookDetailsFieldVisibility
  * @see com.hardbacknutter.nevertoomanybooks.booklist.style.Style.UnderEach
  */
@@ -93,18 +93,7 @@ public class StyleDataStore
             "style.details.show.thumbnail.1",
     };
 
-    /** List screens: Show the cover image (front only) for each book. */
-    private static final String PK_LIST_SHOW_COVERS = "style.booklist.show.thumbnails";
-    private static final String PK_LIST_SHOW_AUTHOR = "style.booklist.show.author";
-    private static final String PK_LIST_SHOW_PUBLISHER = "style.booklist.show.publisher";
-    private static final String PK_LIST_SHOW_PUB_DATE = "style.booklist.show.publication.date";
-    private static final String PK_LIST_SHOW_FORMAT = "style.booklist.show.format";
-    private static final String PK_LIST_SHOW_LANGUAGE = "style.booklist.show.language";
-    private static final String PK_LIST_SHOW_LOCATION = "style.booklist.show.location";
-    private static final String PK_LIST_SHOW_RATING = "style.booklist.show.rating";
-    private static final String PK_LIST_SHOW_PAGE_COUNT = "style.booklist.show.pages";
-    private static final String PK_LIST_SHOW_BOOKSHELVES = "style.booklist.show.bookshelves";
-    private static final String PK_LIST_SHOW_ISBN = "style.booklist.show.isbn";
+    private static final String VIS_PREFIX = "style.booklist.show.";
 
     /** Map preference key to {@link DBKey}. */
     private static final Map<String, String> PK_LIST_SHOW_FIELD_TO_DB_KEY = new HashMap<>();
@@ -113,23 +102,27 @@ public class StyleDataStore
     private static final Map<String, String> PK_DETAILS_SHOW_FIELD_TO_DB_KEY = new HashMap<>();
 
     static {
-        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(PK_LIST_SHOW_COVERS, DBKey.COVER[0]);
+        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "thumbnails", DBKey.COVER[0]);
 
-        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(PK_LIST_SHOW_AUTHOR, DBKey.FK_AUTHOR);
-        PK_LIST_SHOW_FIELD_TO_DB_KEY.put("style.booklist.show.series", DBKey.FK_SERIES);
-        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(PK_LIST_SHOW_PUBLISHER, DBKey.FK_PUBLISHER);
-        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(PK_LIST_SHOW_BOOKSHELVES, DBKey.FK_BOOKSHELF);
+        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "author", DBKey.FK_AUTHOR);
+        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "series", DBKey.FK_SERIES);
+        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "publisher", DBKey.FK_PUBLISHER);
+        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "bookshelves", DBKey.FK_BOOKSHELF);
 
-        PK_LIST_SHOW_FIELD_TO_DB_KEY.put("style.booklist.show.original.title",
-                                         DBKey.TITLE_ORIGINAL_LANG);
-        PK_LIST_SHOW_FIELD_TO_DB_KEY.put("style.booklist.show.condition", DBKey.BOOK_CONDITION);
-        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(PK_LIST_SHOW_ISBN, DBKey.BOOK_ISBN);
-        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(PK_LIST_SHOW_PUB_DATE, DBKey.BOOK_PUBLICATION__DATE);
-        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(PK_LIST_SHOW_FORMAT, DBKey.FORMAT);
-        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(PK_LIST_SHOW_LANGUAGE, DBKey.LANGUAGE);
-        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(PK_LIST_SHOW_LOCATION, DBKey.LOCATION);
-        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(PK_LIST_SHOW_RATING, DBKey.RATING);
-        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(PK_LIST_SHOW_PAGE_COUNT, DBKey.PAGE_COUNT);
+        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "original.title", DBKey.TITLE_ORIGINAL_LANG);
+        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "condition", DBKey.BOOK_CONDITION);
+        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "isbn", DBKey.BOOK_ISBN);
+        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "publication.date",
+                                         DBKey.BOOK_PUBLICATION__DATE);
+        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "format", DBKey.FORMAT);
+        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "language", DBKey.LANGUAGE);
+        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "location", DBKey.LOCATION);
+        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "rating", DBKey.RATING);
+        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "pages", DBKey.PAGE_COUNT);
+
+        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "signed", DBKey.SIGNED__BOOL);
+        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "edition", DBKey.EDITION__BITMASK);
+        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "loanee", DBKey.LOANEE_NAME);
     }
 
     static {
@@ -288,7 +281,7 @@ public class StyleDataStore
         final FieldVisibility listFV = style.getFieldVisibility(Style.Screen.List);
         final String listDbKey = PK_LIST_SHOW_FIELD_TO_DB_KEY.get(key);
         if (listDbKey != null) {
-            listFV.setShowField(listDbKey, value);
+            listFV.setVisible(listDbKey, value);
             setModified();
             return;
         }
@@ -296,7 +289,7 @@ public class StyleDataStore
         final FieldVisibility detailFV = style.getFieldVisibility(Style.Screen.Detail);
         final String detailDbKey = PK_DETAILS_SHOW_FIELD_TO_DB_KEY.get(key);
         if (detailDbKey != null) {
-            detailFV.setShowField(detailDbKey, value);
+            detailFV.setVisible(detailDbKey, value);
             setModified();
             return;
         }

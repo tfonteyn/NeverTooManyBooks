@@ -87,12 +87,14 @@ public class SeriesBooklistGroup
                                 Sort.Asc))
                 .addGroupDomain(
                         new DomainExpression(DBDefinitions.DOM_FK_SERIES,
-                                             DBDefinitions.TBL_BOOK_SERIES))
+                                             DBDefinitions.TBL_BOOK_SERIES,
+                                             Sort.Unsorted))
 
                 // Extra data we need:
                 .addGroupDomain(
                         new DomainExpression(DBDefinitions.DOM_SERIES_IS_COMPLETE,
-                                             DBDefinitions.TBL_SERIES))
+                                             DBDefinitions.TBL_SERIES,
+                                             Sort.Unsorted))
                 .addBaseDomain(
                         // The series number in the base data in sorted order.
                         // This field is NOT displayed.

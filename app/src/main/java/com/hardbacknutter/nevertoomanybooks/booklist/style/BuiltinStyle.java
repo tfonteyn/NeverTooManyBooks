@@ -303,8 +303,8 @@ public final class BuiltinStyle
             style.setTextScale(Style.TEXT_SCALE_1_SMALL);
 
             final FieldVisibility fieldVisibility = style.getFieldVisibility(Screen.List);
-            fieldVisibility.setShowField(DBKey.COVER[0], false);
-            fieldVisibility.setShowField(DBKey.COVER[1], false);
+            fieldVisibility.setVisible(DBKey.COVER[0], false);
+            fieldVisibility.setVisible(DBKey.COVER[1], false);
         }
         return Optional.of(style);
     }

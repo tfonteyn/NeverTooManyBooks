@@ -34,8 +34,8 @@ tasks.register("clean", Delete) {
 
 ext {
     applicationId = "com.hardbacknutter.nevertoomanybooks"
-    applicationVersionCode = 62
-    applicationVersionName = "4.6.6"
+    applicationVersionCode = 63
+    applicationVersionName = "5.0.0"
 
     // see NOTES.txt
     // https://gs.statcounter.com/os-version-market-share/android/mobile-tablet/worldwide
@@ -48,8 +48,8 @@ ext {
     // 8.1      91.01
     // 8.0      93.77
     minSdkVersion = 26
-    targetSdkVersion = 33
-    compileSdkVersion = 33
+    targetSdkVersion = 34
+    compileSdkVersion = 34
 
     // https://github.com/google/desugar_jdk_libs
     desugarVersion = "2.0.3"

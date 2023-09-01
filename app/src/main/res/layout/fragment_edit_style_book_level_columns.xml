@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/TopCentered"
+    tools:context=".FragmentHostActivity"
+    >
+
+    <TextView
+        android:id="@+id/header"
+        style="@style/Text.Header.PreferenceCategory"
+        android:text="@string/pt_bob_show_details"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/header_vis"
+        style="@style/Text.Header"
+        android:text="@string/enabled"
+        android:layout_marginStart="@dimen/field_margin_start"
+        android:textColor="?attr/colorSecondary"
+        app:layout_constraintStart_toStartOf="@id/column_list"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        />
+
+    <TextView
+        android:id="@+id/header_sort"
+        style="@style/Text.Header"
+        android:text="@string/lbl_sorting"
+        android:layout_marginEnd="@dimen/field_margin_end"
+        android:textColor="?attr/colorSecondary"
+        app:layout_constraintEnd_toEndOf="@id/column_list"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/column_list"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header_vis"
+        tools:listitem="@layout/row_edit_style_book_level_column"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+

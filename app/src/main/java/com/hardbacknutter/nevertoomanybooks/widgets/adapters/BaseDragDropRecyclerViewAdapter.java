@@ -39,12 +39,12 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDrag
 /**
  * Base class for implementing a RecyclerView with Drag&Drop support for re-arranging rows.
  * <p>
- * See {@link BaseDragDropViewHolder} for the matching base class for the ViewHolder.
+ * See {@link CheckableDragDropViewHolder} for the matching base class for the ViewHolder.
  *
  * @param <Item> list item type
  * @param <VHT>  ViewHolder type
  */
-public abstract class BaseDragDropRecyclerViewAdapter<Item, VHT extends BaseDragDropViewHolder>
+public abstract class BaseDragDropRecyclerViewAdapter<Item, VHT extends CheckableDragDropViewHolder>
         extends RecyclerView.Adapter<VHT>
         implements ItemTouchHelperAdapter {
 

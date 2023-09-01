@@ -46,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDrag
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStyleGroupsBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropViewHolder;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 
 /**
  * Note this is NOT extending BasePreferenceFragment, so we must handle the base
@@ -150,7 +150,7 @@ public class StyleGroupsFragment
      * Holder for each row.
      */
     private static class Holder
-            extends BaseDragDropViewHolder {
+            extends CheckableDragDropViewHolder {
 
         @NonNull
         private final TextView groupNameView;

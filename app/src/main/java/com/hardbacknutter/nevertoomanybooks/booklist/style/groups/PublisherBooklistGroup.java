@@ -87,7 +87,8 @@ public class PublisherBooklistGroup
                                 Sort.Asc))
                 .addGroupDomain(
                         new DomainExpression(DBDefinitions.DOM_FK_PUBLISHER,
-                                             DBDefinitions.TBL_BOOK_PUBLISHER));
+                                             DBDefinitions.TBL_BOOK_PUBLISHER,
+                                             Sort.Unsorted));
     }
 
     @Override

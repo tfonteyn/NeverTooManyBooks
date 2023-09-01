@@ -690,8 +690,8 @@ public class BooklistGroup {
             // The key domain for a book is not used but we define one
             // to prevents any potential null issues.
             case BOOK: {
-                final DomainExpression keyDomainExpression = new DomainExpression(
-                        DOM_TITLE, TBL_BOOKS);
+                final DomainExpression keyDomainExpression =
+                        new DomainExpression(DOM_TITLE, TBL_BOOKS, Sort.Unsorted);
                 return new GroupKey(id, R.string.lbl_book, "b", keyDomainExpression);
             }
             default:

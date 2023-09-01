@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.bin.CoverRecordReader;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
@@ -61,7 +62,8 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
  * <p>
  * Currently supported formats.
  * <ul>
- *     <li>v6: add {@link RecordType#DeletedBooks} : {@link RecordEncoding#Json}</li>
+ *     <li>v7: adds {@link Style#getBookLevelFieldsOrderBy()} to {@link RecordType#Styles}</li>
+ *     <li>v6: adds {@link RecordType#DeletedBooks} : {@link RecordEncoding#Json}</li>
  *     <li>v5: identical to v4,
  *              but a number of internal preferences have been changed/deleted.
  *     </li>
@@ -277,6 +279,7 @@ public class ZipArchiveReader
 
         final int archiveVersion = metaData.getArchiveVersion();
         switch (archiveVersion) {
+            case 7:
             case 6:
             case 5:
             case 4:

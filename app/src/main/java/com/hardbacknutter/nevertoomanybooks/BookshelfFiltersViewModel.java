@@ -102,7 +102,7 @@ public class BookshelfFiltersViewModel
         FilterFactory.SUPPORTED
                 .entrySet()
                 .stream()
-                .filter(entry -> fieldVisibility.isShowField(entry.getKey()))
+                .filter(entry -> fieldVisibility.isVisible(entry.getKey()).orElse(true))
                 .forEach(entry -> map.put(context.getString(entry.getValue()), entry.getKey()));
 
         return new Pair<>(map.keySet().toArray(Z_ARRAY_STRING),

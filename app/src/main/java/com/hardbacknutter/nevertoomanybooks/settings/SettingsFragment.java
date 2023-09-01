@@ -421,7 +421,7 @@ public class SettingsFragment
         if (preference.getSharedPreferences().getBoolean(schedulerKey, false)) {
             attr = R.attr.appPreferenceAlertColor;
         } else {
-            attr = com.google.android.material.R.attr.colorControlNormal;
+            attr = com.google.android.material.R.attr.colorOnSurfaceVariant;
         }
 
         //noinspection DataFlowIssue

@@ -343,7 +343,7 @@ public class ServiceLocator {
                         .getLong(FieldVisibilityPreferenceFragment.PK_FIELD_VISIBILITY,
                                  Long.MAX_VALUE);
 
-                fieldVisibility.setValue(current);
+                fieldVisibility.setBitValue(current);
             }
         }
         return fieldVisibility;

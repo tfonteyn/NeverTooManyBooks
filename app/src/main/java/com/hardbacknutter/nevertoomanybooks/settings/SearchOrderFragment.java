@@ -50,8 +50,8 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 
 /**
  * Handles the order of sites to search, and the individual site being enabled or not.
@@ -149,7 +149,7 @@ public class SearchOrderFragment
      * Holder for each row.
      */
     private static class Holder
-            extends BaseDragDropViewHolder
+            extends CheckableDragDropViewHolder
             implements BindableViewHolder<Site> {
 
         @NonNull

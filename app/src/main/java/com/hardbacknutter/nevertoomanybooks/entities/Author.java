@@ -738,7 +738,7 @@ public class Author
 
                 final FieldVisibility fieldVisibility = ServiceLocator.getInstance()
                                                                       .getGlobalFieldVisibility();
-                if (fieldVisibility.isShowField(DBKey.AUTHOR_REAL_AUTHOR)) {
+                if (fieldVisibility.isVisible(DBKey.AUTHOR_REAL_AUTHOR).orElse(true)) {
                     final Author author = getRealAuthor();
                     if (author != null) {
                         label += smallerText(context.getString(
@@ -747,7 +747,7 @@ public class Author
                     }
                 }
 
-                if (fieldVisibility.isShowField(DBKey.AUTHOR_TYPE__BITMASK)) {
+                if (fieldVisibility.isVisible(DBKey.AUTHOR_TYPE__BITMASK).orElse(true)) {
                     final String typeLabels = getTypeLabels(context);
                     if (!typeLabels.isEmpty()) {
                         label += smallerText(typeLabels);
