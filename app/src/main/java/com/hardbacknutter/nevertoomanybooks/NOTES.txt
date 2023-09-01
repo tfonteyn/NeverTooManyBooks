@@ -44,7 +44,7 @@ Booklist style sorting by date-read or date-added etc...:
  Does not happen on other devices/emulators. Won't pursue/fix.
 
 ----------------------------------------------------------------------------------------------------
-4.7.0
+4.6.6
 
 NEW:
 
