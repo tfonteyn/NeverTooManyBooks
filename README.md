@@ -84,7 +84,7 @@ at the original creators.
 
 FIXES
 
--fix #21 regression bug in UI in export
+- fix #21 regression bug in UI in export
 
 ### 4.6.5
 
