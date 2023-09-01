@@ -77,13 +77,13 @@ public abstract class DataWriterHelperBase<RESULTS> {
     /**
      * Get the Set of RecordType.
      *
-     * @return an immutable Set
+     * @return the set
      */
     @NonNull
     public Set<RecordType> getRecordTypes() {
         // sanity check
         recordTypes.remove(RecordType.MetaData);
-        return EnumSet.copyOf(recordTypes);
+        return recordTypes;
     }
 
     /**

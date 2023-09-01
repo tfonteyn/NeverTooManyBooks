@@ -117,7 +117,7 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
     public Set<RecordType> getRecordTypes() {
         // sanity check
         recordTypes.remove(RecordType.MetaData);
-        return EnumSet.copyOf(recordTypes);
+        return recordTypes;
     }
 
     /**
