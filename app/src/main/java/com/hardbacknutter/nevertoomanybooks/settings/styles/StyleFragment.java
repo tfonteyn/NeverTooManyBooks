@@ -47,9 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.settings.widgets.MultiSelectListPref
 
 /**
  * Main fragment to edit a Style.
- * <p>
- * Passing in a style with a valid UUID, settings are read/written to the style specific file.
- * If the uuid is {@code null}, then we're editing the global defaults.
  */
 public class StyleFragment
         extends StyleBaseFragment {
