@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,6 +29,9 @@ import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
  * Used/defined in xml/preferences_styles.xml
+ * <p>
+ * OBSOLETE... replaced by {@link StyleBookLevelColumnsFragment}.
+ * To be removed soon.
  */
 @Keep
 public class StyleBookDetailsFragment

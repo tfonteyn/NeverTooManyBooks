@@ -64,7 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropVi
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
 
 /**
- * {@link Style} maintenance.
+ * Editor for the list of all styles.
  */
 public class PreferredStylesFragment
         extends BaseFragment {

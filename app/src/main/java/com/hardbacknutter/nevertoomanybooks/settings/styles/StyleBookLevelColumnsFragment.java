@@ -50,8 +50,10 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecycle
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 
 /**
- * Note this is NOT extending BasePreferenceFragment, so we must handle the base
- * functionality (e.g. StyleViewModel) ourselves.
+ * Editor for the book-level fields of a single style.
+ * <p>
+ * Note this is NOT extending StyleBaseFragment/BasePreferenceFragment.
+ * We must handle the base functionality (e.g. StyleViewModel) ourselves.
  */
 @Keep
 public class StyleBookLevelColumnsFragment

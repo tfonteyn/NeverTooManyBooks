@@ -49,8 +49,10 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecycle
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 
 /**
- * Note this is NOT extending BasePreferenceFragment, so we must handle the base
- * functionality (e.g. StyleViewModel) ourselves.
+ * Editor for the groups of a single style.
+ * <p>
+ * Note this is NOT extending StyleBaseFragment/BasePreferenceFragment.
+ * We must handle the base functionality (e.g. StyleViewModel) ourselves.
  */
 @Keep
 public class StyleGroupsFragment
@@ -160,7 +162,7 @@ public class StyleGroupsFragment
             groupNameView = itemView.findViewById(R.id.booklist_group_name);
         }
 
-        public void onBind(@NonNull final StyleViewModel.WrappedGroup wrappedGroup) {
+        void onBind(@NonNull final StyleViewModel.WrappedGroup wrappedGroup) {
             final Context context = itemView.getContext();
             groupNameView.setText(wrappedGroup.getGroup().getLabel(context));
             setChecked(wrappedGroup.isPresent());

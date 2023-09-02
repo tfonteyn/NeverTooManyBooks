@@ -20,8 +20,13 @@
   -->
 
 <!-- NEWTHINGS: new fields visibility.
-     Third part of the key name **MUST** be equal to the DOM column name.
+     Key name **MUST** be equal to the {@link DBKey} name.
+     The front/back cover are handled specially by
+     {@link DBKey#PREFIX_COVER} and {@link DBKey#COVER}
+
      The list here must be kept in sync with {@link FieldVisibility#DB_KEYS}
+     FIXME: dynamically build this screen using {@link FieldVisibility#DB_KEYS} ?
+      but what to do with the exceptions (always visible) fields as documented below?
 
      Preferences are shown in LOCALE-alphabetical order.
 

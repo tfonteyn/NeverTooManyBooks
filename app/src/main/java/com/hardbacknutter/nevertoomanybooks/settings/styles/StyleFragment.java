@@ -46,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.settings.widgets.MultiSelectListPreferenceSummaryProvider;
 
 /**
- * Main fragment to edit a Style.
+ * Editor for a single style.
  */
 public class StyleFragment
         extends StyleBaseFragment {
