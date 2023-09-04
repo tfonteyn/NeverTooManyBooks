@@ -30,6 +30,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -216,7 +217,12 @@ public class StyleViewModel
                         .stream()
                         .filter(WrappedBookLevelColumn::supportsSorting)
                         .collect(Collectors.toMap(WrappedBookLevelColumn::getDbKey,
-                                                  WrappedBookLevelColumn::getSort)));
+                                                  WrappedBookLevelColumn::getSort,
+                                                  (v1, v2) -> {
+                                                      throw new IllegalArgumentException(
+                                                              "keys should already be unique");
+                                                  },
+                                                  LinkedHashMap::new)));
 
         //noinspection DataFlowIssue
         styleDataStore.setModified();
