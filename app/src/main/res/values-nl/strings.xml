@@ -98,6 +98,7 @@
     <string name="X_warning_no_matching_book_found_long">Het gescande boek is niet gevonden. Je kan de juiste barcode meestal aan de achterkant van het boek vinden. Vul anders de gegevens handmatig in.</string>
     <string name="X_whichImageCaptureApplication">Afbeelding vastleggen met</string>
     <string name="X_whichSendToApplication">Verzenden met</string>
+    <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Uw commentaar (of laat dit leeg):</string>
     <string name="acra_resDialogText">Het lijkt er op dat &APP_NAME; is gecrasht. Beschrijf indien mogelijk hieronder wat de oorzaak kan zijn en druk op „OK” om ons een e-mail te sturen over deze crash. Je kan het bericht inzien voordat het wordt verzonden.</string>

@@ -97,6 +97,7 @@
     <string name="X_warning_no_matching_book_found_long">Il libro scansionato non è stato trovato. A volte il codice a barre corretto si trova all’interno della copertina. Altrimenti inserisci i dati manualmente.</string>
     <string name="X_whichImageCaptureApplication">Acquisisci immagine con</string>
     <string name="X_whichSendToApplication">Invia tramite</string>
+    <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">I tuoi commenti (o lascia in bianco):</string>
     <string name="acra_resDialogText">&APP_NAME; sembra essersi bloccato. Se possibile, comunicaci qui sotto qualsiasi cosa ritieni pertinente e clicca «OK» per inviarci un’email relativa al blocco. Potrai verificare l’email prima dell’invio.</string>

@@ -94,6 +94,7 @@
     <string name="X_warning_no_matching_book_found_long">Το βιβλίο που σαρώθηκε δεν βρέθηκε. Κάποιες φορές το σωστό barcode βρίσκεται στο εσωτερικό του εξωφύλλου. Αλλιώς εισάγετε τις λεπτομέρειες χειροκίνητα.</string>
     <string name="X_whichImageCaptureApplication">Λήψη εικόνας με</string>
     <string name="X_whichSendToApplication">Αποστολή μέσω</string>
+    <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Τα σχόλιά σας (ή αφήστε το κενό):</string>
     <string name="acra_resDialogText">Φαίνεται πως το &APP_NAME; σταμάτησε να λειτουργεί. Εαν είναι δυνατό περιγράψτε παρακάτω ό,τι πιστεύετε πως είναι σχετικό και πατήστε ΟΚ για μας στείλετε email με πληροφορίες για την βλάβη. Θα δείτε το e-mail πρωτού αποσταλεί.</string>

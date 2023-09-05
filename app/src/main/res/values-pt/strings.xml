@@ -55,6 +55,7 @@
     <string name="X_lbl_system">(Sistema)</string>
     <string name="X_whichImageCaptureApplication">Capturar imagem com</string>
     <string name="X_whichSendToApplication">Compartilhar</string>
+    <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Os seus comentários (ou deixe em branco):</string>
     <string name="acra_resDialogText">Parece que &APP_NAME; encerrou inesperadamente. Se possível, descreva abaixo tudo o que acha poder ser relevante e prima “OK” para nos enviar um e-mail sobre este encerramento. Irá ver o e-mail antes de ser enviado.</string>

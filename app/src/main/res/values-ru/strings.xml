@@ -100,6 +100,7 @@
     <string name="X_warning_no_matching_book_found_long">Не найдена книга, соответствующая отсканированному штрих-коду. Возможно правильный штрих-код находится внутри книги. Иначе, пожалуйста, введите детализированную информацию о книге вручную.</string>
     <string name="X_whichImageCaptureApplication">Делать снимки с помощью</string>
     <string name="X_whichSendToApplication">Выберите приложение</string>
+    <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Ваши комментарии (или оставьте пустым):</string>
     <string name="acra_resDialogText">&APP_NAME; завершился с ошибкой. Пожалуйста, если хотите, опишите что-нибудь, что, по вашему мнению, могло быть связано с этим. Нажмите «ОК», чтобы отправить по почте. Вы увидите e-mail перед отправлением.</string>

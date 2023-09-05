@@ -100,6 +100,7 @@
     <string name="X_warning_no_matching_book_found_long">Nepodařilo se nalézt hledanou knihu. Zkuste prosím zadat potřebné údaje manuálně.</string>
     <string name="X_whichImageCaptureApplication">Vyfotit pomocí aplikace</string>
     <string name="X_whichSendToApplication">Odeslat pomocí aplikace</string>
+    <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Váš komentář (nepovinné):</string>
     <string name="acra_resDialogText">Vypadá to, že došlo k neočekávanému pádu aplikace &APP_NAME;. Napište nám prosím o tomto problému všechny informace, které považujete za relevantní, a tlačítkem „OK“ nám je odešlete. Před odesláním mailu budete mít ještě možnost jej zkontrolovat.</string>

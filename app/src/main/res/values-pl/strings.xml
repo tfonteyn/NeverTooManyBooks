@@ -101,6 +101,7 @@
     <string name="X_warning_no_matching_book_found_long">Zeskanowana książka nie została odnaleziona. Spóbuj ponownie z kodem, który może znajdować się w środku okładki lub wprowadź dane ręcznie.</string>
     <string name="X_whichImageCaptureApplication">Zrób zdjęcie w aplikacji</string>
     <string name="X_whichSendToApplication">Wyślij za pomocą</string>
+    <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Twoje komentarze (lub po prostu pozostaw puste):</string>
     <string name="acra_resDialogText">Vypadá to, že &APP_NAME; havaroval. Pokud je to možné, popište cokoliv, o čem si myslíte, že mohou být relevantní níže, a stiskněte „OK”, abyste nám poslali e-mail o havárii. E-mail se zobrazí před odesláním.</string>

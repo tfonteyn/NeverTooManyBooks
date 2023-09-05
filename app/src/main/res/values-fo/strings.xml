@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
     <!ENTITY APP_NAME "NeverTooManyBooks">
     ]>
 <!--suppress LongLine --><resources>
@@ -106,6 +108,7 @@
         <item quantity="other">%1$d bøkur funnin</item>
     </plurals>
     <string name="notification_channel_info">Upplýsingar</string>
+    <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="debug_select_items">Vel hvat tú vilt telja uppí:</string>

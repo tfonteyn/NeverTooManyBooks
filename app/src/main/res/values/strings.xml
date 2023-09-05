@@ -70,6 +70,9 @@
     <!-- endregion -->
 
     <!-- region ========== Order formatters. -->
+    <!-- two strings concatenated; only used for RTL languages -->
+    <string name="a_b">%1$s%2$s</string>
+    <!-- generic "label (info)" -->
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <!-- generic "label: value" -->
     <string name="name_colon_value">%1$s: %2$s</string>

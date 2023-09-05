@@ -94,6 +94,7 @@
     <string name="X_warning_no_matching_book_found_long">Aranan kitap bulunamadı. Bazen doğru barkodu kitap kapağının içinde bulabilirsiniz. Bulamazsanız, bilgileri elle giriniz.</string>
     <string name="X_whichImageCaptureApplication">Fotoğraf çekmek için şu uygulamayı kullan</string>
     <string name="X_whichSendToApplication">Göndermek için kullanılacak uygulama</string>
+    <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Yorumlarınız (isteğe bağlı):</string>
     <string name="acra_resDialogText">Sanırız &APP_NAME; çöktü. Eğer bu çökme ile ilgili olabileceğini düşündüğünüz bir şeyler varsa lütfen “Tamam”a basarak bu çökme hakkında bir e-posta gönderin. Göndermeden önce e-postayı göreceksiniz.</string>

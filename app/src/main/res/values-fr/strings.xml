@@ -98,6 +98,7 @@
     <string name="X_warning_no_matching_book_found_long">Le livre n’a pas été trouvé. Il est parfois possible de trouver le code barre à l’intérieur de la première page de couverture. Sinon merci d’entrer les détails manuellement.</string>
     <string name="X_whichImageCaptureApplication">Capturer une image avec</string>
     <string name="X_whichSendToApplication">Envoyer avec</string>
+    <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Votre commentaire (ou laisser vide) :</string>
     <string name="acra_resDialogText">&APP_NAME; a planté. Décrivez ci-dessous tout ce qui vous semble opportun et pressez «OK» pour nous envoyer un courriel à propos de ce plantage. Vous pourrez lire votre courriel avant son envoi.</string>

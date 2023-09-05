@@ -94,6 +94,7 @@
     <string name="X_warning_no_matching_book_found_long">Das gescannte Buch wurde nicht gefunden. Manchmal befindet sich der korrekte Barcode auf der Rückseite des Buchumschläge. Geben Sie ansonsten die Daten manuell ein.</string>
     <string name="X_whichImageCaptureApplication">Bild aufnehmen mit</string>
     <string name="X_whichSendToApplication">Senden via</string>
+    <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Ihr Kommentar (darf auch leer bleiben):</string>
     <string name="acra_resDialogText">Anscheinend ist &APP_NAME; abgestürzt. Beschreiben Sie nach Möglichkeit alle relevanten Hinweise und drücken Sie „OK“, um uns eine E-Mail zu diesem Absturz zu senden. Sie werden das E-Mail vor dem Versand sehen können.</string>

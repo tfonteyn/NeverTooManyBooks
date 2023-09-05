@@ -97,6 +97,7 @@
     <string name="X_warning_no_matching_book_found_long">El libro escaneado no ha sido encontrado. El código de barras correcto se encuentra a veces en el interior de la portada. También puede introducir los datos de forma manual.</string>
     <string name="X_whichImageCaptureApplication">Capturar imagen con</string>
     <string name="X_whichSendToApplication">Enviar con</string>
+    <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Sus comentarios (puede dejarlos en blanco):</string>
     <string name="acra_resDialogText">Parece que &APP_NAME; se ha detenido. Si es posible, indique cualquier detalle que usted considere relevante y pulse OK para enviarnos un correo electrónico sobre el problema. Podrá revisar el correo antes de que se envíe.</string>
