@@ -26,10 +26,10 @@ import androidx.annotation.NonNull;
 
 public enum Sort
         implements Parcelable {
-    Unsorted(""),
+    Unsorted("", '˗'),
     // " ASC" is the default, so don't bother adding it
-    Asc(""),
-    Desc(" DESC");
+    Asc("", '˄'),
+    Desc(" DESC", '˅');
 
     /** {@link Parcelable}. */
     public static final Creator<Sort> CREATOR = new Creator<>() {
@@ -46,9 +46,18 @@ public enum Sort
     };
     @NonNull
     private final String expression;
+    private final char symbol;
 
-    Sort(@NonNull final String expression) {
+    /**
+     * Constructor.
+     *
+     * @param expression the SQL expression to add to a column
+     * @param symbol     a user-displayable symbol
+     */
+    Sort(@NonNull final String expression,
+         final char symbol) {
         this.expression = expression;
+        this.symbol = symbol;
     }
 
     /**
@@ -73,6 +82,10 @@ public enum Sort
     @NonNull
     public String getExpression() {
         return expression;
+    }
+
+    public char getSymbol() {
+        return symbol;
     }
 
     @Override
