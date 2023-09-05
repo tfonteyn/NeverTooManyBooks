@@ -30,12 +30,14 @@ import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.divider.MaterialDividerItemDecoration;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -50,13 +52,13 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecycle
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 
 /**
- * Editor for the book-level fields of a single style.
+ * Editor for the book-level field sorting of a single style.
  * <p>
  * Note this is NOT extending StyleBaseFragment/BasePreferenceFragment.
  * We must handle the base functionality (e.g. StyleViewModel) ourselves.
  */
 @Keep
-public class StyleBookLevelColumnsFragment
+public class StyleBooklistBookLevelSortingFragment
         extends BaseFragment {
 
     /** Drag and drop support for the list view. */
@@ -105,19 +107,43 @@ public class StyleBookLevelColumnsFragment
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
+        final Context context = getContext();
+
+        final List<StyleViewModel.WrappedBookLevelColumn> groupSortingFields =
+                vm.getStyle()
+                  .getGroupList()
+                  .stream()
+                  .flatMap(booklistGroup -> booklistGroup.getGroupDomainExpressions()
+                                                         .stream())
+                  .filter(domainExpression -> domainExpression.getSort() != Sort.Unsorted)
+                  .map(domainExpression -> new StyleViewModel.WrappedBookLevelColumn(
+                          domainExpression.getDomain().getName(),
+                          domainExpression.getSort()))
+                  .collect(Collectors.toList());
+
+
         //noinspection DataFlowIssue
         vb.columnList.addItemDecoration(
-                new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL));
+                new MaterialDividerItemDecoration(context, RecyclerView.VERTICAL));
         vb.columnList.setHasFixedSize(true);
 
-        // setup the adapter
+        // setup the adapters
+
+        // The adapter for the fixed Group columns.
+        final HeaderAdapter headerAdapter =
+                new HeaderAdapter(context, groupSortingFields);
+
         // The adapter for the list.
         final BookLevelColumnWrapperListAdapter listAdapter =
-                new BookLevelColumnWrapperListAdapter(getContext(),
-                                                      vm.createWrappedBookLevelColumnList(),
+                new BookLevelColumnWrapperListAdapter(context,
+                                                      vm.getWrappedBookLevelColumnList(),
                                                       vh -> itemTouchHelper.startDrag(vh));
 
-        vb.columnList.setAdapter(listAdapter);
+        // Combine the adapters for the list header and the actual list
+        final ConcatAdapter concatAdapter = new ConcatAdapter(
+                headerAdapter, listAdapter);
+
+        vb.columnList.setAdapter(concatAdapter);
 
         final SimpleItemTouchHelperCallback sitHelperCallback =
                 new SimpleItemTouchHelperCallback(listAdapter);
@@ -128,6 +154,31 @@ public class StyleBookLevelColumnsFragment
     /**
      * Holder for each row.
      */
+    private static class HeaderRowHolder
+            extends CheckableDragDropViewHolder {
+
+        @NonNull
+        private final RowEditStyleBookLevelColumnBinding vb;
+
+        HeaderRowHolder(@NonNull final RowEditStyleBookLevelColumnBinding vb) {
+            super(vb.getRoot());
+            this.vb = vb;
+
+            vb.btnRowMenu.setEnabled(false);
+            vb.ROWGRABBERICON.setVisibility(View.INVISIBLE);
+        }
+
+        void onBind(@NonNull final StyleViewModel.WrappedBookLevelColumn wrappedColumn) {
+            final Context context = itemView.getContext();
+            final String text = context.getString(R.string.a_bracket_b_bracket,
+                                                  wrappedColumn.getLabel(context),
+                                                  context.getString(R.string.lbl_group));
+            vb.columnName.setText(text);
+
+            setRowMenuButtonIconResource(StyleViewModel.getIconResId(wrappedColumn.getSort()));
+        }
+    }
+
     private static class Holder
             extends CheckableDragDropViewHolder {
 
@@ -143,60 +194,66 @@ public class StyleBookLevelColumnsFragment
             final Context context = itemView.getContext();
             vb.columnName.setText(wrappedColumn.getLabel(context));
 
-            if (wrappedColumn.supportsVisibility()) {
-                enableCheck(true);
-                setChecked(wrappedColumn.isVisible());
-            } else {
-                enableCheck(false);
-                setChecked(true);
-            }
+            setRowMenuButtonIconResource(StyleViewModel.getIconResId(wrappedColumn.getSort()));
 
-            if (wrappedColumn.supportsSorting()) {
-                showDragHandle(true);
-                setIcon(wrappedColumn.getSort());
+            setOnRowShowContextMenuListener(ShowContextMenu.Button, (anchor, position) -> {
+                final ExtPopupMenu popupMenu = new ExtPopupMenu(anchor.getContext())
+                        .inflate(R.menu.sorting_options)
+                        .setGroupDividerEnabled();
 
-                setOnRowShowContextMenuListener(ShowContextMenu.Button, (anchor, position) -> {
-                    final ExtPopupMenu popupMenu = new ExtPopupMenu(anchor.getContext())
-                            .inflate(R.menu.sorting_options)
-                            .setGroupDividerEnabled();
+                popupMenu.showAsDropDown(anchor, menuItem -> {
+                    final int itemId = menuItem.getItemId();
+                    final Sort nextValue;
+                    if (itemId == R.id.MENU_SORT_UNSORTED) {
+                        nextValue = Sort.Unsorted;
+                    } else if (itemId == R.id.MENU_SORT_ASC) {
+                        nextValue = Sort.Asc;
+                    } else if (itemId == R.id.MENU_SORT_DESC) {
+                        nextValue = Sort.Desc;
+                    } else {
+                        // Should never get here... flw
+                        return false;
+                    }
 
-                    popupMenu.showAsDropDown(anchor, menuItem -> {
-                        final int itemId = menuItem.getItemId();
-                        final Sort nextValue;
-                        if (itemId == R.id.MENU_SORT_UNSORTED) {
-                            nextValue = Sort.Unsorted;
-                        } else if (itemId == R.id.MENU_SORT_ASC) {
-                            nextValue = Sort.Asc;
-                        } else if (itemId == R.id.MENU_SORT_DESC) {
-                            nextValue = Sort.Desc;
-                        } else {
-                            // Should never get here... flw
-                            return false;
-                        }
-
-                        wrappedColumn.setSort(nextValue);
-                        setIcon(nextValue);
-                        return true;
-                    });
+                    wrappedColumn.setSort(nextValue);
+                    setRowMenuButtonIconResource(StyleViewModel.getIconResId(nextValue));
+                    return true;
                 });
-            } else {
-                showDragHandle(false);
-                setOnRowShowContextMenuListener(null, null);
-            }
+            });
+        }
+    }
+
+    private static class HeaderAdapter
+            extends BaseDragDropRecyclerViewAdapter<StyleViewModel.WrappedBookLevelColumn,
+            HeaderRowHolder> {
+
+        /**
+         * Constructor.
+         *
+         * @param context Current context
+         * @param items   List of columns (in WrappedBookLevelColumn)
+         */
+        HeaderAdapter(
+                @NonNull final Context context,
+                @NonNull final List<StyleViewModel.WrappedBookLevelColumn> items) {
+            super(context, items, null);
         }
 
-        private void setIcon(@NonNull final Sort sort) {
-            switch (sort) {
-                case Unsorted:
-                    setRowMenuButtonIconResource(R.drawable.ic_baseline_sort_unsorted);
-                    break;
-                case Asc:
-                    setRowMenuButtonIconResource(R.drawable.ic_baseline_sort_ascending);
-                    break;
-                case Desc:
-                    setRowMenuButtonIconResource(R.drawable.ic_baseline_sort_descending);
-                    break;
-            }
+        @NonNull
+        @Override
+        public HeaderRowHolder onCreateViewHolder(@NonNull final ViewGroup parent,
+                                                  final int viewType) {
+
+            final RowEditStyleBookLevelColumnBinding vb = RowEditStyleBookLevelColumnBinding
+                    .inflate(getLayoutInflater(), parent, false);
+            return new HeaderRowHolder(vb);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull final HeaderRowHolder holder,
+                                     final int position) {
+            super.onBindViewHolder(holder, position);
+            holder.onBind(getItem(position));
         }
     }
 
@@ -224,15 +281,7 @@ public class StyleBookLevelColumnsFragment
 
             final RowEditStyleBookLevelColumnBinding vb = RowEditStyleBookLevelColumnBinding
                     .inflate(getLayoutInflater(), parent, false);
-            final Holder holder = new Holder(vb);
-            holder.setOnItemCheckChangedListener(position -> {
-                final StyleViewModel.WrappedBookLevelColumn wrappedColumn = getItem(position);
-                final boolean newStatus = !wrappedColumn.isVisible();
-                wrappedColumn.setVisible(newStatus);
-                notifyItemChanged(position);
-                return newStatus;
-            });
-            return holder;
+            return new Holder(vb);
         }
 
         @Override

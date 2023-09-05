@@ -23,8 +23,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -32,14 +34,12 @@ import androidx.lifecycle.ViewModel;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.MapDBKey;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
@@ -63,6 +63,44 @@ public class StyleViewModel
 
     @Nullable
     private StyleDataStore styleDataStore;
+
+    @DrawableRes
+    static int getIconResId(@NonNull final Sort sort) {
+        final int iconResId;
+        switch (sort) {
+            case Unsorted:
+                iconResId = R.drawable.ic_baseline_sort_unsorted;
+                break;
+            case Asc:
+                iconResId = R.drawable.ic_baseline_sort_ascending;
+                break;
+            case Desc:
+                iconResId = R.drawable.ic_baseline_sort_descending;
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
+        return iconResId;
+    }
+
+    @StringRes
+    private static int getStringResId(@NonNull final Sort sort) {
+        final int labelResId;
+        switch (sort) {
+            case Unsorted:
+                labelResId = R.string.lbl_sort_unsorted;
+                break;
+            case Asc:
+                labelResId = R.string.lbl_sort_ascending;
+                break;
+            case Desc:
+                labelResId = R.string.lbl_sort_descending;
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
+        return labelResId;
+    }
 
     /**
      * Pseudo constructor.
@@ -173,49 +211,19 @@ public class StyleViewModel
         styleDataStore.setModified();
     }
 
-    List<WrappedBookLevelColumn> createWrappedBookLevelColumnList() {
-        wrappedBookLevelColumnList.clear();
-
-        final FieldVisibility fieldVisibility = style.getFieldVisibility(Style.Screen.List);
-
-        // ALL the fields upon which can be sorted.
-        final Map<String, Sort> bookLevelFieldsOrderBy = style.getBookLevelFieldsOrderBy();
-
-        // first get all the sortable fields with their current visibility.
-        bookLevelFieldsOrderBy.forEach((dbKey, sort) -> wrappedBookLevelColumnList.add(
-                new WrappedBookLevelColumn(dbKey,
-                                           fieldVisibility.isVisible(dbKey)
-                                                          .orElse(null),
-                                           sort)));
-
-        // now add the visibility-enabled fields which are not sortable
-        final Set<String> orderKeys = bookLevelFieldsOrderBy.keySet();
-        fieldVisibility.getKeys(true)
-                       .stream()
-                       // Remove the sortable fields we already handled above
-                       .filter(key -> !orderKeys.contains(key))
-                       .forEach(key -> wrappedBookLevelColumnList.add(
-                               new WrappedBookLevelColumn(key,
-                                                          fieldVisibility.isVisible(key)
-                                                                         .orElse(null),
-                                                          null)));
-
+    @NonNull
+    List<WrappedBookLevelColumn> getWrappedBookLevelColumnList() {
+        if (wrappedBookLevelColumnList.isEmpty()) {
+            style.getBookLevelFieldsOrderBy().forEach((dbKey, sort) -> wrappedBookLevelColumnList
+                    .add(new WrappedBookLevelColumn(dbKey, sort)));
+        }
         return wrappedBookLevelColumnList;
     }
 
     void updateBookLevelColumnList() {
-        final FieldVisibility fieldVisibility = style.getFieldVisibility(Style.Screen.List);
-
-        wrappedBookLevelColumnList
-                .stream()
-                .filter(WrappedBookLevelColumn::supportsVisibility)
-                .forEach(field -> fieldVisibility.setVisible(field.getDbKey(),
-                                                             field.isVisible()));
-
         style.setBookLevelFieldsOrderBy(
                 wrappedBookLevelColumnList
                         .stream()
-                        .filter(WrappedBookLevelColumn::supportsSorting)
                         .collect(Collectors.toMap(WrappedBookLevelColumn::getDbKey,
                                                   WrappedBookLevelColumn::getSort,
                                                   (v1, v2) -> {
@@ -226,6 +234,17 @@ public class StyleViewModel
 
         //noinspection DataFlowIssue
         styleDataStore.setModified();
+    }
+
+    @NonNull
+    String getBookLevelSortingPreferenceSummary(@NonNull final Context context) {
+        return getWrappedBookLevelColumnList()
+                .stream()
+                .filter(column -> column.getSort() != Sort.Unsorted)
+                .map(column -> context.getString(R.string.a_b,
+                                                 column.getLabel(context),
+                                                 column.getSort().getSymbol()))
+                .collect(Collectors.joining(", "));
     }
 
     /**
@@ -271,17 +290,12 @@ public class StyleViewModel
         @NonNull
         private final String dbKey;
 
-        @Nullable
-        private Boolean visible;
-
-        @Nullable
+        @NonNull
         private Sort sort;
 
         WrappedBookLevelColumn(@NonNull final String dbKey,
-                               @Nullable final Boolean visible,
-                               @Nullable final Sort sort) {
+                               @NonNull final Sort sort) {
             this.dbKey = dbKey;
-            this.visible = visible;
             this.sort = sort;
         }
 
@@ -294,30 +308,12 @@ public class StyleViewModel
             return MapDBKey.getLabel(context, dbKey);
         }
 
-        boolean supportsVisibility() {
-            return visible != null;
-        }
-
-        public boolean isVisible() {
-            return Objects.requireNonNull(visible);
-        }
-
-        public void setVisible(final boolean visible) {
-            Objects.requireNonNull(this.visible);
-            this.visible = visible;
-        }
-
-        boolean supportsSorting() {
-            return sort != null;
-        }
-
         @NonNull
         public Sort getSort() {
-            return Objects.requireNonNull(sort);
+            return sort;
         }
 
         public void setSort(@NonNull final Sort sort) {
-            Objects.requireNonNull(this.sort);
             this.sort = sort;
         }
     }

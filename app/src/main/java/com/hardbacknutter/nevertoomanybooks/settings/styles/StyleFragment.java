@@ -55,7 +55,8 @@ public class StyleFragment
     private static final String TAG = "StylePreferenceFragment";
     private static final String SIS_NAME_SET = TAG + ":nameSet";
 
-    private static final String PSK_LIST_SHOWS_BOOK_DETAILS = "psk_style_show_details";
+    private static final String PSK_LIST_BOOK_LEVEL_FIELDS = "psk_style_book_level_fields";
+    private static final String PSK_LIST_BOOK_LEVEL_SORTING = "psk_style_book_level_sorting";
 
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback backPressedCallback =
@@ -82,7 +83,8 @@ public class StyleFragment
     private Preference pCoverScale;
     private Preference pTextScale;
     private SeekBarPreference pExpansionLevel;
-    private Preference pListFieldVisibility;
+    private Preference pListBookLevelSorting;
+    private Preference pListBookLevelFields;
     private Preference pGroups;
 
     @SuppressWarnings("DataFlowIssue")
@@ -104,15 +106,17 @@ public class StyleFragment
             editText.selectAll();
         });
 
+        findPreference(StyleDataStore.PK_LIST_HEADER)
+                .setSummaryProvider(MultiSelectListPreferenceSummaryProvider.getInstance());
+
+        pGroups = findPreference(StyleDataStore.PK_GROUPS);
         pExpansionLevel = findPreference(StyleDataStore.PK_EXPANSION_LEVEL);
+        pListBookLevelSorting = findPreference(PSK_LIST_BOOK_LEVEL_SORTING);
+        pListBookLevelFields = findPreference(PSK_LIST_BOOK_LEVEL_FIELDS);
+
         pCoverScale = findPreference(StyleDataStore.PK_COVER_SCALE);
         pTextScale = findPreference(StyleDataStore.PK_TEXT_SCALE);
 
-        pListFieldVisibility = findPreference(PSK_LIST_SHOWS_BOOK_DETAILS);
-        pGroups = findPreference(StyleDataStore.PK_GROUPS);
-
-        findPreference(StyleDataStore.PK_LIST_HEADER)
-                .setSummaryProvider(MultiSelectListPreferenceSummaryProvider.getInstance());
         findPreference(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE)
                 .setSummaryProvider(MultiSelectListPreferenceSummaryProvider.getInstance());
 
@@ -196,7 +200,9 @@ public class StyleFragment
         final Context context = getContext();
 
         //noinspection DataFlowIssue
-        pListFieldVisibility.setSummary(style.getFieldVisibility(Style.Screen.List)
+        pListBookLevelSorting.setSummary(vm.getBookLevelSortingPreferenceSummary(context));
+
+        pListBookLevelFields.setSummary(style.getFieldVisibility(Style.Screen.List)
                                              .getPreferencesSummaryText(context));
 
         pGroups.setSummary(style.getGroupsSummaryText(context));
@@ -211,6 +217,7 @@ public class StyleFragment
         pExpansionLevel.setMax(style.getGroupCount());
         pExpansionLevel.setValue(style.getExpansionLevel());
     }
+
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {

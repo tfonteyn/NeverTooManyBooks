@@ -28,22 +28,14 @@
     android:minHeight="?attr/listPreferredItemHeightSmall"
     >
 
-    <CheckBox
-        android:id="@id/ROW_CHECKABLE_BTN"
-        style="@style/RowEditor.Button.Checkable"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/ROW_ONCLICK_TARGET"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:checked="true"
-        />
-
+    <!-- mimic preference screen layout: use a margin-start -->
     <LinearLayout
         android:id="@id/ROW_ONCLICK_TARGET"
         style="@style/RowEditor.TextSection"
+        android:layout_marginStart="@dimen/preference_header_margin_start"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/ROW_GRABBER_ICON"
-        app:layout_constraintStart_toEndOf="@id/ROW_CHECKABLE_BTN"
+        app:layout_constraintEnd_toStartOf="@id/btn_row_menu"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         >
 
@@ -56,24 +48,24 @@
 
     </LinearLayout>
 
-    <ImageView
-        android:id="@id/ROW_GRABBER_ICON"
-        style="@style/RowEditor.Button.DragHandle"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/btn_row_menu"
-        app:layout_constraintStart_toEndOf="@id/ROW_ONCLICK_TARGET"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription"
-        />
-
-    <!-- full size icon; so add a margin at the end to avoid overlap with scrollbar -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_row_menu"
         style="@style/Button.MenuPopup.Sorting"
         android:layout_marginEnd="@dimen/field_margin_end"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/ROW_GRABBER_ICON"
+        app:layout_constraintStart_toEndOf="@id/ROW_ONCLICK_TARGET"
         app:layout_constraintTop_toTopOf="parent"
         />
+
+    <ImageView
+        android:id="@id/ROW_GRABBER_ICON"
+        style="@style/RowEditor.Button.DragHandle"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription"
+        />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

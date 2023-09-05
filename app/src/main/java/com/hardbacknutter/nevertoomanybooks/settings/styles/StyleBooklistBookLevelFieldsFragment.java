@@ -29,12 +29,9 @@ import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
  * Used/defined in xml/preferences_styles.xml
- * <p>
- * OBSOLETE... replaced by {@link StyleBookLevelColumnsFragment}.
- * To be removed soon.
  */
 @Keep
-public class StyleBookDetailsFragment
+public class StyleBooklistBookLevelFieldsFragment
         extends StyleBaseFragment {
 
     @Override
@@ -42,6 +39,6 @@ public class StyleBookDetailsFragment
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
-        setPreferencesFromResource(R.xml.preferences_style_book_details, rootKey);
+        setPreferencesFromResource(R.xml.preferences_style_booklist_book_level_fields, rootKey);
     }
 }

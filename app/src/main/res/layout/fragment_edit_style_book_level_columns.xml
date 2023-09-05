@@ -30,29 +30,9 @@
     <TextView
         android:id="@+id/header"
         style="@style/Text.Header.PreferenceCategory"
-        android:text="@string/pt_bob_show_details"
+        android:text="@string/pt_bob_book_level_sorting"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        />
-
-    <TextView
-        android:id="@+id/header_vis"
-        style="@style/Text.Header"
-        android:text="@string/enabled"
-        android:layout_marginStart="@dimen/field_margin_start"
-        android:textColor="?attr/colorSecondary"
-        app:layout_constraintStart_toStartOf="@id/column_list"
-        app:layout_constraintTop_toBottomOf="@id/header"
-        />
-
-    <TextView
-        android:id="@+id/header_sort"
-        style="@style/Text.Header"
-        android:text="@string/lbl_sorting"
-        android:layout_marginEnd="@dimen/field_margin_end"
-        android:textColor="?attr/colorSecondary"
-        app:layout_constraintEnd_toEndOf="@id/column_list"
-        app:layout_constraintTop_toBottomOf="@id/header"
         />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -64,7 +44,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/header_vis"
+        app:layout_constraintTop_toBottomOf="@id/header"
         tools:listitem="@layout/row_edit_style_book_level_column"
         />
 

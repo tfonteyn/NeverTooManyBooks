@@ -37,6 +37,15 @@
         android:title="@string/pc_bob"
         >
 
+        <MultiSelectListPreference
+            android:defaultValue="@array/empty_array"
+            android:entries="@array/pe_bob_header"
+            android:entryValues="@array/pv_bob_header"
+            android:icon="@drawable/ic_baseline_view_headline_24"
+            android:key="style.booklist.header"
+            android:title="@string/pt_bob_header"
+            />
+
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleGroupsFragment"
             android:icon="@drawable/ic_baseline_format_list_bulleted_24"
@@ -57,22 +66,19 @@
             app:showSeekBarValue="true"
             />
 
-        <MultiSelectListPreference
-            android:defaultValue="@array/empty_array"
-            android:entries="@array/pe_bob_header"
-            android:entryValues="@array/pv_bob_header"
-            android:icon="@drawable/ic_baseline_view_headline_24"
-            android:key="style.booklist.header"
-            android:title="@string/pt_bob_header"
+        <Preference
+            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleBooklistBookLevelSortingFragment"
+            android:icon="@drawable/ic_baseline_details_24"
+            android:key="psk_style_book_level_sorting"
+            android:title="@string/pt_bob_book_level_sorting"
             />
 
         <Preference
-            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleBookLevelColumnsFragment"
+            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleBooklistBookLevelFieldsFragment"
             android:icon="@drawable/ic_baseline_details_24"
-            android:key="psk_style_show_details"
+            android:key="psk_style_book_level_fields"
             android:title="@string/pt_bob_show_details"
             />
-
 
         <!-- Showing thumbnails fall under 'Extra Book Details', but this is more user-friendly. -->
         <SwitchPreference
