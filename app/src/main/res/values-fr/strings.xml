@@ -774,4 +774,8 @@
     <string name="option_restore_cover">Restaurer l’image précédente</string>
     <string name="info_site_list">Les recherches sont limitées à : %1$s</string>
     <string name="tip_configure_sites">Les sites web individuels peuvent être configurés à l\'aide de l\'icône des paramètres en haut de l\'écran.</string>
+    <string name="lbl_sort_unsorted">Non trié</string>
+    <string name="lbl_sort_ascending">Ascendante</string>
+    <string name="lbl_sort_descending">Descendant</string>
+    <string name="lbl_group">Groupe</string>
 </resources>

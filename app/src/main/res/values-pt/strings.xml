@@ -804,4 +804,8 @@
     <string name="option_restore_cover">Restaurar imagem anterior</string>
     <string name="info_site_list">As pesquisas são limitadas a: %1$s</string>
     <string name="tip_configure_sites">Os sítios Web individuais podem ser configurados utilizando o ícone de definições na parte superior do ecrã.</string>
+    <string name="lbl_sort_unsorted">Não selecionado</string>
+    <string name="lbl_sort_ascending">Ascendente</string>
+    <string name="lbl_sort_descending">Descendente</string>
+    <string name="lbl_group">Grupo</string>
 </resources>

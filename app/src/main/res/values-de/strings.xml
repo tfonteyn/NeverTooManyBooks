@@ -770,4 +770,8 @@
     <string name="option_restore_cover">Vorheriges Bild wiederherstellen</string>
     <string name="info_site_list">Die Suche ist beschränkt auf: %1$s</string>
     <string name="tip_configure_sites">Einzelne Websites können über das Einstellungssymbol am oberen Bildschirmrand konfiguriert werden.</string>
+    <string name="lbl_sort_unsorted">Unsortiert</string>
+    <string name="lbl_sort_ascending">Aufsteigend</string>
+    <string name="lbl_sort_descending">Absteigend</string>
+    <string name="lbl_group">Gruppe</string>
 </resources>

@@ -770,4 +770,8 @@
     <string name="option_restore_cover">Vorige afbeelding herstellen</string>
     <string name="info_site_list">Zoekopdrachten zijn beperkt tot: %1$s</string>
     <string name="tip_configure_sites">Afzonderlijke websites kunnen worden geconfigureerd met het instellingen-pictogram bovenaan het scherm.</string>
+    <string name="lbl_sort_unsorted">Ongesorteerd</string>
+    <string name="lbl_sort_ascending">Oplopend</string>
+    <string name="lbl_sort_descending">Aflopend</string>
+    <string name="lbl_group">Groep</string>
 </resources>

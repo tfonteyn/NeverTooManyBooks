@@ -782,4 +782,8 @@
     <string name="option_restore_cover">Obnovit předchozí obrázek</string>
     <string name="info_site_list">Vyhledávání je omezeno na: %1$s</string>
     <string name="tip_configure_sites">Jednotlivé webové stránky lze konfigurovat pomocí ikony nastavení v horní části obrazovky.</string>
+    <string name="lbl_sort_unsorted">Netříděné</string>
+    <string name="lbl_sort_ascending">Vzestupně</string>
+    <string name="lbl_sort_descending">Sestupně</string>
+    <string name="lbl_group">Skupina</string>
 </resources>

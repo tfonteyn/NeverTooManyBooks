@@ -783,4 +783,8 @@
     <string name="option_restore_cover">Восстановить предыдущее изображение</string>
     <string name="info_site_list">Поиск ограничен: %1$s</string>
     <string name="tip_configure_sites">Отдельные сайты могут быть настроены с помощью значка настроек в верхней части экрана.</string>
+    <string name="lbl_sort_unsorted">Без сортировки</string>
+    <string name="lbl_sort_ascending">По возрастанию</string>
+    <string name="lbl_sort_descending">Нисходящий</string>
+    <string name="lbl_group">Группа</string>
 </resources>

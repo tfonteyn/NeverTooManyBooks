@@ -771,4 +771,8 @@
     <string name="option_restore_cover">Επαναφορά προηγούμενης εικόνας</string>
     <string name="info_site_list">Οι αναζητήσεις περιορίζονται σε: %1$s</string>
     <string name="tip_configure_sites">Οι επιμέρους ιστότοποι μπορούν να διαμορφωθούν χρησιμοποιώντας το εικονίδιο ρυθμίσεων στο επάνω μέρος της οθόνης.</string>
+    <string name="lbl_sort_unsorted">Μη ταξινομημένο</string>
+    <string name="lbl_sort_ascending">Ανοδική</string>
+    <string name="lbl_sort_descending">Κατιούσα</string>
+    <string name="lbl_group">Ομάδα</string>
 </resources>

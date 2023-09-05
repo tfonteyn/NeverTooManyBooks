@@ -786,4 +786,8 @@
     <string name="option_restore_cover">Przywróć poprzedni obraz</string>
     <string name="info_site_list">Wyszukiwanie jest ograniczone do: %1$s</string>
     <string name="tip_configure_sites">Poszczególne strony internetowe można konfigurować za pomocą ikony ustawień w górnej części ekranu.</string>
+    <string name="lbl_sort_unsorted">Niesortowane</string>
+    <string name="lbl_sort_ascending">Rosnąco</string>
+    <string name="lbl_sort_descending">Malejąco</string>
+    <string name="lbl_group">Grupa</string>
 </resources>
