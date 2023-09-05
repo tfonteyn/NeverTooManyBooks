@@ -1606,6 +1606,9 @@
     <string name="lbl_sort_ascending">Ascending</string>
     <string name="lbl_sort_descending">Descending</string>
 
+    <string name="pt_bob_book_level_sorting">Book level sorting</string>
+    <string name="lbl_group">Group</string>
+
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
 
