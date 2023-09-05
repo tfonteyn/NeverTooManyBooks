@@ -23,6 +23,8 @@ import androidx.annotation.NonNull;
 import androidx.preference.MultiSelectListPreference;
 import androidx.preference.Preference;
 
+import java.util.StringJoiner;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 
@@ -52,11 +54,11 @@ public final class MultiSelectListPreferenceSummaryProvider
     @Override
     @NonNull
     public CharSequence provideSummary(@NonNull final MultiSelectListPreference preference) {
-        final StringBuilder text = new StringBuilder();
+        final StringJoiner items = new StringJoiner(", ");
         for (final String s : preference.getValues()) {
             final int index = preference.findIndexOfValue(s);
             if (index >= 0) {
-                text.append(preference.getEntries()[index]).append('\n');
+                items.add(preference.getEntries()[index]);
 
             } else {
                 // This re-surfaces sometimes after a careless dev. change.
@@ -72,8 +74,8 @@ public final class MultiSelectListPreferenceSummaryProvider
             }
         }
 
-        if (text.length() > 0) {
-            return text;
+        if (items.length() > 0) {
+            return items.toString();
         } else {
             // the preference has no values set, but that is a VALID setting and will be used.
             return preference.getContext().getString(R.string.none);
