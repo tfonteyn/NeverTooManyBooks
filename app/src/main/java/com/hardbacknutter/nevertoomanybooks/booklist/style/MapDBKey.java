@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.database.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -98,12 +99,27 @@ public final class MapDBKey {
             Map.entry(DBKey.READ__BOOL, R.string.lbl_read),
             Map.entry(DBKey.SIGNED__BOOL, R.string.lbl_signed),
             Map.entry(DBKey.TITLE, R.string.lbl_title),
-            Map.entry(DBKey.TITLE_ORIGINAL_LANG, R.string.lbl_original_title)
+            Map.entry(DBKey.TITLE_ORIGINAL_LANG, R.string.lbl_original_title),
+
+            // The BooklistGroup specific domains for sorting
+            Map.entry(BooklistGroup.BlgKey.SORT_AUTHOR, R.string.lbl_author),
+            Map.entry(BooklistGroup.BlgKey.SORT_BOOKSHELF, R.string.lbl_bookshelf),
+            Map.entry(BooklistGroup.BlgKey.SORT_PUBLISHER, R.string.lbl_publisher),
+            Map.entry(BooklistGroup.BlgKey.SORT_SERIES_TITLE, R.string.lbl_series),
+            Map.entry(BooklistGroup.BlgKey.SORT_SERIES_NUM_FLOAT, R.string.lbl_series_num)
     );
 
     private MapDBKey() {
     }
 
+    /**
+     * Map the {@link DBKey} to the actual domain name. These are usually identical,
+     * but will be different for e.g. id columns to linked tables an others.
+     *
+     * @param dbKey to map
+     *
+     * @return actual domain name
+     */
     @NonNull
     public static String getDomainName(@NonNull final String dbKey) {
         return Objects.requireNonNull(DB_KEY_TO_DOMAIN_NAME.get(dbKey), dbKey);
@@ -127,6 +143,7 @@ public final class MapDBKey {
         return context.getString(resId);
     }
 
+    // TODO: Not sure this is the best spot to keep this code. Maybe move it back to BobTask ?
     @NonNull
     public static List<DomainExpression> createDomainExpressions(@NonNull final String dbKey,
                                                                  @NonNull final Sort sort,

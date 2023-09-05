@@ -40,6 +40,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.adapter.BooklistAdapter;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.MapDBKey;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.DomainExpression;
@@ -948,7 +949,12 @@ public class BooklistGroup {
         public static final String PUBLISHER_NAME_1CHAR = "blg_pub_1ch";
         public static final String BOOK_TITLE_1CHAR = "blg_tit_1ch";
         public static final String READ = "blg_rd_sts";
-        // specific domains for sorting
+
+        /**
+         * Specific domains for sorting.
+         * IMPORTANT: when adding a SORT_* key here,
+         * it should also be added to {@link MapDBKey}#DB_KEY_TO_LABEL_RES_ID
+         */
         public static final String SORT_AUTHOR = "blg_sort_aut";
         public static final String SORT_BOOKSHELF = "blg_sort_shelf";
         public static final String SORT_PUBLISHER = "blg_sort_pub";
