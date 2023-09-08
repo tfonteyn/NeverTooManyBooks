@@ -122,6 +122,11 @@ public class BoBTask
 
         final BooklistBuilder builder = new BooklistBuilder(db, style, bookshelf, rebuildMode);
 
+        // Always get the UUID.
+        builder.addDomain(new DomainExpression(DBDefinitions.DOM_BOOK_UUID,
+                                               DBDefinitions.TBL_BOOKS,
+                                               Sort.Unsorted));
+
         // Always add the the book language.
         // It is needed for reordering titles in BooklistGroup rows.
         builder.addDomain(new DomainExpression(DBDefinitions.DOM_BOOK_LANGUAGE,
