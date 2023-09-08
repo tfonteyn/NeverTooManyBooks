@@ -12,6 +12,7 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/fastscroller" />
+            <option value="$PROJECT_DIR$/flowlayoutmanager" />
             <option value="$PROJECT_DIR$/repacked-org-json" />
           </set>
         </option>
