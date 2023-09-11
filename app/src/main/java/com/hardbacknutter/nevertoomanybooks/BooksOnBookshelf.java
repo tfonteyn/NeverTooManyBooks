@@ -555,9 +555,10 @@ public class BooksOnBookshelf
 
         // Custom fastscroller which actually works (as opposed to the builtin android one).
         // Provides an optional overlay.
-        final int overlayType = Prefs.getFastScrollerOverlayType(this);
-        FastScroller.attach(vb.content.list, overlayType);
-
+        if (vb.content.list.getLayoutManager() instanceof LinearLayoutManager) {
+            final int overlayType = Prefs.getFastScrollerOverlayType(this);
+            FastScroller.attach(vb.content.list, overlayType);
+        }
         // attach the scroll-listener
         fabMenu.attach(vb.content.list);
 
