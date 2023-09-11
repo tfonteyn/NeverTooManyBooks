@@ -264,13 +264,10 @@ public class CalibreContentServerReader
                       .getCustomFields().stream()
                       .map(CalibreCustomField::getDbKey)
                       .forEach(dbKey -> {
-                          // URGENT: converting DBKey to label needs to be universal.
                           try {
-                              map.put(MapDBKey.getLabel(context, dbKey),
-                                      new String[]{dbKey});
-
+                              map.put(MapDBKey.getLabel(context, dbKey), new String[]{dbKey});
                           } catch (@NonNull final IllegalArgumentException ignore) {
-                              // will currently never fail, as all custom fields are default
+                              // will currently never fail, as all custom fields are
                               // hardcoded.
                           }
                       });
