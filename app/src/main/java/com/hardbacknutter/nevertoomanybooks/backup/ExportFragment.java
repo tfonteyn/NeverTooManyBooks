@@ -312,7 +312,7 @@ public class ExportFragment
                 final int title = vm.isBackup() ? R.string.info_backup_successful
                                                 : R.string.info_export_successful;
 
-                //URGENT: the report can be large - i.e. the user will need to scroll
+                //FIXME: the report can be large - i.e. the user will need to scroll
                 //noinspection DataFlowIssue
                 final MaterialAlertDialogBuilder dialogBuilder =
                         new MaterialAlertDialogBuilder(getContext())
@@ -334,7 +334,8 @@ public class ExportFragment
                                      destName));
 
                 if (size > 0 && size < MAX_FILE_SIZE_FOR_EMAIL) {
-                    msg.append("\n\n").append(getString(R.string.confirm_email_file));
+                    msg.append("\n\n")
+                       .append(getString(R.string.confirm_email_file));
 
                     dialogBuilder.setNeutralButton(R.string.action_email, (d, w) ->
                             onExportEmail(vm.getUri(), itemList));
