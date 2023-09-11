@@ -117,7 +117,7 @@ public class EditTocEntryDialogFragment
         vb = DialogEditBookTocContentBinding.bind(view.findViewById(R.id.dialog_content));
         setTitle(bookTitle);
 
-        //URGENT: should we provide a TocAdapter to aid manually adding TOC titles?
+        //ENHANCE: should we provide a TocAdapter to aid manually adding TOC titles?
         // What about the publication year?
         vb.title.setText(title);
         autoRemoveError(vb.title, vb.lblTitle);
