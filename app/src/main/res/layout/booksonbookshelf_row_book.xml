@@ -48,12 +48,14 @@
             <ImageView
                 android:id="@id/cover_image_0"
                 style="@style/CoverImage.List"
-                android:layout_width="@dimen/cover_scale_2_width"
-                android:layout_height="@dimen/cover_scale_2_height"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 app:layout_constraintEnd_toStartOf="@id/col1"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="ContentDescription"
+                tools:layout_height="@dimen/tools_cover_height"
+                tools:layout_width="@dimen/tools_cover_width"
                 tools:src="@sample/covers"
                 />
 

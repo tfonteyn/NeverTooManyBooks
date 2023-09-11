@@ -120,10 +120,8 @@
         <item>200dp</item>
     </array>
 
-    <!-- used as defaults in the BoB layout. Will be adjusted according user preferences. -->
-    <dimen name="cover_scale_2_height">120dp</dimen>
-    <dimen name="cover_scale_2_width">72dp</dimen>
-
-    <dimen name="cover_scale_3_height">200dp</dimen>
-    <dimen name="cover_scale_3_width">120dp</dimen>
+    <!-- used as tools defaults in the BoB layout.
+         Actual values are set according to user preferences. -->
+    <dimen name="tools_cover_height">120dp</dimen>
+    <dimen name="tools_cover_width">72dp</dimen>
 </resources>
