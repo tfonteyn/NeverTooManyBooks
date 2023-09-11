@@ -748,7 +748,7 @@
     <string name="confirm_delete_book">This will completely delete the book entitled “%1$s” by %2$s.\n\nAre you sure you want to continue?</string>
     <!-- Param 1: style name -->
     <string name="confirm_delete_style">Delete the style “%1$s”?</string>
-    <!-- URGENT: these 4 could do with a better/clearer message. We're proposing to move the books from nr 1 to nr 2 and delete nr 1. -->
+    <!-- TODO: these 4 could do with a better/clearer message. We're proposing to move the books from nr 1 to nr 2 and delete nr 1. -->
     <string name="confirm_merge_bookshelves">The bookshelf you are modifying already exists. Would you like to merge them?</string>
     <string name="confirm_merge_authors">The author you are modifying already exists. Would you like to merge them?</string>
     <string name="confirm_merge_series">The series you are modifying already exists. Would you like to merge them?</string>
