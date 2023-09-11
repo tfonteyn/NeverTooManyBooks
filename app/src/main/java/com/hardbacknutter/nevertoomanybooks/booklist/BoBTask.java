@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.booklist;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.util.HashSet;
@@ -39,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.FtsMatchFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.NumberListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PEntityListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.MapDBKey;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.FtsDaoHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -87,6 +88,197 @@ public class BoBTask
         super(R.id.TASK_ID_BOOKLIST_BUILDER, TAG);
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
             LoggerFactory.getLogger().d(TAG, "NEW TASK_ID_BOOKLIST_BUILDER");
+        }
+    }
+
+    @VisibleForTesting
+    @NonNull
+    public static List<DomainExpression> createDomainExpressions(@NonNull final String dbKey,
+                                                                 @NonNull final Sort sort,
+                                                                 @NonNull final Style style) {
+
+        if (DBKey.COVER[0].equals(dbKey)
+            || DBKey.COVER[1].equals(dbKey)) {
+            // We need the (unsorted duh!) UUID for the book to get covers
+            return List.of(new DomainExpression(
+                    DBDefinitions.DOM_BOOK_UUID,
+                    DBDefinitions.TBL_BOOKS,
+                    Sort.Unsorted));
+        } else {
+            switch (dbKey) {
+                case DBKey.BOOK_CONDITION: {
+                    return List.of(
+                            new DomainExpression(
+                                    DBDefinitions.DOM_BOOK_CONDITION,
+                                    DBDefinitions.TBL_BOOKS,
+                                    sort)
+                    );
+                }
+                case DBKey.BOOK_ISBN: {
+                    return List.of(
+                            new DomainExpression(DBDefinitions.DOM_BOOK_ISBN,
+                                                 DBDefinitions.TBL_BOOKS,
+                                                 Sort.Unsorted)
+                    );
+                }
+                case DBKey.BOOK_PUBLICATION__DATE: {
+                    return List.of(
+                            new DomainExpression(
+                                    DBDefinitions.DOM_BOOK_DATE_PUBLISHED,
+                                    DBDefinitions.TBL_BOOKS,
+                                    sort)
+                    );
+                }
+                case DBKey.EDITION__BITMASK: {
+                    return List.of(
+                            new DomainExpression(
+                                    DBDefinitions.DOM_BOOK_EDITION,
+                                    DBDefinitions.TBL_BOOKS,
+                                    sort)
+                    );
+                }
+                case DBKey.FK_AUTHOR: {
+                    return List.of(
+                            // primary author only
+                            new DomainExpression(
+                                    DBDefinitions.DOM_AUTHOR_FORMATTED_FAMILY_FIRST,
+                                    AuthorDaoImpl.getDisplayDomainExpression(
+                                            style.isShowAuthorByGivenName()),
+                                    sort)
+                    );
+                }
+                case DBKey.FK_BOOKSHELF: {
+                    return List.of(
+                            // Collect a CSV list of the bookshelves the book is on.
+                            // It is ALWAYS unsorted, as the list is build by SQLite internals
+                            // and the order returned is arbitrary.
+                            new DomainExpression(
+                                    DBDefinitions.DOM_BOOKSHELF_NAME_CSV,
+                                    DBDefinitions.EXP_BOOKSHELF_NAME_CSV,
+                                    Sort.Unsorted)
+                    );
+                }
+                case DBKey.FK_PUBLISHER: {
+                    return List.of(
+                            // primary publisher only
+                            new DomainExpression(
+                                    DBDefinitions.DOM_PUBLISHER_NAME,
+                                    DBDefinitions.TBL_PUBLISHERS,
+                                    sort)
+                    );
+                }
+                case DBKey.FK_SERIES: {
+                    return List.of(
+                            // primary series only
+                            new DomainExpression(
+                                    DBDefinitions.DOM_SERIES_TITLE,
+                                    DBDefinitions.TBL_SERIES,
+                                    sort),
+                            new DomainExpression(
+                                    DBDefinitions.DOM_BOOK_NUM_IN_SERIES,
+                                    DBDefinitions.TBL_BOOK_SERIES,
+                                    sort)
+                    );
+                }
+                case DBKey.FORMAT: {
+                    return List.of(
+                            new DomainExpression(
+                                    DBDefinitions.DOM_BOOK_FORMAT,
+                                    DBDefinitions.TBL_BOOKS,
+                                    sort)
+                    );
+                }
+                case DBKey.LANGUAGE: {
+                    return List.of(
+                            new DomainExpression(DBDefinitions.DOM_BOOK_LANGUAGE,
+                                                 DBDefinitions.TBL_BOOKS,
+                                                 Sort.Unsorted)
+                    );
+                }
+                case DBKey.LOANEE_NAME: {
+                    return List.of(
+                            // Used to display/hide the 'lend' icon for each book.
+                            new DomainExpression(
+                                    DBDefinitions.DOM_LOANEE,
+                                    DBDefinitions.TBL_BOOK_LOANEE,
+                                    sort)
+                    );
+                }
+                case DBKey.LOCATION: {
+                    return List.of(
+                            new DomainExpression(
+                                    DBDefinitions.DOM_BOOK_LOCATION,
+                                    DBDefinitions.TBL_BOOKS,
+                                    sort)
+                    );
+                }
+                case DBKey.PAGE_COUNT: {
+                    return List.of(
+                            new DomainExpression(
+                                    DBDefinitions.DOM_BOOK_PAGES,
+                                    DBDefinitions.TBL_BOOKS,
+                                    sort)
+                    );
+                }
+                case DBKey.RATING: {
+                    return List.of(
+                            new DomainExpression(
+                                    DBDefinitions.DOM_BOOK_RATING,
+                                    DBDefinitions.TBL_BOOKS,
+                                    sort)
+                    );
+                }
+                case DBKey.READ__BOOL: {
+                    return List.of(
+                            new DomainExpression(DBDefinitions.DOM_BOOK_READ,
+                                                 DBDefinitions.TBL_BOOKS,
+                                                 Sort.Unsorted)
+                    );
+                }
+                case DBKey.SIGNED__BOOL: {
+                    return List.of(
+                            new DomainExpression(
+                                    DBDefinitions.DOM_BOOK_SIGNED,
+                                    DBDefinitions.TBL_BOOKS,
+                                    sort)
+                    );
+                }
+                case DBKey.TITLE: {
+                    return List.of(
+                            // Title for displaying; do NOT sort on it
+                            // Example: "The Dream Master"
+                            new DomainExpression(
+                                    DBDefinitions.DOM_TITLE,
+                                    DBDefinitions.TBL_BOOKS,
+                                    Sort.Unsorted),
+                            // Title for sorting
+                            // Example: "dreammasterthe" OR "thedreammaster"
+                            // i.e. depending on user preference, the first format
+                            // consists of the original title stripped of whitespace and any
+                            // special characters, and with the article/prefix moved to the end.
+                            // The second format leaves the article/prefix in its original
+                            // location.
+                            // The choice between the two formats is a user preference which,
+                            // when changed, updates ALL rows in the database with the
+                            // newly formatted title.
+                            new DomainExpression(
+                                    DBDefinitions.DOM_TITLE_OB,
+                                    DBDefinitions.TBL_BOOKS,
+                                    sort)
+                    );
+                }
+                case DBKey.TITLE_ORIGINAL_LANG: {
+                    return List.of(
+                            new DomainExpression(
+                                    DBDefinitions.DOM_TITLE_ORIGINAL_LANG,
+                                    DBDefinitions.TBL_BOOKS,
+                                    sort)
+                    );
+                }
+
+                default:
+                    throw new IllegalArgumentException("DBKey missing: " + dbKey);
+            }
         }
     }
 
@@ -152,8 +344,8 @@ public class BoBTask
         style.getBookLevelFieldsOrderBy().entrySet()
              .stream()
              .filter(field -> style.isShowField(Style.Screen.List, field.getKey()))
-             .map(field -> MapDBKey.createDomainExpressions(field.getKey(), field.getValue(),
-                                                            style))
+             .map(field -> createDomainExpressions(field.getKey(), field.getValue(),
+                                                   style))
              .flatMap(List::stream)
              .forEach(builder::addDomain);
 

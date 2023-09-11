@@ -18,67 +18,31 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.booklist.style;
+package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import java.util.Optional;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
+import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class MapDBKeyTest
+public class BoBTaskTest
         extends BaseDBTest {
 
     /**
-     * The fields globally supporting visibility
-     * must all have a human readable label.
-     */
-    @Test
-    public void visibilityKeysHaveLabels() {
-        final Set<String> keys = new FieldVisibility().getKeys(true);
-        assertFalse(keys.isEmpty());
-
-        final long labelCount = keys
-                .stream()
-                .map(key -> MapDBKey.getLabel(context, key))
-                .count();
-
-        assertEquals(labelCount, keys.size());
-    }
-
-    /**
-     * The style BookLevelFields supporting sorting
-     * must all have a human readable label.
-     */
-    @Test
-    public void sortableBookLevelKeysHaveLabels() {
-        final StylesHelper helper = serviceLocator.getStyles();
-        final Optional<Style> s1 = helper.getStyle(BuiltinStyle.UUID_FOR_TESTING_ONLY);
-        assertTrue(s1.isPresent());
-
-        final Set<String> keys = s1.get().getBookLevelFieldsOrderBy().keySet();
-        assertFalse(keys.isEmpty());
-
-        final long labelCount = keys
-                .stream()
-                .map(key -> MapDBKey.getLabel(context, key))
-                .count();
-
-        assertEquals(labelCount, keys.size());
-    }
-
-
-    /**
      * The style Style.Screen.List fields supporting visibility
-     * must all have a valid domain name.
+     * must all have DomainExpressions.
      */
     @Test
-    public void visibilityKeysHaveDomainNames() {
+    public void visibilityKeysHaveDomainExpressions() {
         final StylesHelper helper = serviceLocator.getStyles();
         final Optional<Style> s1 = helper.getStyle(BuiltinStyle.UUID_FOR_TESTING_ONLY);
         assertTrue(s1.isPresent());
@@ -86,20 +50,23 @@ public class MapDBKeyTest
         final Set<String> keys = s1.get().getFieldVisibility(Style.Screen.List).getKeys(true);
         assertFalse(keys.isEmpty());
 
-        final long domainCount = keys
+        final long expressionCount = keys
                 .stream()
-                .map(MapDBKey::getDomainName)
+                .map(key -> BoBTask.createDomainExpressions(key, Sort.Unsorted,
+                                                            s1.get()))
                 .count();
 
-        assertEquals(domainCount, keys.size());
+        // some keys generate two expressions, don't bother checking
+        // exact number as we're testing on NOT throwing an exception for key not found
+        assertTrue(expressionCount > 0);
     }
 
     /**
      * The style Style.Screen.List fields supporting sorting
-     * must all have a valid domain name.
+     * must all have DomainExpressions.
      */
     @Test
-    public void sortableBookLevelKeysHaveDomainNames() {
+    public void sortableBookLevelKeysHaveDomainExpressions() {
         final StylesHelper helper = serviceLocator.getStyles();
         final Optional<Style> s1 = helper.getStyle(BuiltinStyle.UUID_FOR_TESTING_ONLY);
         assertTrue(s1.isPresent());
@@ -107,13 +74,14 @@ public class MapDBKeyTest
         final Set<String> keys = s1.get().getBookLevelFieldsOrderBy().keySet();
         assertFalse(keys.isEmpty());
 
-        final long domainCount = keys
+        final long expressionCount = keys
                 .stream()
-                .map(MapDBKey::getDomainName)
+                .map(key -> BoBTask.createDomainExpressions(key, Sort.Unsorted,
+                                                            s1.get()))
                 .count();
 
-        assertEquals(domainCount, keys.size());
+        // some keys generate two expressions, don't bother checking
+        // exact number as we're testing on NOT throwing an exception for key not found
+        assertTrue(expressionCount > 0);
     }
-
-
 }
