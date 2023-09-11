@@ -91,10 +91,11 @@ public class GenericStringHolder
     /**
      * Constructor.
      *
-     * @param itemView the view specific for this holder
-     * @param style    to use
-     * @param groupId  the group this holder represents
-     * @param level    the level in the Booklist tree
+     * @param itemView  the view specific for this holder
+     * @param style     to use
+     * @param groupId   the group this holder represents
+     * @param level     the level in the Booklist tree
+     * @param formatter to use
      */
     GenericStringHolder(@NonNull final View itemView,
                         @NonNull final Style style,
