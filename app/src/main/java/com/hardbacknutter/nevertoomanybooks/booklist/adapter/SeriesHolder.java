@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,9 +44,10 @@ public class SeriesHolder
     /**
      * Constructor.
      *
-     * @param itemView the view specific for this holder
-     * @param style    to use
-     * @param level    the level in the Booklist tree
+     * @param itemView  the view specific for this holder
+     * @param style     to use
+     * @param level     the level in the Booklist tree
+     * @param formatter to use
      */
     SeriesHolder(@NonNull final View itemView,
                  @NonNull final Style style,
