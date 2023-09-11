@@ -27,7 +27,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
  * Encapsulate the Book fields which can be shown on the Book-list screen
  * as defined <strong>by the current style</strong>.
  * <p>
- * URGENT: merge with BaseStyle#bookLevelFieldsOrderBy
+ * TODO: merge with BaseStyle#bookLevelFieldsOrderBy
  * <p>
  * Keys must be kept in sync with {@link StyleDataStore} preference keys
  * and "res/xml/preferences_style_book_details.xml".
