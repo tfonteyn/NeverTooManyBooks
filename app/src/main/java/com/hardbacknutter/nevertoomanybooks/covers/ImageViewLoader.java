@@ -61,7 +61,8 @@ public class ImageViewLoader {
     @NonNull
     private final ImageView.ScaleType scaleType;
 
-    private final boolean enforceMaxSize;
+    @NonNull
+    private final MaxSize maxSize;
     private final Transformation scalableImageDecoder;
 
     /**
@@ -75,24 +76,26 @@ public class ImageViewLoader {
     public ImageViewLoader(@NonNull final Executor executor,
                            @Px final int width,
                            @Px final int height) {
-        this(executor, ImageView.ScaleType.FIT_START, width, height, true);
+        this(executor, width, height, ImageView.ScaleType.FIT_START, MaxSize.Enforce);
     }
 
     /**
      * Constructor.
      *
-     * @param executor       to use
-     * @param scaleType      to use for images (ignored for placeholders)
-     * @param width          Desired width of the image
-     * @param height         Desired height of the image
-     * @param enforceMaxSize if {@code true}, then use the desired size as the maximum size
+     * @param executor  to use
+     * @param width     Desired width of the image
+     * @param height    Desired height of the image
+     * @param scaleType to use for images
+     *                  (ignored for placeholders)
+     * @param maxSize   how to adjust the size, see {@link MaxSize}
+     *                  (ignored for placeholders)
      */
     @UiThread
     public ImageViewLoader(@NonNull final Executor executor,
-                           @NonNull final ImageView.ScaleType scaleType,
                            @Px final int width,
                            @Px final int height,
-                           final boolean enforceMaxSize) {
+                           @NonNull final ImageView.ScaleType scaleType,
+                           @NonNull final MaxSize maxSize) {
 
         handler = new Handler(Looper.getMainLooper());
 
@@ -101,7 +104,7 @@ public class ImageViewLoader {
         this.scaleType = scaleType;
         this.width = width;
         this.height = height;
-        this.enforceMaxSize = enforceMaxSize;
+        this.maxSize = maxSize;
 
         scalableImageDecoder = new Transformation()
                 .setScale(this.width, this.height);
@@ -116,14 +119,21 @@ public class ImageViewLoader {
     @UiThread
     public void placeholder(@NonNull final ImageView imageView,
                             @DrawableRes final int drawable) {
-        final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
-        lp.width = width + imageView.getPaddingLeft() + imageView.getPaddingRight();
-        lp.height = height + imageView.getPaddingTop() + imageView.getPaddingBottom();
-        imageView.setLayoutParams(lp);
 
-        imageView.setAdjustViewBounds(true);
+        // The maximum ALLOWABLE size
+        final int maxWidth = width + imageView.getPaddingLeft() + imageView.getPaddingRight();
+        final int maxHeight = height + imageView.getPaddingTop() + imageView.getPaddingBottom();
+
+        final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
+        lp.width = maxWidth;
+        lp.height = maxHeight;
+        imageView.setLayoutParams(lp);
         imageView.setMaxHeight(Integer.MAX_VALUE);
         imageView.setMaxWidth(Integer.MAX_VALUE);
+
+        // essential, so lets not rely on it having been set in xml
+        imageView.setAdjustViewBounds(true);
+
         imageView.setScaleType(ImageView.ScaleType.CENTER);
         imageView.setImageResource(drawable);
     }
@@ -141,35 +151,52 @@ public class ImageViewLoader {
     public void fromBitmap(@NonNull final ImageView imageView,
                            @NonNull final Bitmap bitmap) {
 
-        final int tmpWidth = width + imageView.getPaddingLeft() + imageView.getPaddingRight();
-        final int tmpHeight = height + imageView.getPaddingTop() + imageView.getPaddingBottom();
+        // The maximum ALLOWABLE size
+        final int maxWidth = width + imageView.getPaddingLeft() + imageView.getPaddingRight();
+        final int maxHeight = height + imageView.getPaddingTop() + imageView.getPaddingBottom();
 
+        switch (maxSize) {
+            case Enforce:
+                adjustLayoutParameters(imageView, bitmap, maxWidth, maxHeight);
+                imageView.setMaxWidth(maxWidth);
+                imageView.setMaxHeight(maxHeight);
+                break;
+
+            case Unlimited:
+                adjustLayoutParameters(imageView, bitmap, maxWidth, maxHeight);
+                imageView.setMaxWidth(Integer.MAX_VALUE);
+                imageView.setMaxHeight(Integer.MAX_VALUE);
+                break;
+
+            case Constrained:
+            default:
+                // use original constraints
+        }
+
+        // essential, so lets not rely on it having been set in xml
+        imageView.setAdjustViewBounds(true);
+
+        imageView.setScaleType(scaleType);
+        imageView.setImageBitmap(bitmap);
+    }
+
+    private void adjustLayoutParameters(@NonNull final ImageView imageView,
+                                        @NonNull final Bitmap bitmap,
+                                        final int maxWidth,
+                                        final int maxHeight) {
         // Modifying the layout parameters is mainly for zooming,
         // but is sometimes (why?) needed elsewhere.
         final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
         if (bitmap.getWidth() < bitmap.getHeight()) {
             // image is portrait; limit the height
             lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            lp.height = tmpHeight;
+            lp.height = maxHeight;
         } else {
             // image is landscape; limit the width
-            lp.width = tmpWidth;
+            lp.width = maxWidth;
             lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
         }
         imageView.setLayoutParams(lp);
-
-        // essential, so lets not rely on it having been set in xml
-        imageView.setAdjustViewBounds(true);
-
-        if (enforceMaxSize) {
-            imageView.setMaxHeight(tmpHeight);
-            imageView.setMaxWidth(tmpWidth);
-        } else {
-            imageView.setMaxHeight(Integer.MAX_VALUE);
-            imageView.setMaxWidth(Integer.MAX_VALUE);
-        }
-        imageView.setScaleType(scaleType);
-        imageView.setImageBitmap(bitmap);
     }
 
     /**
@@ -215,5 +242,14 @@ public class ImageViewLoader {
                 }
             });
         });
+    }
+
+    public enum MaxSize {
+        /** Enforce the desired size as the maximum size. */
+        Enforce,
+        /** Let the system maximize the view. */
+        Unlimited,
+        /** Don't change, let the xml constraint settings rule. */
+        Constrained
     }
 }
