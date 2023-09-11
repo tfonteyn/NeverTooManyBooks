@@ -348,6 +348,8 @@ public final class BuiltinStyle
 
     public static class Definition {
 
+        private static final int DEFAULT_GRID_SPAN_COUNT = 3;
+
         /** The id is always a NEGATIVE value. */
         private final int id;
         @NonNull
@@ -356,6 +358,11 @@ public final class BuiltinStyle
         private final int[] groupIds;
         @StringRes
         private final int labelResId;
+
+        @NonNull
+        private final Layout layout;
+
+        private final int gridSpanCount;
 
         private final boolean deprecated;
 
@@ -371,11 +378,25 @@ public final class BuiltinStyle
                    @NonNull final String uuid,
                    @StringRes final int labelResId,
                    @NonNull final int[] groupIds) {
+            this(id, false, uuid, labelResId, groupIds,
+                 Layout.List, DEFAULT_GRID_SPAN_COUNT);
+        }
+
+        Definition(final int id,
+                   final boolean deprecated,
+                   @NonNull final String uuid,
+                   @StringRes final int labelResId,
+                   @NonNull final int[] groupIds,
+                   @NonNull final Layout layout,
+                   final int gridSpanCount) {
             this.id = id;
             this.uuid = uuid;
             this.labelResId = labelResId;
             this.deprecated = deprecated;
             this.groupIds = groupIds;
+
+            this.layout = layout;
+            this.gridSpanCount = gridSpanCount;
         }
 
         public int getId() {
@@ -385,6 +406,15 @@ public final class BuiltinStyle
         @NonNull
         public String getUuid() {
             return uuid;
+        }
+
+        @NonNull
+        public Layout getLayout() {
+            return layout;
+        }
+
+        public int getGridSpanCount() {
+            return gridSpanCount;
         }
     }
 }

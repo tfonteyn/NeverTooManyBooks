@@ -22,11 +22,9 @@ package com.hardbacknutter.nevertoomanybooks.booklist.adapter;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.util.TypedValue;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -35,10 +33,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
-import androidx.fragment.app.FragmentActivity;
 
-import java.io.File;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -55,28 +50,17 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfRowBookBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.PagesFormatter;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 
 /**
  * ViewHolder for a {@link BooklistGroup#BOOK} row.
  */
 public class BookHolder
-        extends RowViewHolder
-        implements BindableViewHolder<DataHolder> {
+        extends BaseBookHolder {
 
-    /**
-     * 0.6 is based on a standard paperback 17.5cm x 10.6cm
-     * -> width = 0.6 * maxHeight.
-     *
-     * @see #coverLongestSide
-     */
-    private static final float HW_RATIO = 0.6f;
     /**
      * The length of a series number is considered short if it's 4 character or less.
      * E.g. "1.12" is considered short and "1|omnibus" is long.
@@ -89,13 +73,10 @@ public class BookHolder
 
     @NonNull
     private final BooksonbookshelfRowBookBinding vb;
-    private final int coverLongestSide;
-    private final boolean imageCachingEnabled;
+
     /** caching the book condition strings. */
     @NonNull
     private final String[] conditionDescriptions;
-    @NonNull
-    private final Style style;
     @NonNull
     private final RealNumberParser realNumberParser;
     /** Only active when running in debug mode; displays the "position/rowId" for a book. */
@@ -124,15 +105,10 @@ public class BookHolder
                @NonNull final Style style,
                @NonNull final RealNumberParser realNumberParser,
                @Dimension final int coverLongestSide) {
-        super(itemView);
-        this.style = style;
+        super(itemView, style, coverLongestSide);
         this.realNumberParser = realNumberParser;
-        this.coverLongestSide = coverLongestSide;
 
         final Context context = itemView.getContext();
-
-        imageCachingEnabled = ServiceLocator.getInstance().getCoverStorage()
-                                            .isImageCachingEnabled();
 
         final Resources res = context.getResources();
         conditionDescriptions = res.getStringArray(R.array.conditions_book);
@@ -141,7 +117,7 @@ public class BookHolder
 
         a_bracket_b_bracket = context.getString(R.string.a_bracket_b_bracket);
 
-        if (this.style.isShowField(Style.Screen.List, DBKey.COVER[0])) {
+        if (getStyle().isShowField(Style.Screen.List, DBKey.COVER[0])) {
             // Do not go overkill here by adding a full-blown CoverHandler.
             // We only provide zooming by clicking on the image.
             vb.coverImage0.setOnClickListener(this::onZoomCover);
@@ -178,30 +154,16 @@ public class BookHolder
         }
     }
 
-    /**
-     * Zoom the given cover.
-     *
-     * @param coverView passed in to allow for future expansion
-     */
-    private void onZoomCover(@NonNull final View coverView) {
-        final String uuid = (String) coverView.getTag(R.id.TAG_THUMBNAIL_UUID);
-        ServiceLocator.getInstance().getCoverStorage().getPersistedFile(uuid, 0).ifPresent(
-                file -> {
-                    final FragmentActivity activity = (FragmentActivity) coverView.getContext();
-                    ZoomedImageDialogFragment.launch(activity.getSupportFragmentManager(), file);
-                });
-    }
-
     @Override
     public void onBind(@NonNull final DataHolder rowData) {
         if (use == null) {
             // init once
-            use = style.getFieldVisibility(Style.Screen.List)
-                       .getKeys(false)
-                       .stream()
-                       // Sanity check making sure the domain is present
-                       .filter(key -> rowData.contains(MapDBKey.getDomainName(key)))
-                       .collect(Collectors.toSet());
+            use = getStyle().getFieldVisibility(Style.Screen.List)
+                            .getKeys(false)
+                            .stream()
+                            // Sanity check making sure the domain is present
+                            .filter(key -> rowData.contains(MapDBKey.getDomainName(key)))
+                            .collect(Collectors.toSet());
 
             if (use.contains(DBKey.PAGE_COUNT)) {
                 pagesFormatter = new PagesFormatter();
@@ -219,7 +181,8 @@ public class BookHolder
          * USE SAME ORDER AS BookLevelFieldVisibility FOR EASE OF UPDATES
          */
         if (use.contains(DBKey.COVER[0])) {
-            setImageView(rowData.getString(DBKey.BOOK_UUID));
+            //noinspection DataFlowIssue
+            setImageView(vb.coverImage0, imageLoader, rowData.getString(DBKey.BOOK_UUID));
         }
 
         if (use.contains(DBKey.FK_AUTHOR)) {
@@ -228,7 +191,7 @@ public class BookHolder
         }
 
         if (use.contains(DBKey.FK_SERIES)) {
-            if (this.style.hasGroup(BooklistGroup.SERIES)) {
+            if (getStyle().hasGroup(BooklistGroup.SERIES)) {
                 vb.seriesTitle.setVisibility(View.GONE);
                 showOrHideSeriesNumber(rowData);
             } else {
@@ -442,63 +405,6 @@ public class BookHolder
             showOrHide(vb.publisher, date);
         } else {
             vb.publisher.setVisibility(View.GONE);
-        }
-    }
-
-    /**
-     * Load the image owned by the UUID/cIdx into the destination ImageView.
-     * Handles checking & storing in the cache.
-     * <p>
-     * Images and placeholder will always be scaled to a fixed size.
-     *
-     * @param uuid UUID of the book
-     */
-    private void setImageView(@NonNull final String uuid) {
-        // store the uuid for use in the OnClickListener
-        vb.coverImage0.setTag(R.id.TAG_THUMBNAIL_UUID, uuid);
-
-        // 1. If caching is used, check it.
-        if (imageCachingEnabled) {
-            final Bitmap bitmap = ServiceLocator.getInstance().getCoverStorage()
-                                                .getCachedBitmap(uuid, 0,
-                                                                 coverLongestSide,
-                                                                 coverLongestSide);
-            if (bitmap != null) {
-                //noinspection DataFlowIssue
-                imageLoader.fromBitmap(vb.coverImage0, bitmap);
-                return;
-            }
-        }
-
-        // 2. Cache did not have it, or we were not allowed to check.
-        final Optional<File> file = ServiceLocator.getInstance().getCoverStorage()
-                                                  .getPersistedFile(uuid, 0);
-        // Check if the file exists; if it does not...
-        if (file.isEmpty()) {
-            // leave the space blank, but preserve the width BASED on the coverLongestSide!
-            final ViewGroup.LayoutParams lp = vb.coverImage0.getLayoutParams();
-            lp.width = (int) (coverLongestSide * HW_RATIO);
-            lp.height = 0;
-            vb.coverImage0.setLayoutParams(lp);
-            vb.coverImage0.setImageDrawable(null);
-            return;
-        }
-
-        // Once we get here, we know the file is valid
-        if (imageCachingEnabled) {
-            // 1. Gets the image from the file system and display it.
-            // 2. Start a subsequent task to send it to the cache.
-            //noinspection DataFlowIssue
-            imageLoader.fromFile(vb.coverImage0, file.get(), bitmap -> {
-                if (bitmap != null) {
-                    ServiceLocator.getInstance().getCoverStorage().saveToCache(
-                            uuid, 0, bitmap, coverLongestSide, coverLongestSide);
-                }
-            });
-        } else {
-            // Cache not used: Get the image from the file system and display it.
-            //noinspection DataFlowIssue
-            imageLoader.fromFile(vb.coverImage0, file.get(), null);
         }
     }
 }

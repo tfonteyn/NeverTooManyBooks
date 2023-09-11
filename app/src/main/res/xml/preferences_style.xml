@@ -73,6 +73,25 @@
             android:title="@string/pt_bob_book_level_sorting"
             />
 
+        <ListPreference
+            android:defaultValue="0"
+            android:icon="@drawable/ic_baseline_grid_view_24"
+            android:key="style.booklist.layout"
+            android:title="@string/pt_layout"
+            android:entries="@array/pe_bob_layout"
+            android:entryValues="@array/pv_bob_layout"
+            />
+
+        <SeekBarPreference
+            android:defaultValue="3"
+            android:icon="@drawable/ic_baseline_grid_view_24"
+            android:key="style.booklist.grid.spancount"
+            android:max="4"
+            android:title="@string/pt_bob_grid_spancount"
+            app:min="1"
+            app:showSeekBarValue="true"
+            />
+
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleBooklistBookLevelFieldsFragment"
             android:icon="@drawable/ic_baseline_details_24"

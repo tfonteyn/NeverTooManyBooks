@@ -119,6 +119,11 @@ public class StyleCoder
 
             encodeGroups(userStyle, dest);
 
+            dest.put(StyleDataStore.PK_LAYOUT,
+                     userStyle.getLayout().getId());
+            dest.put(StyleDataStore.PK_GRID_SPAN_COUNT,
+                     userStyle.getGridSpanCount());
+
             dest.put(StyleDataStore.PK_EXPANSION_LEVEL,
                      userStyle.getExpansionLevel());
             dest.put(StyleDataStore.PK_GROUP_ROW_HEIGHT,
@@ -211,6 +216,15 @@ public class StyleCoder
 
                 if (source.has(StyleDataStore.PK_GROUPS)) {
                     decodeGroups(userStyle, source);
+                }
+
+                if (source.has(StyleDataStore.PK_LAYOUT)) {
+                    userStyle.setLayout(Style.Layout.byId(
+                            source.getInt(StyleDataStore.PK_LAYOUT)));
+                }
+                if (source.has(StyleDataStore.PK_GRID_SPAN_COUNT)) {
+                    userStyle.setGridSpanCount(
+                            source.getInt(StyleDataStore.PK_GRID_SPAN_COUNT));
                 }
 
                 if (source.has(StyleDataStore.PK_EXPANSION_LEVEL)) {

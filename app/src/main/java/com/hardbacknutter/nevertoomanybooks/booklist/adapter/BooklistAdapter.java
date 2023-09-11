@@ -264,7 +264,11 @@ public class BooklistAdapter
         final int layoutId;
         switch (groupId) {
             case BooklistGroup.BOOK:
-                layoutId = R.layout.booksonbookshelf_row_book;
+                if (style.getLayout() == Style.Layout.List) {
+                    layoutId = R.layout.booksonbookshelf_row_book;
+                } else {
+                    layoutId = R.layout.booksonbookshelf_grid_book;
+                }
                 break;
 
             case BooklistGroup.RATING:
@@ -312,9 +316,13 @@ public class BooklistAdapter
         // NEWTHINGS: BooklistGroup - add a new holder type if needed
         switch (groupId) {
             case BooklistGroup.BOOK:
-                holder = new BookHolder(itemView, style,
-                                        realNumberParser,
-                                        coverLongestSide);
+                if (style.getLayout() == Style.Layout.List) {
+                    holder = new BookHolder(itemView, style,
+                                            realNumberParser,
+                                            coverLongestSide);
+                } else {
+                    holder = new BookGridHolder(itemView, style, coverLongestSide);
+                }
                 break;
 
             case BooklistGroup.AUTHOR:

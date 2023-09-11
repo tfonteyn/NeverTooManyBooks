@@ -136,15 +136,25 @@ public final class DBKey {
     public static final String AUTHOR_IS_COMPLETE = "author_complete";
 
 
-    /** Aliases for CASE expressions. */
+    /* Aliases for CASE expressions. */
+
+    /**
+     * The first/family name order is determined in the SQL statement.
+     * Hence, reading the data from the cursor is <strong>always</strong>
+     * done using this key.
+     */
     public static final String AUTHOR_FORMATTED = "author_formatted";
+    /**
+     * Only used for the special case.
+     * {@link com.hardbacknutter.nevertoomanybooks.search.SearchBookByTextFragment}
+     */
     public static final String AUTHOR_FORMATTED_GIVEN_FIRST = "author_formatted_given_first";
 
-    /** {@link DBDefinitions#TBL_BOOK_AUTHOR} */
+    /** {@link DBDefinitions#TBL_BOOK_AUTHOR}. */
     public static final String AUTHOR_TYPE__BITMASK = "author_type";
     public static final String BOOK_AUTHOR_POSITION = "author_position";
 
-    /** {@link DBDefinitions#TBL_PSEUDONYM_AUTHOR} */
+    /** {@link DBDefinitions#TBL_PSEUDONYM_AUTHOR}. */
     public static final String AUTHOR_PSEUDONYM = "pseudonym";
     public static final String AUTHOR_REAL_AUTHOR = "real_author";
 
@@ -226,6 +236,8 @@ public final class DBKey {
     public static final String STYLE_IS_BUILTIN = "builtin";
     public static final String STYLE_IS_PREFERRED = "preferred";
     public static final String STYLE_MENU_POSITION = "menu_order";
+    public static final String STYLE_LAYOUT = "layout";
+    public static final String STYLE_GRID_SPAN_COUNT = "grid_span";
     public static final String STYLE_EXP_LEVEL = "exp_level";
     public static final String STYLE_ROW_USES_PREF_HEIGHT = "row_pref_height";
     public static final String STYLE_AUTHOR_SORT_BY_GIVEN_NAME = "author_sort_gn";

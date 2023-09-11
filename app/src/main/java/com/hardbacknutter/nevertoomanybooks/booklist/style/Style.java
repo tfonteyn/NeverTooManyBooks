@@ -145,6 +145,11 @@ public interface Style {
     @NonNull
     String getUuid();
 
+    @NonNull
+    Layout getLayout();
+
+    int getGridSpanCount();
+
     /**
      * Get the menu position of this style as sorted by the user.
      *
@@ -354,6 +359,31 @@ public interface Style {
      */
     @NonNull
     String getGroupsSummaryText(@NonNull Context context);
+
+    enum Layout {
+        /** Original list-style. */
+        List(0),
+        /** New for 5.0 release. */
+        Grid(1);
+
+        private final int id;
+
+        Layout(final int id) {
+            this.id = id;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        @NonNull
+        public static Layout byId(final int id) {
+            if (id == 0) {
+                return List;
+            }
+            return Grid;
+        }
+    }
 
     /**
      * Which visibility options to use from the user preferences/style.

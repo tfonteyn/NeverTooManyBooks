@@ -57,6 +57,11 @@ public class StyleDataStore
             "style.booklist.group.authors.primary.type";
 
 
+    /** List(0) or Grid(1) layout for BoB. */
+    public static final String PK_LAYOUT = "style.booklist.layout";
+    /** If the BoB layout is Grid, the span-count. */
+    public static final String PK_GRID_SPAN_COUNT = "style.booklist.grid.spancount";
+
     /** The default expansion level for the groups. */
     public static final String PK_EXPANSION_LEVEL = "style.booklist.levels.default";
 
@@ -221,6 +226,10 @@ public class StyleDataStore
     public void putInt(@NonNull final String key,
                        final int value) {
         switch (key) {
+            case PK_GRID_SPAN_COUNT:
+                style.setGridSpanCount(value);
+                break;
+
             case PK_EXPANSION_LEVEL:
                 style.setExpansionLevel(value);
                 break;
@@ -243,6 +252,9 @@ public class StyleDataStore
     public int getInt(@NonNull final String key,
                       final int defValue) {
         switch (key) {
+            case PK_GRID_SPAN_COUNT:
+                return style.getGridSpanCount();
+
             case PK_EXPANSION_LEVEL:
                 return style.getExpansionLevel();
 
@@ -337,11 +349,19 @@ public class StyleDataStore
     @Override
     public void putString(@NonNull final String key,
                           @Nullable final String value) {
-        if (PK_NAME.equals(key)) {
-            //noinspection DataFlowIssue
-            style.setName(value);
-        } else {
-            throw new IllegalArgumentException(key);
+        switch (key) {
+            case PK_NAME:
+                //noinspection DataFlowIssue
+                style.setName(value);
+                break;
+
+            case PK_LAYOUT:
+                //noinspection DataFlowIssue
+                style.setLayout(Style.Layout.byId(Integer.parseInt(value)));
+                break;
+
+            default:
+                throw new IllegalArgumentException(key);
         }
         setModified();
     }
@@ -350,8 +370,12 @@ public class StyleDataStore
     @Override
     public String getString(@NonNull final String key,
                             @Nullable final String defValue) {
-        if (PK_NAME.equals(key)) {
-            return style.getName();
+        switch (key) {
+            case PK_NAME:
+                return style.getName();
+
+            case PK_LAYOUT:
+                return String.valueOf(style.getLayout().getId());
         }
         throw new IllegalArgumentException(key);
     }

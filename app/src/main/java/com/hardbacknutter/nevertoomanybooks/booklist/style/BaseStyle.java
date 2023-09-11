@@ -126,6 +126,12 @@ public abstract class BaseStyle
      * Always NEGATIVE (e.g. <0 ) for a build-in style
      */
     private long id;
+
+    @NonNull
+    private Layout layout = Layout.List;
+
+    private int gridSpanCount = 3;
+
     /**
      * The menu position of this style as sorted by the user.
      * Preferred styles will be at the top.
@@ -181,7 +187,6 @@ public abstract class BaseStyle
         this.uuid = uuid;
         this.id = id;
 
-
         bookLevelFieldVisibility = new BookLevelFieldVisibility();
 
         detailsFieldVisibility = new BookDetailsFieldVisibility();
@@ -206,6 +211,9 @@ public abstract class BaseStyle
 
         preferred = style.isPreferred();
         menuPosition = style.getMenuPosition();
+
+        layout = style.layout;
+        gridSpanCount = style.gridSpanCount;
 
         expansionLevel = style.getExpansionLevel();
         groupRowUsesPreferredHeight = style.isGroupRowUsesPreferredHeight();
@@ -311,6 +319,25 @@ public abstract class BaseStyle
 
     public void setExpansionLevel(@IntRange(from = 1) final int value) {
         expansionLevel = value;
+    }
+
+    @Override
+    @NonNull
+    public Layout getLayout() {
+        return layout;
+    }
+
+    public void setLayout(@NonNull final Layout layout) {
+        this.layout = layout;
+    }
+
+    @Override
+    public int getGridSpanCount() {
+        return gridSpanCount;
+    }
+
+    public void setGridSpanCount(final int gridSpanCount) {
+        this.gridSpanCount = gridSpanCount;
     }
 
     @Override

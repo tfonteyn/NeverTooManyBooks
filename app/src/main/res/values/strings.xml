@@ -1613,8 +1613,12 @@
     <string name="X_lbl_folder">Folder</string>
     <!-- endregion -->
 
-
     <string name="pt_bob_book_level_sorting">Book level sorting</string>
+
+    <string name="pt_layout">Layout</string>
+    <string name="pe_list">List</string>
+    <string name="pe_grid">Grid</string>
+    <string name="pt_bob_grid_spancount">Grid columns</string>
 
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>-->

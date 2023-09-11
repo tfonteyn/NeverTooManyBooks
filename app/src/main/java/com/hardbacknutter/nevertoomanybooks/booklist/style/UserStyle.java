@@ -68,6 +68,9 @@ public class UserStyle
         setPreferred(rowData.getBoolean(DBKey.STYLE_IS_PREFERRED));
         setMenuPosition(rowData.getInt(DBKey.STYLE_MENU_POSITION));
 
+        setLayout(Layout.byId(rowData.getInt(DBKey.STYLE_LAYOUT)));
+        setGridSpanCount(rowData.getInt(DBKey.STYLE_GRID_SPAN_COUNT));
+
         // set the groups first !
         List<Integer> groupIds;
         try {

@@ -213,6 +213,7 @@
         <item>2</item>
     </string-array>
 
+    <!-- ListPreference - How to show the row menu option menu. -->
     <string-array name="pe_bob_row_menu">
         <item>@string/pe_bob_row_menu_button</item>
         <item>@string/pe_bob_row_menu_button_when_space</item>
@@ -224,6 +225,15 @@
         <item>2</item>
     </string-array>
 
+    <!-- ListPreference - The BoB layout. -->
+    <string-array name="pe_bob_layout">
+        <item>@string/pe_list</item>
+        <item>@string/pe_grid</item>
+    </string-array>
+    <string-array name="pv_bob_layout">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
 
     <!-- ListPreference - fastscroller text overlay. -->
     <string-array name="pe_fastscroller_overlay">

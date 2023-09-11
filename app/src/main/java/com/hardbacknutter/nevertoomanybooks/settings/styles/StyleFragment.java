@@ -30,6 +30,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.EditTextPreference;
+import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SeekBarPreference;
@@ -58,6 +59,8 @@ public class StyleFragment
     private static final String PSK_LIST_BOOK_LEVEL_FIELDS = "psk_style_book_level_fields";
     private static final String PSK_LIST_BOOK_LEVEL_SORTING = "psk_style_book_level_sorting";
 
+    private static final String PSK_LIST_BOOK_SHOW_COVER_0 = "style.booklist.show.thumbnails";
+
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
@@ -80,12 +83,15 @@ public class StyleFragment
     /** Flag: prompt for the name of cloned styles. */
     private boolean nameSet;
     private EditTextPreference pName;
-    private Preference pCoverScale;
-    private Preference pTextScale;
+    private SeekBarPreference pCoverScale;
+    private SeekBarPreference pTextScale;
     private SeekBarPreference pExpansionLevel;
     private Preference pListBookLevelSorting;
     private Preference pListBookLevelFields;
     private Preference pGroups;
+    private Preference pLayout;
+    private SwitchPreference pShowCovers;
+    private SeekBarPreference pGridSpanCount;
 
     @SuppressWarnings("DataFlowIssue")
     @Override
@@ -108,17 +114,37 @@ public class StyleFragment
 
         findPreference(StyleDataStore.PK_LIST_HEADER)
                 .setSummaryProvider(MultiSelectListPreferenceSummaryProvider.getInstance());
+        findPreference(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE)
+                .setSummaryProvider(MultiSelectListPreferenceSummaryProvider.getInstance());
 
         pGroups = findPreference(StyleDataStore.PK_GROUPS);
         pExpansionLevel = findPreference(StyleDataStore.PK_EXPANSION_LEVEL);
         pListBookLevelSorting = findPreference(PSK_LIST_BOOK_LEVEL_SORTING);
         pListBookLevelFields = findPreference(PSK_LIST_BOOK_LEVEL_FIELDS);
-
+        pShowCovers = findPreference(PSK_LIST_BOOK_SHOW_COVER_0);
         pCoverScale = findPreference(StyleDataStore.PK_COVER_SCALE);
         pTextScale = findPreference(StyleDataStore.PK_TEXT_SCALE);
 
-        findPreference(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE)
-                .setSummaryProvider(MultiSelectListPreferenceSummaryProvider.getInstance());
+        pLayout = findPreference(StyleDataStore.PK_LAYOUT);
+        pLayout.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
+        pLayout.setOnPreferenceChangeListener((preference, newValue) -> {
+            if (newValue instanceof String) {
+                final Style.Layout layout = Style.Layout.byId(Integer.parseInt((String) newValue));
+                updateLayoutPrefs(layout, true);
+                return true;
+            }
+            return false;
+        });
+
+        pGridSpanCount = findPreference(StyleDataStore.PK_GRID_SPAN_COUNT);
+        pGridSpanCount.setOnPreferenceChangeListener((preference, newValue) -> {
+            if (newValue instanceof Integer) {
+                updateCoverSizeByGridSpanCount((int) newValue);
+                return true;
+            }
+            return false;
+        });
+
 
         pShowCoversOnDetailsScreen[0] = findPreference(StyleDataStore.PK_DETAILS_SHOW_COVER[0]);
         pShowCoversOnDetailsScreen[1] = findPreference(StyleDataStore.PK_DETAILS_SHOW_COVER[1]);
@@ -133,6 +159,7 @@ public class StyleFragment
             return true;
         });
     }
+
 
     @Override
     public void onViewCreated(@NonNull final View view,
@@ -166,6 +193,7 @@ public class StyleFragment
         }
 
         updateSummaries();
+        updateLayoutPrefs(vm.getStyle().getLayout(), false);
 
         // for new (i.e. cloned) styles, auto-popup the name field for the user to change it.
         if (style.getId() == 0) {
@@ -218,6 +246,53 @@ public class StyleFragment
         pExpansionLevel.setValue(style.getExpansionLevel());
     }
 
+    private void updateLayoutPrefs(final Style.Layout layout,
+                                   final boolean byUser) {
+        switch (layout) {
+            case List:
+                pGridSpanCount.setVisible(false);
+                pListBookLevelFields.setVisible(true);
+                pShowCovers.setVisible(true);
+                pCoverScale.setVisible(true);
+                // If the user manually switches from Grid to List...
+                if (byUser) {
+                    // adjust the cover scale
+                    pCoverScale.setValue(Style.DEFAULT_COVER_SCALE);
+                }
+                break;
+
+            case Grid:
+                pGridSpanCount.setVisible(true);
+                pListBookLevelFields.setVisible(false);
+                pShowCovers.setVisible(false);
+                pCoverScale.setVisible(false);
+                // If the user manually switches from List to Grid...
+                if (byUser) {
+                    // The point of grid is to show covers
+                    pShowCovers.setChecked(true);
+                    // use the span-count to adjust the cover scale..
+                    updateCoverSizeByGridSpanCount(pGridSpanCount.getValue());
+                }
+                break;
+            default:
+                throw new IllegalStateException();
+        }
+    }
+
+    private void updateCoverSizeByGridSpanCount(final int gridSpanCount) {
+        switch (gridSpanCount) {
+            case 1:
+            case 2:
+                pCoverScale.setValue(Style.COVER_SCALE_LARGE);
+                break;
+            case 3:
+                pCoverScale.setValue(Style.COVER_SCALE_MEDIUM);
+                break;
+            default:
+                pCoverScale.setValue(Style.COVER_SCALE_SMALL);
+                break;
+        }
+    }
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {

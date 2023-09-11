@@ -31,19 +31,29 @@
         <item name="layout_constraintHorizontal_bias">0</item>
     </style>
 
-    <style name="CoverImage.List" parent="Base.CoverImage">
+    <style name="CoverImage.List"
+           parent="Base.CoverImage">
         <item name="android:padding">@dimen/cover_list_padding</item>
         <item name="android:contentDescription">@string/lbl_cover_front</item>
     </style>
 
-    <style name="CoverImage.Details.0" parent="Base.CoverImage">
+    <style name="CoverImage.Grid"
+           parent="Base.CoverImage">
+        <item name="android:padding">@dimen/cover_list_padding</item>
+        <item name="android:contentDescription">@string/lbl_cover_front</item>
+        <item name="android:scaleType">fitCenter</item>
+    </style>
+
+    <style name="CoverImage.Details.0"
+           parent="Base.CoverImage">
         <item name="android:padding">@dimen/cover_details_0_padding</item>
         <item name="android:layout_width">@dimen/cover_details_0_width</item>
         <item name="android:layout_height">@dimen/cover_details_0_height</item>
         <item name="android:contentDescription">@string/lbl_cover_front</item>
     </style>
 
-    <style name="CoverImage.Details.1" parent="Base.CoverImage">
+    <style name="CoverImage.Details.1"
+           parent="Base.CoverImage">
         <item name="android:padding">@dimen/cover_details_1_padding</item>
         <item name="android:layout_width">@dimen/cover_details_1_width</item>
         <item name="android:layout_height">@dimen/cover_details_1_height</item>

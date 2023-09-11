@@ -50,6 +50,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ConcatAdapter;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -379,6 +380,8 @@ public class BooksOnBookshelf
         createBookshelfSpinner();
         createFabMenu();
 
+        createLayoutManager();
+
         // setup the list related stuff; the actual list data is generated in onResume
         createBooklistView();
 
@@ -543,6 +546,46 @@ public class BooksOnBookshelf
         fabMenu.setOnClickListener(view -> onFabMenuItemSelected(view.getId()));
         fabMenu.getItem(vb.fab4SearchExternalId.getId())
                .ifPresent(item -> item.setEnabled(EditBookExternalIdFragment.isShowTab(this)));
+    }
+
+    /**
+     * Create or recreate the {@link RecyclerView.LayoutManager}.
+     */
+    private void createLayoutManager() {
+        final Style style = vm.getStyle();
+        switch (style.getLayout()) {
+            case List: {
+                final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+                vb.content.list.setLayoutManager(layoutManager);
+                break;
+            }
+            case Grid: {
+                final int spanCount = style.getGridSpanCount();
+                final GridLayoutManager layoutManager = new GridLayoutManager(this, spanCount);
+                layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+                    @Override
+                    public int getSpanSize(final int position) {
+                        final int dataPosition = position - headerAdapter.getItemCount();
+                        if (dataPosition >= 0) {
+                            //noinspection DataFlowIssue
+                            final DataHolder rowData = adapter.readDataAt(dataPosition);
+                            //noinspection DataFlowIssue
+                            final int groupId = rowData.getInt(DBKey.BL_NODE_GROUP);
+                            if (groupId == BooklistGroup.BOOK) {
+                                return 1;
+                            }
+                        }
+                        return spanCount;
+                    }
+                });
+
+                vb.content.list.setLayoutManager(layoutManager);
+                break;
+            }
+
+            default:
+                throw new IllegalStateException();
+        }
     }
 
     private void createBooklistView() {
@@ -736,6 +779,7 @@ public class BooksOnBookshelf
         vm.setForceRebuildInOnResume(false);
 
         if (forceRebuildInOnResume || !vm.isListLoaded()) {
+            createLayoutManager();
             buildBookList();
 
         } else {
@@ -1808,6 +1852,7 @@ public class BooksOnBookshelf
         vb.bookshelfSpinner.setEnabled(true);
 
         if (adapter.getItemCount() > 0) {
+            //URGENT: take GRID layout into account
             if (targetNodes == null || targetNodes.isEmpty()) {
                 // There are no target nodes, just scroll to the saved position
                 final Pair<Integer, Integer> savedListPosition = vm.getSavedListPosition();

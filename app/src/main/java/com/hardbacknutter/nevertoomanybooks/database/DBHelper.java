@@ -723,7 +723,10 @@ public class DBHelper
         }
         if (oldVersion < 26) {
             TBL_BOOKLIST_STYLES.alterTableAddColumns(
-                    db, DBDefinitions.DOM_STYLE_BOOK_LEVEL_FIELDS_ORDER_BY);
+                    db,
+                    DBDefinitions.DOM_STYLE_BOOK_LEVEL_FIELDS_ORDER_BY,
+                    DBDefinitions.DOM_STYLE_LAYOUT,
+                    DBDefinitions.DOM_STYLE_GRID_SPAN_COUNT);
         }
         //TODO: if at a future time we make a change that requires to copy/reload the books table:
         // 1. remove the column "books.clb_uuid"

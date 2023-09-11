@@ -25,71 +25,81 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/grid_cell"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_booklist_grid_cell">
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/card"
-        style="@style/BoB.Group.Book"
+    <ImageView
+        android:id="@id/cover_image_0"
+        style="@style/CoverImage.Grid"
         android:layout_width="0dp"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        >
+        tools:ignore="ContentDescription"
+        tools:layout_height="@dimen/tools_cover_height"
+        tools:src="@sample/covers"
+        />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            >
+    <TextView
+        android:id="@+id/author"
+        style="@style/Field.Generic"
+        android:maxLines="3"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@sample/data.json/book/author"
+        tools:visibility="visible"
+        />
 
-            <ImageView
-                android:id="@id/cover_image_0"
-                style="@style/CoverImage.Grid"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:ignore="ContentDescription"
-                tools:layout_height="@dimen/tools_cover_height"
-                tools:src="@sample/covers"
-                />
+    <TextView
+        android:id="@+id/title"
+        style="@style/Field.BookTitle.Small"
+        android:maxLines="10"
+        android:layout_marginTop="@dimen/section_margin_top"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/author"
+        tools:text="@sample/data.json/book/title"
+        tools:visibility="visible"
+        />
 
-            <TextView
-                android:id="@+id/title"
-                style="@style/Field.BookTitle.Small"
-                android:maxLines="10"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="@sample/data.json/book/title"
-                tools:visibility="visible"
-                />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </com.google.android.material.card.MaterialCardView>
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier_buttons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="cover_image_0,title,author"
+        />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/view_book_details"
         style="@style/Button.MenuPopup"
+        android:insetLeft="0dp"
+        android:insetRight="0dp"
         android:scaleX="@dimen/btn_context_menu_scale"
         android:scaleY="@dimen/btn_context_menu_scale"
         app:icon="@drawable/ic_baseline_details_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/card"
+        app:layout_constraintTop_toBottomOf="@id/barrier_buttons"
         app:layout_constraintVertical_bias="1"
         />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_row_menu"
         style="@style/Button.MenuPopup.More"
+        android:insetLeft="0dp"
+        android:insetRight="0dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/view_book_details"
-        app:layout_constraintTop_toBottomOf="@id/card"
+        app:layout_constraintTop_toBottomOf="@id/barrier_buttons"
         app:layout_constraintVertical_bias="1"
         tools:visibility="visible"
         />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
