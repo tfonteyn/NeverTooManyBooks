@@ -44,7 +44,7 @@
         tools:text="@sample/data.json/field/name"
         />
 
-    <!-- URGENT: use a TextInputLayout "Button.DropdownMenu" -->
+    <!-- TODO: use a TextInputLayout "Button.DropdownMenu" -->
     <CheckBox
         android:id="@+id/cbx_usage"
         android:layout_width="0dp"
