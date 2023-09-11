@@ -550,6 +550,8 @@ public class BooksOnBookshelf
 
     /**
      * Create or recreate the {@link RecyclerView.LayoutManager}.
+     *
+     * @throws IllegalStateException when there is a bug with the enums...
      */
     private void createLayoutManager() {
         final Style style = vm.getStyle();
@@ -560,7 +562,24 @@ public class BooksOnBookshelf
                 break;
             }
             case Grid: {
-                final int spanCount = style.getGridSpanCount();
+                final int spanCount;
+                if (hasEmbeddedDetailsFrame()) {
+                    spanCount = style.getGridSpanCount();
+                } else {
+                    switch (WindowSizeClass.getWidth(this)) {
+                        case Compact:
+                            spanCount = style.getGridSpanCount();
+                            break;
+                        case Medium:
+                            spanCount = (int) (style.getGridSpanCount() * 1.5);
+                            break;
+                        case Expanded:
+                            spanCount = style.getGridSpanCount() * 2;
+                            break;
+                        default:
+                            throw new IllegalStateException();
+                    }
+                }
                 final GridLayoutManager layoutManager = new GridLayoutManager(this, spanCount);
                 layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
                     @Override
