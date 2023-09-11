@@ -55,7 +55,7 @@ import org.jsoup.nodes.Document;
 /**
  * Handles the userdata FORM from the individual book side ajax panel.
  * <p>
- * URGENT: hook up the delete / setRead ... with BoB/ShowBook etc...
+ * TODO: hook up the delete / setRead ... with BoB/ShowBook etc...
  */
 public class CollectionFormUploader {
 
