@@ -171,7 +171,7 @@ public class NetworkCheckerImpl
 
         final InetAddress inetAddress = new DNSService().lookup(host, DNS_TIMEOUT_MS);
 
-        //URGENT: there are issues with this Socket connect call lately (2022-09)
+        //FIXME: there are issues with this Socket connect call lately (2022-09)
         // not sure yet if it's related to the emulator or to Android 12 (13?)
         // For now, pretend that if the DNS lookup went ok... it's all ok...
 //        final Socket sock = new Socket();
