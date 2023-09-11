@@ -101,7 +101,7 @@ public class SearchBookByTextViewModel
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
         // Uses {@link DBDefinitions#KEY_AUTHOR_FORMATTED_GIVEN_FIRST} as not all
-        // search sites can copy with the formatted version.
+        // search sites can cope with the formatted version.
         final List<String> authors =
                 ServiceLocator.getInstance().getAuthorDao()
                               .getNames(DBKey.AUTHOR_FORMATTED_GIVEN_FIRST);
