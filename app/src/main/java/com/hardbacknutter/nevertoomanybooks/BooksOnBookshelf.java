@@ -359,6 +359,7 @@ public class BooksOnBookshelf
      * The adapter used to fill the Bookshelf selector.
      */
     private ExtArrayAdapter<Bookshelf> bookshelfAdapter;
+    private HeaderAdapter headerAdapter;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -545,7 +546,9 @@ public class BooksOnBookshelf
     }
 
     private void createBooklistView() {
-        positioningHelper = new PositioningHelper(vb.content.list);
+        headerAdapter = new HeaderAdapter(this, () -> vm.getHeaderContent(this));
+
+        positioningHelper = new PositioningHelper(vb.content.list, headerAdapter.getItemCount());
 
         // hide the view at creation time. onResume will provide the data and make it visible.
         vb.content.list.setVisibility(View.GONE);
@@ -1797,7 +1800,7 @@ public class BooksOnBookshelf
                 new ConcatAdapter.Config.Builder()
                         .setStableIdMode(ConcatAdapter.Config.StableIdMode.SHARED_STABLE_IDS)
                         .build(),
-                new HeaderAdapter(this, () -> vm.getHeaderContent(this)), adapter);
+                headerAdapter, adapter);
 
         vb.content.list.setAdapter(concatAdapter);
         vb.content.list.setVisibility(View.VISIBLE);
@@ -1893,25 +1896,26 @@ public class BooksOnBookshelf
      * <p>
      * Takes care of conversions between adapter-position and layout-position
      * due to the {@link ConcatAdapter} used with the {@link HeaderAdapter}
-     * (currently hardcoded to 1 header-row).
      */
     private static class PositioningHelper {
 
-        private static final int HEADER_ROWS = 1;
         @NonNull
         private final LinearLayoutManager layoutManager;
+        private final int headerItemCount;
         @NonNull
         private final RecyclerView recyclerView;
 
-        PositioningHelper(@NonNull final RecyclerView recyclerView) {
+        PositioningHelper(@NonNull final RecyclerView recyclerView,
+                          final int headerItemCount) {
             this.recyclerView = recyclerView;
             //noinspection DataFlowIssue
             this.layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+            this.headerItemCount = headerItemCount;
         }
 
         @Nullable
         View findViewByAdapterPosition(final int adapterPosition) {
-            return layoutManager.findViewByPosition(adapterPosition + HEADER_ROWS);
+            return layoutManager.findViewByPosition(adapterPosition + headerItemCount);
         }
 
         /**
@@ -1924,12 +1928,12 @@ public class BooksOnBookshelf
                                      final int currentAdapterPosition) {
             View view;
             if (previousAdapterPosition != currentAdapterPosition) {
-                view = layoutManager.findViewByPosition(previousAdapterPosition + HEADER_ROWS);
+                view = layoutManager.findViewByPosition(previousAdapterPosition + headerItemCount);
                 if (view != null) {
                     view.setSelected(false);
                 }
             }
-            view = layoutManager.findViewByPosition(currentAdapterPosition + HEADER_ROWS);
+            view = layoutManager.findViewByPosition(currentAdapterPosition + headerItemCount);
             if (view != null) {
                 view.setSelected(true);
             }
@@ -1947,7 +1951,7 @@ public class BooksOnBookshelf
                 return new Pair<>(0, 0);
             }
 
-            int adapterPosition = firstVisiblePos - HEADER_ROWS;
+            int adapterPosition = firstVisiblePos - headerItemCount;
             // can theoretically happen with an empty list which has a header
             if (adapterPosition < 0) {
                 adapterPosition = 0;
@@ -1983,10 +1987,10 @@ public class BooksOnBookshelf
             int lastVisiblePosition = layoutManager.findLastCompletelyVisibleItemPosition();
 
             if (firstVisiblePosition > 0) {
-                firstVisiblePosition = firstVisiblePosition - HEADER_ROWS;
+                firstVisiblePosition = firstVisiblePosition - headerItemCount;
             }
             if (lastVisiblePosition > 0) {
-                lastVisiblePosition = lastVisiblePosition - HEADER_ROWS;
+                lastVisiblePosition = lastVisiblePosition - headerItemCount;
             }
 
             final BooklistNode best;
@@ -2000,7 +2004,7 @@ public class BooksOnBookshelf
 
             if (destPos < firstVisiblePosition || destPos > lastVisiblePosition) {
                 final int offset = recyclerView.getHeight() / 4;
-                layoutManager.scrollToPositionWithOffset(destPos + HEADER_ROWS, offset);
+                layoutManager.scrollToPositionWithOffset(destPos + headerItemCount, offset);
             }
             return best;
         }
@@ -2016,10 +2020,10 @@ public class BooksOnBookshelf
         void scrollTo(final int adapterPosition,
                       final int offset,
                       final int maxPosition) {
-            final int position = adapterPosition + HEADER_ROWS;
+            final int position = adapterPosition + headerItemCount;
 
             // sanity check
-            if (position <= HEADER_ROWS) {
+            if (position <= headerItemCount) {
                 layoutManager.scrollToPositionWithOffset(0, 0);
 
             } else if (position >= maxPosition) {
