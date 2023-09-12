@@ -74,10 +74,20 @@ public abstract class RowViewHolder
                 itemView.findViewById(R.id.ROW_ONCLICK_TARGET), itemView);
     }
 
+    /**
+     * Set whether the ClickTargetView/ItemView can receive the focus.
+     *
+     * @param focusable If true, this view can receive the focus.
+     */
     public void setClickTargetViewFocusable(final boolean focusable) {
         onClickTargetView.setFocusable(focusable);
     }
 
+    /**
+     * Sets the icon drawable resource to show for the row-menu button.
+     *
+     * @param iconResourceId Drawable resource ID to use for the button's icon.
+     */
     public void setRowMenuButtonIconResource(@DrawableRes final int iconResourceId) {
         //noinspection DataFlowIssue
         btnRowMenu.setIconResource(iconResourceId);
