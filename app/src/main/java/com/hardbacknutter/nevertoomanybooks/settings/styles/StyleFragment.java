@@ -89,7 +89,6 @@ public class StyleFragment
     private Preference pListBookLevelSorting;
     private Preference pListBookLevelFields;
     private Preference pGroups;
-    private Preference pLayout;
     private SwitchPreference pShowCovers;
     private SeekBarPreference pGridSpanCount;
 
@@ -125,7 +124,7 @@ public class StyleFragment
         pCoverScale = findPreference(StyleDataStore.PK_COVER_SCALE);
         pTextScale = findPreference(StyleDataStore.PK_TEXT_SCALE);
 
-        pLayout = findPreference(StyleDataStore.PK_LAYOUT);
+        final Preference pLayout = findPreference(StyleDataStore.PK_LAYOUT);
         pLayout.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
         pLayout.setOnPreferenceChangeListener((preference, newValue) -> {
             if (newValue instanceof String) {
@@ -158,6 +157,9 @@ public class StyleFragment
             }
             return true;
         });
+
+        // First call sets the current situation before the screen is visible.
+        updateLayoutPrefs(vm.getStyle().getLayout(), false);
     }
 
 
@@ -170,7 +172,10 @@ public class StyleFragment
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
-        vm.onModified().observe(getViewLifecycleOwner(), aVoid -> updateSummaries());
+        vm.onModified().observe(getViewLifecycleOwner(), aVoid -> {
+            updateSummaries();
+            updateLayoutPrefs(vm.getStyle().getLayout(), false);
+        });
 
         if (savedInstanceState == null) {
             //noinspection DataFlowIssue
@@ -246,8 +251,17 @@ public class StyleFragment
         pExpansionLevel.setValue(style.getExpansionLevel());
     }
 
-    private void updateLayoutPrefs(final Style.Layout layout,
-                                   final boolean byUser) {
+    /**
+     * Use the given {@link Style.Layout} to show/hide the applicable preferences.
+     *
+     * @param layout   to match
+     * @param explicit {@code true} if the Layout was explicitly changed by the user
+     *                 or {@code false} if we just want the screen to match the current Layout.
+     *
+     * @throws IllegalStateException when there is a bug with the enums...
+     */
+    private void updateLayoutPrefs(@NonNull final Style.Layout layout,
+                                   final boolean explicit) {
         switch (layout) {
             case List:
                 pGridSpanCount.setVisible(false);
@@ -255,7 +269,7 @@ public class StyleFragment
                 pShowCovers.setVisible(true);
                 pCoverScale.setVisible(true);
                 // If the user manually switches from Grid to List...
-                if (byUser) {
+                if (explicit) {
                     // adjust the cover scale
                     pCoverScale.setValue(Style.DEFAULT_COVER_SCALE);
                 }
@@ -267,8 +281,8 @@ public class StyleFragment
                 pShowCovers.setVisible(false);
                 pCoverScale.setVisible(false);
                 // If the user manually switches from List to Grid...
-                if (byUser) {
-                    // The point of grid is to show covers
+                if (explicit) {
+                    // The point of Grid is to show covers
                     pShowCovers.setChecked(true);
                     // use the span-count to adjust the cover scale..
                     updateCoverSizeByGridSpanCount(pGridSpanCount.getValue());
