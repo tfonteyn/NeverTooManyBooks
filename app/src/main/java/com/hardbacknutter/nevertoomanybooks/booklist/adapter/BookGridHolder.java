@@ -74,6 +74,8 @@ public class BookGridHolder
     @Override
     public void setOnRowClickListener(@Nullable final OnRowClickListener listener) {
         super.setOnRowClickListener(listener);
+        // Add an explicit 'view' button as tapping on the background
+        // is not obvious in this Grid view.
         if (listener != null) {
             vb.viewBookDetails.setOnClickListener(
                     v -> listener.onClick(v, getBindingAdapterPosition()));
