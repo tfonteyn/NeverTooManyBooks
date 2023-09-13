@@ -476,7 +476,7 @@ public class BooksOnBookshelf
                         new CalibreSyncContract(), result -> {
                             // If we imported anything at all... rebuild
                             if (result.contains(SyncContractBase.Outcome.Read)) {
-                                vm.setForceRebuildInOnResume(true);
+                                vm.setForceRebuildInOnResume();
                             }
                         });
             }
@@ -488,7 +488,7 @@ public class BooksOnBookshelf
                         new StripInfoSyncContract(), result -> {
                             // If we imported anything at all... rebuild
                             if (result.contains(SyncContractBase.Outcome.Read)) {
-                                vm.setForceRebuildInOnResume(true);
+                                vm.setForceRebuildInOnResume();
                             }
                         });
             }
@@ -562,24 +562,7 @@ public class BooksOnBookshelf
                 break;
             }
             case Grid: {
-                final int spanCount;
-                if (hasEmbeddedDetailsFrame()) {
-                    spanCount = style.getGridSpanCount();
-                } else {
-                    switch (WindowSizeClass.getWidth(this)) {
-                        case Compact:
-                            spanCount = style.getGridSpanCount();
-                            break;
-                        case Medium:
-                            spanCount = (int) (style.getGridSpanCount() * 1.5);
-                            break;
-                        case Expanded:
-                            spanCount = style.getGridSpanCount() * 2;
-                            break;
-                        default:
-                            throw new IllegalStateException();
-                    }
-                }
+                final int spanCount = getGridSpanCount(style);
                 final GridLayoutManager layoutManager = new GridLayoutManager(this, spanCount);
                 layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
                     @Override
@@ -589,11 +572,12 @@ public class BooksOnBookshelf
                             //noinspection DataFlowIssue
                             final DataHolder rowData = adapter.readDataAt(dataPosition);
                             //noinspection DataFlowIssue
-                            final int groupId = rowData.getInt(DBKey.BL_NODE_GROUP);
-                            if (groupId == BooklistGroup.BOOK) {
+                            if (rowData.getInt(DBKey.BL_NODE_GROUP) == BooklistGroup.BOOK) {
+                                // A book, i.e. a cover, is always 1 cell.
                                 return 1;
                             }
                         }
+                        // all other BooklistGroup's use the full width.
                         return spanCount;
                     }
                 });
@@ -605,6 +589,37 @@ public class BooksOnBookshelf
             default:
                 throw new IllegalStateException();
         }
+    }
+
+    /**
+     * Determine the span count for the {@link GridLayoutManager}.
+     *
+     * @param style to use
+     *
+     * @return count
+     *
+     * @throws IllegalStateException when there is a bug with the enums...
+     */
+    private int getGridSpanCount(@NonNull final Style style) {
+        final int spanCount;
+        if (hasEmbeddedDetailsFrame()) {
+            spanCount = style.getGridSpanCount();
+        } else {
+            switch (WindowSizeClass.getWidth(this)) {
+                case Compact:
+                    spanCount = style.getGridSpanCount();
+                    break;
+                case Medium:
+                    spanCount = (int) (style.getGridSpanCount() * 1.5);
+                    break;
+                case Expanded:
+                    spanCount = style.getGridSpanCount() * 2;
+                    break;
+                default:
+                    throw new IllegalStateException();
+            }
+        }
+        return spanCount;
     }
 
     private void createBooklistView() {
@@ -666,7 +681,7 @@ public class BooksOnBookshelf
         setIntent(intent);
 
         handleStandardSearchIntent(intent);
-        vm.setForceRebuildInOnResume(true);
+        vm.setForceRebuildInOnResume();
     }
 
     /**
@@ -764,7 +779,7 @@ public class BooksOnBookshelf
         super.onSettingsChanged(result);
 
         if (result.getBoolean(SettingsContract.BKEY_REBUILD_BOOKLIST, false)) {
-            vm.setForceRebuildInOnResume(true);
+            vm.setForceRebuildInOnResume();
         }
     }
 
@@ -792,13 +807,11 @@ public class BooksOnBookshelf
         // and select the current shelf.
         vb.bookshelfSpinner.setSelection(vm.getSelectedBookshelfSpinnerPosition(this));
 
-
-        final boolean forceRebuildInOnResume = vm.isForceRebuildInOnResume();
-        // always reset for next iteration.
-        vm.setForceRebuildInOnResume(false);
-
-        if (forceRebuildInOnResume || !vm.isListLoaded()) {
-            createLayoutManager();
+        if (vm.isForceRebuildInOnResume() || !vm.isListLoaded()) {
+            if (vm.isRecreateLayoutManager()) {
+                // This is only needed if the style was changed to use a different Layout.
+                createLayoutManager();
+            }
             buildBookList();
 
         } else {
@@ -1871,12 +1884,12 @@ public class BooksOnBookshelf
         vb.bookshelfSpinner.setEnabled(true);
 
         if (adapter.getItemCount() > 0) {
-            //URGENT: take GRID layout into account
             if (targetNodes == null || targetNodes.isEmpty()) {
                 // There are no target nodes, just scroll to the saved position
                 final Pair<Integer, Integer> savedListPosition = vm.getSavedListPosition();
                 final int adapterPosition = savedListPosition.first;
                 final int viewOffset = savedListPosition.second;
+
                 positioningHelper.scrollTo(adapterPosition, viewOffset, adapter.getItemCount());
                 // wait for layout cycle and display the book
                 vb.content.list.post(() -> showBookDetailsIfWeCan(adapterPosition,
@@ -1896,11 +1909,12 @@ public class BooksOnBookshelf
                 final int adapterPosition = savedListPosition.first;
                 final int viewOffset = savedListPosition.second;
                 positioningHelper.scrollTo(adapterPosition, viewOffset, adapter.getItemCount());
+
                 // wait for layout cycle
                 vb.content.list.post(() -> {
-                    // Now find the "best" node and scroll to it
+                    // Use the target nodes to find the "best" node and scroll to it
                     final BooklistNode node = positioningHelper.scrollTo(targetNodes);
-                    // wait again for layout cycle and display the book
+                    // again wait for layout cycle and try to display the book details
                     vb.content.list.post(() -> showBookDetailsIfWeCan(node.getAdapterPosition(),
                                                                       node.getBookId()));
                 });
@@ -1964,8 +1978,6 @@ public class BooksOnBookshelf
      */
     private static class PositioningHelper {
 
-        @NonNull
-        private final LinearLayoutManager layoutManager;
         private final int headerItemCount;
         @NonNull
         private final RecyclerView recyclerView;
@@ -1973,14 +1985,14 @@ public class BooksOnBookshelf
         PositioningHelper(@NonNull final RecyclerView recyclerView,
                           final int headerItemCount) {
             this.recyclerView = recyclerView;
-            //noinspection DataFlowIssue
-            this.layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
             this.headerItemCount = headerItemCount;
         }
 
         @Nullable
         View findViewByAdapterPosition(final int adapterPosition) {
-            return layoutManager.findViewByPosition(adapterPosition + headerItemCount);
+            //noinspection DataFlowIssue
+            return recyclerView.getLayoutManager()
+                               .findViewByPosition(adapterPosition + headerItemCount);
         }
 
         /**
@@ -1991,13 +2003,18 @@ public class BooksOnBookshelf
          */
         void onSelectAdapterPosition(final int previousAdapterPosition,
                                      final int currentAdapterPosition) {
+            final LinearLayoutManager layoutManager =
+                    (LinearLayoutManager) recyclerView.getLayoutManager();
+
             View view;
             if (previousAdapterPosition != currentAdapterPosition) {
+                //noinspection DataFlowIssue
                 view = layoutManager.findViewByPosition(previousAdapterPosition + headerItemCount);
                 if (view != null) {
                     view.setSelected(false);
                 }
             }
+            //noinspection DataFlowIssue
             view = layoutManager.findViewByPosition(currentAdapterPosition + headerItemCount);
             if (view != null) {
                 view.setSelected(true);
@@ -2011,6 +2028,10 @@ public class BooksOnBookshelf
          */
         @NonNull
         Pair<Integer, Integer> getAdapterPositionAndViewOffset() {
+            final LinearLayoutManager layoutManager =
+                    (LinearLayoutManager) recyclerView.getLayoutManager();
+
+            //noinspection DataFlowIssue
             final int firstVisiblePos = layoutManager.findFirstVisibleItemPosition();
             if (firstVisiblePos == RecyclerView.NO_POSITION) {
                 return new Pair<>(0, 0);
@@ -2039,6 +2060,9 @@ public class BooksOnBookshelf
 
         /**
          * Scroll to the "best" of the given target nodes.
+         * <p>
+         * Note that the list will be <strong>centered</strong> on the best node.
+         * i.e. potentially not on the exact same location as it was before.
          *
          * @param targetNodes candidates to scroll to.
          *
@@ -2046,8 +2070,11 @@ public class BooksOnBookshelf
          */
         @NonNull
         BooklistNode scrollTo(@NonNull final List<BooklistNode> targetNodes) {
+            final LinearLayoutManager layoutManager =
+                    (LinearLayoutManager) recyclerView.getLayoutManager();
 
             // the layout positions (i.e. including the header row)
+            //noinspection DataFlowIssue
             int firstVisiblePosition = layoutManager.findFirstCompletelyVisibleItemPosition();
             int lastVisiblePosition = layoutManager.findLastCompletelyVisibleItemPosition();
 
@@ -2085,16 +2112,22 @@ public class BooksOnBookshelf
         void scrollTo(final int adapterPosition,
                       final int offset,
                       final int maxPosition) {
+            final LinearLayoutManager layoutManager =
+                    (LinearLayoutManager) recyclerView.getLayoutManager();
+
             final int position = adapterPosition + headerItemCount;
 
             // sanity check
             if (position <= headerItemCount) {
+                //noinspection DataFlowIssue
                 layoutManager.scrollToPositionWithOffset(0, 0);
 
             } else if (position >= maxPosition) {
                 // the list is shorter than it used to be, just scroll to the end
+                //noinspection DataFlowIssue
                 layoutManager.scrollToPosition(position);
             } else {
+                //noinspection DataFlowIssue
                 layoutManager.scrollToPositionWithOffset(position, offset);
             }
         }

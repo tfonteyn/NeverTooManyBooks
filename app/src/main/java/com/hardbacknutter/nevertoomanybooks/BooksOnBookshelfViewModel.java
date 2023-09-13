@@ -189,6 +189,9 @@ public class BooksOnBookshelfViewModel
     @Nullable
     private Bookshelf bookshelf;
 
+    private Style.Layout currentLayout;
+
+
     /**
      * The book id we want the new list to display more-or-less in the center.
      * Takes precedence above {@link #selectedAdapterPosition}
@@ -325,6 +328,9 @@ public class BooksOnBookshelfViewModel
             bookshelf = Bookshelf.getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT)
                                  .orElseThrow();
         }
+
+        // preserve the current Layout so we can react to style/layout changes
+        currentLayout = bookshelf.getStyle().getLayout();
     }
 
     boolean isProposeBackup() {
@@ -509,20 +515,42 @@ public class BooksOnBookshelfViewModel
 
     /**
      * Check if a rebuild is needed in {@code Activity#onResume()}.
+     * <p>
+     * <strong>Important</strong>: this method will reset the flag to {@code false}
      *
      * @return {@code true} if a rebuild is needed
      */
     boolean isForceRebuildInOnResume() {
-        return forceRebuildInOnResume;
+        final boolean force = forceRebuildInOnResume;
+        // always reset for next iteration.
+        forceRebuildInOnResume = false;
+        return force;
     }
 
     /**
      * Request a rebuild at the next {@code Activity#onResume()}.
-     *
-     * @param forceRebuild Flag
      */
-    void setForceRebuildInOnResume(final boolean forceRebuild) {
-        forceRebuildInOnResume = forceRebuild;
+    void setForceRebuildInOnResume() {
+        forceRebuildInOnResume = true;
+    }
+
+    /**
+     * Check if the {@link androidx.recyclerview.widget.RecyclerView.LayoutManager}
+     * needs to be recreated by comparing the current with previous Layout.
+     * <p>
+     * <strong>Important</strong>: this method will update the internal state of the current Layout!
+     *
+     * @return {@code true} if it should be recreated
+     */
+    boolean isRecreateLayoutManager() {
+        //noinspection DataFlowIssue
+        final Style.Layout layout = bookshelf.getStyle().getLayout();
+        if (layout != currentLayout) {
+            // always reset for next iteration.
+            currentLayout = layout;
+            return true;
+        }
+        return false;
     }
 
     /**
