@@ -138,8 +138,9 @@ public class ZoomedImageDialogFragment
 
         // load and resize as needed.
         new ImageViewLoader(ASyncExecutor.MAIN,
-                            maxWidth, maxHeight, ImageView.ScaleType.FIT_CENTER,
-                            ImageViewLoader.MaxSize.Unlimited)
+                            ImageView.ScaleType.FIT_CENTER,
+                            ImageViewLoader.MaxSize.Unlimited,
+                            maxWidth, maxHeight)
                 .fromFile(imageView, imageFile, null);
     }
 }

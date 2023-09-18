@@ -27,6 +27,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -190,6 +191,8 @@ public class CoverBrowserDialogFragment
 
         vm.onSelectedImage().observe(getViewLifecycleOwner(), this::setSelectedImage);
         previewLoader = new ImageViewLoader(vm.getPreviewDisplayExecutor(),
+                                            ImageView.ScaleType.FIT_START,
+                                            ImageViewLoader.MaxSize.Enforce,
                                             previewMaxWidth, previewMaxHeight);
 
         // When the preview image is clicked, send the fileSpec back to the caller and terminate.
@@ -494,7 +497,10 @@ public class CoverBrowserDialogFragment
             maxWidth = res.getDimensionPixelSize(R.dimen.cover_browser_gallery_width);
             maxHeight = res.getDimensionPixelSize(R.dimen.cover_browser_gallery_height);
 
-            imageLoader = new ImageViewLoader(executor, maxWidth, maxHeight);
+            imageLoader = new ImageViewLoader(executor,
+                                              ImageView.ScaleType.FIT_START,
+                                              ImageViewLoader.MaxSize.Enforce,
+                                              maxWidth, maxHeight);
         }
 
         @Override

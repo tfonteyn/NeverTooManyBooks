@@ -139,7 +139,10 @@ public class CoverHandler {
         vm = new ViewModelProvider(this.coverHandlerOwner)
                 .get(String.valueOf(this.cIdx), CoverHandlerViewModel.class);
 
-        imageLoader = new ImageViewLoader(ASyncExecutor.MAIN, maxWidth, maxHeight);
+        imageLoader = new ImageViewLoader(ASyncExecutor.MAIN,
+                                          ImageView.ScaleType.FIT_START,
+                                          ImageViewLoader.MaxSize.Enforce,
+                                          maxWidth, maxHeight);
 
         coverBrowserLauncher = new CoverBrowserDialogFragment
                 .Launcher(RK_COVER_BROWSER + cIdx, this::onFileSelected);

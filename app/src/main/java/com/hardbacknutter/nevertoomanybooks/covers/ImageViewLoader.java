@@ -68,43 +68,29 @@ public class ImageViewLoader {
     /**
      * Constructor.
      *
-     * @param executor to use
-     * @param width    Desired width of the image
-     * @param height   Desired height of the image
-     */
-    @UiThread
-    public ImageViewLoader(@NonNull final Executor executor,
-                           @Px final int width,
-                           @Px final int height) {
-        this(executor, width, height, ImageView.ScaleType.FIT_START, MaxSize.Enforce);
-    }
-
-    /**
-     * Constructor.
-     *
      * @param executor  to use
-     * @param width     Desired width of the image
-     * @param height    Desired height of the image
      * @param scaleType to use for images
      *                  (ignored for placeholders)
      * @param maxSize   how to adjust the size, see {@link MaxSize}
      *                  (ignored for placeholders)
+     * @param width     Desired width of the image
+     * @param height    Desired height of the image
      */
     @UiThread
     public ImageViewLoader(@NonNull final Executor executor,
-                           @Px final int width,
-                           @Px final int height,
                            @NonNull final ImageView.ScaleType scaleType,
-                           @NonNull final MaxSize maxSize) {
+                           @NonNull final MaxSize maxSize,
+                           @Px final int width,
+                           @Px final int height) {
 
         handler = new Handler(Looper.getMainLooper());
 
         this.executor = executor;
 
         this.scaleType = scaleType;
+        this.maxSize = maxSize;
         this.width = width;
         this.height = height;
-        this.maxSize = maxSize;
 
         scalableImageDecoder = new Transformation()
                 .setScale(this.width, this.height);
