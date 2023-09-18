@@ -83,6 +83,7 @@
         android:scaleX="@dimen/btn_context_menu_scale"
         android:scaleY="@dimen/btn_context_menu_scale"
         app:icon="@drawable/ic_baseline_details_24"
+        android:contentDescription="@string/pc_book_detail_screen"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/barrier_buttons"
