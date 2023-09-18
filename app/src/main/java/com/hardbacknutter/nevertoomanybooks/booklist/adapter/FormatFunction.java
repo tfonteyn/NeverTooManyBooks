@@ -23,11 +23,22 @@ package com.hardbacknutter.nevertoomanybooks.booklist.adapter;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
 @FunctionalInterface
 public interface FormatFunction {
 
+    /**
+     * Format the source string according to the BooklistGroup id.
+     *
+     * @param groupId the BooklistGroup id
+     * @param rowData read only access to the row data
+     * @param key     the {@link DBKey} for the item to be formatted
+     *
+     * @return Formatted string,
+     *         or original string when no special format was needed or on any failure
+     */
     @NonNull
     CharSequence format(@BooklistGroup.Id int groupId,
                         @NonNull DataHolder rowData,

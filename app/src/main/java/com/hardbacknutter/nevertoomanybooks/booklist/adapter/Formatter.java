@@ -52,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
  * <p>
  * To keep it all straightforward, even when there is a dedicated
  * BooklistGroup (e.g. Author,Series,...),
- * we handle the formatting is here regardless.
+ * we handle the formatting here regardless.
  */
 class Formatter
         implements FormatFunction {
@@ -80,16 +80,6 @@ class Formatter
         conditionDescriptions = context.getResources().getStringArray(R.array.conditions_book);
     }
 
-    /**
-     * Format the source string according to the BooklistGroup id.
-     *
-     * @param groupId the BooklistGroup id
-     * @param rowData read only access to the row data
-     * @param key     the {@link DBKey} for the item to be formatted
-     *
-     * @return Formatted string,
-     *         or original string when no special format was needed or on any failure
-     */
     @NonNull
     @Override
     public CharSequence format(@BooklistGroup.Id final int groupId,
@@ -172,7 +162,9 @@ class Formatter
                 }
             }
             case BooklistGroup.CONDITION: {
-                if (!text.isEmpty()) {
+                if (text.isEmpty()) {
+                    return context.getString(R.string.unknown);
+                } else {
                     try {
                         final int i = Integer.parseInt(text);
                         if (i < conditionDescriptions.length) {
@@ -181,8 +173,9 @@ class Formatter
                     } catch (@NonNull final NumberFormatException ignore) {
                         // ignore
                     }
+                    // We should never get here... flw
+                    return text;
                 }
-                return context.getString(R.string.unknown);
             }
             case BooklistGroup.RATING: {
                 // This is the text based formatting, as used by the level/scroller text.
