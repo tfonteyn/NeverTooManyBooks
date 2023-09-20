@@ -45,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.MapDBKey;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -54,12 +53,15 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.PagesFormatter;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 
 /**
  * ViewHolder for a {@link BooklistGroup#BOOK} row.
  */
 public class BookHolder
-        extends BaseBookHolder {
+        extends RowViewHolder
+        implements BindableViewHolder<DataHolder> {
 
     /**
      * The length of a series number is considered short if it's 4 character or less.
@@ -79,14 +81,17 @@ public class BookHolder
     private final String[] conditionDescriptions;
     @NonNull
     private final RealNumberParser realNumberParser;
+    @NonNull
+    private final Style style;
+    @Nullable
+    private final CoverHelper coverHelper;
     /** Only active when running in debug mode; displays the "position/rowId" for a book. */
     @Nullable
     private TextView dbgRowIdView;
-    /** each holder has its own loader - the more cores the cpu has, the faster we load. */
-    @Nullable
-    private ImageViewLoader imageLoader;
     @Nullable
     private Set<String> use;
+
+    /** Formatter for showing the page-number field. */
     @Nullable
     private FieldFormatter<String> pagesFormatter;
 
@@ -105,7 +110,8 @@ public class BookHolder
                @NonNull final Style style,
                @NonNull final RealNumberParser realNumberParser,
                @Dimension final int coverLongestSide) {
-        super(itemView, style, coverLongestSide);
+        super(itemView);
+        this.style = style;
         this.realNumberParser = realNumberParser;
 
         final Context context = itemView.getContext();
@@ -117,14 +123,17 @@ public class BookHolder
 
         a_bracket_b_bracket = context.getString(R.string.a_bracket_b_bracket);
 
-        if (getStyle().isShowField(Style.Screen.List, DBKey.COVER[0])) {
+        if (style.isShowField(Style.Screen.List, DBKey.COVER[0])) {
+            coverHelper = new CoverHelper(coverLongestSide,
+                                          ImageView.ScaleType.FIT_START,
+                                          ImageViewLoader.MaxSize.Enforce);
+
             // Do not go overkill here by adding a full-blown CoverHandler.
             // We only provide zooming by clicking on the image.
-            vb.coverImage0.setOnClickListener(this::onZoomCover);
+            vb.coverImage0.setOnClickListener(coverHelper::onZoomCover);
 
-            imageLoader = new ImageViewLoader(ASyncExecutor.MAIN,
-                                              coverLongestSide, coverLongestSide);
         } else {
+            coverHelper = null;
             // hide it if not in use.
             vb.coverImage0.setVisibility(View.GONE);
         }
@@ -158,12 +167,12 @@ public class BookHolder
     public void onBind(@NonNull final DataHolder rowData) {
         if (use == null) {
             // init once
-            use = getStyle().getFieldVisibility(Style.Screen.List)
-                            .getKeys(false)
-                            .stream()
-                            // Sanity check making sure the domain is present
-                            .filter(key -> rowData.contains(MapDBKey.getDomainName(key)))
-                            .collect(Collectors.toSet());
+            use = style.getFieldVisibility(Style.Screen.List)
+                       .getKeys(false)
+                       .stream()
+                       // Sanity check making sure the domain is present
+                       .filter(key -> rowData.contains(MapDBKey.getDomainName(key)))
+                       .collect(Collectors.toSet());
 
             if (use.contains(DBKey.PAGE_COUNT)) {
                 pagesFormatter = new PagesFormatter();
@@ -182,7 +191,7 @@ public class BookHolder
          */
         if (use.contains(DBKey.COVER[0])) {
             //noinspection DataFlowIssue
-            setImageView(vb.coverImage0, imageLoader, rowData.getString(DBKey.BOOK_UUID));
+            coverHelper.setImageView(vb.coverImage0, rowData.getString(DBKey.BOOK_UUID));
         }
 
         if (use.contains(DBKey.FK_AUTHOR)) {
@@ -191,7 +200,7 @@ public class BookHolder
         }
 
         if (use.contains(DBKey.FK_SERIES)) {
-            if (getStyle().hasGroup(BooklistGroup.SERIES)) {
+            if (style.hasGroup(BooklistGroup.SERIES)) {
                 vb.seriesTitle.setVisibility(View.GONE);
                 showOrHideSeriesNumber(rowData);
             } else {
@@ -234,6 +243,7 @@ public class BookHolder
         }
 
         if (use.contains(DBKey.LANGUAGE)) {
+            // We could use the LanguageFormatter but there is really no point here
             final String language = ServiceLocator
                     .getInstance().getLanguages().getDisplayNameFromISO3(
                             vb.language.getContext(), rowData.getString(DBKey.LANGUAGE));

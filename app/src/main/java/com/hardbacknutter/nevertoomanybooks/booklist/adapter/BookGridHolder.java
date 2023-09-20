@@ -30,45 +30,55 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfGridBookBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.OnRowClickListener;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 
 /**
- * This holder will disregard any visibility settings
- * and simply show either the frontcover, or a title-placeholder.
+ * ViewHolder for a {@link BooklistGroup#BOOK} row.
+ * <p>
+ * This holder will disregard the cover visibility setting
+ * and simply show either the frontcover, or a title-placeholder (and optional author).
  */
 public class BookGridHolder
-        extends BaseBookHolder {
+        extends RowViewHolder
+        implements BindableViewHolder<DataHolder> {
 
     @NonNull
     private final BooksonbookshelfGridBookBinding vb;
 
-    /** each holder has its own loader - the more cores the cpu has, the faster we load. */
     @NonNull
-    private final ImageViewLoader imageLoader;
+    private final Style style;
+
+    @NonNull
+    private final CoverHelper coverHelper;
+
+    @Nullable
+    private Boolean useAuthor;
 
     @SuppressLint("UseCompatLoadingForDrawables")
     BookGridHolder(@NonNull final View itemView,
                    @NonNull final Style style,
                    @Dimension final int coverLongestSide) {
-        super(itemView, style, coverLongestSide);
+        super(itemView);
 
         vb = BooksonbookshelfGridBookBinding.bind(itemView);
+        this.style = style;
+
+        coverHelper = new CoverHelper(coverLongestSide,
+                                      ImageView.ScaleType.FIT_CENTER,
+                                      ImageViewLoader.MaxSize.Constrained);
 
         vb.gridCell.setMaxWidth(coverLongestSide);
 
         // Do not go overkill here by adding a full-blown CoverHandler.
         // We only provide zooming by clicking on the image.
-        vb.coverImage0.setOnClickListener(this::onZoomCover);
-
-        imageLoader = new ImageViewLoader(ASyncExecutor.MAIN,
-                                          coverLongestSide, coverLongestSide,
-                                          ImageView.ScaleType.FIT_CENTER,
-                                          ImageViewLoader.MaxSize.Constrained);
+        vb.coverImage0.setOnClickListener(coverHelper::onZoomCover);
     }
 
     @Override
@@ -86,26 +96,36 @@ public class BookGridHolder
 
     @Override
     public void onBind(@NonNull final DataHolder rowData) {
-        final boolean hasImage = setImageView(vb.coverImage0, imageLoader,
-                                              rowData.getString(DBKey.BOOK_UUID));
+        if (useAuthor == null) {
+            useAuthor = style.isShowField(Style.Screen.List, DBKey.FK_AUTHOR);
+        }
+
+        final boolean hasImage = coverHelper.setImageView(vb.coverImage0,
+                                                          rowData.getString(DBKey.BOOK_UUID));
         if (hasImage) {
+            final ViewGroup.LayoutParams lp = vb.coverImage0.getLayoutParams();
+            // Use start and end-constraints
+            lp.width = 0;
+            vb.coverImage0.setLayoutParams(lp);
+            vb.coverImage0.setVisibility(View.VISIBLE);
+
             vb.title.setText(null);
             vb.title.setVisibility(View.GONE);
             vb.author.setText(null);
             vb.author.setVisibility(View.GONE);
 
-            final ViewGroup.LayoutParams lp = vb.coverImage0.getLayoutParams();
-            lp.width = 0;
-            vb.coverImage0.setLayoutParams(lp);
-            vb.coverImage0.setVisibility(View.VISIBLE);
-
         } else {
+            vb.coverImage0.setVisibility(View.GONE);
+
             vb.title.setText(rowData.getString(DBKey.TITLE));
             vb.title.setVisibility(View.VISIBLE);
-            vb.author.setText(rowData.getString(DBKey.AUTHOR_FORMATTED));
-            vb.author.setVisibility(View.VISIBLE);
-
-            vb.coverImage0.setVisibility(View.GONE);
+            if (useAuthor) {
+                vb.author.setText(rowData.getString(DBKey.AUTHOR_FORMATTED));
+                vb.author.setVisibility(View.VISIBLE);
+            } else {
+                vb.author.setText(null);
+                vb.author.setVisibility(View.GONE);
+            }
         }
     }
 }
