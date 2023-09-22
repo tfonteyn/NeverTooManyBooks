@@ -786,4 +786,8 @@
     <string name="lbl_sort_descending">Descendente</string>
     <string name="lbl_group">Grupo</string>
     <string name="pt_bob_book_level_sorting">Valoración del libro</string>
+    <string name="pt_layout">Diseño</string>
+    <string name="pt_bob_grid_spancount">Columnas de la cuadrícula</string>
+    <string name="pe_list">Lista</string>
+    <string name="pe_grid">Cuadrícula</string>
 </resources>
