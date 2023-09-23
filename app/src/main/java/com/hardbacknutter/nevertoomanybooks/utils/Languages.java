@@ -236,7 +236,7 @@ public class Languages {
      * <p>
      * This is the entire set correct as on 2019-08-22.
      *
-     * @param locale to use for case lowering
+     * @param locale to use for case manipulation
      * @param iso3   ISO 639-2 (3-char) language code (either bibliographic or terminology coded)
      *
      * @return the bibliographic code
@@ -323,7 +323,7 @@ public class Languages {
      * <p>
      * This is the entire set correct as on 2019-08-22.
      *
-     * @param locale to use for case lowering
+     * @param locale to use for case manipulation
      * @param iso3   ISO 639-2 (3-char) language code (either bibliographic or terminology coded)
      *
      * @return the terminology code

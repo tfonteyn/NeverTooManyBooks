@@ -125,6 +125,7 @@ public class EditSeriesDialogFragment
             return false;
         }
 
+        // Case-sensitive! We must allow the user to correct case.
         final boolean nameChanged = !series.isSameName(currentEdit);
 
         // anything actually changed ? If not, we're done.

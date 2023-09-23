@@ -669,6 +669,7 @@ public class Author
         }
 
         // resolve 1:1 circular reference
+        // Case-sensitive!
         if (a != null && (a.isSameName(this))) {
             a = null;
         }

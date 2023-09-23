@@ -187,6 +187,7 @@ public class EditAuthorDialogFragment
             return false;
         }
 
+        // Case-sensitive! We must allow the user to correct case.
         final boolean nameChanged = !originalAuthor.isSameName(currentEdit);
 
         // anything actually changed ? If not, we're done.

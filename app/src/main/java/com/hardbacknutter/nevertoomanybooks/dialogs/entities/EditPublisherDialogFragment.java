@@ -123,6 +123,7 @@ public class EditPublisherDialogFragment
             return false;
         }
 
+        // Case-sensitive! We must allow the user to correct case.
         final boolean nameChanged = !publisher.isSameName(currentEdit);
 
         // anything actually changed ? If not, we're done.
