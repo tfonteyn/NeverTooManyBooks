@@ -27,8 +27,8 @@ Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyB
 ## User Interface languages:
 
 - English, Dutch, Portuguese.
-- German, French: quality should be very good but may lack in some places.
-- Italian, Spanish: should be usable, but certainly not perfect.
+- German, French, Spanish: quality should be very good but may lack in some places.
+- Italian: should be usable, but certainly not perfect.
 - Czech, Greek, Polish, Russian, Turkish: mostly machine translated, no guarantees for quality.
 
 Translations are now integrated and editable
@@ -44,10 +44,11 @@ You can enable/disable and prioritize the sites in Settings/Search/Websites..
 - **Amazon** with support for .com, .co.uk, .fr, .de, .nl, .com.be, .es sites.
   Other sites *may* work.
 
-> > *WARNING:* Amazon is increasingly blocking access.
-> > If you see any Amazon specific errors, I suggest you switch off Amazon in Settings/Search/Websites.
+> *WARNING:* Amazon is increasingly blocking access.
+> If you see any Amazon specific errors, I suggest you switch off Amazon in
+> Settings/Search/Websites.
 
-> > Please do not ask for GoodReads/LibraryThing/AbeBooks to be added.
+> Please do not ask for GoodReads/LibraryThing/AbeBooks to be added.
 
 - **Bedetheque** (French and more; Catalogue; European Comics)
 - **BOL.com** (Dutch and more; Shop)
