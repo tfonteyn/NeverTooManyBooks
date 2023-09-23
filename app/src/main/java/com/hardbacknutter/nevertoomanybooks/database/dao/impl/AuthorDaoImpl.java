@@ -400,7 +400,7 @@ public class AuthorDaoImpl
     public boolean pruneList(@NonNull final Context context,
                              @NonNull final Collection<Author> list,
                              @NonNull final Function<Author, Locale> localeSupplier) {
-        if (list.isEmpty()) {
+        if (list.size() < 2) {
             return false;
         }
 

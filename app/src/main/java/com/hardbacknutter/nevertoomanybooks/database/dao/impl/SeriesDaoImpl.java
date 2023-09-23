@@ -242,7 +242,7 @@ public class SeriesDaoImpl
     public boolean pruneList(@NonNull final Context context,
                              @NonNull final Collection<Series> list,
                              @NonNull final Function<Series, Locale> localeSupplier) {
-        if (list.isEmpty()) {
+        if (list.size() < 2) {
             return false;
         }
 

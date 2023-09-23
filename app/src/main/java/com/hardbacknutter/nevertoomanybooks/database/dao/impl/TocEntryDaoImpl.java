@@ -89,7 +89,7 @@ public class TocEntryDaoImpl
     public boolean pruneList(@NonNull final Context context,
                              @NonNull final Collection<TocEntry> list,
                              @NonNull final Function<TocEntry, Locale> localeSupplier) {
-        if (list.isEmpty()) {
+        if (list.size() < 2) {
             return false;
         }
 

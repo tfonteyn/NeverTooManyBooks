@@ -197,7 +197,7 @@ public class PublisherDaoImpl
     public boolean pruneList(@NonNull final Context context,
                              @NonNull final Collection<Publisher> list,
                              @NonNull final Function<Publisher, Locale> localeSupplier) {
-        if (list.isEmpty()) {
+        if (list.size() < 2) {
             return false;
         }
 

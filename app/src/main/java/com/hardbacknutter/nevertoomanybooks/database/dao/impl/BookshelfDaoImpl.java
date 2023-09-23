@@ -231,7 +231,7 @@ public class BookshelfDaoImpl
     @Override
     public boolean pruneList(@NonNull final Context context,
                              @NonNull final Collection<Bookshelf> list) {
-        if (list.isEmpty()) {
+        if (list.size() < 2) {
             return false;
         }
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
