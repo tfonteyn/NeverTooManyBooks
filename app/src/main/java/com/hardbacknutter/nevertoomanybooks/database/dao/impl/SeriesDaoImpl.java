@@ -104,8 +104,8 @@ public class SeriesDaoImpl
                                                    localeSupplier.get());
 
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{
-                SqlEncode.orderByColumn(series.getTitle(), obd.locale),
-                SqlEncode.orderByColumn(obd.title, obd.locale)})) {
+                SqlEncode.orderByColumn(series.getTitle(), obd.getLocale()),
+                SqlEncode.orderByColumn(obd.getTitle(), obd.getLocale())})) {
             if (cursor.moveToFirst()) {
                 final CursorRow rowData = new CursorRow(cursor);
                 return Optional.of(new Series(rowData.getLong(DBKey.PK_ID), rowData));
@@ -373,7 +373,7 @@ public class SeriesDaoImpl
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             stmt.bindString(1, series.getTitle());
-            stmt.bindString(2, SqlEncode.orderByColumn(obd.title, obd.locale));
+            stmt.bindString(2, SqlEncode.orderByColumn(obd.getTitle(), obd.getLocale()));
             stmt.bindBoolean(3, series.isComplete());
             final long iId = stmt.executeInsert();
             if (iId > 0) {
@@ -400,7 +400,7 @@ public class SeriesDaoImpl
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
             stmt.bindString(1, series.getTitle());
-            stmt.bindString(2, SqlEncode.orderByColumn(obd.title, obd.locale));
+            stmt.bindString(2, SqlEncode.orderByColumn(obd.getTitle(), obd.getLocale()));
             stmt.bindBoolean(3, series.isComplete());
             stmt.bindLong(4, series.getId());
 

@@ -34,14 +34,24 @@ import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 public final class OrderByData {
 
     @NonNull
-    public final String title;
+    private final String title;
     @NonNull
-    public final Locale locale;
+    private final Locale locale;
 
     private OrderByData(@NonNull final String title,
                         @NonNull final Locale locale) {
         this.title = title;
         this.locale = locale;
+    }
+
+    @NonNull
+    public String getTitle() {
+        return title;
+    }
+
+    @NonNull
+    public Locale getLocale() {
+        return locale;
     }
 
     /**
@@ -56,10 +66,10 @@ public final class OrderByData {
      *   or when doing a lookup the language of the first book in the series
      * <p>
      * - publisher name is in a different language as compared to the book
-     * -> we  always use the book language
+     * -> we always use the book language
      * <p>
      * - tocEntry title is in a different language as compared to the book
-     * -> we  always use the book language
+     * -> we always use the book language
      *
      * @param context       Current context
      * @param reorderHelper to use for displaying labels

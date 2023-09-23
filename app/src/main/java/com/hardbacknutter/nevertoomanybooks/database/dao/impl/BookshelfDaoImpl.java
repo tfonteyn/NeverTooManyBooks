@@ -234,10 +234,10 @@ public class BookshelfDaoImpl
         if (list.size() < 2) {
             return false;
         }
+
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         final BookshelfMergeHelper mergeHelper = new BookshelfMergeHelper();
-        return mergeHelper.merge(context, list,
-                                 current -> userLocale,
+        return mergeHelper.merge(context, list, current -> userLocale,
                                  (current, locale) -> fixId(current));
     }
 
