@@ -46,60 +46,49 @@ public interface Mergeable {
     List<String> getNameFields();
 
     /**
-     * Create a hash on the {@link #getNameFields()} of the given Mergeable.
-     * <p>
-     * Uses the ascii version of the names converted to an "ORDER BY" value.
-     *
-     * @param locale the locale of the name
-     *
-     * @return hash
-     */
-    default int createNameHash(@NonNull final Locale locale) {
-        return Objects.hash(
-                getNameFields()
-                        .stream()
-                        .map(name -> SqlEncode.orderByColumn(name, locale))
-                        .collect(Collectors.toList()));
-    }
-
-    /**
-     * Create a hash on the {@link #getNameFields()} of the given Mergeable.
-     * <p>
-     * Uses the {@link SqlEncode#normalize(CharSequence)} version of the names.
-     *
-     * @return hash
-     */
-    default int createNameHash() {
-        return Objects.hash(
-                getNameFields()
-                        .stream()
-                        .map(SqlEncode::normalize)
-                        .collect(Collectors.toList()));
-    }
-
-    /**
-     * Convenience method to compare two Mergeable's.
+     * Convenience method to <strong>case-sensitive</strong> compare two Mergeable's.
      *
      * @param that the one to compare with
      *
      * @return {@code true} if its the same name
      */
     default boolean isSameName(@NonNull final Mergeable that) {
-        return this.createNameHash() == that.createNameHash();
+        return Objects.hash(getNameFields()
+                                    .stream()
+                                    .map(SqlEncode::normalize)
+                                    .collect(Collectors.toList()))
+               == Objects.hash(that.getNameFields()
+                                   .stream()
+                                   .map(SqlEncode::normalize)
+                                   .collect(Collectors.toList()));
     }
 
     /**
-     * Convenience method to compare two Mergeable's.
+     * Convenience method to <strong>case-insensitive</strong> compare two Mergeable's.
+     * <p>
+     * Same as {@link #isSameName(Mergeable)} but lower-casing the names based
+     * on the given locales.
      *
-     * @param locale     the locale of the name
+     * @param locale     the locale of the name.
+     *                   Used for case manipulation.
      * @param that       the one to compare with
-     * @param thatLocale the locale of the one to compare with
+     * @param thatLocale the locale of the one to compare with.
+     *                   Used for case manipulation.
      *
      * @return {@code true} if its the same name
      */
-    default boolean isSameName(@NonNull final Locale locale,
-                               @NonNull final Mergeable that,
-                               @NonNull final Locale thatLocale) {
-        return this.createNameHash(locale) == that.createNameHash(thatLocale);
+    default boolean isSameNameIgnoreCase(@NonNull final Locale locale,
+                                         @NonNull final Mergeable that,
+                                         @NonNull final Locale thatLocale) {
+        return Objects.hash(getNameFields()
+                                    .stream()
+                                    .map(SqlEncode::normalize)
+                                    .map(name -> name.toLowerCase(locale))
+                                    .collect(Collectors.toList()))
+               == Objects.hash(that.getNameFields()
+                                   .stream()
+                                   .map(SqlEncode::normalize)
+                                   .map(name -> name.toLowerCase(thatLocale))
+                                   .collect(Collectors.toList()));
     }
 }

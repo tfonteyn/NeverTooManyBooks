@@ -28,8 +28,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 
 public abstract class EntityMergeHelper<T extends Mergeable> {
 
@@ -61,6 +65,8 @@ public abstract class EntityMergeHelper<T extends Mergeable> {
 
     /**
      * Loop over the list and try to find and merge duplicates.
+     * <p>
+     * URGENT: add support for reordered versus non-reordered names
      *
      * @param context        Current context
      * @param list           to process
@@ -84,7 +90,11 @@ public abstract class EntityMergeHelper<T extends Mergeable> {
             idFixer.accept(current, currentLocale);
 
             final long id = current.getId();
-            final int hash = current.createNameHash(currentLocale);
+            final int hash = Objects.hash(current.getNameFields()
+                                                 .stream()
+                                                 .map(SqlEncode::normalize)
+                                                 .map(name -> name.toLowerCase(currentLocale))
+                                                 .collect(Collectors.toList()));
 
             // Check if there is a previous occurrence, either by id, or by value (hash)
             T previous = null;

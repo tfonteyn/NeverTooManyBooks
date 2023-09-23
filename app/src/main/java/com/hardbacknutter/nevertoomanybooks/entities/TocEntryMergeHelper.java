@@ -74,7 +74,7 @@ public class TocEntryMergeHelper
         final Author previousAuthor = previous.getPrimaryAuthor();
         final Author currentAuthor = current.getPrimaryAuthor();
         final boolean canMerge = previousAuthor
-                .isSameName(previousLocale, currentAuthor, currentLocale);
+                .isSameNameIgnoreCase(previousLocale, currentAuthor, currentLocale);
 
         if (canMerge) {
             final long currentId = currentAuthor.getId();
