@@ -58,6 +58,11 @@ public class SeriesTest
         assertEquals(pSeries.isComplete(), series.isComplete());
     }
 
+    /**
+     * Fairly generic and 'normally' sorted names and numbers.
+     *
+     * @throws DaoWriteException on conflicts
+     */
     @Test
     public void pruneSeries01List()
             throws DaoWriteException {
