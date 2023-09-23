@@ -150,4 +150,35 @@ public class SeriesTest
         assertEquals("The series", series.getTitle());
         assertEquals("6", series.getNumber());
     }
+
+    /**
+     * Prune a list which contains both the non-reordered AND the reordered name (of a series).
+     * i.e.:  "The title" and "title, The" (with same number)
+     * <p>
+     * Original issue coming from isbn 9789463941914 on lastdodo.nl
+     */
+    @Test
+    public void pruneReorderedDuplications() {
+        final Locale bookLocale = Locale.getDefault();
+        final SeriesDao seriesDao = serviceLocator.getSeriesDao();
+
+        final List<Series> list = new ArrayList<>();
+
+        final Series series1 = Series.from("The title");
+        series1.setId(1);
+        series1.setNumber("1");
+        list.add(series1);
+
+        final Series series2 = Series.from("title, The");
+        // Set the SAME id, so the only diff is the title!
+        series2.setId(1);
+        series2.setNumber("1");
+        list.add(series2);
+
+
+        final boolean modified = seriesDao.pruneList(context, list, item -> bookLocale);
+
+        assertTrue("Failed to prune", modified);
+        assertEquals(1, list.size());
+    }
 }
