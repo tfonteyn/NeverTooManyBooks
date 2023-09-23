@@ -933,7 +933,7 @@ public class AuthorDaoImpl
         private static final String COUNT_ALL = SELECT_COUNT_FROM_ + TBL_AUTHORS.getName();
 
         /**
-         * Find a {@link Author} by name.
+         * Find an {@link Author} by family and given name.
          * The lookup is by EQUALITY and CASE-SENSITIVE.
          */
         private static final String FIND_BY_NAME =

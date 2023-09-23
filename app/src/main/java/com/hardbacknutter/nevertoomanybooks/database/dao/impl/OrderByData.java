@@ -44,11 +44,21 @@ public final class OrderByData {
         this.locale = locale;
     }
 
+    /**
+     * Depending on at the time of construction, whether names are reordered for sorting or not.
+     *
+     * @return the actual title, or the reordered title, as to-be used for sorting.
+     */
     @NonNull
     public String getTitle() {
         return title;
     }
 
+    /**
+     * Get the {@link Locale} for the {@link #getTitle()}.
+     *
+     * @return title locale
+     */
     @NonNull
     public Locale getLocale() {
         return locale;

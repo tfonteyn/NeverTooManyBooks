@@ -47,7 +47,16 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
  */
 public final class ReorderHelper {
 
+    /**
+     * Boolean preference.
+     * {@code true} if the title/name should be DISPLAYED reordered.
+     */
     public static final String PK_SHOW_TITLE_REORDERED = "show.title.reordered";
+    /**
+     * Boolean preference.
+     * {@code true} if the title/name should be SORTED by the reordered version.
+     */
+
     public static final String PK_SORT_TITLE_REORDERED = "sort.title.reordered";
 
     /**
@@ -90,12 +99,29 @@ public final class ReorderHelper {
                                 .getBoolean(PK_SORT_TITLE_REORDERED, true);
     }
 
+    /**
+     * Try reordering using the device Locale list.
+     *
+     * @param context Current context
+     * @param title   to reorder
+     *
+     * @return the reordered title
+     */
     @NonNull
     public String reorder(@NonNull final Context context,
                           @NonNull final String title) {
         return reorder(context, title, (Locale) null, LocaleListUtils.asList(context, null));
     }
 
+    /**
+     * Try reordering using the 'locale' or the device Locale list.
+     *
+     * @param context Current context
+     * @param title   to reorder
+     * @param locale  to try first
+     *
+     * @return the reordered title
+     */
     @NonNull
     public String reorder(@NonNull final Context context,
                           @NonNull final String title,
@@ -103,6 +129,16 @@ public final class ReorderHelper {
         return reorder(context, title, locale, LocaleListUtils.asList(context, null));
     }
 
+    /**
+     * Try reordering using the 'language' or the given Locale list.
+     *
+     * @param context    Current context
+     * @param title      to reorder
+     * @param language   to try first
+     * @param localeList to try if the the language locale fails
+     *
+     * @return the reordered title
+     */
     @NonNull
     public String reorder(@NonNull final Context context,
                           @NonNull final String title,

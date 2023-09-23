@@ -535,7 +535,7 @@ public class PublisherDaoImpl
         /**
          * Find a {@link Publisher} by name.
          * The lookup is by EQUALITY and CASE-SENSITIVE.
-         * Searches PUBLISHER_NAME_OB on both "The Publisher" and "Publisher, The"
+         * Searches PUBLISHER_NAME_OB on both original and (potentially) reordered name.
          */
         private static final String FIND_BY_NAME =
                 SELECT_ALL

@@ -586,7 +586,7 @@ public class SeriesDaoImpl
         /**
          * Find a {@link Series} by Title.
          * The lookup is by EQUALITY and CASE-SENSITIVE.
-         * Searches SERIES_TITLE_OB on both "The Title" and "Title, The"
+         * Searches SERIES_TITLE_OB on both original and (potentially) reordered title.
          */
         private static final String FIND_BY_NAME =
                 SELECT_ALL
