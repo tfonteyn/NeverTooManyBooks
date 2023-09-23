@@ -31,42 +31,6 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 
 public interface Mergeable {
 
-    /**
-     * Create a hash on the {@link #getNameFields()} of the given Mergeable.
-     * <p>
-     * Uses the {@link SqlEncode#normalize(CharSequence)} version of the names.
-     *
-     * @param x to hash
-     *
-     * @return hash
-     */
-    static int createNameHash(@NonNull final Mergeable x) {
-        return Objects.hash(
-                x.getNameFields()
-                 .stream()
-                 .map(SqlEncode::normalize)
-                 .collect(Collectors.toList()));
-    }
-
-    /**
-     * Create a hash on the {@link #getNameFields()} of the given Mergeable.
-     * <p>
-     * Uses the ascii version of the names converted to an "ORDER BY" value.
-     *
-     * @param x      to hash
-     * @param locale the locale of the name
-     *
-     * @return hash
-     */
-    static int createNameHash(@NonNull final Mergeable x,
-                              @NonNull final Locale locale) {
-        return Objects.hash(
-                x.getNameFields()
-                 .stream()
-                 .map(name -> SqlEncode.orderByColumn(name, locale))
-                 .collect(Collectors.toList()));
-    }
-
     long getId();
 
     void setId(long id);
@@ -82,6 +46,38 @@ public interface Mergeable {
     List<String> getNameFields();
 
     /**
+     * Create a hash on the {@link #getNameFields()} of the given Mergeable.
+     * <p>
+     * Uses the ascii version of the names converted to an "ORDER BY" value.
+     *
+     * @param locale the locale of the name
+     *
+     * @return hash
+     */
+    default int createNameHash(@NonNull final Locale locale) {
+        return Objects.hash(
+                getNameFields()
+                        .stream()
+                        .map(name -> SqlEncode.orderByColumn(name, locale))
+                        .collect(Collectors.toList()));
+    }
+
+    /**
+     * Create a hash on the {@link #getNameFields()} of the given Mergeable.
+     * <p>
+     * Uses the {@link SqlEncode#normalize(CharSequence)} version of the names.
+     *
+     * @return hash
+     */
+    default int createNameHash() {
+        return Objects.hash(
+                getNameFields()
+                        .stream()
+                        .map(SqlEncode::normalize)
+                        .collect(Collectors.toList()));
+    }
+
+    /**
      * Convenience method to compare two Mergeable's.
      *
      * @param that the one to compare with
@@ -89,7 +85,7 @@ public interface Mergeable {
      * @return {@code true} if its the same name
      */
     default boolean isSameName(@NonNull final Mergeable that) {
-        return createNameHash(this) == createNameHash(that);
+        return this.createNameHash() == that.createNameHash();
     }
 
     /**
@@ -104,6 +100,6 @@ public interface Mergeable {
     default boolean isSameName(@NonNull final Locale locale,
                                @NonNull final Mergeable that,
                                @NonNull final Locale thatLocale) {
-        return createNameHash(this, locale) == createNameHash(that, thatLocale);
+        return this.createNameHash(locale) == that.createNameHash(thatLocale);
     }
 }
