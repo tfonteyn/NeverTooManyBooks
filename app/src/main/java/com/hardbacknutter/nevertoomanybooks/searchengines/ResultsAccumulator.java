@@ -266,6 +266,7 @@ class ResultsAccumulator {
      * Accumulate ParcelableArrayList data.
      * <p>
      * Data is always appended to any previous data.
+     * There are <strong>NO CHECKS FOR DUPLICATION</strong>.
      *
      * @param <T>      type of items in the ArrayList
      * @param key      Key of data
