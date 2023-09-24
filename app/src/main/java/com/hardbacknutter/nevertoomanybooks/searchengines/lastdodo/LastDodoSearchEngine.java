@@ -31,6 +31,8 @@ import androidx.preference.PreferenceManager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -52,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeAuthorResolver;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -313,7 +317,7 @@ public class LastDodoSearchEngine
         for (final Element section : sections) {
             final Element sectionTitle = section.selectFirst("h2.section-title");
             if (sectionTitle != null) {
-                if ("Verhalen in dit album" .equals(sectionTitle.text())) {
+                if ("Verhalen in dit album".equals(sectionTitle.text())) {
                     tocSection = section;
                     break;
                 }
@@ -327,7 +331,7 @@ public class LastDodoSearchEngine
                 final Element th = divRows.selectFirst("div.label");
                 final Element td = divRows.selectFirst("div.value");
                 if (th != null && td != null) {
-                    if ("Verhaaltitel" .equals(th.text())) {
+                    if ("Verhaaltitel".equals(th.text())) {
                         toc.add(new TocEntry(book.getAuthors().get(0), td.text()));
                     }
                 }
@@ -375,7 +379,7 @@ public class LastDodoSearchEngine
         }
 
         final Element sectionTitle = sections.get(0).selectFirst("h2.section-title");
-        if (sectionTitle == null || !"Catalogusgegevens" .equals(sectionTitle.text())) {
+        if (sectionTitle == null || !"Catalogusgegevens".equals(sectionTitle.text())) {
             return;
         }
 
@@ -454,7 +458,7 @@ public class LastDodoSearchEngine
 
                     case "ISBN":
                         tmpString = td.text();
-                        if (!"Geen" .equals(tmpString)) {
+                        if (!"Geen".equals(tmpString)) {
                             tmpString = ISBN.cleanText(tmpString);
                             if (!tmpString.isEmpty()) {
                                 book.putString(DBKey.BOOK_ISBN, tmpString);
@@ -471,7 +475,7 @@ public class LastDodoSearchEngine
                         break;
 
                     case "Afmetingen":
-                        if (!"? x ? cm" .equals(td.text())) {
+                        if (!"? x ? cm".equals(td.text())) {
                             processText(td, SiteField.SIZE, book);
                         }
                         break;
@@ -496,8 +500,11 @@ public class LastDodoSearchEngine
 
         // post-process all found data.
 
-        // It seems the site only lists a single number, although a book can be in several
-        // Series.
+
+        normalizeSeriesTitles(context, book);
+
+        // It seems the site only lists a single number,
+        // although a book can be in several Series.
         if (tmpSeriesNr != null && !tmpSeriesNr.isEmpty()) {
             final List<Series> seriesList = book.getSeries();
             if (seriesList.size() == 1) {
@@ -542,6 +549,47 @@ public class LastDodoSearchEngine
         if (fetchCovers[0] || fetchCovers[1]) {
             final String isbn = book.getString(DBKey.BOOK_ISBN);
             parseCovers(context, document, isbn, fetchCovers, book);
+        }
+    }
+
+    /**
+     * The site uses a mix of "The title" and "Title, The".
+     * We need to explicitly re-normalise the second format.
+     *
+     * @param context Current context
+     * @param book    to process
+     */
+    @VisibleForTesting
+    public void normalizeSeriesTitles(@NonNull final Context context,
+                                      @NonNull final Book book) {
+
+        final List<Series> seriesList = book.getSeries();
+        if (!seriesList.isEmpty()) {
+            // Determine the book locale as best as we can
+            final String language = book.getString(DBKey.LANGUAGE);
+            @Nullable
+            final Locale localeFromLang;
+            if (language.isBlank()) {
+                localeFromLang = null;
+            } else {
+                localeFromLang = ServiceLocator.getInstance().getAppLocale()
+                                               .getLocale(context, language).orElse(null);
+            }
+
+            final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
+            final List<Locale> locales = LocaleListUtils.asList(context, null);
+            // Check and reverse as needed
+            seriesList.forEach(series -> {
+                String title = series.getTitle();
+                title = reorderHelper.reverse(context, title, localeFromLang, locales);
+                series.setTitle(title);
+            });
+
+            // finally remove potential duplicates
+            final Locale locale = Objects
+                    .requireNonNullElseGet(localeFromLang, () -> getLocale(context));
+            ServiceLocator.getInstance().getSeriesDao()
+                          .pruneList(context, seriesList, series -> locale);
         }
     }
 
