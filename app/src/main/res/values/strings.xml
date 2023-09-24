@@ -1620,6 +1620,8 @@
     <string name="pe_grid">Grid</string>
     <string name="pt_bob_grid_spancount">Grid columns</string>
 
+    <string name="pt_normalize_series_title">Normalize series titles (EXPERIMENTAL, see About/Help)</string>
+
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
 

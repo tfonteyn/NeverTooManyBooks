@@ -220,6 +220,15 @@
             android:summary="@string/ps_manage_fields"
             />
 
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_baseline_reorder_24"
+            android:key="normalize.series.title"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_normalize_series_title" />
+
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_baseline_tab_24"

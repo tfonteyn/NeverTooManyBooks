@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.settings;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.fastscroller.OverlayProviderFactory;
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
@@ -39,6 +40,7 @@ public final class Prefs {
 
     public static final String pk_search_reformat_format = "search.reformat.format";
     public static final String pk_search_reformat_color = "search.reformat.color";
+    public static final String pk_normalize_series_title = "normalize.series.title";
     public static final String pk_search_isbn_prefer_10 = "search.byIsbn.prefer.10";
     public static final String pk_search_show_shopping_menu = "search.shopping.menu";
 
@@ -77,5 +79,10 @@ public final class Prefs {
         return IntListPref.getInt(context,
                                   pk_booklist_fastscroller_overlay,
                                   OverlayProviderFactory.TYPE_MD2);
+    }
+
+    public static boolean normalizeSeriesTitle(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(pk_normalize_series_title, false);
     }
 }
