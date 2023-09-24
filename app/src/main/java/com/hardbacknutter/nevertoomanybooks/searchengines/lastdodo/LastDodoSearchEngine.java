@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,7 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -55,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeAuthorResolver;
-import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -567,29 +564,22 @@ public class LastDodoSearchEngine
         if (!seriesList.isEmpty()) {
             // Determine the book locale as best as we can
             final String language = book.getString(DBKey.LANGUAGE);
-            @Nullable
-            final Locale localeFromLang;
+            @NonNull
+            final Locale locale;
             if (language.isBlank()) {
-                localeFromLang = null;
+                // No book language -> use site Locale
+                locale = getLocale(context);
             } else {
-                localeFromLang = ServiceLocator.getInstance().getAppLocale()
-                                               .getLocale(context, language).orElse(null);
+                // Get the Locale from the language, but if that fails
+                // just use the site Locale
+                locale = ServiceLocator.getInstance().getAppLocale()
+                                       .getLocale(context, language)
+                                       .orElseGet(() -> getLocale(context));
             }
 
-            final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
-            final List<Locale> locales = LocaleListUtils.asList(context, null);
-            // Check and reverse as needed
-            seriesList.forEach(series -> {
-                String title = series.getTitle();
-                title = reorderHelper.reverse(context, title, localeFromLang, locales);
-                series.setTitle(title);
-            });
-
-            // finally remove potential duplicates
-            final Locale locale = Objects
-                    .requireNonNullElseGet(localeFromLang, () -> getLocale(context));
+            // Force normalization!
             ServiceLocator.getInstance().getSeriesDao()
-                          .pruneList(context, seriesList, series -> locale);
+                          .pruneList(context, seriesList, true, series -> locale);
         }
     }
 
