@@ -30,10 +30,12 @@
     <string name="app_name"
             translatable="false">&APP_NAME;</string>
 
-    <string name="lbl_sourcecode_url"
+    <string name="lbl_github"
             translatable="false">github</string>
     <string name="sourcecode_url"
             translatable="false">https://github.com/tfonteyn/NeverTooManyBooks</string>
+    <string name="help_url"
+            translatable="false">https://github.com/tfonteyn/NeverTooManyBooks/wiki</string>
 
     <!--  acronyms -->
     <string name="lbl_isbn"
