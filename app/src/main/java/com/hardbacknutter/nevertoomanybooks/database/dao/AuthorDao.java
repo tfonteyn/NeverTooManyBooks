@@ -28,8 +28,10 @@ import androidx.annotation.StringDef;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -61,6 +63,19 @@ public interface AuthorDao
      */
     @NonNull
     Cursor fetchAll();
+
+    /**
+     * Remove duplicates. We keep the first occurrence.
+     *
+     * @param context        Current context
+     * @param list           List to clean up
+     * @param localeSupplier deferred supplier for a {@link Locale}.
+     *
+     * @return {@code true} if the list was modified.
+     */
+    boolean pruneList(@NonNull Context context,
+                      @NonNull Collection<Author> list,
+                      @NonNull Function<Author, Locale> localeSupplier);
 
     /**
      * Return all the {@link AuthorWork} for the given {@link Author}.

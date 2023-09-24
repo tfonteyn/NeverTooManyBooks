@@ -19,13 +19,18 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao;
 
+import android.content.Context;
 import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
+import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 @SuppressWarnings("UnusedReturnValue")
 public interface SeriesDao
@@ -46,6 +51,26 @@ public interface SeriesDao
      */
     @NonNull
     Cursor fetchAll();
+
+    /**
+     * Remove duplicates. We keep the first occurrence.
+     *
+     * @param context        Current context
+     * @param list           List to clean up
+     * @param localeSupplier deferred supplier for a {@link Locale}.
+     *
+     * @return {@code true} if the list was modified.
+     */
+    default boolean pruneList(@NonNull final Context context,
+                              @NonNull final Collection<Series> list,
+                              @NonNull final Function<Series, Locale> localeSupplier) {
+        return pruneList(context, list, Prefs.normalizeSeriesTitle(context), localeSupplier);
+    }
+
+    boolean pruneList(@NonNull Context context,
+                      @NonNull Collection<Series> list,
+                      boolean normalizeTitles,
+                      @NonNull Function<Series, Locale> localeSupplier);
 
     /**
      * Get the language (ISO3) code for a {@link Series}.

@@ -29,7 +29,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -227,19 +226,6 @@ public interface EntityBookLinksDao<T extends Entity>
     void refresh(@NonNull Context context,
                  @NonNull T item,
                  @NonNull Supplier<Locale> localeSupplier);
-
-    /**
-     * Remove duplicates. We keep the first occurrence.
-     *
-     * @param context        Current context
-     * @param list           List to clean up
-     * @param localeSupplier deferred supplier for a {@link Locale}.
-     *
-     * @return {@code true} if the list was modified.
-     */
-    boolean pruneList(@NonNull Context context,
-                      @NonNull Collection<T> list,
-                      @NonNull Function<T, Locale> localeSupplier);
 
     /**
      * Delete orphaned records.
