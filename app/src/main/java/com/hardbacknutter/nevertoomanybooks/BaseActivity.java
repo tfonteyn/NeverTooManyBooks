@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -241,6 +242,11 @@ public abstract class BaseActivity
 
         } else if (itemId == R.id.MENU_SETTINGS) {
             editSettingsLauncher.launch(null);
+            return true;
+
+        } else if (itemId == R.id.MENU_HELP) {
+            startActivity(new Intent(Intent.ACTION_VIEW,
+                                     Uri.parse(getString(R.string.help_url))));
             return true;
 
         } else if (itemId == R.id.MENU_ABOUT) {

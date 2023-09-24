@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -30,6 +30,11 @@
         android:id="@id/MENU_SETTINGS"
         android:icon="@drawable/ic_baseline_settings_24"
         android:title="@string/lbl_settings" />
+
+    <item
+        android:id="@id/MENU_HELP"
+        android:icon="@drawable/ic_baseline_help_outline_24"
+        android:title="@string/action_help" />
 
     <item
         android:id="@id/MENU_ABOUT"
