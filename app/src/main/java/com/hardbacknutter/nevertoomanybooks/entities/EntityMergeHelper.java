@@ -76,10 +76,10 @@ public abstract class EntityMergeHelper<T extends Mergeable> {
      *
      * @return {@code true} if the list was modified.
      */
-    public boolean merge(@NonNull final Context context,
-                         @NonNull final Collection<T> list,
-                         @NonNull final Function<T, Locale> localeProvider,
-                         @NonNull final BiConsumer<T, Locale> idFixer) {
+    public final boolean merge(@NonNull final Context context,
+                               @NonNull final Collection<T> list,
+                               @NonNull final Function<T, Locale> localeProvider,
+                               @NonNull final BiConsumer<T, Locale> idFixer) {
 
         boolean listModified = false;
         final Iterator<T> iterator = list.iterator();
