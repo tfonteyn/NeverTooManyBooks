@@ -176,7 +176,9 @@ public class SeriesTest
         list.add(series2);
 
 
-        final boolean modified = seriesDao.pruneList(context, list, item -> bookLocale);
+        // Note we force normalization here - this is the test for it... duh...
+        final boolean modified = seriesDao.pruneList(context, list, true,
+                                                     item -> bookLocale);
 
         assertTrue("Failed to prune", modified);
         assertEquals(1, list.size());
