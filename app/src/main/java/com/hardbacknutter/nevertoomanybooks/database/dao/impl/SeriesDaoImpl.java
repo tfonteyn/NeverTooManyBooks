@@ -52,7 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.SeriesMergeHelper;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -248,6 +247,17 @@ public class SeriesDaoImpl
                              @NonNull final Function<Series, Locale> localeSupplier) {
         if (list.isEmpty()) {
             return false;
+        }
+
+        if (normalizeTitles) {
+            final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
+            final List<Locale> locales = LocaleListUtils.asList(context, null);
+            list.forEach(series -> {
+                String title = series.getTitle();
+                title = reorderHelper.reverse(context, title,
+                                              localeSupplier.apply(series), locales);
+                series.setTitle(title);
+            });
         }
 
         final SeriesMergeHelper mergeHelper = new SeriesMergeHelper();
