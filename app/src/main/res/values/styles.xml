@@ -249,8 +249,8 @@
     </style>
 
     <style name="Button.Url.GitHub">
-        <item name="android:text">@string/lbl_sourcecode_url</item>
         <item name="icon">@drawable/ic_github_24px</item>
+        <item name="android:layout_width">160dp</item>
     </style>
 
     <!-- *************************************************************************************** -->

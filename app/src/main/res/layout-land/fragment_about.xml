@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -158,6 +158,7 @@
     <Button
         android:id="@+id/btn_sourcecode_url"
         style="@style/Button.Url.GitHub"
+        android:text="@string/lbl_github"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_contacts"
         />
