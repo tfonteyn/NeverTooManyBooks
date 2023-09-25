@@ -53,7 +53,7 @@
     <string name="X_btn_customize">Anpassen…</string>
     <string name="X_btn_do_not_show_again">Nicht mehr anzeigen</string>
     <string name="X_btn_show_list">Liste anzeigen</string>
-    <string name="confirm_continue">Sind Sie sicher, dass Sie fortfahren möchten ?</string>
+    <string name="confirm_continue">Sind Sie sicher, dass Sie fortfahren möchten?</string>
     <string name="X_error_authentication_failed">Authentifizierung fehlgeschlagen</string>
     <string name="X_error_download_failed">Herunterladen fehlgeschlagen</string>
     <string name="error_record_must_contain_column">Der Datensatz muss ein Feld namens „%1$s“ enthalten.</string>
@@ -188,9 +188,9 @@
     <string name="confirm_merge_publishers">Der Verlag, das Sie umbenennen, ist bereits vorhanden. Möchten Sie sie zusammenführen?</string>
     <string name="confirm_merge_series">Die Serie, das Sie umbenennen, ist bereits vorhanden. Möchten Sie sie zusammenführen?</string>
     <string name="confirm_overwrite_cover">Die ausgewählten Felder werden wie gezeigt aktualisiert. Die Buchumschläge können optional für ALLE Bücher heruntergeladen werden.\n\nSollen alle bestehenden Buchumschläge überschrieben werden? Warnung, die Aktualisierung kann lange dauern.</string>
-    <string name="confirm_rebuild_fts">Die Suchindexdaten werden beim Neustart der App neu erstellt. Bist du dir sicher, dass du weitermachen willst ?</string>
-    <string name="confirm_rebuild_index">Die Indizes werden beim Neustart der App neu erstellt. Bist du dir sicher, dass du weitermachen willst ?</string>
-    <string name="confirm_rebuild_orderby_columns">Dadurch werden die Sortierdaten neu erstellt, wenn die App neu gestartet wird. Bist du dir sicher, dass du weitermachen willst ?</string>
+    <string name="confirm_rebuild_fts">Die Suchindexdaten werden beim Neustart der App neu erstellt. Bist du dir sicher, dass du weitermachen willst?</string>
+    <string name="confirm_rebuild_index">Die Indizes werden beim Neustart der App neu erstellt. Bist du dir sicher, dass du weitermachen willst?</string>
+    <string name="confirm_rebuild_orderby_columns">Dadurch werden die Sortierdaten neu erstellt, wenn die App neu gestartet wird. Bist du dir sicher, dass du weitermachen willst?</string>
     <string name="confirm_registration_benefits">Diese Funktion profitiert von der Registrierung bei %1$s. Möchten Sie weitere Informationen sehen oder diese Nachricht deaktivieren?\n Sie finden diese Informationen zu einem späteren Zeitpunkt in den Einstellungen unter „%2$s“.</string>
     <string name="confirm_registration_required">Diese Funktion erfordert eine Registrierung bei %1$s. Möchten Sie weitere Informationen sehen?</string>
     <string name="confirm_remove_toc_entry">Den Titel „%1$s“ von %2$s aus diesem Buch entfernen?</string>
