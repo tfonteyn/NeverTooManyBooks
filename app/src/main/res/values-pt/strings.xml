@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “...”  (older «…» are no longer used as verified with a native speaker) - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pt">
@@ -450,7 +447,7 @@
     <string name="book_format_softcover_oblong">Capa mole - Oblonga</string>
     <string name="book_format_digest">Selecções</string>
     <string name="style_type_builtin">Embutido</string>
-    <string name="confirm_rebuild_fts">Isto recriará os dados do índice de pesquisa quando a aplicação for reiniciada. Tem certeza de que deseja continuar?</string>
+    <string name="confirm_rebuild_fts">Isto recriará os dados do índice de pesquisa quando a aplicação for reiniciada. Tem certeza de que deseja continuar\?</string>
     <string name="lbl_add_book">Adicionar livro</string>
     <string name="confirm_registration_required">Esta função requer registo com %1$s. Gostaria de ver mais informações?</string>
     <string name="lbl_search_isbn">Pesquisa ISBN</string>
@@ -511,7 +508,7 @@
     <string name="X_pt_site_settings">Configurações do site</string>
     <string name="lbl_strip_info_mapped_bookshelf_wishlist">Estante atribuída à sua lista de desejos</string>
     <string name="X_lbl_updated">Atualizado</string>
-    <string name="confirm_rebuild_index">Isto recriará os índices quando a aplicação for reiniciada. Tem certeza de que deseja continuar?</string>
+    <string name="confirm_rebuild_index">Isto recriará os índices quando a aplicação for reiniciada. Tem certeza de que deseja continuar\?</string>
     <string name="lbl_author">Autor</string>
     <string name="lbl_authors">Autores</string>
     <string name="lbl_author_pseudonym">Pseudônimo do autor</string>
@@ -530,7 +527,7 @@
     <string name="lbl_library">Biblioteca</string>
     <string name="X_action_swap">Trocar</string>
     <string name="X_btn_customize">Personalizar…</string>
-    <string name="confirm_continue">Tem certeza de que deseja continuar?</string>
+    <string name="confirm_continue">Tem certeza de que deseja continuar\?</string>
     <string name="X_txt_thank_you">Obrigado!</string>
     <string name="X_txt_import_books_option_all_books">Novos livros serão adicionados. Os livros existentes serão atualizados.</string>
     <string name="lbl_sync_date">Desde</string>
@@ -733,7 +730,7 @@
     <string name="lbl_website_address">Endereço do site (URL)</string>
     <string name="option_fab_add_book_by_external_id">ID do livro do site</string>
     <string name="confirm_create_real_author">“%1$s” ainda não existe. Devem ser criados?</string>
-    <string name="confirm_rebuild_orderby_columns">Isto recriará os dados de classificação quando a aplicação for reiniciada. Tem certeza de que deseja continuar?</string>
+    <string name="confirm_rebuild_orderby_columns">Isto recriará os dados de classificação quando a aplicação for reiniciada. Tem certeza de que deseja continuar\?</string>
     <string name="confirm_registration_benefits">Esta função beneficia do registo em %1$s. Gostaria de ver mais informações, ou desativar esta mensagem?
 \n Pode encontrar estas informações posteriormente na secção “%2$s” das configurações.</string>
     <string name="action_add_with_details">Adicionar com detalhes</string>
@@ -759,7 +756,7 @@
     <string name="pe_camera_back">Câmera traseira</string>
     <string name="option_purge_bedetheque_authors_cache">Limpar cache de autores do Bedetheque</string>
     <string name="option_rebuild_fts">Reconstruir dados da Pesquisa de Texto Completo</string>
-    <string name="info_purge_blns_item_name">Limpar o estado do nó para %1$s “%2$s”?</string>
+    <string name="info_purge_blns_item_name">Limpar o estado do nó para %1$s “%2$s”\?</string>
     <string name="option_bob_filter_read_no">Livros Não Lidos</string>
     <string name="option_bob_filter_signed_yes">Livros Assinados</string>
     <string name="option_bob_filter_signed_no">Livros não assinados</string>
