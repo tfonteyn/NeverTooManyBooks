@@ -290,7 +290,7 @@
     <string name="vldt_non_blank_required">Non-empty value required</string>
     <!-- The (param 1) field must not be blank -->
     <string name="vldt_non_blank_required_for_x">Non-empty value required for “%1$s”</string>
-    <!-- The (param 1) field MUST be blank. (todo: is this actually used??) -->
+    <!-- The (param 1) field MUST be blank. (todo: is this actually used?) -->
     <string name="vldt_blank_required_for_x">Empty value required for “%1$s”</string>
     <!-- Specific to a check on the "reading started" versus "reading ended" dates. -->
     <string name="vldt_read_start_after_end">The date reading started, is after the end date</string>
@@ -732,7 +732,7 @@
     <string name="option_enable_sync_options">Enable sync options</string>
     <!-- endregion -->
     <!-- region ========== Messages for actions that need confirming first. -->
-    <string name="confirm_continue">Are you sure you want to continue ?</string>
+    <string name="confirm_continue">Are you sure you want to continue?</string>
     <string name="confirm_unsaved_edits">You have unsaved changes, if you exit now they will be lost.</string>
     <string name="confirm_delete_series">Delete the series “%1$s”?\n\nThe books themselves will not be deleted.\n\nConsider editing the series and changing the series name to that of another series to preserve this data.</string>
     <string name="confirm_delete_publisher">Delete the publisher “%1$s”?\n\nThe books themselves will not be deleted.\n\nConsider editing the publisher and changing the publisher name to that of another publisher to preserve this data.</string>
@@ -771,9 +771,9 @@
     <string name="confirm_no_missing_covers_search_from_top">All books below this row have covers. Search again from the top?</string>
     <!-- Displayed when the user changes their sorting preference.
          When doing this, the sorting information in the database needs to be rebuild. -->
-    <string name="confirm_rebuild_orderby_columns">This will rebuild the sorting data when the app is restarted. Are you sure you want to continue ?</string>
-    <string name="confirm_rebuild_fts">This will rebuild the search index data when the app is restarted. Are you sure you want to continue ?</string>
-    <string name="confirm_rebuild_index">This will rebuild the indexes when the app is restarted. Are you sure you want to continue ?</string>
+    <string name="confirm_rebuild_orderby_columns">This will rebuild the sorting data when the app is restarted. Are you sure you want to continue?</string>
+    <string name="confirm_rebuild_fts">This will rebuild the search index data when the app is restarted. Are you sure you want to continue?</string>
+    <string name="confirm_rebuild_index">This will rebuild the indexes when the app is restarted. Are you sure you want to continue?</string>
     <!-- Param 1: website name -->
     <string name="confirm_registration_required">This feature requires registration with %1$s. Would you like to see more information?</string>
     <!-- Param 1: website name -->
@@ -1338,7 +1338,7 @@
     <!-- Clear the status for a single type. e.g. a style, a shelf, ...
         param 1: type of item; param 2: item name.
          e.g.: "Clear the node status for Bookshelf “ToRead” -->
-    <string name="info_purge_blns_item_name">Clear the node state for %1$s “%2$s” ?</string>
+    <string name="info_purge_blns_item_name">Clear the node state for %1$s “%2$s”?</string>
     <!-- [VERIFIED]  Collect debug information and prepare an email to the developers -->
     <string name="option_bug_report">Bug report</string>
     <!-- Explanatory note for the bug report. -->
