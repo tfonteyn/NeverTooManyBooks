@@ -56,7 +56,7 @@
     <string name="X_btn_customize">Configurar…</string>
     <string name="X_btn_do_not_show_again">No volver a mostrar</string>
     <string name="X_btn_show_list">Mostrar lista</string>
-    <string name="confirm_continue">Estás seguro de que quieres continuar ?</string>
+    <string name="confirm_continue">Estás seguro de que quieres continuar?</string>
     <string name="X_error_authentication_failed">Autenticación fallida</string>
     <string name="X_error_download_failed">Descarga fracasó</string>
     <string name="error_record_must_contain_column">El registro debe contener un campo llamado %1$s.</string>
@@ -195,9 +195,9 @@
     <string name="confirm_merge_publishers">El editor al que está renombrando ya existe. ¿Te gustaría fusionarlos?</string>
     <string name="confirm_merge_series">Las series al que está renombrando ya existe. ¿Te gustaría fusionarlos?</string>
     <string name="confirm_overwrite_cover">Los campos seleccionados se actualizarán tal y como se muestra, pero las imágenes de portadas se pueden descargar, si lo desea, para TODOS los libros.\n\n¿Desea sobreescribir todas las portadas existentes? ¡Atención!, esto puede requerir un tiempo considerable.</string>
-    <string name="confirm_rebuild_fts">Los datos del índice de búsqueda se reconstruirán cuando se reinicie la aplicación. Estás seguro de que quieres continuar ?</string>
-    <string name="confirm_rebuild_index">Los índices se reconstruirán cuando se reinicie la aplicación. Estás seguro de que quieres continuar ?</string>
-    <string name="confirm_rebuild_orderby_columns">Esto reconstruirá los datos de clasificación cuando se reinicie la aplicación. Estás seguro de que quieres continuar ?</string>
+    <string name="confirm_rebuild_fts">Los datos del índice de búsqueda se reconstruirán cuando se reinicie la aplicación. Estás seguro de que quieres continuar?</string>
+    <string name="confirm_rebuild_index">Los índices se reconstruirán cuando se reinicie la aplicación. Estás seguro de que quieres continuar?</string>
+    <string name="confirm_rebuild_orderby_columns">Esto reconstruirá los datos de clasificación cuando se reinicie la aplicación. Estás seguro de que quieres continuar?</string>
     <string name="confirm_registration_benefits">Esta característica se beneficia del registro con %1$s. ¿Desea ver más información o deshabilitar este mensaje?\nPuede encontrar esta información más adelante en la sección «%2$s» en la configuración.</string>
     <string name="confirm_registration_required">Esta función requiere registro con %1$s. ¿Te gustaría ver más información?</string>
     <string name="confirm_remove_toc_entry">¿Eliminar el título «%1$s» de %2$s este libro?</string>
