@@ -33,7 +33,7 @@
 
     <item
         android:id="@id/MENU_HELP"
-        android:icon="@drawable/ic_baseline_help_outline_24"
+        android:icon="@drawable/ic_baseline_help_24"
         android:title="@string/action_help" />
 
     <item

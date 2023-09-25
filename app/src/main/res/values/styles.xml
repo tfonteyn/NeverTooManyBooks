@@ -200,7 +200,7 @@
         <item name="android:layout_marginTop">4dp</item>
         <item name="android:layout_marginStart">8dp</item>
         <item name="android:padding">0dp</item>
-        <item name="icon">@drawable/ic_baseline_help_outline_24</item>
+        <item name="icon">@drawable/ic_baseline_help_24</item>
     </style>
 
 
