@@ -53,7 +53,7 @@
     <string name="X_btn_customize">Προσαρμογή…</string>
     <string name="X_btn_do_not_show_again">Μην εμφανιστείς ξανά</string>
     <string name="X_btn_show_list">Εμφάνιση λίστας</string>
-    <string name="confirm_continue">Εισαι σιγουρος οτι θελεις να συνεχισεις ?</string>
+    <string name="confirm_continue">Εισαι σιγουρος οτι θελεις να συνεχισεις;</string>
     <string name="X_error_authentication_failed">Η ταυτοποίηση απέτυχε</string>
     <string name="X_error_download_failed">Η λήψη απέτυχε</string>
     <string name="error_record_must_contain_column">Η εγγραφή πρέπει να περιέχει ένα πεδίο με το όνομα «%1$s».</string>
@@ -188,9 +188,9 @@
     <string name="confirm_merge_publishers">Ο εκδότης που θέλετε να μετονομάσετε υπάρχει ήδη. Θέλετε να τα συγχωνεύσετε;</string>
     <string name="confirm_merge_series">Η σειρά που θέλετε να μετονομάσετε υπάρχει ήδη. Θέλετε να τα συγχωνεύσετε;</string>
     <string name="confirm_overwrite_cover">Τα επιλεγμένα πεδία θα ενημερωθούν όπως φαίνεται, αλλά οι Μικρογραφίες μπορούν να κατέβουν προαιρετικά για ΌΛΑ τα βιβλία.\n\nΘέλετε να αντικαταστήσετε όλες τις υπάρχουσες μικρογραφίες; Προσοχή, θα χρειαστεί πολύς χρόνος. </string>
-    <string name="confirm_rebuild_fts">Τα δεδομένα του ευρετηρίου αναζήτησης θα ξαναφτιάξουν κατά την επανεκκίνηση της εφαρμογής. Εισαι σιγουρος οτι θελεις να συνεχισεις ?</string>
-    <string name="confirm_rebuild_index">Τα ευρετήρια θα ξαναχτίζονται κατά την επανεκκίνηση της εφαρμογής. Εισαι σιγουρος οτι θελεις να συνεχισεις ?</string>
-    <string name="confirm_rebuild_orderby_columns">Αυτό θα επαναδημιουργήσει τα δεδομένα ταξινόμησης κατά την επανεκκίνηση της εφαρμογής. Εισαι σιγουρος οτι θελεις να συνεχισεις ?</string>
+    <string name="confirm_rebuild_fts">Τα δεδομένα του ευρετηρίου αναζήτησης θα ξαναφτιάξουν κατά την επανεκκίνηση της εφαρμογής. Εισαι σιγουρος οτι θελεις να συνεχισεις;</string>
+    <string name="confirm_rebuild_index">Τα ευρετήρια θα ξαναχτίζονται κατά την επανεκκίνηση της εφαρμογής. Εισαι σιγουρος οτι θελεις να συνεχισεις;</string>
+    <string name="confirm_rebuild_orderby_columns">Αυτό θα επαναδημιουργήσει τα δεδομένα ταξινόμησης κατά την επανεκκίνηση της εφαρμογής. Εισαι σιγουρος οτι θελεις να συνεχισεις;</string>
     <string name="confirm_registration_benefits">Αυτή η δυνατότητα επωφελείται από την εγγραφή με %1$s. Θα θέλατε να δείτε περισσότερες πληροφορίες ή να απενεργοποιήσετε αυτό το μήνυμα;\n Μπορείτε να βρείτε αυτές τις πληροφορίες σε μεταγενέστερη ημερομηνία κάτω από την ενότητα «%2$s» στις ρυθμίσεις.</string>
     <string name="confirm_registration_required">Αυτή η λειτουργία απαιτεί εγγραφή με %1$s. Θα θέλατε να δείτε περισσότερες πληροφορίες;</string>
     <string name="confirm_remove_toc_entry">Να καταργηθεί ο τίτλος «%1$s» κατά %2$s από αυτό το βιβλίο;</string>
