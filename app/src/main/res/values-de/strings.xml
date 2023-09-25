@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“  - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -738,7 +735,7 @@
     <string name="book_format_softcover_oblong">Softcover - länglich</string>
     <string name="lbl_purge_blns">Löschen Sie den Knotenstatus</string>
     <string name="info_purge_blns_all">Löschen Sie den Knotenstatus aus allen Listen</string>
-    <string name="info_purge_blns_item_name">Knotenstatus von %1$s „%2$s“ löschen?</string>
+    <string name="info_purge_blns_item_name">Knotenstatus von %1$s „%2$s“ löschen\?</string>
     <string name="error_updates_aborted">Aktualisierungen abgebrochen</string>
     <string name="lbl_country">Land</string>
     <string name="lbl_strip_info_mapped_bookshelf_wishlist">Bücherregal Ihrer Wunschliste zugewiesen</string>
