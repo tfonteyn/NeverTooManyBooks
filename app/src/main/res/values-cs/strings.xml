@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -749,7 +746,7 @@
     <string name="book_format_softcover_oblong">Měkká vazba - podlouhlý</string>
     <string name="lbl_purge_blns">Vymažte stav uzlu</string>
     <string name="info_purge_blns_all">Vymažte stav uzlu ze všech seznamů</string>
-    <string name="info_purge_blns_item_name">Vymazat stav uzlu %1$s „%2$s“?</string>
+    <string name="info_purge_blns_item_name">Vymazat stav uzlu %1$s „%2$s“\?</string>
     <string name="error_updates_aborted">Aktualizace přerušeny</string>
     <string name="lbl_country">Země</string>
     <string name="lbl_strip_info_mapped_bookshelf_wishlist">Police na knihy přiřazená k vašemu seznamu přání</string>
@@ -773,7 +770,7 @@
     <string name="info_maintenance_sync_deleted_book_records">Zkontroluje se historie smazaných knih z předchozího importu z jiného zařízení a tato smazání se synchronizují. Jinými slovy, knihy smazané v jiném zařízení budou smazány i v tomto zařízení.</string>
     <string name="option_clear_deleted_book_records">Vymazání historie smazaných knih</string>
     <string name="info_maintenance_clear_deleted_book_records">Tato funkce vymaže historii smazaných knih. Žádné skutečné knihy nebudou odstraněny.</string>
-    <string name="error_type_not_supported">Type not supported: %1$s …</string>
+    <string name="error_type_not_supported">Typ není podporován: %1$s …</string>
     <string name="info_books_deleted">Smazané knihy: %1$d</string>
     <string name="progress_msg_x_deleted">%1$d smazáno</string>
     <string name="action_undo">Vrátit zpět</string>
