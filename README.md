@@ -27,8 +27,9 @@ Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyB
 ## User Interface languages:
 
 - English, Dutch, Portuguese.
-- German, French, Spanish: quality should be very good but may lack in some places.
-- Italian: should be usable, but certainly not perfect.
+- German, French, Spanish: quality should be very good but could benefit from a native speaker
+  verification.
+- Italian: should be usable, but certainly not perfect. Verification by a native speaker needed.
 - Czech, Greek, Polish, Russian, Turkish: mostly machine translated, no guarantees for quality.
 
 Translations are now integrated and editable
