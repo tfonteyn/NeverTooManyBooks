@@ -76,7 +76,7 @@
 
         <SwitchPreference
             android:defaultValue="true"
-            android:icon="@drawable/ic_baseline_edit_24"
+            android:icon="@drawable/ic_baseline_auto_fix_normal_24"
             android:key="search.reformat.format"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
@@ -84,7 +84,7 @@
 
         <SwitchPreference
             android:defaultValue="true"
-            android:icon="@drawable/ic_baseline_edit_24"
+            android:icon="@drawable/ic_baseline_auto_fix_normal_24"
             android:key="search.reformat.color"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
@@ -223,7 +223,7 @@
 
         <SwitchPreference
             android:defaultValue="false"
-            android:icon="@drawable/ic_baseline_reorder_24"
+            android:icon="@drawable/ic_baseline_auto_fix_normal_24"
             android:key="normalize.series.title"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
@@ -231,7 +231,7 @@
 
         <SwitchPreference
             android:defaultValue="false"
-            android:icon="@drawable/ic_baseline_reorder_24"
+            android:icon="@drawable/ic_baseline_auto_fix_normal_24"
             android:key="normalize.publisher.name"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
