@@ -35,6 +35,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
@@ -43,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.core.database.UncheckedDaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
@@ -196,9 +198,20 @@ public class PublisherDaoImpl
     @Override
     public boolean pruneList(@NonNull final Context context,
                              @NonNull final Collection<Publisher> list,
+                             final boolean normalize,
                              @NonNull final Function<Publisher, Locale> localeSupplier) {
-        if (list.size() < 2) {
+        if (list.isEmpty()) {
             return false;
+        }
+
+        if (normalize) {
+            final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
+            final List<Locale> locales = LocaleListUtils.asList(context, null);
+            list.forEach(publisher -> {
+                final String name = reorderHelper.reverse(context, publisher.getName(),
+                                                          localeSupplier.apply(publisher), locales);
+                publisher.setName(name);
+            });
         }
 
         final PublisherMergeHelper mergeHelper = new PublisherMergeHelper();

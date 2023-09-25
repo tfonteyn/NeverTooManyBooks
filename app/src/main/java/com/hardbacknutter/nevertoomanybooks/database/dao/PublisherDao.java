@@ -30,6 +30,7 @@ import java.util.Locale;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 @SuppressWarnings("UnusedReturnValue")
 public interface PublisherDao
@@ -60,7 +61,14 @@ public interface PublisherDao
      *
      * @return {@code true} if the list was modified.
      */
+    default boolean pruneList(@NonNull final Context context,
+                              @NonNull final Collection<Publisher> list,
+                              @NonNull final Function<Publisher, Locale> localeSupplier) {
+        return pruneList(context, list, Prefs.normalizePublisherName(context), localeSupplier);
+    }
+
     boolean pruneList(@NonNull Context context,
                       @NonNull Collection<Publisher> list,
+                      boolean normalize,
                       @NonNull Function<Publisher, Locale> localeSupplier);
 }

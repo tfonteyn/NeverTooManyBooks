@@ -243,19 +243,18 @@ public class SeriesDaoImpl
     @Override
     public boolean pruneList(@NonNull final Context context,
                              @NonNull final Collection<Series> list,
-                             final boolean normalizeTitles,
+                             final boolean normalize,
                              @NonNull final Function<Series, Locale> localeSupplier) {
         if (list.isEmpty()) {
             return false;
         }
 
-        if (normalizeTitles) {
+        if (normalize) {
             final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
             final List<Locale> locales = LocaleListUtils.asList(context, null);
             list.forEach(series -> {
-                String title = series.getTitle();
-                title = reorderHelper.reverse(context, title,
-                                              localeSupplier.apply(series), locales);
+                final String title = reorderHelper.reverse(context, series.getTitle(),
+                                                           localeSupplier.apply(series), locales);
                 series.setTitle(title);
             });
         }

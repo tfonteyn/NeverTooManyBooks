@@ -69,7 +69,7 @@ public interface SeriesDao
 
     boolean pruneList(@NonNull Context context,
                       @NonNull Collection<Series> list,
-                      boolean normalizeTitles,
+                      boolean normalize,
                       @NonNull Function<Series, Locale> localeSupplier);
 
     /**

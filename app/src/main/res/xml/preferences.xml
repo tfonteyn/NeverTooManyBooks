@@ -231,6 +231,14 @@
 
         <SwitchPreference
             android:defaultValue="false"
+            android:icon="@drawable/ic_baseline_reorder_24"
+            android:key="normalize.publisher.name"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_normalize_publisher_name" />
+
+        <SwitchPreference
+            android:defaultValue="false"
             android:icon="@drawable/ic_baseline_tab_24"
             android:key="edit.book.tab.externalId"
             android:summaryOff="@string/disabled"

@@ -65,8 +65,6 @@ public abstract class EntityMergeHelper<T extends Mergeable> {
 
     /**
      * Loop over the list and try to find and merge duplicates.
-     * <p>
-     * URGENT: add support for reordered versus non-reordered names
      *
      * @param context        Current context
      * @param list           to process
