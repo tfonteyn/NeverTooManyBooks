@@ -30,7 +30,7 @@
     <TextView
         android:id="@+id/header"
         style="@style/Text.Header.PreferenceCategory"
-        android:text="@string/pt_bob_book_level_sorting"
+        android:text="@string/lbl_sorting"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />

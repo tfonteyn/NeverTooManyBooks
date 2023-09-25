@@ -70,7 +70,7 @@
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleBooklistBookLevelSortingFragment"
             android:icon="@drawable/ic_baseline_sort_24"
             android:key="psk_style_book_level_sorting"
-            android:title="@string/pt_bob_book_level_sorting"
+            android:title="@string/lbl_sorting"
             />
 
         <ListPreference
