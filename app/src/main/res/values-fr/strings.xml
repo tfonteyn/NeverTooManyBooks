@@ -91,7 +91,7 @@
     <string name="X_tip_booklist_global_properties">Vous pouvez utiliser cet écran pour définir les caractéristiques par défaut de tous les styles de liste de livres. La plupart des propriétés peuvent être remplacées par des styles individuels, mais les valeurs par défaut sont définies ici. Vous pouvez modifier le mode d’affichage des listes au démarrage et définir diverses autres préférences qui seront appliquées à tous vos styles dans la mesure du possible.</string>
     <string name="X_txt_import_books_option_all_books">De nouveaux livres seront ajoutés. Les livres existants seront mis à jour.</string>
     <string name="X_txt_import_books_option_new_and_changed">Seuls les livres récemment ajoutés ou mis à jour dans la sauvegarde seront mis à jour. Cette option est utile lors de la synchronisation de deux appareils.</string>
-    <string name="X_txt_thank_you">Merci !</string>
+    <string name="X_txt_thank_you">Merci !</string>
     <string name="X_use_default_setting">Utiliser les paramètres par défaut</string>
     <string name="X_vldt_failed_for_x">La validation a échoué pour «%1$s»</string>
     <string name="X_warning_no_matching_book_found_long">Le livre n’a pas été trouvé. Il est parfois possible de trouver le code barre à l’intérieur de la première page de couverture. Sinon merci d’entrer les détails manuellement.</string>
@@ -702,7 +702,7 @@
     <string name="warning_image_copy_failed">L’image n’a pas pu être copiée.</string>
     <string name="warning_image_not_found">L’image est introuvable.</string>
     <string name="warning_immediate_global_changes">Note : toutes les modifications sont prises en compte immédiatement et globalement.</string>
-    <string name="warning_import_csv">Attention ! L’import de données peut provoquer la mise à jour de livres avec de nouvelles informations si les identifiants importés sont identiques à ceux existants. Cela est généralement correct si vous n’avez modifié qu’un champ dans un fichier exporté. Si vous avez intégralement créé un livre, assurez vous que le champ identifiant est vide.</string>
+    <string name="warning_import_csv">Attention ! L’import de données peut provoquer la mise à jour de livres avec de nouvelles informations si les identifiants importés sont identiques à ceux existants. Cela est généralement correct si vous n’avez modifié qu’un champ dans un fichier exporté. Si vous avez intégralement créé un livre, assurez vous que le champ identifiant est vide.</string>
     <string name="warning_import_csv_unescaped_quote">Caractère de guillemet non échappé à la ligne %1$d, position %2$d</string>
     <string name="warning_import_failed_for_lines_lots">L’analyse a échoué pour les lignes \n%1$s\n et autres.</string>
     <string name="warning_import_failed_for_lines_some">L’analyse a échoué pour les lignes \n%1$s\n</string>
