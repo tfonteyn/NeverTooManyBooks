@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -753,7 +750,7 @@
     <string name="book_format_softcover_oblong">Miękka okładka - podłużna</string>
     <string name="lbl_purge_blns">Wyczyść stan węzła</string>
     <string name="info_purge_blns_all">Wyczyść stan węzła ze wszystkich list</string>
-    <string name="info_purge_blns_item_name">Wyczyścić stan węzła %1$s „%2$s”?</string>
+    <string name="info_purge_blns_item_name">Wyczyścić stan węzła %1$s „%2$s”\?</string>
     <string name="error_updates_aborted">Aktualizacje przerwane</string>
     <string name="lbl_country">Kraj</string>
     <string name="lbl_strip_info_mapped_bookshelf_wishlist">Półka przypisana do listy życzeń</string>
