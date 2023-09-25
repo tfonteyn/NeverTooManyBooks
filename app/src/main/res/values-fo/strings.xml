@@ -61,6 +61,8 @@
     <string name="option_sort_and_style_ellipsis">Skilja og stílar…</string>
     <string name="option_level_expand">Lat up øll</string>
     <string name="option_level_reset">Einkarstigupplating</string>
+    <string name="lbl_export_books_option_all">Allar bøkur</string>
+    <string name="option_import_books_option_all">Allar bøkur</string>
     <string name="option_level_collapse">Lat øll aftur</string>
     <string name="option_book_sync_list_with_details">Samstilla/staðbind listin</string>
     <string name="option_set_read">Set sum lisið</string>
@@ -95,6 +97,7 @@
     <string name="notification_channel_error">Villa</string>
     <string name="notification_channel_warn">Ávaring</string>
     <string name="debug_email_subject">Samansavnað kembingarupplýsingar</string>
+    <string name="btn_all_books">Allar bøkur</string>
     <string name="debug_email_body">Vinarliga greið frá trupulleikan upplivaði.</string>
     <string name="httpErrorFailedSslHandshake">Kundi ikki sambinda trygt.</string>
     <string name="httpErrorAuth">Kundi ikki vátta.</string>

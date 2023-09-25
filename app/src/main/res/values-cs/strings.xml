@@ -69,7 +69,6 @@
     <string name="X_info_authorized_needed">Autorizovat přístup</string>
     <string name="X_info_not_authorized">Neautorizováno</string>
     <string name="X_info_site_authorization_successful">%1$s autorizace v pořádku</string>
-    <string name="X_lbl_about_sourcecode">Zdrojový kód</string>
     <string name="X_lbl_completed">Kompletní</string>
     <string name="X_lbl_cover_long">Obal knihy</string>
     <string name="X_lbl_delete_book">Smazat knihu</string>
@@ -786,4 +785,8 @@
     <string name="lbl_sort_ascending">Vzestupně</string>
     <string name="lbl_sort_descending">Sestupně</string>
     <string name="lbl_group">Skupina</string>
+    <string name="pt_layout">Rozložení</string>
+    <string name="pe_list">Seznam</string>
+    <string name="pe_grid">Mřížka</string>
+    <string name="pt_bob_grid_spancount">Sloupce mřížky</string>
 </resources>

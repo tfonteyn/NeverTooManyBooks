@@ -63,7 +63,6 @@
     <string name="X_info_authorized_needed">Erişime izin ver</string>
     <string name="X_info_not_authorized">Yetkilendirilmemiş</string>
     <string name="X_info_site_authorization_successful">%1$s yetkilendirmesi başarılı</string>
-    <string name="X_lbl_about_sourcecode">Kaynak kodu</string>
     <string name="X_lbl_completed">Tamamlandı</string>
     <string name="X_lbl_cover_long">Kitap kapağı</string>
     <string name="X_lbl_delete_book">Kitap sil</string>
@@ -781,4 +780,8 @@
     <string name="lbl_sort_ascending">Yükselen</string>
     <string name="lbl_sort_descending">Alçalma</string>
     <string name="lbl_group">Grup</string>
+    <string name="pt_layout">Düzen</string>
+    <string name="pe_list">Liste</string>
+    <string name="pe_grid">Izgara</string>
+    <string name="pt_bob_grid_spancount">Izgara sütunları</string>
 </resources>

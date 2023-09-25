@@ -98,6 +98,7 @@
     <plurals name="displaying_n_books">
         <item quantity="other">%1$d本书</item>
     </plurals>
+    <string name="option_cover_rotate_automatic">自动</string>
     <string name="name_colon_value">%1$s：%2$s</string>
     <string name="and_others_plus">%1$s … <small>[+%2$d]</small></string>
     <string name="fallback_currency_format">%1$s %2$.2f</string>
@@ -207,6 +208,8 @@
     <string name="style_type_user_defined">用户自定义</string>
     <string name="lbl_styles">风格</string>
     <string name="lbl_style">风格</string>
+    <string name="lbl_export_books_option_all">所有书籍</string>
+    <string name="option_import_books_option_all">所有书籍</string>
     <string name="lbl_group_read_and_unread">已读 &amp; 未读</string>
     <string name="book_format_hardcover_oblong">精装本 - 长方形</string>
     <string name="book_color_support_color">双色</string>
@@ -237,6 +240,9 @@
     <string name="book_format_paperback_large">平装本</string>
     <string name="info_tap_on_image_to_select">点击大图来选择它。</string>
     <string name="info_download_successful">下载成功</string>
+    <string name="lbl_author">作者</string>
+    <string name="lbl_author_type">作者类型</string>
+    <string name="lbl_authors">作者</string>
     <string name="info_calibre_content_server_extension">没有安装Calibre内容服务器扩展。</string>
     <string name="cd_btn_drag_handle">拖动可重新排序此列表</string>
     <string name="cd_clear_text_end_icon">清除文本</string>
@@ -251,6 +257,8 @@
     <string name="bob_empty_year">（未设置出版年）</string>
     <string name="bob_empty_month">（未设置出版月）</string>
     <string name="bob_empty_day">（未设置）</string>
+    <string name="bookshelf_all_books">所有书籍</string>
+    <string name="btn_all_books">所有书籍</string>
     <string name="action_email">电子邮件</string>
     <string name="action_learn_more">了解详情</string>
     <string name="size_bytes">%1$.0fB</string>
@@ -269,8 +277,14 @@
     <string name="action_undo">撤消</string>
     <string name="unknown">未知</string>
     <string name="cancelled">已取消</string>
+    <string name="unknown_author">[作者不详]</string>
+    <string name="unknown_title">[标题不明]</string>
     <string name="username">用户名</string>
     <string name="password">密码</string>
     <string name="none">无</string>
     <string name="action_more_ellipsis">更多…</string>
+    <string name="pt_layout">布局</string>
+    <string name="pe_list">列表</string>
+    <string name="pe_grid">网格</string>
+    <string name="pt_bob_grid_spancount">网格列</string>
 </resources>

@@ -1391,6 +1391,14 @@
     <string name="pv_bob_header_style_name">Style name</string>
     <!-- Option to show in the booklist header -->
     <string name="pv_bob_header_filters">Filters</string>
+    <!-- Label to select the list or grid layout for the Booklist. -->
+    <string name="pt_layout">Layout</string>
+    <!-- The Booklist layout is a list (original layout) -->
+    <string name="pe_list">List</string>
+    <!-- The Booklist layout is a grid of covers (new since v5) -->
+    <string name="pe_grid">Grid</string>
+    <!-- If the Booklist layout is a grid of covers, the amount of columns in the grid. -->
+    <string name="pt_bob_grid_spancount">Grid columns</string>
     <!-- SwitchPreference - Show thumbnail image for each book -->
     <string name="pt_bob_cover_show">Show covers</string>
     <!-- SeekBarPreference - Scale thumbnails in the list view. -->
@@ -1580,7 +1588,6 @@
     <string name="X_info_authorized_needed">Authorize Access</string>
     <string name="X_info_not_authorized">Not Authorized</string>
     <string name="X_info_site_authorization_successful">%1$s authorization successful</string>
-    <string name="X_lbl_about_sourcecode">Source Code</string>
     <string name="X_lbl_completed">Completed</string>
     <string name="X_lbl_created">Created</string>
     <string name="X_lbl_delete_book">Delete book</string>
@@ -1597,6 +1604,7 @@
     <string name="X_lbl_updated">Updated</string>
     <string name="X_lbl_virtual_library">Virtual Library</string>
     <string name="X_pg_general">General</string>
+    <string name="X_pt_bob_book_level_sorting">Book level sorting</string>
     <string name="X_pt_site_settings">Website settings</string>
     <string name="X_tip_booklist_global_properties">You can use this screen to set the default characteristics of all booklist styles. Most properties can be overridden by individual styles, but the default values are defined here. You can change how lists are displayed at startup, and adjust a variety of other preferences that will be applied to all your styles when possible.</string>
     <string name="X_txt_import_books_option_all_books">New books will be added. Existing books will be updated.</string>
@@ -1613,14 +1621,13 @@
     <string name="X_lbl_folder">Folder</string>
     <!-- endregion -->
 
-    <string name="pt_bob_book_level_sorting">Book level sorting</string>
 
-    <string name="pt_layout">Layout</string>
-    <string name="pe_list">List</string>
-    <string name="pe_grid">Grid</string>
-    <string name="pt_bob_grid_spancount">Grid columns</string>
-
-    <string name="pt_normalize_series_title">Normalize series titles (EXPERIMENTAL, see About/Help)</string>
+    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
+    <string name="pt_normalize_series_title"
+            translatable="false">Normalize series titles (EXPERIMENTAL, see Help)</string>
+    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
+    <string name="pt_normalize_publisher_name"
+            translatable="false">Normalize publisher names (EXPERIMENTAL, see Help)</string>
 
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>-->

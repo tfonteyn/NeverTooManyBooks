@@ -69,7 +69,6 @@
     <string name="X_info_authorized_needed">Авторизация</string>
     <string name="X_info_not_authorized">Не авторизовано</string>
     <string name="X_info_site_authorization_successful">Авторизация %1$s прошла успешно</string>
-    <string name="X_lbl_about_sourcecode">Исходный код</string>
     <string name="X_lbl_completed">Завершено</string>
     <string name="X_lbl_cover_long">Эскиз обложки</string>
     <string name="X_lbl_delete_book">Удалить книгу</string>
@@ -787,4 +786,8 @@
     <string name="lbl_sort_ascending">По возрастанию</string>
     <string name="lbl_sort_descending">Нисходящий</string>
     <string name="lbl_group">Группа</string>
+    <string name="pt_layout">Макет</string>
+    <string name="pe_list">Список</string>
+    <string name="pe_grid">Сетка</string>
+    <string name="pt_bob_grid_spancount">Колонки сетки</string>
 </resources>

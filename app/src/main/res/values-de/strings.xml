@@ -63,7 +63,6 @@
     <string name="X_info_authorized_needed">Zugriff autorisieren</string>
     <string name="X_info_not_authorized">Nicht autorisiert</string>
     <string name="X_info_site_authorization_successful">Autorisierung bei %1$s erfolgreich</string>
-    <string name="X_lbl_about_sourcecode">Quellcode</string>
     <string name="X_lbl_completed">Abgeschlossen</string>
     <string name="X_lbl_cover_long">Buchumschlag</string>
     <string name="X_lbl_delete_book">Buch löschen</string>
@@ -774,4 +773,8 @@
     <string name="lbl_sort_ascending">Aufsteigend</string>
     <string name="lbl_sort_descending">Absteigend</string>
     <string name="lbl_group">Gruppe</string>
+    <string name="pt_layout">Layout</string>
+    <string name="pe_list">Liste</string>
+    <string name="pe_grid">Raster</string>
+    <string name="pt_bob_grid_spancount">Raster-Spalten</string>
 </resources>

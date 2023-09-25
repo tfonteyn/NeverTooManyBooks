@@ -695,7 +695,6 @@
     <string name="X_btn_show_list">Mostrar lista</string>
     <string name="X_error_not_available">%1$s não está disponível.</string>
     <string name="X_info_site_authorization_successful">%1$s autorização bem sucedida</string>
-    <string name="X_lbl_about_sourcecode">Código fonte</string>
     <string name="X_lbl_completed">Concluído</string>
     <string name="pt_maintenance">Manutenção</string>
     <string name="pe_bob_list_rebuild_state_preserve">Preservar o estado atual</string>
@@ -808,4 +807,8 @@
     <string name="lbl_sort_ascending">Ascendente</string>
     <string name="lbl_sort_descending">Descendente</string>
     <string name="lbl_group">Grupo</string>
+    <string name="pt_layout">Disposição</string>
+    <string name="pe_list">Lista</string>
+    <string name="pe_grid">Grelha</string>
+    <string name="pt_bob_grid_spancount">Colunas da grelha</string>
 </resources>

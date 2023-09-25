@@ -63,7 +63,6 @@
     <string name="X_info_authorized_needed">Έγκριση Πρόσβασης</string>
     <string name="X_info_not_authorized">Χωρίς άδεια</string>
     <string name="X_info_site_authorization_successful">Επιτυχής η αδειοδότηση %1$s</string>
-    <string name="X_lbl_about_sourcecode">Πηγαίος Κώδικας</string>
     <string name="X_lbl_completed">Ολοκληρώθηκαν</string>
     <string name="X_lbl_cover_long">εξώφυλλο βιβλίου</string>
     <string name="X_lbl_delete_book">Διαγραφή Βιβλίου</string>
@@ -775,4 +774,8 @@
     <string name="lbl_sort_ascending">Ανοδική</string>
     <string name="lbl_sort_descending">Κατιούσα</string>
     <string name="lbl_group">Ομάδα</string>
+    <string name="pt_layout">Διάταξη</string>
+    <string name="pe_list">Λίστα</string>
+    <string name="pe_grid">Πλέγμα</string>
+    <string name="pt_bob_grid_spancount">Στήλες πλέγματος</string>
 </resources>

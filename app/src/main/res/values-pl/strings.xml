@@ -70,7 +70,6 @@
     <string name="X_info_authorized_needed">Autoryzuj dostęp</string>
     <string name="X_info_not_authorized">Nieautoryzowany</string>
     <string name="X_info_site_authorization_successful">Autoryzacja %1$s powiodła się</string>
-    <string name="X_lbl_about_sourcecode">Kod źródłowy</string>
     <string name="X_lbl_completed">Zakończony</string>
     <string name="X_lbl_cover_long">Okładka</string>
     <string name="X_lbl_delete_book">Usuń książkę</string>
@@ -790,4 +789,8 @@
     <string name="lbl_sort_ascending">Rosnąco</string>
     <string name="lbl_sort_descending">Malejąco</string>
     <string name="lbl_group">Grupa</string>
+    <string name="pt_layout">Układ</string>
+    <string name="pe_list">Lista</string>
+    <string name="pe_grid">Siatka</string>
+    <string name="pt_bob_grid_spancount">Kolumny siatki</string>
 </resources>

@@ -63,7 +63,6 @@
     <string name="X_info_authorized_needed">Toegang autoriseren</string>
     <string name="X_info_not_authorized">Niet geautoriseerd</string>
     <string name="X_info_site_authorization_successful">%1$s autorisatie gelukt</string>
-    <string name="X_lbl_about_sourcecode">Broncode</string>
     <string name="X_lbl_clear_filters">Filters wissen</string>
     <string name="X_lbl_completed">Gereed</string>
     <string name="X_lbl_cover_long">Omslagafbeelding</string>
@@ -774,4 +773,8 @@
     <string name="lbl_sort_ascending">Oplopend</string>
     <string name="lbl_sort_descending">Aflopend</string>
     <string name="lbl_group">Groep</string>
+    <string name="pt_layout">Lay-out</string>
+    <string name="pe_list">Lijst</string>
+    <string name="pe_grid">Rooster</string>
+    <string name="pt_bob_grid_spancount">Rooster kolommen</string>
 </resources>
