@@ -699,7 +699,7 @@
     <string name="vldt_non_blank_required_for_x">«%1$s» no puede estar en blanco</string>
     <string name="vldt_read_start_after_end">La fecha de inicio de lectura es posterior a la de finalización</string>
     <string name="vldt_real_expected_for_x">«%1$s» debe ser un número real</string>
-    <string name="warning_already_in_list">Ya en la lista!</string>
+    <string name="warning_already_in_list">¡Ya en la lista!</string>
     <string name="warning_backup_request">¿Desea realizar una copia de la base de datos a la tarjeta SD?</string>
     <string name="warning_book_not_always_found">No todos los sitios devolvieron datos válidos.</string>
     <string name="warning_book_not_found">No se ha encontrado el libro especificado.</string>
