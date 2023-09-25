@@ -59,7 +59,7 @@
     <string name="X_btn_customize">Настроить…</string>
     <string name="X_btn_do_not_show_again">Больше не показывать</string>
     <string name="X_btn_show_list">Показать список</string>
-    <string name="confirm_continue">Вы уверены что хотите продолжить ?</string>
+    <string name="confirm_continue">Вы уверены что хотите продолжить?</string>
     <string name="X_error_authentication_failed">Ошибка аутентификации</string>
     <string name="X_error_download_failed">Загрузка не удалась</string>
     <string name="error_record_must_contain_column">Запись должна содержать поле с именем «%1$s».</string>
@@ -198,9 +198,9 @@
     <string name="confirm_merge_publishers">Издатель, которого вы переименовываете, уже существует. Вы хотите объединить их?</string>
     <string name="confirm_merge_series">Сериал, который вы переименовываете, уже существует. Вы хотите объединить их?</string>
     <string name="confirm_overwrite_cover">Выбранные поля будут обновлены как показано, но миниатюры при желании можно загрузить для ВСЕХ книг.\n\nВы хотите перезаписать все миниатюры? Предупреждение: это может занять много времени. </string>
-    <string name="confirm_rebuild_fts">Данные поискового индекса будут перестроены при перезапуске приложения. Вы уверены что хотите продолжить ?</string>
-    <string name="confirm_rebuild_index">Индексы будут перестроены при перезапуске приложения. Вы уверены что хотите продолжить ?</string>
-    <string name="confirm_rebuild_orderby_columns">Это восстановит данные сортировки при перезапуске приложения. Вы уверены что хотите продолжить ?</string>
+    <string name="confirm_rebuild_fts">Данные поискового индекса будут перестроены при перезапуске приложения. Вы уверены что хотите продолжить?</string>
+    <string name="confirm_rebuild_index">Индексы будут перестроены при перезапуске приложения. Вы уверены что хотите продолжить?</string>
+    <string name="confirm_rebuild_orderby_columns">Это восстановит данные сортировки при перезапуске приложения. Вы уверены что хотите продолжить?</string>
     <string name="confirm_registration_benefits">Эта функция имеет преимущества при регистрации в %1$s. Хотите увидеть больше информации или отключить это сообщение?\n Вы можете найти эту информацию позже в разделе «%2$s» в настройках.</string>
     <string name="confirm_registration_required">Эта функция требует регистрации в %1$s. Хотите увидеть больше информации?</string>
     <string name="confirm_remove_toc_entry">Удалить название «%1$s» пользователя %2$s из этой книги?</string>

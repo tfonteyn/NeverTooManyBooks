@@ -53,7 +53,7 @@
     <string name="X_btn_customize">Aanpassen…</string>
     <string name="X_btn_do_not_show_again">Niet meer laten zien</string>
     <string name="X_btn_show_list">Lijst weergeven</string>
-    <string name="confirm_continue">Weet je zeker dat je door wilt gaan ?</string>
+    <string name="confirm_continue">Weet je zeker dat je door wilt gaan?</string>
     <string name="X_error_authentication_failed">Authenticatie mislukt</string>
     <string name="X_error_download_failed">Download mislukt</string>
     <string name="X_error_network_site_has_problems">De website heeft problemen.</string>
@@ -187,9 +187,9 @@
     <string name="confirm_merge_series">De reeks die je hernoemt bestaat al. Wil je ze samenvoegen?</string>
     <string name="confirm_no_missing_covers_search_from_top">Alle boeken onder deze rij hebben omslagen. Opnieuw zoeken vanaf de top?</string>
     <string name="confirm_overwrite_cover">Dit zal de geselecteerde velden zoals getoond bijwerken, maar afbeeldingen kunnen desgewenst voor alle boeken worden gedownload.\n\nWil je alle afbeeldingen overschrijven? Waarschuwing: dit kan een lange tijd in beslag nemen.</string>
-    <string name="confirm_rebuild_fts">De zoekindexgegevens worden opnieuw opgebouwd wanneer de app opnieuw wordt opgestart. Weet je zeker dat je door wilt gaan ?</string>
-    <string name="confirm_rebuild_index">De indexen worden opnieuw opgebouwd wanneer de app opnieuw wordt opgestart. Weet je zeker dat je door wilt gaan ?</string>
-    <string name="confirm_rebuild_orderby_columns">Hiermee worden de sorteergegevens opnieuw opgebouwd wanneer de app opnieuw wordt gestart. Weet je zeker dat je door wilt gaan ?</string>
+    <string name="confirm_rebuild_fts">De zoekindexgegevens worden opnieuw opgebouwd wanneer de app opnieuw wordt opgestart. Weet je zeker dat je door wilt gaan?</string>
+    <string name="confirm_rebuild_index">De indexen worden opnieuw opgebouwd wanneer de app opnieuw wordt opgestart. Weet je zeker dat je door wilt gaan?</string>
+    <string name="confirm_rebuild_orderby_columns">Hiermee worden de sorteergegevens opnieuw opgebouwd wanneer de app opnieuw wordt gestart. Weet je zeker dat je door wilt gaan?</string>
     <string name="confirm_registration_benefits">Deze functie profiteert van registratie bij %1$s. Wil je meer informatie bekijken of dit bericht uitschakelen?\nJe vind deze informatie op een later tijdstip in de sectie „%2$s” in de instellingen.</string>
     <string name="confirm_registration_required">Deze functie vereist registratie bij %1$s. Wil je meer informatie zien?</string>
     <string name="confirm_remove_toc_entry">De titel „%1$s” door %2$s uit dit boek verwijderen?</string>
@@ -263,7 +263,7 @@
     <string name="info_import_partially_complete">Gedeeltelijke import voltooid</string>
     <string name="info_isfdb_warning_limited_to">(alleen ondersteund door de ISFDB-website)</string>
     <string name="info_purge_blns_all">Wis de node status van alle lijsten</string>
-    <string name="info_purge_blns_item_name">Wis de node status van %1$s „%2$s” ?</string>
+    <string name="info_purge_blns_item_name">Wis de node status van %1$s „%2$s”?</string>
     <string name="info_rebuild_scheduled">Herbouw gepland</string>
     <string name="info_select_fields_to_update">De geselecteerde velden zullen worden bijgewerkt vanaf het internet. Niet geselecteerde velden blijven onveranderd.</string>
     <string name="info_share_book_im_reading">Ik lees %1$s %2$s door %3$s %4$s</string>
@@ -708,7 +708,7 @@
     <string name="vldt_real_author_must_be_valid">Moet leeg zijn of een bestaande auteur zijn</string>
     <string name="vldt_real_expected_for_x">Verwachtte een echt nummer voor „%1$s”</string>
     <string name="warning_already_in_list">Al in de lijst!</string>
-    <string name="warning_backup_request">Wil je een back-up van uw database op uw SD kaart maken ?</string>
+    <string name="warning_backup_request">Wil je een back-up van uw database op uw SD kaart maken?</string>
     <string name="warning_book_not_always_found">Niet alle sites hebben geldige gegevens geretourneerd.</string>
     <string name="warning_book_not_found">Kan gespecificeerd boek niet vinden.</string>
     <string name="warning_cannot_delete_1st_bs">De eerste boekenplank kan niet verwijderd worden.</string>

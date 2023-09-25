@@ -60,7 +60,7 @@
     <string name="X_btn_customize">Dostosuj…</string>
     <string name="X_btn_do_not_show_again">Nie pokazuj ponownie</string>
     <string name="X_btn_show_list">Pokaż listę</string>
-    <string name="confirm_continue">Jesteś pewien, że chcesz kontynuować ?</string>
+    <string name="confirm_continue">Jesteś pewien, że chcesz kontynuować?</string>
     <string name="X_error_authentication_failed">Uwierzytelnianie nie powiodło się</string>
     <string name="X_error_download_failed">Pobieranie nie udane</string>
     <string name="error_record_must_contain_column">Rekord musi zawierać pole o nazwie „%1$s”.</string>
@@ -201,9 +201,9 @@
     <string name="confirm_overwrite_cover">Wybrane pola zostaną zaktualizowane, natomiast okładki mogą by opcjonalnie pobrane dla wszystkich książek.
 \n
 \nCzy chcesz zastąpić wszystkie istniejące okładki? Uwaga - może to zająć sporo czasu.</string>
-    <string name="confirm_rebuild_fts">Dane indeksu wyszukiwania zostaną odbudowane po ponownym uruchomieniu aplikacji. Jesteś pewien, że chcesz kontynuować ?</string>
-    <string name="confirm_rebuild_index">Indeksy zostaną odbudowane po ponownym uruchomieniu aplikacji. Jesteś pewien, że chcesz kontynuować ?</string>
-    <string name="confirm_rebuild_orderby_columns">Spowoduje to odbudowanie danych sortowania po ponownym uruchomieniu aplikacji. Jesteś pewien, że chcesz kontynuować ?</string>
+    <string name="confirm_rebuild_fts">Dane indeksu wyszukiwania zostaną odbudowane po ponownym uruchomieniu aplikacji. Jesteś pewien, że chcesz kontynuować?</string>
+    <string name="confirm_rebuild_index">Indeksy zostaną odbudowane po ponownym uruchomieniu aplikacji. Jesteś pewien, że chcesz kontynuować?</string>
+    <string name="confirm_rebuild_orderby_columns">Spowoduje to odbudowanie danych sortowania po ponownym uruchomieniu aplikacji. Jesteś pewien, że chcesz kontynuować?</string>
     <string name="confirm_registration_benefits">Ta funkcja korzysta z rejestracji w %1$s. Czy chcesz zobaczyć więcej informacji lub wyłączyć tę wiadomość?\n Informacje te można znaleźć później w sekcji „%2$s” w ustawieniach.</string>
     <string name="confirm_registration_required">Ta funkcja wymaga rejestracji w %1$s. Czy chcesz zobaczyć więcej informacji?</string>
     <string name="confirm_remove_toc_entry">Usunąć tytuł „%1$s” autorstwa %2$s z tej książki?</string>

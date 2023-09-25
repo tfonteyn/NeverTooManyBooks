@@ -237,7 +237,7 @@
     <string name="warning_cannot_delete_1st_bs">Não é possível excluir a 1ª prateleira.</string>
     <string name="warning_if_month_set_year_must_be">Se um mês é especificado, então um ano também deve ser especificado.</string>
     <string name="warning_toc_confirm">Por favor, confirme que estes títulos estão (maioritariamente) corretos.</string>
-    <string name="warning_backup_request">Gostaria de fazer uma cópia de segurança da sua base de dados para o seu cartão SD ?</string>
+    <string name="warning_backup_request">Gostaria de fazer uma cópia de segurança da sua base de dados para o seu cartão SD?</string>
     <string name="vldt_failure">Falha de validação</string>
     <string name="vldt_boolean_expected_for_x">Esperado um valor booleano (0,1,t,f,true,false) para “%1$s”</string>
     <string name="vldt_blank_required_for_x">Valor vazio necessário para “%1$s”</string>
@@ -314,8 +314,8 @@
     <string name="option_enable_sync_options">Ativar opções de sincronização</string>
     <string name="option_download_set_folder">Definir a pasta de transferências</string>
     <string name="confirm_unsaved_edits">Tem alterações não guardadas, se sair agora estas serão perdidas.</string>
-    <string name="confirm_delete_bookshelf">Excluir a prateleira“%1$s” ? Os livros em si não serão excluídos. Eles ainda estarão presentes em qualquer outra prateleira, ou na prateleira “%2$s”.</string>
-    <string name="confirm_delete_toc_entry_everywhere">Pretende realmente excluir o título “%1$s” por %2$s ? Ele será excluído de todos os livros em que estiver listado. Os próprios livros não serão excluídos.</string>
+    <string name="confirm_delete_bookshelf">Excluir a prateleira“%1$s”? Os livros em si não serão excluídos. Eles ainda estarão presentes em qualquer outra prateleira, ou na prateleira “%2$s”.</string>
+    <string name="confirm_delete_toc_entry_everywhere">Pretende realmente excluir o título “%1$s” por %2$s? Ele será excluído de todos os livros em que estiver listado. Os próprios livros não serão excluídos.</string>
     <string name="warning_nothing_selected">Nada selecionado</string>
     <string name="info_isfdb_warning_limited_to">(suportado apenas pelo site do ISFDB)</string>
     <string name="tip_import_isbn_list">Importar um ficheiro de texto com números ISBN. O ficheiro deve ter um único ISBN por cada linha. Os resultados serão colocados na fila.</string>
@@ -324,7 +324,7 @@
     <string name="option_barcode_scan_mode_continuous">Ler continuamente</string>
     <string name="option_isbn_strict">ISBN estrito</string>
     <string name="confirm_remove_toc_entry">Remover o título “%1$s” por %2$s deste livro?</string>
-    <string name="confirm_delete_style">Excluir o estilo “%1$s” ?</string>
+    <string name="confirm_delete_style">Excluir o estilo “%1$s”?</string>
     <string name="confirm_merge_bookshelves">A prateleira que está a modificar já existe. Gostaria de uni-las?</string>
     <string name="tip_reset_all">Repor dicas</string>
     <string name="tip_authors_book_may_appear_more_than_once">Se os livros forem apresentados para cada autor do livro, podem aparecer várias vezes na lista. A eliminação de um desses livros tem o efeito de remover todos os exemplares da lista.</string>

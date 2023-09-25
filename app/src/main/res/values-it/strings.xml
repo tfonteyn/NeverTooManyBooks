@@ -56,7 +56,7 @@
     <string name="X_btn_customize">Personalizza…</string>
     <string name="X_btn_do_not_show_again">Non mostrare più</string>
     <string name="X_btn_show_list">Mostra elenco</string>
-    <string name="confirm_continue">Sei sicuro di voler continuare ?</string>
+    <string name="confirm_continue">Sei sicuro di voler continuare?</string>
     <string name="X_error_authentication_failed">Autenticazione fallita</string>
     <string name="X_error_download_failed">Scaricamento fallito</string>
     <string name="error_record_must_contain_column">Il record deve contenere un campo denominato %1$s.</string>
@@ -191,9 +191,9 @@
     <string name="confirm_merge_publishers">L’editore che stai rinominando esiste già. Ti piacerebbe unirli?</string>
     <string name="confirm_merge_series">La serie che stai rinominando esiste già. Ti piacerebbe unirli?</string>
     <string name="confirm_overwrite_cover">Verranno aggiornati i campi selezionati come indicato, ma opzionalmente è possibile aggiornare anche le miniature di TUTTI i libri.\n\nVuoi sovrascrivere tutte le miniature esistenti? Attenzione, potrebbero occorrere diversi minuti. </string>
-    <string name="confirm_rebuild_fts">I dati dell’indice di ricerca verranno ricostruiti al riavvio dell’app. Sei sicuro di voler continuare ?</string>
-    <string name="confirm_rebuild_index">Gli indici verranno ricostruiti al riavvio dell’app. Sei sicuro di voler continuare ?</string>
-    <string name="confirm_rebuild_orderby_columns">Ciò ricostruirà i dati di ordinamento al riavvio dell’app. Sei sicuro di voler continuare ?</string>
+    <string name="confirm_rebuild_fts">I dati dell’indice di ricerca verranno ricostruiti al riavvio dell’app. Sei sicuro di voler continuare?</string>
+    <string name="confirm_rebuild_index">Gli indici verranno ricostruiti al riavvio dell’app. Sei sicuro di voler continuare?</string>
+    <string name="confirm_rebuild_orderby_columns">Ciò ricostruirà i dati di ordinamento al riavvio dell’app. Sei sicuro di voler continuare?</string>
     <string name="confirm_registration_benefits">Questa funzione beneficia della registrazione con %1$s. Desideri visualizzare ulteriori informazioni o disabilitare questo messaggio?\nPuoi trovare queste informazioni in un secondo momento nella sezione «%2$s» nelle impostazioni.</string>
     <string name="confirm_registration_required">Questa funzione richiede la registrazione con %1$s. Vuoi vedere maggiori informazioni?</string>
     <string name="confirm_remove_toc_entry">Rimuovere il titolo «%1$s» di %2$s da questo libro?</string>

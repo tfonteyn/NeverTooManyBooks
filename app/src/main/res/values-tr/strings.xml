@@ -53,7 +53,7 @@
     <string name="X_btn_customize">Kişiselleştir…</string>
     <string name="X_btn_do_not_show_again">Bir daha gösterme</string>
     <string name="X_btn_show_list">Gösteri listesi</string>
-    <string name="confirm_continue">Devam etmek istediğine emin misin ?</string>
+    <string name="confirm_continue">Devam etmek istediğine emin misin?</string>
     <string name="X_error_authentication_failed">Kimlik doğrulama başarısız oldu</string>
     <string name="X_error_download_failed">Yükleme başarısız</string>
     <string name="error_record_must_contain_column">Kayıt, “%1$s” adlı bir alan içermelidir.</string>
@@ -188,9 +188,9 @@
     <string name="confirm_merge_publishers">Yeniden adlandırılan yayıncı zaten var. Onları birleştirmek ister misiniz?</string>
     <string name="confirm_merge_series">Yeniden adlandırılan seri zaten var. Onları birleştirmek ister misiniz?</string>
     <string name="confirm_overwrite_cover">Bu işlem seçili alanları gösterildiği biçimde güncelleyecektir, ancak küçük resimler seçime bağlı olarak tüm kitaplar için de indirilebilir.\n\nVar olan tüm küçük resimlerin üzerine yazmak istiyor musunuz? Bu işlem uzun sürebilir. </string>
-    <string name="confirm_rebuild_fts">Uygulama yeniden başlatıldığında arama dizini verileri yeniden oluşturulur. Devam etmek istediğine emin misin ?</string>
-    <string name="confirm_rebuild_index">Uygulama yeniden başlatıldığında dizinler yeniden oluşturulur. Devam etmek istediğine emin misin ?</string>
-    <string name="confirm_rebuild_orderby_columns">Bu, uygulama yeniden başlatıldığında sıralama verilerini yeniden oluşturacaktır. Devam etmek istediğine emin misin ?</string>
+    <string name="confirm_rebuild_fts">Uygulama yeniden başlatıldığında arama dizini verileri yeniden oluşturulur. Devam etmek istediğine emin misin?</string>
+    <string name="confirm_rebuild_index">Uygulama yeniden başlatıldığında dizinler yeniden oluşturulur. Devam etmek istediğine emin misin?</string>
+    <string name="confirm_rebuild_orderby_columns">Bu, uygulama yeniden başlatıldığında sıralama verilerini yeniden oluşturacaktır. Devam etmek istediğine emin misin?</string>
     <string name="confirm_registration_benefits">Bu özellik %1$s kayıt işleminden faydalanır. Daha fazla bilgi görmek veya bu mesajı devre dışı bırakmak ister misiniz?\n Bu bilgiyi daha sonra ayarlarda “%2$s” bölümünün altında bulabilirsiniz.</string>
     <string name="confirm_registration_required">Bu özellik %1$s ile kayıt gerektiriyor. Daha fazla bilgi görmek ister misiniz?</string>
     <string name="confirm_remove_toc_entry">“%1$s” başlığı %2$s tarafından bu kitaptan kaldırılsın mı?</string>
