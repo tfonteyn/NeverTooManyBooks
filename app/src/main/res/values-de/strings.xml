@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“  - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -696,7 +699,7 @@
     <string name="warning_immediate_global_changes">HINWEIS: Alle gespeicherten Änderungen werden sofort übernommen.</string>
     <string name="warning_import_csv">Warnung. Der Import von Daten kann Informationen von bestehenden Büchern überschreiben, wenn die ID der Importdatei mit der bestehenden ID übereinstimmt. Normalerweise ist es kein Problem wenn ein Feld in der exportierten Datei geändert wurde. Bitte stellen Sie bei einem neuen Buch sicher, dass das ID-Feld leer ist.</string>
     <string name="warning_import_csv_unescaped_quote">Unescaped-Anführungszeichen in Zeile %1$d, Position %2$d</string>
-    <string name="warning_import_failed_for_lines_lots">Die Analyse für die Zeilen \n%1$s\n und andere ist fehlgeschlagen.</string>
+    <string name="warning_import_failed_for_lines_lots">Die Analyse für die Zeilen \n%1$s\n und %2$d weitere ist fehlgeschlagen.</string>
     <string name="warning_import_failed_for_lines_some">Analyse für die Zeilen \n%1$s\n fehlgeschlagen.</string>
     <string name="warning_no_editions">Keine zusätzlichen Ausgabeninformationen verfügbar.</string>
     <string name="warning_no_matching_book_found">Kein passendes Buch gefunden</string>

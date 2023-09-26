@@ -128,7 +128,7 @@
 \n</string>
     <string name="warning_import_failed_for_lines_lots">行解析失败
 \n %1$s
-\n 和其他。</string>
+\n 还有 %2$d 个。</string>
     <string name="warning_export_contains_no_data">没有内容可以导出。</string>
     <string name="warning_book_not_found">找不到指定的书。</string>
     <string name="warning_book_not_always_found">并非所有站点都返回有效数据。</string>

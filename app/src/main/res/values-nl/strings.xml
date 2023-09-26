@@ -721,7 +721,7 @@
     <string name="warning_immediate_global_changes">Let op: Veranderingen worden direct en globaal toegepast.</string>
     <string name="warning_import_csv">Waarschuwing. Het importeren van gegevens kan bestaande boekgegevens onbedoeld bijwerken met nieuwe informatie als de UUID-kolom niet aanwezig is en de id in het import-bestand dezelfde is als het bestaande id. Dit is meestal geen bezwaar als je een veld in een exportbestand hebt veranderd. Als je een nieuw boek item hebt gemaakt, of iemand anders zijn boeken importeert, zorg dan dat het UUID veld aanwezig is of dat het id veld leeg is.</string>
     <string name="warning_import_csv_unescaped_quote">Niet ge-escaped aanhalingsteken op rij %1$d, positie %2$d</string>
-    <string name="warning_import_failed_for_lines_lots">Het parseren is mislukt voor regels\n%1$s\n en andere.</string>
+    <string name="warning_import_failed_for_lines_lots">Het parseren is mislukt voor regels\n%1$s\n en %2$d meer.</string>
     <string name="warning_import_failed_for_lines_some">Het parseren is mislukt voor regels\n%1$s\n</string>
     <string name="warning_no_editions">Geen andere uitgave informatie beschikbaar.</string>
     <string name="warning_no_matching_book_found">Geen overeenkomstig boek gevonden</string>

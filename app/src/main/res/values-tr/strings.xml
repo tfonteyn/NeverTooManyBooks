@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,9 +18,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+  -->
+
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d kitap</item>
@@ -698,11 +701,8 @@
     <string name="warning_immediate_global_changes">Not: Tüm kaydedilmiş değişiklikler anında ve genel olarak uygulanır.</string>
     <string name="warning_import_csv">Uyarı: Bilgileri içe aktarırken eğer içe aktardığınız dosyaların ID numarası var olan bir kitabın ID’si ile aynı ise, varolan kitap verilerinin üstüne yazılmasına neden olabilir. Eğer dışa aktarılmış bir dosyada bir giriyi değiştirdiyseniz bu sorun değildir; ancak yeni bir kitap girişi oluşturuyorsanız ID bölümünün boş olduğundan emin olun.</string>
     <string name="warning_import_csv_unescaped_quote">%1$d. Satırda çıkış karakteri olmayan alıntı karakter, %2$d. konum</string>
-    <string name="warning_import_failed_for_lines_lots">Ayrıştırma işlemi \n%1$s\n satırları ve diğerleri için başarısız oldu.</string>
-    <string name="warning_import_failed_for_lines_some">Ayrıştırma
-\n%1$s
-\n satırları için başarısız oldu.
-\n</string>
+    <string name="warning_import_failed_for_lines_lots">Ayrıştırma işlemi\n%1$s\n satırları ve %2$d diğerleri için başarısız oldu.</string>
+    <string name="warning_import_failed_for_lines_some">Ayrıştırma\n%1$s\n satırları için başarısız oldu.</string>
     <string name="warning_no_editions">Ek yayın bilgisi yok.</string>
     <string name="warning_no_matching_book_found">Eşleşen kitap bulunamadı</string>
     <string name="warning_no_search_data_for_active_sites">Etkin siteler için geçerli arama verisi yok.</string>

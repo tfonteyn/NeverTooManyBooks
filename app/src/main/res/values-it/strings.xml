@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -699,7 +702,7 @@
     <string name="warning_immediate_global_changes">NOTA: Tutte le modifiche salvate si applicano istantaneamente e globalmente.</string>
     <string name="warning_import_csv">Attenzione. L’importazione dei dati potrebbe aggiornare i record esistenti con nuove informazioni se manca la colonna uuid e l’id nel file di importazione è identico a un id esistente. Ciò è corretto se hai modificato un campo nel file di esportazione. Se hai registrato un nuovo libro, o stai importando libri di qualcun altro, assicurati che vi sia il campo uuid o il campo id sia vuoto.</string>
     <string name="warning_import_csv_unescaped_quote">Carattere virgolette senza caratteri di escape nella riga %1$d, posizione %2$d</string>
-    <string name="warning_import_failed_for_lines_lots">Analisi non riuscita per le righe \n%1$s\n e altre.</string>
+    <string name="warning_import_failed_for_lines_lots">Analisi non riuscita per le righe \n%1$s\n e altri %2$d.</string>
     <string name="warning_import_failed_for_lines_some">Analisi non riuscita per le righe \n%1$s\n</string>
     <string name="warning_no_editions">Nessuna informazione aggiuntiva disponibile.</string>
     <string name="warning_no_matching_book_found">Nessuna corrispondenza trovata</string>

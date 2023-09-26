@@ -512,15 +512,16 @@ public class ImportFragment
 
         final List<String> failures = result.createFailuresReport(getContext());
 
-        @StringRes
-        final int fs;
         if (failed > ImportResults.MAX_FAIL_LINES) {
-            fs = R.string.warning_import_failed_for_lines_lots;
+            return report + "\n"
+                   + getString(R.string.warning_import_failed_for_lines_lots,
+                               String.join("\n", failures),
+                               failed - failures.size());
         } else {
-            fs = R.string.warning_import_failed_for_lines_some;
+            return report + "\n"
+                   + getString(R.string.warning_import_failed_for_lines_some,
+                               String.join("\n", failures));
         }
-
-        return report + "\n" + getString(fs, String.join("\n", failures));
     }
 
     private void closeProgressDialog() {

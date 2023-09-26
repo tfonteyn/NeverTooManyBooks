@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,9 +18,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+  -->
+
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d книга</item>
@@ -708,7 +711,7 @@
     <string name="warning_immediate_global_changes">ЗАМЕЧАНИЕ: Все сохраняемые изменения применяются немедленно.</string>
     <string name="warning_import_csv">Предупреждение. Импорт данных может заменить существующие записи книг обновлённой информацией, в случае, если номер в файле совпадает с существующим номером. Обычно это то, что требуется, если вы обновляете поле в файле экспорта. Если вы добавляете запись новой книге, убедитесь, что поле id не заполнено.</string>
     <string name="warning_import_csv_unescaped_quote">Неэкранированный кавычка в строке %1$d, позиция %2$d</string>
-    <string name="warning_import_failed_for_lines_lots">Сбой разбора для строк \n%1$s\n и других.</string>
+    <string name="warning_import_failed_for_lines_lots">Сбой разбора для строк \n%1$s\n и еще %2$d.</string>
     <string name="warning_import_failed_for_lines_some">Сбой разбора для строк \n%1$s\n</string>
     <string name="warning_no_editions">Нет дополнительной информации о выпуске.</string>
     <string name="warning_no_matching_book_found">Нет совпавших книг</string>

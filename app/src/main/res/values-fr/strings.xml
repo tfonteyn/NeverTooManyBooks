@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -700,7 +703,7 @@
     <string name="warning_immediate_global_changes">Note : toutes les modifications sont prises en compte immédiatement et globalement.</string>
     <string name="warning_import_csv">Attention ! L’import de données peut provoquer la mise à jour de livres avec de nouvelles informations si les identifiants importés sont identiques à ceux existants. Cela est généralement correct si vous n’avez modifié qu’un champ dans un fichier exporté. Si vous avez intégralement créé un livre, assurez vous que le champ identifiant est vide.</string>
     <string name="warning_import_csv_unescaped_quote">Caractère de guillemet non échappé à la ligne %1$d, position %2$d</string>
-    <string name="warning_import_failed_for_lines_lots">L’analyse a échoué pour les lignes \n%1$s\n et autres.</string>
+    <string name="warning_import_failed_for_lines_lots">L’analyse a échoué pour les lignes \n%1$s\n et %2$d autres.</string>
     <string name="warning_import_failed_for_lines_some">L’analyse a échoué pour les lignes \n%1$s\n</string>
     <string name="warning_no_editions">Aucune information d’édition supplémentaire disponible.</string>
     <string name="warning_no_matching_book_found">Aucun livre correspondant n’a été trouvé</string>

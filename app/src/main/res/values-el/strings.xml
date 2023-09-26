@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,9 +18,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+  -->
+
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d βιβλίο</item>
@@ -697,7 +700,7 @@
     <string name="warning_immediate_global_changes">ΣΗΜΕΙΩΣΗ: Όλες οι αποθηκευμένες αλλαγές εφαρμόζονται στιγμιαία και παντού.</string>
     <string name="warning_import_csv">Προσοχή. Η εισαγωγή δεδομένων μπορεί να ενημερώσει υπάρχοντα βιβλία με νέες πληροφορίες εαν η στήλη uuid δεν είναι παρούσα και το id στο αρχείο εισαγωγής είναι το ίδιο με κάποιο υπάρχον id. Αυτό είναι εντάξει εαν έχει αλλαχτεί κάποιο πεδίο σε ένα εξαγμένο αρχείο. Εαν δημιουργήσατε μια νεα βιβλιογραφική εγγραφή ή εαν εισάγετε τα βιβλία κάποιου άλλου, σιγουρευτείτε ότι το πεδίο uuid είναι παρόν ή το πεδίο id είναι κενό.</string>
     <string name="warning_import_csv_unescaped_quote">Χαρακτηριστικό απόσβεσης μη έτοιμο στη σειρά %1$d, θέση %2$d</string>
-    <string name="warning_import_failed_for_lines_lots">Η ανάλυση του απέτυχε για τις γραμμές \n%1$s\n και άλλες.</string>
+    <string name="warning_import_failed_for_lines_lots">Η ανάλυση του απέτυχε για τις γραμμές \n%1$s\n και %2$d ακόμη.</string>
     <string name="warning_import_failed_for_lines_some">Η ανάλυση του απέτυχε για τις γραμμές \n%1$s\n</string>
     <string name="warning_no_editions">Δεν υπάρχουν διαθέσιμες εκδόσεις.</string>
     <string name="warning_no_matching_book_found">Δεν βρέθηκε βιβλίο που να ταιριάζει</string>

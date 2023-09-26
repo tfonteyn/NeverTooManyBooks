@@ -71,7 +71,6 @@ public class ImportResults
 
     /** Bundle key if we get passed around. */
     public static final String BKEY = TAG;
-    private static final String ERROR_IMPORT_FAILED_FOR_BOOK = "Import failed for book ";
 
     /**
      * Keeps track of failed import lines in a text file.
@@ -163,19 +162,14 @@ public class ImportResults
         booksFailed++;
 
         final Logger logger = LoggerFactory.getLogger();
-        if (booksFailed <= MAX_FAIL_LINES) {
-            logger.w(TAG, ERROR_IMPORT_FAILED_FOR_BOOK + row + "|e=" + e.getMessage());
-        }
-        if (BuildConfig.DEBUG /* always */) {
-            if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS && booksFailed > MAX_FAIL_LINES) {
-                logger.d(TAG, "handleRowException",
-                         ERROR_IMPORT_FAILED_FOR_BOOK + row,
-                         "e=" + e.getMessage());
-            } else if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS_EXT) {
-                // logging with the full exception is VERY HEAVY
-                logger.d(TAG, "handleRowException",
-                         ERROR_IMPORT_FAILED_FOR_BOOK + row, e);
-            }
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS_EXT) {
+            // logging with the full exception is VERY HEAVY
+            logger.d(TAG, "handleRowException", e.getClass().getSimpleName(),
+                     "row=" + row, e);
+        } else {
+            // NOT in debug; log just the message
+            logger.w(TAG, e.getClass().getSimpleName(), "row=" + row, e.getMessage());
         }
     }
 

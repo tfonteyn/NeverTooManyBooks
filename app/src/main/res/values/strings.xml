@@ -225,7 +225,7 @@
     <string name="warning_import_failed_for_lines_some">Parsing failed for lines \n%1$s\n</string>
     <!-- Importing a book list partially failed with more than 10 lines failing.
          Only 10 line numbers will be listed -->
-    <string name="warning_import_failed_for_lines_lots">Parsing failed for lines \n%1$s\n and others.</string>
+    <string name="warning_import_failed_for_lines_lots">Parsing failed for lines \n%1$s\n and %2$d more.</string>
     <string name="warning_export_contains_no_data">There was nothing to export.</string>
     <!-- A search WAS done, but there is no book-data available; this is not an error. -->
     <string name="warning_book_not_found">Unable to find the specified book.</string>

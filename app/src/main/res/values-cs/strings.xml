@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,9 +18,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+  -->
+
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d kniha</item>
@@ -707,7 +710,7 @@
     <string name="warning_immediate_global_changes">UPOZORNĚNÍ: Všechny uložené změny se aplikují u všech záznamů.</string>
     <string name="warning_import_csv">Pozor: Importovaná data mohou upravit existující záznamy knih - k takové situaci dojde v případě, že není vyplněno uuid, a id v importovaném souboru je totožné s již existujícím id. Doporučujeme proto zkontrolovat - a případně upravit - toto pole v exportovaném souboru. Pokud byl vytvořen nový záznam, nebo jsou importovány další knihy, tak se ujistěte, že je vyplněno uuid, nebo že pole id je prázdné.</string>
     <string name="warning_import_csv_unescaped_quote">Znak bez uvozovek v řádku %1$d, pozice %2$d</string>
-    <string name="warning_import_failed_for_lines_lots">Analýza linek se nezdařila pro linky \n%1$s\n a další.</string>
+    <string name="warning_import_failed_for_lines_lots">Analýza linek se nezdařila pro linky \n%1$s\n a %2$d dalších.</string>
     <string name="warning_import_failed_for_lines_some">Analýza linek se nezdařila pro řádky \n%1$s\n</string>
     <string name="warning_no_editions">K dispozici nejsou žádné další informace o vydání.</string>
     <string name="warning_no_matching_book_found">Nebyla nalezena odpovídající kniha</string>

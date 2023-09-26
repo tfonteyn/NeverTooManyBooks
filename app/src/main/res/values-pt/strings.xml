@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “...”  (older «…» are no longer used as verified with a native speaker) - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pt">
@@ -182,7 +185,7 @@
 \n</string>
     <string name="warning_import_failed_for_lines_lots">Falha na análise das linhas
 \n%1$s
-\n e outras.</string>
+\n e mais %2$d.</string>
     <string name="warning_export_contains_no_data">Não havia nada para exportar.</string>
     <string name="error_network_site_access_failed">Ocorreu um problema de rede ao aceder a %1$s. Verifique se o site está no ar e, se o problema persistir, entre em contacto com o suporte.</string>
     <string name="error_http_401_site_authorization_failed">A autorização %1$s resultou num erro.</string>
