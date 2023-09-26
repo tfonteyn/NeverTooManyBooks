@@ -46,6 +46,16 @@
         <item name="android:contentDescription">@string/cd_btn_drag_handle</item>
     </style>
 
+    <!-- MaterialButton -->
+    <style name="RowEditor.Button.Sorting"
+           parent="Widget.Material3.Button.IconButton.Outlined">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="iconTint">?attr/colorOnPrimaryContainer</item>
+        <item name="icon">@drawable/ic_baseline_sort_unsorted</item>
+        <item name="android:contentDescription">@string/lbl_sorting</item>
+    </style>
+
     <!-- CheckBox -->
     <style name="RowEditor.Button.Checkable"
            parent="Widget.App.CheckBox">

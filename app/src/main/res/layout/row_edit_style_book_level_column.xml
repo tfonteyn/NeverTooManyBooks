@@ -50,7 +50,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_row_menu"
-        style="@style/Button.MenuPopup.Sorting"
+        style="@style/RowEditor.Button.Sorting"
         android:layout_marginEnd="@dimen/field_margin_end"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/ROW_GRABBER_ICON"
