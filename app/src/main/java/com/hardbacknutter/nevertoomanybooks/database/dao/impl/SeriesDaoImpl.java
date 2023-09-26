@@ -245,6 +245,7 @@ public class SeriesDaoImpl
                              @NonNull final Collection<Series> list,
                              final boolean normalize,
                              @NonNull final Function<Series, Locale> localeSupplier) {
+        // Reminder: only abort if empty. We rely on 'fixId' being called for ALL list values.
         if (list.isEmpty()) {
             return false;
         }

@@ -200,6 +200,7 @@ public class PublisherDaoImpl
                              @NonNull final Collection<Publisher> list,
                              final boolean normalize,
                              @NonNull final Function<Publisher, Locale> localeSupplier) {
+        // Reminder: only abort if empty. We rely on 'fixId' being called for ALL list values.
         if (list.isEmpty()) {
             return false;
         }

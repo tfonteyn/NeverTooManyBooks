@@ -231,7 +231,8 @@ public class BookshelfDaoImpl
     @Override
     public boolean pruneList(@NonNull final Context context,
                              @NonNull final Collection<Bookshelf> list) {
-        if (list.size() < 2) {
+        // Reminder: only abort if empty. We rely on 'fixId' being called for ALL list values.
+        if (list.isEmpty()) {
             return false;
         }
 

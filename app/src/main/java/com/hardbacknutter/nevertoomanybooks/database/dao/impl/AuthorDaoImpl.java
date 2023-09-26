@@ -400,7 +400,8 @@ public class AuthorDaoImpl
     public boolean pruneList(@NonNull final Context context,
                              @NonNull final Collection<Author> list,
                              @NonNull final Function<Author, Locale> localeSupplier) {
-        if (list.size() < 2) {
+        // Reminder: only abort if empty. We rely on 'fixId' being called for ALL list values.
+        if (list.isEmpty()) {
             return false;
         }
 

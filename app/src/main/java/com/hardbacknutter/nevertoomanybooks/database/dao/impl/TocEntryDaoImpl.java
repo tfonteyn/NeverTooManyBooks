@@ -89,7 +89,8 @@ public class TocEntryDaoImpl
     public boolean pruneList(@NonNull final Context context,
                              @NonNull final Collection<TocEntry> list,
                              @NonNull final Function<TocEntry, Locale> localeSupplier) {
-        if (list.size() < 2) {
+        // Reminder: only abort if empty. We rely on 'fixId' being called for ALL list values.
+        if (list.isEmpty()) {
             return false;
         }
 
