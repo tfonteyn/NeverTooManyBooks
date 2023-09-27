@@ -150,7 +150,7 @@ public class MaintenanceDaoImpl
     @Override
     public void rebuildOrderByTitleColumns(@NonNull final Context context) {
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-        final List<Locale> locales = LocaleListUtils.asList(context, null);
+        final List<Locale> locales = LocaleListUtils.asList(context);
 
         // Books
         String language;

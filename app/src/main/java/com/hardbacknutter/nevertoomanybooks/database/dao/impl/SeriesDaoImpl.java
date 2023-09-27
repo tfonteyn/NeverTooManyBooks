@@ -252,7 +252,7 @@ public class SeriesDaoImpl
 
         if (normalize) {
             final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
-            final List<Locale> locales = LocaleListUtils.asList(context, null);
+            final List<Locale> locales = LocaleListUtils.asList(context);
             list.forEach(series -> {
                 final String title = reorderHelper.reverse(context, series.getTitle(),
                                                            localeSupplier.apply(series), locales);

@@ -111,7 +111,7 @@ public final class ReorderHelper {
     @NonNull
     public String reorder(@NonNull final Context context,
                           @NonNull final String title) {
-        return reorder(context, title, (Locale) null, LocaleListUtils.asList(context, null));
+        return reorder(context, title, (Locale) null, LocaleListUtils.asList(context));
     }
 
     /**
@@ -127,7 +127,7 @@ public final class ReorderHelper {
     public String reorder(@NonNull final Context context,
                           @NonNull final String title,
                           @NonNull final Locale locale) {
-        return reorder(context, title, locale, LocaleListUtils.asList(context, null));
+        return reorder(context, title, locale, LocaleListUtils.asList(context));
     }
 
     /**

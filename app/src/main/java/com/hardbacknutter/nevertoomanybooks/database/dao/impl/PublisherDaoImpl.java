@@ -207,7 +207,7 @@ public class PublisherDaoImpl
 
         if (normalize) {
             final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
-            final List<Locale> locales = LocaleListUtils.asList(context, null);
+            final List<Locale> locales = LocaleListUtils.asList(context);
             list.forEach(publisher -> {
                 final String name = reorderHelper.reverse(context, publisher.getName(),
                                                           localeSupplier.apply(publisher), locales);
