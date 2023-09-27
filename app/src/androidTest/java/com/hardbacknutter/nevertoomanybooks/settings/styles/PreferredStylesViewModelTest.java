@@ -181,9 +181,12 @@ public class PreferredStylesViewModelTest
         Style initialStyle;
         int initialPosition = 1;
         initialStyle = styleList.get(initialPosition);
-        // IndexOutOfBounds if none found
-        while (!initialStyle.isUserDefined()) {
-            initialStyle = styleList.get(++initialPosition);
+        try {
+            while (!initialStyle.isUserDefined()) {
+                initialStyle = styleList.get(++initialPosition);
+            }
+        } catch (@NonNull final IndexOutOfBoundsException e) {
+            fail("There were no user-defined styles. Create one and restart the test.");
         }
 
         // Prepare editing
