@@ -336,7 +336,7 @@ public class EditBookshelvesFragment
             });
 
             // long-click -> context menu
-            holder.setOnRowShowContextMenuListener(
+            holder.setOnRowLongClickListener(
                     ShowContextMenu.getPreferredMode(parent.getContext()), (v, position) -> {
                         final int listIndex = transpose(position);
                         if (listIndex == RecyclerView.NO_POSITION) {

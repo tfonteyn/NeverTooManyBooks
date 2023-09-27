@@ -428,7 +428,7 @@ public class EditBookSeriesListDialogFragment
                     .inflate(R.layout.row_edit_series_list, parent, false);
             final Holder holder = new Holder(view);
             holder.setOnRowClickListener(rowClickListener);
-            holder.setOnRowShowContextMenuListener(contextMenuMode, rowShowMenuListener);
+            holder.setOnRowLongClickListener(contextMenuMode, rowShowMenuListener);
             return holder;
         }
 

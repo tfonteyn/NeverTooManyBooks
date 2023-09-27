@@ -706,7 +706,7 @@ public class EditBookTocFragment
                     RowEditTocEntryBinding.inflate(getLayoutInflater(), parent, false));
 
             holder.setOnRowClickListener(rowClickListener);
-            holder.setOnRowShowContextMenuListener(contextMenuMode, rowShowMenuListener);
+            holder.setOnRowLongClickListener(contextMenuMode, rowShowMenuListener);
 
             return holder;
         }

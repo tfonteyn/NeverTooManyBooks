@@ -140,7 +140,7 @@ public class TocAdapter
         }
 
         holder.setOnRowClickListener(rowClickListener);
-        holder.setOnRowShowContextMenuListener(contextMenuMode, rowShowMenuListener);
+        holder.setOnRowLongClickListener(contextMenuMode, rowShowMenuListener);
         return holder;
     }
 

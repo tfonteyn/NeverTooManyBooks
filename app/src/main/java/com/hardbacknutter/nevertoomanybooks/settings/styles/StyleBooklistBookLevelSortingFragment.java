@@ -196,7 +196,7 @@ public class StyleBooklistBookLevelSortingFragment
 
             setRowMenuButtonIconResource(StyleViewModel.getIconResId(wrappedColumn.getSort()));
 
-            setOnRowShowContextMenuListener(ShowContextMenu.Button, (anchor, position) -> {
+            setOnRowLongClickListener(ShowContextMenu.Button, (anchor, position) -> {
                 final ExtPopupMenu popupMenu = new ExtPopupMenu(anchor.getContext())
                         .inflate(R.menu.sorting_options)
                         .setGroupDividerEnabled();

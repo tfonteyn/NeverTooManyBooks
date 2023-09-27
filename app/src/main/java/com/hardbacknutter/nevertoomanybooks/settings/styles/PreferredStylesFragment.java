@@ -357,7 +357,7 @@ public class PreferredStylesFragment
             holder.setOnItemCheckChangedListener(this::togglePreferredStatus);
 
             holder.setOnRowClickListener(rowClickListener);
-            holder.setOnRowShowContextMenuListener(contextMenuMode, rowShowMenuListener);
+            holder.setOnRowLongClickListener(contextMenuMode, rowShowMenuListener);
             return holder;
         }
 

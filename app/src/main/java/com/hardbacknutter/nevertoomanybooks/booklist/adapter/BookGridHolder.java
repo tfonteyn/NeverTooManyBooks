@@ -29,6 +29,7 @@ import androidx.annotation.Dimension;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
@@ -44,6 +45,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
  * <p>
  * This holder will disregard the cover visibility setting
  * and simply show either the frontcover, or a title-placeholder (and optional author).
+ * <p>
+ * Detail and context menu buttons are always shown regardless of user ShowContextMenu preference.
  */
 public class BookGridHolder
         extends RowViewHolder
@@ -84,14 +87,21 @@ public class BookGridHolder
     @Override
     public void setOnRowClickListener(@Nullable final OnRowClickListener listener) {
         super.setOnRowClickListener(listener);
-        // Add an explicit 'view' button as tapping on the background
-        // is not obvious in this Grid view.
+
+        // Add an explicit 'view' button as tapping on the background is not obvious here.
         if (listener != null) {
             vb.viewBookDetails.setOnClickListener(
                     v -> listener.onClick(v, getBindingAdapterPosition()));
         } else {
             vb.viewBookDetails.setOnClickListener(null);
         }
+    }
+
+    @Override
+    public void setOnRowLongClickListener(@Nullable final ShowContextMenu contextMenuMode,
+                                          @Nullable final OnRowClickListener listener) {
+        // Override the user! tap-and-hold on the background is not obvious here.
+        super.setOnRowLongClickListener(ShowContextMenu.Button, listener);
     }
 
     @Override

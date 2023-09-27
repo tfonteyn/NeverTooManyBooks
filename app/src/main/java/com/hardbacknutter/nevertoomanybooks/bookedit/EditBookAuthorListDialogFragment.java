@@ -456,7 +456,7 @@ public class EditBookAuthorListDialogFragment
                     .inflate(R.layout.row_edit_author_list, parent, false);
             final Holder holder = new Holder(view, formatter);
             holder.setOnRowClickListener(rowClickListener);
-            holder.setOnRowShowContextMenuListener(contextMenuMode, rowShowMenuListener);
+            holder.setOnRowLongClickListener(contextMenuMode, rowShowMenuListener);
             return holder;
         }
 

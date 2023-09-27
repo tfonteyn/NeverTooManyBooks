@@ -115,8 +115,8 @@ public abstract class RowViewHolder
      * @param contextMenuMode user preferred context menu mode
      * @param listener        to receive clicks
      */
-    public void setOnRowShowContextMenuListener(@Nullable final ShowContextMenu contextMenuMode,
-                                                @Nullable final OnRowClickListener listener) {
+    public void setOnRowLongClickListener(@Nullable final ShowContextMenu contextMenuMode,
+                                          @Nullable final OnRowClickListener listener) {
         if (listener != null && contextMenuMode != null) {
             onClickTargetView.setOnLongClickListener(v -> {
                 listener.onClick(v, getBindingAdapterPosition());

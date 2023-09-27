@@ -424,7 +424,7 @@ public class EditBookPublisherListDialogFragment
                     .inflate(R.layout.row_edit_publisher_list, parent, false);
             final Holder holder = new Holder(view);
             holder.setOnRowClickListener(rowClickListener);
-            holder.setOnRowShowContextMenuListener(contextMenuMode, rowShowMenuListener);
+            holder.setOnRowLongClickListener(contextMenuMode, rowShowMenuListener);
             return holder;
         }
 
