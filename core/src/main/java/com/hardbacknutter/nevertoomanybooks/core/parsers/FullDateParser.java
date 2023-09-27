@@ -70,6 +70,7 @@ public class FullDateParser
             "dd MMM. yyyy",
 
             // Just a dot after the day...
+            "d. MMM yyyy",
             "dd. MMM yyyy",
 
             // Month in full
