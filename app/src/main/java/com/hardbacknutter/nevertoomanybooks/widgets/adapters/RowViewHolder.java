@@ -127,27 +127,8 @@ public abstract class RowViewHolder
                 btnRowMenu.setOnClickListener(
                         v -> listener.onClick(v, getBindingAdapterPosition()));
 
-                switch (contextMenuMode) {
-                    case Button: {
-                        btnRowMenu.setVisibility(View.VISIBLE);
-                        break;
-                    }
-                    case ButtonIfSpace: {
-                        final WindowSizeClass size = WindowSizeClass.getWidth(
-                                btnRowMenu.getContext());
-                        if (size == WindowSizeClass.Medium
-                            || size == WindowSizeClass.Expanded) {
-                            btnRowMenu.setVisibility(View.VISIBLE);
-                        } else {
-                            btnRowMenu.setVisibility(View.GONE);
-                        }
-                        break;
-                    }
-                    case NoButton: {
-                        btnRowMenu.setVisibility(View.GONE);
-                        break;
-                    }
-                }
+                final int visibility = getButtonVisibility(contextMenuMode);
+                btnRowMenu.setVisibility(visibility);
             }
         } else {
             onClickTargetView.setOnLongClickListener(null);
@@ -156,5 +137,40 @@ public abstract class RowViewHolder
                 btnRowMenu.setVisibility(View.GONE);
             }
         }
+    }
+
+    /**
+     * Determine visibility based on the given mode and the screen size.
+     *
+     * @param contextMenuMode user-desired mode
+     *
+     * @return visibility
+     */
+    protected int getButtonVisibility(@NonNull final ShowContextMenu contextMenuMode) {
+        final int visibility;
+        switch (contextMenuMode) {
+            case Button: {
+                visibility = View.VISIBLE;
+                break;
+            }
+            case ButtonIfSpace: {
+                final WindowSizeClass size = WindowSizeClass.getWidth(itemView.getContext());
+                if (size == WindowSizeClass.Medium
+                    || size == WindowSizeClass.Expanded) {
+                    visibility = View.VISIBLE;
+                } else {
+                    visibility = View.GONE;
+                }
+                break;
+            }
+            case NoButton: {
+                visibility = View.GONE;
+                break;
+            }
+            default:
+                visibility = View.GONE;
+                break;
+        }
+        return visibility;
     }
 }
