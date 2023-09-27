@@ -287,4 +287,10 @@
     <string name="pe_list">列表</string>
     <string name="pe_grid">网格</string>
     <string name="pt_bob_grid_spancount">网格列</string>
+    <!-- NOT APPLICABLE FOR BOOKS IN CHINESE; Just show "On"; it will still be used for other languages. -->
+    <string name="ps_show_titles_reordered_on">关于</string>
+    <!-- NOT APPLICABLE FOR BOOKS IN CHINESE; Just show "Off"; it will still be used for other languages. -->
+    <string name="ps_show_titles_reordered_off">关闭</string>
+    <!-- NOT APPLICABLE FOR BOOKS IN CHINESE. Empty string. -->
+    <string name="pv_reformat_titles_prefixes">""</string>
 </resources>
