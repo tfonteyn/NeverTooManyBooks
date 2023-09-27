@@ -789,4 +789,10 @@
     <string name="pe_list">Seznam</string>
     <string name="pe_grid">Mřížka</string>
     <string name="pt_bob_grid_spancount">Sloupce mřížky</string>
+    <!-- NOT APPLICABLE FOR BOOKS IN CZECH; Just show "On"; it will still be used for other languages. -->
+    <string name="ps_show_titles_reordered_on">Na adrese</string>
+    <!-- NOT APPLICABLE FOR BOOKS IN CZECH; Just show "Off"; it will still be used for other languages. -->
+    <string name="ps_show_titles_reordered_off">Vypnuto</string>
+    <!-- NOT APPLICABLE FOR BOOKS IN CZECH. Empty string. -->
+    <string name="pv_reformat_titles_prefixes">""</string>
 </resources>

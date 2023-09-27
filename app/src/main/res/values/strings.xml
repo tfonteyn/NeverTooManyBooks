@@ -1191,9 +1191,11 @@
     <!-- SwitchPreference title: How to sort titles. -->
     <string name="pt_sort_title_reordered">Sort titles by</string>
 
-    <!-- Preference summary: example of an 'original' title; must be translated in combination with "ps_show_titles_reordered_on" -->
+    <!-- Preference summary: example of an 'original' title; must be translated in combination with "ps_show_titles_reordered_on".
+         https://en.wikipedia.org/wiki/Article_(grammar)#Tables -->
     <string name="ps_show_titles_reordered_off">The title</string>
-    <!-- Preference summary: example of a reordered title; must be translated in combination with "ps_show_titles_reordered_off" -->
+    <!-- Preference summary: example of a reordered title; must be translated in combination with "ps_show_titles_reordered_off".
+         https://en.wikipedia.org/wiki/Article_(grammar)#Tables-->
     <string name="ps_show_titles_reordered_on">title, The</string>
     <!--
      Not a preference as such.
@@ -1203,6 +1205,8 @@
      This is case-sensitive, so each locale can decide if it's appropriate to for example
      move a word only if it starts with an uppercase, but not for the same word starting
      with a lowercase character.
+
+     https://en.wikipedia.org/wiki/Article_(grammar)#Tables
  . -->
     <string name="pv_reformat_titles_prefixes">a|A|an|An|the|The</string>
     <!-- SwitchPreference title: allow mobile network usage or limit to use wifi/ethernet only. -->
