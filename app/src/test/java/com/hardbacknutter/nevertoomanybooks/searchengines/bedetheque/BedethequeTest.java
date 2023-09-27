@@ -78,7 +78,7 @@ public class BedethequeTest
 
         assertEquals("La grande terre", book.getString(DBKey.TITLE, null));
 
-        assertEquals("2002-10", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2002-10-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("2840557428", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("46", book.getString(DBKey.PAGE_COUNT, null));

@@ -90,7 +90,7 @@ class OpenLibrarySearchEngineTest
         assertEquals("Includes bibliographical references and index.",
                      book.getString(DBKey.DESCRIPTION, null));
         assertEquals("92", book.getString(DBKey.PAGE_COUNT, null));
-        assertEquals("March 2009", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2009-03-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
 
 
         final List<Publisher> allPublishers = book.getPublishers();

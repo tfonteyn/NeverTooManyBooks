@@ -79,7 +79,7 @@ public class BookFinderTest
 
         assertEquals("Rule 34", book.getString(DBKey.TITLE, null));
         assertEquals("9780441020348", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("2011", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2011-01-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("English", book.getString(DBKey.LANGUAGE, null));
         assertEquals(3.75f, book.getFloat(DBKey.RATING, realNumberParser));

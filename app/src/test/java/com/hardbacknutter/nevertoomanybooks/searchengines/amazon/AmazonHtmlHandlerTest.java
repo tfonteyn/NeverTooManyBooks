@@ -78,7 +78,7 @@ class AmazonHtmlHandlerTest
 
         assertEquals("Bone Silence", book.getString(DBKey.TITLE, null));
         assertEquals("978-0575090675", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("30 Jan. 2020", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2020-01-30", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("608", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("English", book.getString(DBKey.LANGUAGE, null));
@@ -112,7 +112,7 @@ class AmazonHtmlHandlerTest
         assertEquals("The Medusa Chronicles: Alastair Reynolds & Stephen Baxter",
                      book.getString(DBKey.TITLE, null));
         assertEquals("978-1473210202", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("12 Jan. 2017", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2017-01-12", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("336", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("English", book.getString(DBKey.LANGUAGE, null));
@@ -194,7 +194,7 @@ class AmazonHtmlHandlerTest
         assertEquals("3518366823", book.getString(DBKey.SID_ASIN, null));
         assertEquals(8d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
-        assertEquals("1. Juli 1974", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("1974-07-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -232,7 +232,7 @@ class AmazonHtmlHandlerTest
         assertEquals("3518366823", book.getString(DBKey.SID_ASIN, null));
         assertEquals(13.19d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
         assertEquals(MoneyParser.USD, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
-        assertEquals("January 1, 1995", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("1995-01-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -271,7 +271,7 @@ class AmazonHtmlHandlerTest
         assertEquals("1107480558", book.getString(DBKey.SID_ASIN, null));
         assertEquals(22.36d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
-        assertEquals("20 abril 2015", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2015-04-20", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -312,7 +312,7 @@ class AmazonHtmlHandlerTest
         assertEquals("840827578X", book.getString(DBKey.SID_ASIN, null));
         assertEquals(21.75d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
-        assertEquals("14 Junho 2023", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2023-06-14", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
