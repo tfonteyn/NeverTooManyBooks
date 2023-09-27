@@ -60,6 +60,8 @@ class LastDodoTest
         searchEngine.setCaller(new TestProgressListener(TAG));
     }
 
+    // URGENT: this test will fail for now due to the need for 'pruneList' from the SeriesDao
+    //  inside the search-engine method normalizeSeriesTitles
     @Test
     void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
