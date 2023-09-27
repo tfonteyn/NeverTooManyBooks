@@ -56,8 +56,8 @@
     <TextView
         android:id="@+id/title"
         style="@style/Field.BookTitle.Small"
-        android:maxLines="10"
         android:layout_marginTop="@dimen/section_margin_top"
+        android:maxLines="10"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -65,7 +65,6 @@
         tools:text="@sample/data.json/book/title"
         tools:visibility="visible"
         />
-
 
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/barrier_buttons"
@@ -77,13 +76,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/view_book_details"
-        style="@style/Button.MenuPopup"
-        android:insetLeft="0dp"
-        android:insetRight="0dp"
-        android:scaleX="@dimen/btn_context_menu_scale"
-        android:scaleY="@dimen/btn_context_menu_scale"
-        app:icon="@drawable/ic_baseline_details_24"
-        android:contentDescription="@string/pc_book_detail_screen"
+        style="@style/Button.Grid.Details"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/barrier_buttons"
@@ -92,15 +85,11 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_row_menu"
-        style="@style/Button.MenuPopup.More"
-        android:insetLeft="0dp"
-        android:insetRight="0dp"
-        android:visibility="gone"
+        style="@style/Button.Grid.More"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/view_book_details"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/barrier_buttons"
         app:layout_constraintVertical_bias="1"
-        tools:visibility="visible"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -203,26 +203,47 @@
         <item name="icon">@drawable/ic_baseline_help_24</item>
     </style>
 
-
-    <style name="Button.MenuPopup"
+    <!-- Generic Context menu button with the 3-dot vertical line icon. -->
+    <style name="Button.MenuPopup.More"
            parent="Widget.Material3.Button.IconButton.Outlined">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="iconTint">?attr/colorOnPrimaryContainer</item>
-    </style>
-
-    <!-- Generic Context menu button with the 3-dot vertical line icon. -->
-    <style name="Button.MenuPopup.More">
         <item name="icon">@drawable/ic_baseline_more_vert_24</item>
         <item name="android:contentDescription">@string/action_show_options</item>
         <item name="android:scaleX">@dimen/btn_context_menu_scale</item>
         <item name="android:scaleY">@dimen/btn_context_menu_scale</item>
     </style>
 
-    <!-- Sort Unsorted/Asc/Desc menu popup -->
-    <style name="Button.MenuPopup.Sorting">
-        <item name="icon">@drawable/ic_baseline_sort_unsorted</item>
-        <item name="android:contentDescription">@string/lbl_sorting</item>
+    <style name="Base.Button.Grid"
+           parent="Widget.Material3.Button.IconButton.Filled">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <!-- default is 48dp; we just want the minimal icon height. -->
+        <item name="android:minHeight">0dp</item>
+        <!-- default is 20dp; we just want the minimal icon width. -->
+        <item name="android:minWidth">0dp</item>
+        <!-- insets reduce the width/height of the container -->
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:backgroundTint">?attr/colorSurfaceContainer</item>
+        <item name="iconTint">?attr/colorOnPrimaryContainer</item>
+        <item name="android:scaleX">@dimen/btn_context_menu_scale</item>
+        <item name="android:scaleY">@dimen/btn_context_menu_scale</item>
+    </style>
+
+    <style name="Button.Grid.Details"
+           parent="Base.Button.Grid">
+        <item name="icon">@drawable/ic_baseline_details_24</item>
+        <item name="android:contentDescription">@string/pc_book_detail_screen</item>
+    </style>
+
+    <style name="Button.Grid.More"
+           parent="Base.Button.Grid">
+        <item name="icon">@drawable/ic_baseline_more_vert_24</item>
+        <item name="android:contentDescription">@string/action_show_options</item>
     </style>
 
     <style name="ButtonPanel.Container"
