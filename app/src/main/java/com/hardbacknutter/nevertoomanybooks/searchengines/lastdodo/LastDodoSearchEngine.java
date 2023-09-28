@@ -267,19 +267,26 @@ public class LastDodoSearchEngine
                              @NonNull final boolean[] fetchCovers,
                              @NonNull final Book book)
             throws StorageException {
-        final Element images = document.getElementById("images_container");
-        if (images != null) {
-            final Elements aas = images.select("a");
-            for (int cIdx = 0; cIdx < 2; cIdx++) {
-                if (isCancelled()) {
-                    return;
-                }
-                if (fetchCovers[cIdx] && aas.size() > cIdx) {
-                    final String url = aas.get(cIdx).attr("href");
-                    final String fileSpec = saveImage(context, url, isbn, cIdx, null);
-                    if (fileSpec != null) {
-                        book.setCoverFileSpec(cIdx, fileSpec);
-                    }
+
+        // https://assets.lastdodo.com/image/ld_medium/plain/assets/catalog/assets/1/4/8/d/pdf_48dea410-1a0e-012b-985d-f5c6b2a918e0.jpg
+
+        // 2023-09-28: "thumbnails"
+        // https://assets.lastdodo.com/image/ld_thumb1/plain/assets/catalog/assets/1/4/8/d/pdf_48dea410-1a0e-012b-985d-f5c6b2a918e0.jpg
+        // https://assets.lastdodo.com/image/ld_thumb1/plain/assets/catalog/assets/1/4/8/e/pdf_48e35cb0-1a0e-012b-985d-f5c6b2a918e0.jpg
+        // -> replace the substring to get the full size image
+
+        final Elements container = document.getElementsByClass("thumbnails");
+        final Elements images = container.get(0).select("img");
+        for (int cIdx = 0; cIdx < 2; cIdx++) {
+            if (isCancelled()) {
+                return;
+            }
+            if (fetchCovers[cIdx] && images.size() > cIdx) {
+                final String url = images.get(cIdx).attr("src")
+                                         .replace("/ld_thumb1/", "/ld_medium/");
+                final String fileSpec = saveImage(context, url, isbn, cIdx, null);
+                if (fileSpec != null) {
+                    book.setCoverFileSpec(cIdx, fileSpec);
                 }
             }
         }
