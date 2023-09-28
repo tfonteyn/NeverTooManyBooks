@@ -729,7 +729,7 @@ public class BooksOnBookshelf
 
         } else if (itemId == R.id.MENU_MANAGE_BOOKSHELVES) {
             // overridden, so we can pass the current bookshelf id.
-            manageBookshelvesLauncher.launch(vm.getCurrentBookshelf().getId());
+            manageBookshelvesLauncher.launch(vm.getBookshelf().getId());
             return true;
 
         } else if (itemId == R.id.MENU_MANAGE_LIST_STYLES) {
@@ -1350,7 +1350,7 @@ public class BooksOnBookshelf
         if (menuItemId == R.id.MENU_AUTHOR_WORKS_FILTER) {
             authorWorksLauncher.launch(new AuthorWorksContract.Input(
                     rowData.getLong(DBKey.FK_AUTHOR),
-                    vm.getCurrentBookshelf().getId(),
+                    vm.getBookshelf().getId(),
                     vm.getStyle().getUuid()));
             return true;
 
@@ -1634,14 +1634,19 @@ public class BooksOnBookshelf
         editStyleLauncher.launch(EditStyleContract.edit(style, true));
     }
 
+    /**
+     * The user picked a different Bookshelf from the spinner.
+     *
+     * @param bookshelfId of the Bookshelf to use
+     */
     private void onBookshelfSelected(final long bookshelfId) {
-        if (bookshelfId != vm.getCurrentBookshelf().getId()) {
-            vm.setCurrentBookshelf(BooksOnBookshelf.this, bookshelfId);
+        if (bookshelfId != vm.getBookshelf().getId()) {
+            vm.setBookshelf(this, bookshelfId);
+
             saveListPosition();
             buildBookList();
         }
     }
-
 
     /**
      * Receives notifications that an inline-string column was updated.
@@ -1892,16 +1897,15 @@ public class BooksOnBookshelf
                 final int viewOffset = savedListPosition.second;
 
                 positioningHelper.scrollTo(adapterPosition, viewOffset, adapter.getItemCount());
-                // wait for layout cycle and display the book
+                // wait for layout cycle and display the book details if possible
                 vb.content.list.post(() -> showBookDetailsIfWeCan(adapterPosition,
                                                                   vm.getSelectedBookId()));
             } else if (targetNodes.size() == 1) {
                 // There is a single target node; scroll to it
                 final BooklistNode node = positioningHelper.scrollTo(targetNodes);
-                // wait for layout cycle and display the book
+                // wait for layout cycle and display the book details if possible
                 vb.content.list.post(() -> showBookDetailsIfWeCan(node.getAdapterPosition(),
                                                                   node.getBookId()));
-
             } else {
                 // We'll need to find the "best" node (from all target nodes).
                 // First scroll to the saved position which will serve as the starting point
@@ -1915,7 +1919,7 @@ public class BooksOnBookshelf
                 vb.content.list.post(() -> {
                     // Use the target nodes to find the "best" node and scroll to it
                     final BooklistNode node = positioningHelper.scrollTo(targetNodes);
-                    // again wait for layout cycle and try to display the book details
+                    // again wait for layout cycle and display the book details if possible
                     vb.content.list.post(() -> showBookDetailsIfWeCan(node.getAdapterPosition(),
                                                                       node.getBookId()));
                 });
@@ -2264,7 +2268,7 @@ public class BooksOnBookshelf
             final int itemId = menuItem.getItemId();
 
             if (itemId == R.id.MENU_FILTERS) {
-                bookshelfFiltersLauncher.launch(vm.getCurrentBookshelf());
+                bookshelfFiltersLauncher.launch(vm.getBookshelf());
                 return true;
 
             } else if (itemId == R.id.MENU_STYLE_PICKER) {

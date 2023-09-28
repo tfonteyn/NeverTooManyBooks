@@ -189,7 +189,15 @@ public class BooksOnBookshelfViewModel
     @Nullable
     private Bookshelf bookshelf;
 
-    private Style.Layout currentLayout;
+    /**
+     * Set when the LayoutManager is created.
+     * <p>
+     * When either Bookshelf or Style is changed, we'll reset to this to {@code null}.
+     * This will FORCE a recreation of the LayoutManager during BooksOnBookshelf#onResume
+     * even when the type itself happens to be the same between 2 bookshelves or styles.
+     */
+    @Nullable
+    private Style.Layout layout;
 
 
     /**
@@ -413,7 +421,7 @@ public class BooksOnBookshelfViewModel
     }
 
     @NonNull
-    Bookshelf getCurrentBookshelf() {
+    Bookshelf getBookshelf() {
         Objects.requireNonNull(bookshelf, Bookshelf.TAG);
         return bookshelf;
     }
@@ -424,8 +432,8 @@ public class BooksOnBookshelfViewModel
      * @param context     Current context
      * @param bookshelfId of desired {@link Bookshelf}
      */
-    void setCurrentBookshelf(@NonNull final Context context,
-                             final long bookshelfId) {
+    void setBookshelf(@NonNull final Context context,
+                      final long bookshelfId) {
         final long previousBookshelfId = bookshelf == null ? 0 : bookshelf.getId();
 
         bookshelf = ServiceLocator.getInstance().getBookshelfDao()
@@ -544,10 +552,10 @@ public class BooksOnBookshelfViewModel
      */
     boolean isRecreateLayoutManager() {
         //noinspection DataFlowIssue
-        final Style.Layout layout = bookshelf.getStyle().getLayout();
-        if (layout != currentLayout) {
+        final Style.Layout currentLayout = bookshelf.getStyle().getLayout();
+        if (currentLayout != layout) {
             // always reset for next iteration.
-            currentLayout = layout;
+            this.layout = currentLayout;
             return true;
         }
         return false;
@@ -695,7 +703,7 @@ public class BooksOnBookshelfViewModel
 
         final String title = context.getString(R.string.name_colon_value,
                                                context.getString(R.string.lbl_bookshelf),
-                                               getCurrentBookshelf().getName());
+                                               getBookshelf().getName());
         return new UpdateBooklistContract.Input(books, title, null);
     }
 
@@ -1027,8 +1035,8 @@ public class BooksOnBookshelfViewModel
 
     void onManageBookshelvesFinished(@NonNull final Context context,
                                      final long bookshelfId) {
-        if (bookshelfId != 0 && bookshelfId != getCurrentBookshelf().getId()) {
-            setCurrentBookshelf(context, bookshelfId);
+        if (bookshelfId != 0 && bookshelfId != getBookshelf().getId()) {
+            setBookshelf(context, bookshelfId);
             forceRebuildInOnResume = true;
         }
     }
