@@ -73,7 +73,7 @@ public abstract class BaseDBTest {
             throws IOException {
         final Document document;
         try (InputStream is = InstrumentationRegistry.getInstrumentation().getContext()
-                                                     .getResources().openRawResource(resId);) {
+                                                     .getResources().openRawResource(resId)) {
             assertNotNull(is);
             document = Jsoup.parse(is, charset, locationHeader);
             assertNotNull(document);
