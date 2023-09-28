@@ -23,6 +23,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.Iterator;
 import java.util.Locale;
@@ -86,7 +87,8 @@ class AuthorListLoader {
      *
      * @return {@code true} on success
      */
-    private boolean parseAuthorList(@NonNull final Document document) {
+    @VisibleForTesting
+    boolean parseAuthorList(@NonNull final Document document) {
 
         final Iterator<Element> iterator = document.select("ul.nav-liste > li > a")
                                                    .iterator();
@@ -99,6 +101,7 @@ class AuthorListLoader {
                     final Element span = a.selectFirst("span.libelle");
                     if (span != null) {
                         final String name = span.text();
+                        //Log.d(TAG, name );
                         return new BdtAuthor(name, url);
                     }
                 }
