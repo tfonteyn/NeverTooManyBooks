@@ -25,11 +25,10 @@ import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.JSoupBase;
+import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
@@ -44,28 +43,30 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.jsoup.nodes.Document;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-/**
+
+/*
  * Test parsing the Jsoup Document for ISFDB single-book data.
  */
-class IsfdbBookHandlerTest
-        extends JSoupBase {
 
-    private static final String TAG = "IsfdbBookHandlerTest";
+/** @noinspection MissingJavadoc */
+public class ParseTest
+        extends BaseDBTest {
+
+    private static final String TAG = "ParseTest";
 
     private IsfdbSearchEngine searchEngine;
-    private Book book;
-    @BeforeEach
+
+    @Before
     public void setup()
-            throws Exception {
+            throws DaoWriteException, StorageException {
         super.setup();
-        book = new Book(BundleMock.create());
 
         searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
@@ -80,18 +81,21 @@ class IsfdbBookHandlerTest
     }
 
     @Test
-    void parse01()
+    public void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
-        setLocale(searchEngine.getLocale(context));
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
 
         final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?112781";
-        final String filename = "/isfdb/112781.html";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.isfdb_112781;
 
-        final Document document = loadDocument(filename, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
+        final RealNumberParser realNumberParser =
+                new RealNumberParser(List.of(searchEngine.getLocale(context)));
+
+        final Document document = loadDocument(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
                                                locationHeader);
+        final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false}, book);
-        // System.out.println(book);
+        // Log.d(TAG, book.toString());
 
         assertEquals("Like Nothing on Earth", book.getString(DBKey.TITLE, null));
         assertEquals(112781L, book.getLong(DBKey.SID_ISFDB));
@@ -99,7 +103,7 @@ class IsfdbBookHandlerTest
         assertEquals("1986-10-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("0413600106", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("9780413600103", book.getString(IsfdbSearchEngine.SiteField.ISBN_2, null));
-        assertEquals(1.95d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(1.95d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
         assertEquals("159", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("pb", book.getString(DBKey.FORMAT, null));
@@ -154,25 +158,28 @@ class IsfdbBookHandlerTest
     }
 
     @Test
-    void parse02()
+    public void parse02()
             throws SearchException, IOException, CredentialsException, StorageException {
-        setLocale(searchEngine.getLocale(context));
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
 
         final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?431964";
-        final String filename = "/isfdb/431964.html";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.isfdb_431964;
 
-        final Document document = loadDocument(filename, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
+        final RealNumberParser realNumberParser =
+                new RealNumberParser(List.of(searchEngine.getLocale(context)));
+
+        final Document document = loadDocument(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
                                                locationHeader);
+        final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false}, book);
-        // System.out.println(book);
+        // Log.d(TAG, book.toString());
 
         assertEquals("Mort", book.getString(DBKey.TITLE, null));
         assertEquals(431964L, book.getLong(DBKey.SID_ISFDB));
         assertEquals("2013-11-07", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("9781473200104", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("1473200105", book.getString(IsfdbSearchEngine.SiteField.ISBN_2, null));
-        assertEquals(9.99d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(9.99d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
         assertEquals("257", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("hc", book.getString(DBKey.FORMAT, null));
@@ -215,25 +222,28 @@ class IsfdbBookHandlerTest
     }
 
     @Test
-    void parse03()
+    public void parse03()
             throws SearchException, IOException, CredentialsException, StorageException {
-        setLocale(searchEngine.getLocale(context));
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
 
         final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?542125";
-        final String filename = "/isfdb/542125.html";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.isfdb_542125;
 
-        final Document document = loadDocument(filename, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
+        final RealNumberParser realNumberParser =
+                new RealNumberParser(List.of(searchEngine.getLocale(context)));
+
+        final Document document = loadDocument(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
                                                locationHeader);
+        final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false}, book);
-        // System.out.println(book);
+        // Log.d(TAG, book.toString());
 
         assertEquals("The Shepherd's Crown", book.getString(DBKey.TITLE, null));
         assertEquals(542125L, book.getLong(DBKey.SID_ISFDB));
         assertEquals("2015-09-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("9780062429995", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("006242999X", book.getString(IsfdbSearchEngine.SiteField.ISBN_2, null));
-        assertEquals(11.99d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(11.99d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.USD, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
         assertEquals("ebook", book.getString(DBKey.FORMAT, null));
         assertEquals("NOVEL", book.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE, null));
@@ -280,23 +290,24 @@ class IsfdbBookHandlerTest
     }
 
     @Test
-    void parse04()
+    public void parse04()
             throws SearchException, IOException, CredentialsException, StorageException {
 
-        setLocale(Locale.GERMANY);
-
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
-
         final String locationHeader = "https://www.isfdb.org/cgi-bin/pl.cgi?808391";
-        final String filename = "/isfdb/808391.html";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.isfdb_808391;
 
-        final Document document = loadDocument(filename, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
+        final RealNumberParser realNumberParser =
+                new RealNumberParser(List.of(searchEngine.getLocale(context)));
+
+        final Document document = loadDocument(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
                                                locationHeader);
+        final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false}, book);
-        //System.out.println(book);
+        // Log.d(TAG, book.toString());
 
         // We're only interested in the price field to check if the Locale is working as expected.
-        assertEquals(7.0d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(7.0d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals("DEM", book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
     }
 }

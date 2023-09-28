@@ -19,32 +19,36 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
+import android.util.Log;
+
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.Base;
+import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-/**
+/*
  * Test parsing the Jsoup Document for ISFDB multi-edition data.
  * <p>
  * Unless noted, these tests will make a live call to the ISFDB website.
  */
-class IsfdbEditionsHandlerTest
-        extends Base {
+
+/** @noinspection MissingJavadoc */
+public class IsfdbEditionsHandlerTest
+        extends BaseDBTest {
 
     private static final String TAG = "IsfdbEditionsHandlerTes";
 
@@ -52,27 +56,26 @@ class IsfdbEditionsHandlerTest
 
     private IsfdbSearchEngine searchEngine;
 
-    @BeforeEach
+    @Before
     public void setup()
-            throws Exception {
+            throws DaoWriteException, StorageException {
         super.setup();
+
         searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
         sBaseUrl = searchEngine.getHostUrl(context);
     }
 
     @Test
-    void parseMultiEdition()
+    public void parseMultiEdition()
             throws IOException {
-        setLocale(searchEngine.getLocale(context));
-        final String locationHeader = "https://www.isfdb.org/cgi-bin/title.cgi?11169";
-        final String filename = "/isfdb/11169-multi-edition.html";
 
-        final Document document;
-        try (InputStream in = this.getClass().getResourceAsStream(filename)) {
-            assertNotNull(in);
-            document = Jsoup.parse(in, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader);
-        }
+        final String locationHeader = "https://www.isfdb.org/cgi-bin/title.cgi?11169";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.isfdb_11169_multi_edition;
+
+        final Document document = loadDocument(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
+                                               locationHeader);
         assertNotNull(document);
         assertTrue(document.hasText());
 
@@ -82,21 +85,19 @@ class IsfdbEditionsHandlerTest
         assertEquals(27, editions.size());
         assertEquals("eng", editions.get(0).getLangIso3());
 
-        System.out.println(editions);
+        Log.d(TAG, editions.toString());
     }
 
     @Test
-    void parseMultiEdition2()
+    public void parseMultiEdition2()
             throws IOException {
-        setLocale(searchEngine.getLocale(context));
-        final String locationHeader = "https://www.isfdb.org/cgi-bin/title.cgi?1360173";
-        final String filename = "/isfdb/1360173-multi-edition.html";
 
-        final Document document;
-        try (InputStream in = this.getClass().getResourceAsStream(filename)) {
-            assertNotNull(in);
-            document = Jsoup.parse(in, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader);
-        }
+        final String locationHeader = "https://www.isfdb.org/cgi-bin/title.cgi?1360173";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.isfdb_1360173_multi_edition;
+
+        final Document document = loadDocument(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
+                                               locationHeader);
         assertNotNull(document);
         assertTrue(document.hasText());
 
@@ -106,7 +107,7 @@ class IsfdbEditionsHandlerTest
         assertEquals(4, editions.size());
         assertEquals("nld", editions.get(0).getLangIso3());
 
-        System.out.println(editions);
+        Log.d(TAG, editions.toString());
     }
 
     /**
@@ -119,7 +120,7 @@ class IsfdbEditionsHandlerTest
      * Resulting url should have "pl.cgi".
      */
     @Test
-    void searchSingleEditionIsbn()
+    public void searchSingleEditionIsbn()
             throws SearchException, CredentialsException {
 
         final String path = sBaseUrl + "/cgi-bin/se.cgi?arg=9020612476&type=ISBN";
@@ -138,7 +139,7 @@ class IsfdbEditionsHandlerTest
      * @see #searchSingleEditionIsbn()
      */
     @Test
-    void searchMultiEditionIsbn()
+    public void searchMultiEditionIsbn()
             throws SearchException, CredentialsException {
 
         final String path = sBaseUrl + "/cgi-bin/se.cgi?arg=9781473208926&type=ISBN";
