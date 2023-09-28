@@ -22,11 +22,10 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.bookfinder;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.JSoupBase;
+import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -38,51 +37,54 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.jsoup.nodes.Document;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-public class BookFinderTest
-        extends JSoupBase {
+/** @noinspection MissingJavadoc */
+public class ParseTest
+        extends BaseDBTest {
 
-    private static final String TAG = "BookFinderTest";
+    private static final String TAG = "ParseTest";
 
     private static final String UTF_8 = "UTF-8";
 
     private BookFinderSearchEngine searchEngine;
-    private Book book;
 
-    @BeforeEach
+    @Before
     public void setup()
-            throws Exception {
+            throws DaoWriteException, StorageException {
         super.setup();
-        book = new Book(BundleMock.create());
+
         searchEngine = (BookFinderSearchEngine) EngineId.BookFinder.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
     }
 
     @Test
-    void parse01()
+    public void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
-        setLocale(Locale.UK);
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
 
         final String locationHeader = "https://www.bookfinder.com/isbn/9780441020348/?st=sr&ac=qr&mode=basic&author=&title=&isbn=978-0-441-02034-8&lang=en&destination=gb&currency=USD&binding=*&keywords=&publisher=&min_year=&max_year=&minprice=&maxprice=";
-        final String filename = "/bookfinder/9780441020348.html";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.bookfinder_9780441020348;
 
-        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        final RealNumberParser realNumberParser =
+                new RealNumberParser(List.of(searchEngine.getLocale(context)));
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, false}, book);
-        //System.out.println(book);
+        // Log.d(TAG, book.toString());
 
         assertEquals("Rule 34", book.getString(DBKey.TITLE, null));
         assertEquals("9780441020348", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("2011-01-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("English", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(3.75f, book.getFloat(DBKey.RATING, realNumberParser));
+        assertEquals(3.75f, book.getFloat(DBKey.RATING, realNumberParser), 0);
 
         assertEquals("<b>\"The most spectacular science fiction writer of recent years"
                      + "\" (Vernor Vinge, author of <i>Rainbows End</i>)"
