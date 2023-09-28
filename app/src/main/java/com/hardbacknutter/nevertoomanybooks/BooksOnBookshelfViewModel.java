@@ -185,7 +185,7 @@ public class BooksOnBookshelfViewModel
     /** Flag to prompt the user to make a backup after startup. */
     private boolean proposeBackup;
 
-    /** Currently selected bookshelf. */
+    /** Currently selected {@link Bookshelf}. */
     @Nullable
     private Bookshelf bookshelf;
 
@@ -350,7 +350,7 @@ public class BooksOnBookshelfViewModel
     }
 
     /**
-     * Get the Bookshelf list to show in the Spinner.
+     * Get the {@link Bookshelf} list to show in the Spinner.
      * Will be empty until a call to {@link #reloadBookshelfList(Context)} is made.
      *
      * @return list
@@ -361,7 +361,7 @@ public class BooksOnBookshelfViewModel
     }
 
     /**
-     * Construct the Bookshelf list to show in the Spinner.
+     * Construct the {@link Bookshelf} list to show in the Spinner.
      *
      * @param context Current context.
      */
@@ -372,12 +372,12 @@ public class BooksOnBookshelfViewModel
     }
 
     /**
-     * Find the position of the currently set Bookshelf in the Spinner.
+     * Find the position of the currently set {@link Bookshelf} in the Spinner.
      * (with fallback to the default, or to 0 if needed)
      *
      * @param context Current context.
      *
-     * @return the position that reflects the current bookshelf.
+     * @return the position that reflects the current {@link Bookshelf}.
      */
     int getSelectedBookshelfSpinnerPosition(@NonNull final Context context) {
         Objects.requireNonNull(bookshelf, Bookshelf.TAG);
@@ -419,10 +419,10 @@ public class BooksOnBookshelfViewModel
     }
 
     /**
-     * Load and set the desired Bookshelf.
+     * Load and set the desired {@link Bookshelf}.
      *
      * @param context     Current context
-     * @param bookshelfId of desired Bookshelf
+     * @param bookshelfId of desired {@link Bookshelf}
      */
     void setCurrentBookshelf(@NonNull final Context context,
                              final long bookshelfId) {
@@ -460,7 +460,7 @@ public class BooksOnBookshelfViewModel
     }
 
     /**
-     * Get the style of the current bookshelf.
+     * Get the style of the current {@link Bookshelf}.
      *
      * @return style
      */
@@ -492,7 +492,7 @@ public class BooksOnBookshelfViewModel
     }
 
     /**
-     * Save the current booklist adapter position on the current bookshelf.
+     * Save the current booklist adapter position on the current {@link Bookshelf}.
      *
      * @param context    Current context
      * @param position   The booklist <strong>adapter</strong> position of the first visible view.
@@ -943,7 +943,7 @@ public class BooksOnBookshelfViewModel
     }
 
     /**
-     * Delete the given Bookshelf.
+     * Delete the given {@link Bookshelf}.
      *
      * @param bookshelf to delete
      *
