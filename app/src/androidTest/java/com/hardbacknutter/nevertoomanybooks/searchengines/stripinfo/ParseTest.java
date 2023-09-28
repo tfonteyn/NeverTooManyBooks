@@ -22,9 +22,9 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo;
 import java.io.IOException;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.JSoupBase;
+import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
@@ -39,49 +39,52 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.jsoup.nodes.Document;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-/**
+/*
  * Network access for covers in all tests.
  * <p>
  * Full network access for {@link #parseMultiResult}.
- */
-class StripInfoTest
-        extends JSoupBase {
+ * */
 
-    private static final String TAG = "StripInfoTest";
+/** @noinspection MissingJavadoc */
+public class ParseTest
+        extends BaseDBTest {
+
+    private static final String TAG = "ParseTest";
 
     private static final String UTF_8 = "UTF-8";
     private StripInfoSearchEngine searchEngine;
-    private Book book;
     private AuthorResolver mockAuthorResolver;
 
-    @BeforeEach
+    @Before
     public void setup()
-            throws Exception {
+            throws DaoWriteException, StorageException {
         super.setup();
-        book = new Book(BundleMock.create());
+
         searchEngine = (StripInfoSearchEngine) EngineId.StripInfoBe.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
     }
 
     @Test
-    void parse01()
+    public void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
-        setLocale(searchEngine.getLocale(context));
+
         final String locationHeader = "https://www.stripinfo.be/reeks/strip"
                                       + "/336348_Hauteville_House_14_De_37ste_parallel";
-        final String filename = "/stripinfo/336348_Hauteville_House_14_De_37ste_parallel.html";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.stripinfo_336348_hauteville_house_14_de_37ste_parallel;
 
-        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, true}, book, mockAuthorResolver);
-        // System.out.println(rawData);
+        // Log.d(TAG, book.toString());
 
         assertEquals("De 37ste parallel", book.getString(DBKey.TITLE, null));
         assertEquals("9789463064385", book.getString(DBKey.BOOK_ISBN, null));
@@ -138,18 +141,19 @@ class StripInfoTest
     }
 
     @Test
-    void parse02()
+    public void parse02()
             throws SearchException, IOException, CredentialsException, StorageException {
-        setLocale(searchEngine.getLocale(context));
+
         final String locationHeader = "https://www.stripinfo.be/reeks/strip"
                                       + "/2060_De_boom_van_de_twee_lentes_1"
                                       + "_De_boom_van_de_twee_lentes";
-        final String filename = "/stripinfo/2060_De_boom_van_de_twee_lentes_1"
-                                + "_De_boom_van_de_twee_lentes.html";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.stripinfo_2060_de_boom_van_de_twee_lentes_1_de_boom_van_de_twee_lentes;
 
-        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, true}, book, mockAuthorResolver);
-        // System.out.println(rawData);
+        // Log.d(TAG, book.toString());
 
         assertEquals("De boom van de twee lentes", book.getString(DBKey.TITLE, null));
         assertEquals("905581315X", book.getString(DBKey.BOOK_ISBN, null));
@@ -205,17 +209,19 @@ class StripInfoTest
     }
 
     @Test
-    void parse03()
+    public void parse03()
             throws SearchException, IOException, CredentialsException, StorageException {
-        setLocale(searchEngine.getLocale(context));
+
         final String locationHeader = "https://www.stripinfo.be/reeks/strip"
                                       + "/181604_Okiya_het_huis_van_verboden_geneugten"
                                       + "_1_Het_huis_van_verboden_geneugten";
-        final String filename = "/stripinfo/181604_mat_cover.html";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.stripinfo_181604_mat_cover;
 
-        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, true}, book, mockAuthorResolver);
-        // System.out.println(rawData);
+        // Log.d(TAG, book.toString());
 
         assertEquals("Het huis van verboden geneugten",
                      book.getString(DBKey.TITLE, null));
@@ -267,17 +273,19 @@ class StripInfoTest
     }
 
     @Test
-    void parseIntegrale()
+    public void parseIntegrale()
             throws SearchException, IOException, CredentialsException, StorageException {
-        setLocale(searchEngine.getLocale(context));
+
         final String locationHeader = "https://www.stripinfo.be/reeks/strip/"
                                       + "316016_Johan_en_Pirrewiet_INT_5_De_integrale_5";
-        final String filename = "/stripinfo/316016_Johan_en_Pirrewiet_INT_5_De_integrale_5.html";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.stripinfo_316016_johan_en_pirrewiet_int_5_de_integrale_5;
 
-        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false}, book,
                            mockAuthorResolver);
-        // System.out.println(rawData);
+        // Log.d(TAG, book.toString());
 
         assertEquals("De integrale 5", book.getString(DBKey.TITLE, null));
         assertEquals("9789055819485", book.getString(DBKey.BOOK_ISBN, null));
@@ -328,17 +336,19 @@ class StripInfoTest
     }
 
     @Test
-    void parseIntegrale2()
+    public void parseIntegrale2()
             throws SearchException, IOException, CredentialsException, StorageException {
-        setLocale(searchEngine.getLocale(context));
+
         final String locationHeader = "https://www.stripinfo.be/reeks/strip/"
                                       + "17030_Comanche_1_Red_Dust";
-        final String filename = "/stripinfo/17030_Comanche_1_Red_Dust.html";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.stripinfo_17030_comanche_1_red_dust;
 
-        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false}, book,
                            mockAuthorResolver);
-        // System.out.println(rawData);
+        // Log.d(TAG, book.toString());
 
         assertEquals("Red Dust", book.getString(DBKey.TITLE, null));
         assertEquals("1972-01-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
@@ -386,17 +396,19 @@ class StripInfoTest
     }
 
     @Test
-    void parseFavReeks2()
+    public void parseFavReeks2()
             throws SearchException, IOException, CredentialsException, StorageException {
-        setLocale(searchEngine.getLocale(context));
+
         final String locationHeader = "https://www.stripinfo.be/reeks/strip/"
                                       + "8155_De_avonturen_van_de_3L_7_Spoken_in_de_grot";
-        final String filename = "/stripinfo/8155_De_avonturen_van_de_3L_7_Spoken_in_de_grot.html";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.stripinfo_8155_de_avonturen_van_de_3l_7_spoken_in_de_grot;
 
-        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false}, book,
                            mockAuthorResolver);
-        // System.out.println(rawData);
+        // Log.d(TAG, book.toString());
 
         assertEquals("Spoken in de grot", book.getString(DBKey.TITLE, null));
         assertEquals("1977-01-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
@@ -442,20 +454,22 @@ class StripInfoTest
 
     /** Network access! */
     @Test
-    void parseMultiResult()
+    public void parseMultiResult()
             throws SearchException, CredentialsException, StorageException, IOException {
-        setLocale(searchEngine.getLocale(context));
-        final String locationHeader = "https://stripinfo.be/zoek/zoek?zoekstring=pluvi";
-        final String filename = "/stripinfo/multi-result-pluvi.html";
 
-        final Document document = loadDocument(filename, null, locationHeader);
+        final String locationHeader = "https://stripinfo.be/zoek/zoek?zoekstring=pluvi";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.stripinfo_multi_result_pluvi;
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
 
         // we've set the doc, but will redirect.. so an internet download WILL be done.
         searchEngine.processDocument(context, "9782756010830",
                                      document, new boolean[]{false, false}, book);
 
         assertFalse(book.isEmpty());
-        System.out.println(book);
+        // Log.d(TAG, book.toString());
 
         assertEquals("9782756010830", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("Le chant du pluvier", book.getString(DBKey.TITLE, null));
@@ -510,7 +524,7 @@ class StripInfoTest
     // ISBN	9069692736 <-- incorrect
     // Barcode	9789069692739 <-- correct
     @Test
-    void asEnGoud() {
+    public void asEnGoud() {
         final ISBN barcode = new ISBN("9789069692739", true);
         assertTrue(barcode.isValid(true));
 
@@ -519,7 +533,7 @@ class StripInfoTest
         assertFalse(isbn.isValid(false));
         assertTrue(isbn.isType(ISBN.Type.Invalid));
 
-        book.clearData();
+        final Book book = new Book();
         book.putString(DBKey.BOOK_ISBN, "9069692736");
         book.putString(StripInfoSearchEngine.SiteField.BARCODE, "9789069692739");
         searchEngine.processBarcode("9789069692739", book);
