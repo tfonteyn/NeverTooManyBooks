@@ -67,6 +67,18 @@ public class NormalizeSeriesTitlesTest
 
     /** Dutch test data using site locale Dutch. */
     @Test
+    public void normalize1() {
+        book.add(Series.from("Dames van de Pillar To Post, De"));
+
+        searchEngine.normalizeSeriesTitles(context, book);
+
+        final List<Series> series = book.getSeries();
+        assertEquals(1, series.size());
+        assertEquals("De Dames van de Pillar To Post", series.get(0).getTitle());
+    }
+
+    /** Dutch test data using site locale Dutch. */
+    @Test
     public void normalize2() {
         book.add(Series.from("titel, De"));
         book.add(Series.from("De titel"));

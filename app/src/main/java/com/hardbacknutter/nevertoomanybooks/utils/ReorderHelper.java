@@ -224,9 +224,9 @@ public final class ReorderHelper {
                 if (text.endsWith(SUFFIX_SEPARATOR + word)) {
                     // This is the (hopefully) original/actual title.
                     final String reconstructed =
-                            word + " " + text.substring(0, word.length()
-                                                           + SUFFIX_SEPARATOR.length()
-                                                           + 1);
+                            word + " " + text.substring(0, text.length()
+                                                           - SUFFIX_SEPARATOR.length()
+                                                           - word.length());
                     // Now reorder it AGAIN, and check if it matches the original text.
                     final String reordered =
                             reorder(context, reconstructed, firstLocale, localeList);
