@@ -65,6 +65,8 @@ public abstract class EntityMergeHelper<T extends Mergeable> {
 
     /**
      * Loop over the list and try to find and merge duplicates.
+     * <p>
+     * We always convert to lower case for comparing items.
      *
      * @param context        Current context
      * @param list           to process
