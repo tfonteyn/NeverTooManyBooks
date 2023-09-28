@@ -41,10 +41,10 @@ import static org.junit.Assert.assertNotNull;
 /**
  * Does live lookups to the website !
  */
-public class IsbnTest
+public class SearchByIsbnTest
         extends BaseDBTest {
 
-    private static final String TAG = "IsbnTest";
+    private static final String TAG = "SearchByIsbnTest";
 
 
     private SearchEngine searchEngine;
@@ -66,9 +66,9 @@ public class IsbnTest
         assertNotNull(book);
         assertFalse(book.isEmpty());
         LoggerFactory.getLogger().w(TAG, book);
-        
+
         // At the time of this test comment, we were using amazon.es:
-        // 2023-06-25T13:58:43.156|IsbnTest|WARN|DataManager{rawData=Bundle[{
+        // 2023-06-25T13:58:43.156|SearchByIsbnTest|WARN|DataManager{rawData=Bundle[{
         // language=Inglés,
         // format=Tapa dura,
         // date_published=28 abril 2022,

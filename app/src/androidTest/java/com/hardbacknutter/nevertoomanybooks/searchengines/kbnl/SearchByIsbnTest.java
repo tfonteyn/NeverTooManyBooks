@@ -41,10 +41,10 @@ import static org.junit.Assert.assertNotNull;
 /**
  * Does live lookups to the website !
  */
-public class IsbnTest
+public class SearchByIsbnTest
         extends BaseDBTest {
 
-    private static final String TAG = "IsbnTest";
+    private static final String TAG = "SearchByIsbnTest";
 
     private SearchEngine searchEngine;
 

@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque;
+package com.hardbacknutter.nevertoomanybooks.searchengines.bol;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
@@ -41,11 +41,10 @@ import static org.junit.Assert.assertNotNull;
 /**
  * Does live lookups to the website !
  */
-public class IsbnTest
+public class SearchByIsbnTest
         extends BaseDBTest {
 
-    private static final String TAG = "IsbnTest";
-
+    private static final String TAG = "SearchByIsbnTest";
 
     private SearchEngine searchEngine;
 
@@ -54,29 +53,21 @@ public class IsbnTest
             throws DaoWriteException, StorageException {
         super.setup();
 
-        searchEngine = EngineId.Bedetheque.createSearchEngine(context);
+        searchEngine = EngineId.Bol.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
     }
 
     @Test
-    public void Isbn9781849182089()
+    public void parseMultiResult01()
             throws SearchException, CredentialsException, StorageException {
-        // {series_list=[Series{id=0, title=`Lucky Luke`, complete=false, number=`148`},
-        // language=anglais, format=Couverture souple,
-        // date_published=2014-08, isbn=9781849182089,
-        // pages=48, title=Dick Digger's Gold Mine,
-        // author_list=[Author{id=0, familyName=`Morris`, givenNames=``, complete=false,
-        //                     type=0b1001000000000001:
-        //                     Type{TYPE_WRITER,TYPE_ARTIST,TYPE_COLORIST},
-        // realAuthor=Author{id=0, familyName=`De Bevere`, givenNames=`Maurice`, complete=false,
-        // type=0b0: Type{}, realAuthor=null}}],
-        // publisher_list=[Publisher{id=0, name=`Cinebook`}]}]
+
         final Book book = ((SearchEngine.ByIsbn) searchEngine)
-                .searchByIsbn(context, "9781849182089", new boolean[]{false, false});
+                .searchByIsbn(context, "9789056478193", new boolean[]{false, false});
+
         assertNotNull(book);
         assertFalse(book.isEmpty());
-        assertEquals("Softcover", book.getString(DBKey.FORMAT, null));
-        assertEquals("anglais", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("nijntjes voorleesfeest", book.getString(DBKey.TITLE, null));
+        assertEquals("2019-01-31", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         // this is good enough... the local junit tests do the full parse test
     }
 }
