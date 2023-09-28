@@ -338,7 +338,7 @@ public class BooksOnBookshelfViewModel
         }
 
         // preserve the current Layout so we can react to style/layout changes
-        currentLayout = bookshelf.getStyle().getLayout();
+//        currentLayout = bookshelf.getStyle().getLayout();
     }
 
     boolean isProposeBackup() {
@@ -444,6 +444,7 @@ public class BooksOnBookshelfViewModel
         bookshelf.setAsPreferred(context);
 
         if (previousBookshelfId != bookshelf.getId()) {
+            layout = null;
             resetSelectedBook();
         }
     }
@@ -497,6 +498,7 @@ public class BooksOnBookshelfViewModel
         // save the new bookshelf/style combination
         bookshelf.setAsPreferred(context);
         bookshelf.setStyle(context, style);
+        layout = null;
     }
 
     /**
@@ -559,6 +561,15 @@ public class BooksOnBookshelfViewModel
             return true;
         }
         return false;
+    }
+
+    /**
+     * Called when the LayoutManager is recreated.
+     *
+     * @param layout to remember
+     */
+    void setLayout(@NonNull final Style.Layout layout) {
+        this.layout = layout;
     }
 
     /**

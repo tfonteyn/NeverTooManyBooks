@@ -556,14 +556,20 @@ public class BooksOnBookshelf
      */
     private void createLayoutManager() {
         final Style style = vm.getStyle();
-        switch (style.getLayout()) {
+        final Style.Layout layout = style.getLayout();
+        switch (layout) {
             case List: {
                 final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
                 vb.content.list.setLayoutManager(layoutManager);
                 break;
             }
             case Grid: {
-                final int spanCount = getGridSpanCount(style);
+                final int spanCount;
+                if (hasEmbeddedDetailsFrame()) {
+                    spanCount = MathUtils.clamp(style.getGridSpanCount(), 1, 3);
+                } else {
+                    spanCount = style.getGridSpanCount();
+                }
                 final GridLayoutManager layoutManager = new GridLayoutManager(this, spanCount);
                 layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
                     @Override
@@ -590,37 +596,9 @@ public class BooksOnBookshelf
             default:
                 throw new IllegalStateException();
         }
-    }
 
-    /**
-     * Determine the span count for the {@link GridLayoutManager}.
-     *
-     * @param style to use
-     *
-     * @return count
-     *
-     * @throws IllegalStateException when there is a bug with the enums...
-     */
-    private int getGridSpanCount(@NonNull final Style style) {
-        final int spanCount;
-        if (hasEmbeddedDetailsFrame()) {
-            spanCount = style.getGridSpanCount();
-        } else {
-            switch (WindowSizeClass.getWidth(this)) {
-                case Compact:
-                    spanCount = style.getGridSpanCount();
-                    break;
-                case Medium:
-                    spanCount = (int) (style.getGridSpanCount() * 1.5);
-                    break;
-                case Expanded:
-                    spanCount = style.getGridSpanCount() * 2;
-                    break;
-                default:
-                    throw new IllegalStateException();
-            }
-        }
-        return spanCount;
+        // store as the current one.
+        vm.setLayout(layout);
     }
 
     private void createBooklistView() {
@@ -811,6 +789,7 @@ public class BooksOnBookshelf
         if (vm.isForceRebuildInOnResume() || !vm.isListLoaded()) {
             if (vm.isRecreateLayoutManager()) {
                 // This is only needed if the style was changed to use a different Layout.
+                // We must NOT recreate it here otherwise.
                 createLayoutManager();
             }
             buildBookList();
@@ -1618,9 +1597,11 @@ public class BooksOnBookshelf
      * @param uuid of the style to apply
      */
     private void onStyleSelected(@NonNull final String uuid) {
+        vm.onStyleChanged(this, uuid);
+        vm.resetPreferredListRebuildMode(this);
+
         saveListPosition();
-        vm.onStyleChanged(BooksOnBookshelf.this, uuid);
-        vm.resetPreferredListRebuildMode(BooksOnBookshelf.this);
+        createLayoutManager();
         buildBookList();
     }
 
@@ -1644,6 +1625,7 @@ public class BooksOnBookshelf
             vm.setBookshelf(this, bookshelfId);
 
             saveListPosition();
+            createLayoutManager();
             buildBookList();
         }
     }
