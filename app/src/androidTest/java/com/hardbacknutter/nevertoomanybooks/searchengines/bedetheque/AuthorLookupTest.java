@@ -37,10 +37,11 @@ import org.junit.Test;
 /**
  * Does live lookups to the website !
  */
-public class AuthorTest
+@SuppressWarnings("MissingJavadoc")
+public class AuthorLookupTest
         extends BaseDBTest {
 
-    private static final String TAG = "AuthorTest";
+    private static final String TAG = "AuthorLookupTest";
     private AuthorResolver resolver;
 
     @Before

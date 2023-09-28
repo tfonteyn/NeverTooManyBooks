@@ -23,9 +23,9 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque;
 import java.io.IOException;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.JSoupBase;
+import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -37,44 +37,45 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.jsoup.nodes.Document;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-public class BedethequeTest
-        extends JSoupBase {
+@SuppressWarnings("MissingJavadoc")
+public class ParseTest
+        extends BaseDBTest {
 
-    private static final String TAG = "BedethequeTest";
+    private static final String TAG = "ParseTest";
 
     private static final String UTF_8 = "UTF-8";
 
     private BedethequeSearchEngine searchEngine;
-    private Book book;
 
-    @BeforeEach
+    @Before
     public void setup()
-            throws Exception {
+            throws DaoWriteException, StorageException {
         super.setup();
-        book = new Book(BundleMock.create());
+
         searchEngine = (BedethequeSearchEngine) EngineId.Bedetheque.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
     }
 
     @Test
-    void parse01()
+    public void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
-        setLocale(searchEngine.getLocale(context));
 
         final String locationHeader = "https://www.bedetheque.com"
                                       + "/BD-Fond-du-monde-Tome-6-La-grande-terre-19401.html";
-        final String filename = "/bedetheque/BD-Fond-du-monde-Tome-6-La-grande-terre-19401.html";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.bedetheque_db_fond_du_monde_tome_6_la_grande_terre_19401;
 
-        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, true}, book, null);
-        //System.out.println(book);
+        // Log.d(TAG, book.toString());
 
         assertEquals("La grande terre", book.getString(DBKey.TITLE, null));
 
