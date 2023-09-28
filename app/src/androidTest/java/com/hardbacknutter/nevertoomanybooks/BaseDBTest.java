@@ -23,12 +23,23 @@ import android.content.Context;
 import android.os.StrictMode;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.test.platform.app.InstrumentationRegistry;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.junit.Before;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public abstract class BaseDBTest {
 
@@ -52,5 +63,22 @@ public abstract class BaseDBTest {
 
         CoverVolume.initVolume(context, 0);
         ServiceLocator.getInstance().getDb();
+    }
+
+    /** Load and parse a JSoup document from a raw html resource. */
+    @NonNull
+    protected Document loadDocument(final int resId,
+                                    @Nullable final String charset,
+                                    @NonNull final String locationHeader)
+            throws IOException {
+        final Document document;
+        try (InputStream is = InstrumentationRegistry.getInstrumentation().getContext()
+                                                     .getResources().openRawResource(resId);) {
+            assertNotNull(is);
+            document = Jsoup.parse(is, charset, locationHeader);
+            assertNotNull(document);
+            assertTrue(document.hasText());
+        }
+        return document;
     }
 }

@@ -35,7 +35,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class normalizeSeriesTitlesTest
+public class NormalizeSeriesTitlesTest
         extends BaseDBTest {
 
     private static final String TAG = "normalizeSeriesTitlesTe";
@@ -53,15 +53,28 @@ public class normalizeSeriesTitlesTest
         searchEngine.setCaller(new TestProgressListener(TAG));
     }
 
+    /** Dutch test data using site locale Dutch. */
     @Test
     public void normalize() {
-        book.add(Series.from("title, The"));
-        book.add(Series.from("The title"));
+        book.add(Series.from("titel, De"));
 
         searchEngine.normalizeSeriesTitles(context, book);
 
         final List<Series> series = book.getSeries();
         assertEquals(1, series.size());
-        assertEquals("The title", series.get(0).getTitle());
+        assertEquals("De titel", series.get(0).getTitle());
+    }
+
+    /** Dutch test data using site locale Dutch. */
+    @Test
+    public void normalize2() {
+        book.add(Series.from("titel, De"));
+        book.add(Series.from("De titel"));
+
+        searchEngine.normalizeSeriesTitles(context, book);
+
+        final List<Series> series = book.getSeries();
+        assertEquals(1, series.size());
+        assertEquals("De titel", series.get(0).getTitle());
     }
 }
