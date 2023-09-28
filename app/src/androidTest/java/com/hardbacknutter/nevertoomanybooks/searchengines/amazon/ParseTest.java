@@ -21,11 +21,10 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.amazon;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.JSoupBase;
+import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
@@ -39,42 +38,43 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.jsoup.nodes.Document;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-class AmazonHtmlHandlerTest
-        extends JSoupBase {
 
-    private static final String TAG = "AmazonHtmlHandlerTest";
+/** @noinspection MissingJavadoc */
+public class ParseTest
+        extends BaseDBTest {
+
+    private static final String TAG = "ParseTest";
     private static final String UTF_8 = "UTF-8";
 
     private AmazonSearchEngine searchEngine;
 
-    private Book book;
-
-    @BeforeEach
+    @Before
     public void setup()
-            throws Exception {
+            throws DaoWriteException, StorageException {
         super.setup();
-        book = new Book(BundleMock.create());
+
         searchEngine = (AmazonSearchEngine) EngineId.Amazon.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
     }
 
     @Test
-    void parse01()
+    public void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
-        setLocale(Locale.UK);
 
         final String locationHeader = "https://www.amazon.co.uk/gp/product/0575090677";
-        final String filename = "/amazon/0575090677.html";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.amazon_0575090677;
 
-        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false}, book);
-        // System.out.println(book);
+        // Log.d(TAG, book.toString());
 
         assertEquals("Bone Silence", book.getString(DBKey.TITLE, null));
         assertEquals("978-0575090675", book.getString(DBKey.BOOK_ISBN, null));
@@ -98,16 +98,17 @@ class AmazonHtmlHandlerTest
     }
 
     @Test
-    void parse02()
+    public void parse02()
             throws SearchException, IOException, CredentialsException, StorageException {
-        setLocale(Locale.UK);
 
         final String locationHeader = "https://www.amazon.co.uk/gp/product/1473210208";
-        final String filename = "/amazon/1473210208.html";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.amazon_1473210208;
 
-        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false}, book);
-        // System.out.println(book);
+        // Log.d(TAG, book.toString());
 
         assertEquals("The Medusa Chronicles: Alastair Reynolds & Stephen Baxter",
                      book.getString(DBKey.TITLE, null));
@@ -134,23 +135,26 @@ class AmazonHtmlHandlerTest
     }
 
     @Test
-    void parse10()
+    public void parse10()
             throws SearchException, IOException, CredentialsException, StorageException {
-        setLocale(Locale.FRANCE);
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
 
         final String locationHeader = "https://www.amazon.fr/gp/product/2205057332";
-        final String filename = "/amazon/2205057332.html";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.amazon_2205057332;
 
-        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        final RealNumberParser realNumberParser =
+                new RealNumberParser(List.of(searchEngine.getLocale(context)));
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false}, book);
-        // System.out.println(book);
+        // Log.d(TAG, book.toString());
 
         assertEquals("Le retour à la terre, 1 : La vraie vie",
                      book.getString(DBKey.TITLE, null));
         assertEquals("Français", book.getString(DBKey.LANGUAGE, null));
         assertEquals("978-2205057331", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals(13d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(13d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final List<Publisher> allPublishers = book.getPublishers();
@@ -170,21 +174,20 @@ class AmazonHtmlHandlerTest
     }
 
     @Test
-    void parse11()
+    public void parse11()
             throws SearchException, IOException, CredentialsException, StorageException {
-        setLocale(Locale.GERMANY);
-
-        searchEngine = (AmazonSearchEngine) EngineId.Amazon.createSearchEngine(context);
-        searchEngine.setCaller(new TestProgressListener(TAG));
-
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
 
         final String locationHeader = "https://www.amazon.de/gp/product/3518366823";
-        final String filename = "/amazon/3518366823.html";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.amazon_3518366823;
 
-        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        final RealNumberParser realNumberParser =
+                new RealNumberParser(List.of(searchEngine.getLocale(context)));
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false}, book);
-        //System.out.println(book);
+        // Log.d(TAG, book.toString());
 
         assertEquals("Siddhartha. Eine indische Dichtung",
                      book.getString(DBKey.TITLE, null));
@@ -192,7 +195,7 @@ class AmazonHtmlHandlerTest
         assertEquals("Deutsch", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Taschenbuch", book.getString(DBKey.FORMAT, null));
         assertEquals("3518366823", book.getString(DBKey.SID_ASIN, null));
-        assertEquals(8d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(8d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
         assertEquals("1974-07-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
 
@@ -210,27 +213,26 @@ class AmazonHtmlHandlerTest
     }
 
     @Test
-    void parse12()
+    public void parse12()
             throws SearchException, IOException, CredentialsException, StorageException {
-        setLocale(Locale.US);
-
-        searchEngine = (AmazonSearchEngine) EngineId.Amazon.createSearchEngine(context);
-        searchEngine.setCaller(new TestProgressListener(TAG));
-
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
 
         final String locationHeader = "https://www.amazon.com/gp/product/3518366823";
-        final String filename = "/amazon/3518366823-us.html";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.amazon_3518366823_us;
 
-        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        final RealNumberParser realNumberParser =
+                new RealNumberParser(List.of(searchEngine.getLocale(context)));
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false}, book);
-        //System.out.println(book);
+        // Log.d(TAG, book.toString());
 
         assertEquals("Siddhartha", book.getString(DBKey.TITLE, null));
         assertEquals("978-3518366820", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("German", book.getString(DBKey.LANGUAGE, null));
         assertEquals("3518366823", book.getString(DBKey.SID_ASIN, null));
-        assertEquals(13.19d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(13.19d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.USD, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
         assertEquals("1995-01-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
 
@@ -248,28 +250,27 @@ class AmazonHtmlHandlerTest
     }
 
     @Test
-    void parse20()
+    public void parse20()
             throws SearchException, IOException, CredentialsException, StorageException {
-        setLocale(new Locale("es", "ES"));
-
-        searchEngine = (AmazonSearchEngine) EngineId.Amazon.createSearchEngine(context);
-        searchEngine.setCaller(new TestProgressListener(TAG));
-
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
 
         final String locationHeader = "https://www.amazon.es/gp/product/1107480558";
-        final String filename = "/amazon/1107480558.html";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.amazon_1107480558;
 
-        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        final RealNumberParser realNumberParser =
+                new RealNumberParser(List.of(searchEngine.getLocale(context)));
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false}, book);
-        //System.out.println(book);
+        // Log.d(TAG, book.toString());
 
         assertEquals("Essential Grammar in Use. Fourth Edition. Book with Answers.",
                      book.getString(DBKey.TITLE, null));
         assertEquals("978-1107480551", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("Inglés", book.getString(DBKey.LANGUAGE, null));
         assertEquals("1107480558", book.getString(DBKey.SID_ASIN, null));
-        assertEquals(22.36d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(22.36d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
         assertEquals("2015-04-20", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
 
@@ -287,21 +288,20 @@ class AmazonHtmlHandlerTest
     }
 
     @Test
-    void parse21()
+    public void parse21()
             throws SearchException, IOException, CredentialsException, StorageException {
-        setLocale(new Locale("es", "ES"));
-
-        searchEngine = (AmazonSearchEngine) EngineId.Amazon.createSearchEngine(context);
-        searchEngine.setCaller(new TestProgressListener(TAG));
-
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
 
         final String locationHeader = "https://www.amazon.es/gp/product/840827578X";
-        final String filename = "/amazon/840827578X.html";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.amazon_840827578x;
 
-        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        final RealNumberParser realNumberParser =
+                new RealNumberParser(List.of(searchEngine.getLocale(context)));
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false}, book);
-        //System.out.println(book);
+        // Log.d(TAG, book.toString());
 
         assertEquals("La rebelión de los buenos: Premio de Novela Fernando Lara 2023",
                      book.getString(DBKey.TITLE, null));
@@ -310,7 +310,7 @@ class AmazonHtmlHandlerTest
         assertEquals("Español", book.getString(DBKey.LANGUAGE, null));
         assertEquals("720 páginas", book.getString(DBKey.PAGE_COUNT, null));
         assertEquals("840827578X", book.getString(DBKey.SID_ASIN, null));
-        assertEquals(21.75d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(21.75d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
         assertEquals("2023-06-14", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
 
