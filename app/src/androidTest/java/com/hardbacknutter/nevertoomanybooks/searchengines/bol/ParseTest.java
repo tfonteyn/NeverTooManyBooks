@@ -48,7 +48,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 
-/** @noinspection MissingJavadoc */
+@SuppressWarnings("MissingJavadoc")
 public class ParseTest
         extends BaseDBTest {
 

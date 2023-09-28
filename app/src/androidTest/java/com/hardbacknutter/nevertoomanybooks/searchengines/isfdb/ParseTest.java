@@ -51,11 +51,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 
-/*
+/**
  * Test parsing the Jsoup Document for ISFDB single-book data.
  */
-
-/** @noinspection MissingJavadoc */
+@SuppressWarnings("MissingJavadoc")
 public class ParseTest
         extends BaseDBTest {
 

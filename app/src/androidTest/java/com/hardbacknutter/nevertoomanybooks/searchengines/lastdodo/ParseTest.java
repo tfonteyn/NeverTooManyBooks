@@ -43,7 +43,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-/** @noinspection MissingJavadoc */
+@SuppressWarnings("MissingJavadoc")
 public class ParseTest
         extends BaseDBTest {
 

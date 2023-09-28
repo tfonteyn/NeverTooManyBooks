@@ -40,13 +40,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-/*
+/**
  * Test parsing the Jsoup Document for ISFDB multi-edition data.
  * <p>
  * Unless noted, these tests will make a live call to the ISFDB website.
  */
-
-/** @noinspection MissingJavadoc */
+@SuppressWarnings("MissingJavadoc")
 public class IsfdbEditionsHandlerTest
         extends BaseDBTest {
 

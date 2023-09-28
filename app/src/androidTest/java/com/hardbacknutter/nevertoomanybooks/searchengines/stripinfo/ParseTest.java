@@ -47,13 +47,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-/*
+/**
  * Network access for covers in all tests.
  * <p>
  * Full network access for {@link #parseMultiResult}.
- * */
-
-/** @noinspection MissingJavadoc */
+ */
+@SuppressWarnings("MissingJavadoc")
 public class ParseTest
         extends BaseDBTest {
 
