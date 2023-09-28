@@ -224,13 +224,16 @@ public final class ReorderHelper {
                 if (text.endsWith(SUFFIX_SEPARATOR + word)) {
                     // This is the (hopefully) original/actual title.
                     final String reconstructed =
-                            word + " " + text.substring(0, word.length() + 2);
+                            word + " " + text.substring(0, word.length()
+                                                           + SUFFIX_SEPARATOR.length()
+                                                           + 1);
                     // Now reorder it AGAIN, and check if it matches the original text.
                     final String reordered =
                             reorder(context, reconstructed, firstLocale, localeList);
+                    // IgnoreCase as the incoming text might have an uppercase character to start
                     if (text.equalsIgnoreCase(reordered)) {
                         // We have a good chance that this is the original title.
-                        // The first character of the 'word' and the original 'text'
+                        // The case of the first character of the 'word' and the original 'text'
                         // might however be wrong. Leave that to the user...
                         return reconstructed;
                     }
