@@ -20,40 +20,51 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import com.hardbacknutter.nevertoomanybooks.Base;
+import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertTrue;
 
-
-class IsfdbXmlPublicationTest
-        extends Base {
+/**
+ * ENHANCE: this is experimental code. Parsing works, but reporting EOF is dodgy
+ */
+@SuppressWarnings("MissingJavadoc")
+public class IsfdbXmlPublicationTest
+        extends BaseDBTest {
 
     private static final String TAG = "IsfdbXmlPublicationTest";
 
     private IsfdbSearchEngine searchEngine;
 
-    @BeforeEach
+    @Before
     public void setup()
-            throws Exception {
+            throws DaoWriteException, StorageException {
         super.setup();
+
         searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 
@@ -66,13 +77,16 @@ class IsfdbXmlPublicationTest
     }
 
     @Test
-    void singleByExtId()
+    public void singleByExtId()
             throws ParserConfigurationException, IOException, SAXException {
-        setLocale(searchEngine.getLocale(context));
-        final String filename = "/isfdb/425189.xml";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.isfdb_425189;
 
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
-        final MoneyParser moneyParser = new MoneyParser(locales.get(0), realNumberParser);
+        final RealNumberParser realNumberParser =
+                new RealNumberParser(List.of(searchEngine.getLocale(context)));
+
+        final MoneyParser moneyParser = new MoneyParser(searchEngine.getLocale(context),
+                                                        realNumberParser);
 
         final IsfdbPublicationListHandler listHandler =
                 new IsfdbPublicationListHandler(context, searchEngine,
@@ -81,14 +95,24 @@ class IsfdbXmlPublicationTest
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final SAXParser parser = factory.newSAXParser();
-        try {
-            parser.parse(this.getClass().getResourceAsStream(filename), listHandler);
+        try (InputStream is = InstrumentationRegistry.getInstrumentation().getContext()
+                                                     .getResources().openRawResource(resId)) {
+            // The ISFDB site returns xml with the encoding "iso-8859-1"
+            // i.e. with <?xml version="1.0" encoding="iso-8859-1" ?>
+            // but for Android seems to ignore this and defaults to UTF-8
+            // So wrap in InputSource and manually set the encoding.
+            final InputSource inputSource = new InputSource(is);
+            inputSource.setEncoding("iso-8859-1");
+            parser.parse(inputSource, listHandler);
         } catch (@NonNull final SAXException e) {
+            // In testing, this logic is not working. And we get
+            // TestRunner: failed: singleByExtId(com.hardbacknutter.nevertoomanybooks.searchengines
+            // .isfdb.IsfdbXmlPublicationTest)
             if (!(e.getCause() instanceof EOFException)) {
                 throw e;
             }
         }
 
-        System.out.println(listHandler.getResult());
+        Log.d(TAG, listHandler.getResult().toString());
     }
 }
