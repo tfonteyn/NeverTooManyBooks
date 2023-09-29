@@ -19,13 +19,16 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary;
 
+import androidx.annotation.NonNull;
+import androidx.test.platform.app.InstrumentationRegistry;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.Base;
+import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -35,45 +38,52 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
-class OpenLibrarySearchEngineTest
-        extends Base {
+@SuppressWarnings("MissingJavadoc")
+public class ParseTest
+        extends BaseDBTest {
 
-    private static final String TAG = "OpenLibrarySETest";
+    private static final String TAG = "ParseTest";
 
     private OpenLibrarySearchEngine searchEngine;
-    private Book book;
-    @BeforeEach
+
+    @Before
     public void setup()
-            throws Exception {
+            throws DaoWriteException, StorageException {
         super.setup();
-        book = new Book(BundleMock.create());
 
         searchEngine = (OpenLibrarySearchEngine) EngineId.OpenLibrary.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
     }
 
+    @NonNull
+    private Book getBook(final int resId)
+            throws IOException, StorageException, SearchException {
+        final Book book = new Book();
+
+        try (InputStream is = InstrumentationRegistry.getInstrumentation().getContext()
+                                                     .getResources().openRawResource(resId)) {
+            assertNotNull(is);
+            final String response = searchEngine.readResponseStream(is);
+            searchEngine.handleResponse(context, response, new boolean[]{false, false}, book);
+        }
+        return book;
+    }
+
     @Test
-    void parse()
+    public void parse()
             throws IOException, SearchException, StorageException {
-        setLocale(searchEngine.getLocale(context));
 
         // https://openlibrary.org/api/books?jscmd=data&format=json&bibkeys=ISBN:9780980200447
 
-        final String filename = "/openlibrary/9780980200447.json";
-
-        try (InputStream is = this.getClass().getResourceAsStream(filename)) {
-            assertNotNull(is);
-            final String response = searchEngine.readResponseStream(is);
-            searchEngine.handleResponse(context, response, new boolean[]{false, false},
-                                        book);
-        }
+        final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test
+                                          .R.raw.openlibrary_9780980200447);
 
         assertNotNull(book);
         assertFalse(book.isEmpty());
