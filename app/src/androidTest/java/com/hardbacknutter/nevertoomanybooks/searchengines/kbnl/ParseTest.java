@@ -19,14 +19,20 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.kbnl;
 
+import androidx.annotation.NonNull;
+import androidx.test.platform.app.InstrumentationRegistry;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import com.hardbacknutter.nevertoomanybooks.Base;
-import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
+import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -34,58 +40,65 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.xml.sax.SAXException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
-class KbNlBookHandlerTest
-        extends Base {
+@SuppressWarnings("MissingJavadoc")
+public class ParseTest
+        extends BaseDBTest {
 
-    private static final String file_list = "/kbnl/kbnl-list-1.xml";
-    private static final String file_book_1 = "/kbnl/kbnl-book-1.xml";
-    private static final String file_comic_1 = "/kbnl/kbnl-comic-1.xml";
-    private static final String file_old_book = "/kbnl/kbnl-old-book.xml";
+    private static final String TAG = "ParseTest";
 
-    private KbNlBookHandler bookHandler;
+    private KbNlSearchEngine searchEngine;
     private SAXParser saxParser;
-    private Book book;
 
-    @BeforeEach
+    @Before
     public void setup()
-            throws Exception {
+            throws DaoWriteException, StorageException {
         super.setup();
-        book = new Book(BundleMock.create());
 
-        final SAXParserFactory factory = SAXParserFactory.newInstance();
+        searchEngine = (KbNlSearchEngine) EngineId.KbNl.createSearchEngine(context);
+        searchEngine.setCaller(new TestProgressListener(TAG));
 
-        final KbNlSearchEngine engine = (KbNlSearchEngine)
-                EngineId.KbNl.createSearchEngine(context);
-        bookHandler = new KbNlBookHandler(context, engine, book);
-        saxParser = factory.newSAXParser();
+        try {
+            saxParser = SAXParserFactory.newInstance().newSAXParser();
+        } catch (ParserConfigurationException | SAXException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @NonNull
+    private Book getBook(final int resId)
+            throws IOException, SAXException {
+        final Book book = new Book();
+        final KbNlBookHandler bookHandler = new KbNlBookHandler(context, searchEngine, book);
+        try (InputStream in = InstrumentationRegistry.getInstrumentation().getContext()
+                                                     .getResources().openRawResource(resId)) {
+            saxParser.parse(in, bookHandler);
+        }
+        return book;
     }
 
     @Test
-    void parseList01()
+    public void parseList01()
             throws IOException, SAXException {
-        try (InputStream in = this.getClass().getResourceAsStream(file_list)) {
-            saxParser.parse(in, bookHandler);
-        }
+
+        final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test.R.raw.kbnl_list_1);
 
         assertEquals("SHW?FRST=1", book.getString(KbNlHandlerBase.BKEY_SHOW_URL, null));
     }
 
-
     @Test
-    void parseBook01()
+    public void parseBook01()
             throws IOException, SAXException {
 
-        try (InputStream in = this.getClass().getResourceAsStream(file_book_1)) {
-            saxParser.parse(in, bookHandler);
-        }
+        final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test.R.raw.kbnl_book_1);
 
         assertEquals("De Foundation", book.getString(DBKey.TITLE, null));
 
@@ -119,12 +132,10 @@ class KbNlBookHandlerTest
     }
 
     @Test
-    void parseComic()
+    public void parseComic()
             throws IOException, SAXException {
 
-        try (InputStream in = this.getClass().getResourceAsStream(file_comic_1)) {
-            saxParser.parse(in, bookHandler);
-        }
+        final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test.R.raw.kbnl_comic_1);
 
         assertEquals("De buitengewone reis", book.getString(DBKey.TITLE, null));
 
@@ -165,13 +176,11 @@ class KbNlBookHandlerTest
     }
 
     @Test
-    void parseOldBook()
+    public void parseOldBook()
             throws IOException, SAXException {
         // Test an "old" book where the data is rather unstructured.
         // The parser will do a best-effort.
-        try (InputStream in = this.getClass().getResourceAsStream(file_old_book)) {
-            saxParser.parse(in, bookHandler);
-        }
+        final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test.R.raw.kbnl_old_book);
 
         assertEquals("De Discus valt aan", book.getString(DBKey.TITLE, null));
         assertEquals("1973", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
