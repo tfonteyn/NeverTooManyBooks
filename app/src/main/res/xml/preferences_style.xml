@@ -46,16 +46,6 @@
             android:entryValues="@array/pv_bob_layout"
             />
 
-        <SeekBarPreference
-            android:defaultValue="3"
-            android:icon="@drawable/ic_baseline_grid_view_24"
-            android:key="style.booklist.grid.spancount"
-            android:max="4"
-            android:title="@string/pt_bob_grid_spancount"
-            app:min="1"
-            app:showSeekBarValue="true"
-            />
-
         <MultiSelectListPreference
             android:defaultValue="@array/empty_array"
             android:entries="@array/pe_bob_header"

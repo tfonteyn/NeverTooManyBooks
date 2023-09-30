@@ -87,8 +87,8 @@ public class BooklistAdapter
 
     /** Shared across all {@link BookHolder}s. */
     private final RealNumberParser realNumberParser;
-
-
+    @NonNull
+    private final Style.Layout layout;
     /** The cursor is the equivalent of the 'list of items'. */
     @Nullable
     private Cursor cursor;
@@ -107,13 +107,19 @@ public class BooklistAdapter
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param style   to use
+     * @param context          Current context
+     * @param style            to use
+     * @param layout           to use
+     * @param coverLongestSide Longest side for a cover in pixels
      */
     public BooklistAdapter(@NonNull final Context context,
-                           @NonNull final Style style) {
+                           @NonNull final Style style,
+                           @NonNull final Style.Layout layout,
+                           final int coverLongestSide) {
         this.inflater = LayoutInflater.from(context);
         this.style = style;
+        this.layout = layout;
+        this.coverLongestSide = coverLongestSide;
 
         final List<Locale> locales = LocaleListUtils.asList(context);
         realNumberParser = new RealNumberParser(locales);
@@ -124,23 +130,6 @@ public class BooklistAdapter
         level1topMargin = res.getDimensionPixelSize(R.dimen.bob_group_level_1_margin_top);
 
         groupRowHeight = this.style.getGroupRowHeight(context);
-
-        if (this.style.isShowField(Style.Screen.List, DBKey.COVER[0])) {
-            @Style.CoverScale
-            final int frontCoverScale = this.style.getCoverScale();
-
-            // The thumbnail scale is used to retrieve the cover dimensions
-            // We use a square space for the image so both portrait/landscape images work out.
-            final TypedArray coverSizes = context
-                    .getResources().obtainTypedArray(R.array.cover_book_list_longest_side);
-            try {
-                coverLongestSide = coverSizes.getDimensionPixelSize(frontCoverScale, 0);
-            } finally {
-                coverSizes.recycle();
-            }
-        } else {
-            coverLongestSide = 0;
-        }
 
         // getItemId returns the rowId
         setHasStableIds(true);
@@ -264,7 +253,7 @@ public class BooklistAdapter
         final int layoutId;
         switch (groupId) {
             case BooklistGroup.BOOK:
-                if (style.getLayout() == Style.Layout.List) {
+                if (layout == Style.Layout.List) {
                     layoutId = R.layout.booksonbookshelf_row_book;
                 } else {
                     layoutId = R.layout.booksonbookshelf_grid_book;
@@ -316,7 +305,7 @@ public class BooklistAdapter
         // NEWTHINGS: BooklistGroup - add a new holder type if needed
         switch (groupId) {
             case BooklistGroup.BOOK:
-                if (style.getLayout() == Style.Layout.List) {
+                if (layout == Style.Layout.List) {
                     holder = new BookHolder(itemView, style,
                                             realNumberParser,
                                             coverLongestSide);

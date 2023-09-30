@@ -53,6 +53,15 @@ public enum WindowSizeClass {
     Medium,
     Expanded;
 
+    /**
+     * Get the identifier for the current display.
+     * <p>
+     * Based on the official Google boundaries of 600 and 840.
+     *
+     * @param activity to use
+     *
+     * @return WindowSizeClass
+     */
     @NonNull
     public static WindowSizeClass getWidth(@NonNull final Activity activity) {
         final WindowMetrics metrics = WindowMetricsCalculator
@@ -63,6 +72,32 @@ public enum WindowSizeClass {
         if (widthDp < 600f) {
             return Compact;
         } else if (widthDp < 840f) {
+            return Medium;
+        } else {
+            return Expanded;
+        }
+    }
+
+    /**
+     * getWidthVariant is used for the grid-layout where we found 800 to
+     * //  be a better boundary to distinguish between 7" and 10" devices.
+     * <p>
+     * FIXME: unify getWidthVariant and getWidth
+     *
+     * @param activity to use
+     *
+     * @return WindowSizeClass
+     */
+    @NonNull
+    public static WindowSizeClass getWidthVariant(@NonNull final Activity activity) {
+        final WindowMetrics metrics = WindowMetricsCalculator
+                .getOrCreate().computeCurrentWindowMetrics(activity);
+
+        final float widthDp = metrics.getBounds().width()
+                              / activity.getResources().getDisplayMetrics().density;
+        if (widthDp < 600f) {
+            return Compact;
+        } else if (widthDp < 800f) {
             return Medium;
         } else {
             return Expanded;
@@ -91,20 +126,36 @@ public enum WindowSizeClass {
     }
 
     @NonNull
+    public static WindowSizeClass getWidthVariant(@NonNull final Context context) {
+        return getWidthVariant(getActivity(context));
+    }
+
+    @NonNull
     public static WindowSizeClass getHeight(@NonNull final Context context) {
         return getHeight(getActivity(context));
     }
 
+    /**
+     * Unwrap the given context to get the Activity.
+     * <p>
+     * This code is based on "androidx.window.layout.util.ContextUtils.unwrapUiContext"
+     *
+     * @param context Current context
+     *
+     * @return Activity
+     *
+     * @throws IllegalArgumentException if the given Context is not a UiContext
+     */
     @NonNull
-    private static Activity getActivity(@NonNull final Context context) {
-        // Gross way of unwrapping the Activity
-        Context tmp = context;
-        while (tmp instanceof ContextWrapper) {
-            if (tmp instanceof Activity) {
-                return (Activity) tmp;
+    private static Activity getActivity(@NonNull final Context context)
+            throws IllegalArgumentException {
+        Context iterator = context;
+        while (iterator instanceof ContextWrapper) {
+            if (iterator instanceof Activity) {
+                return (Activity) iterator;
             }
-            tmp = ((ContextWrapper) tmp).getBaseContext();
+            iterator = ((ContextWrapper) iterator).getBaseContext();
         }
-        throw new IllegalStateException();
+        throw new IllegalArgumentException("Context is not a UiContext");
     }
 }

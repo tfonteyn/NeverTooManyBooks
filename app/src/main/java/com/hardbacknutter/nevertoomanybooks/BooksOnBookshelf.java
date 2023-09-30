@@ -41,7 +41,6 @@ import androidx.annotation.IntRange;
 import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.math.MathUtils;
 import androidx.core.util.Pair;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.MenuCompat;
@@ -94,7 +93,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BoBTask;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
-import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.booklist.adapter.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
@@ -340,12 +338,14 @@ public class BooksOnBookshelf
     private final EditStringLauncher editLocationLauncher =
             new EditStringLauncher(DBKey.LOCATION, EditLocationDialogFragment::new,
                                    this::onInlineStringUpdate);
-
-
+    /**
+     * The adapter used to fill the Bookshelf selector.
+     */
+    private ExtArrayAdapter<Bookshelf> bookshelfAdapter;
+    private HeaderAdapter headerAdapter;
     /** Listener for the Bookshelf Spinner. */
     private final SpinnerInteractionListener bookshelfSelectionChangedListener =
             new SpinnerInteractionListener(this::onBookshelfSelected);
-
     /**
      * React to the user selecting a style to apply.
      * <p>
@@ -355,13 +355,6 @@ public class BooksOnBookshelf
      */
     private final StylePickerDialogFragment.Launcher stylePickerLauncher =
             new StylePickerDialogFragment.Launcher(RK_STYLE_PICKER, this::onStyleSelected);
-
-
-    /**
-     * The adapter used to fill the Bookshelf selector.
-     */
-    private ExtArrayAdapter<Bookshelf> bookshelfAdapter;
-    private HeaderAdapter headerAdapter;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -552,11 +545,13 @@ public class BooksOnBookshelf
     /**
      * Create or recreate the {@link RecyclerView.LayoutManager}.
      *
-     * @throws IllegalStateException when there is a bug with the enums...
+     * @throws IllegalStateException when there is a bug with the enums
      */
     private void createLayoutManager() {
-        final Style style = vm.getStyle();
-        final Style.Layout layout = style.getLayout();
+        final Style.Layout layout = vm.getStyle().getLayout(hasEmbeddedDetailsFrame());
+        // and remember it. See #onResume where we need to check/compare it again
+        vm.setCurrentLayout(layout);
+
         switch (layout) {
             case List: {
                 final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -564,12 +559,7 @@ public class BooksOnBookshelf
                 break;
             }
             case Grid: {
-                final int spanCount;
-                if (hasEmbeddedDetailsFrame()) {
-                    spanCount = MathUtils.clamp(style.getGridSpanCount(), 1, 3);
-                } else {
-                    spanCount = style.getGridSpanCount();
-                }
+                final int spanCount = getGridSpanCount(this);
                 final GridLayoutManager layoutManager = new GridLayoutManager(this, spanCount);
                 layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
                     @Override
@@ -592,13 +582,31 @@ public class BooksOnBookshelf
                 vb.content.list.setLayoutManager(layoutManager);
                 break;
             }
-
             default:
                 throw new IllegalStateException();
         }
+    }
 
-        // store as the current one.
-        vm.setLayout(layout);
+    /**
+     * Calculate how many grid columns we should display depending on the screen size.
+     *
+     * @param context Current context
+     *
+     * @return span count
+     *
+     * @throws IllegalStateException when there is a bug with the enums
+     */
+    private int getGridSpanCount(@NonNull final Context context) {
+        switch (WindowSizeClass.getWidthVariant(context)) {
+            case Compact:
+                return 4;
+            case Medium:
+                return 5;
+            case Expanded:
+                return 6;
+            default:
+                throw new IllegalStateException();
+        }
     }
 
     private void createBooklistView() {
@@ -787,9 +795,9 @@ public class BooksOnBookshelf
         vb.bookshelfSpinner.setSelection(vm.getSelectedBookshelfSpinnerPosition(this));
 
         if (vm.isForceRebuildInOnResume() || !vm.isListLoaded()) {
-            if (vm.isRecreateLayoutManager()) {
-                // This is only needed if the style was changed to use a different Layout.
-                // We must NOT recreate it here otherwise.
+            // This is only needed if the style was changed to use a different Layout.
+            // We must NOT recreate it here otherwise.
+            if (vm.getStyle().getLayout(hasEmbeddedDetailsFrame()) != vm.getCurrentLayout()) {
                 createLayoutManager();
             }
             buildBookList();
@@ -1757,9 +1765,10 @@ public class BooksOnBookshelf
                         .now().withNano(0)
                         .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
             }
+
             // force the adapter to stop displaying by disabling the list.
             // DO NOT REMOVE THE ADAPTER FROM FROM THE VIEW;
-            // i.e. do NOT call mVb.list.setAdapter(null)... crashes assured when doing so.
+            // i.e. do NOT call vb.content.list.setAdapter(null)... crashes assured when doing so.
             if (adapter != null) {
                 adapter.setBooklist(null);
             }
@@ -1850,15 +1859,11 @@ public class BooksOnBookshelf
                                         new Throwable());
         }
 
-        adapter = new BooklistAdapter(this, vm.getStyle());
+        adapter = vm.createBooklistAdapter(this, hasEmbeddedDetailsFrame());
         adapter.setOnRowClickListener(this::onRowClicked);
-        ShowContextMenu preferredMode = ShowContextMenu.getPreferredMode(this);
-        if (preferredMode == ShowContextMenu.ButtonIfSpace && hasEmbeddedDetailsFrame()) {
-            preferredMode = ShowContextMenu.NoButton;
-        }
-        adapter.setOnRowShowMenuListener(preferredMode, this::onCreateContextMenu);
-
-        adapter.setBooklist(vm.getBooklist());
+        adapter.setOnRowShowMenuListener(
+                vm.getShowContextMenuMode(this, hasEmbeddedDetailsFrame()),
+                this::onCreateContextMenu);
 
         // Combine the adapters for the list header and the actual list
         final ConcatAdapter concatAdapter = new ConcatAdapter(

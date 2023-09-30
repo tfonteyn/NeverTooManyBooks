@@ -106,7 +106,6 @@ public class StyleDaoImpl
         }
 
         tmp.append(',' + DBKey.STYLE_LAYOUT
-                   + ',' + DBKey.STYLE_GRID_SPAN_COUNT
                    + ',' + DBKey.STYLE_EXP_LEVEL
                    + ',' + DBKey.STYLE_ROW_USES_PREF_HEIGHT
                    + ',' + DBKey.STYLE_AUTHOR_SORT_BY_GIVEN_NAME
@@ -234,7 +233,6 @@ public class StyleDaoImpl
             }
 
             stmt.bindLong(++c, style.getLayout().getId());
-            stmt.bindLong(++c, style.getGridSpanCount());
 
             stmt.bindLong(++c, style.getExpansionLevel());
             stmt.bindBoolean(++c, style.isGroupRowUsesPreferredHeight());
@@ -276,7 +274,6 @@ public class StyleDaoImpl
             }
 
             cv.put(DBKey.STYLE_LAYOUT, style.getLayout().getId());
-            cv.put(DBKey.STYLE_GRID_SPAN_COUNT, style.getGridSpanCount());
 
             cv.put(DBKey.STYLE_EXP_LEVEL, style.getExpansionLevel());
             cv.put(DBKey.STYLE_ROW_USES_PREF_HEIGHT,

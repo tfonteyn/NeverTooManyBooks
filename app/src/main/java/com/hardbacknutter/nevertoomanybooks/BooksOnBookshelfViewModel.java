@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.Dimension;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -51,6 +52,8 @@ import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
+import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
+import com.hardbacknutter.nevertoomanybooks.booklist.adapter.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
@@ -197,7 +200,7 @@ public class BooksOnBookshelfViewModel
      * even when the type itself happens to be the same between 2 bookshelves or styles.
      */
     @Nullable
-    private Style.Layout layout;
+    private Style.Layout currentLayout;
 
 
     /**
@@ -444,7 +447,7 @@ public class BooksOnBookshelfViewModel
         bookshelf.setAsPreferred(context);
 
         if (previousBookshelfId != bookshelf.getId()) {
-            layout = null;
+            currentLayout = null;
             resetSelectedBook();
         }
     }
@@ -498,7 +501,77 @@ public class BooksOnBookshelfViewModel
         // save the new bookshelf/style combination
         bookshelf.setAsPreferred(context);
         bookshelf.setStyle(context, style);
-        layout = null;
+        currentLayout = null;
+    }
+
+    /**
+     * Set/remember the layout we're using.
+     *
+     * @param currentLayout to set
+     */
+    void setCurrentLayout(@NonNull final Style.Layout currentLayout) {
+        this.currentLayout = currentLayout;
+    }
+
+    @Nullable
+    Style.Layout getCurrentLayout() {
+        return currentLayout;
+    }
+
+    /**
+     * Create the adapter, and set the Booklist on it.
+     *
+     * @param context                 Current context
+     * @param hasEmbeddedDetailsFrame whether the display Activity is showing
+     *                                the embedded details-frame.
+     *
+     * @return the adapter
+     */
+    @NonNull
+    BooklistAdapter createBooklistAdapter(@NonNull final Context context,
+                                          final boolean hasEmbeddedDetailsFrame) {
+        final Style style = getStyle();
+        final BooklistAdapter adapter = new BooklistAdapter(
+                context, style,
+                style.getLayout(hasEmbeddedDetailsFrame),
+                getCoverLongestSide(context, style, hasEmbeddedDetailsFrame));
+        adapter.setBooklist(booklist);
+        return adapter;
+    }
+
+    @Dimension
+    private int getCoverLongestSide(@NonNull final Context context,
+                                    @NonNull final Style style,
+                                    final boolean hasEmbeddedDetailsFrame) {
+        if (style.isShowField(Style.Screen.List, DBKey.COVER[0])) {
+            if (hasEmbeddedDetailsFrame) {
+                return style.getCoverMaxSizeInPixels(context, Style.Layout.List);
+            } else {
+                return style.getCoverMaxSizeInPixels(context);
+            }
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * Get the mode to use for the context-menu's.
+     *
+     * @param context                 Current context
+     * @param hasEmbeddedDetailsFrame whether the display Activity is showing
+     *                                the embedded details-frame.
+     *
+     * @return the mode to use
+     */
+    @NonNull
+    ShowContextMenu getShowContextMenuMode(@NonNull final Context context,
+                                           final boolean hasEmbeddedDetailsFrame) {
+        final ShowContextMenu preferredMode = ShowContextMenu.getPreferredMode(context);
+        if (preferredMode == ShowContextMenu.ButtonIfSpace && hasEmbeddedDetailsFrame) {
+            return ShowContextMenu.NoButton;
+        } else {
+            return preferredMode;
+        }
     }
 
     /**
@@ -544,33 +617,6 @@ public class BooksOnBookshelfViewModel
         forceRebuildInOnResume = true;
     }
 
-    /**
-     * Check if the {@link androidx.recyclerview.widget.RecyclerView.LayoutManager}
-     * needs to be recreated by comparing the current with previous Layout.
-     * <p>
-     * <strong>Important</strong>: this method will update the internal state of the current Layout!
-     *
-     * @return {@code true} if it should be recreated
-     */
-    boolean isRecreateLayoutManager() {
-        //noinspection DataFlowIssue
-        final Style.Layout currentLayout = bookshelf.getStyle().getLayout();
-        if (currentLayout != layout) {
-            // always reset for next iteration.
-            this.layout = currentLayout;
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Called when the LayoutManager is recreated.
-     *
-     * @param layout to remember
-     */
-    void setLayout(@NonNull final Style.Layout layout) {
-        this.layout = layout;
-    }
 
     /**
      * Check if the list has (ever) loaded successfully.
@@ -684,12 +730,6 @@ public class BooksOnBookshelfViewModel
     }
 
     @NonNull
-    public Booklist getBooklist() {
-        Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
-        return booklist;
-    }
-
-    @NonNull
     String getBookNavigationTableName() {
         Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
         return booklist.getNavigationTableName();
@@ -710,7 +750,8 @@ public class BooksOnBookshelfViewModel
     @NonNull
     UpdateBooklistContract.Input createUpdateBooklistContractInput(
             @NonNull final Context context) {
-        final List<Long> books = getBooklist().getCurrentBookIdList();
+        //noinspection DataFlowIssue
+        final List<Long> books = booklist.getCurrentBookIdList();
 
         final String title = context.getString(R.string.name_colon_value,
                                                context.getString(R.string.lbl_bookshelf),

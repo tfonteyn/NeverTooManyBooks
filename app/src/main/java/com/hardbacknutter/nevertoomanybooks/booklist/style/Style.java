@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
 import android.content.Context;
 
+import androidx.annotation.Dimension;
 import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -89,7 +90,20 @@ public interface Style {
     int COVER_SCALE_SMALL = 1;
     int COVER_SCALE_MEDIUM = 2;
     int COVER_SCALE_LARGE = 3;
-
+    //     private void updateCoverSizeByGridSpanCount(final int gridSpanCount) {
+//        switch (gridSpanCount) {
+//            case 1:
+//            case 2:
+//                pCoverScale.setValue(Style.COVER_SCALE_LARGE);
+//                break;
+//            case 3:
+//                pCoverScale.setValue(Style.COVER_SCALE_MEDIUM);
+//                break;
+//            default:
+//                pCoverScale.setValue(Style.COVER_SCALE_SMALL);
+//                break;
+//        }
+//    }
     int DEFAULT_COVER_SCALE = COVER_SCALE_MEDIUM;
 
     /**
@@ -145,10 +159,36 @@ public interface Style {
     @NonNull
     String getUuid();
 
+    /**
+     * Get the layout as set on the style.
+     *
+     * @return layout
+     */
     @NonNull
     Layout getLayout();
 
-    int getGridSpanCount();
+    /**
+     * Get the layout as set on the style, potentially overriding it
+     * depending on the given flag.
+     * <p>
+     * <strong>Do not use this method for storing the layout!</strong>
+     *
+     * @param hasEmbeddedDetailsFrame whether the display Activity is showing
+     *                                the embedded details-frame.
+     *
+     * @return layout
+     */
+    @NonNull
+    default Layout getLayout(final boolean hasEmbeddedDetailsFrame) {
+        if (hasEmbeddedDetailsFrame) {
+            // We tested with using the grid when having the embedded frame,
+            // but it was just to confusing and a mess to look at.
+            // Hence just use the list layout in this setup.
+            return Style.Layout.List;
+        } else {
+            return getLayout();
+        }
+    }
 
     /**
      * Get the menu position of this style as sorted by the user.
@@ -215,12 +255,30 @@ public interface Style {
 
     /**
      * Get the cover scale <strong>identifier</strong> used by the style.
+     * <p>
+     * Used for user preferences and stored in the database.
      *
      * @return scale
      */
     @Style.CoverScale
     int getCoverScale();
 
+    /**
+     * Calculate the scaled cover maximum size in pixels.
+     * <p>
+     * Uses the {@link #getCoverScale()} identifier to lookup an a
+     * resource value in {code dp} and returns that as an amount of pixels.
+     *
+     * @param context Current context
+     *
+     * @return max size in pixels
+     */
+    @Dimension
+    int getCoverMaxSizeInPixels(@NonNull Context context);
+
+    @Dimension
+    int getCoverMaxSizeInPixels(@NonNull Context context,
+                                @NonNull Layout layout);
 
     /**
      * Check if the style wants the specified header to be displayed.
@@ -372,16 +430,16 @@ public interface Style {
             this.id = id;
         }
 
-        public int getId() {
-            return id;
-        }
-
         @NonNull
         public static Layout byId(final int id) {
             if (id == 0) {
                 return List;
             }
             return Grid;
+        }
+
+        public int getId() {
+            return id;
         }
     }
 

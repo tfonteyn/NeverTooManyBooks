@@ -413,7 +413,6 @@ public final class DBDefinitions {
     public static final Domain DOM_STYLE_IS_PREFERRED;
     public static final Domain DOM_STYLE_MENU_POSITION;
     public static final Domain DOM_STYLE_LAYOUT;
-    public static final Domain DOM_STYLE_GRID_SPAN_COUNT;
     public static final Domain DOM_STYLE_EXP_LEVEL;
     public static final Domain DOM_STYLE_ROW_USES_PREF_HEIGHT;
     public static final Domain DOM_STYLE_AUTHOR_SORT_BY_GIVEN_NAME;
@@ -1195,11 +1194,6 @@ public final class DBDefinitions {
                         .notNull()
                         .withDefault(0)
                         .build();
-        DOM_STYLE_GRID_SPAN_COUNT =
-                new Domain.Builder(DBKey.STYLE_GRID_SPAN_COUNT, SqLiteDataType.Integer)
-                        .notNull()
-                        .withDefault(1)
-                        .build();
 
         DOM_STYLE_EXP_LEVEL =
                 new Domain.Builder(DBKey.STYLE_EXP_LEVEL, SqLiteDataType.Integer)
@@ -1280,7 +1274,6 @@ public final class DBDefinitions {
                             DOM_STYLE_GROUPS_BOOKSHELF_SHOW_UNDER_EACH,
 
                             DOM_STYLE_LAYOUT,
-                            DOM_STYLE_GRID_SPAN_COUNT,
 
                             DOM_STYLE_EXP_LEVEL,
                             DOM_STYLE_ROW_USES_PREF_HEIGHT,

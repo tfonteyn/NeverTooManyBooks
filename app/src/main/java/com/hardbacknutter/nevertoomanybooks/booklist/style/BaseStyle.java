@@ -20,8 +20,10 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.view.ViewGroup;
 
+import androidx.annotation.Dimension;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,6 +39,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
@@ -47,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.LinkedMap;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 
 /**
  * Represents a specific style of booklist (e.g. Authors/Series).<br>
@@ -130,8 +134,6 @@ public abstract class BaseStyle
     @NonNull
     private Layout layout = Layout.List;
 
-    private int gridSpanCount = 3;
-
     /**
      * The menu position of this style as sorted by the user.
      * Preferred styles will be at the top.
@@ -213,7 +215,6 @@ public abstract class BaseStyle
         menuPosition = style.getMenuPosition();
 
         layout = style.layout;
-        gridSpanCount = style.gridSpanCount;
 
         expansionLevel = style.getExpansionLevel();
         groupRowUsesPreferredHeight = style.isGroupRowUsesPreferredHeight();
@@ -332,15 +333,6 @@ public abstract class BaseStyle
     }
 
     @Override
-    public int getGridSpanCount() {
-        return gridSpanCount;
-    }
-
-    public void setGridSpanCount(final int gridSpanCount) {
-        this.gridSpanCount = gridSpanCount;
-    }
-
-    @Override
     public boolean isShowAuthorByGivenName() {
         return showAuthorByGivenName;
     }
@@ -390,6 +382,44 @@ public abstract class BaseStyle
 
     public void setCoverScale(@Style.CoverScale final int coverScale) {
         this.coverScale = coverScale;
+    }
+
+    @Dimension
+    public int getCoverMaxSizeInPixels(@NonNull final Context context) {
+        return getCoverMaxSizeInPixels(context, layout);
+    }
+
+    @Dimension
+    public int getCoverMaxSizeInPixels(@NonNull final Context context,
+                                       @NonNull final Layout layout) {
+        final int scale;
+        if (layout == Layout.Grid) {
+            switch (WindowSizeClass.getWidthVariant(context)) {
+                case Compact:
+                    scale = COVER_SCALE_SMALL;
+                    break;
+                case Expanded:
+                    scale = COVER_SCALE_LARGE;
+                    break;
+                case Medium:
+                default:
+                    scale = COVER_SCALE_MEDIUM;
+                    break;
+            }
+        } else {
+            // default: List: use the value as set by the user preferences.
+            scale = coverScale;
+        }
+
+        // The scale is used to retrieve the cover dimensions.
+        // We use a square space for the image so both portrait/landscape images work out.
+        final TypedArray coverSizes = context
+                .getResources().obtainTypedArray(R.array.cover_book_list_longest_side);
+        try {
+            return coverSizes.getDimensionPixelSize(scale, 0);
+        } finally {
+            coverSizes.recycle();
+        }
     }
 
     @Override

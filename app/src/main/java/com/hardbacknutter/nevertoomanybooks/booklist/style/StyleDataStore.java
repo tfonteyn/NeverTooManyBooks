@@ -59,8 +59,6 @@ public class StyleDataStore
 
     /** List(0) or Grid(1) layout for BoB. */
     public static final String PK_LAYOUT = "style.booklist.layout";
-    /** If the BoB layout is Grid, the span-count. */
-    public static final String PK_GRID_SPAN_COUNT = "style.booklist.grid.spancount";
 
     /** The default expansion level for the groups. */
     public static final String PK_EXPANSION_LEVEL = "style.booklist.levels.default";
@@ -226,10 +224,6 @@ public class StyleDataStore
     public void putInt(@NonNull final String key,
                        final int value) {
         switch (key) {
-            case PK_GRID_SPAN_COUNT:
-                style.setGridSpanCount(value);
-                break;
-
             case PK_EXPANSION_LEVEL:
                 style.setExpansionLevel(value);
                 break;
@@ -252,9 +246,6 @@ public class StyleDataStore
     public int getInt(@NonNull final String key,
                       final int defValue) {
         switch (key) {
-            case PK_GRID_SPAN_COUNT:
-                return style.getGridSpanCount();
-
             case PK_EXPANSION_LEVEL:
                 return style.getExpansionLevel();
 

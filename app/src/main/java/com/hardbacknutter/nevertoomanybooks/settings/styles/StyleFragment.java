@@ -90,7 +90,6 @@ public class StyleFragment
     private Preference pListBookLevelFields;
     private Preference pGroups;
     private SwitchPreference pShowCovers;
-    private SeekBarPreference pGridSpanCount;
 
     @SuppressWarnings("DataFlowIssue")
     @Override
@@ -129,21 +128,11 @@ public class StyleFragment
         pLayout.setOnPreferenceChangeListener((preference, newValue) -> {
             if (newValue instanceof String) {
                 final Style.Layout layout = Style.Layout.byId(Integer.parseInt((String) newValue));
-                updateLayoutPrefs(layout, true);
+                updateLayoutPrefs(layout);
                 return true;
             }
             return false;
         });
-
-        pGridSpanCount = findPreference(StyleDataStore.PK_GRID_SPAN_COUNT);
-        pGridSpanCount.setOnPreferenceChangeListener((preference, newValue) -> {
-            if (newValue instanceof Integer) {
-                updateCoverSizeByGridSpanCount((int) newValue);
-                return true;
-            }
-            return false;
-        });
-
 
         pShowCoversOnDetailsScreen[0] = findPreference(StyleDataStore.PK_DETAILS_SHOW_COVER[0]);
         pShowCoversOnDetailsScreen[1] = findPreference(StyleDataStore.PK_DETAILS_SHOW_COVER[1]);
@@ -159,7 +148,7 @@ public class StyleFragment
         });
 
         // First call sets the current situation before the screen is visible.
-        updateLayoutPrefs(vm.getStyle().getLayout(), false);
+        updateLayoutPrefs(vm.getStyle().getLayout());
     }
 
 
@@ -174,7 +163,7 @@ public class StyleFragment
 
         vm.onModified().observe(getViewLifecycleOwner(), aVoid -> {
             updateSummaries();
-            updateLayoutPrefs(vm.getStyle().getLayout(), false);
+            updateLayoutPrefs(vm.getStyle().getLayout());
         });
 
         if (savedInstanceState == null) {
@@ -198,7 +187,7 @@ public class StyleFragment
         }
 
         updateSummaries();
-        updateLayoutPrefs(vm.getStyle().getLayout(), false);
+        updateLayoutPrefs(vm.getStyle().getLayout());
 
         // for new (i.e. cloned) styles, auto-popup the name field for the user to change it.
         if (style.getId() == 0) {
@@ -254,57 +243,28 @@ public class StyleFragment
     /**
      * Use the given {@link Style.Layout} to show/hide the applicable preferences.
      *
-     * @param layout   to match
-     * @param explicit {@code true} if the Layout was explicitly changed by the user
-     *                 or {@code false} if we just want the screen to match the current Layout.
+     * @param layout to match
      *
-     * @throws IllegalStateException when there is a bug with the enums...
+     * @throws IllegalStateException when there is a bug with the enums
      */
-    private void updateLayoutPrefs(@NonNull final Style.Layout layout,
-                                   final boolean explicit) {
+    private void updateLayoutPrefs(@NonNull final Style.Layout layout) {
         switch (layout) {
-            case List:
-                pGridSpanCount.setVisible(false);
+            case List: {
                 pListBookLevelFields.setVisible(true);
                 pShowCovers.setVisible(true);
                 pCoverScale.setVisible(true);
-                // If the user manually switches from Grid to List...
-                if (explicit) {
-                    // adjust the cover scale
-                    pCoverScale.setValue(Style.DEFAULT_COVER_SCALE);
-                }
                 break;
-
-            case Grid:
-                pGridSpanCount.setVisible(true);
+            }
+            case Grid: {
                 pListBookLevelFields.setVisible(false);
                 pShowCovers.setVisible(false);
                 pCoverScale.setVisible(false);
-                // If the user manually switches from List to Grid...
-                if (explicit) {
-                    // The point of Grid is to show covers
-                    pShowCovers.setChecked(true);
-                    // use the span-count to adjust the cover scale..
-                    updateCoverSizeByGridSpanCount(pGridSpanCount.getValue());
-                }
+                // The point of Grid is to show covers
+                pShowCovers.setChecked(true);
                 break;
+            }
             default:
                 throw new IllegalStateException();
-        }
-    }
-
-    private void updateCoverSizeByGridSpanCount(final int gridSpanCount) {
-        switch (gridSpanCount) {
-            case 1:
-            case 2:
-                pCoverScale.setValue(Style.COVER_SCALE_LARGE);
-                break;
-            case 3:
-                pCoverScale.setValue(Style.COVER_SCALE_MEDIUM);
-                break;
-            default:
-                pCoverScale.setValue(Style.COVER_SCALE_SMALL);
-                break;
         }
     }
 
