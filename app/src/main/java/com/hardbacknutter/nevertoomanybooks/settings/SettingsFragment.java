@@ -49,9 +49,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchSitesAllListsContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
@@ -388,10 +390,13 @@ public class SettingsFragment
     public void onSharedPreferenceChanged(@NonNull final SharedPreferences prefs,
                                           @Nullable final String key) {
         if (key != null) {
-            //TODO: once these are on the style level, the below can be removed as well.
             switch (key) {
+                case StyleDataStore.PK_SHOW_AUTHOR_NAME_GIVEN_FIRST:
+                case StyleDataStore.PK_SORT_AUTHOR_NAME_GIVEN_FIRST:
                 case ReorderHelper.PK_SORT_TITLE_REORDERED:
                 case ReorderHelper.PK_SHOW_TITLE_REORDERED: {
+                    // ensure the new style defaults are used
+                    ServiceLocator.getInstance().getStyles().clearCache();
                     // Set the activity result so our caller will recreate itself
                     vm.setOnBackRequiresActivityRecreation();
                     break;
