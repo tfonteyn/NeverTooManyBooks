@@ -1553,6 +1553,9 @@ public class Book
     @SuppressWarnings("WeakerAccess")
     public static final class Edition {
 
+        /** generic/unknown edition. */
+        public static final int UNKNOWN = 0;
+
         /** first edition ever of this work/content/story. */
         public static final int FIRST = 1;
         /** First printing of 'this' edition. */

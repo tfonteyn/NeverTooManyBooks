@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.database;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -652,8 +653,7 @@ public final class DBDefinitions {
         DOM_BOOKSHELF_BL_TOP_POS =
                 new Domain.Builder(DBKey.BOOKSHELF_BL_TOP_POS, SqLiteDataType.Integer)
                         .notNull()
-                        // RecyclerView.NO_POSITION == -1
-                        .withDefault(-1)
+                        .withDefault(RecyclerView.NO_POSITION)
                         .build();
 
         DOM_BOOKSHELF_BL_TOP_OFFSET =
@@ -856,7 +856,7 @@ public final class DBDefinitions {
         DOM_BOOK_EDITION =
                 new Domain.Builder(DBKey.EDITION__BITMASK, SqLiteDataType.Integer)
                         .notNull()
-                        .withDefault(0)
+                        .withDefault(Book.Edition.UNKNOWN)
                         .build();
 
         DOM_BOOK_DATE_ACQUIRED =
@@ -1090,7 +1090,7 @@ public final class DBDefinitions {
         DOM_BOOK_AUTHOR_TYPE_BITMASK =
                 new Domain.Builder(DBKey.AUTHOR_TYPE__BITMASK, SqLiteDataType.Integer)
                         .notNull()
-                        .withDefault(0)
+                        .withDefault(Author.TYPE_UNKNOWN)
                         .build();
 
         DOM_BOOK_AUTHOR_POSITION =
@@ -1663,12 +1663,12 @@ public final class DBDefinitions {
 
         DOM_BL_NODE_VISIBLE =
                 new Domain.Builder(DBKey.BL_NODE_VISIBLE, SqLiteDataType.Integer)
-                        .withDefault(0)
+                        .withDefault(false)
                         .build();
 
         DOM_BL_NODE_EXPANDED =
                 new Domain.Builder(DBKey.BL_NODE_EXPANDED, SqLiteDataType.Integer)
-                        .withDefault(0)
+                        .withDefault(false)
                         .build();
 
         TBL_BOOK_LIST_NODE_STATE
