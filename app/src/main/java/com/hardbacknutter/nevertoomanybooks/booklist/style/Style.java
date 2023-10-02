@@ -215,6 +215,11 @@ public interface Style {
         }
     }
 
+    /**
+     * Get the action to take when the user taps the cover image in the BoB list.
+     *
+     * @return action
+     */
     @NonNull
     CoverClickAction getCoverClickAction();
 
@@ -313,6 +318,11 @@ public interface Style {
     @NonNull
     FieldVisibility getFieldVisibility(@NonNull Screen screen);
 
+    /**
+     * Get the list of fields on which we'll sort the lowest level (books) in the BoB.
+     *
+     * @return fields and how to sort them
+     */
     @NonNull
     Map<String, Sort> getBookLevelFieldsOrderBy();
 
