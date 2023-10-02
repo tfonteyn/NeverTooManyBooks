@@ -134,6 +134,9 @@ public abstract class BaseStyle
     @NonNull
     private Layout layout = Layout.List;
 
+    @NonNull
+    private CoverClickAction coverClickAction = CoverClickAction.Zoom;
+
     /**
      * The menu position of this style as sorted by the user.
      * Preferred styles will be at the top.
@@ -167,6 +170,8 @@ public abstract class BaseStyle
     private boolean groupRowUsesPreferredHeight = true;
     /**
      * Cached pixel value.
+     * <p>
+     * Do not add to equals/hash!
      *
      * @see #getGroupRowHeight(Context)
      */
@@ -330,6 +335,16 @@ public abstract class BaseStyle
 
     public void setLayout(@NonNull final Layout layout) {
         this.layout = layout;
+    }
+
+    @Override
+    @NonNull
+    public CoverClickAction getCoverClickAction() {
+        return coverClickAction;
+    }
+
+    public void setCoverClickAction(@NonNull final CoverClickAction coverClickAction) {
+        this.coverClickAction = coverClickAction;
     }
 
     @Override
@@ -651,27 +666,44 @@ public abstract class BaseStyle
                && uuid.equals(style.uuid)
                && menuPosition == style.menuPosition
                && preferred == style.preferred
-               && showAuthorByGivenName == style.showAuthorByGivenName
-               && sortAuthorByGivenName == style.sortAuthorByGivenName
+
+               && LinkedMap.equals(groups, style.groups)
+               && LinkedMap.equals(bookLevelFieldsOrderBy, style.bookLevelFieldsOrderBy)
+
+               && layout == style.layout
+               && coverClickAction == style.coverClickAction
                && expansionLevel == style.expansionLevel
                && headerFieldVisibility == style.headerFieldVisibility
                && groupRowUsesPreferredHeight == style.groupRowUsesPreferredHeight
                && coverScale == style.coverScale
                && textScale == style.textScale
 
+               && showAuthorByGivenName == style.showAuthorByGivenName
+               && sortAuthorByGivenName == style.sortAuthorByGivenName
+
                && Objects.equals(bookLevelFieldVisibility, style.bookLevelFieldVisibility)
-               && Objects.equals(detailsFieldVisibility, style.detailsFieldVisibility)
-               && LinkedMap.equals(groups, style.groups);
+               && Objects.equals(detailsFieldVisibility, style.detailsFieldVisibility);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id, uuid, menuPosition, preferred,
-                            showAuthorByGivenName, sortAuthorByGivenName,
-                            expansionLevel, headerFieldVisibility, groupRowUsesPreferredHeight,
-                            coverScale, textScale,
-                            bookLevelFieldVisibility, detailsFieldVisibility,
-                            groups);
+                            groups,
+                            bookLevelFieldsOrderBy,
+
+                            layout,
+                            coverClickAction,
+                            expansionLevel,
+                            headerFieldVisibility,
+                            groupRowUsesPreferredHeight,
+                            coverScale,
+                            textScale,
+
+                            showAuthorByGivenName,
+                            sortAuthorByGivenName,
+
+                            bookLevelFieldVisibility,
+                            detailsFieldVisibility);
     }
 
     @Override
@@ -680,23 +712,27 @@ public abstract class BaseStyle
         return "BaseStyle{"
                + "id=" + id
                + ", uuid=`" + uuid + '`'
-               + ", preferred=" + preferred
                + ", menuPosition=" + menuPosition
+               + ", preferred=" + preferred
                + ", groups=" + groups
+               + ", bookLevelFieldsOrderBy=" + bookLevelFieldsOrderBy
+
+               + ", layout=" + layout
+               + ", coverClickAction=" + coverClickAction
+               + ", expansionLevel=" + expansionLevel
+               + ", headerFieldVisibility=" + headerFieldVisibility
+               + ", groupRowUsesPreferredHeight=" + groupRowUsesPreferredHeight
+               + ", coverScale=" + coverScale
+               + ", textScale=" + textScale
 
                + ", showAuthorByGivenName=" + showAuthorByGivenName
                + ", sortAuthorByGivenName=" + sortAuthorByGivenName
 
-               + ", expansionLevel=" + expansionLevel
-               + ", groupRowUsesPreferredHeight=" + groupRowUsesPreferredHeight
-               + ", listPreferredItemHeightSmall=" + listPreferredItemHeightSmall
-               + ", headerFieldVisibility=" + headerFieldVisibility
-
-               + ", coverScale=" + coverScale
-               + ", textScale=" + textScale
                + ", listFieldVisibility=" + bookLevelFieldVisibility
                + ", detailsFieldVisibility=" + detailsFieldVisibility
+
+               // cached value
+               + ", listPreferredItemHeightSmall=" + listPreferredItemHeightSmall
                + '}';
     }
-
 }

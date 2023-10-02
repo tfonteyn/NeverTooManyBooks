@@ -318,6 +318,8 @@
     <string name="lbl_backup">Kopia zapasowa</string>
     <string name="lbl_barcode">kod kreskowy</string>
     <string name="lbl_book">Książka</string>
+    <string name="pc_bob_list">Lista</string>
+    <string name="pc_bob_layout">Układ listy</string>
     <string name="pc_book_detail_screen">Strona ze szczegółami książki</string>
     <string name="lbl_book_type">Typ książki</string>
     <string name="lbl_books">Książki</string>
@@ -799,4 +801,7 @@
     <string name="ps_show_titles_reordered_off">Wył.</string>
     <!-- NOT APPLICABLE FOR BOOKS IN POLISH. Empty string. -->
     <string name="pv_reformat_titles_prefixes">""</string>
+    <string name="pt_bob_cover_click">Stuknięcie obrazu okładki.</string>
+    <string name="pe_bob_cover_click_zoom">Powiększy obraz okładki.</string>
+    <string name="pe_bob_cover_click_details">Otworzy stronę szczegółów książki.</string>
 </resources>

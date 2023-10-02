@@ -106,6 +106,7 @@ public class StyleDaoImpl
         }
 
         tmp.append(',' + DBKey.STYLE_LAYOUT
+                   + ',' + DBKey.STYLE_COVER_CLICK_ACTION
                    + ',' + DBKey.STYLE_EXP_LEVEL
                    + ',' + DBKey.STYLE_ROW_USES_PREF_HEIGHT
                    + ',' + DBKey.STYLE_AUTHOR_SORT_BY_GIVEN_NAME
@@ -274,6 +275,7 @@ public class StyleDaoImpl
             }
 
             cv.put(DBKey.STYLE_LAYOUT, style.getLayout().getId());
+            cv.put(DBKey.STYLE_COVER_CLICK_ACTION, style.getCoverClickAction().getId());
 
             cv.put(DBKey.STYLE_EXP_LEVEL, style.getExpansionLevel());
             cv.put(DBKey.STYLE_ROW_USES_PREF_HEIGHT,

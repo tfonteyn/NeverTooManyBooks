@@ -305,12 +305,16 @@ public class BooklistAdapter
         // NEWTHINGS: BooklistGroup - add a new holder type if needed
         switch (groupId) {
             case BooklistGroup.BOOK:
-                if (layout == Style.Layout.List) {
-                    holder = new BookHolder(itemView, style,
-                                            realNumberParser,
-                                            coverLongestSide);
-                } else {
-                    holder = new BookGridHolder(itemView, style, coverLongestSide);
+                switch (layout) {
+                    case List:
+                        holder = new BookHolder(itemView, style, coverLongestSide,
+                                                realNumberParser);
+                        break;
+                    case Grid:
+                        holder = new BookGridHolder(itemView, style, coverLongestSide);
+                        break;
+                    default:
+                        throw new IllegalArgumentException();
                 }
                 break;
 

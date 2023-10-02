@@ -299,6 +299,8 @@
     <string name="lbl_backup">Sicherungskopie</string>
     <string name="lbl_barcode">Strichcode</string>
     <string name="lbl_book">Buch</string>
+    <string name="pc_bob_list">Liste</string>
+    <string name="pc_bob_layout">Layout der Liste</string>
     <string name="pc_book_detail_screen">Seite mit den Buchdetails</string>
     <string name="lbl_book_type">Buchart</string>
     <string name="lbl_books">Bücher</string>
@@ -777,4 +779,7 @@
     <string name="pe_list">Liste</string>
     <string name="pe_grid">Raster</string>
     <string name="pt_bob_grid_spancount">Raster-Spalten</string>
+    <string name="pt_bob_cover_click">Tippen Sie auf ein Titelbild.</string>
+    <string name="pe_bob_cover_click_zoom">Vergrößert das Titelbild.</string>
+    <string name="pe_bob_cover_click_details">Öffnet die Detailseite des Buches.</string>
 </resources>

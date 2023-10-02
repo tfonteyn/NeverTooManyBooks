@@ -70,6 +70,8 @@ public class UserStyle
 
         setLayout(Layout.byId(rowData.getInt(DBKey.STYLE_LAYOUT)));
 
+        setCoverClickAction(CoverClickAction.byId(rowData.getInt(DBKey.STYLE_COVER_CLICK_ACTION)));
+
         // set the groups first !
         List<Integer> groupIds;
         try {

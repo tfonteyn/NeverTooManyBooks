@@ -300,6 +300,8 @@
     <string name="lbl_backup">Αντιγράφων ασφαλείας</string>
     <string name="lbl_barcode">Barcode</string>
     <string name="lbl_book">Βιβλίο</string>
+    <string name="pc_bob_list">Λίστα</string>
+    <string name="pc_bob_layout">Διάταξη λίστας</string>
     <string name="pc_book_detail_screen">Σελίδα λεπτομερειών βιβλίου</string>
     <string name="lbl_book_type">Τύπος βιβλίου</string>
     <string name="lbl_books">Βιβλία</string>
@@ -778,4 +780,7 @@
     <string name="pe_list">Λίστα</string>
     <string name="pe_grid">Πλέγμα</string>
     <string name="pt_bob_grid_spancount">Στήλες πλέγματος</string>
+    <string name="pt_bob_cover_click">Πατώντας σε μια εικόνα εξωφύλλου.</string>
+    <string name="pe_bob_cover_click_zoom">Θα μεγεθύνει την εικόνα του εξωφύλλου.</string>
+    <string name="pe_bob_cover_click_details">Ανοίγει τη σελίδα με τις λεπτομέρειες του βιβλίου.</string>
 </resources>

@@ -314,6 +314,8 @@
     <string name="lbl_backup">Záloha</string>
     <string name="lbl_barcode">čárový kód</string>
     <string name="lbl_book">Kniha</string>
+    <string name="pc_bob_list">Seznam</string>
+    <string name="pc_bob_layout">Rozložení seznamu</string>
     <string name="pc_book_detail_screen">Stránka s podrobnostmi o knize</string>
     <string name="lbl_book_type">Typ knihy</string>
     <string name="lbl_books">Knihy</string>
@@ -795,4 +797,7 @@
     <string name="ps_show_titles_reordered_off">Vypnuto</string>
     <!-- NOT APPLICABLE FOR BOOKS IN CZECH. Empty string. -->
     <string name="pv_reformat_titles_prefixes">""</string>
+    <string name="pt_bob_cover_click">Klepnutí na obrázek obálky.</string>
+    <string name="pe_bob_cover_click_zoom">Obrázek obálky se přiblíží.</string>
+    <string name="pe_bob_cover_click_details">Otevře stránku s podrobnostmi o knize.</string>
 </resources>

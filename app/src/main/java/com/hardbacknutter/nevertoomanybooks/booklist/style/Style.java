@@ -90,20 +90,6 @@ public interface Style {
     int COVER_SCALE_SMALL = 1;
     int COVER_SCALE_MEDIUM = 2;
     int COVER_SCALE_LARGE = 3;
-    //     private void updateCoverSizeByGridSpanCount(final int gridSpanCount) {
-//        switch (gridSpanCount) {
-//            case 1:
-//            case 2:
-//                pCoverScale.setValue(Style.COVER_SCALE_LARGE);
-//                break;
-//            case 3:
-//                pCoverScale.setValue(Style.COVER_SCALE_MEDIUM);
-//                break;
-//            default:
-//                pCoverScale.setValue(Style.COVER_SCALE_SMALL);
-//                break;
-//        }
-//    }
     int DEFAULT_COVER_SCALE = COVER_SCALE_MEDIUM;
 
     /**
@@ -160,37 +146,6 @@ public interface Style {
     String getUuid();
 
     /**
-     * Get the layout as set on the style.
-     *
-     * @return layout
-     */
-    @NonNull
-    Layout getLayout();
-
-    /**
-     * Get the layout as set on the style, potentially overriding it
-     * depending on the given flag.
-     * <p>
-     * <strong>Do not use this method for storing the layout!</strong>
-     *
-     * @param hasEmbeddedDetailsFrame whether the display Activity is showing
-     *                                the embedded details-frame.
-     *
-     * @return layout
-     */
-    @NonNull
-    default Layout getLayout(final boolean hasEmbeddedDetailsFrame) {
-        if (hasEmbeddedDetailsFrame) {
-            // We tested with using the grid when having the embedded frame,
-            // but it was just to confusing and a mess to look at.
-            // Hence just use the list layout in this setup.
-            return Style.Layout.List;
-        } else {
-            return getLayout();
-        }
-    }
-
-    /**
      * Get the menu position of this style as sorted by the user.
      *
      * @return menuPosition
@@ -229,6 +184,39 @@ public interface Style {
     @IntRange(from = 1)
     int getExpansionLevel();
 
+    /**
+     * Get the layout as set on the style.
+     *
+     * @return layout
+     */
+    @NonNull
+    Layout getLayout();
+
+    /**
+     * Get the layout as set on the style, potentially overriding it
+     * depending on the given flag.
+     * <p>
+     * <strong>Do not use this method for storing the layout!</strong>
+     *
+     * @param hasEmbeddedDetailsFrame whether the display Activity is showing
+     *                                the embedded details-frame.
+     *
+     * @return layout
+     */
+    @NonNull
+    default Layout getLayout(final boolean hasEmbeddedDetailsFrame) {
+        if (hasEmbeddedDetailsFrame) {
+            // We tested with using the grid when having the embedded frame,
+            // but it was just to confusing and a mess to look at.
+            // Hence just use the list layout in this setup.
+            return Style.Layout.List;
+        } else {
+            return getLayout();
+        }
+    }
+
+    @NonNull
+    CoverClickAction getCoverClickAction();
 
     /**
      * Whether the user prefers the Author names displayed by Given names, or by Family name first.
@@ -272,10 +260,25 @@ public interface Style {
      * @param context Current context
      *
      * @return max size in pixels
+     *
+     * @see #getCoverMaxSizeInPixels(Context, Layout)
      */
     @Dimension
     int getCoverMaxSizeInPixels(@NonNull Context context);
 
+    /**
+     * Calculate the scaled cover maximum size in pixels.
+     * <p>
+     * Uses the {@link #getCoverScale()} identifier to lookup an a
+     * resource value in {code dp} and returns that as an amount of pixels.
+     *
+     * @param context Current context
+     * @param layout  overrule the layout-setting of the style
+     *
+     * @return max size in pixels
+     *
+     * @see #getCoverMaxSizeInPixels(Context)
+     */
     @Dimension
     int getCoverMaxSizeInPixels(@NonNull Context context,
                                 @NonNull Layout layout);
@@ -312,8 +315,6 @@ public interface Style {
 
     @NonNull
     Map<String, Sort> getBookLevelFieldsOrderBy();
-
-    void setBookLevelFieldsOrderBy(@NonNull Map<String, Sort> map);
 
     /**
      * Get the group row <strong>height</strong> to be applied to
@@ -436,6 +437,31 @@ public interface Style {
                 return List;
             }
             return Grid;
+        }
+
+        public int getId() {
+            return id;
+        }
+    }
+
+    enum CoverClickAction {
+        /** Tapping the cover image will invoke a zoom dialog with the cover. */
+        Zoom(0),
+        /** Tapping the cover image will trigger opening the book detail page. */
+        OpenBookDetails(1);
+
+        private final int id;
+
+        CoverClickAction(final int id) {
+            this.id = id;
+        }
+
+        @NonNull
+        public static CoverClickAction byId(final int id) {
+            if (id == 0) {
+                return Zoom;
+            }
+            return OpenBookDetails;
         }
 
         public int getId() {

@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.PagesFormatter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.OnRowClickListener;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 
 /**
@@ -103,34 +104,34 @@ public class BookHolder
      *
      * @param itemView         the view specific for this holder
      * @param style            to use
-     * @param realNumberParser the shared parser
      * @param coverLongestSide Longest side for a cover in pixels
+     * @param realNumberParser the shared parser
      */
     BookHolder(@NonNull final View itemView,
                @NonNull final Style style,
-               @NonNull final RealNumberParser realNumberParser,
-               @Dimension final int coverLongestSide) {
+               @Dimension final int coverLongestSide,
+               @NonNull final RealNumberParser realNumberParser) {
         super(itemView);
         this.style = style;
         this.realNumberParser = realNumberParser;
 
         final Context context = itemView.getContext();
-
         final Resources res = context.getResources();
         conditionDescriptions = res.getStringArray(R.array.conditions_book);
+        a_bracket_b_bracket = res.getString(R.string.a_bracket_b_bracket);
 
         vb = BooksonbookshelfRowBookBinding.bind(itemView);
-
-        a_bracket_b_bracket = context.getString(R.string.a_bracket_b_bracket);
 
         if (style.isShowField(Style.Screen.List, DBKey.COVER[0])) {
             coverHelper = new CoverHelper(coverLongestSide,
                                           ImageView.ScaleType.FIT_START,
                                           ImageViewLoader.MaxSize.Enforce);
 
-            // Do not go overkill here by adding a full-blown CoverHandler.
-            // We only provide zooming by clicking on the image.
-            vb.coverImage0.setOnClickListener(coverHelper::onZoomCover);
+            if (style.getCoverClickAction() == Style.CoverClickAction.Zoom) {
+                // Do not go overkill here by adding a full-blown CoverHandler.
+                // We only provide zooming by clicking on the image.
+                vb.coverImage0.setOnClickListener(coverHelper::onZoomCover);
+            }
 
         } else {
             coverHelper = null;
@@ -160,6 +161,20 @@ public class BookHolder
             set.setVerticalBias(dbgRowIdView.getId(), 1.0f);
 
             set.applyTo(parentLayout);
+        }
+    }
+
+    @Override
+    public void setOnRowClickListener(@Nullable final OnRowClickListener listener) {
+        super.setOnRowClickListener(listener);
+
+        if (listener != null) {
+            if (style.isShowField(Style.Screen.List, DBKey.COVER[0])) {
+                if (style.getCoverClickAction() == Style.CoverClickAction.OpenBookDetails) {
+                    vb.coverImage0.setOnClickListener(v -> listener
+                            .onClick(v, getBindingAdapterPosition()));
+                }
+            }
         }
     }
 

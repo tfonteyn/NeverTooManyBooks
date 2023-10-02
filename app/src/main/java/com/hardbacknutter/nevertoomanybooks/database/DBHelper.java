@@ -725,11 +725,23 @@ public class DBHelper
             TBL_BOOKLIST_STYLES.alterTableAddColumns(
                     db,
                     DBDefinitions.DOM_STYLE_BOOK_LEVEL_FIELDS_ORDER_BY,
+                    DBDefinitions.DOM_STYLE_COVER_CLICK_ACTION,
                     DBDefinitions.DOM_STYLE_LAYOUT);
         }
-        //TODO: if at a future time we make a change that requires to copy/reload the books table:
-        // 1. remove the column "books.clb_uuid"
-        // 2. remove the column "books.last_goodreads_sync_date"
+
+        // SqLite 3.35.0 from 2021-03-12 adds ALTER TABLE DROP COLUMN
+        // SqLite 3.25.0 from 2018-09-15 added ALTER TABLE RENAME COLUMN
+        // but... https://developer.android.com/reference/android/database/sqlite/package-summary
+        // i.e. Android 8.0 == API 26 == SqLite 3.18
+
+        //TODO: the styles table MIGHT contain a column "grid_span" created in 5.0.0-beta1
+        // which ultimately was not needed/used.
+        // If at a future time we make a change that requires to copy/reload
+        // the styles table that column should be removed.
+
+        //TODO: the books table MIGHT contain columns "clb_uuid" and "last_goodreads_sync_date"
+        // If at a future time we make a change that requires to copy/reload
+        // the books table those columns should be removed.
 
         //NEWTHINGS: adding a new search engine: optional: add external id DOM
         //TBL_BOOKS.alterTableAddColumn(db, DBDefinitions.DOM_your_engine_external_id);

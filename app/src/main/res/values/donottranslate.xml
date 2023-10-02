@@ -237,6 +237,15 @@
         <item>1</item>
     </string-array>
 
+    <string-array name="pe_bob_cover_click">
+        <item>@string/pe_bob_cover_click_zoom</item>
+        <item>@string/pe_bob_cover_click_details</item>
+    </string-array>
+    <string-array name="pv_bob_cover_click">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
     <!-- ListPreference - fastscroller text overlay. -->
     <string-array name="pe_fastscroller_overlay">
         <item>@string/pe_fast_scroller_overlay_dynamic</item>

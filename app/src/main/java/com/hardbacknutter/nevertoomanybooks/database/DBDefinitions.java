@@ -413,6 +413,8 @@ public final class DBDefinitions {
     public static final Domain DOM_STYLE_IS_PREFERRED;
     public static final Domain DOM_STYLE_MENU_POSITION;
     public static final Domain DOM_STYLE_LAYOUT;
+    public static final Domain DOM_STYLE_COVER_CLICK_ACTION;
+
     public static final Domain DOM_STYLE_EXP_LEVEL;
     public static final Domain DOM_STYLE_ROW_USES_PREF_HEIGHT;
     public static final Domain DOM_STYLE_AUTHOR_SORT_BY_GIVEN_NAME;
@@ -1192,7 +1194,13 @@ public final class DBDefinitions {
         DOM_STYLE_LAYOUT =
                 new Domain.Builder(DBKey.STYLE_LAYOUT, SqLiteDataType.Integer)
                         .notNull()
-                        .withDefault(0)
+                        .withDefault(Style.Layout.List.getId())
+                        .build();
+
+        DOM_STYLE_COVER_CLICK_ACTION =
+                new Domain.Builder(DBKey.STYLE_COVER_CLICK_ACTION, SqLiteDataType.Integer)
+                        .notNull()
+                        .withDefault(Style.CoverClickAction.Zoom.getId())
                         .build();
 
         DOM_STYLE_EXP_LEVEL =
@@ -1274,6 +1282,7 @@ public final class DBDefinitions {
                             DOM_STYLE_GROUPS_BOOKSHELF_SHOW_UNDER_EACH,
 
                             DOM_STYLE_LAYOUT,
+                            DOM_STYLE_COVER_CLICK_ACTION,
 
                             DOM_STYLE_EXP_LEVEL,
                             DOM_STYLE_ROW_USES_PREF_HEIGHT,

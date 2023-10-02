@@ -110,19 +110,14 @@ public class StyleFragment
             editText.selectAll();
         });
 
+        // List
         findPreference(StyleDataStore.PK_LIST_HEADER)
                 .setSummaryProvider(MultiSelectListPreferenceSummaryProvider.getInstance());
-        findPreference(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE)
-                .setSummaryProvider(MultiSelectListPreferenceSummaryProvider.getInstance());
-
         pGroups = findPreference(StyleDataStore.PK_GROUPS);
         pExpansionLevel = findPreference(StyleDataStore.PK_EXPANSION_LEVEL);
         pListBookLevelSorting = findPreference(PSK_LIST_BOOK_LEVEL_SORTING);
-        pListBookLevelFields = findPreference(PSK_LIST_BOOK_LEVEL_FIELDS);
-        pShowCovers = findPreference(PSK_LIST_BOOK_SHOW_COVER_0);
-        pCoverScale = findPreference(StyleDataStore.PK_COVER_SCALE);
-        pTextScale = findPreference(StyleDataStore.PK_TEXT_SCALE);
 
+        // List layout
         final Preference pLayout = findPreference(StyleDataStore.PK_LAYOUT);
         pLayout.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
         pLayout.setOnPreferenceChangeListener((preference, newValue) -> {
@@ -134,9 +129,18 @@ public class StyleFragment
             return false;
         });
 
+        findPreference(StyleDataStore.PK_COVER_CLICK_ACTION)
+                .setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
+
+        pListBookLevelFields = findPreference(PSK_LIST_BOOK_LEVEL_FIELDS);
+        pShowCovers = findPreference(PSK_LIST_BOOK_SHOW_COVER_0);
+        pCoverScale = findPreference(StyleDataStore.PK_COVER_SCALE);
+        pTextScale = findPreference(StyleDataStore.PK_TEXT_SCALE);
+
+
+        // Book details page
         pShowCoversOnDetailsScreen[0] = findPreference(StyleDataStore.PK_DETAILS_SHOW_COVER[0]);
         pShowCoversOnDetailsScreen[1] = findPreference(StyleDataStore.PK_DETAILS_SHOW_COVER[1]);
-
         pShowCoversOnDetailsScreen[0].setOnPreferenceChangeListener((preference, newValue) -> {
             // Covers on DETAIL screen:
             // Setting cover 0 to false
@@ -146,6 +150,11 @@ public class StyleFragment
             }
             return true;
         });
+
+
+        // Author
+        findPreference(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE)
+                .setSummaryProvider(MultiSelectListPreferenceSummaryProvider.getInstance());
 
         // First call sets the current situation before the screen is visible.
         updateLayoutPrefs(vm.getStyle().getLayout());
@@ -221,23 +230,23 @@ public class StyleFragment
         final UserStyle style = vm.getStyle();
         final Context context = getContext();
 
+        // List
+
         //noinspection DataFlowIssue
-        pListBookLevelSorting.setSummary(vm.getBookLevelSortingPreferenceSummary(context));
-
-        pListBookLevelFields.setSummary(style.getFieldVisibility(Style.Screen.List)
-                                             .getPreferencesSummaryText(context));
-
         pGroups.setSummary(style.getGroupsSummaryText(context));
-
-        pCoverScale.setSummary(context.getResources().getStringArray(
-                R.array.pe_bob_thumbnail_scale)[style.getCoverScale()]);
-
-        pTextScale.setSummary(context.getResources().getStringArray(
-                R.array.pe_bob_text_scale)[style.getTextScale()]);
-
         // the 'level expansion' depends on the number of groups in use
         pExpansionLevel.setMax(style.getGroupCount());
         pExpansionLevel.setValue(style.getExpansionLevel());
+        pListBookLevelSorting.setSummary(vm.getBookLevelSortingPreferenceSummary(context));
+
+
+        // List layout
+        pListBookLevelFields.setSummary(style.getFieldVisibility(Style.Screen.List)
+                                             .getPreferencesSummaryText(context));
+        pCoverScale.setSummary(context.getResources().getStringArray(
+                R.array.pe_bob_thumbnail_scale)[style.getCoverScale()]);
+        pTextScale.setSummary(context.getResources().getStringArray(
+                R.array.pe_bob_text_scale)[style.getTextScale()]);
     }
 
     /**
@@ -250,16 +259,12 @@ public class StyleFragment
     private void updateLayoutPrefs(@NonNull final Style.Layout layout) {
         switch (layout) {
             case List: {
-                pListBookLevelFields.setVisible(true);
                 pShowCovers.setVisible(true);
-                pCoverScale.setVisible(true);
                 break;
             }
             case Grid: {
-                pListBookLevelFields.setVisible(false);
-                pShowCovers.setVisible(false);
-                pCoverScale.setVisible(false);
                 // The point of Grid is to show covers
+                pShowCovers.setVisible(false);
                 pShowCovers.setChecked(true);
                 break;
             }

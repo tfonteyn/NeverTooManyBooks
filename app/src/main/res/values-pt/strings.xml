@@ -550,6 +550,8 @@
     <string name="pt_barcode_scanner">Leitor de códigos de barra</string>
     <string name="pt_scanning_beep_on_valid">Apitar se o ISBN lido é válido</string>
     <string name="option_purge_image_cache">Limpar cache de imagens</string>
+    <string name="pc_bob_list">Lista</string>
+    <string name="pc_bob_layout">Estrutura da lista</string>
     <string name="pc_book_detail_screen">Página de detalhes do livro</string>
     <string name="pt_bob_groups">Grupos</string>
     <string name="option_bob_filter_isbn_yes">Com ISBN</string>
@@ -811,4 +813,7 @@
     <string name="pe_list">Lista</string>
     <string name="pe_grid">Grelha</string>
     <string name="pt_bob_grid_spancount">Colunas da grelha</string>
+    <string name="pt_bob_cover_click">Tocar numa imagem de capa.</string>
+    <string name="pe_bob_cover_click_zoom">Aumentará o zoom da imagem da capa.</string>
+    <string name="pe_bob_cover_click_details">Abre a página de detalhes do livro.</string>
 </resources>

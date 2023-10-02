@@ -60,6 +60,9 @@ public class StyleDataStore
     /** List(0) or Grid(1) layout for BoB. */
     public static final String PK_LAYOUT = "style.booklist.layout";
 
+    /** Action to take when the user taps a cover image in the BoB list. */
+    public static final String PK_COVER_CLICK_ACTION = "style.booklist.cover.click";
+
     /** The default expansion level for the groups. */
     public static final String PK_EXPANSION_LEVEL = "style.booklist.levels.default";
 
@@ -351,6 +354,11 @@ public class StyleDataStore
                 style.setLayout(Style.Layout.byId(Integer.parseInt(value)));
                 break;
 
+            case PK_COVER_CLICK_ACTION:
+                //noinspection DataFlowIssue
+                style.setCoverClickAction(Style.CoverClickAction.byId(Integer.parseInt(value)));
+                break;
+
             default:
                 throw new IllegalArgumentException(key);
         }
@@ -367,6 +375,9 @@ public class StyleDataStore
 
             case PK_LAYOUT:
                 return String.valueOf(style.getLayout().getId());
+
+            case PK_COVER_CLICK_ACTION:
+                return String.valueOf(style.getCoverClickAction().getId());
         }
         throw new IllegalArgumentException(key);
     }

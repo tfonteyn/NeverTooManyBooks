@@ -34,17 +34,8 @@
         />
 
     <PreferenceCategory
-        android:title="@string/pc_bob"
+        android:title="@string/pc_bob_list"
         >
-
-        <ListPreference
-            android:defaultValue="0"
-            android:icon="@drawable/ic_baseline_aod_24"
-            android:key="style.booklist.layout"
-            android:title="@string/pt_layout"
-            android:entries="@array/pe_bob_layout"
-            android:entryValues="@array/pv_bob_layout"
-            />
 
         <MultiSelectListPreference
             android:defaultValue="@array/empty_array"
@@ -82,6 +73,20 @@
             android:title="@string/lbl_sorting"
             />
 
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pc_bob_layout"
+        >
+        <ListPreference
+            android:defaultValue="0"
+            android:icon="@drawable/ic_baseline_aod_24"
+            android:key="style.booklist.layout"
+            android:title="@string/pt_layout"
+            android:entries="@array/pe_bob_layout"
+            android:entryValues="@array/pv_bob_layout"
+            />
+
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleBooklistBookLevelFieldsFragment"
             android:icon="@drawable/ic_baseline_details_24"
@@ -97,6 +102,15 @@
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/pt_bob_cover_show"
+            />
+
+        <ListPreference
+            android:defaultValue="0"
+            android:icon="@drawable/ic_baseline_image_24"
+            android:key="style.booklist.cover.click"
+            android:title="@string/pt_bob_cover_click"
+            android:entries="@array/pe_bob_cover_click"
+            android:entryValues="@array/pv_bob_cover_click"
             />
 
         <!-- default Style.IMAGE_SCALE_2_MEDIUM == 2 -->

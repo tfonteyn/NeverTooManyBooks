@@ -313,6 +313,8 @@
     <string name="lbl_backup">Copia de seguridad</string>
     <string name="lbl_barcode">Código de barras</string>
     <string name="lbl_book">Libro</string>
+    <string name="pc_bob_list">Lista</string>
+    <string name="pc_bob_layout">Diseño de la lista</string>
     <string name="pc_book_detail_screen">Página de detalles del libro</string>
     <string name="lbl_book_type">tipo de libro</string>
     <string name="lbl_books">Libros</string>
@@ -787,9 +789,11 @@
     <string name="lbl_sort_ascending">Ascendente</string>
     <string name="lbl_sort_descending">Descendente</string>
     <string name="lbl_group">Grupo</string>
-    <string name="X_pt_bob_book_level_sorting">Valoración del libro</string>
     <string name="pt_layout">Diseño</string>
     <string name="pt_bob_grid_spancount">Columnas de la cuadrícula</string>
     <string name="pe_list">Lista</string>
     <string name="pe_grid">Cuadrícula</string>
+    <string name="pt_bob_cover_click">Pulsar sobre una imagen de portada.</string>
+    <string name="pe_bob_cover_click_zoom">Amplía la imagen de la cubierta.</string>
+    <string name="pe_bob_cover_click_details">Abrirá la página de detalles del libro.</string>
 </resources>

@@ -303,6 +303,8 @@
     <string name="lbl_backup">Sauvegarder</string>
     <string name="lbl_barcode">code à barre</string>
     <string name="lbl_book">Livre</string>
+    <string name="pc_bob_list">Liste</string>
+    <string name="pc_bob_layout">Présentation de la liste</string>
     <string name="pc_book_detail_screen">Page de détails du livre</string>
     <string name="lbl_book_type">Type de livre</string>
     <string name="lbl_books">Livres</string>
@@ -781,4 +783,7 @@
     <string name="pe_list">Liste</string>
     <string name="pe_grid">Grille</string>
     <string name="pt_bob_grid_spancount">Colonnes de la grille</string>
+    <string name="pt_bob_cover_click">Taper sur une image de couverture.</string>
+    <string name="pe_bob_cover_click_zoom">Permet de zoomer sur l\'image de couverture.</string>
+    <string name="pe_bob_cover_click_details">Ouvre la page de détails du livre.</string>
 </resources>

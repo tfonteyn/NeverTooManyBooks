@@ -69,9 +69,9 @@ public class BookGridHolder
                    @NonNull final Style style,
                    @Dimension final int coverLongestSide) {
         super(itemView);
+        this.style = style;
 
         vb = BooksonbookshelfGridBookBinding.bind(itemView);
-        this.style = style;
 
         coverHelper = new CoverHelper(coverLongestSide,
                                       ImageView.ScaleType.FIT_CENTER,
@@ -79,20 +79,31 @@ public class BookGridHolder
 
         vb.gridCell.setMaxWidth(coverLongestSide);
 
-        // Do not go overkill here by adding a full-blown CoverHandler.
-        // We only provide zooming by clicking on the image.
-        vb.coverImage0.setOnClickListener(coverHelper::onZoomCover);
+        if (style.getCoverClickAction() == Style.CoverClickAction.Zoom) {
+            // Do not go overkill here by adding a full-blown CoverHandler.
+            // We only provide zooming by clicking on the image.
+            vb.coverImage0.setOnClickListener(coverHelper::onZoomCover);
+        }
     }
 
     @Override
     public void setOnRowClickListener(@Nullable final OnRowClickListener listener) {
         super.setOnRowClickListener(listener);
 
-        // Add an explicit 'view' button as tapping on the background is not obvious here.
         if (listener != null) {
-            vb.viewBookDetails.setOnClickListener(
-                    v -> listener.onClick(v, getBindingAdapterPosition()));
+            if (style.isShowField(Style.Screen.List, DBKey.COVER[0])) {
+                if (style.getCoverClickAction() == Style.CoverClickAction.OpenBookDetails) {
+                    vb.coverImage0.setOnClickListener(v -> listener
+                            .onClick(v, getBindingAdapterPosition()));
+                }
+            }
+
+            // Add an explicit 'view' button as tapping on the background is not obvious here.
+            vb.viewBookDetails.setVisibility(View.VISIBLE);
+            vb.viewBookDetails.setOnClickListener(v -> listener
+                    .onClick(v, getBindingAdapterPosition()));
         } else {
+            vb.viewBookDetails.setVisibility(View.GONE);
             vb.viewBookDetails.setOnClickListener(null);
         }
     }

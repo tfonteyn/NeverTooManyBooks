@@ -305,6 +305,8 @@
     <string name="lbl_backup">Yedek kopya</string>
     <string name="lbl_barcode">Barkod</string>
     <string name="lbl_book">Kitap</string>
+    <string name="pc_bob_list">Liste</string>
+    <string name="pc_bob_layout">Liste düzeni</string>
     <string name="pc_book_detail_screen">Kitap ayrıntıları sayfası</string>
     <string name="lbl_book_type">Kitap türü</string>
     <string name="lbl_books">Kitaplar</string>
@@ -786,4 +788,7 @@
     <string name="pe_list">Liste</string>
     <string name="pe_grid">Izgara</string>
     <string name="pt_bob_grid_spancount">Izgara sütunları</string>
+    <string name="pt_bob_cover_click">Bir kapak resmine dokunun.</string>
+    <string name="pe_bob_cover_click_zoom">Kapak resmini yakınlaştırır.</string>
+    <string name="pe_bob_cover_click_details">Kitap ayrıntıları sayfasını açar.</string>
 </resources>

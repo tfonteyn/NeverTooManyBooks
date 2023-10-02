@@ -553,6 +553,8 @@
     <string name="password">Wachtwoord</string>
     <string name="pc_advanced_options">Geavanceerd</string>
     <string name="pc_bob">Boeken Lijst</string>
+    <string name="pc_bob_list">Lijst</string>
+    <string name="pc_bob_layout">Lijstopmaak</string>
     <string name="pc_book_detail_screen">Pagina met boekdetails</string>
     <string name="pc_camera">Camera</string>
     <string name="pc_formatting">Formatteren</string>
@@ -777,4 +779,7 @@
     <string name="pe_list">Lijst</string>
     <string name="pe_grid">Rooster</string>
     <string name="pt_bob_grid_spancount">Rooster kolommen</string>
+    <string name="pt_bob_cover_click">Tikken op een omslagafbeelding.</string>
+    <string name="pe_bob_cover_click_zoom">Inzoomen op de omslagafbeelding.</string>
+    <string name="pe_bob_cover_click_details">Opent de detailpagina van het boek.</string>
 </resources>

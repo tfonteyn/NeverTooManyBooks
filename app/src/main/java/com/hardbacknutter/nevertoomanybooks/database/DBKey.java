@@ -237,6 +237,7 @@ public final class DBKey {
     public static final String STYLE_IS_PREFERRED = "preferred";
     public static final String STYLE_MENU_POSITION = "menu_order";
     public static final String STYLE_LAYOUT = "layout";
+    public static final String STYLE_COVER_CLICK_ACTION = "cover_click_action";
     public static final String STYLE_EXP_LEVEL = "exp_level";
     public static final String STYLE_ROW_USES_PREF_HEIGHT = "row_pref_height";
     public static final String STYLE_AUTHOR_SORT_BY_GIVEN_NAME = "author_sort_gn";

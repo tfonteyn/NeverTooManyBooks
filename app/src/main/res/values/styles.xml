@@ -237,7 +237,7 @@
     <style name="Button.Grid.Details"
            parent="Base.Button.Grid">
         <item name="icon">@drawable/ic_baseline_details_24</item>
-        <item name="android:contentDescription">@string/pc_book_detail_screen</item>
+        <item name="android:contentDescription">@string/pe_bob_cover_click_details</item>
     </style>
 
     <style name="Button.Grid.More"

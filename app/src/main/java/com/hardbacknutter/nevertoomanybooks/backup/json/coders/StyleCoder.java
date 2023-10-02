@@ -122,6 +122,9 @@ public class StyleCoder
             dest.put(StyleDataStore.PK_LAYOUT,
                      userStyle.getLayout().getId());
 
+            dest.put(StyleDataStore.PK_COVER_CLICK_ACTION,
+                     userStyle.getCoverClickAction().getId());
+
             dest.put(StyleDataStore.PK_EXPANSION_LEVEL,
                      userStyle.getExpansionLevel());
             dest.put(StyleDataStore.PK_GROUP_ROW_HEIGHT,
@@ -219,6 +222,11 @@ public class StyleCoder
                 if (source.has(StyleDataStore.PK_LAYOUT)) {
                     userStyle.setLayout(Style.Layout.byId(
                             source.getInt(StyleDataStore.PK_LAYOUT)));
+                }
+
+                if (source.has(StyleDataStore.PK_COVER_CLICK_ACTION)) {
+                    userStyle.setCoverClickAction(Style.CoverClickAction.byId(
+                            source.getInt(StyleDataStore.PK_COVER_CLICK_ACTION)));
                 }
 
                 if (source.has(StyleDataStore.PK_EXPANSION_LEVEL)) {

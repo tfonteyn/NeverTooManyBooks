@@ -1380,6 +1380,8 @@
     <!-- endregion -->
     <!-- region ========== Style settings. -->
     <!-- Preference Category -->
+    <string name="pc_bob_list">List</string>
+    <string name="pc_bob_layout">List layout</string>
     <string name="pc_book_detail_screen">Book details page</string>
     <!-- BooklistGroups.
          Opens a new screen with the related settings. -->
@@ -1405,6 +1407,12 @@
     <string name="pt_bob_grid_spancount">Grid columns</string>
     <!-- SwitchPreference - Show thumbnail image for each book -->
     <string name="pt_bob_cover_show">Show covers</string>
+
+    <!-- ListPreference - When a user taps on the thumbnail/cover-image... -->
+    <string name="pt_bob_cover_click">Tapping on a cover image.</string>
+    <string name="pe_bob_cover_click_zoom">Will zoom in on the cover image.</string>
+    <string name="pe_bob_cover_click_details">Will open the book details page.</string>
+
     <!-- SeekBarPreference - Scale thumbnails in the list view. -->
     <string name="pt_bob_cover_scale">Cover size in lists</string>
     <!-- [VERIFIED] SeekBarPreference - Scale text. -->
@@ -1608,7 +1616,6 @@
     <string name="X_lbl_updated">Updated</string>
     <string name="X_lbl_virtual_library">Virtual Library</string>
     <string name="X_pg_general">General</string>
-    <string name="X_pt_bob_book_level_sorting">Book level sorting</string>
     <string name="X_pt_site_settings">Website settings</string>
     <string name="X_tip_booklist_global_properties">You can use this screen to set the default characteristics of all booklist styles. Most properties can be overridden by individual styles, but the default values are defined here. You can change how lists are displayed at startup, and adjust a variety of other preferences that will be applied to all your styles when possible.</string>
     <string name="X_txt_import_books_option_all_books">New books will be added. Existing books will be updated.</string>
@@ -1632,7 +1639,6 @@
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="pt_normalize_publisher_name"
             translatable="false">Normalize publisher names (EXPERIMENTAL, see Help)</string>
-
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
 
