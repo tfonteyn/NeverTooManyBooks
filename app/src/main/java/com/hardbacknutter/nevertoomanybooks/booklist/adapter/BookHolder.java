@@ -170,10 +170,14 @@ public class BookHolder
 
         if (listener != null) {
             if (style.isShowField(Style.Screen.List, DBKey.COVER[0])) {
+                // Tapping the cover image will open the book-details page
                 if (style.getCoverClickAction() == Style.CoverClickAction.OpenBookDetails) {
                     vb.coverImage0.setOnClickListener(v -> listener
                             .onClick(v, getBindingAdapterPosition()));
                 }
+                // else {
+                // Tapping the cover image will zoom the image (as setup in the class constructor).
+                // }
             }
         }
     }
