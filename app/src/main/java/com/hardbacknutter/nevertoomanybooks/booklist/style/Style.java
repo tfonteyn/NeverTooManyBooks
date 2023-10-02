@@ -226,14 +226,14 @@ public interface Style {
     /**
      * Whether the user prefers the Author names displayed by Given names, or by Family name first.
      *
-     * @return {@code true} when Given names should come first
+     * @return {@code true} if the Given name should be displayed before the Family name
      */
     boolean isShowAuthorByGivenName();
 
     /**
      * Whether the user prefers the Author names sorted by Given names, or by Family name first.
      *
-     * @return {@code true} when Given names should come first
+     * @return {@code true} if the Given name should be sorted before then the Family name
      */
     boolean isSortAuthorByGivenName();
 

@@ -31,7 +31,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.preference.PreferenceManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -48,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.StringList;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -168,8 +168,6 @@ public class Author
             | TYPE_COVER_ARTIST | TYPE_COVER_INKING | TYPE_NARRATOR | TYPE_COVER_COLORIST
             | TYPE_ARTIST | TYPE_INKING | TYPE_COLORIST | TYPE_PSEUDONYM;
 
-    /** This is the global setting! There is also a specific style-level setting. */
-    private static final String PK_SHOW_AUTHOR_NAME_GIVEN_FIRST = "show.author.name.given_first";
     /** Maps the type-bit to a string resource for the type-label. */
     private static final Map<Integer, Integer> TYPES = new LinkedHashMap<>();
 
@@ -560,19 +558,6 @@ public class Author
     }
 
     /**
-     * Get the global preference: should an Author be shown with the given first.
-     *
-     * @param context Current context
-     *
-     * @return {@code true} if the given name should be shown before family name
-     */
-    public static boolean isGivenNameFirst(@NonNull final Context context) {
-        return PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .getBoolean(PK_SHOW_AUTHOR_NAME_GIVEN_FIRST, false);
-    }
-
-    /**
      * Return the formatted version of the name.
      *
      * @param givenNameFirst {@code true} if we want "given-names family-name" formatted name.
@@ -608,7 +593,7 @@ public class Author
         if (style != null) {
             givenNameFirst = style.isShowAuthorByGivenName();
         } else {
-            givenNameFirst = isGivenNameFirst(context);
+            givenNameFirst = GlobalStyle.isShowAuthorByGivenName(context);
         }
 
         return getFormattedName(givenNameFirst);
@@ -769,7 +754,7 @@ public class Author
                     if (style != null) {
                         givenNameFirst = style.isShowAuthorByGivenName();
                     } else {
-                        givenNameFirst = isGivenNameFirst(context);
+                        givenNameFirst = GlobalStyle.isShowAuthorByGivenName(context);
                     }
 
                     if (givenNameFirst) {
