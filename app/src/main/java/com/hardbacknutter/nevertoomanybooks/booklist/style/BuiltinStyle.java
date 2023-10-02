@@ -86,132 +86,129 @@ public final class BuiltinStyle
      * NEVER change the UUID values.
      */
     private static final Collection<Definition> ALL = List.of(
-            new Definition(ID_AUTHOR_THEN_SERIES,
-                           "6a82c4c0-48f1-4130-8a62-bbf478ffe184",
-                           R.string.style_builtin_author_series,
-                           new int[]{BooklistGroup.AUTHOR,
-                                   BooklistGroup.SERIES}),
-            new Definition(ID_DEPRECATED_1,
-                           true,
-                           "f479e979-c43f-4b0b-9c5b-6942964749df",
-                           R.string.disabled,
-                           new int[]{}),
-            new Definition(ID_COMPACT,
-                           "5e4c3137-a05f-4c4c-853a-bd1dacb6cd16",
-                           R.string.style_builtin_compact,
-                           new int[]{BooklistGroup.AUTHOR}),
-            new Definition(ID_BOOK_TITLE_FIRST_LETTER,
-                           "16b4ecdf-edef-4bf2-a682-23f7230446c8",
-                           R.string.style_builtin_1st_char_book_title,
-                           new int[]{BooklistGroup.BOOK_TITLE_1ST_CHAR}),
-            new Definition(ID_SERIES,
-                           "ad55ebc3-f79d-4cc2-a27d-f06ff0bf2335",
-                           R.string.style_builtin_series,
-                           new int[]{BooklistGroup.SERIES}),
+            Definition.create(ID_AUTHOR_THEN_SERIES,
+                              "6a82c4c0-48f1-4130-8a62-bbf478ffe184",
+                              R.string.style_builtin_author_series,
+                              BooklistGroup.AUTHOR,
+                              BooklistGroup.SERIES),
+            Definition.createDeprecated(ID_DEPRECATED_1,
+                                        "f479e979-c43f-4b0b-9c5b-6942964749df"),
+            Definition.create(ID_COMPACT,
+                              "5e4c3137-a05f-4c4c-853a-bd1dacb6cd16",
+                              R.string.style_builtin_compact,
+                              BooklistGroup.AUTHOR),
+            Definition.create(ID_BOOK_TITLE_FIRST_LETTER,
+                              "16b4ecdf-edef-4bf2-a682-23f7230446c8",
+                              R.string.style_builtin_1st_char_book_title,
+                              BooklistGroup.BOOK_TITLE_1ST_CHAR),
+            Definition.create(ID_SERIES,
+                              "ad55ebc3-f79d-4cc2-a27d-f06ff0bf2335",
+                              R.string.style_builtin_series,
+                              BooklistGroup.SERIES),
 
-            new Definition(ID_GENRE,
-                           "edc5c178-60f0-40e7-9674-e08445b6c942",
-                           R.string.style_builtin_genre,
-                           new int[]{BooklistGroup.GENRE,
-                                   BooklistGroup.AUTHOR,
-                                   BooklistGroup.SERIES}),
-            new Definition(ID_LENDING,
-                           "e4f1c364-2cbe-467e-a0c1-3ae71bd56fa3",
-                           R.string.style_builtin_lending,
-                           new int[]{BooklistGroup.LENDING,
-                                   BooklistGroup.AUTHOR,
-                                   BooklistGroup.SERIES}),
-            new Definition(ID_READ_AND_UNREAD,
-                           "e3678890-7785-4870-9213-333a68293a49",
-                           R.string.style_builtin_read_and_unread,
-                           new int[]{BooklistGroup.READ_STATUS,
-                                   BooklistGroup.AUTHOR,
-                                   BooklistGroup.SERIES}),
-            new Definition(ID_PUBLICATION_DATA,
-                           "182f5d3c-8fd7-4f3a-b5b0-0c93551d1796",
-                           R.string.style_builtin_date_published,
-                           new int[]{BooklistGroup.DATE_PUBLISHED_YEAR,
-                                   BooklistGroup.DATE_PUBLISHED_MONTH,
-                                   BooklistGroup.AUTHOR,
-                                   BooklistGroup.SERIES}),
-            new Definition(ID_DATE_ADDED,
-                           "95d7afc0-a70a-4f1f-8d77-aa7ebc60e521",
-                           R.string.style_builtin_date_added,
-                           new int[]{BooklistGroup.DATE_ADDED_YEAR,
-                                   BooklistGroup.DATE_ADDED_MONTH,
-                                   BooklistGroup.DATE_ADDED_DAY,
-                                   BooklistGroup.AUTHOR}),
+            Definition.create(ID_GENRE,
+                              "edc5c178-60f0-40e7-9674-e08445b6c942",
+                              R.string.style_builtin_genre,
+                              BooklistGroup.GENRE,
+                              BooklistGroup.AUTHOR,
+                              BooklistGroup.SERIES),
+            Definition.create(ID_LENDING,
+                              "e4f1c364-2cbe-467e-a0c1-3ae71bd56fa3",
+                              R.string.style_builtin_lending,
+                              BooklistGroup.LENDING,
+                              BooklistGroup.AUTHOR,
+                              BooklistGroup.SERIES),
+            Definition.create(ID_READ_AND_UNREAD,
+                              "e3678890-7785-4870-9213-333a68293a49",
+                              R.string.style_builtin_read_and_unread,
+                              BooklistGroup.READ_STATUS,
+                              BooklistGroup.AUTHOR,
+                              BooklistGroup.SERIES),
+            Definition.create(ID_PUBLICATION_DATA,
+                              "182f5d3c-8fd7-4f3a-b5b0-0c93551d1796",
+                              R.string.style_builtin_date_published,
+                              BooklistGroup.DATE_PUBLISHED_YEAR,
+                              BooklistGroup.DATE_PUBLISHED_MONTH,
+                              BooklistGroup.AUTHOR,
+                              BooklistGroup.SERIES),
+            Definition.create(ID_DATE_ADDED,
+                              "95d7afc0-a70a-4f1f-8d77-aa7ebc60e521",
+                              R.string.style_builtin_date_added,
+                              BooklistGroup.DATE_ADDED_YEAR,
+                              BooklistGroup.DATE_ADDED_MONTH,
+                              BooklistGroup.DATE_ADDED_DAY,
+                              BooklistGroup.AUTHOR),
 
-            new Definition(ID_DATE_ACQUIRED,
-                           "b3255b1f-5b07-4b3e-9700-96c0f8f35a58",
-                           R.string.style_builtin_date_acquired,
-                           new int[]{BooklistGroup.DATE_ACQUIRED_YEAR,
-                                   BooklistGroup.DATE_ACQUIRED_MONTH,
-                                   BooklistGroup.DATE_ACQUIRED_DAY,
-                                   BooklistGroup.AUTHOR}),
-            new Definition(ID_AUTHOR_AND_YEAR,
-                           "7c9ad91e-df7c-415a-a205-cdfabff5465d",
-                           R.string.style_builtin_author_year,
-                           new int[]{BooklistGroup.AUTHOR,
-                                   BooklistGroup.DATE_PUBLISHED_YEAR,
-                                   BooklistGroup.SERIES}),
-            new Definition(ID_FORMAT,
-                           "bdc43f17-2a95-42ef-b0f8-c750ef920f28",
-                           R.string.style_builtin_format,
-                           new int[]{BooklistGroup.FORMAT}),
-            new Definition(ID_DATE_READ,
-                           "034fe547-879b-4fa0-997a-28d769ba5a84",
-                           R.string.style_builtin_date_read,
-                           new int[]{BooklistGroup.DATE_READ_YEAR,
-                                   BooklistGroup.DATE_READ_MONTH,
-                                   BooklistGroup.AUTHOR}),
-            new Definition(ID_LOCATION,
-                           "e21a90c9-5150-49ee-a204-0cab301fc5a1",
-                           R.string.style_builtin_location,
-                           new int[]{BooklistGroup.LOCATION,
-                                   BooklistGroup.AUTHOR,
-                                   BooklistGroup.SERIES}),
+            Definition.create(ID_DATE_ACQUIRED,
+                              "b3255b1f-5b07-4b3e-9700-96c0f8f35a58",
+                              R.string.style_builtin_date_acquired,
+                              BooklistGroup.DATE_ACQUIRED_YEAR,
+                              BooklistGroup.DATE_ACQUIRED_MONTH,
+                              BooklistGroup.DATE_ACQUIRED_DAY,
+                              BooklistGroup.AUTHOR),
+            Definition.create(ID_AUTHOR_AND_YEAR,
+                              "7c9ad91e-df7c-415a-a205-cdfabff5465d",
+                              R.string.style_builtin_author_year,
+                              BooklistGroup.AUTHOR,
+                              BooklistGroup.DATE_PUBLISHED_YEAR,
+                              BooklistGroup.SERIES),
+            Definition.create(ID_FORMAT,
+                              "bdc43f17-2a95-42ef-b0f8-c750ef920f28",
+                              R.string.style_builtin_format,
+                              BooklistGroup.FORMAT),
+            Definition.create(ID_DATE_READ,
+                              "034fe547-879b-4fa0-997a-28d769ba5a84",
+                              R.string.style_builtin_date_read,
+                              BooklistGroup.DATE_READ_YEAR,
+                              BooklistGroup.DATE_READ_MONTH,
+                              BooklistGroup.AUTHOR),
+            Definition.create(ID_LOCATION,
+                              "e21a90c9-5150-49ee-a204-0cab301fc5a1",
+                              R.string.style_builtin_location,
+                              BooklistGroup.LOCATION,
+                              BooklistGroup.AUTHOR,
+                              BooklistGroup.SERIES),
 
-            new Definition(ID_LANGUAGE,
-                           "00379d95-6cb2-40e6-8c3b-f8278f34750a",
-                           R.string.style_builtin_language,
-                           new int[]{BooklistGroup.LANGUAGE,
-                                   BooklistGroup.AUTHOR,
-                                   BooklistGroup.SERIES}),
-            new Definition(ID_RATING,
-                           "20a2ebdf-81a7-4eca-a3a9-7275062b907a",
-                           R.string.style_builtin_rating,
-                           new int[]{BooklistGroup.RATING,
-                                   BooklistGroup.AUTHOR,
-                                   BooklistGroup.SERIES}),
-            new Definition(ID_BOOKSHELF,
-                           "999d383e-6e76-416a-86f9-960c729aa718",
-                           R.string.style_builtin_bookshelf,
-                           new int[]{BooklistGroup.BOOKSHELF,
-                                   BooklistGroup.AUTHOR,
-                                   BooklistGroup.SERIES}),
-            new Definition(ID_DATE_LAST_UPDATE,
-                           "427a0da5-0779-44b6-89e9-82772e5ad5ef",
-                           R.string.style_builtin_date_last_updated,
-                           new int[]{BooklistGroup.DATE_LAST_UPDATE_YEAR,
-                                   BooklistGroup.DATE_LAST_UPDATE_MONTH,
-                                   BooklistGroup.DATE_LAST_UPDATE_DAY})
+            Definition.create(ID_LANGUAGE,
+                              "00379d95-6cb2-40e6-8c3b-f8278f34750a",
+                              R.string.style_builtin_language,
+                              BooklistGroup.LANGUAGE,
+                              BooklistGroup.AUTHOR,
+                              BooklistGroup.SERIES),
+            Definition.create(ID_RATING,
+                              "20a2ebdf-81a7-4eca-a3a9-7275062b907a",
+                              R.string.style_builtin_rating,
+                              BooklistGroup.RATING,
+                              BooklistGroup.AUTHOR,
+                              BooklistGroup.SERIES),
+            Definition.create(ID_BOOKSHELF,
+                              "999d383e-6e76-416a-86f9-960c729aa718",
+                              R.string.style_builtin_bookshelf,
+                              BooklistGroup.BOOKSHELF,
+                              BooklistGroup.AUTHOR,
+                              BooklistGroup.SERIES),
+            Definition.create(ID_DATE_LAST_UPDATE,
+                              "427a0da5-0779-44b6-89e9-82772e5ad5ef",
+                              R.string.style_builtin_date_last_updated,
+                              BooklistGroup.DATE_LAST_UPDATE_YEAR,
+                              BooklistGroup.DATE_LAST_UPDATE_MONTH,
+                              BooklistGroup.DATE_LAST_UPDATE_DAY)
     );
 
     static {
         DEFAULT_ID = ID_AUTHOR_THEN_SERIES;
 
-        //noinspection OptionalGetWithoutIsPresent
         DEFAULT_UUID = ALL.stream()
-                          .filter(def -> def.id == ID_AUTHOR_THEN_SERIES)
+                          .filter(def -> def.getId() == ID_AUTHOR_THEN_SERIES)
                           .findFirst()
-                          .get().uuid;
+                          .map(Definition::getUuid)
+                          .orElseThrow();
 
-        //noinspection OptionalGetWithoutIsPresent
         UUID_FOR_TESTING_ONLY = ALL.stream()
-                                   .filter(def -> def.id == ID_PUBLICATION_DATA)
+                                   .filter(def -> def.getId() == ID_PUBLICATION_DATA)
                                    .findFirst()
-                                   .get().uuid;
+                                   .map(Definition::getUuid)
+                                   .orElseThrow();
     }
 
     /**
@@ -231,14 +228,14 @@ public final class BuiltinStyle
     public BuiltinStyle(@NonNull final Definition definition,
                         final boolean preferred,
                         final int menuPosition) {
-        super(definition.uuid, definition.id);
+        super(definition.getUuid(), definition.getId());
 
-        this.labelResId = definition.labelResId;
+        this.labelResId = definition.getLabelResId();
 
         setPreferred(preferred);
         setMenuPosition(menuPosition);
 
-        setGroupIds(Arrays.stream(definition.groupIds)
+        setGroupIds(Arrays.stream(definition.getGroupIds())
                           .boxed()
                           .collect(Collectors.toList()));
     }
@@ -251,12 +248,17 @@ public final class BuiltinStyle
      * @return count
      */
     public static int size() {
-        return (int) ALL.stream().filter(def -> !def.deprecated).count();
+        return (int) ALL.stream().filter(def -> !def.isDeprecated()).count();
     }
 
+    /**
+     * Get all the builtin styles.
+     *
+     * @return all styles
+     */
     @NonNull
     public static Collection<Definition> getAll() {
-        return ALL.stream().filter(def -> !def.deprecated).collect(Collectors.toList());
+        return ALL.stream().filter(def -> !def.isDeprecated()).collect(Collectors.toList());
     }
 
     /**
@@ -267,7 +269,8 @@ public final class BuiltinStyle
      * @return {@code true} if it is
      */
     public static boolean isBuiltin(@NonNull final String uuid) {
-        return !uuid.isEmpty() && ALL.stream().anyMatch(def -> def.uuid.equalsIgnoreCase(uuid));
+        return !uuid.isEmpty() && ALL.stream()
+                                     .anyMatch(def -> def.getUuid().equalsIgnoreCase(uuid));
     }
 
     /**
@@ -284,11 +287,11 @@ public final class BuiltinStyle
 
         final int id = rowData.getInt(DBKey.PK_ID);
         final Definition styleDef = ALL.stream()
-                                       .filter(def -> def.id == id)
+                                       .filter(def -> def.getId() == id)
                                        .findFirst()
                                        .orElseThrow(() -> new IllegalStateException(
                                                "Style id from the db: " + id + " is invalid"));
-        if (styleDef.deprecated) {
+        if (styleDef.isDeprecated()) {
             return Optional.empty();
         }
 
@@ -346,7 +349,7 @@ public final class BuiltinStyle
         return Objects.hash(super.hashCode(), labelResId);
     }
 
-    public static class Definition {
+    public static final class Definition {
 
         /** The id is always a NEGATIVE value. */
         private final int id;
@@ -357,39 +360,33 @@ public final class BuiltinStyle
         @StringRes
         private final int labelResId;
 
-        @NonNull
-        private final Layout layout;
-
         private final boolean deprecated;
 
-        Definition(final int id,
-                   @NonNull final String uuid,
-                   @StringRes final int labelResId,
-                   @NonNull final int[] groupIds) {
-            this(id, false, uuid, labelResId, groupIds);
-        }
-
-        Definition(final int id,
-                   final boolean deprecated,
-                   @NonNull final String uuid,
-                   @StringRes final int labelResId,
-                   @NonNull final int[] groupIds) {
-            this(id, false, uuid, labelResId, groupIds, Layout.List);
-        }
-
-        Definition(final int id,
-                   final boolean deprecated,
-                   @NonNull final String uuid,
-                   @StringRes final int labelResId,
-                   @NonNull final int[] groupIds,
-                   @NonNull final Layout layout) {
+        private Definition(final int id,
+                           final boolean deprecated,
+                           @NonNull final String uuid,
+                           @StringRes final int labelResId,
+                           @NonNull final int[] groupIds) {
             this.id = id;
             this.uuid = uuid;
             this.labelResId = labelResId;
             this.deprecated = deprecated;
             this.groupIds = groupIds;
+        }
 
-            this.layout = layout;
+        @NonNull
+        static Definition create(final int id,
+                                 @NonNull final String uuid,
+                                 @StringRes final int labelResId,
+                                 @NonNull final int... groupIds) {
+            return new Definition(id, false, uuid, labelResId, groupIds);
+        }
+
+        @SuppressWarnings("SameParameterValue")
+        @NonNull
+        static Definition createDeprecated(final int id,
+                                           @NonNull final String uuid) {
+            return new Definition(id, true, uuid, R.string.disabled, new int[]{});
         }
 
         public int getId() {
@@ -402,8 +399,16 @@ public final class BuiltinStyle
         }
 
         @NonNull
-        public Layout getLayout() {
-            return layout;
+        int[] getGroupIds() {
+            return groupIds;
+        }
+
+        int getLabelResId() {
+            return labelResId;
+        }
+
+        boolean isDeprecated() {
+            return deprecated;
         }
     }
 }
