@@ -41,10 +41,12 @@
         tools:src="@sample/covers"
         />
 
+    <!-- textIsSelectable="false" as we need to allow clicks on this field. -->
     <TextView
         android:id="@+id/author"
         style="@style/Field.Generic"
         android:maxLines="3"
+        android:textIsSelectable="false"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -53,11 +55,13 @@
         tools:visibility="visible"
         />
 
+    <!-- textIsSelectable="false" as we need to allow clicks on this field. -->
     <TextView
         android:id="@+id/title"
         style="@style/Field.BookTitle.Small"
         android:layout_marginTop="@dimen/section_margin_top"
         android:maxLines="10"
+        android:textIsSelectable="false"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

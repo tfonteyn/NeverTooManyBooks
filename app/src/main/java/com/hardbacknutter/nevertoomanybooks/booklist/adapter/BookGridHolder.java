@@ -91,18 +91,33 @@ public class BookGridHolder
         super.setOnRowClickListener(listener);
 
         if (listener != null) {
-            if (style.isShowField(Style.Screen.List, DBKey.COVER[0])) {
-                if (style.getCoverClickAction() == Style.CoverClickAction.OpenBookDetails) {
-                    vb.coverImage0.setOnClickListener(v -> listener
-                            .onClick(v, getBindingAdapterPosition()));
-                }
-            }
-
-            // Add an explicit 'view' button as tapping on the background is not obvious here.
-            vb.viewBookDetails.setVisibility(View.VISIBLE);
-            vb.viewBookDetails.setOnClickListener(v -> listener
+            // If there is no image, tapping title or author has the same effect
+            // as tapping the background.
+            vb.title.setOnClickListener(v -> listener
                     .onClick(v, getBindingAdapterPosition()));
+            vb.author.setOnClickListener(v -> listener
+                    .onClick(v, getBindingAdapterPosition()));
+
+            if (style.getCoverClickAction() == Style.CoverClickAction.OpenBookDetails) {
+                // Tapping the cover image will open the book-details page
+                vb.coverImage0.setOnClickListener(v -> listener
+                        .onClick(v, getBindingAdapterPosition()));
+
+                // No need for the extra button to do the same
+                vb.viewBookDetails.setVisibility(View.GONE);
+                vb.viewBookDetails.setOnClickListener(null);
+            } else {
+                // Tapping the cover image will zoom the image (as setup in the class constructor).
+                // Add an explicit 'view' button
+                // as tapping on the background is not obvious when using the grid.
+                vb.viewBookDetails.setVisibility(View.VISIBLE);
+                vb.viewBookDetails.setOnClickListener(v -> listener
+                        .onClick(v, getBindingAdapterPosition()));
+            }
         } else {
+            vb.title.setOnClickListener(null);
+            vb.author.setOnClickListener(null);
+
             vb.viewBookDetails.setVisibility(View.GONE);
             vb.viewBookDetails.setOnClickListener(null);
         }
@@ -111,7 +126,8 @@ public class BookGridHolder
     @Override
     public void setOnRowLongClickListener(@Nullable final ShowContextMenu contextMenuMode,
                                           @Nullable final OnRowClickListener listener) {
-        // Override the user! tap-and-hold on the background is not obvious here.
+        // Override the user! Always show the button,
+        // as tapping on the background is not obvious when using the grid.
         super.setOnRowLongClickListener(ShowContextMenu.Button, listener);
     }
 
