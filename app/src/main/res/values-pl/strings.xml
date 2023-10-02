@@ -796,9 +796,9 @@
     <string name="pe_grid">Siatka</string>
     <string name="pt_bob_grid_spancount">Kolumny siatki</string>
     <!-- NOT APPLICABLE FOR BOOKS IN POLISH; Just show "On"; it will still be used for other languages. -->
-    <string name="ps_show_titles_reordered_on">Wł.</string>
+    <string name="ps_show_titles_reordered_on">Wł</string>
     <!-- NOT APPLICABLE FOR BOOKS IN POLISH; Just show "Off"; it will still be used for other languages. -->
-    <string name="ps_show_titles_reordered_off">Wył.</string>
+    <string name="ps_show_titles_reordered_off">Wył</string>
     <!-- NOT APPLICABLE FOR BOOKS IN POLISH. Empty string. -->
     <string name="pv_reformat_titles_prefixes">""</string>
     <string name="pt_bob_cover_click">Stuknięcie obrazu okładki.</string>
