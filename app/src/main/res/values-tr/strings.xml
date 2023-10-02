@@ -704,7 +704,10 @@
     <string name="warning_import_csv">Uyarı: Bilgileri içe aktarırken eğer içe aktardığınız dosyaların ID numarası var olan bir kitabın ID’si ile aynı ise, varolan kitap verilerinin üstüne yazılmasına neden olabilir. Eğer dışa aktarılmış bir dosyada bir giriyi değiştirdiyseniz bu sorun değildir; ancak yeni bir kitap girişi oluşturuyorsanız ID bölümünün boş olduğundan emin olun.</string>
     <string name="warning_import_csv_unescaped_quote">%1$d. Satırda çıkış karakteri olmayan alıntı karakter, %2$d. konum</string>
     <string name="warning_import_failed_for_lines_lots">Ayrıştırma işlemi\n%1$s\n satırları ve %2$d diğerleri için başarısız oldu.</string>
-    <string name="warning_import_failed_for_lines_some">Ayrıştırma\n%1$s\n satırları için başarısız oldu.</string>
+    <string name="warning_import_failed_for_lines_some">Ayrıştırma
+\n%1$s
+\n satırları için başarısız oldu.
+\n</string>
     <string name="warning_no_editions">Ek yayın bilgisi yok.</string>
     <string name="warning_no_matching_book_found">Eşleşen kitap bulunamadı</string>
     <string name="warning_no_search_data_for_active_sites">Etkin siteler için geçerli arama verisi yok.</string>
