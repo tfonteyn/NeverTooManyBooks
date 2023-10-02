@@ -21,8 +21,8 @@
   -->
 
 <!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!--suppress LongLine --><resources>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s（%2$s）</string>

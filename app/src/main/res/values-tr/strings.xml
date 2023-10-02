@@ -21,8 +21,8 @@
   -->
 
 <!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d kitap</item>
