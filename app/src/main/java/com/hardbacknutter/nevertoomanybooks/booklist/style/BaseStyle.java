@@ -31,6 +31,7 @@ import androidx.annotation.Px;
 import androidx.core.math.MathUtils;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,50 +63,9 @@ public abstract class BaseStyle
 
     private static final String ERROR_UUID_IS_EMPTY = "uuid.isEmpty()";
 
-    /**
-     * IMPORTANT: this is the ALMOST the same set as used by BookLevelFieldVisibility
-     * and should be kept in sync.
-     * but note the differences:
-     * <ul>
-     *     <li>TITLE added: we ALWAYS display it.</li>
-     *     <li>ISBN & LANGUAGE removed: we already have it added during BooklistBuilder setup.</li>
-     * </ul>
-     * Also note this is an <strong>ORDERED LIST!</strong>
-     */
-    private static final Map<String, Sort> BOOK_LEVEL_FIELDS_DEFAULTS = new LinkedHashMap<>();
-
-    static {
-        // The default is sorting by book title only
-        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.TITLE, Sort.Asc);
-
-        // The field order here on assuming the user will need to sort more likely
-        // on the fields at the top.
-        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.TITLE_ORIGINAL_LANG, Sort.Unsorted);
-
-        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.FK_AUTHOR, Sort.Unsorted);
-        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.FK_SERIES, Sort.Unsorted);
-        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.FK_PUBLISHER, Sort.Unsorted);
-        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.BOOK_PUBLICATION__DATE, Sort.Unsorted);
-
-        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.FORMAT, Sort.Unsorted);
-        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.LOCATION, Sort.Unsorted);
-        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.RATING, Sort.Unsorted);
-
-        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.PAGE_COUNT, Sort.Unsorted);
-        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.BOOK_CONDITION, Sort.Unsorted);
-        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.SIGNED__BOOL, Sort.Unsorted);
-        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.EDITION__BITMASK, Sort.Unsorted);
-        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.LOANEE_NAME, Sort.Unsorted);
-    }
-
-
-    /** Configuration for the fields shown on the Book level in the book list. */
+    /** Configuration for the fields shown on the given {@link Screen}. */
     @NonNull
-    private final FieldVisibility bookLevelFieldVisibility;
-
-    /** Configuration for the fields shown on the Book details screen. */
-    @NonNull
-    private final FieldVisibility detailsFieldVisibility;
+    private final Map<Screen, FieldVisibility> fieldVisibility = new EnumMap<>(Screen.class);
 
     /**
      * The <strong>ordered</strong> {@link BooklistGroup}s shown/handled by this style.
@@ -121,7 +81,7 @@ public abstract class BaseStyle
      * Key: the {@link DBKey} string.
      */
     @NonNull
-    private final Map<String, Sort> bookLevelFieldsOrderBy = new LinkedHashMap<>();
+    private final Map<String, Sort> bookLevelFieldsOrderBy;
     @NonNull
     private final String uuid;
     /**
@@ -132,10 +92,10 @@ public abstract class BaseStyle
     private long id;
 
     @NonNull
-    private Layout layout = Layout.List;
+    private Layout layout;
 
     @NonNull
-    private CoverClickAction coverClickAction = CoverClickAction.Zoom;
+    private CoverClickAction coverClickAction;
 
     /**
      * The menu position of this style as sorted by the user.
@@ -148,26 +108,26 @@ public abstract class BaseStyle
     private boolean preferred;
     /** Relative scaling factor for text on the list screen. */
     @Style.TextScale
-    private int textScale = Style.DEFAULT_TEXT_SCALE;
+    private int textScale;
     /** Relative scaling factor for covers on the list screen. */
     @Style.CoverScale
-    private int coverScale = Style.DEFAULT_COVER_SCALE;
+    private int coverScale;
     /** Local override. */
     private boolean sortAuthorByGivenName;
     /** Local override. */
     private boolean showAuthorByGivenName;
     /** The default number of levels to expand the list tree to. */
-    private int expansionLevel = 1;
+    private int expansionLevel;
     /**
      * Show list header info.
      */
-    private int headerFieldVisibility = BooklistHeader.BITMASK_ALL;
+    private int headerFieldVisibility;
     /**
      * Should rows be shown using
      * {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT} (false),
      * or as system "?attr/listPreferredItemHeightSmall" (true).
      */
-    private boolean groupRowUsesPreferredHeight = true;
+    private boolean groupRowUsesPreferredHeight;
     /**
      * Cached pixel value.
      * <p>
@@ -194,21 +154,27 @@ public abstract class BaseStyle
         this.uuid = uuid;
         this.id = id;
 
-        bookLevelFieldVisibility = new BookLevelFieldVisibility();
+        // load defaults from the global settings
+        final GlobalStyle globalStyle = ServiceLocator.getInstance().getStyles().getGlobalStyle();
 
-        detailsFieldVisibility = new BookDetailsFieldVisibility();
+        headerFieldVisibility = globalStyle.getBooklistHeaderValue();
+        expansionLevel = globalStyle.getExpansionLevel();
+        bookLevelFieldsOrderBy = globalStyle.getBookLevelFieldsOrderBy();
 
-        initBookLevelFieldsOrderByDefaults();
+        layout = globalStyle.getLayout();
+        coverClickAction = globalStyle.getCoverClickAction();
+        coverScale = globalStyle.getCoverScale();
+        textScale = globalStyle.getTextScale();
+        groupRowUsesPreferredHeight = globalStyle.isGroupRowUsesPreferredHeight();
 
-        // load some defaults from the global settings
-        final Context appContext = ServiceLocator.getInstance().getAppContext();
+        fieldVisibility.put(Screen.List, globalStyle.getFieldVisibility(Screen.List));
+        fieldVisibility.put(Screen.Detail, globalStyle.getFieldVisibility(Screen.Detail));
 
-//        textScale = GlobalStyle.getTextScale(appContext);
-//        coverScale = GlobalStyle.getCoverScale(appContext);
+        showAuthorByGivenName = globalStyle.isShowAuthorByGivenName();
+        sortAuthorByGivenName = globalStyle.isSortAuthorByGivenName();
 
-        showAuthorByGivenName = GlobalStyle.isShowAuthorByGivenName(appContext);
-        sortAuthorByGivenName = GlobalStyle.isSortAuthorByGivenName(appContext);
-
+        // URGENT: Group specific options cannot be set from the global style for now
+        // as we don't have the groups yet.
     }
 
     /**
@@ -229,23 +195,24 @@ public abstract class BaseStyle
         preferred = style.isPreferred();
         menuPosition = style.getMenuPosition();
 
-        layout = style.layout;
-
+        setHeaderFieldVisibilityValue(style.getHeaderFieldVisibilityValue());
         expansionLevel = style.getExpansionLevel();
+        setBookLevelFieldsOrderBy(style.getBookLevelFieldsOrderBy());
+
+        layout = style.layout;
+        coverClickAction = style.getCoverClickAction();
+        coverScale = style.getCoverScale();
+        textScale = style.getTextScale();
         groupRowUsesPreferredHeight = style.isGroupRowUsesPreferredHeight();
+
+        for (final Screen screen : List.of(Screen.List, Screen.Detail)) {
+            getFieldVisibility(screen).setBitValue(style.getFieldVisibility(screen).getBitValue());
+        }
 
         showAuthorByGivenName = style.isShowAuthorByGivenName();
         sortAuthorByGivenName = style.isSortAuthorByGivenName();
 
-        textScale = style.getTextScale();
-        coverScale = style.getCoverScale();
-
-        setHeaderFieldVisibilityValue(style.getHeaderFieldVisibilityValue());
-        for (final Screen screen : Screen.values()) {
-            getFieldVisibility(screen).setBitValue(style.getFieldVisibility(screen).getBitValue());
-        }
-
-        // set groups first!
+        // set groups first before setting the group specific options!
         setGroupList(style.getGroupList());
 
         setPrimaryAuthorType(style.getPrimaryAuthorType());
@@ -253,11 +220,6 @@ public abstract class BaseStyle
         for (final Style.UnderEach item : Style.UnderEach.values()) {
             setShowBooks(item, style.isShowBooks(item));
         }
-    }
-
-    /** load the default sorting options for the optional book-level fields. */
-    private void initBookLevelFieldsOrderByDefaults() {
-        bookLevelFieldsOrderBy.putAll(BOOK_LEVEL_FIELDS_DEFAULTS);
     }
 
     /**
@@ -464,28 +426,21 @@ public abstract class BaseStyle
     @Override
     public boolean isShowField(@NonNull final Screen screen,
                                @NonNull final String dbKey) {
-        // First check the style!
-        // If we have a field which is simply not defined on the respective FieldVisibility,
-        // use the global and if that fails, just return 'true'
-        switch (screen) {
-            case List:
-                return bookLevelFieldVisibility.isVisible(dbKey).orElseGet(
-                        () -> ServiceLocator.getInstance().getGlobalFieldVisibility()
-                                            .isVisible(dbKey)
-                                            .orElse(true));
 
-            case Detail:
-                return detailsFieldVisibility.isVisible(dbKey).orElseGet(
-                        () -> ServiceLocator.getInstance().getGlobalFieldVisibility()
-                                            .isVisible(dbKey)
-                                            .orElse(true));
-
-            case Global:
-                return ServiceLocator.getInstance().getGlobalFieldVisibility()
-                                     .isVisible(dbKey)
-                                     .orElse(true);
+        if (screen == Screen.Global) {
+            return ServiceLocator.getInstance().getGlobalFieldVisibility()
+                                 .isVisible(dbKey)
+                                 .orElse(true);
+        } else {
+            // First check the style itself of course.
+            // But if we have a field which is simply not defined on the respective
+            // FieldVisibility, use the global and if that fails, just return 'true'
+            //noinspection DataFlowIssue
+            return fieldVisibility.get(screen).isVisible(dbKey).orElseGet(
+                    () -> ServiceLocator.getInstance().getGlobalFieldVisibility()
+                                        .isVisible(dbKey)
+                                        .orElse(true));
         }
-        throw new IllegalArgumentException();
     }
 
     @NonNull
@@ -497,21 +452,18 @@ public abstract class BaseStyle
         bookLevelFieldsOrderBy.clear();
         bookLevelFieldsOrderBy.putAll(map);
         // add any fields with their default which might be missing.
-        BOOK_LEVEL_FIELDS_DEFAULTS.forEach(bookLevelFieldsOrderBy::putIfAbsent);
+        GlobalStyle.BOOK_LEVEL_FIELDS_DEFAULTS.forEach(bookLevelFieldsOrderBy::putIfAbsent);
     }
 
     @Override
     @NonNull
     public FieldVisibility getFieldVisibility(@NonNull final Screen screen) {
-        switch (screen) {
-            case List:
-                return bookLevelFieldVisibility;
-            case Detail:
-                return detailsFieldVisibility;
-            case Global:
-                return ServiceLocator.getInstance().getGlobalFieldVisibility();
+        if (screen == Screen.Global) {
+            return ServiceLocator.getInstance().getGlobalFieldVisibility();
+        } else {
+            //noinspection DataFlowIssue
+            return fieldVisibility.get(screen);
         }
-        throw new IllegalArgumentException();
     }
 
     @Override
@@ -691,8 +643,7 @@ public abstract class BaseStyle
                && showAuthorByGivenName == style.showAuthorByGivenName
                && sortAuthorByGivenName == style.sortAuthorByGivenName
 
-               && Objects.equals(bookLevelFieldVisibility, style.bookLevelFieldVisibility)
-               && Objects.equals(detailsFieldVisibility, style.detailsFieldVisibility);
+               && Objects.equals(fieldVisibility, style.fieldVisibility);
     }
 
     @Override
@@ -712,8 +663,7 @@ public abstract class BaseStyle
                             showAuthorByGivenName,
                             sortAuthorByGivenName,
 
-                            bookLevelFieldVisibility,
-                            detailsFieldVisibility);
+                            fieldVisibility);
     }
 
     @Override
@@ -738,8 +688,7 @@ public abstract class BaseStyle
                + ", showAuthorByGivenName=" + showAuthorByGivenName
                + ", sortAuthorByGivenName=" + sortAuthorByGivenName
 
-               + ", listFieldVisibility=" + bookLevelFieldVisibility
-               + ", detailsFieldVisibility=" + detailsFieldVisibility
+               + ", fieldVisibility=" + fieldVisibility
 
                // cached value
                + ", listPreferredItemHeightSmall=" + listPreferredItemHeightSmall
