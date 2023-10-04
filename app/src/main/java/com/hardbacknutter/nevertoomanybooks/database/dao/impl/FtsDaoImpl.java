@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalStyle;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
@@ -364,7 +364,10 @@ public class FtsDaoImpl
         // Accumulator for TOCEntry titles for each book
         final List<String> tocList = new ArrayList<>();
 
-        final boolean givenNameFirst = GlobalStyle.isShowAuthorByGivenName(context);
+        final boolean givenNameFirst = ServiceLocator.getInstance()
+                                                     .getStyles()
+                                                     .getGlobalStyle()
+                                                     .isShowAuthorByGivenName();
 
         // Indexes of fields in the inner-loop cursors, -2 for 'not initialised yet'
         int colGivenNames = -2;

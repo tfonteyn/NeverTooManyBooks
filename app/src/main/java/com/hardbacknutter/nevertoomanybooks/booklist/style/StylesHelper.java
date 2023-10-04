@@ -60,6 +60,8 @@ public class StylesHelper {
     private final Supplier<StyleDao> styleDaoSupplier;
     @NonNull
     private final Supplier<Context> appContextSupplier;
+    @Nullable
+    private GlobalStyle globalStyle;
 
     /**
      * Constructor.
@@ -71,6 +73,15 @@ public class StylesHelper {
                         @NonNull final Supplier<StyleDao> styleDaoSupplier) {
         this.appContextSupplier = appContextSupplier;
         this.styleDaoSupplier = styleDaoSupplier;
+    }
+
+    //Yes, this should just be a "Style" but it will take some time to implement/migrate
+    @NonNull
+    public GlobalStyle getGlobalStyle() {
+        if (globalStyle == null) {
+            globalStyle = new GlobalStyle(appContextSupplier.get());
+        }
+        return globalStyle;
     }
 
     /**
@@ -108,16 +119,6 @@ public class StylesHelper {
     }
 
     /**
-     * store the given style as the user default one.
-     *
-     * @param uuid style to set
-     */
-    public void setDefault(@NonNull final String uuid) {
-        PreferenceManager.getDefaultSharedPreferences(appContextSupplier.get())
-                         .edit().putString(PK_DEFAULT_STYLE, uuid).apply();
-    }
-
-    /**
      * Get the user default style, or if none found, the Builtin default.
      *
      * @return the style.
@@ -138,12 +139,22 @@ public class StylesHelper {
     }
 
     /**
+     * store the given style as the user default one.
+     *
+     * @param uuid style to set
+     */
+    public void setDefault(@NonNull final String uuid) {
+        PreferenceManager.getDefaultSharedPreferences(appContextSupplier.get())
+                         .edit().putString(PK_DEFAULT_STYLE, uuid).apply();
+    }
+
+    /**
      * Get a list with all the styles, ordered by preferred menu position.
      * If 'all' is {@code true} the list contains the preferred styles at the top,
      * followed by the non-preferred styles.
      * If 'all' is {@code false} the list only contains the preferred styles.
      *
-     * @param all     if {@code true} then also return the non-preferred styles
+     * @param all if {@code true} then also return the non-preferred styles
      *
      * @return LinkedHashMap, key: uuid, value: style
      */
@@ -203,7 +214,6 @@ public class StylesHelper {
 
     /**
      * Convenience wrapper that gets called after an import to re-sort all styles.
-     *
      */
     public void updateMenuOrder() {
         updateMenuOrder(getStyles(true));

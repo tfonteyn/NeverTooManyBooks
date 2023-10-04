@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.StringList;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -593,7 +592,10 @@ public class Author
         if (style != null) {
             givenNameFirst = style.isShowAuthorByGivenName();
         } else {
-            givenNameFirst = GlobalStyle.isShowAuthorByGivenName(context);
+            givenNameFirst = ServiceLocator.getInstance()
+                                           .getStyles()
+                                           .getGlobalStyle()
+                                           .isShowAuthorByGivenName();
         }
 
         return getFormattedName(givenNameFirst);
@@ -754,7 +756,9 @@ public class Author
                     if (style != null) {
                         givenNameFirst = style.isShowAuthorByGivenName();
                     } else {
-                        givenNameFirst = GlobalStyle.isShowAuthorByGivenName(context);
+                        givenNameFirst = ServiceLocator.getInstance()
+                                                       .getStyles()
+                                                       .getGlobalStyle().isShowAuthorByGivenName();
                     }
 
                     if (givenNameFirst) {
