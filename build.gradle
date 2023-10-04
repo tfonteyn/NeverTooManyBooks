@@ -34,19 +34,19 @@ tasks.register("clean", Delete) {
 
 ext {
     applicationId = "com.hardbacknutter.nevertoomanybooks"
-    applicationVersionCode = 63
+    applicationVersionCode = 64
     applicationVersionName = "5.0.0"
 
     // see NOTES.txt
     // https://gs.statcounter.com/os-version-market-share/android/mobile-tablet/worldwide
-    // 2023-07-12 world wide:
-    // 13.0     22.38
-    // 12.0     40.26
-    // 11.0     58.06
-    // 10.0     81.39
-    // 9.0      88.15
-    // 8.1      91.01
-    // 8.0      93.77
+    // 2023-10-04 world wide:
+    // 13.0     34.90
+    // 12.0     53.85
+    // 11.0     72.59
+    // 10.0     81.64
+    // 9.0      88.66
+    // 8.1      91.16
+    // 8.0      94.23
     minSdkVersion = 26
     targetSdkVersion = 34
     compileSdkVersion = 34
