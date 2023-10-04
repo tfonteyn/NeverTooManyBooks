@@ -236,21 +236,21 @@
             android:summaryOn="@string/enabled"
             android:title="@string/pt_allow_editing_external_id" />
 
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_baseline_auto_fix_normal_24"
-            android:key="normalize.series.title"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/pt_normalize_series_title" />
+        <!--        <SwitchPreference-->
+        <!--            android:defaultValue="false"-->
+        <!--            android:icon="@drawable/ic_baseline_auto_fix_normal_24"-->
+        <!--            android:key="normalize.series.title"-->
+        <!--            android:summaryOff="@string/no"-->
+        <!--            android:summaryOn="@string/yes"-->
+        <!--            android:title="@string/pt_normalize_series_title" />-->
 
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_baseline_auto_fix_normal_24"
-            android:key="normalize.publisher.name"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/pt_normalize_publisher_name" />
+        <!--        <SwitchPreference-->
+        <!--            android:defaultValue="false"-->
+        <!--            android:icon="@drawable/ic_baseline_auto_fix_normal_24"-->
+        <!--            android:key="normalize.publisher.name"-->
+        <!--            android:summaryOff="@string/no"-->
+        <!--            android:summaryOn="@string/yes"-->
+        <!--            android:title="@string/pt_normalize_publisher_name" />-->
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibrePreferencesFragment"
