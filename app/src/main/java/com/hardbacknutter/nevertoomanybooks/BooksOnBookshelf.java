@@ -545,7 +545,7 @@ public class BooksOnBookshelf
     /**
      * Create or recreate the {@link RecyclerView.LayoutManager}.
      *
-     * @throws IllegalStateException when there is a bug with the enums
+     * @throws IllegalArgumentException when there is a bug with the enums
      */
     private void createLayoutManager() {
         final Style.Layout layout = vm.getStyle().getLayout(hasEmbeddedDetailsFrame());
@@ -583,7 +583,7 @@ public class BooksOnBookshelf
                 break;
             }
             default:
-                throw new IllegalStateException();
+                throw new IllegalArgumentException();
         }
     }
 
@@ -594,7 +594,7 @@ public class BooksOnBookshelf
      *
      * @return span count
      *
-     * @throws IllegalStateException when there is a bug with the enums
+     * @throws IllegalArgumentException when there is a bug with the enums
      */
     private int getGridSpanCount(@NonNull final Context context) {
         switch (WindowSizeClass.getWidthVariant(context)) {
@@ -605,7 +605,7 @@ public class BooksOnBookshelf
             case Expanded:
                 return 6;
             default:
-                throw new IllegalStateException();
+                throw new IllegalArgumentException();
         }
     }
 
