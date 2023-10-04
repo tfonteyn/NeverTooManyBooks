@@ -246,7 +246,7 @@ public class StyleDaoImpl
 
             stmt.bindLong(++c, style.getFieldVisibility(Style.Screen.Detail).getBitValue());
             stmt.bindLong(++c, style.getFieldVisibility(Style.Screen.List).getBitValue());
-            stmt.bindString(++c, StyleCoder.encodeBookLevelFieldsOrderBy(style));
+            stmt.bindString(++c, StyleCoder.getBookLevelFieldsOrderByAsJsonString(style));
 
             final long iId = stmt.executeInsert();
             if (iId > 0) {
@@ -295,7 +295,7 @@ public class StyleDaoImpl
                    style.getFieldVisibility(Style.Screen.List).getBitValue());
 
             cv.put(DBKey.STYLE_BOOK_LEVEL_FIELDS_ORDER_BY,
-                   StyleCoder.encodeBookLevelFieldsOrderBy(style));
+                   StyleCoder.getBookLevelFieldsOrderByAsJsonString(style));
         }
 
         return 0 < db.update(DBDefinitions.TBL_BOOKLIST_STYLES.getName(), cv,

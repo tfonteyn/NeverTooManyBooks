@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BaseStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
@@ -71,17 +72,16 @@ public class StyleCoder
      * @throws JSONException upon any parsing error
      */
     @NonNull
-    public static String encodeBookLevelFieldsOrderBy(@NonNull final Style style)
+    public static String getBookLevelFieldsOrderByAsJsonString(@NonNull final Style style)
             throws JSONException {
-        final JSONObject bookLevelFieldsOrderBy = new JSONObject();
-        new StyleCoder().encodeBookLevelFieldsOrderBy(style, bookLevelFieldsOrderBy);
-        return Objects.requireNonNull(bookLevelFieldsOrderBy.toString(),
+        final JSONArray columns = new StyleCoder().encodeBookLevelFieldsOrderBy(style);
+        return Objects.requireNonNull(columns.toString(),
                                       "encBookLevelFieldsOrderBy was NULL");
     }
 
     /**
      * Static wrapper convenience method.
-     * Decode a JSON String for use with {@link Style#setBookLevelFieldsOrderBy}.
+     * Decode a JSON String for use with {@link BaseStyle#setBookLevelFieldsOrderBy(Map)}.
      *
      * @param source JSON encoded string
      *
@@ -90,7 +90,7 @@ public class StyleCoder
     @NonNull
     public static Map<String, Sort> decodeBookLevelFieldsOrderBy(@NonNull final String source) {
         try {
-            return new StyleCoder().decodeBookLevelFieldsOrderBy(new JSONObject(source));
+            return new StyleCoder().decodeBookLevelFieldsOrderBy(new JSONArray(source));
 
         } catch (@NonNull final JSONException e) {
             // Do not crash, this is not critical, but DO log
@@ -145,7 +145,7 @@ public class StyleCoder
             dest.put(PK_LIST_FIELD_VISIBILITY,
                      userStyle.getFieldVisibility(Style.Screen.List).getBitValue());
 
-            encodeBookLevelFieldsOrderBy(style, dest);
+            dest.put(PK_LIST_FIELD_ORDER_BY, encodeBookLevelFieldsOrderBy(userStyle));
 
             out.put(STYLE_SETTINGS, dest);
         }
@@ -168,8 +168,8 @@ public class StyleCoder
         }
     }
 
-    private void encodeBookLevelFieldsOrderBy(@NonNull final Style style,
-                                              @NonNull final JSONObject dest)
+    @NonNull
+    private JSONArray encodeBookLevelFieldsOrderBy(@NonNull final Style style)
             throws JSONException {
         final JSONArray columns = new JSONArray();
         style.getBookLevelFieldsOrderBy()
@@ -180,7 +180,7 @@ public class StyleCoder
                  columns.put(column);
              });
 
-        dest.put(PK_LIST_FIELD_ORDER_BY, columns);
+        return columns;
     }
 
     @NonNull
@@ -274,7 +274,7 @@ public class StyleCoder
 
                 if (source.has(PK_LIST_FIELD_ORDER_BY)) {
                     userStyle.setBookLevelFieldsOrderBy(decodeBookLevelFieldsOrderBy(
-                            source.getJSONObject(PK_LIST_FIELD_ORDER_BY)));
+                            source.getJSONArray(PK_LIST_FIELD_ORDER_BY)));
                 }
             }
 
@@ -304,11 +304,10 @@ public class StyleCoder
     }
 
     @NonNull
-    private Map<String, Sort> decodeBookLevelFieldsOrderBy(@NonNull final JSONObject source)
+    private Map<String, Sort> decodeBookLevelFieldsOrderBy(@NonNull final JSONArray columns)
             throws JSONException {
         final Map<String, Sort> result = new LinkedHashMap<>();
 
-        final JSONArray columns = source.getJSONArray(PK_LIST_FIELD_ORDER_BY);
         for (int i = 0; i < columns.length(); i++) {
             final JSONObject column = columns.getJSONObject(i);
             final String name = column.getString(COLUMN_NAME);
