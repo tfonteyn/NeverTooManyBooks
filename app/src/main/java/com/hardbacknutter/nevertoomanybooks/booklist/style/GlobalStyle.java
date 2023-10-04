@@ -35,9 +35,11 @@ import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
 /**
- * Setting which are configurable on "preferences.xml".
+ * Settings which are configurable on "preferences.xml".
  * These are used where a Style is not needed/present
  * and as defaults for styles in general. User defined styles can override these settings.
+ * <p>
+ * Note this is NOT a {@link Style} as it's really only a set of preferences.
  */
 @SuppressWarnings("WeakerAccess")
 public final class GlobalStyle {
@@ -61,8 +63,8 @@ public final class GlobalStyle {
         // The default is sorting by book title only
         BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.TITLE, Sort.Asc);
 
-        // The field order here on assuming the user will need to sort more likely
-        // on the fields at the top.
+        // The field order here is assuming the user will need to sort more likely
+        // on the fields listed at the top.
         BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.TITLE_ORIGINAL_LANG, Sort.Unsorted);
 
         BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.FK_AUTHOR, Sort.Unsorted);
@@ -180,6 +182,8 @@ public final class GlobalStyle {
      * @param screen to get the setting for
      *
      * @return FieldVisibility
+     *
+     * @throws IllegalArgumentException when there is a bug with the enums
      */
     @NonNull
     public FieldVisibility getFieldVisibility(@NonNull final Style.Screen screen) {

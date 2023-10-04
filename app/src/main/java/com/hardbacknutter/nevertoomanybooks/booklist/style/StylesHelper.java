@@ -75,7 +75,11 @@ public class StylesHelper {
         this.styleDaoSupplier = styleDaoSupplier;
     }
 
-    //Yes, this should just be a "Style" but it will take some time to implement/migrate
+    /**
+     * Get the user preferences for the defaults for all styles.
+     *
+     * @return the global/default style preferences
+     */
     @NonNull
     public GlobalStyle getGlobalStyle() {
         if (globalStyle == null) {

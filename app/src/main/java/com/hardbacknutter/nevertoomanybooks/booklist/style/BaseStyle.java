@@ -414,6 +414,7 @@ public abstract class BaseStyle
         return (headerFieldVisibility & bit) != 0;
     }
 
+    // This getter is not in the interface, as it's only to be used for storage
     @BooklistHeader.Option
     public int getHeaderFieldVisibilityValue() {
         return headerFieldVisibility;

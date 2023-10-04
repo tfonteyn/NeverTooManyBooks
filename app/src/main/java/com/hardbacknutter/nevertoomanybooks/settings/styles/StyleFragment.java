@@ -254,7 +254,7 @@ public class StyleFragment
      *
      * @param layout to match
      *
-     * @throws IllegalStateException when there is a bug with the enums
+     * @throws IllegalArgumentException when there is a bug with the enums
      */
     private void updateLayoutPrefs(@NonNull final Style.Layout layout) {
         switch (layout) {
@@ -269,7 +269,7 @@ public class StyleFragment
                 break;
             }
             default:
-                throw new IllegalStateException();
+                throw new IllegalArgumentException();
         }
     }
 
