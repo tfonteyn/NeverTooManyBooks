@@ -195,7 +195,7 @@
 \n%2$s</string>
     <string name="info_all_books_have_covers">这个书架上的所有书都有封面</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d书，在 %2$d条目中</string>
-    <string name="info_share_book_im_reading">我正在阅读\"%1$s\" %2$s 由 %3$s %4$s</string>
+    <string name="info_share_book_im_reading">我正在阅读“%1$s” %2$s 由 %3$s %4$s</string>
     <string name="progress_msg_x_created">%1$d已创建</string>
     <string name="progress_msg_x_updated">%1$d已更新</string>
     <string name="progress_msg_x_skipped">%1$d已跳过</string>

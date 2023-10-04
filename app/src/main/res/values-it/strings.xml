@@ -303,7 +303,7 @@
     <string name="lbl_barcode">Codice a barre</string>
     <string name="lbl_book">Libro</string>
     <string name="pc_bob_list">Elenco</string>
-    <string name="pc_bob_layout">Layout dell\'elenco</string>
+    <string name="pc_bob_layout">Layout dell’elenco</string>
     <string name="pc_book_detail_screen">Pagina dei dettagli del libro</string>
     <string name="lbl_book_type">Tipo di libro</string>
     <string name="lbl_books">Libri</string>
@@ -782,7 +782,7 @@
     <string name="pe_list">Elenco</string>
     <string name="pe_grid">Griglia</string>
     <string name="pt_bob_grid_spancount">Colonne della griglia</string>
-    <string name="pt_bob_cover_click">Toccare l\'immagine di copertina.</string>
-    <string name="pe_bob_cover_click_zoom">Ingrandisce l\'immagine della copertina.</string>
+    <string name="pt_bob_cover_click">Toccare l’immagine di copertina.</string>
+    <string name="pe_bob_cover_click_zoom">Ingrandisce l’immagine della copertina.</string>
     <string name="pe_bob_cover_click_details">Apre la pagina dei dettagli del libro.</string>
 </resources>

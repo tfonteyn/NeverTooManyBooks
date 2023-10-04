@@ -189,7 +189,7 @@
     <string name="confirm_email_file">Souhaitez-vous envoyer ce fichier par e-mail à quelqu’un ?</string>
     <string name="confirm_merge_authors">L’auteur que vous renommez existe déjà. Voulez-vous les fusionner ?</string>
     <string name="confirm_merge_bookshelves">La bibliothèque que vous renommez existe déjà. Voulez-vous les fusionner ?</string>
-    <string name="confirm_merge_publishers">L\'éditeur que vous renommez existe déjà. Voulez-vous les fusionner \?</string>
+    <string name="confirm_merge_publishers">L’éditeur que vous renommez existe déjà. Voulez-vous les fusionner \?</string>
     <string name="confirm_merge_series">L’éditeur que vous renommez existe déjà. Voulez-vous les fusionner ?</string>
     <string name="confirm_overwrite_cover">Les champs sélectionnés vont être mis à jour tels que montré ; en option, les couvertures peuvent être téléchargées pour tous les livres.\n\nVoulez-vous remplacer toutes les couvertures existantes ? Attention, cela peut prendre du temps.</string>
     <string name="confirm_rebuild_fts">Les données de l’index de recherche seront reconstruites au redémarrage de l’application. Es-tu sur de vouloir continuer ?</string>
@@ -784,6 +784,6 @@
     <string name="pe_grid">Grille</string>
     <string name="pt_bob_grid_spancount">Colonnes de la grille</string>
     <string name="pt_bob_cover_click">Taper sur une image de couverture.</string>
-    <string name="pe_bob_cover_click_zoom">Permet de zoomer sur l\'image de couverture.</string>
+    <string name="pe_bob_cover_click_zoom">Permet de zoomer sur l’image de couverture.</string>
     <string name="pe_bob_cover_click_details">Ouvre la page de détails du livre.</string>
 </resources>
