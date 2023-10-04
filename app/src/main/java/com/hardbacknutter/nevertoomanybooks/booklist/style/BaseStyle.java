@@ -199,6 +199,16 @@ public abstract class BaseStyle
         detailsFieldVisibility = new BookDetailsFieldVisibility();
 
         initBookLevelFieldsOrderByDefaults();
+
+        // load some defaults from the global settings
+        final Context appContext = ServiceLocator.getInstance().getAppContext();
+
+//        textScale = GlobalStyle.getTextScale(appContext);
+//        coverScale = GlobalStyle.getCoverScale(appContext);
+
+        showAuthorByGivenName = GlobalStyle.isShowAuthorByGivenName(appContext);
+        sortAuthorByGivenName = GlobalStyle.isSortAuthorByGivenName(appContext);
+
     }
 
     /**

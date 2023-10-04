@@ -775,8 +775,16 @@ public class BooksOnBookshelf
     public void onResume() {
         super.onResume();
 
-        // don't build the list needlessly
-        if (isRecreating() || isFinishing() || isDestroyed()) {
+        if (isFinishing() || isDestroyed()) {
+            // don't build the list needlessly
+            return;
+        }
+
+        if (isRecreating()) {
+            // If this turn round in onResume() we're recreating, then force a rebuild
+            // for when we get back here in onResume() after the recreation.
+            vm.setForceRebuildInOnResume();
+            // don't build the list needlessly
             return;
         }
 
