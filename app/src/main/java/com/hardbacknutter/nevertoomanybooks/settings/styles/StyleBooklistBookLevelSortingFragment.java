@@ -36,12 +36,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.divider.MaterialDividerItemDecoration;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
+import com.hardbacknutter.nevertoomanybooks.core.database.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
@@ -113,12 +115,23 @@ public class StyleBooklistBookLevelSortingFragment
                 vm.getStyle()
                   .getGroupList()
                   .stream()
-                  .flatMap(booklistGroup -> booklistGroup.getGroupDomainExpressions()
-                                                         .stream())
+                  .flatMap(booklistGroup -> booklistGroup.getGroupDomainExpressions().stream())
+                  // only show the groups that do sorting
                   .filter(domainExpression -> domainExpression.getSort() != Sort.Unsorted)
-                  .map(domainExpression -> new StyleViewModel.WrappedBookLevelColumn(
-                          domainExpression.getDomain().getName(),
-                          domainExpression.getSort()))
+                  // We can get duplicate names;
+                  // e.g. "Year Read" and "Month Read" both use "Read"
+                  // as the name. So use a LinkedHashMap to prevent duplicates
+                  .collect(Collectors.toMap(
+                          domainExpression -> domainExpression.getDomain().getName(),
+                          DomainExpression::getSort,
+                          (a, b) -> a,
+                          LinkedHashMap::new))
+                  .entrySet()
+                  .stream()
+                  // Now convert the map back a list
+                  .map(entry -> new StyleViewModel.WrappedBookLevelColumn(
+                          entry.getKey(),
+                          entry.getValue()))
                   .collect(Collectors.toList());
 
 
