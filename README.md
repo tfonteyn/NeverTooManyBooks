@@ -104,11 +104,15 @@ FIXES:
 - LastDodo started to store series titles as "Title, The". We're now reversing those titles back to
   the original "The Title" and provide the usual dynamic reordering instead.
 
+---
+
 ### 4.6.6
 
 FIXES
 
 - fix #21 regression bug in UI in export
+
+---
 
 ### 4.6.5
 
