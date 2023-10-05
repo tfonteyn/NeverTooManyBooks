@@ -118,7 +118,7 @@ public final class AppLocaleImpl
         }
 
         // Recreate the user-locale list adding the preferred one at the start.
-        // Github #3
+        // GitHub #3
         // Older Android versions throw an exception if there are duplicates,
         // while more recent ones will simply ignore the duplicate.
         // Note to self: it never happened on my personal 8.0 due to it being

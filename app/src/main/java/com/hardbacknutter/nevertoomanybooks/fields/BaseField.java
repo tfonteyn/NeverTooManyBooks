@@ -356,7 +356,7 @@ public abstract class BaseField<T, V extends View>
         try {
             return isEmpty(getValue());
         } catch (@NonNull final ClassCastException e) {
-            // added due to github #4.
+            // added due to GitHub #4.
             LoggerFactory.getLogger().e(TAG, e, "value=" + getValue());
         }
         return true;
@@ -387,7 +387,7 @@ public abstract class BaseField<T, V extends View>
             changed = !allEmpty && !allEqual;
 
         } catch (@NonNull final ClassCastException e) {
-            // added due to github #4.
+            // added due to GitHub #4.
             LoggerFactory.getLogger().e(TAG, e, "value=" + getValue());
             return;
         }

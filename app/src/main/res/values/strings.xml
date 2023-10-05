@@ -360,7 +360,7 @@
     <!--Shown when browsing alternative edition book covers. -->
     <string name="info_tap_on_image_to_select">Tap on the larger image to select it.</string>
     <string name="info_download_successful">Download successful</string>
-    <!-- See github docs... there is optional code to be added to Calibre. -->
+    <!-- See GitHub docs... there is optional code to be added to Calibre. -->
     <string name="info_calibre_content_server_extension">Calibre content server extension is not installed.</string>
     <!-- ContentDescription text for the drag handle button in re-order-able lists -->
     <string name="cd_btn_drag_handle">Drag to reorder this list</string>

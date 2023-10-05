@@ -76,7 +76,7 @@ public class TakePictureContract
                          .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
-        // github #11: the google camera app returns an empty Intent, while
+        // GitHub #11: the google camera app returns an empty Intent, while
         // OpenCamera returns a null for the Intent.
         // Hence ONLY test on the resultCode here.
         if (resultCode != Activity.RESULT_OK) {
