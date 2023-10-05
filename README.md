@@ -35,7 +35,8 @@ Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyB
 Translations are now integrated and editable
 on [https://hosted.weblate.org/engage/nevertoomanybooks/](https://hosted.weblate.org/engage/nevertoomanybooks/)
 
-- everyone welcome; log a github 'issue' if you want to be credited with your help.
+- everyone welcome; log a GitHub [issue](https://github.com/tfonteyn/NeverTooManyBooks/issues) if
+  you want to be credited with your help.
 
 ## Data sources
 
