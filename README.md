@@ -83,6 +83,27 @@ at the original creators.
 
 ## History
 
+### 5.0.0
+
+NEW:
+
+- Grid layout (see #22): aside of the traditional list, a new grid layout option was added which
+  shows only the cover image (or author/title if there is no image available). Please note this is
+  the first release of this functionality. All comments are welcome: just log a new
+  GitHub [issue](https://github.com/tfonteyn/NeverTooManyBooks/issues) with a bug-report of any
+  other remarks.
+- Sorting by using groups in the list has now been extended to allow sorting on the book-level as
+  well.
+- Tapping on a cover in the book-list can now be configured to either zoom-in on the image as
+  before, or to open the book-detail page. This is mostly useful in the new grid layout.
+- A 'Help' menu-item was added that takes you to the
+  project [documentation](https://github.com/tfonteyn/NeverTooManyBooks/wiki).
+
+FIXES:
+
+- LastDodo started to store series titles as "Title, The". We're now reversing those titles back to
+  the original "The Title" and provide the usual dynamic reordering instead.
+
 ### 4.6.6
 
 FIXES
