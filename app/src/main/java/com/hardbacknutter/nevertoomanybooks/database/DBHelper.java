@@ -734,11 +734,6 @@ public class DBHelper
         // but... https://developer.android.com/reference/android/database/sqlite/package-summary
         // i.e. Android 8.0 == API 26 == SqLite 3.18
 
-        //TODO: the styles table MIGHT contain a column "grid_span" created in 5.0.0-beta1
-        // which ultimately was not needed/used.
-        // If at a future time we make a change that requires to copy/reload
-        // the styles table that column should be removed.
-
         //TODO: the books table MIGHT contain columns "clb_uuid" and "last_goodreads_sync_date"
         // If at a future time we make a change that requires to copy/reload
         // the books table those columns should be removed.
