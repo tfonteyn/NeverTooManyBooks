@@ -18,6 +18,8 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
+## Download the latest release: [5.0.0 apk](https://github.com/tfonteyn/NeverTooManyBooks/releases/tag/v5.0.0)
+
 This is a book collection application, to keep track of your books and comics.
 
 Add books by scanning their barcode, ISBN, or generic text searches.
