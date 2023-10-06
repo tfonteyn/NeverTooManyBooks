@@ -56,7 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropVi
 /**
  * Editor for the book-level field sorting of a single style.
  * <p>
- * Note this is NOT extending StyleBaseFragment/BasePreferenceFragment.
+ * Note this is NOT extending BasePreferenceFragment.
  * We must handle the base functionality (e.g. StyleViewModel) ourselves.
  */
 @Keep

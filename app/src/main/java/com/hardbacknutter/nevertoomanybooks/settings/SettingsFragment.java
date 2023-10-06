@@ -37,6 +37,7 @@ import androidx.annotation.AttrRes;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
@@ -233,7 +234,10 @@ public class SettingsFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        getToolbar().setTitle(R.string.lbl_settings);
+        final Toolbar toolbar = getToolbar();
+        toolbar.setTitle(R.string.lbl_settings);
+        // erase any existing subtitle as we can come back here from a sub-fragment
+        toolbar.setSubtitle("");
 
         //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()

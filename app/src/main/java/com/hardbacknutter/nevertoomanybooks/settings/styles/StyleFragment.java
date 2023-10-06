@@ -29,6 +29,8 @@ import android.view.View;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
@@ -44,13 +46,14 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
+import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.widgets.MultiSelectListPreferenceSummaryProvider;
 
 /**
- * Editor for a single style.
+ * Main settings editor for a single style.
  */
 public class StyleFragment
-        extends StyleBaseFragment {
+        extends BasePreferenceFragment {
 
     /** Fragment manager tag. */
     private static final String TAG = "StylePreferenceFragment";
@@ -60,6 +63,8 @@ public class StyleFragment
     private static final String PSK_LIST_BOOK_LEVEL_SORTING = "psk_style_book_level_sorting";
 
     private static final String PSK_LIST_BOOK_SHOW_COVER_0 = "style.booklist.show.thumbnails";
+
+    private StyleViewModel vm;
 
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback backPressedCallback =
@@ -95,8 +100,17 @@ public class StyleFragment
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
-        super.onCreatePreferences(savedInstanceState, rootKey);
+        //noinspection DataFlowIssue
+        vm = new ViewModelProvider(getActivity()).get(StyleViewModel.class);
+        //noinspection DataFlowIssue
+        vm.init(getContext(), requireArguments());
 
+        // redirect storage to the database
+        // This MUST be done in onCreate/onCreatePreferences
+        // and BEFORE we inflate the xml screen definition
+        getPreferenceManager().setPreferenceDataStore(vm.getStyleDataStore());
+
+        super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_style, rootKey);
 
         if (savedInstanceState != null) {
@@ -166,6 +180,18 @@ public class StyleFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        final Toolbar toolbar = getToolbar();
+        final Style style = vm.getStyle();
+        if (style.getId() == 0) {
+            toolbar.setTitle(R.string.lbl_clone_style);
+        } else {
+            toolbar.setTitle(R.string.lbl_edit_style);
+        }
+
+        // Style name as the subtitle
+        //noinspection DataFlowIssue
+        toolbar.setSubtitle(style.getLabel(getContext()));
+
         //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
@@ -176,7 +202,6 @@ public class StyleFragment
         });
 
         if (savedInstanceState == null) {
-            //noinspection DataFlowIssue
             TipManager.getInstance()
                       .display(getContext(), R.string.tip_booklist_style_properties, null);
         }

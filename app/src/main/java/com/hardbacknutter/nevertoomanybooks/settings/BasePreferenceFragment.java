@@ -95,17 +95,6 @@ public abstract class BasePreferenceFragment
         }
     }
 
-    @Override
-    public void onViewCreated(@NonNull final View view,
-                              @Nullable final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        // The child class is responsible to set the toolbar title,
-        // but is not obliged to set the subtitle.
-        // So we must always erase any existing subtitle!
-        getToolbar().setSubtitle("");
-    }
-
     /**
      * Should be called instead of direct calls to popBackStack/finish.
      * This will make sure the current fragment can be the top-fragment (then finish)
