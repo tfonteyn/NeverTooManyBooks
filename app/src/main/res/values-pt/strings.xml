@@ -449,6 +449,7 @@
     <string name="book_format_hardcover_oblong">Capa dura - Oblong</string>
     <string name="book_format_softcover_oblong">Capa mole - Oblonga</string>
     <string name="book_format_digest">Selecções</string>
+    <string name="lbl_defaults">Padrões</string>
     <string name="style_type_builtin">Embutido</string>
     <string name="confirm_rebuild_fts">Isto recriará os dados do índice de pesquisa quando a aplicação for reiniciada. Tem certeza de que deseja continuar\?</string>
     <string name="lbl_add_book">Adicionar livro</string>

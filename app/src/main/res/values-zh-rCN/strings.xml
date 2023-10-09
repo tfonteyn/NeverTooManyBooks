@@ -216,6 +216,7 @@
     <string name="style_builtin_author_year">作者，年</string>
     <string name="style_builtin_compact">袖珍本</string>
     <string name="lbl_styles_long">书单风格</string>
+    <string name="lbl_defaults">默认操作</string>
     <string name="style_type_builtin">内装式</string>
     <string name="tip_reset_all">重置提示</string>
     <string name="info_isfdb_warning_limited_to">(仅支持ISFDB)</string>

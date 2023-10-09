@@ -641,6 +641,7 @@
     <string name="style_builtin_author_year">Autore ed Anno</string>
     <string name="style_builtin_compact">Compatto</string>
     <string name="lbl_date_read">Lettura Data</string>
+    <string name="lbl_defaults">Impostazioni predefinite</string>
     <string name="style_type_builtin">Predefinito</string>
     <string name="style_type_user_defined">Definito dall’utente</string>
     <string name="X_lbl_system">(Sistema)</string>

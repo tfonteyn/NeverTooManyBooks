@@ -650,6 +650,7 @@
     <string name="style_builtin_author_year">Автор и год</string>
     <string name="style_builtin_compact">Компактный</string>
     <string name="lbl_date_read">Дата прочтения</string>
+    <string name="lbl_defaults">По умолчанию</string>
     <string name="style_type_builtin">Встроенный</string>
     <string name="style_type_user_defined">Определенный пользователем</string>
     <string name="X_lbl_system">(системное)</string>
