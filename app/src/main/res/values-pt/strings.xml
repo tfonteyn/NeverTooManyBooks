@@ -174,7 +174,7 @@
     <string name="error_http_403_site_forbidden">%1$s bloqueou o acesso.</string>
     <string name="error_http_403_forbidden">O sítio Web bloqueou o acesso.</string>
     <string name="error_storage_not_accessible">Por favor verifique se o armazenamento está disponível.</string>
-    <string name="error_storage_no_space_left">Espaço de armazenamento insuficiente.</string>
+    <string name="error_insufficient_storage">Não há espaço de armazenamento suficiente.</string>
     <string name="error_email_failed">Falha ao enviar o e-mail.</string>
     <string name="error_unsupported_version_v">Versão não suportada: %1$d</string>
     <string name="error_import_csv_line_to_long">Linha muito longa (linha=%1$d, comprimento=%2$d)</string>

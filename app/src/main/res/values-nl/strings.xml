@@ -229,7 +229,7 @@
     <string name="error_search_x_failed_y">Zoeken op %1$s is mislukt: %2$s</string>
     <string name="error_site_authentication_failed">%1$s authenticatie mislukt</string>
     <string name="error_http_401_site_authorization_failed">%1$s autorisatie leidde tot een fout.</string>
-    <string name="error_storage_no_space_left">Onvoldoende opslag beschikbaar.</string>
+    <string name="error_insufficient_storage">Niet voldoende opslagruimte.</string>
     <string name="error_http_403_site_forbidden">%1$s heeft de toegang geblokkeerd.</string>
     <string name="error_http_403_forbidden">De website heeft de toegang geblokkeerd.</string>
     <string name="error_storage_not_accessible">Controleer aub of opslag toegankelijk is.</string>

@@ -243,7 +243,7 @@
     <string name="error_search_x_failed_y">La búsqueda en %1$s falló: %2$s</string>
     <string name="error_site_authentication_failed">%1$s autenticación fallida</string>
     <string name="error_http_401_site_authorization_failed">Error de autorización en %1$s.</string>
-    <string name="error_storage_no_space_left">Almacenamiento insuficiente disponible.</string>
+    <string name="error_insufficient_storage">No hay suficiente espacio de almacenamiento.</string>
     <string name="error_http_403_site_forbidden">%1$s ha bloqueado el acceso.</string>
     <string name="error_http_403_forbidden">El sitio web ha bloqueado el acceso.</string>
     <string name="error_storage_not_accessible">Por favor, compruebe que el almacenamiento es accesible.</string>

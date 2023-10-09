@@ -242,7 +242,7 @@ public final class ExMsg {
         final int errno = e.errno;
         // write failed: ENOSPC (No space left on device)
         if (errno == OsConstants.ENOSPC) {
-            return context.getString(R.string.error_storage_no_space_left);
+            return context.getString(R.string.error_insufficient_storage);
         } else {
             // write to logfile for future reporting enhancements.
             LoggerFactory.getLogger().w("android.system.ErrnoException",

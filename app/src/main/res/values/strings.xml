@@ -167,8 +167,8 @@
     <!-- Displayed when any write operation to the database, or to Shared Storage fails
      TODO:  error_storage_not_accessible + error_storage_not_writable is too widely used; must be split into multiple different messages -->
     <string name="error_storage_not_writable">Please check that storage is writable, and has sufficient space.</string>
-    <!-- you're out of Shared Storage space... buy a bigger SD Card -->
-    <string name="error_storage_no_space_left">Insufficient storage available.</string>
+    <!-- [VERIFIED] -->
+    <string name="error_insufficient_storage">Not enough storage space.</string>
     <!-- A search on a specific website failed, with the specified reason.
          param 1: website name; param 2: message   . -->
     <string name="error_search_x_failed_y">Searching on %1$s failed: %2$s</string>

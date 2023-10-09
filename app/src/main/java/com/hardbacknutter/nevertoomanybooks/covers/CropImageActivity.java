@@ -115,7 +115,7 @@ public class CropImageActivity
             // make an educated guess how many pics we can store.
             if (FileUtils.getFreeSpace(coverDir) / ESTIMATED_PICTURE_SIZE < 1) {
                 // Shouldn't we 'finish()' the activity? i.e. handle like an exception?
-                Snackbar.make(vb.coverImage0, R.string.error_storage_no_space_left,
+                Snackbar.make(vb.coverImage0, R.string.error_insufficient_storage,
                               Snackbar.LENGTH_LONG).show();
             }
 

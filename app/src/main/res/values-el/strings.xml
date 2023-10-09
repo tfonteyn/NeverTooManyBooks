@@ -230,7 +230,7 @@
     <string name="error_search_x_failed_y">Η αναζήτηση στο %1$s απέτυχε: %2$s</string>
     <string name="error_site_authentication_failed">Ο έλεγχος ταυτότητας %1$s απέτυχε</string>
     <string name="error_http_401_site_authorization_failed">Η αδειοδότηση του %1$s οδήγησε σε λάθος.</string>
-    <string name="error_storage_no_space_left">Ανεπαρκής χώρος αποθήκευσης.</string>
+    <string name="error_insufficient_storage">Δεν υπάρχει επαρκής αποθηκευτικός χώρος.</string>
     <string name="error_http_403_site_forbidden">%1$s έχει μπλοκάρει την πρόσβαση.</string>
     <string name="error_http_403_forbidden">Ο ιστότοπος έχει μπλοκάρει την πρόσβαση.</string>
     <string name="error_storage_not_accessible">Βεβαιωθείτε ότι έχετε πρόσβαση στο χώρο αποθήκευσης.</string>

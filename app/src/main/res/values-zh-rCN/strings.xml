@@ -77,7 +77,7 @@
     <string name="X_error_authentication_failed">验证失败</string>
     <string name="error_site_authentication_failed">%1$s验证失败</string>
     <string name="error_storage_not_accessible">请检查App存储权限。</string>
-    <string name="error_storage_no_space_left">存储空间不足。</string>
+    <string name="error_insufficient_storage">存储空间不足。</string>
     <string name="error_search_could_not_be_started">搜索图书失败。</string>
     <string name="error_search_failed_network">请打开设置并检查您的网络和搜索站点首选项。
 \n 并检查您的设备网络设置。</string>

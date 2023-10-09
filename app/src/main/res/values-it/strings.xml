@@ -232,7 +232,7 @@
     <string name="error_search_x_failed_y">Ricerca su %1$s non riuscita: %2$s</string>
     <string name="error_site_authentication_failed">Autenticazione %1$s non riuscita</string>
     <string name="error_http_401_site_authorization_failed">Errore durante l’autorizzazione di %1$s.</string>
-    <string name="error_storage_no_space_left">Spazio disponibile insufficiente.</string>
+    <string name="error_insufficient_storage">Spazio di archiviazione insufficiente.</string>
     <string name="error_http_403_site_forbidden">%1$s ha bloccato l’accesso.</string>
     <string name="error_http_403_forbidden">Il sito web ha bloccato l’accesso.</string>
     <string name="error_storage_not_accessible">Si prega di verificare che lo spazio di archiviazione sia accessibile.</string>
