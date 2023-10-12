@@ -113,8 +113,8 @@ public class UserStyle
     /**
      * Copy constructor. Used for cloning.
      * <p>
-     * The id and uuid are passed in to allow testing,
-     * see {@link #clone(Context)}.
+     * The id and uuid are passed in as they need to override
+     * the originals values, see {@link #clone(Context)}.
      *
      * @param context Current context
      * @param id      for the new style
