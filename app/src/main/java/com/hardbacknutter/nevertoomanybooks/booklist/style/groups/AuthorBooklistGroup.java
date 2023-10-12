@@ -71,22 +71,25 @@ public class AuthorBooklistGroup
     /**
      * Constructor.
      *
-     * @param style Style reference.
+     * @param showGivenNameFirst whether to <strong>show</strong> the given name
+     *                           before (@code true} or after {@code false} the family name
+     * @param sortByGivenName    whether to <strong>sort</strong> by the given name
+     *                           first (@code true} or by  the family name
+     *                           {@code false} first
      */
-    AuthorBooklistGroup(@NonNull final Style style) {
+    AuthorBooklistGroup(final boolean showGivenNameFirst,
+                        final boolean sortByGivenName) {
         super(AUTHOR);
         // Not sorted
         displayDomainExpression =
                 new DomainExpression(DBDefinitions.DOM_AUTHOR_FORMATTED_FAMILY_FIRST,
-                                     AuthorDaoImpl.getDisplayDomainExpression(
-                                             style.isShowAuthorByGivenName()),
+                                     AuthorDaoImpl.getDisplayDomainExpression(showGivenNameFirst),
                                      Sort.Unsorted);
         // Sorting depends on user preference
         sortingDomainExpression =
                 new DomainExpression(new Domain.Builder(BlgKey.SORT_AUTHOR, SqLiteDataType.Text)
                                              .build(),
-                                     AuthorDaoImpl.getSortingDomainExpression(
-                                             style.isSortAuthorByGivenName()),
+                                     AuthorDaoImpl.getSortingDomainExpression(sortByGivenName),
                                      Sort.Asc);
     }
 

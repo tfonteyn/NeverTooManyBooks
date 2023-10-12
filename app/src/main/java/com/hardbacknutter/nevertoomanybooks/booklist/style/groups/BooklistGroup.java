@@ -223,7 +223,8 @@ public class BooklistGroup {
                                             @NonNull final Style style) {
         switch (id) {
             case AUTHOR:
-                return new AuthorBooklistGroup(style);
+                return new AuthorBooklistGroup(style.isShowAuthorByGivenName(),
+                                               style.isSortAuthorByGivenName());
             case SERIES:
                 return new SeriesBooklistGroup();
             case PUBLISHER:
