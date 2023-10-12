@@ -79,7 +79,7 @@ public abstract class BaseStyle
      * Key: the {@link DBKey} string.
      */
     @NonNull
-    private final Map<String, Sort> bookLevelFieldsOrderBy;
+    private final Map<String, Sort> bookLevelFieldsOrderBy = new LinkedHashMap<>();
     @NonNull
     private final String uuid;
     /**
@@ -140,21 +140,26 @@ public abstract class BaseStyle
         if (uuid.isEmpty()) {
             throw new IllegalArgumentException(ERROR_UUID_IS_EMPTY);
         }
+
         this.uuid = uuid;
         this.id = id;
+        preferred = false;
+        menuPosition = MENU_POSITION_NOT_PREFERRED;
+
+        expansionLevel = 1;
+        // empty 'groups' and obv. no group options
 
         // load defaults from the global settings
         final GlobalStyle globalStyle = ServiceLocator.getInstance().getStyles().getGlobalStyle();
-
-        headerFieldVisibility = globalStyle.getBooklistHeaderValue();
-        expansionLevel = globalStyle.getExpansionLevel();
-        bookLevelFieldsOrderBy = globalStyle.getBookLevelFieldsOrderBy();
 
         layout = globalStyle.getLayout();
         coverClickAction = globalStyle.getCoverClickAction();
         coverScale = globalStyle.getCoverScale();
         textScale = globalStyle.getTextScale();
         groupRowUsesPreferredHeight = globalStyle.isGroupRowUsesPreferredHeight();
+
+        setHeaderFieldVisibilityValue(globalStyle.getBooklistHeaderValue());
+        setBookLevelFieldsOrderBy(globalStyle.getBookLevelFieldsOrderBy());
 
         fieldVisibility.put(FieldVisibility.Screen.List, globalStyle.getFieldVisibility(
                 FieldVisibility.Screen.List));
@@ -163,9 +168,6 @@ public abstract class BaseStyle
 
         showAuthorByGivenName = globalStyle.isShowAuthorByGivenName();
         sortAuthorByGivenName = globalStyle.isSortAuthorByGivenName();
-
-        // URGENT: Group specific options cannot be set from the global style for now
-        // as we don't have the groups yet.
     }
 
     /**
@@ -177,18 +179,29 @@ public abstract class BaseStyle
      * @param id    for the new style
      * @param uuid  for the new style
      * @param style to clone
+     *
+     * @throws IllegalArgumentException if the given UUID is empty
      */
     BaseStyle(@NonNull final String uuid,
               @IntRange(from = 0) final long id,
               @NonNull final BaseStyle style) {
-        this(uuid, id);
+        if (uuid.isEmpty()) {
+            throw new IllegalArgumentException(ERROR_UUID_IS_EMPTY);
+        }
 
+        this.uuid = uuid;
+        this.id = id;
         preferred = style.isPreferred();
         menuPosition = style.getMenuPosition();
 
-        setHeaderFieldVisibilityValue(style.getHeaderFieldVisibilityValue());
         expansionLevel = style.getExpansionLevel();
-        setBookLevelFieldsOrderBy(style.getBookLevelFieldsOrderBy());
+        // set groups first before setting the group specific options!
+        setGroupList(style.getGroupList());
+        setPrimaryAuthorType(style.getPrimaryAuthorType());
+        for (final Style.UnderEach item : Style.UnderEach.values()) {
+            final int groupId = item.getGroupId();
+            setShowBooksUnderEachGroup(groupId, style.isShowBooksUnderEachGroup(groupId));
+        }
 
         layout = style.layout;
         coverClickAction = style.getCoverClickAction();
@@ -196,23 +209,16 @@ public abstract class BaseStyle
         textScale = style.getTextScale();
         groupRowUsesPreferredHeight = style.isGroupRowUsesPreferredHeight();
 
-        for (final FieldVisibility.Screen screen : List.of(FieldVisibility.Screen.List,
-                                                           FieldVisibility.Screen.Detail)) {
-            getFieldVisibility(screen).setBitValue(style.getFieldVisibility(screen).getBitValue());
-        }
+        setHeaderFieldVisibilityValue(style.getHeaderFieldVisibilityValue());
+        setBookLevelFieldsOrderBy(style.getBookLevelFieldsOrderBy());
+
+        fieldVisibility.put(FieldVisibility.Screen.List, style.getFieldVisibility(
+                FieldVisibility.Screen.List));
+        fieldVisibility.put(FieldVisibility.Screen.Detail, style.getFieldVisibility(
+                FieldVisibility.Screen.Detail));
 
         showAuthorByGivenName = style.isShowAuthorByGivenName();
         sortAuthorByGivenName = style.isSortAuthorByGivenName();
-
-        // set groups first before setting the group specific options!
-        setGroupList(style.getGroupList());
-
-        setPrimaryAuthorType(style.getPrimaryAuthorType());
-
-        for (final Style.UnderEach item : Style.UnderEach.values()) {
-            final int groupId = item.getGroupId();
-            setShowBooksUnderEachGroup(groupId, style.isShowBooksUnderEachGroup(groupId));
-        }
     }
 
     /**

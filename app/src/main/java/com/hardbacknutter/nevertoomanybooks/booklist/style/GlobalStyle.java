@@ -102,15 +102,6 @@ public final class GlobalStyle {
     }
 
     /**
-     * List "Expansion Level".
-     *
-     * @return level
-     */
-    public int getExpansionLevel() {
-        return 1;
-    }
-
-    /**
      * List "Sorting".
      *
      * @return sorting info

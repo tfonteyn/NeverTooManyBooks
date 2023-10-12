@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StyleDao;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
 public class StyleDaoImpl
         extends BaseDaoImpl
@@ -100,6 +101,7 @@ public class StyleDaoImpl
                 + ',' + DBKey.STYLE_MENU_POSITION
                 + ',' + DBKey.STYLE_NAME
 
+                + ',' + DBKey.STYLE_EXP_LEVEL
                 + ',' + DBKey.STYLE_GROUPS
                 + ',' + DBKey.STYLE_GROUPS_AUTHOR_PRIMARY_TYPE);
 
@@ -109,16 +111,17 @@ public class StyleDaoImpl
 
         tmp.append(',' + DBKey.STYLE_LAYOUT
                    + ',' + DBKey.STYLE_COVER_CLICK_ACTION
-                   + ',' + DBKey.STYLE_EXP_LEVEL
-                   + ',' + DBKey.STYLE_ROW_USES_PREF_HEIGHT
-                   + ',' + DBKey.STYLE_AUTHOR_SORT_BY_GIVEN_NAME
-                   + ',' + DBKey.STYLE_AUTHOR_SHOW_BY_GIVEN_NAME
-                   + ',' + DBKey.STYLE_TEXT_SCALE
                    + ',' + DBKey.STYLE_COVER_SCALE
+                   + ',' + DBKey.STYLE_TEXT_SCALE
+                   + ',' + DBKey.STYLE_ROW_USES_PREF_HEIGHT
+
                    + ',' + DBKey.STYLE_LIST_HEADER
-                   + ',' + DBKey.STYLE_DETAILS_SHOW_FIELDS
                    + ',' + DBKey.STYLE_BOOK_LEVEL_FIELDS_VISIBILITY
                    + ',' + DBKey.STYLE_BOOK_LEVEL_FIELDS_ORDER_BY
+                   + ',' + DBKey.STYLE_AUTHOR_SORT_BY_GIVEN_NAME
+                   + ',' + DBKey.STYLE_AUTHOR_SHOW_BY_GIVEN_NAME
+
+                   + ',' + DBKey.STYLE_DETAILS_SHOW_FIELDS
                    + ") VALUES (");
 
         final int count = (int) (tmp.chars().filter(ch -> ch == ',').count() + 1);
@@ -181,7 +184,7 @@ public class StyleDaoImpl
 
         try (Cursor cursor = db.rawQuery(SELECT_STYLES_BY_TYPE, new String[]{
                 String.valueOf(StyleType.User.getId())})) {
-            final CursorRow rowData = new CursorRow(cursor);
+            final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 final UserStyle style = UserStyle.createFromDatabase(rowData);
                 map.put(style.getUuid(), style);
@@ -198,7 +201,7 @@ public class StyleDaoImpl
 
         try (Cursor cursor = db.rawQuery(SELECT_STYLES_BY_TYPE, new String[]{
                 String.valueOf(StyleType.Builtin.getId())})) {
-            final CursorRow rowData = new CursorRow(cursor);
+            final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 BuiltinStyle.createFromDatabase(rowData).ifPresent(
                         style -> map.put(style.getUuid(), style));
@@ -227,28 +230,28 @@ public class StyleDaoImpl
             stmt.bindLong(++c, style.getMenuPosition());
             stmt.bindString(++c, style.getName());
 
+            stmt.bindLong(++c, style.getExpansionLevel());
             stmt.bindString(++c, getGroupIdsAsCsv(style));
             stmt.bindLong(++c, style.getPrimaryAuthorType());
-
             for (final Style.UnderEach item : Style.UnderEach.values()) {
                 stmt.bindBoolean(++c, style.isShowBooksUnderEachGroup(item.getGroupId()));
             }
 
             stmt.bindLong(++c, style.getLayout().getId());
-
-            stmt.bindLong(++c, style.getExpansionLevel());
+            stmt.bindLong(++c, style.getCoverClickAction().getId());
+            stmt.bindLong(++c, style.getCoverScale());
+            stmt.bindLong(++c, style.getTextScale());
             stmt.bindBoolean(++c, style.isGroupRowUsesPreferredHeight());
+
+            stmt.bindLong(++c, style.getHeaderFieldVisibilityValue());
+            stmt.bindLong(++c, style.getFieldVisibility(FieldVisibility.Screen.List)
+                                    .getBitValue());
+            stmt.bindString(++c, StyleCoder.getBookLevelFieldsOrderByAsJsonString(style));
             stmt.bindBoolean(++c, style.isSortAuthorByGivenName());
             stmt.bindBoolean(++c, style.isShowAuthorByGivenName());
 
-            stmt.bindLong(++c, style.getTextScale());
-            stmt.bindLong(++c, style.getCoverScale());
-            stmt.bindLong(++c, style.getHeaderFieldVisibilityValue());
-
-            stmt.bindLong(++c,
-                          style.getFieldVisibility(FieldVisibility.Screen.Detail).getBitValue());
-            stmt.bindLong(++c, style.getFieldVisibility(FieldVisibility.Screen.List).getBitValue());
-            stmt.bindString(++c, StyleCoder.getBookLevelFieldsOrderByAsJsonString(style));
+            stmt.bindLong(++c, style.getFieldVisibility(FieldVisibility.Screen.Detail)
+                                    .getBitValue());
 
             final long iId = stmt.executeInsert();
             if (iId > 0) {
@@ -269,35 +272,32 @@ public class StyleDaoImpl
 
             cv.put(DBKey.STYLE_NAME, userStyle.getName());
 
+            cv.put(DBKey.STYLE_EXP_LEVEL, style.getExpansionLevel());
             cv.put(DBKey.STYLE_GROUPS, getGroupIdsAsCsv(style));
             cv.put(DBKey.STYLE_GROUPS_AUTHOR_PRIMARY_TYPE, style.getPrimaryAuthorType());
-
             for (final Style.UnderEach item : Style.UnderEach.values()) {
                 cv.put(item.getDbKey(), style.isShowBooksUnderEachGroup(item.getGroupId()));
             }
 
             cv.put(DBKey.STYLE_LAYOUT, style.getLayout().getId());
             cv.put(DBKey.STYLE_COVER_CLICK_ACTION, style.getCoverClickAction().getId());
-
-            cv.put(DBKey.STYLE_EXP_LEVEL, style.getExpansionLevel());
+            cv.put(DBKey.STYLE_COVER_SCALE, style.getCoverScale());
+            cv.put(DBKey.STYLE_TEXT_SCALE, style.getTextScale());
             cv.put(DBKey.STYLE_ROW_USES_PREF_HEIGHT,
                    userStyle.isGroupRowUsesPreferredHeight());
+
+            cv.put(DBKey.STYLE_LIST_HEADER, userStyle.getHeaderFieldVisibilityValue());
+            cv.put(DBKey.STYLE_BOOK_LEVEL_FIELDS_VISIBILITY,
+                   style.getFieldVisibility(FieldVisibility.Screen.List).getBitValue());
+            cv.put(DBKey.STYLE_BOOK_LEVEL_FIELDS_ORDER_BY,
+                   StyleCoder.getBookLevelFieldsOrderByAsJsonString(style));
             cv.put(DBKey.STYLE_AUTHOR_SORT_BY_GIVEN_NAME,
                    style.isSortAuthorByGivenName());
             cv.put(DBKey.STYLE_AUTHOR_SHOW_BY_GIVEN_NAME,
                    style.isShowAuthorByGivenName());
 
-            cv.put(DBKey.STYLE_TEXT_SCALE, style.getTextScale());
-            cv.put(DBKey.STYLE_COVER_SCALE, style.getCoverScale());
-            cv.put(DBKey.STYLE_LIST_HEADER, userStyle.getHeaderFieldVisibilityValue());
-
             cv.put(DBKey.STYLE_DETAILS_SHOW_FIELDS,
                    style.getFieldVisibility(FieldVisibility.Screen.Detail).getBitValue());
-            cv.put(DBKey.STYLE_BOOK_LEVEL_FIELDS_VISIBILITY,
-                   style.getFieldVisibility(FieldVisibility.Screen.List).getBitValue());
-
-            cv.put(DBKey.STYLE_BOOK_LEVEL_FIELDS_ORDER_BY,
-                   StyleCoder.getBookLevelFieldsOrderByAsJsonString(style));
         }
 
         return 0 < db.update(DBDefinitions.TBL_BOOKLIST_STYLES.getName(), cv,
