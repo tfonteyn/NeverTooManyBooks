@@ -164,12 +164,17 @@ public abstract class BaseStyle
     private boolean groupRowUsesPreferredHeight;
 
     /**
-     * Constructor for the global/defaults.
-     * Only used during app installation.
+     * Constructor for a new style based on hardcoded defaults.
+     * <p>
+     * Only used during app installation for the global/defaults.
+     *
+     * @param id   for the new style
+     * @param uuid for the new style
      */
-    BaseStyle() {
-        this.uuid = "";
-        this.id = Integer.MIN_VALUE;
+    BaseStyle(@NonNull final String uuid,
+              final long id) {
+        this.uuid = uuid;
+        this.id = id;
 
         fieldVisibility.put(FieldVisibility.Screen.List, new BookLevelFieldVisibility());
         fieldVisibility.put(FieldVisibility.Screen.Detail, new BookDetailsFieldVisibility());

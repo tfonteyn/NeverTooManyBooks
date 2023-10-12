@@ -24,6 +24,8 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import java.util.UUID;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
@@ -35,6 +37,7 @@ public final class GlobalStyle
      * Constructor used during app installation/upgrade.
      */
     public GlobalStyle() {
+        super(UUID.randomUUID().toString(), Integer.MIN_VALUE);
     }
 
     /**
