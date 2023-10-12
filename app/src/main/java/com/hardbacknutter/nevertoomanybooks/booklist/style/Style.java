@@ -92,13 +92,6 @@ public interface Style {
     int COVER_SCALE_LARGE = 3;
     int DEFAULT_COVER_SCALE = COVER_SCALE_MEDIUM;
 
-    /**
-     * Check if this style is user-defined.
-     *
-     * @return flag
-     */
-    boolean isUserDefined();
-
     @SuppressWarnings("ClassReferencesSubclass")
     @NonNull
     UserStyle clone(@NonNull Context context);
@@ -118,14 +111,12 @@ public interface Style {
     void setId(long id);
 
     /**
-     * Get a short description of the type of this style.
+     * Get the type of this style.
      *
-     * @param context Current context
-     *
-     * @return description
+     * @return type
      */
     @NonNull
-    String getTypeDescription(@NonNull Context context);
+    StyleType getType();
 
     /**
      * Get the label to use. This is for <strong>displaying only</strong>.

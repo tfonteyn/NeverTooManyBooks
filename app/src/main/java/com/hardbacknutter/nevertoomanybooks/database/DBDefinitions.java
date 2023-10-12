@@ -31,6 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.BookDetailsFieldVisib
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BookLevelFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
@@ -410,7 +411,7 @@ public final class DBDefinitions {
 
     /** {@link #TBL_BOOKLIST_STYLES}. */
     public static final Domain DOM_STYLE_NAME;
-    public static final Domain DOM_STYLE_IS_BUILTIN;
+    public static final Domain DOM_STYLE_TYPE;
     public static final Domain DOM_STYLE_IS_PREFERRED;
     public static final Domain DOM_STYLE_MENU_POSITION;
     public static final Domain DOM_STYLE_LAYOUT;
@@ -1128,10 +1129,10 @@ public final class DBDefinitions {
                         .withDefaultEmptyString()
                         .build();
 
-        DOM_STYLE_IS_BUILTIN =
-                new Domain.Builder(DBKey.STYLE_IS_BUILTIN, SqLiteDataType.Boolean)
+        DOM_STYLE_TYPE =
+                new Domain.Builder(DBKey.STYLE_TYPE, SqLiteDataType.Integer)
                         .notNull()
-                        .withDefault(false)
+                        .withDefault(StyleType.User.getId())
                         .build();
 
         DOM_STYLE_IS_PREFERRED =
@@ -1268,7 +1269,7 @@ public final class DBDefinitions {
 
         TBL_BOOKLIST_STYLES
                 .addDomains(DOM_PK_ID,
-                            DOM_STYLE_IS_BUILTIN,
+                            DOM_STYLE_TYPE,
                             DOM_STYLE_IS_PREFERRED,
                             DOM_STYLE_MENU_POSITION,
                             DOM_STYLE_UUID,

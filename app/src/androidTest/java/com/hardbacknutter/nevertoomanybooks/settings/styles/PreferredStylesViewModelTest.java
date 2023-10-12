@@ -32,6 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -69,10 +70,11 @@ public class PreferredStylesViewModelTest
         super.setup();
         stylesHelper = ServiceLocator.getInstance().getStyles();
 
+        // delete any user-styles we created in previous tests.
         for (final String name : List.of(NAME_CLONE_BUILTIN, NAME_CLONE_USER)) {
             stylesHelper.getStyles(true)
                         .stream()
-                        .filter(Style::isUserDefined)
+                        .filter(style -> style.getType() == StyleType.User)
                         .map(style -> (UserStyle) style)
                         .filter(userStyle -> name.equals(userStyle.getName()))
                         .forEach(userStyle -> stylesHelper.delete(userStyle));
@@ -110,9 +112,13 @@ public class PreferredStylesViewModelTest
         Style initialStyle;
         int initialPosition = styleList.size() - 10;
         initialStyle = styleList.get(initialPosition);
-        // IndexOutOfBounds if none found
-        while (initialStyle.isUserDefined()) {
-            initialStyle = styleList.get(++initialPosition);
+        try {
+            // Skip all entries until we find a Builtin style.
+            while (initialStyle.getType() != StyleType.Builtin) {
+                initialStyle = styleList.get(++initialPosition);
+            }
+        } catch (@NonNull final IndexOutOfBoundsException e) {
+            fail("No Builtin styles?");
         }
 
         initialStyle.setPreferred(asPreferred);
@@ -182,7 +188,8 @@ public class PreferredStylesViewModelTest
         int initialPosition = 1;
         initialStyle = styleList.get(initialPosition);
         try {
-            while (!initialStyle.isUserDefined()) {
+            // Skip all entries until we find a User style.
+            while (initialStyle.getType() != StyleType.User) {
                 initialStyle = styleList.get(++initialPosition);
             }
         } catch (@NonNull final IndexOutOfBoundsException e) {
@@ -245,7 +252,8 @@ public class PreferredStylesViewModelTest
         int initialPosition = 1;
         initialStyle = styleList.get(initialPosition);
         try {
-            while (!initialStyle.isUserDefined()) {
+            // Skip all entries until we find a User style.
+            while (initialStyle.getType() != StyleType.User) {
                 initialStyle = styleList.get(++initialPosition);
             }
         } catch (@NonNull final IndexOutOfBoundsException e) {

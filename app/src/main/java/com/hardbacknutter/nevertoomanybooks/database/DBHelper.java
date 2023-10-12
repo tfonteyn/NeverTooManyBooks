@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType;
 import com.hardbacknutter.nevertoomanybooks.core.Logger;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedCursor;
@@ -400,7 +401,7 @@ public class DBHelper
         // Create all the app & user data tables in the correct dependency order
         TableDefinition.onCreate(db, getCollation(db), DBDefinitions.ALL_TABLES.values());
 
-        // insert the builtin styles so foreign key rules are possible.
+        // insert the default and builtin styles
         StyleDaoImpl.onPostCreate(db);
         // and the all/default shelves
         BookshelfDaoImpl.onPostCreate(context, db);
@@ -523,7 +524,7 @@ public class DBHelper
             final List<String> uuids = new ArrayList<>();
             try (Cursor cursor = db.rawQuery(
                     "SELECT uuid FROM " + TBL_BOOKLIST_STYLES.getName()
-                    + " WHERE " + DBKey.STYLE_IS_BUILTIN + "=0", null)) {
+                    + " WHERE " + DBKey.STYLE_TYPE + "=" + StyleType.User.getId(), null)) {
                 while (cursor.moveToNext()) {
                     uuids.add(cursor.getString(0));
                 }

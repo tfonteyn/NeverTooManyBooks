@@ -43,9 +43,11 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleCon
 import com.hardbacknutter.nevertoomanybooks.booklist.style.MapDBKey;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 
 public class StyleViewModel
@@ -125,9 +127,13 @@ public class StyleViewModel
             final int action = args.getInt(EditStyleContract.BKEY_ACTION,
                                            EditStyleContract.ACTION_EDIT);
 
-            if (action == EditStyleContract.ACTION_CLONE || !dbStyle.isUserDefined()) {
+            if (action == EditStyleContract.ACTION_CLONE
+                || dbStyle.getType() == StyleType.Builtin) {
+                // We're cloning (user of builtin).
+                // or the style is builtin in which case we force cloning.
                 style = dbStyle.clone(context);
             } else {
+                // just edit the user-style
                 style = (UserStyle) dbStyle;
             }
 
@@ -285,6 +291,9 @@ public class StyleViewModel
         }
     }
 
+    /**
+     * Wraps a book-level field, a {@link DBKey}, with its {@link Sort} option.
+     */
     static class WrappedBookLevelColumn {
 
         @NonNull

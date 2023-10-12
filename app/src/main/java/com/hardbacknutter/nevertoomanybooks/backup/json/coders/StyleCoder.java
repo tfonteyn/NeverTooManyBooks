@@ -34,6 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.BaseStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
@@ -109,7 +110,7 @@ public class StyleCoder
         out.put(DBKey.STYLE_IS_PREFERRED, style.isPreferred());
         out.put(DBKey.STYLE_MENU_POSITION, style.getMenuPosition());
 
-        if (style.isUserDefined()) {
+        if (style.getType() == StyleType.User) {
             final UserStyle userStyle = (UserStyle) style;
 
             out.put(DBKey.STYLE_NAME, userStyle.getName());

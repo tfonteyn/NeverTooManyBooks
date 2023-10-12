@@ -313,14 +313,9 @@ public final class BuiltinStyle
     }
 
     @Override
-    public boolean isUserDefined() {
-        return false;
-    }
-
-    @Override
     @NonNull
-    public String getTypeDescription(@NonNull final Context context) {
-        return context.getString(R.string.style_type_builtin);
+    public StyleType getType() {
+        return StyleType.Builtin;
     }
 
     @Override

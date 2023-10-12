@@ -36,6 +36,7 @@ import java.util.stream.IntStream;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 
@@ -243,17 +244,20 @@ public class PreferredStylesViewModel
         final Style templateStyle = stylesHelper.getStyle(templateUuid).orElseThrow();
         final int templateRow = findRow(templateStyle);
 
-        if (templateStyle.isUserDefined()) {
+        if (templateStyle.getType() == StyleType.User) {
+            // The 'style' is either an edit of a user-defined style,
+            // or it's a (new) clone of a user-defined style.
+
             if (templateStyle.getUuid().equalsIgnoreCase(style.getUuid())) {
-                // Same UUID, it was an edit of a user-defined style,
+                // If it has the same UUID, it was an edit of a user-defined style,
                 // i.e. edit-in-place: replace the old object with the new one.
                 styleList.set(templateRow, style);
             } else {
-                // It's a clone of a user-defined style
+                // If it has a different UUID, then it's a clone of a user-defined style
                 // Put it directly above the user-defined original
                 styleList.add(templateRow, style);
             }
-        } else {
+        } else if (templateStyle.getType() == StyleType.Builtin) {
             // It's a clone of a builtin style
             if (templateStyle.isPreferred()) {
                 // if the original style was a preferred style,
@@ -277,6 +281,9 @@ public class PreferredStylesViewModel
                 styleList.add(templateRow, style);
             }
         }
+        // else {
+        //    // it's the global/defaults
+        // }
 
         selectedPosition = templateRow;
     }

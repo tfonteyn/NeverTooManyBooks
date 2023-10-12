@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleCon
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PreferredStylesContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStylesBinding;
@@ -242,7 +243,7 @@ public class PreferredStylesFragment
                             ? null : vm.getStyle(position);
 
         // only user styles can be edited/deleted
-        final boolean isUserStyle = style != null && style.isUserDefined();
+        final boolean isUserStyle = style != null && style.getType() == StyleType.User;
         menu.findItem(R.id.MENU_EDIT).setVisible(isUserStyle);
         menu.findItem(R.id.MENU_DELETE).setVisible(isUserStyle);
 
@@ -370,7 +371,7 @@ public class PreferredStylesFragment
             final Style style = getItem(position);
 
             holder.vb.styleName.setText(style.getLabel(context));
-            holder.vb.type.setText(style.getTypeDescription(context));
+            holder.vb.type.setText(style.getType().getTypeResId());
             holder.vb.groups.setText(style.getGroupsSummaryText(context));
 
             // set the 'preferred' state of the current row

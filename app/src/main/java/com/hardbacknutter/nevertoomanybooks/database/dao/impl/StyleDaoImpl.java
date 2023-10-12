@@ -35,6 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.StyleCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -61,7 +62,7 @@ public class StyleDaoImpl
      */
     private static final String SELECT_STYLES_BY_TYPE =
             SELECT_STYLES
-            + _WHERE_ + DBKey.STYLE_IS_BUILTIN + "=?"
+            + _WHERE_ + DBKey.STYLE_TYPE + "=?"
             + _ORDER_BY_ + DBKey.PK_ID;
 
     private static final String DELETE_BOOK_LIST_NODE_STATE_BY_STYLE =
@@ -72,7 +73,7 @@ public class StyleDaoImpl
             INSERT_INTO_ + DBDefinitions.TBL_BOOKLIST_STYLES.getName()
             + '(' + DBKey.PK_ID
             + ',' + DBKey.STYLE_UUID
-            + ',' + DBKey.STYLE_IS_BUILTIN
+            + ',' + DBKey.STYLE_TYPE
             + ',' + DBKey.STYLE_IS_PREFERRED
             + ',' + DBKey.STYLE_MENU_POSITION
             + ") VALUES(?,?,?,?,?)";
@@ -93,7 +94,7 @@ public class StyleDaoImpl
         final StringBuilder tmp = new StringBuilder(
                 INSERT_INTO_ + DBDefinitions.TBL_BOOKLIST_STYLES.getName()
                 + '(' + DBKey.STYLE_UUID
-                + ',' + DBKey.STYLE_IS_BUILTIN
+                + ',' + DBKey.STYLE_TYPE
                 + ',' + DBKey.STYLE_IS_PREFERRED
                 + ',' + DBKey.STYLE_MENU_POSITION
                 + ',' + DBKey.STYLE_NAME
@@ -146,8 +147,7 @@ public class StyleDaoImpl
             for (final BuiltinStyle.Definition styleDef : BuiltinStyle.getAll()) {
                 stmt.bindLong(1, styleDef.getId());
                 stmt.bindString(2, styleDef.getUuid());
-                // builtin: true
-                stmt.bindLong(3, 1);
+                stmt.bindLong(3, StyleType.Builtin.getId());
                 // preferred: false
                 stmt.bindLong(4, 0);
                 // menu position, initially just in the order defined.
@@ -178,8 +178,8 @@ public class StyleDaoImpl
     public Map<String, UserStyle> getUserStyles() {
         final Map<String, UserStyle> map = new LinkedHashMap<>();
 
-        try (Cursor cursor = db.rawQuery(SELECT_STYLES_BY_TYPE,
-                                         new String[]{String.valueOf(0)})) {
+        try (Cursor cursor = db.rawQuery(SELECT_STYLES_BY_TYPE, new String[]{
+                String.valueOf(StyleType.User.getId())})) {
             final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 final UserStyle style = UserStyle.createFromDatabase(rowData);
@@ -195,8 +195,8 @@ public class StyleDaoImpl
     public Map<String, BuiltinStyle> getBuiltinStyles() {
         final Map<String, BuiltinStyle> map = new LinkedHashMap<>();
 
-        try (Cursor cursor = db.rawQuery(SELECT_STYLES_BY_TYPE,
-                                         new String[]{String.valueOf(1)})) {
+        try (Cursor cursor = db.rawQuery(SELECT_STYLES_BY_TYPE, new String[]{
+                String.valueOf(StyleType.Builtin.getId())})) {
             final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 BuiltinStyle.createFromDatabase(rowData).ifPresent(
@@ -217,11 +217,11 @@ public class StyleDaoImpl
 
     @Override
     public long insert(@NonNull final UserStyle style) {
-
         try (SynchronizedStatement stmt = db.compileStatement(INSERT_STYLE)) {
             int c = 0;
             stmt.bindString(++c, style.getUuid());
-            stmt.bindBoolean(++c, !style.isUserDefined());
+            // Always StyleType.User but allow for future expansion
+            stmt.bindLong(++c, style.getType().getId());
             stmt.bindBoolean(++c, style.isPreferred());
             stmt.bindLong(++c, style.getMenuPosition());
             stmt.bindString(++c, style.getName());
@@ -262,7 +262,7 @@ public class StyleDaoImpl
         cv.put(DBKey.STYLE_IS_PREFERRED, style.isPreferred());
         cv.put(DBKey.STYLE_MENU_POSITION, style.getMenuPosition());
 
-        if (style.isUserDefined()) {
+        if (style.getType() == StyleType.User) {
             final UserStyle userStyle = (UserStyle) style;
 
             cv.put(DBKey.STYLE_NAME, userStyle.getName());

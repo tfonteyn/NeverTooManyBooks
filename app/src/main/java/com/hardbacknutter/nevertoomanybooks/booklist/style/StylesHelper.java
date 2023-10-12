@@ -343,7 +343,8 @@ public class StylesHelper {
         }
 
         if (styleDaoSupplier.get().delete(style)) {
-            if (style.isUserDefined()) {
+            // Sanity check, it should always be a StyleType.User
+            if (style.getType() == StyleType.User) {
                 cache.remove(style.getUuid());
             }
             return true;

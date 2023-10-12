@@ -232,8 +232,19 @@ public final class DBKey {
 
     /** {@link DBDefinitions#TBL_BOOKLIST_STYLES}. */
     public static final String STYLE_UUID = "uuid";
+    /**
+     * The name for a {@link com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle}.
+     */
     public static final String STYLE_NAME = "name";
-    public static final String STYLE_IS_BUILTIN = "builtin";
+    /**
+     * The type of Style.
+     * <p>
+     * Note the actual name of the columns is incorrect.
+     * This used to be a boolean (0=user, 1=builtin).
+     *
+     * @see com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType
+     */
+    public static final String STYLE_TYPE = "builtin";
     public static final String STYLE_IS_PREFERRED = "preferred";
     public static final String STYLE_MENU_POSITION = "menu_order";
     public static final String STYLE_LAYOUT = "layout";
@@ -244,6 +255,9 @@ public final class DBKey {
     public static final String STYLE_AUTHOR_SHOW_BY_GIVEN_NAME = "author_show_gn";
     public static final String STYLE_TEXT_SCALE = "text_scale";
     public static final String STYLE_COVER_SCALE = "cover_scale";
+    /**
+     * @see com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader
+     */
     public static final String STYLE_LIST_HEADER = "list_header";
     public static final String STYLE_DETAILS_SHOW_FIELDS = "detail_fields_vis";
     public static final String STYLE_BOOK_LEVEL_FIELDS_VISIBILITY = "list_fields_vis";

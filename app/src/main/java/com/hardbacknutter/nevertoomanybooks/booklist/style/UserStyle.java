@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.StyleCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -154,6 +153,12 @@ public class UserStyle
         return new UserStyle(uuid);
     }
 
+    @Override
+    @NonNull
+    public StyleType getType() {
+        return StyleType.User;
+    }
+
     /**
      * Get the user-displayable name for this style.
      *
@@ -171,17 +176,6 @@ public class UserStyle
      */
     public void setName(@NonNull final String name) {
         this.name = name;
-    }
-
-    @Override
-    public boolean isUserDefined() {
-        return true;
-    }
-
-    @Override
-    @NonNull
-    public String getTypeDescription(@NonNull final Context context) {
-        return context.getString(R.string.style_type_user_defined);
     }
 
     @Override
