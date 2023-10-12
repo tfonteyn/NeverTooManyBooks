@@ -117,13 +117,13 @@ public class FieldVisibility {
      * <p>
      * Style conditional visibility: use the given subset of keys.
      *
-     * @param dbKeys   the (sub)set of keys supported for this instance
-     * @param defValue the bitmask with the defaults for this instance
+     * @param dbKeys the (sub)set of keys supported for this instance
+     * @param bits   the bitmask with the defaults for this instance
      */
     FieldVisibility(@NonNull final Set<String> dbKeys,
-                    @NonNull final Set<String> defValue) {
+                    final long bits) {
         this.dbKeys = dbKeys;
-        bits = getBitValue(defValue);
+        this.bits = bits;
     }
 
     /**

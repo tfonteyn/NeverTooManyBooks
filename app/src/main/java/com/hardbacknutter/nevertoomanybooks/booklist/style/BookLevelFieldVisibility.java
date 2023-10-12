@@ -69,7 +69,16 @@ public class BookLevelFieldVisibility
      * Constructor.
      */
     BookLevelFieldVisibility() {
-        super(FIELDS, DEFAULT);
+        super(FIELDS, getDefault());
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param bits the bitmask with the fields
+     */
+    BookLevelFieldVisibility(final long bits) {
+        super(FIELDS, bits);
     }
 
     public static long getDefault() {
