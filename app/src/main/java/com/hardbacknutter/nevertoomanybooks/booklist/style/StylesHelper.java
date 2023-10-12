@@ -89,17 +89,6 @@ public class StylesHelper {
     }
 
     /**
-     * Clear and reload the {@link GlobalStyle} from the database.
-     *
-     * @return newly loaded global/default style preferences
-     */
-    @NonNull
-    public Style reloadGlobalStyle() {
-        globalStyle = null;
-        return getGlobalStyle();
-    }
-
-    /**
      * Get the specified style; {@code null} if not found.
      *
      * @param uuid UUID of the style to get.
