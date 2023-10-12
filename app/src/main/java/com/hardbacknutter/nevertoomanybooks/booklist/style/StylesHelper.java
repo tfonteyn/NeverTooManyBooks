@@ -280,6 +280,10 @@ public class StylesHelper {
             }
         }
 
+        if (style.getType() == StyleType.Global) {
+            return update(context, style);
+        }
+
         final StyleDao dao = styleDaoSupplier.get();
 
         // resolve the id based on the UUID
