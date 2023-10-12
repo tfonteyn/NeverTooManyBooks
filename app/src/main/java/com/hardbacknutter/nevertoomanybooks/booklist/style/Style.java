@@ -406,11 +406,11 @@ public interface Style {
     /**
      * Should books be shown under each of the given row type.
      *
-     * @param underEach row type
+     * @param groupId the {@link BooklistGroup} id
      *
      * @return flag
      */
-    boolean isShowBooks(@NonNull UnderEach underEach);
+    boolean isShowBooksUnderEachGroup(@BooklistGroup.Id int groupId);
 
     /**
      * Convenience method for use in the Preferences screen.
@@ -474,7 +474,7 @@ public interface Style {
     }
 
     /**
-     * See {@link #isShowBooks(UnderEach)}.
+     * See {@link #isShowBooksUnderEachGroup(int)}.
      */
     enum UnderEach {
         /** {@link AuthorBooklistGroup}. */

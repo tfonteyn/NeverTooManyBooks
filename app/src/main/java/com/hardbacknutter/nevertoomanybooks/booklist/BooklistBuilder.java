@@ -949,7 +949,7 @@ class BooklistBuilder {
             sb.append(TBL_BOOKS.join(TBL_BOOK_AUTHOR));
             // Extend the join filtering on the primary Author unless
             // the user wants the book to show under all its Authors
-            if (!style.isShowBooks(Style.UnderEach.Author)) {
+            if (!style.isShowBooksUnderEachGroup(Style.UnderEach.Author.getGroupId())) {
                 @Author.Type
                 final int primaryAuthorType = style.getPrimaryAuthorType();
                 if (primaryAuthorType == Author.TYPE_UNKNOWN) {
@@ -982,7 +982,7 @@ class BooklistBuilder {
             sb.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_SERIES));
             // Extend the join filtering on the primary Series unless
             // the user wants the book to show under all its Series
-            if (!style.isShowBooks(Style.UnderEach.Series)) {
+            if (!style.isShowBooksUnderEachGroup(Style.UnderEach.Series.getGroupId())) {
                 sb.append(_AND_)
                   .append(TBL_BOOK_SERIES.dot(DBKey.BOOK_SERIES_POSITION))
                   .append("=1");
@@ -996,7 +996,7 @@ class BooklistBuilder {
             sb.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_PUBLISHER));
             // Extend the join filtering on the primary Publisher unless
             // the user wants the book to show under all its Publishers
-            if (!style.isShowBooks(Style.UnderEach.Publisher)) {
+            if (!style.isShowBooksUnderEachGroup(Style.UnderEach.Publisher.getGroupId())) {
                 sb.append(_AND_)
                   .append(TBL_BOOK_PUBLISHER.dot(DBKey.BOOK_PUBLISHER_POSITION))
                   .append("=1");

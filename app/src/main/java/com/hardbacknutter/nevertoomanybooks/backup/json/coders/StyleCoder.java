@@ -166,7 +166,7 @@ public class StyleCoder
                  style.getPrimaryAuthorType());
 
         for (final Style.UnderEach item : Style.UnderEach.values()) {
-            dest.put(item.getPrefKey(), style.isShowBooks(item));
+            dest.put(item.getPrefKey(), style.isShowBooksUnderEachGroup(item.getGroupId()));
         }
     }
 
@@ -300,7 +300,8 @@ public class StyleCoder
 
         for (final Style.UnderEach item : Style.UnderEach.values()) {
             if (source.has(item.getPrefKey())) {
-                userStyle.setShowBooks(item, source.getBoolean(item.getPrefKey()));
+                userStyle.setShowBooksUnderEachGroup(item.getGroupId(),
+                                                     source.getBoolean(item.getPrefKey()));
             }
         }
     }

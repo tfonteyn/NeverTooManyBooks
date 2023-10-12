@@ -302,7 +302,7 @@ public class StyleDataStore
 
         final Style.UnderEach underEach = Style.UnderEach.findByPrefKey(key);
         if (underEach != null) {
-            style.setShowBooks(underEach, value);
+            style.setShowBooksUnderEachGroup(underEach.getGroupId(), value);
             setModified();
             return;
         }
@@ -334,7 +334,7 @@ public class StyleDataStore
 
         final Style.UnderEach underEach = Style.UnderEach.findByPrefKey(key);
         if (underEach != null) {
-            return style.isShowBooks(underEach);
+            return style.isShowBooksUnderEachGroup(underEach.getGroupId());
         }
 
         throw new IllegalArgumentException(key);

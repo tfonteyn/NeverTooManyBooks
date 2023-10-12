@@ -231,7 +231,7 @@ public class StyleDaoImpl
             stmt.bindLong(++c, style.getPrimaryAuthorType());
 
             for (final Style.UnderEach item : Style.UnderEach.values()) {
-                stmt.bindBoolean(++c, style.isShowBooks(item));
+                stmt.bindBoolean(++c, style.isShowBooksUnderEachGroup(item.getGroupId()));
             }
 
             stmt.bindLong(++c, style.getLayout().getId());
@@ -273,7 +273,7 @@ public class StyleDaoImpl
             cv.put(DBKey.STYLE_GROUPS_AUTHOR_PRIMARY_TYPE, style.getPrimaryAuthorType());
 
             for (final Style.UnderEach item : Style.UnderEach.values()) {
-                cv.put(item.getDbKey(), style.isShowBooks(item));
+                cv.put(item.getDbKey(), style.isShowBooksUnderEachGroup(item.getGroupId()));
             }
 
             cv.put(DBKey.STYLE_LAYOUT, style.getLayout().getId());

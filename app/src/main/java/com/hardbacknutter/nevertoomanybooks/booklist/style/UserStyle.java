@@ -86,7 +86,7 @@ public class UserStyle
         setPrimaryAuthorType(rowData.getInt(DBKey.STYLE_GROUPS_AUTHOR_PRIMARY_TYPE));
 
         for (final Style.UnderEach item : Style.UnderEach.values()) {
-            setShowBooks(item, rowData.getBoolean(item.getDbKey()));
+            setShowBooksUnderEachGroup(item.getGroupId(), rowData.getBoolean(item.getDbKey()));
         }
 
         setExpansionLevel(rowData.getInt(DBKey.STYLE_EXP_LEVEL));

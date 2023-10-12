@@ -210,7 +210,8 @@ public abstract class BaseStyle
         setPrimaryAuthorType(style.getPrimaryAuthorType());
 
         for (final Style.UnderEach item : Style.UnderEach.values()) {
-            setShowBooks(item, style.isShowBooks(item));
+            final int groupId = item.getGroupId();
+            setShowBooksUnderEachGroup(groupId, style.isShowBooksUnderEachGroup(groupId));
         }
     }
 
@@ -570,12 +571,12 @@ public abstract class BaseStyle
     /**
      * Wrapper to set the show-book-under-each for the given wrapped group (if we have it).
      *
-     * @param item  the wrapped group
-     * @param value to set
+     * @param groupId the {@link BooklistGroup} id
+     * @param value   to set
      */
-    public void setShowBooks(@NonNull final UnderEach item,
-                             final boolean value) {
-        getGroupById(item.getGroupId())
+    public void setShowBooksUnderEachGroup(@BooklistGroup.Id final int groupId,
+                                           final boolean value) {
+        getGroupById(groupId)
                 .ifPresent(group -> ((UnderEachGroup) group).setShowBooksUnderEach(value));
     }
 
@@ -583,13 +584,13 @@ public abstract class BaseStyle
      * Wrapper that gets the show-book-under-each for the given wrapped group (if we have it);
      * or by default {@code false}.
      *
-     * @param item the wrapped group
+     * @param groupId the {@link BooklistGroup} id
      *
-     * @return {@code true} if we want to show a book under each of its Authors
+     * @return {@code true} if we want to show a book under each of the given group (id)
      */
     @Override
-    public boolean isShowBooks(@NonNull final UnderEach item) {
-        return getGroupById(item.getGroupId())
+    public boolean isShowBooksUnderEachGroup(@BooklistGroup.Id final int groupId) {
+        return getGroupById(groupId)
                 .map(group -> ((UnderEachGroup) group).isShowBooksUnderEach())
                 .orElse(false);
     }
