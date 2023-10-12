@@ -97,18 +97,31 @@ public interface Style {
     UserStyle clone(@NonNull Context context);
 
     /**
-     * Get the database row id of the style.
+     * Get the id.
+     * <ul>
+     *      <li>Positive ID's: user-defined styles</li>
+     *      <li>Negative ID's: builtin styles</li>
+     *      <li>0: a user-defined style which has not been saved yet</li>
+     * </ul>
      *
      * @return id
      */
     long getId();
 
     /**
-     * Set the database row id of the style.
+     * Set the id.
      *
      * @param id to set
      */
     void setId(long id);
+
+    /**
+     * Get the UUID for this style.
+     *
+     * @return the UUID
+     */
+    @NonNull
+    String getUuid();
 
     /**
      * Get the type of this style.
@@ -127,14 +140,6 @@ public interface Style {
      */
     @NonNull
     String getLabel(@NonNull Context context);
-
-    /**
-     * Get the UUID for this style.
-     *
-     * @return the UUID
-     */
-    @NonNull
-    String getUuid();
 
     /**
      * Get the menu position of this style as sorted by the user.
@@ -318,14 +323,12 @@ public interface Style {
     Map<String, Sort> getBookLevelFieldsOrderBy();
 
     /**
-     * Get the group row <strong>height</strong> to be applied to
-     * the {@link android.view.ViewGroup.LayoutParams}.
+     * Should rows be shown using the system's preferred height or minimum height.
      *
-     * @param context Current context
-     *
-     * @return group row height value in pixels
+     * @return {@code true} for "?attr/listPreferredItemHeightSmall"
+     *         or {@code false} for {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT}
      */
-    int getGroupRowHeight(@NonNull Context context);
+    boolean isGroupRowUsesPreferredHeight();
 
     /**
      * Get the number of groups in this style.

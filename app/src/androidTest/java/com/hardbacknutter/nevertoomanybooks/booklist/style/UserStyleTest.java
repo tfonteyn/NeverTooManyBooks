@@ -38,16 +38,6 @@ import static org.junit.Assert.assertTrue;
 public class UserStyleTest
         extends BaseDBTest {
 
-    /**
-     * Test fails with:
-     * <p>
-     * android.content.res.Resources$NotFoundException: Failed to resolve attribute 2130969324
-     * at com.hardbacknutter.nevertoomanybooks.utils.AttrUtils.getDimensionPixelSize(AttrUtils.java:151)
-     * at com.hardbacknutter.nevertoomanybooks.booklist.style.BaseStyle.getGroupRowHeight(BaseStyle.java:394)
-     * <p>
-     * because {@code com.google.android.material.R.attr.listPreferredItemHeightSmall}
-     * cannot be resolved in androidTest?
-     */
     @Test
     public void clone01() {
         final StylesHelper helper = serviceLocator.getStyles();
@@ -74,6 +64,19 @@ public class UserStyleTest
         assertEquals(s1.isPreferred(), s2.isPreferred());
         assertEquals(s1.getMenuPosition(), s2.getMenuPosition());
 
+        assertEquals(s1.getGroupList(), s2.getGroupList());
+        assertEquals(s1.getExpansionLevel(), s2.getExpansionLevel());
+        assertEquals(s1.getPrimaryAuthorType(), s2.getPrimaryAuthorType());
+        for (final Style.UnderEach item : Style.UnderEach.values()) {
+            assertEquals(s1.isShowBooks(item), s2.isShowBooks(item));
+        }
+
+        assertEquals(s1.getLayout(), s2.getLayout());
+        assertEquals(s1.getCoverClickAction(), s2.getCoverClickAction());
+        assertEquals(s1.getCoverScale(), s2.getCoverScale());
+        assertEquals(s1.getTextScale(), s2.getTextScale());
+        assertEquals(s1.isGroupRowUsesPreferredHeight(), s2.isGroupRowUsesPreferredHeight());
+
         assertEquals(s1.isShowAuthorByGivenName(), s2.isShowAuthorByGivenName());
         assertEquals(s1.isSortAuthorByGivenName(), s2.isSortAuthorByGivenName());
 
@@ -84,20 +87,10 @@ public class UserStyleTest
         assertEquals(s1.isShowHeaderField(BooklistHeader.SHOW_FILTERS),
                      s2.isShowHeaderField(BooklistHeader.SHOW_FILTERS));
 
-        assertEquals(s1.getGroupRowHeight(context), s2.getGroupRowHeight(context));
-        assertEquals(s1.getExpansionLevel(), s2.getExpansionLevel());
-        assertEquals(s1.getPrimaryAuthorType(), s2.getPrimaryAuthorType());
-        assertEquals(s1.getTextScale(), s2.getTextScale());
-        assertEquals(s1.getGroupList(), s2.getGroupList());
-
-        for (final Style.UnderEach item : Style.UnderEach.values()) {
-            assertEquals(s1.isShowBooks(item), s2.isShowBooks(item));
-        }
-
         for (final FieldVisibility.Screen item : FieldVisibility.Screen.values()) {
             assertEquals(s1.getFieldVisibility(item).getBitValue(),
                          s2.getFieldVisibility(item).getBitValue());
         }
-
+        assertEquals(s1.getBookLevelFieldsOrderBy(), s2.getBookLevelFieldsOrderBy());
     }
 }

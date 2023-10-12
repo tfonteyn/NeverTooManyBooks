@@ -56,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.OnRowClickListener;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
@@ -129,7 +130,12 @@ public class BooklistAdapter
         levelIndent = res.getDimensionPixelSize(R.dimen.bob_group_level_padding_start);
         level1topMargin = res.getDimensionPixelSize(R.dimen.bob_group_level_1_margin_top);
 
-        groupRowHeight = this.style.getGroupRowHeight(context);
+        if (style.isGroupRowUsesPreferredHeight()) {
+            groupRowHeight = AttrUtils.getDimensionPixelSize(
+                    context, com.google.android.material.R.attr.listPreferredItemHeightSmall);
+        } else {
+            groupRowHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
+        }
 
         // getItemId returns the rowId
         setHasStableIds(true);

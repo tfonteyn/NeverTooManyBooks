@@ -21,13 +21,11 @@ package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.view.ViewGroup;
 
 import androidx.annotation.Dimension;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.Px;
 import androidx.core.math.MathUtils;
 
 import java.util.ArrayList;
@@ -50,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LinkedMap;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 
 /**
@@ -129,15 +126,6 @@ public abstract class BaseStyle
      * or as system "?attr/listPreferredItemHeightSmall" (true).
      */
     private boolean groupRowUsesPreferredHeight;
-    /**
-     * Cached pixel value.
-     * <p>
-     * Do not add to equals/hash!
-     *
-     * @see #getGroupRowHeight(Context)
-     */
-    @Px
-    private int listPreferredItemHeightSmall;
 
     /**
      * Base constructor.
@@ -471,27 +459,13 @@ public abstract class BaseStyle
         }
     }
 
-    @Override
-    public int getGroupRowHeight(@NonNull final Context context) {
-        if (groupRowUsesPreferredHeight) {
-            if (listPreferredItemHeightSmall == 0) {
-                listPreferredItemHeightSmall = AttrUtils.getDimensionPixelSize(
-                        context, com.google.android.material.R.attr.listPreferredItemHeightSmall);
-            }
-            return listPreferredItemHeightSmall;
-        } else {
-            return ViewGroup.LayoutParams.WRAP_CONTENT;
-        }
-    }
-
     /**
      * Should rows be shown using the system's preferred height or minimum height.
      *
      * @return {@code true} for "?attr/listPreferredItemHeightSmall"
      *         or {@code false} for {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT}
-     *
-     * @see #getGroupRowHeight(Context)
      */
+    @Override
     public boolean isGroupRowUsesPreferredHeight() {
         return groupRowUsesPreferredHeight;
     }
@@ -694,9 +668,6 @@ public abstract class BaseStyle
                + ", sortAuthorByGivenName=" + sortAuthorByGivenName
 
                + ", fieldVisibility=" + fieldVisibility
-
-               // cached value
-               + ", listPreferredItemHeightSmall=" + listPreferredItemHeightSmall
                + '}';
     }
 }
