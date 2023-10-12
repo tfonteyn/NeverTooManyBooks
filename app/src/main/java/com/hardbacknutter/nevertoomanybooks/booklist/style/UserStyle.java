@@ -102,7 +102,7 @@ public class UserStyle
      * @return the loaded UserStyle
      */
     @NonNull
-    public static UserStyle createFromImport(@NonNull final String uuid) {
+    public static Style createFromImport(@NonNull final String uuid) {
         return new UserStyle(uuid);
     }
 
