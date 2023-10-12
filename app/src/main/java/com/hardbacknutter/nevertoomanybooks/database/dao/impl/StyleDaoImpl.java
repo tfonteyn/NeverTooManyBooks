@@ -342,6 +342,8 @@ public class StyleDaoImpl
     public boolean update(@NonNull final Context context,
                           @NonNull final Style style) {
         final ContentValues cv = new ContentValues();
+        // Note that the StyleType is NEVER updated.
+
         cv.put(DBKey.STYLE_IS_PREFERRED, style.isPreferred());
         cv.put(DBKey.STYLE_MENU_POSITION, style.getMenuPosition());
 

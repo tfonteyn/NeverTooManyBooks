@@ -205,6 +205,8 @@ public class PreferredStylesViewModel
 
     /**
      * Save the preferred Style menu list.
+     *
+     * @param context Current context
      */
     void updateMenuOrder(@NonNull final Context context) {
         if (dirty) {
@@ -233,6 +235,7 @@ public class PreferredStylesViewModel
      * Called after a style has been edited.
      * Calculates the new position in the list and sets it as selected.
      *
+     * @param context      Current context
      * @param style        the modified (or newly created) style
      * @param templateUuid uuid of the original style we cloned (different from current)
      *                     or edited (same as current).
@@ -293,7 +296,8 @@ public class PreferredStylesViewModel
     /**
      * Update the given Style.
      *
-     * @param style to update
+     * @param context Current context
+     * @param style   to update
      */
     void updateStyle(@NonNull final Context context,
                      @NonNull final Style style) {
