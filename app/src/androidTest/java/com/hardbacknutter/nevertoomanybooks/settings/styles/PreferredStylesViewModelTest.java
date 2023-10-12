@@ -143,14 +143,14 @@ public class PreferredStylesViewModelTest
         // Modify the name, just to modify 'something'
         styleVm.getStyleDataStore().putString(StyleDataStore.PK_NAME, NAME_CLONE_BUILTIN);
         // pretend leaving the style-editor, this will trigger a call to:
-        styleVm.updateOrInsertStyle();
+        styleVm.updateOrInsertStyle(context);
 
         final long editedStyleId = editedStyle.getId();
         final String editedStyleUuid = editedStyle.getUuid();
         final String editedStyleName = editedStyle.getName();
         final boolean editedStylePreferred = editedStyle.isPreferred();
 
-        listVm.onStyleEdited(editedStyle, initialStyle.getUuid());
+        listVm.onStyleEdited(context, editedStyle, initialStyle.getUuid());
 
         // We added a style
         assertEquals(initialSize + 1, styleList.size());
@@ -216,14 +216,14 @@ public class PreferredStylesViewModelTest
         // Modify the name, just to modify 'something'
         styleVm.getStyleDataStore().putString(StyleDataStore.PK_NAME, NAME_CLONE_USER);
         // pretend leaving the style-editor, this will trigger a call to:
-        styleVm.updateOrInsertStyle();
+        styleVm.updateOrInsertStyle(context);
 
         final long editedStyleId = editedStyle.getId();
         final String editedStyleUuid = editedStyle.getUuid();
         final String editedStyleName = editedStyle.getName();
         final boolean editedStylePreferred = editedStyle.isPreferred();
 
-        listVm.onStyleEdited(editedStyle, initialStyle.getUuid());
+        listVm.onStyleEdited(context, editedStyle, initialStyle.getUuid());
 
         // We added a style
         assertEquals(initialSize + 1, styleList.size());
@@ -279,14 +279,14 @@ public class PreferredStylesViewModelTest
         // Modify the name, just to modify 'something'
         styleVm.getStyleDataStore().putString(StyleDataStore.PK_NAME, NAME_CLONE_USER);
         // pretend leaving the style-editor, this will trigger a call to:
-        styleVm.updateOrInsertStyle();
+        styleVm.updateOrInsertStyle(context);
 
         final long editedStyleId = editedStyle.getId();
         final String editedStyleUuid = editedStyle.getUuid();
         final String editedStyleName = editedStyle.getName();
         final boolean editedStylePreferred = editedStyle.isPreferred();
 
-        listVm.onStyleEdited(editedStyle, initialStyle.getUuid());
+        listVm.onStyleEdited(context, editedStyle, initialStyle.getUuid());
 
         // We only edited a style
         assertEquals(initialSize, styleList.size());

@@ -475,10 +475,10 @@ public class ImportFragment
     private void onImportFinished(@StringRes final int titleId,
                                   @NonNull final ImportResults result) {
 
-        vm.postProcessStyles(result);
+        //noinspection DataFlowIssue
+        vm.postProcessStyles(getContext(), result);
         result.booksDeleted = vm.postProcessDeletedBooks();
 
-        //noinspection DataFlowIssue
         new MaterialAlertDialogBuilder(getContext())
                 .setIcon(R.drawable.ic_baseline_info_24)
                 .setTitle(titleId)

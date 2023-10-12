@@ -218,17 +218,21 @@ public class StylesHelper {
 
     /**
      * Convenience wrapper that gets called after an import to re-sort all styles.
+     *
+     * @param context Current context
      */
-    public void updateMenuOrder() {
-        updateMenuOrder(getStyles(true));
+    public void updateMenuOrder(@NonNull final Context context) {
+        updateMenuOrder(context, getStyles(true));
     }
 
     /**
      * Sort the incoming list of styles according to their preferred status.
      *
-     * @param styles list to sort and update
+     * @param context Current context
+     * @param styles  list to sort and update
      */
-    public void updateMenuOrder(@NonNull final Collection<Style> styles) {
+    public void updateMenuOrder(@NonNull final Context context,
+                                @NonNull final Collection<Style> styles) {
         int order = 0;
 
         final StyleDao dao = styleDaoSupplier.get();
@@ -237,7 +241,7 @@ public class StylesHelper {
         for (final Style style : styles) {
             if (style.isPreferred()) {
                 style.setMenuPosition(order);
-                dao.update(style);
+                dao.update(context, style);
                 order++;
             }
         }
@@ -245,7 +249,7 @@ public class StylesHelper {
         for (final Style style : styles) {
             if (!style.isPreferred()) {
                 style.setMenuPosition(order);
-                dao.update(style);
+                dao.update(context, style);
                 order++;
             }
         }
@@ -260,14 +264,16 @@ public class StylesHelper {
      * <p>
      * if an <strong>insert</strong> fails, the style retains id==0.
      *
-     * @param style to save
+     * @param context Current context
+     * @param style   to save
      *
      * @return {@code true} on success
      *
      * @throws IllegalStateException if the UUID is missing
      */
     @SuppressWarnings("UnusedReturnValue")
-    public boolean updateOrInsert(@NonNull final Style style) {
+    public boolean updateOrInsert(@NonNull final Context context,
+                                  @NonNull final Style style) {
         if (BuildConfig.DEBUG /* always */) {
             if (style.getUuid().isEmpty()) {
                 throw new IllegalStateException(ERROR_MISSING_UUID);
@@ -281,29 +287,29 @@ public class StylesHelper {
         style.setId(dao.getStyleIdByUuid(style.getUuid()));
 
         if (style.getId() == 0) {
-            // When we get here, we know it's a UserStyle.
-            if (dao.insert((UserStyle) style) > 0) {
+            if (dao.insert(context, style) > 0) {
                 cache.put(style.getUuid(), style);
                 return true;
             }
             return false;
 
         } else {
-            // Both BuiltinStyle and UserStyle
-            return update(style);
+            return update(context, style);
         }
     }
 
     /**
      * Update the given style.
      *
-     * @param style to update
+     * @param context Current context
+     * @param style   to update
      *
      * @return {@code true} on success
      *
      * @throws IllegalStateException if the UUID is missing
      */
-    public boolean update(@NonNull final Style style) {
+    public boolean update(@NonNull final Context context,
+                          @NonNull final Style style) {
         if (BuildConfig.DEBUG /* always */) {
             if (style.getUuid().isEmpty()) {
                 throw new IllegalStateException(ERROR_MISSING_UUID);
@@ -316,7 +322,7 @@ public class StylesHelper {
             }
         }
 
-        if (styleDaoSupplier.get().update(style)) {
+        if (styleDaoSupplier.get().update(context, style)) {
             cache.put(style.getUuid(), style);
             return true;
         }
@@ -338,7 +344,7 @@ public class StylesHelper {
                 throw new IllegalStateException(ERROR_MISSING_UUID);
             }
             if (style.getId() <= 0) {
-                throw new IllegalStateException("A new or builtin Style cannot be deleted");
+                throw new IllegalStateException("A new or builtin/global Style cannot be deleted");
             }
         }
 

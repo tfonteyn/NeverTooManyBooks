@@ -118,7 +118,8 @@ public class PreferredStylesFragment
                                                final int itemCount) {
                     // The style settings in its SharedPreference file are already stored.
                     // But (some of) the database settings also need to be stored.
-                    vm.updateStyle(listAdapter.getItem(positionStart));
+                    //noinspection DataFlowIssue
+                    vm.updateStyle(getContext(), listAdapter.getItem(positionStart));
                     onChanged();
                 }
 
@@ -134,8 +135,10 @@ public class PreferredStylesFragment
             registerForActivityResult(new EditStyleContract(), o -> o.ifPresent(data -> {
                 if (data.isModified()) {
                     if (data.getUuid().isPresent()) {
+                        //noinspection DataFlowIssue
                         vm.getStyle(data.getUuid().get())
-                          .ifPresent(style -> vm.onStyleEdited(style, data.getTemplateUuid()));
+                          .ifPresent(style -> vm.onStyleEdited(getContext(),
+                                                               style, data.getTemplateUuid()));
                     }
                     // always update ALL rows as the order might have changed
                     listAdapter.notifyDataSetChanged();
@@ -227,7 +230,8 @@ public class PreferredStylesFragment
 
     @Override
     public void onPause() {
-        vm.updateMenuOrder();
+        //noinspection DataFlowIssue
+        vm.updateMenuOrder(getContext());
         super.onPause();
     }
 

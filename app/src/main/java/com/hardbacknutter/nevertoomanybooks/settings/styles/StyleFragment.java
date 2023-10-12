@@ -72,7 +72,8 @@ public class StyleFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    final boolean modified = vm.updateOrInsertStyle();
+                    //noinspection DataFlowIssue
+                    final boolean modified = vm.updateOrInsertStyle(getContext());
 
                     final Intent resultIntent = EditStyleContract
                             .createResult(vm.getTemplateUuid(),

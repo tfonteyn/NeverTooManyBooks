@@ -169,12 +169,14 @@ public class StyleViewModel
     /**
      * Called when the user leaves the fragment. Save any updates needed.
      *
+     * @param context Current context
+     *
      * @return {@code true} if the style was modified
      */
-    boolean updateOrInsertStyle() {
+    boolean updateOrInsertStyle(@NonNull final Context context) {
         //noinspection DataFlowIssue
         if (styleDataStore.isModified()) {
-            ServiceLocator.getInstance().getStyles().updateOrInsert(style);
+            ServiceLocator.getInstance().getStyles().updateOrInsert(context, style);
             return true;
         }
         return false;

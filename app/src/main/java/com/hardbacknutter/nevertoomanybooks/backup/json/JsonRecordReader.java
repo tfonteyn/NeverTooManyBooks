@@ -253,7 +253,7 @@ public class JsonRecordReader
 
                     if (recordType == RecordType.Styles
                         || recordType == RecordType.AutoDetect) {
-                        readStyles(root, stylesHelper);
+                        readStyles(context, root, stylesHelper);
                     }
 
                     if (recordType == RecordType.Preferences
@@ -318,14 +318,15 @@ public class JsonRecordReader
         return results;
     }
 
-    private void readStyles(@NonNull final JSONObject root,
+    private void readStyles(@NonNull final Context context,
+                            @NonNull final JSONObject root,
                             @NonNull final StylesHelper stylesHelper)
             throws JSONException {
         final JSONArray jsonRoot = root.optJSONArray(RecordType.Styles.getName());
         if (jsonRoot != null) {
             new StyleCoder()
                     .decode(jsonRoot)
-                    .forEach(stylesHelper::updateOrInsert);
+                    .forEach(style -> stylesHelper.updateOrInsert(context, style));
             results.styles = jsonRoot.length();
         }
     }

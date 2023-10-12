@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -205,9 +206,9 @@ public class PreferredStylesViewModel
     /**
      * Save the preferred Style menu list.
      */
-    void updateMenuOrder() {
+    void updateMenuOrder(@NonNull final Context context) {
         if (dirty) {
-            stylesHelper.updateMenuOrder(styleList);
+            stylesHelper.updateMenuOrder(context, styleList);
         }
     }
 
@@ -236,7 +237,8 @@ public class PreferredStylesViewModel
      * @param templateUuid uuid of the original style we cloned (different from current)
      *                     or edited (same as current).
      */
-    void onStyleEdited(@NonNull final Style style,
+    void onStyleEdited(@NonNull final Context context,
+                       @NonNull final Style style,
                        @NonNull final String templateUuid) {
         dirty = true;
 
@@ -267,11 +269,11 @@ public class PreferredStylesViewModel
 
                 // Make the new one preferred and update it
                 style.setPreferred(true);
-                stylesHelper.update(style);
+                stylesHelper.update(context, style);
 
                 // And demote the original and update it
                 templateStyle.setPreferred(false);
-                stylesHelper.update(templateStyle);
+                stylesHelper.update(context, templateStyle);
 
                 // Re-add the original at the very end of the list.
                 styleList.add(templateStyle);
@@ -293,8 +295,9 @@ public class PreferredStylesViewModel
      *
      * @param style to update
      */
-    void updateStyle(@NonNull final Style style) {
-        stylesHelper.update(style);
+    void updateStyle(@NonNull final Context context,
+                     @NonNull final Style style) {
+        stylesHelper.update(context, style);
     }
 
     /**

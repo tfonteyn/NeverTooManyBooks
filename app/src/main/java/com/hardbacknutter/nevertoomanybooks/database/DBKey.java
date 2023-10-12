@@ -239,7 +239,7 @@ public final class DBKey {
     /**
      * The type of Style.
      * <p>
-     * Note the actual name of the columns is incorrect.
+     * Note the actual name of the column is incorrect.
      * This used to be a boolean (0=user, 1=builtin).
      *
      * @see com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType
@@ -247,13 +247,25 @@ public final class DBKey {
     public static final String STYLE_TYPE = "builtin";
     public static final String STYLE_IS_PREFERRED = "preferred";
     public static final String STYLE_MENU_POSITION = "menu_order";
+    /**
+     * @see com.hardbacknutter.nevertoomanybooks.booklist.style.Style.Layout
+     */
     public static final String STYLE_LAYOUT = "layout";
+    /**
+     * @see com.hardbacknutter.nevertoomanybooks.booklist.style.Style.CoverClickAction
+     */
     public static final String STYLE_COVER_CLICK_ACTION = "cover_click_action";
     public static final String STYLE_EXP_LEVEL = "exp_level";
     public static final String STYLE_ROW_USES_PREF_HEIGHT = "row_pref_height";
     public static final String STYLE_AUTHOR_SORT_BY_GIVEN_NAME = "author_sort_gn";
     public static final String STYLE_AUTHOR_SHOW_BY_GIVEN_NAME = "author_show_gn";
+    /**
+     * @see com.hardbacknutter.nevertoomanybooks.booklist.style.Style.TextScale
+     */
     public static final String STYLE_TEXT_SCALE = "text_scale";
+    /**
+     * @see com.hardbacknutter.nevertoomanybooks.booklist.style.Style.CoverScale
+     */
     public static final String STYLE_COVER_SCALE = "cover_scale";
     /**
      * @see com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader

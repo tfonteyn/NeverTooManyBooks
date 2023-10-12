@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao;
 
+import android.content.Context;
+
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
@@ -60,20 +62,24 @@ public interface StyleDao {
     /**
      * Create a new {@link UserStyle}.
      *
-     * @param style to insert. Will be updated with the id.
+     * @param context Current context
+     * @param style   to insert. Will be updated with the id.
      *
      * @return the row id of the newly inserted row, or {@code -1} if an error occurred
      */
-    long insert(@NonNull UserStyle style);
+    long insert(@NonNull Context context,
+                @NonNull Style style);
 
     /**
      * Update a {@link Style} - both {@link UserStyle} and {@link BuiltinStyle} can be updated.
      *
-     * @param style to update
+     * @param context Current context
+     * @param style   to update
      *
      * @return {@code true} for success.
      */
-    boolean update(@NonNull Style style);
+    boolean update(@NonNull Context context,
+                   @NonNull Style style);
 
     /**
      * Delete a {@link Style}.

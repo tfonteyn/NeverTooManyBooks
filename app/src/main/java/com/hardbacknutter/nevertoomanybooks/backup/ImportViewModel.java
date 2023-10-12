@@ -119,11 +119,12 @@ public class ImportViewModel
         return 0;
     }
 
-    void postProcessStyles(@NonNull final ImportResults result) {
+    void postProcessStyles(@NonNull final Context context,
+                           @NonNull final ImportResults result) {
         if (result.styles > 0) {
             final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
             // Resort the styles menu as per their (new) order.
-            stylesHelper.updateMenuOrder();
+            stylesHelper.updateMenuOrder(context);
             // Force a refresh of the cached styles.
             stylesHelper.clearCache();
         }

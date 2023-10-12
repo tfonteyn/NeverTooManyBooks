@@ -80,14 +80,14 @@ public class StyleDataStore
 
 
     /**
-     * Style overrides global setting with the same key.
+     * How to show author names.
      *
      * @see BaseStyle#setShowAuthorByGivenName(boolean)
      */
     public static final String PK_SHOW_AUTHOR_NAME_GIVEN_FIRST = "show.author.name.given_first";
 
     /**
-     * Style overrides global setting with the same key.
+     * How to sort author names.
      *
      * @see BaseStyle#setSortAuthorByGivenName(boolean)
      */
