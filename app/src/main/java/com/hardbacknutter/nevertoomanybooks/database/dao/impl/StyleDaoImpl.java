@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.StyleCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
@@ -244,8 +245,9 @@ public class StyleDaoImpl
             stmt.bindLong(++c, style.getCoverScale());
             stmt.bindLong(++c, style.getHeaderFieldVisibilityValue());
 
-            stmt.bindLong(++c, style.getFieldVisibility(Style.Screen.Detail).getBitValue());
-            stmt.bindLong(++c, style.getFieldVisibility(Style.Screen.List).getBitValue());
+            stmt.bindLong(++c,
+                          style.getFieldVisibility(FieldVisibility.Screen.Detail).getBitValue());
+            stmt.bindLong(++c, style.getFieldVisibility(FieldVisibility.Screen.List).getBitValue());
             stmt.bindString(++c, StyleCoder.getBookLevelFieldsOrderByAsJsonString(style));
 
             final long iId = stmt.executeInsert();
@@ -290,9 +292,9 @@ public class StyleDaoImpl
             cv.put(DBKey.STYLE_LIST_HEADER, userStyle.getHeaderFieldVisibilityValue());
 
             cv.put(DBKey.STYLE_DETAILS_SHOW_FIELDS,
-                   style.getFieldVisibility(Style.Screen.Detail).getBitValue());
+                   style.getFieldVisibility(FieldVisibility.Screen.Detail).getBitValue());
             cv.put(DBKey.STYLE_BOOK_LEVEL_FIELDS_VISIBILITY,
-                   style.getFieldVisibility(Style.Screen.List).getBitValue());
+                   style.getFieldVisibility(FieldVisibility.Screen.List).getBitValue());
 
             cv.put(DBKey.STYLE_BOOK_LEVEL_FIELDS_ORDER_BY,
                    StyleCoder.getBookLevelFieldsOrderByAsJsonString(style));

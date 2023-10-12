@@ -284,7 +284,7 @@ public class StyleDataStore
                 return;
         }
 
-        final FieldVisibility listFV = style.getFieldVisibility(Style.Screen.List);
+        final FieldVisibility listFV = style.getFieldVisibility(FieldVisibility.Screen.List);
         final String listDbKey = PK_LIST_SHOW_FIELD_TO_DB_KEY.get(key);
         if (listDbKey != null) {
             listFV.setVisible(listDbKey, value);
@@ -292,7 +292,7 @@ public class StyleDataStore
             return;
         }
 
-        final FieldVisibility detailFV = style.getFieldVisibility(Style.Screen.Detail);
+        final FieldVisibility detailFV = style.getFieldVisibility(FieldVisibility.Screen.Detail);
         final String detailDbKey = PK_DETAILS_SHOW_FIELD_TO_DB_KEY.get(key);
         if (detailDbKey != null) {
             detailFV.setVisible(detailDbKey, value);
@@ -324,12 +324,12 @@ public class StyleDataStore
 
         final String listDbKey = PK_LIST_SHOW_FIELD_TO_DB_KEY.get(key);
         if (listDbKey != null) {
-            return style.isShowField(Style.Screen.List, listDbKey);
+            return style.isShowField(FieldVisibility.Screen.List, listDbKey);
         }
 
         final String detailDbKey = PK_DETAILS_SHOW_FIELD_TO_DB_KEY.get(key);
         if (detailDbKey != null) {
-            return style.isShowField(Style.Screen.Detail, detailDbKey);
+            return style.isShowField(FieldVisibility.Screen.Detail, detailDbKey);
         }
 
         final Style.UnderEach underEach = Style.UnderEach.findByPrefKey(key);

@@ -296,7 +296,7 @@ public interface Style {
      *
      * @return {@code true} if in use
      */
-    boolean isShowField(@NonNull Screen screen,
+    boolean isShowField(@NonNull FieldVisibility.Screen screen,
                         @NonNull String dbKey);
 
     /**
@@ -307,7 +307,7 @@ public interface Style {
      * @return visibility
      */
     @NonNull
-    FieldVisibility getFieldVisibility(@NonNull Screen screen);
+    FieldVisibility getFieldVisibility(@NonNull FieldVisibility.Screen screen);
 
     /**
      * Get the list of fields on which we'll sort the lowest level (books) in the BoB.
@@ -468,18 +468,6 @@ public interface Style {
         public int getId() {
             return id;
         }
-    }
-
-    /**
-     * Which visibility options to use from the user preferences/style.
-     */
-    enum Screen {
-        /** Bypass the style and use the global setting. */
-        Global,
-        /** Based on Style, for use in a list/adapter. */
-        List,
-        /** Based on Style, for use on a details screen, dialog, ... */
-        Detail
     }
 
     /**

@@ -25,6 +25,7 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
@@ -47,7 +48,8 @@ public class BoBTaskTest
         final Optional<Style> s1 = helper.getStyle(BuiltinStyle.UUID_FOR_TESTING_ONLY);
         assertTrue(s1.isPresent());
 
-        final Set<String> keys = s1.get().getFieldVisibility(Style.Screen.List).getKeys(true);
+        final Set<String> keys = s1.get().getFieldVisibility(FieldVisibility.Screen.List)
+                                   .getKeys(true);
         assertFalse(keys.isEmpty());
 
         final long expressionCount = keys

@@ -41,6 +41,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
@@ -266,7 +267,7 @@ public class StyleFragment
 
 
         // List layout
-        pListBookLevelFields.setSummary(style.getFieldVisibility(Style.Screen.List)
+        pListBookLevelFields.setSummary(style.getFieldVisibility(FieldVisibility.Screen.List)
                                              .getPreferencesSummaryText(context));
         pCoverScale.setSummary(context.getResources().getStringArray(
                 R.array.pe_bob_thumbnail_scale)[style.getCoverScale()]);

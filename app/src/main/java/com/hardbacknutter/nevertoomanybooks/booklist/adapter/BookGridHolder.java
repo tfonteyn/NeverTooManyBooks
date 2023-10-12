@@ -30,6 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
@@ -134,7 +135,7 @@ public class BookGridHolder
     @Override
     public void onBind(@NonNull final DataHolder rowData) {
         if (useAuthor == null) {
-            useAuthor = style.isShowField(Style.Screen.List, DBKey.FK_AUTHOR);
+            useAuthor = style.isShowField(FieldVisibility.Screen.List, DBKey.FK_AUTHOR);
         }
 
         final boolean hasImage = coverHelper.setImageView(vb.coverImage0,

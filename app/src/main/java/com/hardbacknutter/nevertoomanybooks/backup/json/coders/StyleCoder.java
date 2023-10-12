@@ -32,6 +32,7 @@ import java.util.stream.IntStream;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BaseStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType;
@@ -141,10 +142,10 @@ public class StyleCoder
 
             // since v3 stored as bitmask and no longer as individual flags
             dest.put(PK_DETAILS_FIELD_VISIBILITY,
-                     userStyle.getFieldVisibility(Style.Screen.Detail).getBitValue());
+                     userStyle.getFieldVisibility(FieldVisibility.Screen.Detail).getBitValue());
             // since v3 stored as bitmask and no longer as individual flags
             dest.put(PK_LIST_FIELD_VISIBILITY,
-                     userStyle.getFieldVisibility(Style.Screen.List).getBitValue());
+                     userStyle.getFieldVisibility(FieldVisibility.Screen.List).getBitValue());
 
             dest.put(PK_LIST_FIELD_ORDER_BY, encodeBookLevelFieldsOrderBy(userStyle));
 
@@ -258,7 +259,7 @@ public class StyleCoder
                 }
 
                 if (source.has(PK_DETAILS_FIELD_VISIBILITY)) {
-                    userStyle.getFieldVisibility(Style.Screen.Detail)
+                    userStyle.getFieldVisibility(FieldVisibility.Screen.Detail)
                              .setBitValue(source.getLong(PK_DETAILS_FIELD_VISIBILITY));
                 } else {
                     // backwards compatibility
@@ -266,7 +267,7 @@ public class StyleCoder
                 }
 
                 if (source.has(PK_LIST_FIELD_VISIBILITY)) {
-                    userStyle.getFieldVisibility(Style.Screen.List)
+                    userStyle.getFieldVisibility(FieldVisibility.Screen.List)
                              .setBitValue(source.getLong(PK_LIST_FIELD_VISIBILITY));
                 } else {
                     // backwards compatibility
@@ -324,12 +325,14 @@ public class StyleCoder
         if (source.has(V2.DETAILS_COVER[0])) {
             final boolean show = source.getBoolean(V2.DETAILS_COVER[0]);
 
-            style.getFieldVisibility(Style.Screen.Detail).setVisible(DBKey.COVER[0], show);
+            style.getFieldVisibility(FieldVisibility.Screen.Detail)
+                 .setVisible(DBKey.COVER[0], show);
         }
         if (source.has(V2.DETAILS_COVER[1])) {
             final boolean show = source.getBoolean(V2.DETAILS_COVER[1]);
 
-            style.getFieldVisibility(Style.Screen.Detail).setVisible(DBKey.COVER[1], show);
+            style.getFieldVisibility(FieldVisibility.Screen.Detail)
+                 .setVisible(DBKey.COVER[1], show);
         }
         // reminder: this is for backwards compatibility - don't add new fields here!
     }
@@ -340,60 +343,60 @@ public class StyleCoder
         if (source.has(V2.LIST_THUMBNAILS)) {
             final boolean show = source.getBoolean(V2.LIST_THUMBNAILS);
 
-            style.getFieldVisibility(Style.Screen.List).setVisible(DBKey.COVER[0], show);
+            style.getFieldVisibility(FieldVisibility.Screen.List).setVisible(DBKey.COVER[0], show);
         }
         if (source.has(V2.LIST_AUTHOR)) {
             final boolean show = source.getBoolean(V2.LIST_AUTHOR);
 
-            style.getFieldVisibility(Style.Screen.List)
+            style.getFieldVisibility(FieldVisibility.Screen.List)
                  .setVisible(DBKey.FK_AUTHOR, show);
         }
         if (source.has(V2.LIST_PUBLISHER)) {
             final boolean show = source.getBoolean(V2.LIST_PUBLISHER);
 
-            style.getFieldVisibility(Style.Screen.List)
+            style.getFieldVisibility(FieldVisibility.Screen.List)
                  .setVisible(DBKey.FK_PUBLISHER, show);
         }
         if (source.has(V2.LIST_PUBLICATION_DATE)) {
             final boolean show = source.getBoolean(V2.LIST_PUBLICATION_DATE);
 
-            style.getFieldVisibility(Style.Screen.List)
+            style.getFieldVisibility(FieldVisibility.Screen.List)
                  .setVisible(DBKey.BOOK_PUBLICATION__DATE, show);
         }
         if (source.has(V2.LIST_FORMAT)) {
             final boolean show = source.getBoolean(V2.LIST_FORMAT);
 
-            style.getFieldVisibility(Style.Screen.List)
+            style.getFieldVisibility(FieldVisibility.Screen.List)
                  .setVisible(DBKey.FORMAT, show);
         }
         if (source.has(V2.LIST_LANGUAGE)) {
             final boolean show = source.getBoolean(V2.LIST_LANGUAGE);
 
-            style.getFieldVisibility(Style.Screen.List)
+            style.getFieldVisibility(FieldVisibility.Screen.List)
                  .setVisible(DBKey.LANGUAGE, show);
         }
         if (source.has(V2.LIST_LOCATION)) {
             final boolean show = source.getBoolean(V2.LIST_LOCATION);
 
-            style.getFieldVisibility(Style.Screen.List)
+            style.getFieldVisibility(FieldVisibility.Screen.List)
                  .setVisible(DBKey.LOCATION, show);
         }
         if (source.has(V2.LIST_RATING)) {
             final boolean show = source.getBoolean(V2.LIST_RATING);
 
-            style.getFieldVisibility(Style.Screen.List)
+            style.getFieldVisibility(FieldVisibility.Screen.List)
                  .setVisible(DBKey.RATING, show);
         }
         if (source.has(V2.LIST_BOOKSHELVES)) {
             final boolean show = source.getBoolean(V2.LIST_BOOKSHELVES);
 
-            style.getFieldVisibility(Style.Screen.List)
+            style.getFieldVisibility(FieldVisibility.Screen.List)
                  .setVisible(DBKey.FK_BOOKSHELF, show);
         }
         if (source.has(V2.LIST_ISBN)) {
             final boolean show = source.getBoolean(V2.LIST_ISBN);
 
-            style.getFieldVisibility(Style.Screen.List)
+            style.getFieldVisibility(FieldVisibility.Screen.List)
                  .setVisible(DBKey.BOOK_ISBN, show);
         }
         // reminder: this is for backwards compatibility - don't add new fields here!

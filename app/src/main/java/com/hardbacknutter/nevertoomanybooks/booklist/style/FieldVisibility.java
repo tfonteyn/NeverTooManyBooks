@@ -280,4 +280,16 @@ public class FieldVisibility {
     public int hashCode() {
         return Objects.hash(bits, dbKeys);
     }
+
+    /**
+     * Which visibility options to use from the user preferences/style.
+     */
+    public enum Screen {
+        /** Bypass the style and use the global setting. */
+        Global,
+        /** Based on Style, for use in a list/adapter. */
+        List,
+        /** Based on Style, for use on a details screen, dialog, ... */
+        Detail
+    }
 }

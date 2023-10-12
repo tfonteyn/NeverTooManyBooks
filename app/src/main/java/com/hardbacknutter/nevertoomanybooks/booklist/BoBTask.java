@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.FtsMatchFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.NumberListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PEntityListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
@@ -343,13 +344,13 @@ public class BoBTask
         // with {@link DBDefinitions#TBL_BOOK_LOANEE}. See below
         style.getBookLevelFieldsOrderBy().entrySet()
              .stream()
-             .filter(field -> style.isShowField(Style.Screen.List, field.getKey()))
+             .filter(field -> style.isShowField(FieldVisibility.Screen.List, field.getKey()))
              .map(field -> createDomainExpressions(field.getKey(), field.getValue(),
                                                    style))
              .flatMap(List::stream)
              .forEach(builder::addDomain);
 
-        if (style.isShowField(Style.Screen.List, DBKey.LOANEE_NAME)) {
+        if (style.isShowField(FieldVisibility.Screen.List, DBKey.LOANEE_NAME)) {
             builder.addLeftOuterJoin(DBDefinitions.TBL_BOOK_LOANEE);
         }
 

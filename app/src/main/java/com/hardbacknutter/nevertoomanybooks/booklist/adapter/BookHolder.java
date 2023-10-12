@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.MapDBKey;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
@@ -122,7 +123,7 @@ public class BookHolder
 
         vb = BooksonbookshelfRowBookBinding.bind(itemView);
 
-        if (style.isShowField(Style.Screen.List, DBKey.COVER[0])) {
+        if (style.isShowField(FieldVisibility.Screen.List, DBKey.COVER[0])) {
             coverHelper = new CoverHelper(coverLongestSide,
                                           ImageView.ScaleType.FIT_START,
                                           ImageViewLoader.MaxSize.Enforce);
@@ -169,7 +170,7 @@ public class BookHolder
         super.setOnRowClickListener(listener);
 
         if (listener != null) {
-            if (style.isShowField(Style.Screen.List, DBKey.COVER[0])) {
+            if (style.isShowField(FieldVisibility.Screen.List, DBKey.COVER[0])) {
                 // Tapping the cover image will open the book-details page
                 if (style.getCoverClickAction() == Style.CoverClickAction.OpenBookDetails) {
                     vb.coverImage0.setOnClickListener(v -> listener
@@ -186,7 +187,7 @@ public class BookHolder
     public void onBind(@NonNull final DataHolder rowData) {
         if (use == null) {
             // init once
-            use = style.getFieldVisibility(Style.Screen.List)
+            use = style.getFieldVisibility(FieldVisibility.Screen.List)
                        .getKeys(false)
                        .stream()
                        // Sanity check making sure the domain is present

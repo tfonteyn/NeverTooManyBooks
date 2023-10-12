@@ -186,7 +186,7 @@ public final class GlobalStyle {
      * @throws IllegalArgumentException when there is a bug with the enums
      */
     @NonNull
-    public FieldVisibility getFieldVisibility(@NonNull final Style.Screen screen) {
+    public FieldVisibility getFieldVisibility(@NonNull final FieldVisibility.Screen screen) {
         switch (screen) {
             case List:
                 return new BookLevelFieldVisibility();

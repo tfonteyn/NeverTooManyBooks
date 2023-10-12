@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.booklist.adapter.BooklistAdapter;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
@@ -543,7 +544,7 @@ public class BooksOnBookshelfViewModel
     private int getCoverLongestSide(@NonNull final Context context,
                                     @NonNull final Style style,
                                     final boolean hasEmbeddedDetailsFrame) {
-        if (style.isShowField(Style.Screen.List, DBKey.COVER[0])) {
+        if (style.isShowField(FieldVisibility.Screen.List, DBKey.COVER[0])) {
             if (hasEmbeddedDetailsFrame) {
                 return style.getCoverMaxSizeInPixels(context, Style.Layout.List);
             } else {

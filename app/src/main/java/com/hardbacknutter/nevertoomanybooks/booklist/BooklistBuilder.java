@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
@@ -928,12 +929,12 @@ class BooklistBuilder {
             joinWithAuthors(sb);
 
             if (style.hasGroup(BooklistGroup.SERIES)
-                || style.isShowField(Style.Screen.List, DBKey.FK_SERIES)) {
+                || style.isShowField(FieldVisibility.Screen.List, DBKey.FK_SERIES)) {
                 joinWithSeries(sb);
             }
 
             if (style.hasGroup(BooklistGroup.PUBLISHER)
-                || style.isShowField(Style.Screen.List, DBKey.FK_PUBLISHER)) {
+                || style.isShowField(FieldVisibility.Screen.List, DBKey.FK_PUBLISHER)) {
                 joinWithPublishers(sb);
             }
 

@@ -94,7 +94,7 @@ public class UserStyleTest
             assertEquals(s1.isShowBooks(item), s2.isShowBooks(item));
         }
 
-        for (final Style.Screen item : Style.Screen.values()) {
+        for (final FieldVisibility.Screen item : FieldVisibility.Screen.values()) {
             assertEquals(s1.getFieldVisibility(item).getBitValue(),
                          s2.getFieldVisibility(item).getBitValue());
         }

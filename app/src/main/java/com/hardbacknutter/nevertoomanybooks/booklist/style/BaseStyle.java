@@ -63,9 +63,10 @@ public abstract class BaseStyle
 
     private static final String ERROR_UUID_IS_EMPTY = "uuid.isEmpty()";
 
-    /** Configuration for the fields shown on the given {@link Screen}. */
+    /** Configuration for the fields shown on the given {@link FieldVisibility.Screen}. */
     @NonNull
-    private final Map<Screen, FieldVisibility> fieldVisibility = new EnumMap<>(Screen.class);
+    private final Map<FieldVisibility.Screen, FieldVisibility> fieldVisibility = new EnumMap<>(
+            FieldVisibility.Screen.class);
 
     /**
      * The <strong>ordered</strong> {@link BooklistGroup}s shown/handled by this style.
@@ -167,8 +168,10 @@ public abstract class BaseStyle
         textScale = globalStyle.getTextScale();
         groupRowUsesPreferredHeight = globalStyle.isGroupRowUsesPreferredHeight();
 
-        fieldVisibility.put(Screen.List, globalStyle.getFieldVisibility(Screen.List));
-        fieldVisibility.put(Screen.Detail, globalStyle.getFieldVisibility(Screen.Detail));
+        fieldVisibility.put(FieldVisibility.Screen.List, globalStyle.getFieldVisibility(
+                FieldVisibility.Screen.List));
+        fieldVisibility.put(FieldVisibility.Screen.Detail, globalStyle.getFieldVisibility(
+                FieldVisibility.Screen.Detail));
 
         showAuthorByGivenName = globalStyle.isShowAuthorByGivenName();
         sortAuthorByGivenName = globalStyle.isSortAuthorByGivenName();
@@ -205,7 +208,8 @@ public abstract class BaseStyle
         textScale = style.getTextScale();
         groupRowUsesPreferredHeight = style.isGroupRowUsesPreferredHeight();
 
-        for (final Screen screen : List.of(Screen.List, Screen.Detail)) {
+        for (final FieldVisibility.Screen screen : List.of(FieldVisibility.Screen.List,
+                                                           FieldVisibility.Screen.Detail)) {
             getFieldVisibility(screen).setBitValue(style.getFieldVisibility(screen).getBitValue());
         }
 
@@ -425,10 +429,10 @@ public abstract class BaseStyle
     }
 
     @Override
-    public boolean isShowField(@NonNull final Screen screen,
+    public boolean isShowField(@NonNull final FieldVisibility.Screen screen,
                                @NonNull final String dbKey) {
 
-        if (screen == Screen.Global) {
+        if (screen == FieldVisibility.Screen.Global) {
             return ServiceLocator.getInstance().getGlobalFieldVisibility()
                                  .isVisible(dbKey)
                                  .orElse(true);
@@ -458,8 +462,8 @@ public abstract class BaseStyle
 
     @Override
     @NonNull
-    public FieldVisibility getFieldVisibility(@NonNull final Screen screen) {
-        if (screen == Screen.Global) {
+    public FieldVisibility getFieldVisibility(@NonNull final FieldVisibility.Screen screen) {
+        if (screen == FieldVisibility.Screen.Global) {
             return ServiceLocator.getInstance().getGlobalFieldVisibility();
         } else {
             //noinspection DataFlowIssue
