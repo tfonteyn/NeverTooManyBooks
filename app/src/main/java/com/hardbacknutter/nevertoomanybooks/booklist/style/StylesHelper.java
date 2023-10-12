@@ -61,7 +61,7 @@ public class StylesHelper {
     @NonNull
     private final Supplier<Context> appContextSupplier;
     @Nullable
-    private GlobalStyle globalStyle;
+    private Style globalStyle;
 
     /**
      * Constructor.
@@ -81,11 +81,22 @@ public class StylesHelper {
      * @return the global/default style preferences
      */
     @NonNull
-    public GlobalStyle getGlobalStyle() {
+    public Style getGlobalStyle() {
         if (globalStyle == null) {
-            globalStyle = new GlobalStyle(appContextSupplier.get());
+            globalStyle = styleDaoSupplier.get().getGlobalStyle();
         }
         return globalStyle;
+    }
+
+    /**
+     * Clear and reload the {@link GlobalStyle} from the database.
+     *
+     * @return newly loaded global/default style preferences
+     */
+    @NonNull
+    public Style reloadGlobalStyle() {
+        globalStyle = null;
+        return getGlobalStyle();
     }
 
     /**

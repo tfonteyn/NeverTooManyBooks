@@ -24,13 +24,10 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.StyleCoder;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
@@ -52,7 +49,8 @@ public class UserStyle
      * @see StyleCoder
      */
     private UserStyle(@NonNull final String uuid) {
-        super(uuid, 0);
+        super(requireUuid(uuid), 0,
+              ServiceLocator.getInstance().getStyles().getGlobalStyle());
     }
 
     /**
@@ -61,53 +59,8 @@ public class UserStyle
      * @param rowData with data
      */
     private UserStyle(@NonNull final DataHolder rowData) {
-        super(rowData.getString(DBKey.STYLE_UUID), rowData.getLong(DBKey.PK_ID));
-
+        super(rowData);
         name = rowData.getString(DBKey.STYLE_NAME);
-        setPreferred(rowData.getBoolean(DBKey.STYLE_IS_PREFERRED));
-        setMenuPosition(rowData.getInt(DBKey.STYLE_MENU_POSITION));
-
-        setLayout(Layout.byId(rowData.getInt(DBKey.STYLE_LAYOUT)));
-
-        setCoverClickAction(CoverClickAction.byId(rowData.getInt(DBKey.STYLE_COVER_CLICK_ACTION)));
-
-        // set the groups first !
-        List<Integer> groupIds;
-        try {
-            groupIds = Arrays.stream(rowData.getString(DBKey.STYLE_GROUPS).split(","))
-                             .map(Integer::parseInt)
-                             .collect(Collectors.toList());
-        } catch (@NonNull final NumberFormatException ignore) {
-            // we should never get here... flw... try to recover.
-            groupIds = List.of(BooklistGroup.AUTHOR);
-        }
-        setGroupIds(groupIds);
-
-        setPrimaryAuthorType(rowData.getInt(DBKey.STYLE_GROUPS_AUTHOR_PRIMARY_TYPE));
-
-        for (final Style.UnderEach item : Style.UnderEach.values()) {
-            setShowBooksUnderEachGroup(item.getGroupId(), rowData.getBoolean(item.getDbKey()));
-        }
-
-        setExpansionLevel(rowData.getInt(DBKey.STYLE_EXP_LEVEL));
-        setGroupRowUsesPreferredHeight(rowData.getBoolean(DBKey.STYLE_ROW_USES_PREF_HEIGHT));
-
-        setSortAuthorByGivenName(rowData.getBoolean(DBKey.STYLE_AUTHOR_SORT_BY_GIVEN_NAME));
-        setShowAuthorByGivenName(rowData.getBoolean(DBKey.STYLE_AUTHOR_SHOW_BY_GIVEN_NAME));
-
-        setTextScale(rowData.getInt(DBKey.STYLE_TEXT_SCALE));
-        setCoverScale(rowData.getInt(DBKey.STYLE_COVER_SCALE));
-
-        setHeaderFieldVisibilityValue(rowData.getInt(DBKey.STYLE_LIST_HEADER));
-
-        getFieldVisibility(FieldVisibility.Screen.List)
-                .setBitValue(rowData.getLong(DBKey.STYLE_BOOK_LEVEL_FIELDS_VISIBILITY));
-        getFieldVisibility(FieldVisibility.Screen.Detail)
-                .setBitValue(rowData.getLong(DBKey.STYLE_DETAILS_SHOW_FIELDS));
-
-        setBookLevelFieldsOrderBy(
-                StyleCoder.decodeBookLevelFieldsOrderBy(
-                        rowData.getString(DBKey.STYLE_BOOK_LEVEL_FIELDS_ORDER_BY)));
     }
 
     /**
@@ -124,8 +77,8 @@ public class UserStyle
     protected UserStyle(@NonNull final Context context,
                         final long id,
                         @NonNull final String uuid,
-                        @NonNull final BaseStyle style) {
-        super(uuid, id, style);
+                        @NonNull final Style style) {
+        super(requireUuid(uuid), id, style);
         name = style.getLabel(context);
     }
 
@@ -137,7 +90,7 @@ public class UserStyle
      * @return the loaded UserStyle
      */
     @NonNull
-    public static UserStyle createFromDatabase(@NonNull final DataHolder rowData) {
+    public static Style createFromDatabase(@NonNull final DataHolder rowData) {
         return new UserStyle(rowData);
     }
 

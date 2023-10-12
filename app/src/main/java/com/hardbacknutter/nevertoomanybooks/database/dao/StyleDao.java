@@ -49,7 +49,7 @@ public interface StyleDao {
      * @return an ordered Map of styles
      */
     @NonNull
-    Map<String, UserStyle> getUserStyles();
+    Map<String, Style> getUserStyles();
 
     /**
      * Get the builtin Styles.
@@ -57,7 +57,15 @@ public interface StyleDao {
      * @return an ordered Map of styles
      */
     @NonNull
-    Map<String, BuiltinStyle> getBuiltinStyles();
+    Map<String, Style> getBuiltinStyles();
+
+    /**
+     * Get the global/defaults Style.
+     *
+     * @return the instance
+     */
+    @NonNull
+    Style getGlobalStyle();
 
     /**
      * Create a new {@link UserStyle}.

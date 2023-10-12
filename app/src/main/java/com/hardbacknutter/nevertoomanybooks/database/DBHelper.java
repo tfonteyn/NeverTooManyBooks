@@ -93,7 +93,7 @@ public class DBHelper
         extends SQLiteOpenHelper {
 
     /** Current version. */
-    public static final int DATABASE_VERSION = 26;
+    public static final int DATABASE_VERSION = 27;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -278,6 +278,8 @@ public class DBHelper
               .remove("search.form.advanced")
               .remove("search.site.goodreads.data.enabled")
               .remove("search.site.goodreads.covers.enabled")
+              .remove("show.author.name.given_first")
+              .remove("sort.author.name.given_first")
               .remove("startup.lastVersion")
               .remove("tmp.edit.book.tab.authSer")
               .remove("ui.messages.use")
@@ -728,6 +730,15 @@ public class DBHelper
                     DBDefinitions.DOM_STYLE_BOOK_LEVEL_FIELDS_ORDER_BY,
                     DBDefinitions.DOM_STYLE_COVER_CLICK_ACTION,
                     DBDefinitions.DOM_STYLE_LAYOUT);
+        }
+        if (oldVersion < 27) {
+            final SharedPreferences prefs = PreferenceManager
+                    .getDefaultSharedPreferences(context);
+            final boolean sortAuthorByGivenName =
+                    prefs.getBoolean("sort.author.name.given_first", false);
+            final boolean showAuthorByGivenName =
+                    prefs.getBoolean("show.author.name.given_first", false);
+            StyleDaoImpl.insertGlobalDefaults(db, sortAuthorByGivenName, showAuthorByGivenName);
         }
 
         // SqLite 3.35.0 from 2021-03-12 adds ALTER TABLE DROP COLUMN

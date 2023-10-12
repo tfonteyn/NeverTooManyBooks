@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 import androidx.core.math.MathUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -40,6 +41,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.backup.json.coders.StyleCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
@@ -48,22 +50,52 @@ import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LinkedMap;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 
-/**
- * Represents a specific style of booklist (e.g. Authors/Series).<br>
- * Individual {@link BooklistGroup} objects are added to a {@link BaseStyle} in order
- * to describe the resulting list style.
- */
 public abstract class BaseStyle
         implements Style {
 
-    private static final String ERROR_UUID_IS_EMPTY = "uuid.isEmpty()";
+    /**
+     * IMPORTANT: this is the ALMOST the same set as used by BookLevelFieldVisibility
+     * and should be kept in sync.
+     * but note the differences:
+     * <ul>
+     *     <li>TITLE added: we ALWAYS display it.</li>
+     *     <li>ISBN & LANGUAGE removed: we already have it added during BooklistBuilder setup.</li>
+     * </ul>
+     * Also note this is an <strong>ORDERED LIST!</strong>
+     */
+    private static final Map<String, Sort> BOOK_LEVEL_FIELDS_DEFAULTS = new LinkedHashMap<>();
+
+    static {
+        // The default is sorting by book title only
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.TITLE, Sort.Asc);
+
+        // The field order here is assuming the user will need to sort more likely
+        // on the fields listed at the top.
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.TITLE_ORIGINAL_LANG, Sort.Unsorted);
+
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.FK_AUTHOR, Sort.Unsorted);
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.FK_SERIES, Sort.Unsorted);
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.FK_PUBLISHER, Sort.Unsorted);
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.BOOK_PUBLICATION__DATE, Sort.Unsorted);
+
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.FORMAT, Sort.Unsorted);
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.LOCATION, Sort.Unsorted);
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.RATING, Sort.Unsorted);
+
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.PAGE_COUNT, Sort.Unsorted);
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.BOOK_CONDITION, Sort.Unsorted);
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.SIGNED__BOOL, Sort.Unsorted);
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.EDITION__BITMASK, Sort.Unsorted);
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.LOANEE_NAME, Sort.Unsorted);
+    }
 
     /** Configuration for the fields shown on the given {@link FieldVisibility.Screen}. */
     @NonNull
-    private final Map<FieldVisibility.Screen, FieldVisibility> fieldVisibility = new EnumMap<>(
-            FieldVisibility.Screen.class);
+    private final Map<FieldVisibility.Screen, FieldVisibility> fieldVisibility =
+            new EnumMap<>(FieldVisibility.Screen.class);
 
     /**
      * The <strong>ordered</strong> {@link BooklistGroup}s shown/handled by this style.
@@ -79,96 +111,123 @@ public abstract class BaseStyle
      * Key: the {@link DBKey} string.
      */
     @NonNull
-    private final Map<String, Sort> bookLevelFieldsOrderBy = new LinkedHashMap<>();
+    private final Map<String, Sort> bookLevelFieldsOrderBy =
+            new LinkedHashMap<>(BOOK_LEVEL_FIELDS_DEFAULTS);
     @NonNull
     private final String uuid;
     /**
      * Row id of database row from which this object comes.
      * A '0' is for an as yet unsaved user-style.
      * Always NEGATIVE (e.g. <0 ) for a build-in style
+     * <p>
+     * The global style will have {@code Integer.MIN_VALUE}.
      */
     private long id;
 
     @NonNull
-    private Layout layout;
+    private Layout layout = Layout.List;
 
     @NonNull
-    private CoverClickAction coverClickAction;
+    private CoverClickAction coverClickAction = CoverClickAction.Zoom;
 
     /**
      * The menu position of this style as sorted by the user.
      * Preferred styles will be at the top.
      */
-    private int menuPosition;
+    private int menuPosition = MENU_POSITION_NOT_PREFERRED;
     /**
      * Is this style preferred by the user; i.e. should it be shown in the preferred-list.
      */
     private boolean preferred;
     /** Relative scaling factor for text on the list screen. */
     @Style.TextScale
-    private int textScale;
+    private int textScale = DEFAULT_TEXT_SCALE;
     /** Relative scaling factor for covers on the list screen. */
     @Style.CoverScale
-    private int coverScale;
+    private int coverScale = DEFAULT_COVER_SCALE;
     /** Local override. */
     private boolean sortAuthorByGivenName;
     /** Local override. */
     private boolean showAuthorByGivenName;
     /** The default number of levels to expand the list tree to. */
-    private int expansionLevel;
+    private int expansionLevel = 1;
     /**
-     * Show list header info.
+     * Bitmap value with the list header fields to show.
      */
-    private int headerFieldVisibility;
+    private int headerFieldVisibility = BooklistHeader.SHOW_BOOK_COUNT
+                                        | BooklistHeader.SHOW_STYLE_NAME;
     /**
      * Should rows be shown using
-     * {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT} (false),
-     * or as system "?attr/listPreferredItemHeightSmall" (true).
+     * {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT} {@code false},
+     * or as system "?attr/listPreferredItemHeightSmall" {@code true}.
      */
     private boolean groupRowUsesPreferredHeight;
 
     /**
-     * Base constructor.
-     *
-     * @param uuid style UUID string
-     * @param id   style id; can be {@code 0} for new styles (e.g. when importing)
-     *
-     * @throws IllegalArgumentException if the given UUID is empty
+     * Constructor for the global/defaults.
+     * Only used during app installation.
      */
-    BaseStyle(@NonNull final String uuid,
-              @IntRange(from = 0) final long id) {
-        if (uuid.isEmpty()) {
-            throw new IllegalArgumentException(ERROR_UUID_IS_EMPTY);
-        }
+    BaseStyle() {
+        this.uuid = "";
+        this.id = Integer.MIN_VALUE;
 
-        this.uuid = uuid;
-        this.id = id;
-        preferred = false;
-        menuPosition = MENU_POSITION_NOT_PREFERRED;
-
-        expansionLevel = 1;
-        // empty 'groups' and obv. no group options
-
-        // load defaults from the global settings
-        final GlobalStyle globalStyle = ServiceLocator.getInstance().getStyles().getGlobalStyle();
-
-        layout = globalStyle.getLayout();
-        coverClickAction = globalStyle.getCoverClickAction();
-        coverScale = globalStyle.getCoverScale();
-        textScale = globalStyle.getTextScale();
-        groupRowUsesPreferredHeight = globalStyle.isGroupRowUsesPreferredHeight();
-
-        setHeaderFieldVisibilityValue(globalStyle.getBooklistHeaderValue());
-        setBookLevelFieldsOrderBy(globalStyle.getBookLevelFieldsOrderBy());
-
-        fieldVisibility.put(FieldVisibility.Screen.List, globalStyle.getFieldVisibility(
-                FieldVisibility.Screen.List));
-        fieldVisibility.put(FieldVisibility.Screen.Detail, globalStyle.getFieldVisibility(
-                FieldVisibility.Screen.Detail));
-
-        showAuthorByGivenName = globalStyle.isShowAuthorByGivenName();
-        sortAuthorByGivenName = globalStyle.isSortAuthorByGivenName();
+        fieldVisibility.put(FieldVisibility.Screen.List, new BookLevelFieldVisibility());
+        fieldVisibility.put(FieldVisibility.Screen.Detail, new BookDetailsFieldVisibility());
     }
+
+    /**
+     * Load the style data from the database.
+     *
+     * @param rowData to use
+     */
+    BaseStyle(@NonNull final DataHolder rowData) {
+        uuid = rowData.getString(DBKey.STYLE_UUID);
+        id = rowData.getLong(DBKey.PK_ID);
+
+        preferred = rowData.getBoolean(DBKey.STYLE_IS_PREFERRED);
+        menuPosition = rowData.getInt(DBKey.STYLE_MENU_POSITION);
+
+        // 'simple' options
+        layout = Layout.byId(rowData.getInt(DBKey.STYLE_LAYOUT));
+        coverClickAction = CoverClickAction.byId(rowData.getInt(DBKey.STYLE_COVER_CLICK_ACTION));
+        coverScale = rowData.getInt(DBKey.STYLE_COVER_SCALE);
+        textScale = rowData.getInt(DBKey.STYLE_TEXT_SCALE);
+        groupRowUsesPreferredHeight = rowData.getBoolean(DBKey.STYLE_ROW_USES_PREF_HEIGHT);
+
+        setHeaderFieldVisibilityValue(rowData.getInt(DBKey.STYLE_LIST_HEADER));
+        setBookLevelFieldsOrderBy(StyleCoder.decodeBookLevelFieldsOrderBy(
+                rowData.getString(DBKey.STYLE_BOOK_LEVEL_FIELDS_ORDER_BY)));
+
+        fieldVisibility.put(FieldVisibility.Screen.List, new BookLevelFieldVisibility(
+                rowData.getLong(DBKey.STYLE_BOOK_LEVEL_FIELDS_VISIBILITY)));
+        fieldVisibility.put(FieldVisibility.Screen.Detail, new BookDetailsFieldVisibility(
+                rowData.getLong(DBKey.STYLE_DETAILS_SHOW_FIELDS)));
+
+        sortAuthorByGivenName = rowData.getBoolean(DBKey.STYLE_AUTHOR_SORT_BY_GIVEN_NAME);
+        showAuthorByGivenName = rowData.getBoolean(DBKey.STYLE_AUTHOR_SHOW_BY_GIVEN_NAME);
+
+        // groups
+        expansionLevel = rowData.getInt(DBKey.STYLE_EXP_LEVEL);
+        final String groupsAsCsv = rowData.getString(DBKey.STYLE_GROUPS);
+        if (!groupsAsCsv.isEmpty()) {
+            List<Integer> groupIds;
+            try {
+                groupIds = Arrays.stream(groupsAsCsv.split(","))
+                                 .map(Integer::parseInt)
+                                 .collect(Collectors.toList());
+            } catch (@NonNull final NumberFormatException ignore) {
+                // we should never get here... flw... try to recover.
+                groupIds = List.of(BooklistGroup.AUTHOR);
+            }
+            setGroupIds(groupIds);
+        }
+        // group-options
+        setPrimaryAuthorType(rowData.getInt(DBKey.STYLE_GROUPS_AUTHOR_PRIMARY_TYPE));
+        for (final Style.UnderEach item : Style.UnderEach.values()) {
+            setShowBooksUnderEachGroup(item.getGroupId(), rowData.getBoolean(item.getDbKey()));
+        }
+    }
+
 
     /**
      * Copy constructor. Used for cloning.
@@ -179,31 +238,18 @@ public abstract class BaseStyle
      * @param id    for the new style
      * @param uuid  for the new style
      * @param style to clone
-     *
-     * @throws IllegalArgumentException if the given UUID is empty
      */
     BaseStyle(@NonNull final String uuid,
               @IntRange(from = 0) final long id,
-              @NonNull final BaseStyle style) {
-        if (uuid.isEmpty()) {
-            throw new IllegalArgumentException(ERROR_UUID_IS_EMPTY);
-        }
-
+              @NonNull final Style style) {
         this.uuid = uuid;
         this.id = id;
+
         preferred = style.isPreferred();
         menuPosition = style.getMenuPosition();
 
-        expansionLevel = style.getExpansionLevel();
-        // set groups first before setting the group specific options!
-        setGroupList(style.getGroupList());
-        setPrimaryAuthorType(style.getPrimaryAuthorType());
-        for (final Style.UnderEach item : Style.UnderEach.values()) {
-            final int groupId = item.getGroupId();
-            setShowBooksUnderEachGroup(groupId, style.isShowBooksUnderEachGroup(groupId));
-        }
-
-        layout = style.layout;
+        // 'simple' options
+        layout = style.getLayout();
         coverClickAction = style.getCoverClickAction();
         coverScale = style.getCoverScale();
         textScale = style.getTextScale();
@@ -219,6 +265,24 @@ public abstract class BaseStyle
 
         showAuthorByGivenName = style.isShowAuthorByGivenName();
         sortAuthorByGivenName = style.isSortAuthorByGivenName();
+
+        // groups
+        expansionLevel = style.getExpansionLevel();
+        setGroupList(style.getGroupList());
+        // group-options
+        setPrimaryAuthorType(style.getPrimaryAuthorType());
+        for (final Style.UnderEach item : Style.UnderEach.values()) {
+            final int groupId = item.getGroupId();
+            setShowBooksUnderEachGroup(groupId, style.isShowBooksUnderEachGroup(groupId));
+        }
+    }
+
+    @NonNull
+    static String requireUuid(@NonNull final String uuid) {
+        if (uuid.isEmpty()) {
+            throw new IllegalArgumentException("uuid.isEmpty()");
+        }
+        return uuid;
     }
 
     /**
@@ -234,9 +298,8 @@ public abstract class BaseStyle
     @Override
     @NonNull
     public UserStyle clone(@NonNull final Context context) {
-        if (uuid.isEmpty()) {
-            throw new IllegalArgumentException(ERROR_UUID_IS_EMPTY);
-        }
+        requireUuid(uuid);
+
         // A cloned style is *always* a UserStyle/persistent regardless of the original
         // being a UserStyle or BuiltinStyle.
         return new UserStyle(context, 0, UUID.randomUUID().toString(), this);
@@ -413,12 +476,17 @@ public abstract class BaseStyle
         return (headerFieldVisibility & bit) != 0;
     }
 
-    // This getter is not in the interface, as it's only to be used for storage
+    @Override
     @BooklistHeader.Option
     public int getHeaderFieldVisibilityValue() {
         return headerFieldVisibility;
     }
 
+    /**
+     * Set the bitmap value with the list header fields to show.
+     *
+     * @param bitmask to set
+     */
     public void setHeaderFieldVisibilityValue(@BooklistHeader.Option final int bitmask) {
         headerFieldVisibility = bitmask & BooklistHeader.BITMASK_ALL;
     }
@@ -452,7 +520,7 @@ public abstract class BaseStyle
         bookLevelFieldsOrderBy.clear();
         bookLevelFieldsOrderBy.putAll(map);
         // add any fields with their default which might be missing.
-        GlobalStyle.BOOK_LEVEL_FIELDS_DEFAULTS.forEach(bookLevelFieldsOrderBy::putIfAbsent);
+        BOOK_LEVEL_FIELDS_DEFAULTS.forEach(bookLevelFieldsOrderBy::putIfAbsent);
     }
 
     @Override
@@ -521,6 +589,8 @@ public abstract class BaseStyle
      * Set the list of groups.
      *
      * @param list to set
+     *
+     * @see #setGroupIds(List)
      */
     public void setGroupList(@Nullable final List<BooklistGroup> list) {
         groups.clear();
@@ -533,6 +603,8 @@ public abstract class BaseStyle
      * Using the given group-ids, create and set the group list.
      *
      * @param groupIds to create groups for
+     *
+     * @see #setGroupList(List)
      */
     public void setGroupIds(@NonNull final List<Integer> groupIds) {
         final List<BooklistGroup> list = groupIds
@@ -555,7 +627,7 @@ public abstract class BaseStyle
      * Wrapper that gets the primary-author-type from the {@link AuthorBooklistGroup}
      * (if we have it); or the default {@link Author#TYPE_UNKNOWN}.
      *
-     * @return the type of author we consider the primary author
+     * @return bitmask representing the type of author we consider the primary author
      */
     @Override
     public int getPrimaryAuthorType() {
@@ -565,7 +637,8 @@ public abstract class BaseStyle
     }
 
     /**
-     * Wrapper to set the primary-author-type from the {@link AuthorBooklistGroup} (if we have it).
+     * Set the primary-author-type from the {@link AuthorBooklistGroup}
+     * (if this Style has the group).
      *
      * @param type the Author type
      */
@@ -575,7 +648,8 @@ public abstract class BaseStyle
     }
 
     /**
-     * Wrapper to set the show-book-under-each for the given wrapped group (if we have it).
+     * Set the show-book-under-each for the given wrapped group
+     * (if this Style has the group).
      *
      * @param groupId the {@link BooklistGroup} id
      * @param value   to set

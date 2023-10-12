@@ -294,6 +294,14 @@ public interface Style {
     boolean isShowHeaderField(@BooklistHeader.Option int bit);
 
     /**
+     * Get the bitmap value with the list header fields to show.
+     *
+     * @return bitmask
+     */
+    @BooklistHeader.Option
+    int getHeaderFieldVisibilityValue();
+
+    /**
      * Check if the given field should be displayed.
      *
      * @param screen to get the setting for
@@ -393,15 +401,13 @@ public interface Style {
     @NonNull
     List<BooklistGroup> getGroupList();
 
-
     /**
      * {@link AuthorBooklistGroup} property.
      *
-     * @return bitmask
+     * @return bitmask representing the type of author we consider the primary author
      */
     @Author.Type
     int getPrimaryAuthorType();
-
 
     /**
      * Should books be shown under each of the given row type.

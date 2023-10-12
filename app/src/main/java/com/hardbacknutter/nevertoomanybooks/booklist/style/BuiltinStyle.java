@@ -220,15 +220,18 @@ public final class BuiltinStyle
     /**
      * Constructor.
      *
-     * @param definition   to use
-     * @param preferred    flag
-     * @param menuPosition to set
+     * @param definition    to use
+     * @param styleDefaults the defaults to use
+     * @param preferred     flag
+     * @param menuPosition  to set
      */
     @VisibleForTesting
     public BuiltinStyle(@NonNull final Definition definition,
+                        @NonNull final Style styleDefaults,
                         final boolean preferred,
                         final int menuPosition) {
-        super(definition.getUuid(), definition.getId());
+        // The defaults are taken from the global style.
+        super(requireUuid(definition.getUuid()), definition.getId(), styleDefaults);
 
         this.labelResId = definition.getLabelResId();
 
@@ -238,6 +241,7 @@ public final class BuiltinStyle
         setGroupIds(Arrays.stream(definition.getGroupIds())
                           .boxed()
                           .collect(Collectors.toList()));
+        // none of the builtin styles have extra group settings
     }
 
     /**
@@ -278,12 +282,14 @@ public final class BuiltinStyle
      * <p>
      * This method will return {@code Optional.empty()} if the style is deprecated.
      *
-     * @param rowData from the styles table
+     * @param styleDefaults the defaults to use
+     * @param rowData       from the styles table
      *
      * @return style
      */
     @NonNull
-    public static Optional<BuiltinStyle> createFromDatabase(@NonNull final DataHolder rowData) {
+    public static Optional<Style> createFromDatabase(@NonNull final Style styleDefaults,
+                                                     @NonNull final DataHolder rowData) {
 
         final int id = rowData.getInt(DBKey.PK_ID);
         final Definition styleDef = ALL.stream()
@@ -298,7 +304,9 @@ public final class BuiltinStyle
         final boolean preferred = rowData.getBoolean(DBKey.STYLE_IS_PREFERRED);
         final int menuPosition = rowData.getInt(DBKey.STYLE_MENU_POSITION);
 
-        final BuiltinStyle style = new BuiltinStyle(styleDef, preferred, menuPosition);
+
+        final BuiltinStyle style = new BuiltinStyle(styleDef, styleDefaults,
+                                                    preferred, menuPosition);
 
         // NEWTHINGS: BuiltinStyle: add a new builtin style if needed
         if (id == ID_COMPACT) {

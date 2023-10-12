@@ -33,9 +33,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.StyleCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
@@ -148,6 +150,11 @@ public class StyleDaoImpl
      * @param db Database Access
      */
     public static void onPostCreate(@NonNull final SQLiteDatabase db) {
+        insertGlobalDefaults(db, false, false);
+
+        // insert the builtin styles so foreign key rules are possible.
+        // Other than the id/uuid/type and the menu options, the settings are never
+        // read/written from/to the database.
         try (SQLiteStatement stmt = db.compileStatement(INSERT_BUILTIN_STYLE)) {
             int menuPos = 1;
             for (final BuiltinStyle.Definition styleDef : BuiltinStyle.getAll()) {
@@ -171,6 +178,65 @@ public class StyleDaoImpl
         }
     }
 
+    /**
+     * Create and insert the single global/defaults style.
+     * Used during app installation (and upgrade).
+     *
+     * @param db                    Database Access
+     * @param sortAuthorByGivenName passed in for upgrade
+     * @param showAuthorByGivenName passed in for upgrade
+     */
+    public static void insertGlobalDefaults(@NonNull final SQLiteDatabase db,
+                                            final boolean sortAuthorByGivenName,
+                                            final boolean showAuthorByGivenName) {
+        final GlobalStyle style = new GlobalStyle();
+        style.setSortAuthorByGivenName(sortAuthorByGivenName);
+        style.setShowAuthorByGivenName(showAuthorByGivenName);
+
+        // URGENT: unite this with the code in instance#insert(context, style)
+        try (SQLiteStatement stmt = db.compileStatement(INSERT_STYLE)) {
+            int c = 0;
+            stmt.bindString(++c, style.getUuid());
+            stmt.bindLong(++c, style.getType().getId());
+            stmt.bindLong(++c, style.isPreferred() ? 1 : 0);
+            stmt.bindLong(++c, style.getMenuPosition());
+            stmt.bindNull(++c);
+
+            stmt.bindLong(++c, style.getLayout().getId());
+            stmt.bindLong(++c, style.getCoverClickAction().getId());
+            stmt.bindLong(++c, style.getCoverScale());
+            stmt.bindLong(++c, style.getTextScale());
+            stmt.bindLong(++c, style.isGroupRowUsesPreferredHeight() ? 1 : 0);
+
+            stmt.bindLong(++c, style.getHeaderFieldVisibilityValue());
+            stmt.bindLong(++c, style.getFieldVisibility(FieldVisibility.Screen.List)
+                                    .getBitValue());
+            stmt.bindString(++c, StyleCoder.getBookLevelFieldsOrderByAsJsonString(style));
+            stmt.bindLong(++c, style.isSortAuthorByGivenName() ? 1 : 0);
+            stmt.bindLong(++c, style.isShowAuthorByGivenName() ? 1 : 0);
+
+            stmt.bindLong(++c, style.getFieldVisibility(FieldVisibility.Screen.Detail)
+                                    .getBitValue());
+
+            stmt.bindLong(++c, style.getExpansionLevel());
+            stmt.bindString(++c, getGroupIdsAsCsv(style));
+            stmt.bindLong(++c, style.getPrimaryAuthorType());
+            for (final Style.UnderEach item : Style.UnderEach.values()) {
+                stmt.bindLong(++c, style.isShowBooksUnderEachGroup(item.getGroupId()) ? 1 : 0);
+            }
+
+            stmt.executeInsert();
+        }
+    }
+
+    @NonNull
+    private static String getGroupIdsAsCsv(@NonNull final Style style) {
+        return style.getGroupList()
+                    .stream()
+                    .map(group -> String.valueOf(group.getId()))
+                    .collect(Collectors.joining(","));
+    }
+
     @Override
     public long getStyleIdByUuid(@NonNull final String uuid) {
         try (SynchronizedStatement stmt = db.compileStatement(SELECT_STYLE_ID_BY_UUID)) {
@@ -181,14 +247,14 @@ public class StyleDaoImpl
 
     @Override
     @NonNull
-    public Map<String, UserStyle> getUserStyles() {
-        final Map<String, UserStyle> map = new LinkedHashMap<>();
+    public Map<String, Style> getUserStyles() {
+        final Map<String, Style> map = new LinkedHashMap<>();
 
         try (Cursor cursor = db.rawQuery(SELECT_STYLES_BY_TYPE, new String[]{
                 String.valueOf(StyleType.User.getId())})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                final UserStyle style = UserStyle.createFromDatabase(rowData);
+                final Style style = UserStyle.createFromDatabase(rowData);
                 map.put(style.getUuid(), style);
             }
         }
@@ -198,14 +264,16 @@ public class StyleDaoImpl
 
     @Override
     @NonNull
-    public Map<String, BuiltinStyle> getBuiltinStyles() {
-        final Map<String, BuiltinStyle> map = new LinkedHashMap<>();
+    public Map<String, Style> getBuiltinStyles() {
+        final Map<String, Style> map = new LinkedHashMap<>();
+
+        final Style styleDefaults = ServiceLocator.getInstance().getStyles().getGlobalStyle();
 
         try (Cursor cursor = db.rawQuery(SELECT_STYLES_BY_TYPE, new String[]{
                 String.valueOf(StyleType.Builtin.getId())})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                BuiltinStyle.createFromDatabase(rowData).ifPresent(
+                BuiltinStyle.createFromDatabase(styleDefaults, rowData).ifPresent(
                         style -> map.put(style.getUuid(), style));
             }
         }
@@ -213,12 +281,18 @@ public class StyleDaoImpl
         return map;
     }
 
+    @Override
     @NonNull
-    private String getGroupIdsAsCsv(@NonNull final Style style) {
-        return style.getGroupList()
-                    .stream()
-                    .map(group -> String.valueOf(group.getId()))
-                    .collect(Collectors.joining(","));
+    public Style getGlobalStyle() {
+        try (Cursor cursor = db.rawQuery(SELECT_STYLES_BY_TYPE, new String[]{
+                String.valueOf(StyleType.Global.getId())})) {
+            final DataHolder rowData = new CursorRow(cursor);
+            if (cursor.moveToFirst()) {
+                return GlobalStyle.createFromDatabase(rowData);
+            }
+        }
+
+        throw new IllegalStateException();
     }
 
     @Override
