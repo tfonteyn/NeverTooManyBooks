@@ -276,8 +276,8 @@ public class StyleCoder
                     source.getInt(StyleDataStore.PK_LIST_HEADER));
         }
         if (source.has(PK_LIST_FIELD_VISIBILITY)) {
-            baseStyle.getFieldVisibility(FieldVisibility.Screen.List)
-                     .setBitValue(source.getLong(PK_LIST_FIELD_VISIBILITY));
+            style.getFieldVisibility(FieldVisibility.Screen.List)
+                 .setBitValue(source.getLong(PK_LIST_FIELD_VISIBILITY));
         } else {
             // backwards compatibility
             decodeV2ListVisibility(style, source);
@@ -297,8 +297,8 @@ public class StyleCoder
         }
 
         if (source.has(PK_DETAILS_FIELD_VISIBILITY)) {
-            baseStyle.getFieldVisibility(FieldVisibility.Screen.Detail)
-                     .setBitValue(source.getLong(PK_DETAILS_FIELD_VISIBILITY));
+            style.getFieldVisibility(FieldVisibility.Screen.Detail)
+                 .setBitValue(source.getLong(PK_DETAILS_FIELD_VISIBILITY));
         } else {
             // backwards compatibility
             decodeV2DetailVisibility(style, source);
@@ -350,17 +350,13 @@ public class StyleCoder
     private void decodeV2DetailVisibility(@NonNull final Style style,
                                           @NonNull final JSONObject source) {
 
-        if (source.has(V2.DETAILS_COVER[0])) {
-            final boolean show = source.getBoolean(V2.DETAILS_COVER[0]);
+        final FieldVisibility visibility = style.getFieldVisibility(FieldVisibility.Screen.Detail);
 
-            style.getFieldVisibility(FieldVisibility.Screen.Detail)
-                 .setVisible(DBKey.COVER[0], show);
+        if (source.has(V2.DETAILS_COVER[0])) {
+            visibility.setVisible(DBKey.COVER[0], source.getBoolean(V2.DETAILS_COVER[0]));
         }
         if (source.has(V2.DETAILS_COVER[1])) {
-            final boolean show = source.getBoolean(V2.DETAILS_COVER[1]);
-
-            style.getFieldVisibility(FieldVisibility.Screen.Detail)
-                 .setVisible(DBKey.COVER[1], show);
+            visibility.setVisible(DBKey.COVER[1], source.getBoolean(V2.DETAILS_COVER[1]));
         }
         // reminder: this is for backwards compatibility - don't add new fields here!
     }
@@ -368,64 +364,38 @@ public class StyleCoder
     private void decodeV2ListVisibility(@NonNull final Style style,
                                         @NonNull final JSONObject source) {
 
-        if (source.has(V2.LIST_THUMBNAILS)) {
-            final boolean show = source.getBoolean(V2.LIST_THUMBNAILS);
+        final FieldVisibility visibility = style.getFieldVisibility(FieldVisibility.Screen.List);
 
-            style.getFieldVisibility(FieldVisibility.Screen.List).setVisible(DBKey.COVER[0], show);
+        if (source.has(V2.LIST_THUMBNAILS)) {
+            visibility.setVisible(DBKey.COVER[0], source.getBoolean(V2.LIST_THUMBNAILS));
         }
         if (source.has(V2.LIST_AUTHOR)) {
-            final boolean show = source.getBoolean(V2.LIST_AUTHOR);
-
-            style.getFieldVisibility(FieldVisibility.Screen.List)
-                 .setVisible(DBKey.FK_AUTHOR, show);
+            visibility.setVisible(DBKey.FK_AUTHOR, source.getBoolean(V2.LIST_AUTHOR));
         }
         if (source.has(V2.LIST_PUBLISHER)) {
-            final boolean show = source.getBoolean(V2.LIST_PUBLISHER);
-
-            style.getFieldVisibility(FieldVisibility.Screen.List)
-                 .setVisible(DBKey.FK_PUBLISHER, show);
+            visibility.setVisible(DBKey.FK_PUBLISHER, source.getBoolean(V2.LIST_PUBLISHER));
         }
         if (source.has(V2.LIST_PUBLICATION_DATE)) {
-            final boolean show = source.getBoolean(V2.LIST_PUBLICATION_DATE);
-
-            style.getFieldVisibility(FieldVisibility.Screen.List)
-                 .setVisible(DBKey.BOOK_PUBLICATION__DATE, show);
+            visibility.setVisible(DBKey.BOOK_PUBLICATION__DATE,
+                                  source.getBoolean(V2.LIST_PUBLICATION_DATE));
         }
         if (source.has(V2.LIST_FORMAT)) {
-            final boolean show = source.getBoolean(V2.LIST_FORMAT);
-
-            style.getFieldVisibility(FieldVisibility.Screen.List)
-                 .setVisible(DBKey.FORMAT, show);
+            visibility.setVisible(DBKey.FORMAT, source.getBoolean(V2.LIST_FORMAT));
         }
         if (source.has(V2.LIST_LANGUAGE)) {
-            final boolean show = source.getBoolean(V2.LIST_LANGUAGE);
-
-            style.getFieldVisibility(FieldVisibility.Screen.List)
-                 .setVisible(DBKey.LANGUAGE, show);
+            visibility.setVisible(DBKey.LANGUAGE, source.getBoolean(V2.LIST_LANGUAGE));
         }
         if (source.has(V2.LIST_LOCATION)) {
-            final boolean show = source.getBoolean(V2.LIST_LOCATION);
-
-            style.getFieldVisibility(FieldVisibility.Screen.List)
-                 .setVisible(DBKey.LOCATION, show);
+            visibility.setVisible(DBKey.LOCATION, source.getBoolean(V2.LIST_LOCATION));
         }
         if (source.has(V2.LIST_RATING)) {
-            final boolean show = source.getBoolean(V2.LIST_RATING);
-
-            style.getFieldVisibility(FieldVisibility.Screen.List)
-                 .setVisible(DBKey.RATING, show);
+            visibility.setVisible(DBKey.RATING, source.getBoolean(V2.LIST_RATING));
         }
         if (source.has(V2.LIST_BOOKSHELVES)) {
-            final boolean show = source.getBoolean(V2.LIST_BOOKSHELVES);
-
-            style.getFieldVisibility(FieldVisibility.Screen.List)
-                 .setVisible(DBKey.FK_BOOKSHELF, show);
+            visibility.setVisible(DBKey.FK_BOOKSHELF, source.getBoolean(V2.LIST_BOOKSHELVES));
         }
         if (source.has(V2.LIST_ISBN)) {
-            final boolean show = source.getBoolean(V2.LIST_ISBN);
-
-            style.getFieldVisibility(FieldVisibility.Screen.List)
-                 .setVisible(DBKey.BOOK_ISBN, show);
+            visibility.setVisible(DBKey.BOOK_ISBN, source.getBoolean(V2.LIST_ISBN));
         }
         // reminder: this is for backwards compatibility - don't add new fields here!
     }
