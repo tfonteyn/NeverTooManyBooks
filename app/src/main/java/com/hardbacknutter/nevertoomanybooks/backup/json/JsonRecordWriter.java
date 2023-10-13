@@ -185,11 +185,10 @@ public class JsonRecordWriter
                 && !progressListener.isCancelled()) {
                 progressListener.publishProgress(1, context.getString(R.string.lbl_styles));
 
+                final JsonCoder<Style> coder = new StyleCoder();
                 final List<Style> styles = stylesHelper.getStyles(true);
-                if (!styles.isEmpty()) {
-                    final JsonCoder<Style> coder = new StyleCoder();
-                    jsonData.put(RecordType.Styles.getName(), coder.encode(styles));
-                }
+                styles.add(stylesHelper.getGlobalStyle());
+                jsonData.put(RecordType.Styles.getName(), coder.encode(styles));
                 results.styles = styles.size();
             }
 
