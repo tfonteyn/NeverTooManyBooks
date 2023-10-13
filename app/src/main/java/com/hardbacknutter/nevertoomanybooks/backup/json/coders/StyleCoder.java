@@ -25,7 +25,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -107,66 +106,66 @@ public class StyleCoder
             throws JSONException {
         final JSONObject out = new JSONObject();
 
+        final StyleType type = style.getType();
+
+        out.put(DBKey.STYLE_TYPE, type.getId());
         out.put(DBKey.STYLE_UUID, style.getUuid());
+
         out.put(DBKey.STYLE_IS_PREFERRED, style.isPreferred());
         out.put(DBKey.STYLE_MENU_POSITION, style.getMenuPosition());
 
-        if (style.getType() == StyleType.User) {
-            final UserStyle userStyle = (UserStyle) style;
-
-            out.put(DBKey.STYLE_NAME, userStyle.getName());
-
-            // The set 'dest' will go under a new JSON object 'STYLE_SETTINGS'
-            final JSONObject dest = new JSONObject();
-
-            encodeGroups(userStyle, dest);
-
-            dest.put(StyleDataStore.PK_LAYOUT,
-                     userStyle.getLayout().getId());
-
-            dest.put(StyleDataStore.PK_COVER_CLICK_ACTION,
-                     userStyle.getCoverClickAction().getId());
-
-            dest.put(StyleDataStore.PK_EXPANSION_LEVEL,
-                     userStyle.getExpansionLevel());
-            dest.put(StyleDataStore.PK_GROUP_ROW_HEIGHT,
-                     userStyle.isGroupRowUsesPreferredHeight());
-            dest.put(StyleDataStore.PK_SORT_AUTHOR_NAME_GIVEN_FIRST,
-                     userStyle.isSortAuthorByGivenName());
-            dest.put(StyleDataStore.PK_SHOW_AUTHOR_NAME_GIVEN_FIRST,
-                     userStyle.isShowAuthorByGivenName());
-
-            dest.put(StyleDataStore.PK_TEXT_SCALE, userStyle.getTextScale());
-            dest.put(StyleDataStore.PK_COVER_SCALE, userStyle.getCoverScale());
-            dest.put(StyleDataStore.PK_LIST_HEADER, userStyle.getHeaderFieldVisibilityValue());
-
-            // since v3 stored as bitmask and no longer as individual flags
-            dest.put(PK_DETAILS_FIELD_VISIBILITY,
-                     userStyle.getFieldVisibility(FieldVisibility.Screen.Detail).getBitValue());
-            // since v3 stored as bitmask and no longer as individual flags
-            dest.put(PK_LIST_FIELD_VISIBILITY,
-                     userStyle.getFieldVisibility(FieldVisibility.Screen.List).getBitValue());
-
-            dest.put(PK_LIST_FIELD_ORDER_BY, encodeBookLevelFieldsOrderBy(userStyle));
-
-            out.put(STYLE_SETTINGS, dest);
+        if (type == StyleType.Builtin) {
+            // We're done
+            return out;
         }
+
+        if (type == StyleType.User) {
+            out.put(DBKey.STYLE_NAME, ((UserStyle) style).getName());
+        }
+
+        // The settings will be stored under a new JSON object 'STYLE_SETTINGS'
+        final JSONObject settings = new JSONObject();
+
+        encodeGroups(style, settings);
+
+        settings.put(StyleDataStore.PK_LAYOUT, style.getLayout().getId());
+        settings.put(StyleDataStore.PK_COVER_CLICK_ACTION, style.getCoverClickAction().getId());
+        settings.put(StyleDataStore.PK_COVER_SCALE, style.getCoverScale());
+        settings.put(StyleDataStore.PK_TEXT_SCALE, style.getTextScale());
+        settings.put(StyleDataStore.PK_GROUP_ROW_HEIGHT, style.isGroupRowUsesPreferredHeight());
+
+        settings.put(StyleDataStore.PK_LIST_HEADER, style.getHeaderFieldVisibilityValue());
+        settings.put(PK_LIST_FIELD_ORDER_BY, encodeBookLevelFieldsOrderBy(style));
+        settings.put(PK_LIST_FIELD_VISIBILITY,
+                     style.getFieldVisibility(FieldVisibility.Screen.List).getBitValue());
+
+        settings.put(StyleDataStore.PK_SORT_AUTHOR_NAME_GIVEN_FIRST,
+                     style.isSortAuthorByGivenName());
+        settings.put(StyleDataStore.PK_SHOW_AUTHOR_NAME_GIVEN_FIRST,
+                     style.isShowAuthorByGivenName());
+
+        settings.put(PK_DETAILS_FIELD_VISIBILITY,
+                     style.getFieldVisibility(FieldVisibility.Screen.Detail).getBitValue());
+
+        // Store them
+        out.put(STYLE_SETTINGS, settings);
+
         return out;
     }
 
     private void encodeGroups(@NonNull final Style style,
-                              @NonNull final JSONObject dest) {
-        final JSONArray groupArray = new JSONArray(style.getGroupList()
-                                                        .stream()
-                                                        .map(BooklistGroup::getId)
-                                                        .collect(Collectors.toList()));
-        dest.put(StyleDataStore.PK_GROUPS, groupArray);
+                              @NonNull final JSONObject options) {
 
-        dest.put(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE,
-                 style.getPrimaryAuthorType());
+        options.put(StyleDataStore.PK_EXPANSION_LEVEL, style.getExpansionLevel());
 
+        options.put(StyleDataStore.PK_GROUPS, new JSONArray(
+                style.getGroupList()
+                     .stream()
+                     .map(BooklistGroup::getId)
+                     .collect(Collectors.toList())));
+        options.put(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE, style.getPrimaryAuthorType());
         for (final Style.UnderEach item : Style.UnderEach.values()) {
-            dest.put(item.getPrefKey(), style.isShowBooksUnderEachGroup(item.getGroupId()));
+            options.put(item.getPrefKey(), style.isShowBooksUnderEachGroup(item.getGroupId()));
         }
     }
 
@@ -174,13 +173,12 @@ public class StyleCoder
     private JSONArray encodeBookLevelFieldsOrderBy(@NonNull final Style style)
             throws JSONException {
         final JSONArray columns = new JSONArray();
-        style.getBookLevelFieldsOrderBy()
-             .forEach((columnName, sort) -> {
-                 final JSONObject column = new JSONObject();
-                 column.put(COLUMN_NAME, columnName);
-                 column.put(COLUMN_SORT, sort.name());
-                 columns.put(column);
-             });
+        style.getBookLevelFieldsOrderBy().forEach((columnName, sort) -> {
+            final JSONObject column = new JSONObject();
+            column.put(COLUMN_NAME, columnName);
+            column.put(COLUMN_SORT, sort.name());
+            columns.put(column);
+        });
 
         return columns;
     }
@@ -192,101 +190,130 @@ public class StyleCoder
 
         final String uuid = data.getString(DBKey.STYLE_UUID);
 
-        final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
-
-        if (BuiltinStyle.isBuiltin(uuid)) {
-            final Optional<Style> oStyle = stylesHelper.getStyle(uuid);
-            if (oStyle.isPresent()) {
-                final Style style = oStyle.get();
-                style.setPreferred(data.getBoolean(DBKey.STYLE_IS_PREFERRED));
-                style.setMenuPosition(data.getInt(DBKey.STYLE_MENU_POSITION));
-                return style;
-            } else {
-                // It's a recognized Builtin Style, but it's deprecated.
-                // We return the default builtin style instead.
-                return stylesHelper.getStyle(BuiltinStyle.DEFAULT_UUID).orElseThrow();
-            }
-
+        final StyleType type;
+        if (data.has(DBKey.STYLE_TYPE)) {
+            // Version 5.1 archives store the type; just use it.
+            type = StyleType.byId(data.getInt(DBKey.STYLE_TYPE));
         } else {
-            final UserStyle userStyle = UserStyle.createFromImport(uuid);
-            userStyle.setName(data.getString(DBKey.STYLE_NAME));
-            userStyle.setPreferred(data.getBoolean(DBKey.STYLE_IS_PREFERRED));
-            userStyle.setMenuPosition(data.getInt(DBKey.STYLE_MENU_POSITION));
-
-            if (data.has(STYLE_SETTINGS)) {
-                // any element in the source which we don't know, will simply be ignored.
-                final JSONObject source = data.getJSONObject(STYLE_SETTINGS);
-
-                if (source.has(StyleDataStore.PK_GROUPS)) {
-                    decodeGroups(userStyle, source);
-                }
-
-                if (source.has(StyleDataStore.PK_LAYOUT)) {
-                    userStyle.setLayout(Style.Layout.byId(
-                            source.getInt(StyleDataStore.PK_LAYOUT)));
-                }
-
-                if (source.has(StyleDataStore.PK_COVER_CLICK_ACTION)) {
-                    userStyle.setCoverClickAction(Style.CoverClickAction.byId(
-                            source.getInt(StyleDataStore.PK_COVER_CLICK_ACTION)));
-                }
-
-                if (source.has(StyleDataStore.PK_EXPANSION_LEVEL)) {
-                    userStyle.setExpansionLevel(
-                            source.getInt(StyleDataStore.PK_EXPANSION_LEVEL));
-                }
-                if (source.has(StyleDataStore.PK_GROUP_ROW_HEIGHT)) {
-                    userStyle.setGroupRowUsesPreferredHeight(
-                            source.getBoolean(StyleDataStore.PK_GROUP_ROW_HEIGHT));
-                }
-                if (source.has(StyleDataStore.PK_SORT_AUTHOR_NAME_GIVEN_FIRST)) {
-                    userStyle.setSortAuthorByGivenName(
-                            source.getBoolean(StyleDataStore.PK_SORT_AUTHOR_NAME_GIVEN_FIRST));
-                }
-                if (source.has(StyleDataStore.PK_SHOW_AUTHOR_NAME_GIVEN_FIRST)) {
-                    userStyle.setShowAuthorByGivenName(
-                            source.getBoolean(StyleDataStore.PK_SHOW_AUTHOR_NAME_GIVEN_FIRST));
-                }
-                if (source.has(StyleDataStore.PK_TEXT_SCALE)) {
-                    userStyle.setTextScale(source.getInt(StyleDataStore.PK_TEXT_SCALE));
-                }
-                if (source.has(StyleDataStore.PK_COVER_SCALE)) {
-                    userStyle.setCoverScale(source.getInt(StyleDataStore.PK_COVER_SCALE));
-                }
-                if (source.has(StyleDataStore.PK_LIST_HEADER)) {
-                    userStyle.setHeaderFieldVisibilityValue(
-                            source.getInt(StyleDataStore.PK_LIST_HEADER));
-                }
-
-                if (source.has(PK_DETAILS_FIELD_VISIBILITY)) {
-                    userStyle.getFieldVisibility(FieldVisibility.Screen.Detail)
-                             .setBitValue(source.getLong(PK_DETAILS_FIELD_VISIBILITY));
-                } else {
-                    // backwards compatibility
-                    decodeV2DetailVisibility(userStyle, source);
-                }
-
-                if (source.has(PK_LIST_FIELD_VISIBILITY)) {
-                    userStyle.getFieldVisibility(FieldVisibility.Screen.List)
-                             .setBitValue(source.getLong(PK_LIST_FIELD_VISIBILITY));
-                } else {
-                    // backwards compatibility
-                    decodeV2ListVisibility(userStyle, source);
-                }
-
-                if (source.has(PK_LIST_FIELD_ORDER_BY)) {
-                    userStyle.setBookLevelFieldsOrderBy(decodeBookLevelFieldsOrderBy(
-                            source.getJSONArray(PK_LIST_FIELD_ORDER_BY)));
-                }
+            // without a STYLE_TYPE, we're reading a version 5.0 or earlier
+            // Use the UUID to check if we're reading a builtin Style.
+            if (BuiltinStyle.isBuiltin(uuid)) {
+                type = StyleType.Builtin;
+            } else {
+                type = StyleType.User;
             }
+        }
 
-            return userStyle;
+        final Style style;
+        switch (type) {
+            case User: {
+                style = UserStyle.createFromImport(uuid);
+                if (data.has(DBKey.STYLE_NAME)) {
+                    ((UserStyle) style).setName(data.getString(DBKey.STYLE_NAME));
+                }
+                break;
+            }
+            case Builtin: {
+                final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
+                style = stylesHelper.getStyle(uuid).orElseGet(
+                        // It's a recognized Builtin Style, but it's deprecated.
+                        // We return the default builtin style instead.
+                        () -> stylesHelper.getStyle(BuiltinStyle.DEFAULT_UUID).orElseThrow());
+                break;
+            }
+            case Global: {
+                style = ServiceLocator.getInstance().getStyles().getGlobalStyle();
+                break;
+            }
+            default:
+                throw new IllegalArgumentException();
+        }
+
+        style.setPreferred(data.getBoolean(DBKey.STYLE_IS_PREFERRED));
+        style.setMenuPosition(data.getInt(DBKey.STYLE_MENU_POSITION));
+
+        if (data.has(STYLE_SETTINGS)) {
+            // any element in the source which we don't know, will simply be ignored.
+            final JSONObject source = data.getJSONObject(STYLE_SETTINGS);
+
+            if (style.getType() == StyleType.User && source.has(StyleDataStore.PK_GROUPS)) {
+                decodeGroups((UserStyle) style, source);
+            }
+            decodeSettings(source, style);
+        }
+
+        return style;
+    }
+
+    private void decodeSettings(@NonNull final JSONObject source,
+                                @NonNull final Style style) {
+
+        // It's either a StyleType.User or a StyleType.Global
+        // TODO: casting to BaseStyle is not a nice thing to do...
+        final BaseStyle baseStyle = (BaseStyle) style;
+
+        if (source.has(StyleDataStore.PK_LAYOUT)) {
+            baseStyle.setLayout(Style.Layout.byId(
+                    source.getInt(StyleDataStore.PK_LAYOUT)));
+        }
+        if (source.has(StyleDataStore.PK_COVER_CLICK_ACTION)) {
+            baseStyle.setCoverClickAction(Style.CoverClickAction.byId(
+                    source.getInt(StyleDataStore.PK_COVER_CLICK_ACTION)));
+        }
+        if (source.has(StyleDataStore.PK_COVER_SCALE)) {
+            baseStyle.setCoverScale(source.getInt(StyleDataStore.PK_COVER_SCALE));
+        }
+        if (source.has(StyleDataStore.PK_TEXT_SCALE)) {
+            baseStyle.setTextScale(source.getInt(StyleDataStore.PK_TEXT_SCALE));
+        }
+        if (source.has(StyleDataStore.PK_GROUP_ROW_HEIGHT)) {
+            baseStyle.setGroupRowUsesPreferredHeight(
+                    source.getBoolean(StyleDataStore.PK_GROUP_ROW_HEIGHT));
+        }
+
+        if (source.has(StyleDataStore.PK_LIST_HEADER)) {
+            baseStyle.setHeaderFieldVisibilityValue(
+                    source.getInt(StyleDataStore.PK_LIST_HEADER));
+        }
+        if (source.has(PK_LIST_FIELD_VISIBILITY)) {
+            baseStyle.getFieldVisibility(FieldVisibility.Screen.List)
+                     .setBitValue(source.getLong(PK_LIST_FIELD_VISIBILITY));
+        } else {
+            // backwards compatibility
+            decodeV2ListVisibility(style, source);
+        }
+        if (source.has(PK_LIST_FIELD_ORDER_BY)) {
+            baseStyle.setBookLevelFieldsOrderBy(decodeBookLevelFieldsOrderBy(
+                    source.getJSONArray(PK_LIST_FIELD_ORDER_BY)));
+        }
+
+        if (source.has(StyleDataStore.PK_SORT_AUTHOR_NAME_GIVEN_FIRST)) {
+            baseStyle.setSortAuthorByGivenName(
+                    source.getBoolean(StyleDataStore.PK_SORT_AUTHOR_NAME_GIVEN_FIRST));
+        }
+        if (source.has(StyleDataStore.PK_SHOW_AUTHOR_NAME_GIVEN_FIRST)) {
+            baseStyle.setShowAuthorByGivenName(
+                    source.getBoolean(StyleDataStore.PK_SHOW_AUTHOR_NAME_GIVEN_FIRST));
+        }
+
+        if (source.has(PK_DETAILS_FIELD_VISIBILITY)) {
+            baseStyle.getFieldVisibility(FieldVisibility.Screen.Detail)
+                     .setBitValue(source.getLong(PK_DETAILS_FIELD_VISIBILITY));
+        } else {
+            // backwards compatibility
+            decodeV2DetailVisibility(style, source);
         }
     }
 
     private void decodeGroups(@NonNull final UserStyle userStyle,
                               @NonNull final JSONObject source)
             throws JSONException {
+
+        if (source.has(StyleDataStore.PK_EXPANSION_LEVEL)) {
+            userStyle.setExpansionLevel(
+                    source.getInt(StyleDataStore.PK_EXPANSION_LEVEL));
+        }
+
         final JSONArray groupArray = source.getJSONArray(StyleDataStore.PK_GROUPS);
         final List<Integer> groupIds = IntStream.range(0, groupArray.length())
                                                 .mapToObj(groupArray::getInt)
