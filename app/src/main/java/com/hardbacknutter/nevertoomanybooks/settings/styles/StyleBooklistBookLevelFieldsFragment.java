@@ -48,8 +48,6 @@ public class StyleBooklistBookLevelFieldsFragment
                                     @Nullable final String rootKey) {
         //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(StyleViewModel.class);
-        //noinspection DataFlowIssue
-        vm.init(getContext(), requireArguments());
 
         // redirect storage to the database
         // This MUST be done in onCreate/onCreatePreferences
