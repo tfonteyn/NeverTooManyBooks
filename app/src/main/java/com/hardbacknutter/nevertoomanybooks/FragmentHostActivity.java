@@ -23,11 +23,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.appbar.AppBarLayout;
@@ -52,6 +52,21 @@ public class FragmentHostActivity
 
     private static final String BKEY_ACTIVITY = TAG + ":a";
     private static final String BKEY_FRAGMENT_CLASS = TAG + ":f";
+
+    private final OnBackPressedCallback backPressedCallback =
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    if (closeNavigationDrawer()) {
+                        return;
+                    }
+                    // Prevent looping
+                    this.setEnabled(false);
+                    // Simulate the user pressing the 'back' key,
+                    // which will take us back to the previous screen.
+                    getOnBackPressedDispatcher().onBackPressed();
+                }
+            };
 
     @NonNull
     public static Intent createIntent(@NonNull final Context context,
@@ -78,6 +93,8 @@ public class FragmentHostActivity
 
         initNavDrawer();
         initToolbar();
+
+        getOnBackPressedDispatcher().addCallback(this, backPressedCallback);
 
         final String classname = Objects.requireNonNull(
                 getIntent().getStringExtra(BKEY_FRAGMENT_CLASS), "fragment class");
@@ -110,7 +127,6 @@ public class FragmentHostActivity
 
         toolbar.setNavigationOnClickListener(v -> {
             if (!isTaskRoot() || !openNavigationDrawer()) {
-                // otherwise, home is an 'up' event.
                 // Simulate the user pressing the 'back' key.
                 getOnBackPressedDispatcher().onBackPressed();
             }

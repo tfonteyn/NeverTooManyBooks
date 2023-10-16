@@ -34,6 +34,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
@@ -42,7 +43,6 @@ import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
-import androidx.core.view.GravityCompat;
 import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
@@ -136,8 +136,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
-
-import org.intellij.lang.annotations.Language;
 
 /**
  * Activity that displays a flattened book hierarchy based on the Booklist* classes.
@@ -288,6 +286,40 @@ public class BooksOnBookshelf
     /** View Binding. */
     private BooksonbookshelfBinding vb;
 
+    private final OnBackPressedCallback backPressedCallback =
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    // It's possible to have both FAB and NAV open if the
+                    // user first opened the FAB, then swiped the NAV into visibility.
+                    // So make sure to close both before deciding we're done here.
+                    final boolean navClosed = closeNavigationDrawer();
+                    final boolean fabClosed = fabMenu.hideMenu();
+
+                    // If either was actually closed, we're done here
+                    if (navClosed || fabClosed) {
+                        return;
+                    }
+
+                    // Secondly, after an "Advanced Local Search", the BoB
+                    // will be displaying a filtered list.
+                    // i.e. the current list will have search criteria present,
+                    // If the user taps 'back' we clear the search criteria and rebuild the list.
+                    if (isTaskRoot() && !vm.getSearchCriteria().isEmpty()) {
+                        vm.getSearchCriteria().clear();
+                        setNavIcon();
+                        buildBookList();
+                        return;
+                    }
+
+                    // Prevent looping
+                    this.setEnabled(false);
+                    // Simulate the user pressing the 'back' key,
+                    // which minimize the app.
+                    getOnBackPressedDispatcher().onBackPressed();
+                }
+            };
+
     private final BookshelfFiltersDialogFragment.Launcher bookshelfFiltersLauncher =
             new BookshelfFiltersDialogFragment.Launcher(
                     RK_FILTERS, modified -> {
@@ -397,6 +429,8 @@ public class BooksOnBookshelf
 
         // check & get search text coming from a system search intent
         handleStandardSearchIntent(getIntent());
+
+        getOnBackPressedDispatcher().addCallback(this, backPressedCallback);
 
         if (savedInstanceState == null) {
             TipManager.getInstance().display(this, R.string.tip_book_list, null);
@@ -510,7 +544,6 @@ public class BooksOnBookshelf
 
         vb.toolbar.setNavigationOnClickListener(v -> {
             if (!isRootActivity() || !openNavigationDrawer()) {
-                // otherwise, home is an 'up' event.
                 // Simulate the user pressing the 'back' key.
                 getOnBackPressedDispatcher().onBackPressed();
             }
@@ -743,25 +776,6 @@ public class BooksOnBookshelf
     }
 
     @Override
-    public void onBackPressed() {
-        // If the FAB menu is showing, hide it and suppress the back key.
-        if (fabMenu.hideMenu()) {
-            return;
-        }
-
-        // If the current list has any search criteria enabled, clear them and rebuild the list.
-        if (isTaskRoot() && !vm.getSearchCriteria().isEmpty()) {
-            vm.getSearchCriteria().clear();
-            setNavIcon();
-            buildBookList();
-            return;
-        }
-
-        // Otherwise handle the back-key as normal.
-        super.onBackPressed();
-    }
-
-    @Override
     public void onSettingsChanged(@NonNull final SettingsContract.Output result) {
         super.onSettingsChanged(result);
 
@@ -789,7 +803,7 @@ public class BooksOnBookshelf
         }
 
         // If we have search criteria enabled (i.e. we're filtering the current list)
-        // then we should display the 'up' indicator. See #onBackPressed.
+        // then we should display the 'up' indicator.
         setNavIcon();
 
         updateSyncMenuVisibility();
@@ -1482,7 +1496,7 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Handle the row/context menu for a {@link Language}.
+     * Handle the row/context menu for a {@link BooklistGroup#LANGUAGE}.
      *
      * @param rowData    the row data
      * @param menuItemId selected menu item

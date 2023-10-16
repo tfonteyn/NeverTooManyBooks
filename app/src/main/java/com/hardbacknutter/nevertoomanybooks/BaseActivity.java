@@ -188,24 +188,6 @@ public abstract class BaseActivity
         return recreateVm.isRecreating();
     }
 
-    /**
-     * If the drawer is open and the user click the back-button, close the drawer
-     * and ignore the back-press.
-     */
-    @Override
-    public void onBackPressed() {
-        if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START);
-
-        } else {
-            // Will call any (enabled) registered OnBackPressedCallback handlers.
-            // If there are none registered, the system will call finish().
-            // However, if we do have an enabled/registered callback of our own,
-            // it is responsible to call finish()
-            super.onBackPressed();
-        }
-    }
-
     @Nullable
     protected MenuItem getNavigationMenuItem(@SuppressWarnings("SameParameterValue")
                                              @IdRes final int itemId) {
@@ -255,7 +237,8 @@ public abstract class BaseActivity
     /**
      * If we have a navigation drawer, open it.
      *
-     * @return {@code true} if opened; {@code false} if not
+     * @return {@code true} if it opened;
+     *         {@code false} if this was a no-operation.
      */
     boolean openNavigationDrawer() {
         if (drawerLayout != null) {
@@ -267,10 +250,15 @@ public abstract class BaseActivity
 
     /**
      * If the drawerLayout is showing, close it.
+     *
+     * @return {@code true} if it closed;
+     *         {@code false} if this was a no-operation.
      */
-    void closeNavigationDrawer() {
+    boolean closeNavigationDrawer() {
         if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
+            return true;
         }
+        return false;
     }
 }
