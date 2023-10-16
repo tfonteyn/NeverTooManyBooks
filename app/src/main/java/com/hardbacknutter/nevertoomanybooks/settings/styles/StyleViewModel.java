@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.MapDBKey;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.WritableStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -58,7 +58,7 @@ public class StyleViewModel
     private final List<WrappedBookLevelColumn> wrappedBookLevelColumnList = new ArrayList<>();
     private String templateUuid;
     /** The style we're editing. */
-    private UserStyle style;
+    private WritableStyle style;
     /** The list of groups with a boolean flag for when the user is editing the groups. */
     @Nullable
     private List<WrappedGroup> wrappedGroupList;
@@ -152,7 +152,7 @@ public class StyleViewModel
     }
 
     @NonNull
-    UserStyle getStyle() {
+    WritableStyle getStyle() {
         return style;
     }
 

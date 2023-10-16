@@ -137,7 +137,7 @@ public class StyleDataStore
     }
 
     @NonNull
-    private final UserStyle style;
+    private final WritableStyle style;
     @NonNull
     private final MutableLiveData<Void> onModified;
 
@@ -149,7 +149,7 @@ public class StyleDataStore
      * @param style      to use
      * @param onModified the LiveData to update when this store is modified
      */
-    public StyleDataStore(@NonNull final UserStyle style,
+    public StyleDataStore(@NonNull final WritableStyle style,
                           @NonNull final MutableLiveData<Void> onModified) {
         this.style = style;
         this.onModified = onModified;
@@ -345,8 +345,14 @@ public class StyleDataStore
                           @Nullable final String value) {
         switch (key) {
             case PK_NAME:
-                //noinspection DataFlowIssue
-                style.setName(value);
+                // The DataStores lives inside a ViewModel, so we can't get a Context
+                // and use the type independent #getLabel(Context).
+                // But we only allow name editing for a UserStyle anyhow.
+                if (style.getType() == StyleType.User) {
+                    //noinspection DataFlowIssue
+                    ((UserStyle) style).setName(value);
+                }
+                // else: We can't stop the framework calling us... just ignore
                 break;
 
             case PK_LAYOUT:
@@ -371,7 +377,13 @@ public class StyleDataStore
                             @Nullable final String defValue) {
         switch (key) {
             case PK_NAME:
-                return style.getName();
+                // See remarks in #putString
+                if (style.getType() == StyleType.User) {
+                    return ((UserStyle) style).getName();
+                } else {
+                    // We can't stop the framework calling us... just return bogus
+                    return "";
+                }
 
             case PK_LAYOUT:
                 return String.valueOf(style.getLayout().getId());

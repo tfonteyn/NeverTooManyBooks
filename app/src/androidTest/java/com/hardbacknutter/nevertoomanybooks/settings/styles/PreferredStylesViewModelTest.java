@@ -35,6 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.WritableStyle;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
@@ -133,7 +134,7 @@ public class PreferredStylesViewModelTest
 
 
         // Test the prepared style
-        final UserStyle editedStyle = styleVm.getStyle();
+        final WritableStyle editedStyle = styleVm.getStyle();
         // It's not saved to the db yet
         assertEquals(0, editedStyle.getId());
         // but should have a new UUID assigned to it
@@ -147,7 +148,7 @@ public class PreferredStylesViewModelTest
 
         final long editedStyleId = editedStyle.getId();
         final String editedStyleUuid = editedStyle.getUuid();
-        final String editedStyleName = editedStyle.getName();
+        final String editedStyleName = editedStyle.getLabel(context);
         final boolean editedStylePreferred = editedStyle.isPreferred();
 
         listVm.onStyleEdited(context, editedStyle, initialStyle.getUuid());
@@ -206,7 +207,7 @@ public class PreferredStylesViewModelTest
 
 
         // Test the prepared style
-        final UserStyle editedStyle = styleVm.getStyle();
+        final WritableStyle editedStyle = styleVm.getStyle();
         // It's not saved to the db yet
         assertEquals(0, editedStyle.getId());
         // but should have a new UUID assigned to it
@@ -220,7 +221,7 @@ public class PreferredStylesViewModelTest
 
         final long editedStyleId = editedStyle.getId();
         final String editedStyleUuid = editedStyle.getUuid();
-        final String editedStyleName = editedStyle.getName();
+        final String editedStyleName = editedStyle.getLabel(context);
         final boolean editedStylePreferred = editedStyle.isPreferred();
 
         listVm.onStyleEdited(context, editedStyle, initialStyle.getUuid());
@@ -270,7 +271,7 @@ public class PreferredStylesViewModelTest
 
 
         // Test the prepared style
-        final UserStyle editedStyle = styleVm.getStyle();
+        final WritableStyle editedStyle = styleVm.getStyle();
         // id/uuid is kept
         assertEquals(initialStyle.getId(), editedStyle.getId());
         assertEquals(initialStyle.getUuid(), editedStyle.getUuid());
@@ -283,7 +284,7 @@ public class PreferredStylesViewModelTest
 
         final long editedStyleId = editedStyle.getId();
         final String editedStyleUuid = editedStyle.getUuid();
-        final String editedStyleName = editedStyle.getName();
+        final String editedStyleName = editedStyle.getLabel(context);
         final boolean editedStylePreferred = editedStyle.isPreferred();
 
         listVm.onStyleEdited(context, editedStyle, initialStyle.getUuid());

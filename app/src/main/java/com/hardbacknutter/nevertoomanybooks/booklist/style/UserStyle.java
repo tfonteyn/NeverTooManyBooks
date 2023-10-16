@@ -36,7 +36,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
  * Use the factory methods instead for clarity.
  */
 public class UserStyle
-        extends BaseStyle {
+        extends BaseStyle
+        implements WritableStyle {
 
     @Nullable
     private String name;

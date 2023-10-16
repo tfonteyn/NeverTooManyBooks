@@ -78,7 +78,8 @@ public class StylesHelper {
     /**
      * Get the user preferences for the defaults for all styles.
      *
-     * @return the global/default style preferences
+     * @return a hard-reference to the global/default style preferences
+     *         i.e. any updates done will be preserved (but not automatically saved)
      */
     @NonNull
     public Style getGlobalStyle() {
