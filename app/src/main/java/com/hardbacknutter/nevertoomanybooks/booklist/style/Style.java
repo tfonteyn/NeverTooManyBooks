@@ -94,7 +94,7 @@ public interface Style {
 
     @SuppressWarnings("ClassReferencesSubclass")
     @NonNull
-    UserStyle clone(@NonNull Context context);
+    WritableStyle clone(@NonNull Context context);
 
     /**
      * Get the id.

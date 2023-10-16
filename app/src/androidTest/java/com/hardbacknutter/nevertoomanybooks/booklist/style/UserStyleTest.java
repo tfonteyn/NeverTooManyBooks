@@ -45,7 +45,7 @@ public class UserStyleTest
         assertTrue(s1.isPresent());
 
         // clone a BuiltinStyle
-        final UserStyle s2 = s1.get().clone(context);
+        final WritableStyle s2 = s1.get().clone(context);
         compare(context, s1.get(), s2);
         // clone a UserStyle
         compare(context, s2, s2.clone(context));

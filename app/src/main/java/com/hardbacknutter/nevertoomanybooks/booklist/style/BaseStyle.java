@@ -291,22 +291,21 @@ public abstract class BaseStyle
     }
 
     /**
-     * Construct a clone of this object with id==0, and a new uuid.
+     * Construct a clone of this Style with id==0, and a new uuid.
      *
      * @param context Current context
      *
-     * @return cloned/new instance
+     * @return a new {@link WritableStyle} instance
      *
      * @throws IllegalArgumentException if the given UUID is empty
      */
     @SuppressWarnings("ClassReferencesSubclass")
     @Override
     @NonNull
-    public UserStyle clone(@NonNull final Context context) {
+    public WritableStyle clone(@NonNull final Context context) {
         requireUuid(uuid);
 
-        // A cloned style is *always* a UserStyle/persistent regardless of the original
-        // being a UserStyle or BuiltinStyle.
+        // A cloned style is *always* a UserStyle regardless of the original type
         return new UserStyle(context, 0, UUID.randomUUID().toString(), this);
     }
 
