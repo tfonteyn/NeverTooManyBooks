@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.WritableStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
@@ -237,7 +238,7 @@ public class StyleCoder
             final JSONObject source = data.getJSONObject(STYLE_SETTINGS);
 
             if (style.getType() == StyleType.User && source.has(StyleDataStore.PK_GROUPS)) {
-                decodeGroups((UserStyle) style, source);
+                decodeGroups((WritableStyle) style, source);
             }
             decodeSettings(source, style);
         }
@@ -305,12 +306,12 @@ public class StyleCoder
         }
     }
 
-    private void decodeGroups(@NonNull final UserStyle userStyle,
+    private void decodeGroups(@NonNull final WritableStyle style,
                               @NonNull final JSONObject source)
             throws JSONException {
 
         if (source.has(StyleDataStore.PK_EXPANSION_LEVEL)) {
-            userStyle.setExpansionLevel(
+            style.setExpansionLevel(
                     source.getInt(StyleDataStore.PK_EXPANSION_LEVEL));
         }
 
@@ -318,17 +319,17 @@ public class StyleCoder
         final List<Integer> groupIds = IntStream.range(0, groupArray.length())
                                                 .mapToObj(groupArray::getInt)
                                                 .collect(Collectors.toList());
-        userStyle.setGroupIds(groupIds);
+        style.setGroupIds(groupIds);
 
         if (source.has(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE)) {
-            userStyle.setPrimaryAuthorType(
+            style.setPrimaryAuthorType(
                     source.getInt(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE));
         }
 
         for (final Style.UnderEach item : Style.UnderEach.values()) {
             if (source.has(item.getPrefKey())) {
-                userStyle.setShowBooksUnderEachGroup(item.getGroupId(),
-                                                     source.getBoolean(item.getPrefKey()));
+                style.setShowBooksUnderEachGroup(item.getGroupId(),
+                                                 source.getBoolean(item.getPrefKey()));
             }
         }
     }
