@@ -91,18 +91,9 @@
             android:title="@string/pt_search_reformat_color" />
     </PreferenceCategory>
 
-    <PreferenceCategory
-        android:title="@string/pc_formatting">
 
-        <!-- This is the global setting; can be overridden with a style-level setting. -->
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_baseline_reorder_24"
-            android:key="show.author.name.given_first"
-            android:summaryOff="@string/ps_author_name_family_first"
-            android:summaryOn="@string/ps_author_name_given_first"
-            android:title="@string/pt_show_author_name_given_first"
-            />
+    <PreferenceCategory
+        android:title="@string/lbl_title">
 
         <!-- This is the global setting used for
              - book, toc and series titles.
@@ -118,20 +109,6 @@
             android:summaryOff="@string/ps_show_titles_reordered_off"
             android:summaryOn="@string/ps_show_titles_reordered_on"
             android:title="@string/pt_show_title_reordered" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="@string/pc_sorting">
-
-        <!-- This is the global setting; can be overridden with a style-level setting. -->
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_baseline_sort_24"
-            android:key="sort.author.name.given_first"
-            android:summaryOff="@string/ps_author_name_family_first"
-            android:summaryOn="@string/ps_author_name_given_first"
-            android:title="@string/pt_sort_author_name_given_first" />
 
         <!-- This is the global setting used for
              - book, toc and series titles.
@@ -152,6 +129,18 @@
             android:title="@string/pt_sort_title_reordered" />
 
     </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/style_type_defaults">
+
+        <Preference
+            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleDefaultsFragment"
+            android:icon="@drawable/ic_baseline_style_24"
+            android:key="psk_style_defaults"
+            android:title="@string/style_type_defaults"
+            />
+    </PreferenceCategory>
+
 
     <PreferenceCategory
         android:title="@string/pc_edit">

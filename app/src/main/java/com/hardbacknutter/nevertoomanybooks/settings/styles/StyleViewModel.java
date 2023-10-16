@@ -53,6 +53,10 @@ import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 public class StyleViewModel
         extends ViewModel {
 
+    private static final String TAG = "StyleViewModel";
+
+    public static final String BKEY_GLOBAL_STYLE = TAG + ":global";
+
     private final MutableLiveData<Void> onModified = new MutableLiveData<>();
     @NonNull
     private final List<WrappedBookLevelColumn> wrappedBookLevelColumnList = new ArrayList<>();
@@ -113,33 +117,37 @@ public class StyleViewModel
     void init(@NonNull final Context context,
               @NonNull final Bundle args) {
         if (style == null) {
-            final String uuid = SanityCheck.requireValue(args.getString(Style.BKEY_UUID),
-                                                         Style.BKEY_UUID);
-            // ALWAYS pass the original style uuid back.
-            templateUuid = uuid;
+            if (args.getBoolean(BKEY_GLOBAL_STYLE, false)) {
+                style = (WritableStyle) ServiceLocator.getInstance().getStyles().getGlobalStyle();
 
-            final Style dbStyle = ServiceLocator.getInstance().getStyles()
-                                                .getStyle(uuid)
-                                                .orElseThrow(() -> new IllegalArgumentException(
-                                                        "uuid not found: " + uuid));
-
-            @EditStyleContract.EditAction
-            final int action = args.getInt(EditStyleContract.BKEY_ACTION,
-                                           EditStyleContract.ACTION_EDIT);
-
-            if (action == EditStyleContract.ACTION_CLONE
-                || dbStyle.getType() == StyleType.Builtin) {
-                // We're cloning (user of builtin).
-                // or the style is builtin in which case we force cloning.
-                style = dbStyle.clone(context);
             } else {
-                // just edit the user-style
-                style = (UserStyle) dbStyle;
-            }
+                final String uuid = SanityCheck.requireValue(args.getString(Style.BKEY_UUID),
+                                                             Style.BKEY_UUID);
+                // ALWAYS pass the original style uuid back.
+                templateUuid = uuid;
 
-            // Only set if true, don't overwrite
-            if (args.getBoolean(EditStyleContract.BKEY_SET_AS_PREFERRED)) {
-                style.setPreferred(true);
+                final Style dbStyle = ServiceLocator.getInstance().getStyles()
+                                                    .getStyle(uuid)
+                                                    .orElseThrow(() -> new IllegalArgumentException(
+                                                            "uuid not found: " + uuid));
+
+                @EditStyleContract.EditAction
+                final int action = args.getInt(EditStyleContract.BKEY_ACTION,
+                                               EditStyleContract.ACTION_EDIT);
+
+                if (action == EditStyleContract.ACTION_CLONE
+                    || dbStyle.getType() == StyleType.Builtin) {
+                    // We're cloning a style. If the style is Builtin, we force cloning.
+                    style = dbStyle.clone(context);
+                } else {
+                    // just edit the style.
+                    style = (WritableStyle) dbStyle;
+                }
+
+                // Only set if true, don't overwrite
+                if (args.getBoolean(EditStyleContract.BKEY_SET_AS_PREFERRED)) {
+                    style.setPreferred(true);
+                }
             }
 
             styleDataStore = new StyleDataStore(style, onModified);

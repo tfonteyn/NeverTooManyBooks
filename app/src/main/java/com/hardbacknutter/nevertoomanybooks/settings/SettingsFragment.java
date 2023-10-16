@@ -60,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
+import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
@@ -89,6 +90,8 @@ public class SettingsFragment
 
     private static final String PSK_SEARCH_SITE_ORDER = "psk_search_site_order";
     private static final String PSK_CALIBRE = "psk_calibre";
+
+    private static final String PSK_STYLE_DEFAULTS = "psk_style_defaults";
 
     private final ActivityResultLauncher<Void> editSitesLauncher =
             registerForActivityResult(new SearchSitesAllListsContract(),
@@ -196,6 +199,11 @@ public class SettingsFragment
         //noinspection DataFlowIssue
         setVisualIndicator(titleOrderByPref, StartupViewModel.PK_REBUILD_TITLE_OB);
         titleOrderByPref.setOnPreferenceChangeListener(this::onTitleOrderByChange);
+
+        // Add flag to indicate we'll be editing the global-style when coming from here
+        //noinspection DataFlowIssue
+        findPreference(PSK_STYLE_DEFAULTS)
+                .getExtras().putBoolean(StyleViewModel.BKEY_GLOBAL_STYLE, true);
 
         final Bundle args = getArguments();
         if (args != null) {

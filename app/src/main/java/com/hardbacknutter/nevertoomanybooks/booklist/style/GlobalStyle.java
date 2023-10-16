@@ -24,20 +24,39 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import java.util.List;
 import java.util.UUID;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
 @SuppressWarnings("WeakerAccess")
 public final class GlobalStyle
-        extends BaseStyle {
+        extends BaseStyle
+        implements WritableStyle {
+
+    /**
+     * All groups which have configurable settings.
+     * <p>
+     * As an alternative we could just run:
+     * {@link BooklistGroup#getAllGroups}
+     * but that is severe overkill and a waste of memory.
+     * FIXME: to be reimplemented when BooklistGroup identifiers are finally moved to an enum.
+     * <p>
+     * NEWTHINGS: BooklistGroup: adding a new group with configurable settings
+     */
+    private static final List<Integer> GROUPS = List.of(BooklistGroup.AUTHOR,
+                                                        BooklistGroup.SERIES,
+                                                        BooklistGroup.PUBLISHER,
+                                                        BooklistGroup.BOOKSHELF);
 
     /**
      * Constructor used during app installation/upgrade.
      */
     public GlobalStyle() {
         super(UUID.randomUUID().toString(), Integer.MIN_VALUE);
+        setGroupIds(GROUPS);
     }
 
     /**
@@ -47,6 +66,7 @@ public final class GlobalStyle
      */
     private GlobalStyle(@NonNull final DataHolder rowData) {
         super(rowData);
+        setGroupIds(GROUPS);
     }
 
     /**

@@ -270,4 +270,28 @@
 
     </PreferenceCategory>
 
+    <!-- ENHANCE: enable this if/when we introduce the concept of a PRIMARY Bookshelf.
+          All other plumbing is already implemented.
+    -->
+    <!--    <PreferenceCategory-->
+    <!--        android:key="psk_style_bookshelf"-->
+    <!--        android:title="@string/lbl_bookshelf"-->
+    <!--        app:isPreferenceVisible="false"-->
+    <!--        tools:isPreferenceVisible="true"-->
+    <!--        >-->
+
+    <!--        &lt;!&ndash; Enabled if Group 'Bookshelf' is present in this style. &ndash;&gt;-->
+    <!--        <SwitchPreference-->
+    <!--            android:defaultValue="false"-->
+    <!--            android:icon="@drawable/ic_baseline_functions_24"-->
+    <!--            android:key="style.booklist.group.bookshelf.show.all"-->
+    <!--            android:summaryOff="@string/ps_bob_books_under_multiple_primary_bookshelf_only"-->
+    <!--            android:summaryOn="@string/ps_bob_books_under_multiple_each_bookshelf"-->
+    <!--            android:title="@string/pt_bob_books_under_multiple_bookshelf"-->
+    <!--            app:isPreferenceVisible="false"-->
+    <!--            tools:isPreferenceVisible="true"-->
+    <!--            />-->
+
+    <!--    </PreferenceCategory>-->
+
 </PreferenceScreen>
