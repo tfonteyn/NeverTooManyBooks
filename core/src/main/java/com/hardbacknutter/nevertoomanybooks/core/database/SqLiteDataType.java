@@ -25,6 +25,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -114,18 +115,17 @@ public enum SqLiteDataType
      * We only lookup the more common types.
      *
      * @param typeName one of the {@link #MAP} keys
-     *                 Must be lower-case
      *
      * @throws IllegalArgumentException if the type name is unknown
      */
     @NonNull
     static SqLiteDataType getInstance(@NonNull final String typeName) {
-        final SqLiteDataType type = MAP.get(typeName);
+        final SqLiteDataType type = MAP.get(typeName.toLowerCase(Locale.ENGLISH));
         if (type != null) {
             return type;
         }
 
-        throw new IllegalArgumentException(typeName);
+        throw new IllegalArgumentException("No matching SqLiteDataType found for :" + typeName);
     }
 
     @NonNull

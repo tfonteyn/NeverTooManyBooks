@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -87,6 +87,8 @@ public class TableInfo {
      * @param tableName Name of the database table to lookup
      *
      * @return A collection of ColumnInfo objects.
+     *
+     * @throws SQLiteException if we failed to get the column details
      */
     @NonNull
     private Map<String, ColumnInfo> describeTable(@NonNull final SQLiteDatabase db,
