@@ -96,10 +96,10 @@ public abstract class BaseActivity
      * Called when w return from editing the Settings.
      * Override as needed.
      *
-     * @param result Bundle; see {@link SettingsContract} for keys.
+     * @param result from the {@link SettingsContract}.
      */
-    public void onSettingsChanged(@NonNull final Bundle result) {
-        if (result.getBoolean(SettingsContract.BKEY_RECREATE_ACTIVITY, false)) {
+    public void onSettingsChanged(@NonNull final SettingsContract.Output result) {
+        if (result.isRecreateActivity()) {
             recreateVm.setRecreationRequired();
         }
     }

@@ -762,10 +762,10 @@ public class BooksOnBookshelf
     }
 
     @Override
-    public void onSettingsChanged(@NonNull final Bundle result) {
+    public void onSettingsChanged(@NonNull final SettingsContract.Output result) {
         super.onSettingsChanged(result);
 
-        if (result.getBoolean(SettingsContract.BKEY_REBUILD_BOOKLIST, false)) {
+        if (result.isForceRebuildBooklist()) {
             vm.setForceRebuildInOnResume();
         }
     }

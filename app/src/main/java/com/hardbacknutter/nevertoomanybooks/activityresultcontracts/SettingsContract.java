@@ -38,19 +38,19 @@ import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsFragment;
 
 public class SettingsContract
-        extends ActivityResultContract<String, Optional<Bundle>> {
+        extends ActivityResultContract<String, Optional<SettingsContract.Output>> {
 
     private static final String TAG = "SettingsContract";
 
     /** Something changed (or not) that requires a recreation of the caller Activity. */
-    public static final String BKEY_RECREATE_ACTIVITY = SettingsFragment.TAG + ":recreate";
+    private static final String BKEY_RECREATE_ACTIVITY = TAG + ":recreate";
     /** Something changed (or not) that requires a rebuild of the Booklist. */
-    public static final String BKEY_REBUILD_BOOKLIST = SettingsFragment.TAG + ":rebuildList";
+    private static final String BKEY_REBUILD_BOOKLIST = TAG + ":rebuildList";
 
     /**
      * Create the result which {@link #parseResult(int, Intent)} will receive.
      *
-     * @param requiresRecreation   flag indicating if the BoB <strong>Activity</strong>
+     * @param recreateActivity     flag indicating if the BoB <strong>Activity</strong>
      *                             should be recreated
      * @param forceRebuildBooklist flag indicating if the BoB <strong>Booklist</strong>
      *                             should be rebuild
@@ -58,10 +58,10 @@ public class SettingsContract
      * @return Intent
      */
     @NonNull
-    public static Intent createResult(final boolean requiresRecreation,
+    public static Intent createResult(final boolean recreateActivity,
                                       final boolean forceRebuildBooklist) {
         return new Intent()
-                .putExtra(BKEY_RECREATE_ACTIVITY, requiresRecreation)
+                .putExtra(BKEY_RECREATE_ACTIVITY, recreateActivity)
                 .putExtra(BKEY_REBUILD_BOOKLIST, forceRebuildBooklist);
     }
 
@@ -78,7 +78,7 @@ public class SettingsContract
 
     @Override
     @NonNull
-    public Optional<Bundle> parseResult(final int resultCode,
+    public Optional<Output> parseResult(final int resultCode,
                                         @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             LoggerFactory.getLogger()
@@ -92,6 +92,29 @@ public class SettingsContract
         if (result == null) {
             return Optional.empty();
         }
-        return Optional.of(result);
+
+        final Output output = new Output(
+                result.getBoolean(BKEY_RECREATE_ACTIVITY, false),
+                result.getBoolean(BKEY_REBUILD_BOOKLIST, false));
+        return Optional.of(output);
+    }
+
+    public static final class Output {
+        private final boolean recreateActivity;
+        private final boolean forceRebuildBooklist;
+
+        Output(final boolean recreateActivity,
+               final boolean forceRebuildBooklist) {
+            this.recreateActivity = recreateActivity;
+            this.forceRebuildBooklist = forceRebuildBooklist;
+        }
+
+        public boolean isRecreateActivity() {
+            return recreateActivity;
+        }
+
+        public boolean isForceRebuildBooklist() {
+            return forceRebuildBooklist;
+        }
     }
 }
