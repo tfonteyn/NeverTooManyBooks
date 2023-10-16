@@ -157,11 +157,10 @@ public abstract class StyleBaseFragment
         final WritableStyle style = vm.getStyle();
 
         final PreferenceScreen screen = getPreferenceScreen();
-        for (final BooklistGroup group : BooklistGroup.getAllGroups(style)) {
-            // Show the preferences for groups we have
-            // and hide for groups we don't/no longer have.
-            group.setPreferencesVisible(screen, style.hasGroup(group.getId()));
-        }
+
+        // Show the preferences for groups we have and hide for groups we don't/no longer have.
+        BooklistGroup.getAllGroups(style).forEach(
+                group -> group.setPreferencesVisible(screen, style.hasGroup(group.getId())));
 
         updateSummaries();
         updateLayoutPrefs();

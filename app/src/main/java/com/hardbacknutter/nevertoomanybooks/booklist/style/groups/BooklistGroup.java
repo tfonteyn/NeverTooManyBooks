@@ -37,6 +37,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.adapter.BooklistAdapter;
@@ -252,11 +254,9 @@ public class BooklistGroup {
     @SuppressLint("WrongConstant")
     @NonNull
     public static List<BooklistGroup> getAllGroups(@NonNull final Style style) {
-        final List<BooklistGroup> list = new ArrayList<>();
-        for (int id = 1; id <= GROUP_KEY_MAX; id++) {
-            list.add(newInstance(id, style));
-        }
-        return list;
+        return IntStream.rangeClosed(1, GROUP_KEY_MAX)
+                        .mapToObj(id -> newInstance(id, style))
+                        .collect(Collectors.toList());
     }
 
     /**
