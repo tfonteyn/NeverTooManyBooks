@@ -70,7 +70,7 @@ public abstract class BaseActivity
                                       });
     /** Optional - The side/navigation panel. */
     @Nullable
-    DrawerLayout drawerLayout;
+    private DrawerLayout drawerLayout;
     private RecreateViewModel recreateVm;
     private final ActivityResultLauncher<String> editSettingsLauncher =
             registerForActivityResult(new SettingsContract(), o -> o.ifPresent(
@@ -179,13 +179,6 @@ public abstract class BaseActivity
     @CallSuper
     protected void onResume() {
         super.onResume();
-        recreateIfNeeded();
-    }
-
-    /**
-     * Trigger a recreate() on the Activity if needed.
-     */
-    protected void recreateIfNeeded() {
         if (recreateVm.isRecreationRequired()) {
             recreate();
         }
@@ -220,7 +213,7 @@ public abstract class BaseActivity
     }
 
     @NonNull
-    View getNavigationMenuItemView(final int itemId) {
+    View getNavigationMenuItemView(@IdRes final int itemId) {
         //noinspection DataFlowIssue
         final View anchor = navigationView.findViewById(itemId);
         // Not 100% we are using a legal way of getting the View...
@@ -259,6 +252,22 @@ public abstract class BaseActivity
         return false;
     }
 
+    /**
+     * If we have a navigation drawer, open it.
+     *
+     * @return {@code true} if opened; {@code false} if not
+     */
+    boolean openNavigationDrawer() {
+        if (drawerLayout != null) {
+            drawerLayout.openDrawer(GravityCompat.START);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * If the drawerLayout is showing, close it.
+     */
     void closeNavigationDrawer() {
         if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);

@@ -509,10 +509,10 @@ public class BooksOnBookshelf
         setNavIcon();
 
         vb.toolbar.setNavigationOnClickListener(v -> {
-            if (isRootActivity()) {
-                vb.drawerLayout.openDrawer(GravityCompat.START);
-            } else {
-                onBackPressed();
+            if (!isRootActivity() || !openNavigationDrawer()) {
+                // otherwise, home is an 'up' event.
+                // Simulate the user pressing the 'back' key.
+                getOnBackPressedDispatcher().onBackPressed();
             }
         });
 

@@ -109,12 +109,10 @@ public class FragmentHostActivity
         }
 
         toolbar.setNavigationOnClickListener(v -> {
-            if (isTaskRoot() && drawerLayout != null) {
-                // when root, show the drawer
-                drawerLayout.openDrawer(GravityCompat.START);
-            } else {
-                // otherwise, home is an 'up' event. Simulate the user pressing the 'back' key.
-                onBackPressed();
+            if (!isTaskRoot() || !openNavigationDrawer()) {
+                // otherwise, home is an 'up' event.
+                // Simulate the user pressing the 'back' key.
+                getOnBackPressedDispatcher().onBackPressed();
             }
         });
     }
