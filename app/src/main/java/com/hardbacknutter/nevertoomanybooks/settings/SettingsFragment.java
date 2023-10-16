@@ -123,6 +123,7 @@ public class SettingsFragment
                     getActivity().finish();
                 }
             };
+
     @Nullable
     private ProgressDelegate progressDelegate;
     private boolean storageWasMissing;

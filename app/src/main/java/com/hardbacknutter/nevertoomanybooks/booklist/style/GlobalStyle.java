@@ -49,6 +49,13 @@ public final class GlobalStyle
         super(rowData);
     }
 
+    /**
+     * Constructor - load the style from the database.
+     *
+     * @param rowData data
+     *
+     * @return the loaded Style
+     */
     @NonNull
     public static Style createFromDatabase(@NonNull final DataHolder rowData) {
         return new GlobalStyle(rowData);

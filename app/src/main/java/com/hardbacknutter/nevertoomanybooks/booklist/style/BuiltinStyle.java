@@ -278,7 +278,8 @@ public final class BuiltinStyle
     }
 
     /**
-     * Construct a BuiltinStyle based on the given database row data.
+     * Load the style data from the database filling in the defaults from
+     * the given defaults.
      * <p>
      * This method will return {@code Optional.empty()} if the style is deprecated.
      *

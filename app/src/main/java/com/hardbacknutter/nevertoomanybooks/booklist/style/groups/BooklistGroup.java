@@ -209,8 +209,7 @@ public class BooklistGroup {
     }
 
     /**
-     * Create a new BooklistGroup of the specified id, creating any specific
-     * subclasses as necessary.
+     * Create a new BooklistGroup of the specified id.
      *
      * @param id    of group to create
      * @param style Style reference.
@@ -238,10 +237,15 @@ public class BooklistGroup {
     }
 
     /**
-     * Get a list of BooklistGroup's, one for each defined {@link GroupKey}'s.
+     * Get a list of <strong>ALL defined</strong> groups,
+     * i.e. one for each of the defined {@link GroupKey}'s.
+     * <p>
+     * Note that these are <strong>not</strong> the {@link Style}'s groups; the style
+     * is only used to get default settings for some groups.
+     * <p>
      * This <strong>excludes</strong> the Book key itself.
      *
-     * @param style Style reference.
+     * @param style Style reference;
      *
      * @return the list
      */
@@ -814,6 +818,7 @@ public class BooklistGroup {
      */
     public void setPreferencesVisible(@NonNull final PreferenceScreen screen,
                                       final boolean visible) {
+        // no properties by default
     }
 
     /**

@@ -161,6 +161,13 @@ public class StyleViewModel
         return styleDataStore;
     }
 
+    /**
+     * Get the template UUID this style edit was based on  for the Activity result.
+     * <p>
+     * <strong>DO NOT use</strong> for {@link StyleType#Global}.
+     *
+     * @return uuid
+     */
     @NonNull
     String getTemplateUuid() {
         return Objects.requireNonNull(templateUuid, "templateUuid");

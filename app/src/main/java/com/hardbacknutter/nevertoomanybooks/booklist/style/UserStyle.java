@@ -84,11 +84,11 @@ public class UserStyle
     }
 
     /**
-     * Constructor - load a style from the database.
+     * Constructor - load the style from the database.
      *
      * @param rowData data
      *
-     * @return the loaded UserStyle
+     * @return the loaded Style
      */
     @NonNull
     public static Style createFromDatabase(@NonNull final DataHolder rowData) {
@@ -96,11 +96,11 @@ public class UserStyle
     }
 
     /**
-     * Constructor - load a style from an import (backup file).
+     * Constructor - load the style from an import (backup file).
      *
      * @param uuid data
      *
-     * @return the loaded UserStyle
+     * @return the loaded Style
      */
     @NonNull
     public static Style createFromImport(@NonNull final String uuid) {

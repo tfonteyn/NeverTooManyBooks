@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.StorageMoverTask;
  * Shared on the Activity level as it's needed by more than 1 Fragment.
  * <p>
  * Note that {@link #forceRebuildBooklist} and {@link #requiresActivityRecreation}
- * are overlapping. TODO: design a more flexible 'result' object (and NOT a Bundle)
+ * are somewhat overlapping in functionality.
  */
 @SuppressWarnings("WeakerAccess")
 public class SettingsViewModel
@@ -61,9 +61,6 @@ public class SettingsViewModel
         return forceRebuildBooklist;
     }
 
-    /**
-     * Upon returning to the BoB, trigger a Booklist rebuild.
-     */
     public void setForceRebuildBooklist() {
         this.forceRebuildBooklist = true;
     }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,8 +41,16 @@ public class FragmentHostActivity
         extends BaseActivity {
 
     private static final String TAG = "FragmentHostActivity";
-    private static final String BKEY_ACTIVITY = TAG + ":a";
+
+    /**
+     * Allows passing in {@link AppBarLayout.LayoutParams}#SCROLL_FLAG_*
+     * which will be set on the Activity toolbar.
+     *
+     * @see #initToolbar()
+     */
     public static final String BKEY_TOOLBAR_SCROLL_FLAGS = TAG + ":tbf";
+
+    private static final String BKEY_ACTIVITY = TAG + ":a";
     private static final String BKEY_FRAGMENT_CLASS = TAG + ":f";
 
     @NonNull

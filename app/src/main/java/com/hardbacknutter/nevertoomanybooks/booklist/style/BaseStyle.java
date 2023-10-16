@@ -390,13 +390,6 @@ public abstract class BaseStyle
         return showAuthorByGivenName;
     }
 
-    /**
-     * Set the preference whether to <strong>show</strong> the Author full name
-     * with their given-name first, or their family name first.
-     * i.e.
-     *
-     * @param value {@code true} for "given family", or {@code false} for "family, given"
-     */
     public void setShowAuthorByGivenName(final boolean value) {
         showAuthorByGivenName = value;
     }
@@ -406,13 +399,6 @@ public abstract class BaseStyle
         return sortAuthorByGivenName;
     }
 
-    /**
-     * Set the preference whether to <strong>sort</strong> the Author full name
-     * with their given-name first, or their family name first.
-     * i.e.
-     *
-     * @param value {@code true} for "given family", or {@code false} for "family, given"
-     */
     public void setSortAuthorByGivenName(final boolean value) {
         sortAuthorByGivenName = value;
     }
@@ -486,11 +472,6 @@ public abstract class BaseStyle
         return headerFieldVisibility;
     }
 
-    /**
-     * Set the bitmap value with the list header fields to show.
-     *
-     * @param bitmask to set
-     */
     public void setHeaderFieldVisibilityValue(@BooklistHeader.Option final int bitmask) {
         headerFieldVisibility = bitmask & BooklistHeader.BITMASK_ALL;
     }
@@ -538,12 +519,6 @@ public abstract class BaseStyle
         }
     }
 
-    /**
-     * Should rows be shown using the system's preferred height or minimum height.
-     *
-     * @return {@code true} for "?attr/listPreferredItemHeightSmall"
-     *         or {@code false} for {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT}
-     */
     @Override
     public boolean isGroupRowUsesPreferredHeight() {
         return groupRowUsesPreferredHeight;
@@ -552,7 +527,6 @@ public abstract class BaseStyle
     public void setGroupRowUsesPreferredHeight(final boolean value) {
         groupRowUsesPreferredHeight = value;
     }
-
 
     @Override
     public int getGroupCount() {
@@ -589,13 +563,6 @@ public abstract class BaseStyle
         return new ArrayList<>(groups.values());
     }
 
-    /**
-     * Set the list of groups.
-     *
-     * @param list to set
-     *
-     * @see #setGroupIds(List)
-     */
     public void setGroupList(@Nullable final List<BooklistGroup> list) {
         groups.clear();
         if (list != null) {
@@ -603,13 +570,6 @@ public abstract class BaseStyle
         }
     }
 
-    /**
-     * Using the given group-ids, create and set the group list.
-     *
-     * @param groupIds to create groups for
-     *
-     * @see #setGroupList(List)
-     */
     public void setGroupIds(@NonNull final List<Integer> groupIds) {
         final List<BooklistGroup> list = groupIds
                 .stream()
@@ -640,24 +600,11 @@ public abstract class BaseStyle
                 .orElse(Author.TYPE_UNKNOWN);
     }
 
-    /**
-     * Set the primary-author-type from the {@link AuthorBooklistGroup}
-     * (if this Style has the group).
-     *
-     * @param type the Author type
-     */
     public void setPrimaryAuthorType(@Author.Type final int type) {
         getGroupById(BooklistGroup.AUTHOR)
                 .ifPresent(group -> ((AuthorBooklistGroup) group).setPrimaryType(type));
     }
 
-    /**
-     * Set the show-book-under-each for the given wrapped group
-     * (if this Style has the group).
-     *
-     * @param groupId the {@link BooklistGroup} id
-     * @param value   to set
-     */
     public void setShowBooksUnderEachGroup(@BooklistGroup.Id final int groupId,
                                            final boolean value) {
         getGroupById(groupId)
