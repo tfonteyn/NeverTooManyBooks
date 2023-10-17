@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -67,15 +68,16 @@ public abstract class BaseActivity
     /** Optional - The side/navigation panel. */
     @Nullable
     private DrawerLayout drawerLayout;
-    private RecreateViewModel recreateVm;
-    private final ActivityResultLauncher<String> editSettingsLauncher =
-            registerForActivityResult(new SettingsContract(), o -> o.ifPresent(
-                    this::onSettingsChanged));
-
     /** Optional - The side/navigation menu. */
     @Nullable
     private NavigationView navigationView;
-    private Toolbar toolbar;
+
+    /** Handles Activity recreation. */
+    private RecreateViewModel recreateVm;
+
+    private final ActivityResultLauncher<String> editSettingsLauncher =
+            registerForActivityResult(new SettingsContract(), o -> o.ifPresent(
+                    this::onSettingsChanged));
 
     /**
      * Hide the keyboard.
@@ -114,15 +116,7 @@ public abstract class BaseActivity
         super.onCreate(savedInstanceState);
     }
 
-    @CallSuper
-    void initNavDrawer() {
-        drawerLayout = findViewById(R.id.drawer_layout);
-        if (drawerLayout != null) {
-            navigationView = drawerLayout.findViewById(R.id.nav_view);
-            navigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
-            navigationView.setItemMaxLines(2);
-        }
-    }
+
 
     /**
      * When resuming, recreate activity if needed.
@@ -140,6 +134,22 @@ public abstract class BaseActivity
         return recreateVm.isRecreating();
     }
 
+
+    /**
+     * Setup the {@link DrawerLayout} and the {@link NavigationView}.
+     * <p>
+     * Should be called from {@link Activity#onCreate(Bundle)}.
+     */
+    @CallSuper
+    void initNavDrawer() {
+        drawerLayout = findViewById(R.id.drawer_layout);
+        if (drawerLayout != null) {
+            navigationView = drawerLayout.findViewById(R.id.nav_view);
+            navigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
+            navigationView.setItemMaxLines(2);
+        }
+    }
+
     @Nullable
     protected MenuItem getNavigationMenuItem(@SuppressWarnings("SameParameterValue")
                                              @IdRes final int itemId) {
@@ -155,6 +165,13 @@ public abstract class BaseActivity
         return anchor;
     }
 
+    /**
+     * Overridable/extendable handler for the {@link NavigationView} menu.
+     *
+     * @param menuItem which was tapped by the user
+     *
+     * @return {@code true} if the item was handled.
+     */
     @CallSuper
     boolean onNavigationItemSelected(@NonNull final MenuItem menuItem) {
         final int itemId = menuItem.getItemId();
