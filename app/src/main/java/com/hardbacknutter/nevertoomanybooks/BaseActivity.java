@@ -33,7 +33,6 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -102,15 +101,6 @@ public abstract class BaseActivity
         if (result.isRecreateActivity()) {
             recreateVm.setRecreationRequired();
         }
-    }
-
-    @NonNull
-    public Toolbar getToolbar() {
-        if (toolbar == null) {
-            toolbar = findViewById(R.id.toolbar);
-            Objects.requireNonNull(toolbar, "R.id.toolbar");
-        }
-        return toolbar;
     }
 
     @Override

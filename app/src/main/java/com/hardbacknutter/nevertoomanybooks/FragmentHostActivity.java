@@ -112,7 +112,8 @@ public class FragmentHostActivity
     }
 
     private void initToolbar() {
-        final Toolbar toolbar = getToolbar();
+        final Toolbar toolbar = findViewById(R.id.toolbar);
+        Objects.requireNonNull(toolbar, "R.id.toolbar");
         if (isTaskRoot()) {
             toolbar.setNavigationIcon(R.drawable.ic_baseline_menu_24);
         } else {
