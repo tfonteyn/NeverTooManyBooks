@@ -32,6 +32,8 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.utils.Delay;
+
 public abstract class BaseFragment
         extends Fragment {
 
@@ -90,7 +92,7 @@ public abstract class BaseFragment
                 if (activity != null) {
                     activity.finish();
                 }
-            }, BaseActivity.DELAY_LONG_MS);
+            }, Delay.LONG_MS);
         }
     }
 }

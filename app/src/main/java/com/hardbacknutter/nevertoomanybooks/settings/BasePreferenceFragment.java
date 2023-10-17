@@ -38,8 +38,8 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.utils.Delay;
 
 /**
  * Base settings page. This handles:
@@ -189,7 +189,7 @@ public abstract class BasePreferenceFragment
                 if (activity != null) {
                     activity.finish();
                 }
-            }, BaseActivity.DELAY_LONG_MS);
+            }, Delay.LONG_MS);
         }
     }
 }

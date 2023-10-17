@@ -34,13 +34,13 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.network.ConnectionValidatorViewModel;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
+import com.hardbacknutter.nevertoomanybooks.utils.Delay;
 
 /**
  * Intermediate abstract class providing the bulk of the logic to validate a connection.
@@ -156,7 +156,7 @@ public abstract class ConnectionValidationBasePreferenceFragment
                 //noinspection DataFlowIssue
                 Snackbar.make(getView(), R.string.info_authorized, Snackbar.LENGTH_SHORT)
                         .show();
-                getView().postDelayed(this::popBackStackOrFinish, BaseActivity.DELAY_SHORT_MS);
+                getView().postDelayed(this::popBackStackOrFinish, Delay.SHORT_MS);
             } else {
                 //For now we don't get here, instead we would be in onFailure.
                 // But keeping this here to guard against future changes in the task logic

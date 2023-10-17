@@ -50,7 +50,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Executor;
 
-import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -60,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogCoverBrowserConten
 import com.hardbacknutter.nevertoomanybooks.databinding.RowCoverBrowserGalleryBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
+import com.hardbacknutter.nevertoomanybooks.utils.Delay;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 
 /**
@@ -272,7 +272,7 @@ public class CoverBrowserDialogFragment
         if (editionsList == null || editionsList.isEmpty()) {
             vb.progressBar.hide();
             vb.statusMessage.setText(R.string.warning_no_editions);
-            vb.statusMessage.postDelayed(this::dismiss, BaseActivity.DELAY_LONG_MS);
+            vb.statusMessage.postDelayed(this::dismiss, Delay.LONG_MS);
         } else {
             // set the list and trigger the adapter
             vm.setEditions(editionsList);
@@ -320,7 +320,7 @@ public class CoverBrowserDialogFragment
         if (galleryAdapter.getItemCount() == 0) {
             vb.progressBar.hide();
             vb.statusMessage.setText(R.string.warning_image_not_found);
-            vb.statusMessage.postDelayed(this::dismiss, BaseActivity.DELAY_LONG_MS);
+            vb.statusMessage.postDelayed(this::dismiss, Delay.LONG_MS);
         }
     }
 

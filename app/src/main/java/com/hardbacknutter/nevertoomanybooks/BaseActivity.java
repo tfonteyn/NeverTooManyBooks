@@ -53,14 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsCont
 public abstract class BaseActivity
         extends AppCompatActivity {
 
-    /**
-     * Used to create a delay when leaving an Activity, showing a Message, ...
-     * {@link Snackbar#LENGTH_SHORT} is 1500 ms.
-     * {@link Snackbar#LENGTH_LONG} is 2750 ms.
-     */
-    public static final int DELAY_SHORT_MS = 1500;
-    public static final int DELAY_LONG_MS = 2800;
-
     private final ActivityResultLauncher<Long> manageBookshelvesBaseLauncher =
             registerForActivityResult(new EditBookshelvesContract(),
                                       bookshelfId -> {
