@@ -24,14 +24,17 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.appbar.AppBarLayout;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 
 /**
@@ -133,5 +136,40 @@ public class FragmentHostActivity
                 getOnBackPressedDispatcher().onBackPressed();
             }
         });
+    }
+
+    /**
+     * Manually add the first fragment for the given container. Not added to the BackStack.
+     * <p>
+     * <strong>The activity extras bundle will be set as arguments.</strong>
+     *
+     * @param containerViewId to receive the fragment
+     * @param fragmentClass   the fragment; must be loadable with the current class loader.
+     * @param fragmentTag     tag for the fragment
+     *
+     * @throws IllegalStateException if the Fragment cannot be instantiated
+     */
+    private void addFirstFragment(@SuppressWarnings("SameParameterValue")
+                                  @IdRes final int containerViewId,
+                                  @NonNull final Class<? extends Fragment> fragmentClass,
+                                  @NonNull final String fragmentTag) {
+
+        final FragmentManager fm = getSupportFragmentManager();
+        if (fm.findFragmentByTag(fragmentTag) == null) {
+            final Fragment fragment;
+            try {
+                fragment = fragmentClass.getConstructor().newInstance();
+            } catch (@NonNull final IllegalAccessException | InstantiationException e) {
+                throw new IllegalStateException("Not a fragment: " + fragmentClass.getName());
+            } catch (final NoSuchMethodException | InvocationTargetException e) {
+                throw new IllegalStateException("Other failure: " + fragmentClass.getName());
+            }
+            fragment.setArguments(getIntent().getExtras());
+
+            fm.beginTransaction()
+              .setReorderingAllowed(true)
+              .add(containerViewId, fragment, fragmentTag)
+              .commit();
+        }
     }
 }
