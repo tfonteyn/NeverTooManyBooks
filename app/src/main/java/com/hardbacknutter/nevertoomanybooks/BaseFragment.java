@@ -19,7 +19,9 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.content.Context;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,6 +45,17 @@ public abstract class BaseFragment
     private Toolbar toolbar;
     @Nullable
     private FloatingActionButton fab;
+
+    /**
+     * Hide the keyboard.
+     */
+    protected void hideKeyboard() {
+        final View view = getView();
+        //noinspection DataFlowIssue
+        final InputMethodManager imm = (InputMethodManager)
+                view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
 
     @NonNull
     protected View getProgressFrame() {

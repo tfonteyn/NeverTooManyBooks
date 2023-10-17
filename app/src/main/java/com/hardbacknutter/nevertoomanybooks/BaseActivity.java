@@ -25,8 +25,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
@@ -72,22 +70,12 @@ public abstract class BaseActivity
                     this::onSettingsChanged));
 
     /**
-     * Hide the keyboard.
-     *
-     * @param view a View that can be used to get the context and the window token
-     */
-    public static void hideKeyboard(@NonNull final View view) {
-        final InputMethodManager imm = (InputMethodManager)
-                view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    }
-
-    /**
-     * Called when w return from editing the Settings.
+     * Called when we return from editing the Settings.
      * Override as needed.
      *
      * @param result from the {@link SettingsContract}.
      */
+    @CallSuper
     public void onSettingsChanged(@NonNull final SettingsContract.Output result) {
         if (result.isRecreateActivity()) {
             recreateVm.setRecreationRequired();

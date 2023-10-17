@@ -39,7 +39,6 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
@@ -131,7 +130,7 @@ public class SearchBookByExternalIdFragment
         autoRemoveError(vb.externalId, vb.lblExternalId);
         vb.externalId.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                BaseActivity.hideKeyboard(v);
+                hideKeyboard();
                 startSearch();
                 return true;
             }

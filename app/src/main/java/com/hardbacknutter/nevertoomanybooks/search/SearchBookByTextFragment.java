@@ -22,12 +22,10 @@ package com.hardbacknutter.nevertoomanybooks.search;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,7 +37,6 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
@@ -108,13 +105,14 @@ public class SearchBookByTextFragment
             vb.title.setOnEditorActionListener(null);
 
             vb.publisher.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
-            vb.publisher.setOnEditorActionListener(this::onEditorAction);
-
+            vb.publisher.setOnEditorActionListener(
+                    (v, actionId, event) -> onEditorAction(actionId));
         } else {
             vb.lblPublisher.setVisibility(View.GONE);
 
             vb.title.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
-            vb.title.setOnEditorActionListener(this::onEditorAction);
+            vb.title.setOnEditorActionListener(
+                    (v, actionId, event) -> onEditorAction(actionId));
         }
 
         vb.author.setText(coordinator.getAuthorSearchText());
@@ -163,11 +161,9 @@ public class SearchBookByTextFragment
                                             + " / " + getString(R.string.lbl_title)));
     }
 
-    private boolean onEditorAction(@NonNull final TextView v,
-                                   final int actionId,
-                                   @Nullable final KeyEvent event) {
+    private boolean onEditorAction(final int actionId) {
         if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-            BaseActivity.hideKeyboard(v);
+            hideKeyboard();
             startSearch();
             return true;
         }

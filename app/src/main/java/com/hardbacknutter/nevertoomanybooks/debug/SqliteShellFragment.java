@@ -39,7 +39,6 @@ import androidx.preference.PreferenceManager;
 
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -122,7 +121,7 @@ public class SqliteShellFragment
 
         vb.input.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_GO) {
-                BaseActivity.hideKeyboard(v);
+                hideKeyboard();
                 execute();
                 return true;
             }
