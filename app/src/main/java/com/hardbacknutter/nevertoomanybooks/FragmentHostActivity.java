@@ -53,6 +53,7 @@ public class FragmentHostActivity
     private static final String BKEY_ACTIVITY = TAG + ":a";
     private static final String BKEY_FRAGMENT_CLASS = TAG + ":f";
 
+    /** See comments in the BoB activity on its backPressedCallback. */
     private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override

@@ -45,6 +45,7 @@ import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
@@ -285,7 +286,23 @@ public class BooksOnBookshelf
 
     /** View Binding. */
     private BooksonbookshelfBinding vb;
-
+    /**
+     * The single back-press handler.
+     * <p>
+     * <a href="https://developer.android.com/guide/navigation/custom-back/predictive-back-gesture#best-practices">Best practices</a>
+     * states that we should have multiple handlers and enable/disable them as needed.
+     * e.g. have a callback to close the Navigation drawer solely.
+     * and trigger the enable/disable using an observable. That's all very well if the
+     * state is held in the ViewModel, but for all 3 situation in our handler
+     * the state is directly dependent on another UI element. It would be absurd to
+     * duplicate state in the VM. So... sticking with conditionals in this single handler.
+     * <p>
+     * Notes:
+     * - a {@link DrawerLayout.SimpleDrawerListener} could be used for the nav-drawer.
+     * - we could implement a similar listener on the FABMenu.
+     * - the SearchCriteria could be handled as per above link.
+     * ... so code in 3 different places as compared to all of it centralized here
+     */
     private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
