@@ -64,7 +64,11 @@ public class ImportResults
         }
     };
 
-    static final int MAX_FAIL_LINES = 10;
+    /**
+     * The maximum lines with failure messages presented to the user.
+     * Note that ALL failures will be reported in the logfile regardless.
+     */
+    static final int MAX_FAIL_LINES_REPORTED = 10;
 
     /** Log tag. */
     private static final String TAG = "ImportResults";
@@ -127,6 +131,8 @@ public class ImportResults
      * @param results to add
      */
     public void add(@NonNull final ImportResults results) {
+        final int booksFailedBefore = booksFailed;
+
         super.add(results);
 
         styles += results.styles;
@@ -136,8 +142,14 @@ public class ImportResults
         deletedBookRecords += results.deletedBookRecords;
 
         recordsSkipped += results.recordsSkipped;
-        failedLinesNr.addAll(results.failedLinesNr);
-        failedLinesMessage.addAll(results.failedLinesMessage);
+
+        // see comments in #handleRowException
+        for (int i = 0; i < results.failedLinesNr.size()
+                        && booksFailedBefore + i < MAX_FAIL_LINES_REPORTED;
+             i++) {
+            failedLinesNr.add(results.failedLinesNr.get(i));
+            failedLinesMessage.add(results.failedLinesMessage.get(1));
+        }
     }
 
     /**
@@ -157,8 +169,14 @@ public class ImportResults
                 .map(context, e)
                 .orElseGet(() -> context.getString(R.string.error_import_csv_line, row)));
 
-        failedLinesMessage.add(message);
-        failedLinesNr.add(row);
+        // Limit the amount of reporting (to the user) so we don't
+        // - overrun the Parceling max message size
+        // - overwhelm the user with to many (maybe identical) messages.
+        // but we DO log ALL message (see below)
+        if (booksFailed < MAX_FAIL_LINES_REPORTED) {
+            failedLinesMessage.add(message);
+            failedLinesNr.add(row);
+        }
         booksFailed++;
 
         final Logger logger = LoggerFactory.getLogger();
@@ -214,8 +232,9 @@ public class ImportResults
         if (failed == 0) {
             return lines;
         }
-        if (failed > MAX_FAIL_LINES) {
-            failed = MAX_FAIL_LINES;
+        // sanity check, the amount of reporting should already be cut at error-time
+        if (failed > MAX_FAIL_LINES_REPORTED) {
+            failed = MAX_FAIL_LINES_REPORTED;
         }
         for (int i = 0; i < failed; i++) {
             lines.add(context.getString(R.string.list_element, context.getString(
