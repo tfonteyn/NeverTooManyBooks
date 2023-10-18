@@ -92,7 +92,7 @@ NEW:
 - Grid layout (see #22): aside of the traditional list, a new grid layout option was added which
   shows only the cover image (or author/title if there is no image available). Please note this is
   the first release of this functionality. All comments are welcome: just log a new
-  GitHub [issue](https://github.com/tfonteyn/NeverTooManyBooks/issues) with a bug-report of any
+  GitHub [issue](https://github.com/tfonteyn/NeverTooManyBooks/issues) with a bug-report or any
   other remarks.
 - Sorting by using groups in the list has now been extended to allow sorting on the book-level as
   well.
