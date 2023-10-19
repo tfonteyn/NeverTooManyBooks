@@ -214,6 +214,13 @@ android {
         abortOnError = false
     }
 
+    applicationVariants.all {
+        final variant ->
+            variant.outputs.all {
+                outputFileName = "${rootProject.name}-${rootProject.ext.applicationVersionName}-${variant.name}.apk"
+            }
+    }
+
     // This configuration specifies how an app bundle should be split
     // in terms of language, density and cpu architecture (abi).
     // The default values are true. This means a split will be generated.
