@@ -136,6 +136,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
+import com.hardbacknutter.nevertoomanybooks.widgets.NavDrawer;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 
 /**
@@ -310,7 +311,7 @@ public class BooksOnBookshelf
                     // It's possible to have both FAB and NAV open if the
                     // user first opened the FAB, then swiped the NAV into visibility.
                     // So make sure to close both before deciding we're done here.
-                    final boolean navClosed = closeNavigationDrawer();
+                    final boolean navClosed = navDrawer.close();
                     final boolean fabClosed = fabMenu.hideMenu();
 
                     // If either was actually closed, we're done here
@@ -405,6 +406,8 @@ public class BooksOnBookshelf
     private final StylePickerDialogFragment.Launcher stylePickerLauncher =
             new StylePickerDialogFragment.Launcher(RK_STYLE_PICKER, this::onStyleSelected);
 
+    private NavDrawer navDrawer;
+
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -417,7 +420,9 @@ public class BooksOnBookshelf
         createSyncDelegates();
         createHandlers();
 
-        initNavDrawer();
+        // Always present
+        navDrawer = NavDrawer.create(this, this::onNavigationItemSelected);
+
         initToolbar();
 
         createBookshelfSpinner();
@@ -560,7 +565,9 @@ public class BooksOnBookshelf
         setNavIcon();
 
         vb.toolbar.setNavigationOnClickListener(v -> {
-            if (!isRootActivity() || !openNavigationDrawer()) {
+            if (isRootActivity()) {
+                navDrawer.open();
+            } else {
                 // Simulate the user pressing the 'back' key.
                 getOnBackPressedDispatcher().onBackPressed();
             }
@@ -691,7 +698,7 @@ public class BooksOnBookshelf
                 SyncServer.StripInfo.isEnabled(this) && stripInfoSyncLauncher != null;
 
         //noinspection DataFlowIssue
-        getNavigationMenuItem(R.id.SUBMENU_SYNC).setVisible(enable);
+        navDrawer.getMenuItem(R.id.SUBMENU_SYNC).setVisible(enable);
     }
 
     private void setNavIcon() {
@@ -749,7 +756,8 @@ public class BooksOnBookshelf
     }
 
     @Override
-    boolean onNavigationItemSelected(@NonNull final MenuItem menuItem) {
+    boolean onNavigationItemSelected(@NonNull final NavDrawer navDrawer,
+                                     @NonNull final MenuItem menuItem) {
         final int itemId = menuItem.getItemId();
 
         if (itemId == R.id.SUBMENU_SYNC) {
@@ -757,7 +765,7 @@ public class BooksOnBookshelf
             return false;
         }
 
-        closeNavigationDrawer();
+        navDrawer.close();
 
         if (itemId == R.id.MENU_ADVANCED_SEARCH) {
             ftsSearchLauncher.launch(vm.getSearchCriteria());
@@ -782,14 +790,14 @@ public class BooksOnBookshelf
 
         } else if (itemId == R.id.MENU_SYNC_CALIBRE && calibreSyncLauncher != null) {
             calibreSyncLauncher.launch(null);
-            return false;
+            return true;
 
         } else if (itemId == R.id.MENU_SYNC_STRIP_INFO && stripInfoSyncLauncher != null) {
             stripInfoSyncLauncher.launch(null);
-            return false;
+            return true;
         }
 
-        return super.onNavigationItemSelected(menuItem);
+        return super.onNavigationItemSelected(navDrawer, menuItem);
     }
 
     @Override
@@ -1588,7 +1596,7 @@ public class BooksOnBookshelf
                                        @NonNull final MenuItem menuItem,
                                        @MenuRes final int menuRes) {
 
-        final View anchor = getNavigationMenuItemView(anchorMenuItemId);
+        final View anchor = navDrawer.getMenuItemView(anchorMenuItemId);
 
         final ExtPopupMenu popupMenu = new ExtPopupMenu(this)
                 .inflate(menuRes);
@@ -1602,7 +1610,7 @@ public class BooksOnBookshelf
         }
 
         popupMenu.setTitle(menuItem.getTitle())
-                 .showAsDropDown(anchor, this::onNavigationItemSelected);
+                 .showAsDropDown(anchor, item -> onNavigationItemSelected(navDrawer, item));
     }
 
     /**

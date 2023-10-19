@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -28,22 +27,17 @@ import android.view.MenuItem;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
-
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
+import com.hardbacknutter.nevertoomanybooks.widgets.NavDrawer;
 
 /**
  * Base class for all Activity's (except the startup and the crop activity).
@@ -55,12 +49,6 @@ public abstract class BaseActivity
             registerForActivityResult(new EditBookshelvesContract(),
                                       bookshelfId -> {
                                       });
-    /** Optional - The side/navigation panel. */
-    @Nullable
-    private DrawerLayout drawerLayout;
-    /** Optional - The side/navigation menu. */
-    @Nullable
-    private NavigationView navigationView;
 
     /** Handles Activity recreation. */
     private RecreateViewModel recreateVm;
@@ -96,8 +84,6 @@ public abstract class BaseActivity
         super.onCreate(savedInstanceState);
     }
 
-
-
     /**
      * When resuming, recreate activity if needed.
      */
@@ -114,53 +100,24 @@ public abstract class BaseActivity
         return recreateVm.isRecreating();
     }
 
-
-    /**
-     * Setup the {@link DrawerLayout} and the {@link NavigationView}.
-     * <p>
-     * Should be called from {@link Activity#onCreate(Bundle)}.
-     */
-    @CallSuper
-    void initNavDrawer() {
-        drawerLayout = findViewById(R.id.drawer_layout);
-        if (drawerLayout != null) {
-            navigationView = drawerLayout.findViewById(R.id.nav_view);
-            navigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
-            navigationView.setItemMaxLines(2);
-        }
-    }
-
-    @Nullable
-    protected MenuItem getNavigationMenuItem(@SuppressWarnings("SameParameterValue")
-                                             @IdRes final int itemId) {
-        return navigationView != null ? navigationView.getMenu().findItem(itemId) : null;
-    }
-
-    @NonNull
-    View getNavigationMenuItemView(@IdRes final int itemId) {
-        //noinspection DataFlowIssue
-        final View anchor = navigationView.findViewById(itemId);
-        // Not 100% we are using a legal way of getting the View...
-        Objects.requireNonNull(anchor, () -> "navigationView.findViewById(" + itemId + ")");
-        return anchor;
-    }
-
     /**
      * Overridable/extendable handler for the {@link NavigationView} menu.
      *
-     * @param menuItem which was tapped by the user
+     * @param navDrawer the caller
+     * @param menuItem  the menu item that was clicked
      *
-     * @return {@code true} if the item was handled.
+     * @return {@code true} if the menuItem was handled.
      */
     @CallSuper
-    boolean onNavigationItemSelected(@NonNull final MenuItem menuItem) {
+    boolean onNavigationItemSelected(@NonNull final NavDrawer navDrawer,
+                                     @NonNull final MenuItem menuItem) {
         final int itemId = menuItem.getItemId();
 
-        closeNavigationDrawer();
+        navDrawer.close();
 
         if (itemId == R.id.MENU_MANAGE_BOOKSHELVES) {
             // child classes which have a 'current bookshelf' should
-            // override and pass the current bookshelf id
+            // override and pass the current bookshelf id instead of 0L
             manageBookshelvesBaseLauncher.launch(0L);
             return true;
 
@@ -178,34 +135,6 @@ public abstract class BaseActivity
             intent.putExtra(FragmentHostActivity.BKEY_TOOLBAR_SCROLL_FLAGS,
                             AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL);
             startActivity(intent);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * If we have a navigation drawer, open it.
-     *
-     * @return {@code true} if it opened;
-     *         {@code false} if this was a no-operation.
-     */
-    boolean openNavigationDrawer() {
-        if (drawerLayout != null) {
-            drawerLayout.openDrawer(GravityCompat.START);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * If the drawerLayout is showing, close it.
-     *
-     * @return {@code true} if it closed;
-     *         {@code false} if this was a no-operation.
-     */
-    boolean closeNavigationDrawer() {
-        if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START);
             return true;
         }
         return false;

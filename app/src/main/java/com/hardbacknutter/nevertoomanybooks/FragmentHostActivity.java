@@ -37,6 +37,8 @@ import com.google.android.material.appbar.AppBarLayout;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.widgets.NavDrawer;
+
 /**
  * Hosting activity for generic fragments.
  */
@@ -56,12 +58,16 @@ public class FragmentHostActivity
     private static final String BKEY_ACTIVITY = TAG + ":a";
     private static final String BKEY_FRAGMENT_CLASS = TAG + ":f";
 
+    /** Optional - The side/navigation menu. */
+    @Nullable
+    private NavDrawer navDrawer;
+
     /** See comments in the BoB activity on its backPressedCallback. */
     private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    if (closeNavigationDrawer()) {
+                    if (navDrawer != null && navDrawer.close()) {
                         return;
                     }
                     // Prevent looping
@@ -95,7 +101,9 @@ public class FragmentHostActivity
         final int activityResId = getIntent().getIntExtra(BKEY_ACTIVITY, 0);
         setContentView(activityResId);
 
-        initNavDrawer();
+        // Optional!
+        navDrawer = NavDrawer.create(this, this::onNavigationItemSelected);
+
         initToolbar();
 
         getOnBackPressedDispatcher().addCallback(this, backPressedCallback);
@@ -131,7 +139,11 @@ public class FragmentHostActivity
         }
 
         toolbar.setNavigationOnClickListener(v -> {
-            if (!isTaskRoot() || !openNavigationDrawer()) {
+            if (isTaskRoot()) {
+                if (navDrawer != null) {
+                    navDrawer.open();
+                }
+            } else {
                 // Simulate the user pressing the 'back' key.
                 getOnBackPressedDispatcher().onBackPressed();
             }
