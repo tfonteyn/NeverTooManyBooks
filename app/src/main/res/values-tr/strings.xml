@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,11 +17,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
-    <!ENTITY APP_NAME "NeverTooManyBooks">
-    ]>
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d kitap</item>
@@ -759,7 +756,6 @@
     <!-- NOT APPLICABLE FOR BOOKS IN TURKISH; Just show "Off"; it will still be used for other languages. -->
     <string name="ps_show_titles_reordered_off">Kapalı</string>
     <!-- NOT APPLICABLE FOR BOOKS IN TURKISH. Empty string. -->
-    <string name="pv_reformat_titles_prefixes">""</string>
     <string name="lbl_original_title">Orijinal başlık</string>
     <string name="lbl_original_title_long">Bu kitap bir çeviriyse orijinal adı</string>
     <string name="error_site_access_blocked">Web sitesi tarafından erişim engellendi.</string>
