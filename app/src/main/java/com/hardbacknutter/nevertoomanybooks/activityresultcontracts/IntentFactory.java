@@ -32,6 +32,9 @@ import com.hardbacknutter.nevertoomanybooks.AboutFragment;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 
+/**
+ * Some {@link Intent} creation methods which are used more than once.
+ */
 public final class IntentFactory {
 
     private IntentFactory() {
@@ -39,8 +42,7 @@ public final class IntentFactory {
 
     @NonNull
     public static Intent createHelpIntent(@NonNull final Context context) {
-        return new Intent(Intent.ACTION_VIEW,
-                          Uri.parse(context.getString(R.string.help_url)));
+        return new Intent(Intent.ACTION_VIEW, Uri.parse(context.getString(R.string.help_url)));
     }
 
     @NonNull
