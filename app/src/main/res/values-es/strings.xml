@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,11 +17,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
-    <!ENTITY APP_NAME "NeverTooManyBooks">
-    ]>
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d libro</item>
@@ -797,4 +794,5 @@
     <string name="pt_bob_cover_click">Pulsar sobre una imagen de portada.</string>
     <string name="pe_bob_cover_click_zoom">Amplía la imagen de la cubierta.</string>
     <string name="pe_bob_cover_click_details">Abrirá la página de detalles del libro.</string>
+    <string name="style_type_defaults">Valores predeterminados del estilo</string>
 </resources>

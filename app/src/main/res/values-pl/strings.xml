@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,11 +17,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
-    <!ENTITY APP_NAME "NeverTooManyBooks">
-    ]>
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d książka</item>
@@ -71,7 +68,7 @@
     <string name="X_info_not_authorized">Nieautoryzowany</string>
     <string name="X_info_site_authorization_successful">Autoryzacja %1$s powiodła się</string>
     <string name="X_lbl_completed">Zakończony</string>
-    <string name="X_lbl_cover_long">Okładka</string>
+    <string name="X_lbl_cover_long">Obraz okładki</string>
     <string name="X_lbl_delete_book">Usuń książkę</string>
     <string name="X_lbl_failed">Nie powiodło się</string>
     <string name="X_lbl_folder">Folder</string>
@@ -268,7 +265,7 @@
     <string name="httpError">Wystąpił błąd sieci.</string>
     <string name="httpErrorAuth">Nie można uwierzytelnić.</string>
     <string name="httpErrorFailedSslHandshake">Nie można ustanowić bezpiecznego połączenia.</string>
-    <string name="httpErrorFile">Nie można znaleźć żądanego pliku.</string>
+    <string name="httpErrorFile">Nie można uzyskać dostępu do pliku.</string>
     <string name="httpErrorFileNotFound">Nie można znaleźć żądanego pliku.</string>
     <string name="httpErrorTimeout">Zbyt długi czas oczekiwania na połączenie z serwerem.</string>
     <string name="info_authorized">Upoważniony</string>
@@ -336,7 +333,7 @@
     <string name="lbl_color">Kolor</string>
     <string name="lbl_condition">Stan</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Brakujący/zadowalający</string>
-    <string name="lbl_condition_dust_cover_none">Żaden</string>
+    <string name="lbl_condition_dust_cover_none">Brak</string>
     <string name="lbl_condition_fair">Do przyjęcia</string>
     <string name="lbl_condition_fine">Jak nowy</string>
     <string name="lbl_condition_good">Dobry</string>
@@ -467,7 +464,7 @@
     <string name="lbl_styles">Style</string>
     <string name="lbl_styles_long">Style listy książek</string>
     <string name="lbl_sync_date">Odkąd</string>
-    <string name="lbl_tab_alternative_editions">Alt. wersje</string>
+    <string name="lbl_tab_alternative_editions">Alt. wer.</string>
     <string name="lbl_tab_details">Detale</string>
     <string name="lbl_tab_lbl_ext_id">Zewnętrzny ID</string>
     <string name="lbl_tab_notes">Notatki</string>
@@ -801,8 +798,8 @@
     <!-- NOT APPLICABLE FOR BOOKS IN POLISH; Just show "Off"; it will still be used for other languages. -->
     <string name="ps_show_titles_reordered_off">Wył</string>
     <!-- NOT APPLICABLE FOR BOOKS IN POLISH. Empty string. -->
-    <string name="pv_reformat_titles_prefixes">""</string>
     <string name="pt_bob_cover_click">Stuknięcie obrazu okładki.</string>
     <string name="pe_bob_cover_click_zoom">Powiększy obraz okładki.</string>
     <string name="pe_bob_cover_click_details">Otworzy stronę szczegółów książki.</string>
+    <string name="style_type_defaults">Domyślny styl</string>
 </resources>
