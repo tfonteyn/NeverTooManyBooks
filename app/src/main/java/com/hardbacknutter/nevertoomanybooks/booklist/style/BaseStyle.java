@@ -299,7 +299,6 @@ public abstract class BaseStyle
      *
      * @throws IllegalArgumentException if the given UUID is empty
      */
-    @SuppressWarnings("ClassReferencesSubclass")
     @Override
     @NonNull
     public WritableStyle clone(@NonNull final Context context) {

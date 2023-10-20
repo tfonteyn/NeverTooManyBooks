@@ -1630,7 +1630,7 @@ public class BooksOnBookshelf
         }
 
         popupMenu.setTitle(menuItem.getTitle())
-                 .showAsDropDown(anchor, item -> onNavigationItemSelected(item));
+                 .showAsDropDown(anchor, this::onNavigationItemSelected);
     }
 
     /**
