@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,9 +18,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+  -->
+
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d книга</item>
@@ -795,6 +798,7 @@
     <!-- NOT APPLICABLE FOR BOOKS IN RUSSIAN; Just show "Off"; it will still be used for other languages. -->
     <string name="ps_show_titles_reordered_off">С сайта</string>
     <!-- NOT APPLICABLE FOR BOOKS IN RUSSIAN. Empty string. -->
+    <string name="pv_reformat_titles_prefixes">""</string>
     <string name="pt_bob_cover_click">Нажатие на изображение обложки.</string>
     <string name="pe_bob_cover_click_zoom">Увеличение изображения обложки.</string>
     <string name="pe_bob_cover_click_details">Откроется страница с подробной информацией о книге.</string>
