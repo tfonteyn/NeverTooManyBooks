@@ -283,8 +283,7 @@ public class CalibreHandler {
 
     private void openBookUri(@NonNull final Context context,
                              @NonNull final Uri uri) {
-        final Intent intent = new Intent(Intent.ACTION_VIEW)
-                .setData(uri)
+        final Intent intent = new Intent(Intent.ACTION_VIEW, uri)
                 .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         context.startActivity(Intent.createChooser(
                 intent, context.getString(R.string.whichViewApplication)));
