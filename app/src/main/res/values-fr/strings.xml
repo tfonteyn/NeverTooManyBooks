@@ -787,4 +787,5 @@
     <string name="pt_bob_cover_click">Taper sur une image de couverture.</string>
     <string name="pe_bob_cover_click_zoom">Permet de zoomer sur l’image de couverture.</string>
     <string name="pe_bob_cover_click_details">Ouvre la page de détails du livre.</string>
+    <string name="style_type_defaults">Paramètres par défaut des styles</string>
 </resources>

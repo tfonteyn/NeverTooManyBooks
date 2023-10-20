@@ -805,5 +805,5 @@
     <string name="pt_bob_cover_click">Stuknięcie obrazu okładki.</string>
     <string name="pe_bob_cover_click_zoom">Powiększy obraz okładki.</string>
     <string name="pe_bob_cover_click_details">Otworzy stronę szczegółów książki.</string>
-    <string name="style_type_defaults">Domyślny styl</string>
+    <string name="style_type_defaults">Domyślne ustawienia stylu</string>
 </resources>

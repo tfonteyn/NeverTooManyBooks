@@ -802,4 +802,5 @@
     <string name="pt_bob_cover_click">Нажатие на изображение обложки.</string>
     <string name="pe_bob_cover_click_zoom">Увеличение изображения обложки.</string>
     <string name="pe_bob_cover_click_details">Откроется страница с подробной информацией о книге.</string>
+    <string name="style_type_defaults">Настройки стилей по умолчанию</string>
 </resources>

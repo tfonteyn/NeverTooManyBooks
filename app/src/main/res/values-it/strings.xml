@@ -786,4 +786,5 @@
     <string name="pt_bob_cover_click">Toccare l’immagine di copertina.</string>
     <string name="pe_bob_cover_click_zoom">Ingrandisce l’immagine della copertina.</string>
     <string name="pe_bob_cover_click_details">Apre la pagina dei dettagli del libro.</string>
+    <string name="style_type_defaults">Impostazioni predefinite degli stili</string>
 </resources>

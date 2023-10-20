@@ -795,4 +795,5 @@
     <string name="pt_bob_cover_click">Bir kapak resmine dokunun.</string>
     <string name="pe_bob_cover_click_zoom">Kapak resmini yakınlaştırır.</string>
     <string name="pe_bob_cover_click_details">Kitap ayrıntıları sayfasını açar.</string>
+    <string name="style_type_defaults">Stiller varsayılan ayarları</string>
 </resources>

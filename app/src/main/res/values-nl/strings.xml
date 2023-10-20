@@ -783,4 +783,5 @@
     <string name="pt_bob_cover_click">Tikken op een omslagafbeelding.</string>
     <string name="pe_bob_cover_click_zoom">Inzoomen op de omslagafbeelding.</string>
     <string name="pe_bob_cover_click_details">Opent de detailpagina van het boek.</string>
+    <string name="style_type_defaults">Standaardinstellingen stijlen</string>
 </resources>

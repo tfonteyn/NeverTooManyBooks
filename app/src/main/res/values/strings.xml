@@ -544,6 +544,8 @@
     <string name="lbl_styles">Styles</string>
     <!-- Multiple Styles - Long label. -->
     <string name="lbl_styles_long">Booklist styles</string>
+    <!-- The global default values used as defaults for the builtin styles. -->
+    <string name="style_type_defaults">Styles default settings</string>
     <!-- Style type -->
     <string name="style_type_builtin">Builtin</string>
     <!-- Style type -->
@@ -1641,8 +1643,6 @@
             translatable="false">Normalize publisher names (EXPERIMENTAL, see Help)</string>
 
     <string name="lbl_defaults">Defaults</string>
-
-    <string name="style_type_defaults">Style defaults</string>
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
 
