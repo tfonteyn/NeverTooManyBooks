@@ -59,7 +59,9 @@ public abstract class BasePreferenceFragment
     /** Allows auto-scrolling on opening the preference screen to the desired key. */
     public static final String BKEY_AUTO_SCROLL_TO_KEY = TAG + ":scrollTo";
 
+    @Nullable
     private View progressFrame;
+    @Nullable
     private Toolbar toolbar;
 
     @Nullable
