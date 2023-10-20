@@ -35,9 +35,9 @@ Builds:
 #     Will be published in the wiki if present.
 
 # The following options are described at this location:
-# https://f-droid.org/docs/Build_Metadata_Reference/#UpdateCheckMode
+# https://f-droid.org/docs/Build_Metadata_Reference
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: '4.4.0'
-AllowedAPKSigningKeys: ???
-CurrentVersionCode: 53
+AllowedAPKSigningKeys: df971ce7d58d3cdf377c32e0e2f53d6599bd7f130a50c0529c45583ddc12a008
+CurrentVersion: '5.1.0'
+CurrentVersionCode: 65
