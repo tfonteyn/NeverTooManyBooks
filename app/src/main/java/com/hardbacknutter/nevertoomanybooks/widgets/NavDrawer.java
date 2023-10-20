@@ -42,18 +42,16 @@ public final class NavDrawer {
     private final DrawerLayout drawerLayout;
     @NonNull
     private final NavigationView navigationView;
-    @NonNull
-    private final ItemSelectedListener listener;
 
     private NavDrawer(@NonNull final DrawerLayout drawerLayout,
-                      @NonNull final ItemSelectedListener listener) {
+                      @NonNull final NavigationView.OnNavigationItemSelectedListener listener) {
         this.drawerLayout = drawerLayout;
         navigationView = drawerLayout.findViewById(R.id.nav_view);
-        this.listener = listener;
+        // Sanity check
         Objects.requireNonNull(navigationView);
+
         navigationView.setItemMaxLines(2);
-        navigationView.setNavigationItemSelectedListener(
-                menuItem -> this.listener.onNavigationItemSelected(this, menuItem));
+        navigationView.setNavigationItemSelectedListener(listener);
     }
 
     /**
@@ -68,7 +66,8 @@ public final class NavDrawer {
      */
     @Nullable
     public static NavDrawer create(@NonNull final Activity activity,
-                                   @NonNull final ItemSelectedListener listener) {
+                                   @NonNull final NavigationView.OnNavigationItemSelectedListener
+                                           listener) {
         final DrawerLayout drawerLayout = activity.findViewById(R.id.drawer_layout);
         if (drawerLayout == null) {
             return null;
@@ -124,19 +123,5 @@ public final class NavDrawer {
             return true;
         }
         return false;
-    }
-
-    @FunctionalInterface
-    public interface ItemSelectedListener {
-        /**
-         * Called when an item in the navigation menu is selected.
-         *
-         * @param navDrawer the drawer owner
-         * @param item      The selected item
-         *
-         * @return true to display the item as the selected item
-         */
-        boolean onNavigationItemSelected(@NonNull NavDrawer navDrawer,
-                                         @NonNull MenuItem item);
     }
 }

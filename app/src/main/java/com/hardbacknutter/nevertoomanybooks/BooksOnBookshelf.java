@@ -56,6 +56,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.security.cert.CertificateException;
@@ -80,6 +81,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshel
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ExportContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ImportContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.IntentFactory;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PreferredStylesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchFtsContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
@@ -225,6 +227,10 @@ public class BooksOnBookshelf
             registerForActivityResult(new EditStyleContract(), o -> o.ifPresent(
                     data -> vm.onEditStyleFinished(this, data)));
 
+    private final ActivityResultLauncher<String> editSettingsLauncher =
+            registerForActivityResult(new SettingsContract(), o -> o.ifPresent(
+                    this::onSettingsChanged));
+
     /**
      * Display a Book. We still call
      * {@link BooksOnBookshelfViewModel#onBookEditFinished(EditBookOutput)}
@@ -287,57 +293,6 @@ public class BooksOnBookshelf
 
     /** View Binding. */
     private BooksonbookshelfBinding vb;
-    /**
-     * The single back-press handler.
-     * <p>
-     * <a href="https://developer.android.com/guide/navigation/custom-back/predictive-back-gesture#best-practices">Best practices</a>
-     * states that we should have multiple handlers and enable/disable them as needed.
-     * e.g. have a callback to close the Navigation drawer solely.
-     * and trigger the enable/disable using an observable. That's all very well if the
-     * state is held in the ViewModel, but for all 3 situation in our handler
-     * the state is directly dependent on another UI element. It would be absurd to
-     * duplicate state in the VM. So... sticking with conditionals in this single handler.
-     * <p>
-     * Notes:
-     * - a {@link DrawerLayout.SimpleDrawerListener} could be used for the nav-drawer.
-     * - we could implement a similar listener on the FABMenu.
-     * - the SearchCriteria could be handled as per above link.
-     * ... so code in 3 different places as compared to all of it centralized here
-     */
-    private final OnBackPressedCallback backPressedCallback =
-            new OnBackPressedCallback(true) {
-                @Override
-                public void handleOnBackPressed() {
-                    // It's possible to have both FAB and NAV open if the
-                    // user first opened the FAB, then swiped the NAV into visibility.
-                    // So make sure to close both before deciding we're done here.
-                    final boolean navClosed = navDrawer.close();
-                    final boolean fabClosed = fabMenu.hideMenu();
-
-                    // If either was actually closed, we're done here
-                    if (navClosed || fabClosed) {
-                        return;
-                    }
-
-                    // Secondly, after an "Advanced Local Search", the BoB
-                    // will be displaying a filtered list.
-                    // i.e. the current list will have search criteria present,
-                    // If the user taps 'back' we clear the search criteria and rebuild the list.
-                    if (isTaskRoot() && !vm.getSearchCriteria().isEmpty()) {
-                        vm.getSearchCriteria().clear();
-                        setNavIcon();
-                        buildBookList();
-                        return;
-                    }
-
-                    // Prevent looping
-                    this.setEnabled(false);
-                    // Simulate the user pressing the 'back' key,
-                    // which minimize the app.
-                    getOnBackPressedDispatcher().onBackPressed();
-                }
-            };
-
     private final BookshelfFiltersDialogFragment.Launcher bookshelfFiltersLauncher =
             new BookshelfFiltersDialogFragment.Launcher(
                     RK_FILTERS, modified -> {
@@ -405,8 +360,57 @@ public class BooksOnBookshelf
      */
     private final StylePickerDialogFragment.Launcher stylePickerLauncher =
             new StylePickerDialogFragment.Launcher(RK_STYLE_PICKER, this::onStyleSelected);
-
     private NavDrawer navDrawer;
+    /**
+     * The single back-press handler.
+     * <p>
+     * <a href="https://developer.android.com/guide/navigation/custom-back/predictive-back-gesture#best-practices">Best practices</a>
+     * states that we should have multiple handlers and enable/disable them as needed.
+     * e.g. have a callback to close the Navigation drawer solely.
+     * and trigger the enable/disable using an observable. That's all very well if the
+     * state is held in the ViewModel, but for all 3 situation in our handler
+     * the state is directly dependent on another UI element. It would be absurd to
+     * duplicate state in the VM. So... sticking with conditionals in this single handler.
+     * <p>
+     * Notes:
+     * - a {@link DrawerLayout.SimpleDrawerListener} could be used for the nav-drawer.
+     * - we could implement a similar listener on the FABMenu.
+     * - the SearchCriteria could be handled as per above link.
+     * ... so code in 3 different places as compared to all of it centralized here
+     */
+    private final OnBackPressedCallback backPressedCallback =
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    // It's possible to have both FAB and NAV open if the
+                    // user first opened the FAB, then swiped the NAV into visibility.
+                    // So make sure to close both before deciding we're done here.
+                    final boolean navClosed = navDrawer.close();
+                    final boolean fabClosed = fabMenu.hideMenu();
+
+                    // If either was actually closed, we're done here
+                    if (navClosed || fabClosed) {
+                        return;
+                    }
+
+                    // Secondly, after an "Advanced Local Search", the BoB
+                    // will be displaying a filtered list.
+                    // i.e. the current list will have search criteria present,
+                    // If the user taps 'back' we clear the search criteria and rebuild the list.
+                    if (isTaskRoot() && !vm.getSearchCriteria().isEmpty()) {
+                        vm.getSearchCriteria().clear();
+                        setNavIcon();
+                        buildBookList();
+                        return;
+                    }
+
+                    // Prevent looping
+                    this.setEnabled(false);
+                    // Simulate the user pressing the 'back' key,
+                    // which minimize the app.
+                    getOnBackPressedDispatcher().onBackPressed();
+                }
+            };
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -755,49 +759,65 @@ public class BooksOnBookshelf
         vm.getSearchCriteria().setFtsKeywords(query);
     }
 
-    @Override
-    boolean onNavigationItemSelected(@NonNull final NavDrawer navDrawer,
-                                     @NonNull final MenuItem menuItem) {
-        final int itemId = menuItem.getItemId();
+    /**
+     * Handle the {@link NavigationView} menu.
+     *
+     * @param menuItem the menu item that was clicked
+     *
+     * @return {@code true} if the menuItem was handled.
+     */
+    private boolean onNavigationItemSelected(@NonNull final MenuItem menuItem) {
+        final int menuItemId = menuItem.getItemId();
 
-        if (itemId == R.id.SUBMENU_SYNC) {
+        if (menuItemId == R.id.SUBMENU_SYNC) {
             showNavigationSubMenu(R.id.SUBMENU_SYNC, menuItem, R.menu.sync);
             return false;
         }
 
         navDrawer.close();
 
-        if (itemId == R.id.MENU_ADVANCED_SEARCH) {
+        if (menuItemId == R.id.MENU_ADVANCED_SEARCH) {
             ftsSearchLauncher.launch(vm.getSearchCriteria());
             return true;
 
-        } else if (itemId == R.id.MENU_MANAGE_BOOKSHELVES) {
-            // overridden, so we can pass the current bookshelf id.
-            manageBookshelvesLauncher.launch(vm.getBookshelf().getId());
-            return true;
-
-        } else if (itemId == R.id.MENU_MANAGE_LIST_STYLES) {
+        } else if (menuItemId == R.id.MENU_MANAGE_LIST_STYLES) {
             editStylesLauncher.launch(vm.getStyle().getUuid());
             return true;
 
-        } else if (itemId == R.id.MENU_FILE_IMPORT) {
+        } else if (menuItemId == R.id.MENU_FILE_IMPORT) {
             importLauncher.launch(null);
             return true;
 
-        } else if (itemId == R.id.MENU_FILE_EXPORT) {
+        } else if (menuItemId == R.id.MENU_FILE_EXPORT) {
             exportLauncher.launch(null);
             return true;
 
-        } else if (itemId == R.id.MENU_SYNC_CALIBRE && calibreSyncLauncher != null) {
+        } else if (menuItemId == R.id.MENU_SYNC_CALIBRE && calibreSyncLauncher != null) {
             calibreSyncLauncher.launch(null);
             return true;
 
-        } else if (itemId == R.id.MENU_SYNC_STRIP_INFO && stripInfoSyncLauncher != null) {
+        } else if (menuItemId == R.id.MENU_SYNC_STRIP_INFO && stripInfoSyncLauncher != null) {
             stripInfoSyncLauncher.launch(null);
+            return true;
+
+        } else if (menuItemId == R.id.MENU_MANAGE_BOOKSHELVES) {
+            manageBookshelvesLauncher.launch(vm.getBookshelf().getId());
+            return true;
+
+        } else if (menuItemId == R.id.MENU_SETTINGS) {
+            editSettingsLauncher.launch(null);
+            return true;
+
+        } else if (menuItemId == R.id.MENU_HELP) {
+            startActivity(IntentFactory.createHelpIntent(this));
+            return true;
+
+        } else if (menuItemId == R.id.MENU_ABOUT) {
+            startActivity(IntentFactory.createAboutIntent(this));
             return true;
         }
 
-        return super.onNavigationItemSelected(navDrawer, menuItem);
+        return false;
     }
 
     @Override
@@ -1610,7 +1630,7 @@ public class BooksOnBookshelf
         }
 
         popupMenu.setTitle(menuItem.getTitle())
-                 .showAsDropDown(anchor, item -> onNavigationItemSelected(navDrawer, item));
+                 .showAsDropDown(anchor, item -> onNavigationItemSelected(item));
     }
 
     /**

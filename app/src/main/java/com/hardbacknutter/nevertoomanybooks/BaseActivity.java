@@ -20,42 +20,25 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.view.MenuItem;
 
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.navigation.NavigationView;
-
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
-import com.hardbacknutter.nevertoomanybooks.widgets.NavDrawer;
 
 /**
- * Base class for all Activity's (except the startup and the crop activity).
+ * Base class for all Activity's (except the startup and the crop activity)
+ * providing the recreation mechanism.
  */
 public abstract class BaseActivity
         extends AppCompatActivity {
 
-    private final ActivityResultLauncher<Long> manageBookshelvesBaseLauncher =
-            registerForActivityResult(new EditBookshelvesContract(),
-                                      bookshelfId -> {
-                                      });
-
     /** Handles Activity recreation. */
     private RecreateViewModel recreateVm;
-
-    private final ActivityResultLauncher<String> editSettingsLauncher =
-            registerForActivityResult(new SettingsContract(), o -> o.ifPresent(
-                    this::onSettingsChanged));
 
     /**
      * Called when we return from editing the Settings.
@@ -84,9 +67,6 @@ public abstract class BaseActivity
         super.onCreate(savedInstanceState);
     }
 
-    /**
-     * When resuming, recreate activity if needed.
-     */
     @Override
     @CallSuper
     protected void onResume() {
@@ -98,45 +78,5 @@ public abstract class BaseActivity
 
     protected boolean isRecreating() {
         return recreateVm.isRecreating();
-    }
-
-    /**
-     * Overridable/extendable handler for the {@link NavigationView} menu.
-     *
-     * @param navDrawer the caller
-     * @param menuItem  the menu item that was clicked
-     *
-     * @return {@code true} if the menuItem was handled.
-     */
-    @CallSuper
-    boolean onNavigationItemSelected(@NonNull final NavDrawer navDrawer,
-                                     @NonNull final MenuItem menuItem) {
-        final int itemId = menuItem.getItemId();
-
-        navDrawer.close();
-
-        if (itemId == R.id.MENU_MANAGE_BOOKSHELVES) {
-            // child classes which have a 'current bookshelf' should
-            // override and pass the current bookshelf id instead of 0L
-            manageBookshelvesBaseLauncher.launch(0L);
-            return true;
-
-        } else if (itemId == R.id.MENU_SETTINGS) {
-            editSettingsLauncher.launch(null);
-            return true;
-
-        } else if (itemId == R.id.MENU_HELP) {
-            startActivity(new Intent(Intent.ACTION_VIEW,
-                                     Uri.parse(getString(R.string.help_url))));
-            return true;
-
-        } else if (itemId == R.id.MENU_ABOUT) {
-            final Intent intent = FragmentHostActivity.createIntent(this, AboutFragment.class);
-            intent.putExtra(FragmentHostActivity.BKEY_TOOLBAR_SCROLL_FLAGS,
-                            AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL);
-            startActivity(intent);
-            return true;
-        }
-        return false;
     }
 }

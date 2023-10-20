@@ -22,8 +22,10 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -33,10 +35,14 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.navigation.NavigationView;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.IntentFactory;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
 import com.hardbacknutter.nevertoomanybooks.widgets.NavDrawer;
 
 /**
@@ -57,6 +63,11 @@ public class FragmentHostActivity
 
     private static final String BKEY_ACTIVITY = TAG + ":a";
     private static final String BKEY_FRAGMENT_CLASS = TAG + ":f";
+
+    @Nullable
+    private ActivityResultLauncher<String> editSettingsLauncher;
+    @Nullable
+    private ActivityResultLauncher<Long> manageBookshelvesLauncher;
 
     /** Optional - The side/navigation menu. */
     @Nullable
@@ -103,6 +114,9 @@ public class FragmentHostActivity
 
         // Optional!
         navDrawer = NavDrawer.create(this, this::onNavigationItemSelected);
+        if (navDrawer != null) {
+            initLaunchers();
+        }
 
         initToolbar();
 
@@ -120,6 +134,15 @@ public class FragmentHostActivity
         }
 
         addFirstFragment(R.id.main_fragment, fragmentClass, classname);
+    }
+
+    private void initLaunchers() {
+        manageBookshelvesLauncher = registerForActivityResult(
+                new EditBookshelvesContract(), bookshelfId -> {
+                });
+
+        editSettingsLauncher = registerForActivityResult(
+                new SettingsContract(), o -> o.ifPresent(this::onSettingsChanged));
     }
 
     private void initToolbar() {
@@ -183,5 +206,43 @@ public class FragmentHostActivity
               .add(containerViewId, fragment, fragmentTag)
               .commit();
         }
+    }
+
+    /**
+     * Handle the {@link NavigationView} menu.
+     *
+     * @param menuItem the menu item that was clicked
+     *
+     * @return {@code true} if the menuItem was handled.
+     */
+    private boolean onNavigationItemSelected(@NonNull final MenuItem menuItem) {
+
+        final int menuItemId = menuItem.getItemId();
+
+        //noinspection DataFlowIssue
+        navDrawer.close();
+
+        if (menuItemId == R.id.MENU_MANAGE_BOOKSHELVES) {
+            // child classes which have a 'current bookshelf' should
+            // override and pass the current bookshelf id instead of 0L
+            //noinspection DataFlowIssue
+            manageBookshelvesLauncher.launch(0L);
+            return true;
+
+        } else if (menuItemId == R.id.MENU_SETTINGS) {
+            //noinspection DataFlowIssue
+            editSettingsLauncher.launch(null);
+            return true;
+
+        } else if (menuItemId == R.id.MENU_HELP) {
+            startActivity(IntentFactory.createHelpIntent(this));
+            return true;
+
+        } else if (menuItemId == R.id.MENU_ABOUT) {
+            startActivity(IntentFactory.createAboutIntent(this));
+            return true;
+        }
+
+        return false;
     }
 }
