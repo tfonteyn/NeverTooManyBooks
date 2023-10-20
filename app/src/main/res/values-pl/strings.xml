@@ -800,8 +800,8 @@
     <string name="ps_show_titles_reordered_on">Wł</string>
     <!-- NOT APPLICABLE FOR BOOKS IN POLISH; Just show "Off"; it will still be used for other languages. -->
     <string name="ps_show_titles_reordered_off">Wył</string>
-    <!-- NOT APPLICABLE FOR BOOKS IN POLISH. Empty string. -->
-    <string name="pv_reformat_titles_prefixes">""</string>
+    <!-- NOT APPLICABLE FOR BOOKS IN POLISH. A single vertical bar character. -->
+    <string name="pv_reformat_titles_prefixes">"|"</string>
     <string name="pt_bob_cover_click">Stuknięcie obrazu okładki.</string>
     <string name="pe_bob_cover_click_zoom">Powiększy obraz okładki.</string>
     <string name="pe_bob_cover_click_details">Otworzy stronę szczegółów książki.</string>

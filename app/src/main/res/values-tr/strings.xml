@@ -758,8 +758,8 @@
     <string name="ps_show_titles_reordered_on">Açık</string>
     <!-- NOT APPLICABLE FOR BOOKS IN TURKISH; Just show "Off"; it will still be used for other languages. -->
     <string name="ps_show_titles_reordered_off">Kapalı</string>
-    <!-- NOT APPLICABLE FOR BOOKS IN TURKISH. Empty string. -->
-    <string name="pv_reformat_titles_prefixes">""</string>
+    <!-- NOT APPLICABLE FOR BOOKS IN TURKISH. A single vertical bar character. -->
+    <string name="pv_reformat_titles_prefixes">"|"</string>
     <string name="lbl_original_title">Orijinal başlık</string>
     <string name="lbl_original_title_long">Bu kitap bir çeviriyse orijinal adı</string>
     <string name="error_site_access_blocked">Web sitesi tarafından erişim engellendi.</string>

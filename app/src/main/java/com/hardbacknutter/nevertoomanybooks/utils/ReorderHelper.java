@@ -246,6 +246,14 @@ public final class ReorderHelper {
     }
 
 
+    /**
+     * Get the '|' separated list of words to check for in the given Locale.
+     *
+     * @param context Current context
+     * @param locale  to lookup
+     *
+     * @return word list; can be empty.
+     */
     @NonNull
     private String getWords(@NonNull final Context context,
                             @NonNull final Locale locale) {
@@ -255,6 +263,10 @@ public final class ReorderHelper {
             words = appLocaleSupplier.get()
                                      .getLocalizedResources(context, locale)
                                      .getString(R.string.pv_reformat_titles_prefixes);
+            // hack for WebLate removing empty Strings.
+            if ("|".equals(words)) {
+                words = "";
+            }
             localePrefixMap.put(locale, words);
         }
         return words;
