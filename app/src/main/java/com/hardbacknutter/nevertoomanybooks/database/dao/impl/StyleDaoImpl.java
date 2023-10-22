@@ -26,6 +26,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -42,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.database.ExtSQLiteStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -193,39 +195,8 @@ public class StyleDaoImpl
         style.setSortAuthorByGivenName(sortAuthorByGivenName);
         style.setShowAuthorByGivenName(showAuthorByGivenName);
 
-        // URGENT: unite this with the code in instance#insert(context, style)
-        try (SQLiteStatement stmt = db.compileStatement(INSERT_STYLE)) {
-            int c = 0;
-            stmt.bindString(++c, style.getUuid());
-            stmt.bindLong(++c, style.getType().getId());
-            stmt.bindLong(++c, style.isPreferred() ? 1 : 0);
-            stmt.bindLong(++c, style.getMenuPosition());
-            stmt.bindNull(++c);
-
-            stmt.bindLong(++c, style.getLayout().getId());
-            stmt.bindLong(++c, style.getCoverClickAction().getId());
-            stmt.bindLong(++c, style.getCoverScale());
-            stmt.bindLong(++c, style.getTextScale());
-            stmt.bindLong(++c, style.isGroupRowUsesPreferredHeight() ? 1 : 0);
-
-            stmt.bindLong(++c, style.getHeaderFieldVisibilityValue());
-            stmt.bindLong(++c, style.getFieldVisibility(FieldVisibility.Screen.List)
-                                    .getBitValue());
-            stmt.bindString(++c, StyleCoder.getBookLevelFieldsOrderByAsJsonString(style));
-            stmt.bindLong(++c, style.isSortAuthorByGivenName() ? 1 : 0);
-            stmt.bindLong(++c, style.isShowAuthorByGivenName() ? 1 : 0);
-
-            stmt.bindLong(++c, style.getFieldVisibility(FieldVisibility.Screen.Detail)
-                                    .getBitValue());
-
-            stmt.bindLong(++c, style.getExpansionLevel());
-            stmt.bindString(++c, getGroupIdsAsCsv(style));
-            stmt.bindLong(++c, style.getPrimaryAuthorType());
-            for (final Style.UnderEach item : Style.UnderEach.values()) {
-                stmt.bindLong(++c, style.isShowBooksUnderEachGroup(item.getGroupId()) ? 1 : 0);
-            }
-
-            stmt.executeInsert();
+        try (ExtSQLiteStatement stmt = new ExtSQLiteStatement(db.compileStatement(INSERT_STYLE))) {
+            doInsert(style, null, stmt);
         }
     }
 
@@ -235,6 +206,42 @@ public class StyleDaoImpl
                     .stream()
                     .map(group -> String.valueOf(group.getId()))
                     .collect(Collectors.joining(","));
+    }
+
+    private static long doInsert(@NonNull final Style style,
+                                 @Nullable final String styleName,
+                                 @NonNull final ExtSQLiteStatement stmt) {
+        int c = 0;
+        stmt.bindString(++c, style.getUuid());
+        stmt.bindLong(++c, style.getType().getId());
+        stmt.bindBoolean(++c, style.isPreferred());
+        stmt.bindLong(++c, style.getMenuPosition());
+        stmt.bindString(++c, styleName);
+
+        stmt.bindLong(++c, style.getLayout().getId());
+        stmt.bindLong(++c, style.getCoverClickAction().getId());
+        stmt.bindLong(++c, style.getCoverScale());
+        stmt.bindLong(++c, style.getTextScale());
+        stmt.bindBoolean(++c, style.isGroupRowUsesPreferredHeight());
+
+        stmt.bindLong(++c, style.getHeaderFieldVisibilityValue());
+        stmt.bindLong(++c, style.getFieldVisibility(FieldVisibility.Screen.List)
+                                .getBitValue());
+        stmt.bindString(++c, StyleCoder.getBookLevelFieldsOrderByAsJsonString(style));
+        stmt.bindBoolean(++c, style.isSortAuthorByGivenName());
+        stmt.bindBoolean(++c, style.isShowAuthorByGivenName());
+
+        stmt.bindLong(++c, style.getFieldVisibility(FieldVisibility.Screen.Detail)
+                                .getBitValue());
+
+        stmt.bindLong(++c, style.getExpansionLevel());
+        stmt.bindString(++c, getGroupIdsAsCsv(style));
+        stmt.bindLong(++c, style.getPrimaryAuthorType());
+        for (final Style.UnderEach item : Style.UnderEach.values()) {
+            stmt.bindBoolean(++c, style.isShowBooksUnderEachGroup(item.getGroupId()));
+        }
+
+        return stmt.executeInsert();
     }
 
     @Override
@@ -299,38 +306,7 @@ public class StyleDaoImpl
     public long insert(@NonNull final Context context,
                        @NonNull final Style style) {
         try (SynchronizedStatement stmt = db.compileStatement(INSERT_STYLE)) {
-            int c = 0;
-            stmt.bindString(++c, style.getUuid());
-            stmt.bindLong(++c, style.getType().getId());
-            stmt.bindBoolean(++c, style.isPreferred());
-            stmt.bindLong(++c, style.getMenuPosition());
-            stmt.bindString(++c, style.getLabel(context));
-
-            stmt.bindLong(++c, style.getLayout().getId());
-            stmt.bindLong(++c, style.getCoverClickAction().getId());
-            stmt.bindLong(++c, style.getCoverScale());
-            stmt.bindLong(++c, style.getTextScale());
-            stmt.bindBoolean(++c, style.isGroupRowUsesPreferredHeight());
-
-            stmt.bindLong(++c, style.getHeaderFieldVisibilityValue());
-            stmt.bindLong(++c, style.getFieldVisibility(FieldVisibility.Screen.List)
-                                    .getBitValue());
-            stmt.bindString(++c, StyleCoder.getBookLevelFieldsOrderByAsJsonString(style));
-            stmt.bindBoolean(++c, style.isSortAuthorByGivenName());
-            stmt.bindBoolean(++c, style.isShowAuthorByGivenName());
-
-            stmt.bindLong(++c, style.getFieldVisibility(FieldVisibility.Screen.Detail)
-                                    .getBitValue());
-
-            stmt.bindLong(++c, style.getExpansionLevel());
-            stmt.bindString(++c, getGroupIdsAsCsv(style));
-            stmt.bindLong(++c, style.getPrimaryAuthorType());
-            for (final Style.UnderEach item : Style.UnderEach.values()) {
-                stmt.bindBoolean(++c, style.isShowBooksUnderEachGroup(item.getGroupId()));
-            }
-
-
-            final long iId = stmt.executeInsert();
+            final long iId = doInsert(style, style.getLabel(context), stmt);
             if (iId > 0) {
                 style.setId(iId);
             }
