@@ -25,21 +25,12 @@ import android.database.sqlite.SQLiteStatement;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.Closeable;
-
-import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.core.Logger;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
-
 /**
- * Wrapper for statements that ensures locking is used.
- * <p>
- * Represents a statement that can be executed against a database.  The statement
- * cannot return multiple rows or columns, but single value (1 x 1) result sets
- * are supported.
+ * Wrapper for {@link SQLiteStatement} that ensures locking is used.
  */
+@SuppressWarnings({"unused", "WeakerAccess", "MissingJavadoc"})
 public class SynchronizedStatement
-        implements Closeable {
+        extends ExtSQLiteStatement {
 
     /** Log tag. */
     private static final String TAG = "SynchronizedStatement";
@@ -48,249 +39,65 @@ public class SynchronizedStatement
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final Synchronizer synchronizer;
-    /** Underlying statement. This class is final, so we cannot extend it. */
-    private final SQLiteStatement statement;
     /** Indicates this is a 'read-only' statement. */
     private final boolean readOnly;
 
     /**
-     * Constructor. Do not use directly!
-     * <p>
+     * Constructor.
      * Always use {@link SynchronizedDb#compileStatement(String)} to get a new instance.
-     * (why? -> compileStatement uses locks)
      *
      * @param synchronizer to use
-     * @param statement    to execute
+     * @param statement    to wrap
      * @param readOnly     flag; is the statement a read-only operation
      */
     public SynchronizedStatement(@NonNull final Synchronizer synchronizer,
                                  @NonNull final SQLiteStatement statement,
                                  final boolean readOnly) {
+        super(statement);
         this.synchronizer = synchronizer;
-        this.statement = statement;
         this.readOnly = readOnly;
     }
 
-    /**
-     * Wrapper for underlying method on SQLiteStatement.
-     * <p>
-     * Bind a String value to this statement. The value remains bound until
-     * {@link #clearBindings} is called.
-     *
-     * @param index The 1-based index to the parameter to bind
-     * @param value The value to bind, CAN be null, in which case {@link #bindNull} will be used.
-     */
-    public void bindString(final int index,
-                           @Nullable final String value) {
-        if (value == null) {
-            statement.bindNull(index);
-        } else {
-            statement.bindString(index, value);
-        }
-    }
-
-    /**
-     * Wrapper for binding a boolean to a SQLiteStatement by morphing it to a long(1/0).
-     * <p>
-     * Bind a boolean value to this statement. The value remains bound until
-     * {@link #clearBindings} is called.
-     *
-     * @param index The 1-based index to the parameter to bind
-     * @param value The value to bind
-     */
-    public void bindBoolean(final int index,
-                            final boolean value) {
-        statement.bindLong(index, value ? 1 : 0);
-    }
-
-    /**
-     * Wrapper for underlying method on SQLiteStatement.
-     * <p>
-     * Bind a long value to this statement. The value remains bound until
-     * {@link #clearBindings} is called.
-     *
-     * @param index The 1-based index to the parameter to bind
-     * @param value The value to bind
-     */
-    public void bindLong(final int index,
-                         final long value) {
-        statement.bindLong(index, value);
-    }
-
-    /**
-     * Wrapper for underlying method on SQLiteStatement.
-     * <p>
-     * Bind a double value to this statement. The value remains bound until
-     * {@link #clearBindings} is called.
-     *
-     * @param index The 1-based index to the parameter to bind
-     * @param value The value to bind
-     */
-    @SuppressWarnings("unused")
-    public void bindDouble(final int index,
-                           final double value) {
-        statement.bindDouble(index, value);
-    }
-
-    /**
-     * Wrapper for underlying method on SQLiteStatement.
-     * <p>
-     * Bind a byte array value to this statement. The value remains bound until
-     * {@link #clearBindings} is called.
-     *
-     * @param index The 1-based index to the parameter to bind
-     * @param value The value to bind, CAN be null, in which case {@link #bindNull} will be used.
-     */
-    public void bindBlob(final int index,
-                         @Nullable final byte[] value) {
-        if (value == null) {
-            statement.bindNull(index);
-        } else {
-            statement.bindBlob(index, value);
-        }
-    }
-
-    /**
-     * Wrapper for underlying method on SQLiteStatement.
-     * <p>
-     * Bind a NULL value to this statement. The value remains bound until
-     * {@link #clearBindings} is called.
-     *
-     * @param index The 1-based index to the parameter to bind null to
-     */
-    public void bindNull(final int index) {
-        statement.bindNull(index);
-    }
-
-    /**
-     * Wrapper for underlying method on SQLiteStatement.
-     * <p>
-     * Clears all existing bindings. Unset bindings are treated as NULL.
-     */
-    @SuppressWarnings({"unused", "WeakerAccess"})
-    public void clearBindings() {
-        statement.clearBindings();
-    }
-
-    /**
-     * Wrapper for underlying method on SQLiteStatement.
-     */
-    @Override
-    public void close() {
-        statement.close();
-    }
-
-    /**
-     * Wrapper that uses a lock before calling underlying method on SQLiteStatement.
-     * <p>
-     * Execute a statement that returns a 1 by 1 table with a numeric value.
-     *
-     * @return The result of the query.
-     *
-     * @throws SQLiteDoneException if the query returns zero rows
-     * @see #simpleQueryForLongOrZero()
-     */
     public long simpleQueryForLong()
             throws SQLiteDoneException {
         final Synchronizer.SyncLock sharedLock = synchronizer.getSharedLock();
         try {
-            final long result = statement.simpleQueryForLong();
-            if (BuildConfig.DEBUG && LoggerFactory.DEBUG_EXEC_SQL) {
-                LoggerFactory.getLogger()
-                             .d(TAG, "simpleQueryForLong", statement + "|result=" + result);
-            }
-            return result;
+            return super.simpleQueryForLong();
         } finally {
             sharedLock.unlock();
         }
     }
 
-    /**
-     * Syntax sugar. Converts an SQLiteDoneException into returning 0.
-     * <p>
-     * Wrapper that uses a lock before calling underlying method on SQLiteStatement.
-     * <p>
-     * Execute a statement that returns a 1 by 1 table with a numeric value.
-     *
-     * @return The result of the query, or 0 when no rows found
-     */
     public long simpleQueryForLongOrZero() {
         final Synchronizer.SyncLock sharedLock = synchronizer.getSharedLock();
         try {
-            final long result = statement.simpleQueryForLong();
-            if (BuildConfig.DEBUG && LoggerFactory.DEBUG_EXEC_SQL) {
-                LoggerFactory.getLogger()
-                             .d(TAG, "simpleQueryForLongOrZero", statement + "|result=" + result);
-            }
-            return result;
-        } catch (@NonNull final SQLiteDoneException ignore) {
-            return 0;
+            return super.simpleQueryForLong();
         } finally {
             sharedLock.unlock();
         }
     }
 
-    /**
-     * Wrapper that uses a lock before calling underlying method on SQLiteStatement.
-     * <p>
-     * Execute a statement that returns a 1 by 1 table with a text value.
-     *
-     * @return The result of the query.
-     *
-     * @throws SQLiteDoneException if the query returns zero rows
-     * @see #simpleQueryForStringOrNull()
-     */
-    @SuppressWarnings("unused")
     @NonNull
     public String simpleQueryForString()
             throws SQLiteDoneException {
         final Synchronizer.SyncLock sharedLock = synchronizer.getSharedLock();
         try {
-            final String result = statement.simpleQueryForString();
-
-            if (BuildConfig.DEBUG && LoggerFactory.DEBUG_EXEC_SQL) {
-                LoggerFactory.getLogger()
-                             .d(TAG, "simpleQueryForString", statement + "|result=" + result);
-            }
-            return result;
-
+            return super.simpleQueryForString();
         } finally {
             sharedLock.unlock();
         }
     }
 
-    /**
-     * Syntax sugar. Converts an SQLiteDoneException into returning {@code null}.
-     * <p>
-     * Wrapper that uses a lock before calling underlying method on SQLiteStatement.
-     * <p>
-     * Execute a statement that returns a 1 by 1 table with a text value.
-     *
-     * @return The result of the query, or {@code null} if not found.
-     */
     @Nullable
     public String simpleQueryForStringOrNull() {
         final Synchronizer.SyncLock sharedLock = synchronizer.getSharedLock();
         try {
-            return statement.simpleQueryForString();
-
-        } catch (@NonNull final SQLiteDoneException e) {
-            if (BuildConfig.DEBUG && LoggerFactory.DEBUG_EXEC_SQL) {
-                LoggerFactory.getLogger()
-                             .d(TAG, "simpleQueryForStringOrNull", statement + "|NULL");
-            }
-            return null;
+            return super.simpleQueryForString();
         } finally {
             sharedLock.unlock();
         }
     }
 
-    /**
-     * Wrapper that uses a lock before calling underlying method on SQLiteStatement.
-     * <p>
-     * Execute this SQL statement, if it is not a SELECT / INSERT / DELETE / UPDATE, for example
-     * CREATE / DROP table, view, trigger, index etc.
-     */
     public void execute() {
         final Synchronizer.SyncLock txLock;
         if (readOnly) {
@@ -299,60 +106,25 @@ public class SynchronizedStatement
             txLock = synchronizer.getExclusiveLock();
         }
         try {
-            if (BuildConfig.DEBUG && LoggerFactory.DEBUG_EXEC_SQL) {
-                LoggerFactory.getLogger()
-                             .d(TAG, "execute", statement);
-            }
-            statement.execute();
+            super.execute();
         } finally {
             txLock.unlock();
         }
     }
 
-    /**
-     * Wrapper that uses a lock before calling underlying method on SQLiteStatement.
-     * <p>
-     * Execute this SQL statement, if the number of rows affected by execution of this SQL
-     * statement is of any importance to the caller - for example, UPDATE / DELETE SQL statements.
-     *
-     * @return the number of rows affected by this SQL statement execution.
-     */
     public int executeUpdateDelete() {
         final Synchronizer.SyncLock exclusiveLock = synchronizer.getExclusiveLock();
         try {
-            final int rowsAffected = statement.executeUpdateDelete();
-            if (BuildConfig.DEBUG && LoggerFactory.DEBUG_EXEC_SQL) {
-                LoggerFactory.getLogger()
-                             .d(TAG, "executeUpdateDelete",
-                                statement + "|rowsAffected=" + rowsAffected);
-            }
-            return rowsAffected;
+            return super.executeUpdateDelete();
         } finally {
             exclusiveLock.unlock();
         }
     }
 
-    /**
-     * Wrapper that uses a lock before calling underlying method on SQLiteStatement.
-     * <p>
-     * Execute this SQL statement and return the id of the row inserted due to this call.
-     * The SQL statement should be an INSERT for this to be a useful call.
-     *
-     * @return the row id of the newly inserted row, or {@code -1} if an error occurred
-     */
     public long executeInsert() {
         final Synchronizer.SyncLock exclusiveLock = synchronizer.getExclusiveLock();
         try {
-            final long id = statement.executeInsert();
-
-            if (BuildConfig.DEBUG && LoggerFactory.DEBUG_EXEC_SQL) {
-                final Logger logger = LoggerFactory.getLogger();
-                logger.d(TAG, "executeInsert", statement + "|id=" + id);
-                if (id == -1) {
-                    logger.e(TAG, new Throwable(), "Insert failed|" + statement);
-                }
-            }
-            return id;
+            return super.executeInsert();
         } finally {
             exclusiveLock.unlock();
         }
@@ -362,8 +134,8 @@ public class SynchronizedStatement
     @NonNull
     public String toString() {
         return "SynchronizedStatement{"
+               + super.toString()
                + ", readOnly=" + readOnly
-               + ", statement=" + statement
                + '}';
     }
 }

@@ -431,7 +431,10 @@ public class SynchronizedDb
     /**
      * Locking-aware wrapper for underlying database method.
      *
-     * @param sql The raw SQL statement
+     * @param sql           The raw SQL statement
+     * @param selectionArgs You may include ?s in where clause in the query,
+     *                      which will be replaced by the values from selectionArgs. The
+     *                      values will be bound as Strings.
      *
      * @return the cursor
      */
