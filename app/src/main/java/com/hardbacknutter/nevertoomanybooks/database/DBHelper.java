@@ -217,24 +217,26 @@ public class DBHelper
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        // db version 25
+        // Check for pre-db25 multiple-keys
         final Pattern dot = Pattern.compile("\\.");
-        final FieldVisibility fieldVisibility = new FieldVisibility();
-        prefs.getAll()
-             .keySet()
-             .stream()
-             .filter(key -> key.startsWith("fields.visibility."))
-             .forEach(oldKey -> {
-                 final boolean value = prefs.getBoolean(oldKey, false);
-                 final String dbKey = dot.split(oldKey, 3)[2];
-                 fieldVisibility.setVisible(dbKey, value);
-             });
+        final List<String> oldVisKeys = prefs.getAll()
+                                             .keySet()
+                                             .stream()
+                                             .filter(key -> key.startsWith("fields.visibility."))
+                                             .collect(Collectors.toList());
+        if (!oldVisKeys.isEmpty()) {
+            final FieldVisibility fieldVisibility = new FieldVisibility();
+            oldVisKeys.forEach(oldKey -> {
+                final boolean value = prefs.getBoolean(oldKey, false);
+                final String dbKey = dot.split(oldKey, 3)[2];
+                fieldVisibility.setVisible(dbKey, value);
+            });
 
-        prefs.edit()
-             .putLong(FieldVisibilityPreferenceFragment.PK_FIELD_VISIBILITY,
-                      fieldVisibility.getBitValue())
-             .apply();
-
+            prefs.edit()
+                 .putLong(FieldVisibilityPreferenceFragment.PK_FIELD_VISIBILITY,
+                          fieldVisibility.getBitValue())
+                 .apply();
+        }
 
         // Now remove all obsolete keys.
         final SharedPreferences.Editor editor = prefs.edit();
