@@ -86,7 +86,7 @@ public final class ErrorDialog {
                             @NonNull final String tag,
                             @NonNull final DaoWriteException e) {
         LoggerFactory.getLogger().e(tag, e);
-        showDialog(context, e, context.getString(R.string.error_storage_not_writable), null,
+        showDialog(context, e, context.getString(R.string.error_unexpected), null,
                    (d, w) -> d.dismiss());
     }
 
@@ -204,8 +204,8 @@ public final class ErrorDialog {
             // Try to map the exception to a localized/simple message.
             final Optional<String> mappedMsg = ExMsg.map(context, e);
             // If we have no mapped message or the exception was null - freak-out!
-            final String message2 = mappedMsg.orElseGet(() -> context.getString(
-                    R.string.error_unexpected_long, context.getString(R.string.pt_maintenance)));
+            final String message2 = mappedMsg.orElseGet(
+                    () -> ExMsg.getUnexpectedErrorMessage(context));
             builder.setMessage(message2);
 
             // The exception SHOULD be present but we're paranoid.
@@ -235,8 +235,7 @@ public final class ErrorDialog {
         // Try to map the exception to a localized/simple message.
         final Optional<String> mappedMsg = ExMsg.map(context, e);
         // If we have no mapped message or the exception was null - freak-out!
-        final String title2 = mappedMsg.orElseGet(() -> context.getString(
-                R.string.error_unexpected_long, context.getString(R.string.pt_maintenance)));
+        final String title2 = mappedMsg.orElseGet(() -> ExMsg.getUnexpectedErrorMessage(context));
         // Set it as the title and leave the message itself blank.
         builder.setTitle(title2);
 

@@ -34,17 +34,17 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherListContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditParcelableLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
@@ -343,17 +343,13 @@ public class EditBookPublisherListDialogFragment
                                    @NonNull final Publisher modified) {
 
         // This change is done in the database right NOW!
-        //noinspection DataFlowIssue
-        if (vm.changeForAllBooks(getContext(), original, modified)) {
+        try {
+            //noinspection DataFlowIssue
+            vm.changeForAllBooks(getContext(), original, modified);
             adapter.notifyDataSetChanged();
-        } else {
-            new MaterialAlertDialogBuilder(getContext())
-                    .setIcon(R.drawable.ic_baseline_error_24)
-                    .setTitle(R.string.action_save)
-                    .setMessage(R.string.error_storage_not_writable)
-                    .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
-                    .create()
-                    .show();
+
+        } catch (@NonNull final DaoWriteException e) {
+            ErrorDialog.show(getContext(), TAG, e);
         }
     }
 
@@ -364,17 +360,13 @@ public class EditBookPublisherListDialogFragment
         // Note that if the user abandons the entire book edit,
         // we will orphan this new Publisher. That's ok, it will get
         // garbage collected from the database sooner or later.
-        //noinspection DataFlowIssue
-        if (vm.changeForThisBook(getContext(), original, modified)) {
+        try {
+            //noinspection DataFlowIssue
+            vm.changeForThisBook(getContext(), original, modified);
             adapter.notifyDataSetChanged();
-        } else {
-            new MaterialAlertDialogBuilder(getContext())
-                    .setIcon(R.drawable.ic_baseline_error_24)
-                    .setTitle(R.string.action_save)
-                    .setMessage(R.string.error_storage_not_writable)
-                    .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
-                    .create()
-                    .show();
+
+        } catch (@NonNull final DaoWriteException e) {
+            ErrorDialog.show(getContext(), TAG, e);
         }
     }
 

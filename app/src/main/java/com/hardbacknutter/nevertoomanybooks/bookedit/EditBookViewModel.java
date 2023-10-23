@@ -48,7 +48,6 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
@@ -731,136 +730,94 @@ public class EditBookViewModel
         requireField(R.id.publisher).setValue(list);
     }
 
-    boolean changeForThisBook(@NonNull final Context context,
-                              @NonNull final Author original,
-                              @NonNull final Author modified) {
-        try {
-            ServiceLocator.getInstance().getAuthorDao()
-                          .insert(context, modified, book.getLocaleOrUserLocale(context));
-            final List<Author> list = book.getAuthors();
-            // unlink the original, and link with the new one
-            // Note that the original *might* be orphaned at this time.
-            // That's ok, it will get garbage collected from the database sooner or later.
-            list.remove(original);
-            list.add(modified);
-            book.setAuthors(list);
-            book.pruneAuthors(context, true);
-            return true;
+    void changeForThisBook(@NonNull final Context context,
+                           @NonNull final Author original,
+                           @NonNull final Author modified)
+            throws DaoWriteException {
 
-        } catch (@NonNull final DaoWriteException e) {
-            LoggerFactory.getLogger()
-                         .e(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
-        }
-        return false;
+        ServiceLocator.getInstance().getAuthorDao()
+                      .insert(context, modified, book.getLocaleOrUserLocale(context));
+        final List<Author> list = book.getAuthors();
+        // unlink the original, and link with the new one
+        // Note that the original *might* be orphaned at this time.
+        // That's ok, it will get garbage collected from the database sooner or later.
+        list.remove(original);
+        list.add(modified);
+        book.setAuthors(list);
+        book.pruneAuthors(context, true);
     }
 
-    boolean changeForAllBooks(@NonNull final Context context,
-                              @NonNull final Author original,
-                              @NonNull final Author modified) {
+    void changeForAllBooks(@NonNull final Context context,
+                           @NonNull final Author original,
+                           @NonNull final Author modified)
+            throws DaoWriteException {
         // copy all new data
         original.copyFrom(modified, true);
 
-        try {
-            ServiceLocator.getInstance().getAuthorDao()
-                          .update(context, original, book.getLocaleOrUserLocale(context));
-            book.pruneAuthors(context, true);
-            book.refreshAuthors(context);
-            return true;
-
-        } catch (@NonNull final DaoWriteException e) {
-            LoggerFactory.getLogger()
-                         .e(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
-        }
-        return false;
+        ServiceLocator.getInstance().getAuthorDao()
+                      .update(context, original, book.getLocaleOrUserLocale(context));
+        book.pruneAuthors(context, true);
+        book.refreshAuthors(context);
     }
 
-    boolean changeForThisBook(@NonNull final Context context,
-                              @NonNull final Series original,
-                              @NonNull final Series modified) {
-        try {
-            ServiceLocator.getInstance().getSeriesDao()
-                          .insert(context, modified, book.getLocaleOrUserLocale(context));
-            final List<Series> list = book.getSeries();
-            // unlink the original, and link with the new one
-            // Note that the original *might* be orphaned at this time.
-            // That's ok, it will get garbage collected from the database sooner or later.
-            list.remove(original);
-            list.add(modified);
-            book.setSeries(list);
-            book.pruneSeries(context, true);
-            return true;
+    void changeForThisBook(@NonNull final Context context,
+                           @NonNull final Series original,
+                           @NonNull final Series modified)
+            throws DaoWriteException {
 
-        } catch (@NonNull final DaoWriteException e) {
-            LoggerFactory.getLogger()
-                         .e(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
-        }
-        return false;
+        ServiceLocator.getInstance().getSeriesDao()
+                      .insert(context, modified, book.getLocaleOrUserLocale(context));
+        final List<Series> list = book.getSeries();
+        // unlink the original, and link with the new one
+        // Note that the original *might* be orphaned at this time.
+        // That's ok, it will get garbage collected from the database sooner or later.
+        list.remove(original);
+        list.add(modified);
+        book.setSeries(list);
+        book.pruneSeries(context, true);
     }
 
-    boolean changeForAllBooks(@NonNull final Context context,
-                              @NonNull final Series original,
-                              @NonNull final Series modified) {
+    void changeForAllBooks(@NonNull final Context context,
+                           @NonNull final Series original,
+                           @NonNull final Series modified)
+            throws DaoWriteException {
         // copy all new data
         original.copyFrom(modified, true);
 
-        try {
-            ServiceLocator.getInstance().getSeriesDao()
-                          .update(context, original, book.getLocaleOrUserLocale(context));
-            book.pruneSeries(context, true);
-            book.refreshSeries(context);
-            return true;
-
-        } catch (@NonNull final DaoWriteException e) {
-            LoggerFactory.getLogger()
-                         .e(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
-        }
-
-        return false;
+        ServiceLocator.getInstance().getSeriesDao()
+                      .update(context, original, book.getLocaleOrUserLocale(context));
+        book.pruneSeries(context, true);
+        book.refreshSeries(context);
     }
 
-    boolean changeForThisBook(@NonNull final Context context,
-                              @NonNull final Publisher original,
-                              @NonNull final Publisher modified) {
+    void changeForThisBook(@NonNull final Context context,
+                           @NonNull final Publisher original,
+                           @NonNull final Publisher modified)
+            throws DaoWriteException {
 
-        try {
-            ServiceLocator.getInstance().getPublisherDao()
-                          .insert(context, modified, book.getLocaleOrUserLocale(context));
-            final List<Publisher> list = book.getPublishers();
-            // unlink the original, and link with the new one
-            // Note that the original *might* be orphaned at this time.
-            // That's ok, it will get garbage collected from the database sooner or later.
-            list.remove(original);
-            list.add(modified);
-            book.setPublishers(list);
-            book.prunePublishers(context, true);
-            return true;
-
-        } catch (@NonNull final DaoWriteException e) {
-            LoggerFactory.getLogger()
-                         .e(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
-        }
-        return false;
+        ServiceLocator.getInstance().getPublisherDao()
+                      .insert(context, modified, book.getLocaleOrUserLocale(context));
+        final List<Publisher> list = book.getPublishers();
+        // unlink the original, and link with the new one
+        // Note that the original *might* be orphaned at this time.
+        // That's ok, it will get garbage collected from the database sooner or later.
+        list.remove(original);
+        list.add(modified);
+        book.setPublishers(list);
+        book.prunePublishers(context, true);
     }
 
-    boolean changeForAllBooks(@NonNull final Context context,
-                              @NonNull final Publisher original,
-                              @NonNull final Publisher modified) {
+    void changeForAllBooks(@NonNull final Context context,
+                           @NonNull final Publisher original,
+                           @NonNull final Publisher modified)
+            throws DaoWriteException {
         // copy all new data
         original.copyFrom(modified);
 
-        try {
-            ServiceLocator.getInstance().getPublisherDao()
-                          .update(context, original, book.getLocaleOrUserLocale(context));
-            book.prunePublishers(context, true);
-            book.refreshPublishers(context);
-            return true;
-
-        } catch (@NonNull final DaoWriteException e) {
-            LoggerFactory.getLogger()
-                         .e(TAG, e, UPDATE_FAILED, ORIGINAL + original, MODIFIED + modified);
-        }
-
-        return false;
+        ServiceLocator.getInstance().getPublisherDao()
+                      .update(context, original, book.getLocaleOrUserLocale(context));
+        book.prunePublishers(context, true);
+        book.refreshPublishers(context);
     }
 
     void fixId(@NonNull final Context context,

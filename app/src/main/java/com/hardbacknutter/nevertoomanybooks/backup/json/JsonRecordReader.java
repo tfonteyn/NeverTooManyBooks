@@ -517,18 +517,19 @@ public class JsonRecordReader
             try {
                 final Book book = bookCoder.decode(books.getJSONObject(i));
                 final String importUuid = book.getString(DBKey.BOOK_UUID, null);
-                if (importUuid == null || importUuid.isEmpty()) {
-                    throw new DaoWriteException(context.getString(
-                            R.string.error_record_must_contain_column, DBKey.BOOK_UUID));
-                }
+                if (importUuid != null && !importUuid.isEmpty()) {
+                    final long importNumericId = book.getLong(DBKey.PK_ID);
+                    book.remove(DBKey.PK_ID);
 
-                final long importNumericId = book.getLong(DBKey.PK_ID);
-                book.remove(DBKey.PK_ID);
+                    importBookWithUuid(context, book, importUuid, importNumericId);
 
-                importBookWithUuid(context, book, importUuid, importNumericId);
-
-                if (txLock != null) {
-                    db.setTransactionSuccessful();
+                    if (txLock != null) {
+                        db.setTransactionSuccessful();
+                    }
+                } else {
+                    final String msg = context.getString(R.string.error_record_must_contain_column,
+                                                         DBKey.BOOK_UUID);
+                    results.handleRowException(context, row, new DataReaderException(msg), msg);
                 }
             } catch (@NonNull final DaoWriteException | SQLiteDoneException e) {
                 results.handleRowException(context, row, e, null);
