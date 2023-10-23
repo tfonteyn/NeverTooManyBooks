@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -33,6 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsViewModel;
 
+@Keep
 public class StyleDefaultsFragment
         extends StyleBaseFragment {
 
