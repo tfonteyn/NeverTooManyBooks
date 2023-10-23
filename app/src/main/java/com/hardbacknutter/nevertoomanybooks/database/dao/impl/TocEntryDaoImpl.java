@@ -35,6 +35,8 @@ import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -249,7 +251,7 @@ public class TocEntryDaoImpl
                     if (iId > 0) {
                         tocEntry.setId(iId);
                     } else {
-                        throw new DaoWriteException(ERROR_INSERT_FROM + tocEntry);
+                        throw new DaoInsertException(ERROR_INSERT_FROM + tocEntry);
                     }
 
                 } else {
@@ -262,7 +264,7 @@ public class TocEntryDaoImpl
                             .getFirstPublicationDate().getIsoString());
                     stmtUpdToc.bindLong(4, tocEntry.getId());
                     if (stmtUpdToc.executeUpdateDelete() != 1) {
-                        throw new DaoWriteException(ERROR_UPDATE_FROM + tocEntry);
+                        throw new DaoUpdateException(ERROR_UPDATE_FROM + tocEntry);
                     }
                 }
 
@@ -283,7 +285,7 @@ public class TocEntryDaoImpl
                     stmt.bindLong(2, bookId);
                     stmt.bindLong(3, position);
                     if (stmt.executeInsert() == -1) {
-                        throw new DaoWriteException("insert Book-TocEntry");
+                        throw new DaoInsertException("insert Book-TocEntry");
                     }
                 } catch (@NonNull final SQLiteConstraintException ignore) {
                     // ignore and reset the position counter.

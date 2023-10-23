@@ -17,24 +17,20 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.hardbacknutter.nevertoomanybooks.core.database;
 
 import androidx.annotation.NonNull;
 
-/**
- * On purpose <strong>NOT</strong> an IOException, to force the developer to deal with it.
- */
-public class DaoWriteException
-        extends Exception {
-
-    private static final long serialVersionUID = -2857466683799399619L;
-
-    protected DaoWriteException(@NonNull final String message) {
+public class DaoUpdateException
+        extends DaoWriteException {
+    public DaoUpdateException(@NonNull final String message) {
         super(message);
     }
 
-    protected DaoWriteException(@NonNull final String message,
-                                @NonNull final Throwable cause) {
+    public DaoUpdateException(@NonNull final String message,
+                              @NonNull final Throwable cause) {
         super(message, cause);
     }
+
 }

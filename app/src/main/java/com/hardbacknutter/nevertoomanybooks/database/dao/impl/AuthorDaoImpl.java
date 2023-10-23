@@ -38,6 +38,8 @@ import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -517,7 +519,7 @@ public class AuthorDaoImpl
                 stmt.bindLong(3, position);
                 stmt.bindLong(4, author.getType());
                 if (stmt.executeInsert() == -1) {
-                    throw new DaoWriteException("insert Book-Author");
+                    throw new DaoInsertException("insert Book-Author");
                 }
             }
         }
@@ -563,9 +565,9 @@ public class AuthorDaoImpl
                 return iId;
             }
 
-            throw new DaoWriteException(ERROR_INSERT_FROM + author);
+            throw new DaoInsertException(ERROR_INSERT_FROM + author);
         } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
-            throw new DaoWriteException(ERROR_INSERT_FROM + author, e);
+            throw new DaoInsertException(ERROR_INSERT_FROM + author, e);
 
         } finally {
             if (txLock != null) {
@@ -613,9 +615,9 @@ public class AuthorDaoImpl
                 return;
             }
 
-            throw new DaoWriteException(ERROR_UPDATE_FROM + author);
+            throw new DaoUpdateException(ERROR_UPDATE_FROM + author);
         } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
-            throw new DaoWriteException(ERROR_UPDATE_FROM + author, e);
+            throw new DaoUpdateException(ERROR_UPDATE_FROM + author, e);
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -704,8 +706,8 @@ public class AuthorDaoImpl
             stmt.bindLong(2, realAuthorId);
             final long id = stmt.executeInsert();
             if (id < 0) {
-                throw new DaoWriteException("Failed to insert PseudonymLink author=" + authorId
-                                            + ", real=" + realAuthorId);
+                throw new DaoInsertException("Failed to insert PseudonymLink author=" + authorId
+                                             + ", real=" + realAuthorId);
             }
         }
     }

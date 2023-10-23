@@ -39,6 +39,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.FilterFactory;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
@@ -301,7 +303,7 @@ public class BookshelfDaoImpl
                 stmt.bindLong(1, bookId);
                 stmt.bindLong(2, bookshelf.getId());
                 if (stmt.executeInsert() == -1) {
-                    throw new DaoWriteException("insert Book-Bookshelf");
+                    throw new DaoInsertException("insert Book-Bookshelf");
                 }
             }
         }
@@ -341,9 +343,9 @@ public class BookshelfDaoImpl
                 return iId;
             }
 
-            throw new DaoWriteException(ERROR_INSERT_FROM + bookshelf);
+            throw new DaoInsertException(ERROR_INSERT_FROM + bookshelf);
         } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
-            throw new DaoWriteException(ERROR_INSERT_FROM + bookshelf, e);
+            throw new DaoInsertException(ERROR_INSERT_FROM + bookshelf, e);
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -384,9 +386,9 @@ public class BookshelfDaoImpl
                 return;
             }
 
-            throw new DaoWriteException(ERROR_UPDATE_FROM + bookshelf);
+            throw new DaoUpdateException(ERROR_UPDATE_FROM + bookshelf);
         } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
-            throw new DaoWriteException(ERROR_UPDATE_FROM + bookshelf, e);
+            throw new DaoUpdateException(ERROR_UPDATE_FROM + bookshelf, e);
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);

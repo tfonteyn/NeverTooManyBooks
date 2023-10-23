@@ -41,6 +41,9 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoCoverException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -226,7 +229,7 @@ public class BookDaoImpl
             // Make sure we have at least one author
             final List<Author> authors = book.getAuthors();
             if (authors.isEmpty()) {
-                throw new DaoWriteException("No authors for book=" + book);
+                throw new DaoInsertException("No authors for book=" + book);
             }
 
             final String addedOrUpdatedNow = SqlEncode.date(LocalDateTime.now(ZoneOffset.UTC));
@@ -258,7 +261,7 @@ public class BookDaoImpl
 
                 book.putLong(DBKey.PK_ID, 0);
                 book.remove(DBKey.BOOK_UUID);
-                throw new DaoWriteException(ERROR_CREATING_BOOK_FROM + book);
+                throw new DaoInsertException(ERROR_CREATING_BOOK_FROM + book);
             }
 
             // Set the new id/uuid on the Book itself
@@ -288,7 +291,7 @@ public class BookDaoImpl
             } catch (@NonNull final IOException e) {
                 book.putLong(DBKey.PK_ID, 0);
                 book.remove(DBKey.BOOK_UUID);
-                throw new DaoWriteException(ERROR_STORING_COVERS + book, e);
+                throw new DaoCoverException(ERROR_STORING_COVERS + book, e);
             }
 
             if (txLock != null) {
@@ -297,7 +300,7 @@ public class BookDaoImpl
             return newBookId;
 
         } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
-            throw new DaoWriteException(ERROR_CREATING_BOOK_FROM + book, e);
+            throw new DaoInsertException(ERROR_CREATING_BOOK_FROM + book, e);
 
         } finally {
             if (txLock != null) {
@@ -361,17 +364,17 @@ public class BookDaoImpl
                     bookDaoHelper.persistCovers();
 
                 } catch (@NonNull final IOException e) {
-                    throw new DaoWriteException(ERROR_STORING_COVERS + book);
+                    throw new DaoCoverException(ERROR_STORING_COVERS + book);
                 }
 
                 if (txLock != null) {
                     db.setTransactionSuccessful();
                 }
             } else {
-                throw new DaoWriteException(ERROR_UPDATING_BOOK_FROM + book);
+                throw new DaoUpdateException(ERROR_UPDATING_BOOK_FROM + book);
             }
         } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
-            throw new DaoWriteException(ERROR_UPDATING_BOOK_FROM + book, e);
+            throw new DaoUpdateException(ERROR_UPDATING_BOOK_FROM + book, e);
 
         } finally {
             if (txLock != null) {

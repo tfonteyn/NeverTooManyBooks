@@ -235,8 +235,7 @@ public class StartupActivity
 
         String msg = ExMsg
                 .map(this, e)
-                .orElseGet(() -> getString(R.string.error_unexpected_long,
-                                           getString(R.string.pt_maintenance)));
+                .orElseGet(() -> ExMsg.getUnexpectedErrorMessage(this));
 
         if (BuildConfig.DEBUG /* always */) {
             msg += "\n" + Arrays.toString(e.getStackTrace());

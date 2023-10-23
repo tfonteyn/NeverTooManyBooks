@@ -35,6 +35,9 @@ import javax.net.ssl.SSLException;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.Logger;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoCoverException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.UpgradeFailedException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -103,9 +106,18 @@ public final class ExMsg {
         } else if (e instanceof CoverStorageException) {
             return context.getString(R.string.error_storage_not_accessible);
 
-        } else if (e instanceof DaoWriteException) {
+        } else if (e instanceof DaoInsertException || e instanceof DaoUpdateException) {
+            // There was a database write operation failure.
+            // Unlikely (but not impossible) to be disk-full.
+            return getUnexpectedErrorMessage(context);
+
+        } else if (e instanceof DaoCoverException) {
+            // It's very likely a disk-full, or it could be an unexpected access issue.
             return context.getString(R.string.error_storage_not_writable);
 
+        } else if (e instanceof DaoWriteException) {
+            // Fallback, we should never get here.
+            return getUnexpectedErrorMessage(context);
 
         } else if (e instanceof DataReaderException) {
             return ((DataReaderException) e).getUserMessage(context);
@@ -124,13 +136,11 @@ public final class ExMsg {
         } else if (e instanceof com.hardbacknutter.org.json.JSONException
                    || e instanceof org.json.JSONException) {
             //TODO: a JSONException is very generic, we'd need to look at the actual text.
-            return context.getString(R.string.error_unexpected_long,
-                                     context.getString(R.string.pt_maintenance));
+            return getUnexpectedErrorMessage(context);
 
         } else if (e instanceof android.database.SQLException
                    || e instanceof java.sql.SQLException) {
-            return context.getString(R.string.error_unexpected_long,
-                                     context.getString(R.string.pt_maintenance));
+            return getUnexpectedErrorMessage(context);
 
         } else if (e instanceof java.security.cert.CertificateEncodingException) {
             return context.getString(R.string.error_certificate_invalid);
@@ -143,13 +153,18 @@ public final class ExMsg {
             // This is BAD.... but we've only ever seen this in the emulator ... flw
             // ^^^ 2022-04-06
             // TODO: give user detailed message
-            return context.getString(R.string.error_unexpected_long,
-                                     context.getString(R.string.pt_maintenance));
+            return getUnexpectedErrorMessage(context);
 
         } else if (e instanceof android.system.ErrnoException) {
             return mapErnoException(context, (android.system.ErrnoException) e);
         }
         return null;
+    }
+
+    @NonNull
+    public static String getUnexpectedErrorMessage(@NonNull final Context context) {
+        return context.getString(R.string.error_unexpected_long,
+                                 context.getString(R.string.pt_maintenance));
     }
 
     /**

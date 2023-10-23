@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
@@ -91,7 +92,7 @@ public class StripInfoDaoImpl
             stmt.bindString(7, book.getString(DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC));
             final long rowId = stmt.executeInsert();
             if (rowId == -1) {
-                throw new DaoWriteException("StripInfo data insert failed");
+                throw new DaoInsertException("StripInfo data insert failed");
             }
         }
     }

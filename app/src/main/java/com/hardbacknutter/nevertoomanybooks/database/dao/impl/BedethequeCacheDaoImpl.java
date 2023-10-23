@@ -30,6 +30,8 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -109,7 +111,7 @@ public class BedethequeCacheDaoImpl
                     if (id > 0) {
                         bdtAuthor.setId(id);
                     } else {
-                        throw new DaoWriteException(ERROR_INSERT_FROM + bdtAuthor);
+                        throw new DaoInsertException(ERROR_INSERT_FROM + bdtAuthor);
                     }
                 }
             }
@@ -119,7 +121,7 @@ public class BedethequeCacheDaoImpl
             return id > 0;
 
         } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
-            throw new DaoWriteException(ERROR_INSERT_FROM + bdtAuthor, e);
+            throw new DaoInsertException(ERROR_INSERT_FROM + bdtAuthor, e);
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -165,7 +167,7 @@ public class BedethequeCacheDaoImpl
                         if (id > 0) {
                             bdtAuthor.setId(id);
                         } else {
-                            throw new DaoWriteException(ERROR_INSERT_FROM + bdtAuthor);
+                            throw new DaoInsertException(ERROR_INSERT_FROM + bdtAuthor);
                         }
                     } else {
                         stmtUpdate.bindString(1, bdtAuthor.getUrl());
@@ -173,7 +175,7 @@ public class BedethequeCacheDaoImpl
                         if (stmtUpdate.executeUpdateDelete() > 0) {
                             id = bdtAuthor.getId();
                         } else {
-                            throw new DaoWriteException(ERROR_UPDATE_FROM + bdtAuthor);
+                            throw new DaoUpdateException(ERROR_UPDATE_FROM + bdtAuthor);
                         }
                     }
                 }
@@ -184,7 +186,7 @@ public class BedethequeCacheDaoImpl
             return id > 0;
 
         } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
-            throw new DaoWriteException(ERROR_INSERT_FROM + bdtAuthor, e);
+            throw new DaoInsertException(ERROR_INSERT_FROM + bdtAuthor, e);
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -227,9 +229,9 @@ public class BedethequeCacheDaoImpl
                 }
                 return;
             }
-            throw new DaoWriteException(ERROR_UPDATE_FROM + bdtAuthor);
+            throw new DaoUpdateException(ERROR_UPDATE_FROM + bdtAuthor);
         } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
-            throw new DaoWriteException(ERROR_UPDATE_FROM + bdtAuthor, e);
+            throw new DaoUpdateException(ERROR_UPDATE_FROM + bdtAuthor, e);
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);

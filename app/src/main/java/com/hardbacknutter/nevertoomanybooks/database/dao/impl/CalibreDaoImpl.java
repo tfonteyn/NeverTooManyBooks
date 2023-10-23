@@ -28,6 +28,7 @@ import java.util.function.Supplier;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
@@ -108,7 +109,7 @@ public class CalibreDaoImpl
             libraryDao.fixId(context, library);
             if (library.getId() == 0) {
                 if (libraryDao.insert(library) == -1) {
-                    throw new DaoWriteException("CalibreLibrary insert failed");
+                    throw new DaoInsertException("CalibreLibrary insert failed");
                 }
             }
         } else if (book.contains(DBKey.FK_CALIBRE_LIBRARY)) {
@@ -144,7 +145,7 @@ public class CalibreDaoImpl
             stmt.bindLong(5, library.getId());
             final long rowId = stmt.executeInsert();
             if (rowId == -1) {
-                throw new DaoWriteException("Calibre data insert failed");
+                throw new DaoInsertException("Calibre data insert failed");
             }
         }
 

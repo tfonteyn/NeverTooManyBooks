@@ -38,6 +38,8 @@ import java.util.function.Supplier;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -368,7 +370,7 @@ public class SeriesDaoImpl
                 stmt.bindString(3, series.getNumber());
                 stmt.bindLong(4, position);
                 if (stmt.executeInsert() == -1) {
-                    throw new DaoWriteException("insert Book-Series");
+                    throw new DaoInsertException("insert Book-Series");
                 }
             }
         }
@@ -395,9 +397,9 @@ public class SeriesDaoImpl
                 return iId;
             }
 
-            throw new DaoWriteException(ERROR_INSERT_FROM + series);
+            throw new DaoInsertException(ERROR_INSERT_FROM + series);
         } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
-            throw new DaoWriteException(ERROR_INSERT_FROM + series, e);
+            throw new DaoInsertException(ERROR_INSERT_FROM + series, e);
         }
     }
 
@@ -423,9 +425,9 @@ public class SeriesDaoImpl
                 return;
             }
 
-            throw new DaoWriteException(ERROR_UPDATE_FROM + series);
+            throw new DaoUpdateException(ERROR_UPDATE_FROM + series);
         } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
-            throw new DaoWriteException(ERROR_UPDATE_FROM + series, e);
+            throw new DaoUpdateException(ERROR_UPDATE_FROM + series, e);
         }
     }
 
