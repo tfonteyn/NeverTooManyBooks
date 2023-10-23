@@ -152,7 +152,7 @@ public class StyleDaoImpl
      * @param db Database Access
      */
     public static void onPostCreate(@NonNull final SQLiteDatabase db) {
-        insertGlobalDefaults(db, false, false);
+        insertGlobalDefaults(db, new GlobalStyle());
 
         // insert the builtin styles so foreign key rules are possible.
         // Other than the id/uuid/type and the menu options, the settings are never
@@ -184,17 +184,11 @@ public class StyleDaoImpl
      * Create and insert the single global/defaults style.
      * Used during app installation (and upgrade).
      *
-     * @param db                    Database Access
-     * @param sortAuthorByGivenName passed in for upgrade
-     * @param showAuthorByGivenName passed in for upgrade
+     * @param db    Database Access
+     * @param style the defaults
      */
     public static void insertGlobalDefaults(@NonNull final SQLiteDatabase db,
-                                            final boolean sortAuthorByGivenName,
-                                            final boolean showAuthorByGivenName) {
-        final GlobalStyle style = new GlobalStyle();
-        style.setSortAuthorByGivenName(sortAuthorByGivenName);
-        style.setShowAuthorByGivenName(showAuthorByGivenName);
-
+                                            @NonNull final Style style) {
         try (ExtSQLiteStatement stmt = new ExtSQLiteStatement(db.compileStatement(INSERT_STYLE))) {
             doInsert(style, null, stmt);
         }

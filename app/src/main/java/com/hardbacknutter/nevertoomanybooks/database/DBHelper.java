@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.StartupActivity;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType;
@@ -732,13 +733,15 @@ public class DBHelper
                     DBDefinitions.DOM_STYLE_LAYOUT);
         }
         if (oldVersion < 27) {
-            final SharedPreferences prefs = PreferenceManager
-                    .getDefaultSharedPreferences(context);
-            final boolean sortAuthorByGivenName =
-                    prefs.getBoolean("sort.author.name.given_first", false);
-            final boolean showAuthorByGivenName =
-                    prefs.getBoolean("show.author.name.given_first", false);
-            StyleDaoImpl.insertGlobalDefaults(db, sortAuthorByGivenName, showAuthorByGivenName);
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+            final GlobalStyle style = new GlobalStyle();
+            style.setSortAuthorByGivenName(
+                    prefs.getBoolean("sort.author.name.given_first", false));
+            style.setShowAuthorByGivenName(
+                    prefs.getBoolean("show.author.name.given_first", false));
+
+            StyleDaoImpl.insertGlobalDefaults(db, style);
         }
 
         // SqLite 3.35.0 from 2021-03-12 adds ALTER TABLE DROP COLUMN
