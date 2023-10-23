@@ -113,6 +113,16 @@ public class FieldVisibility {
     }
 
     /**
+     * Copy constructor.
+     *
+     * @param fieldVisibility object to copy
+     */
+    public FieldVisibility(@NonNull final FieldVisibility fieldVisibility) {
+        dbKeys = Set.copyOf(fieldVisibility.dbKeys);
+        bits = fieldVisibility.bits;
+    }
+
+    /**
      * Constructor.
      * <p>
      * Style conditional visibility: use the given subset of keys.

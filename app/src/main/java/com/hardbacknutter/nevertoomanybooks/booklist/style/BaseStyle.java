@@ -497,7 +497,7 @@ public abstract class BaseStyle
 
     @NonNull
     public Map<String, Sort> getBookLevelFieldsOrderBy() {
-        return bookLevelFieldsOrderBy;
+        return new LinkedHashMap<>(bookLevelFieldsOrderBy);
     }
 
     public void setBookLevelFieldsOrderBy(@NonNull final Map<String, Sort> map) {
@@ -511,11 +511,17 @@ public abstract class BaseStyle
     @NonNull
     public FieldVisibility getFieldVisibility(@NonNull final FieldVisibility.Screen screen) {
         if (screen == FieldVisibility.Screen.Global) {
-            return ServiceLocator.getInstance().getGlobalFieldVisibility();
+            return new FieldVisibility(ServiceLocator.getInstance().getGlobalFieldVisibility());
         } else {
             //noinspection DataFlowIssue
-            return fieldVisibility.get(screen);
+            return new FieldVisibility(fieldVisibility.get(screen));
         }
+    }
+
+    public void setFieldVisibility(@NonNull final FieldVisibility.Screen screen,
+                                   final long value) {
+        //noinspection DataFlowIssue
+        fieldVisibility.get(screen).setBitValue(value);
     }
 
     @Override

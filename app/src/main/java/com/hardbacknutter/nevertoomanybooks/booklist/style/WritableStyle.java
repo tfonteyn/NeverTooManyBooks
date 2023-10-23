@@ -78,6 +78,9 @@ public interface WritableStyle
      */
     void setBookLevelFieldsOrderBy(@NonNull Map<String, Sort> map);
 
+    void setFieldVisibility(@NonNull FieldVisibility.Screen screen,
+                            long value);
+
     /**
      * Set the height to use for grouping rows.
      *

@@ -317,15 +317,15 @@ public interface Style {
      *
      * @param screen to get the setting for
      *
-     * @return visibility
+     * @return a <strong>new</strong> visibility object
      */
     @NonNull
     FieldVisibility getFieldVisibility(@NonNull FieldVisibility.Screen screen);
 
     /**
-     * Get the list of fields on which we'll sort the lowest level (books) in the BoB.
+     * Get the fields and how to sort on them for the lowest level (books) in the BoB.
      *
-     * @return fields and how to sort them
+     * @return a <strong>new</strong> map
      */
     @NonNull
     Map<String, Sort> getBookLevelFieldsOrderBy();
@@ -396,7 +396,7 @@ public interface Style {
     /**
      * Get all groups assigned to this style.
      *
-     * @return new List
+     * @return a <strong>new</strong> List
      */
     @NonNull
     List<BooklistGroup> getGroupList();

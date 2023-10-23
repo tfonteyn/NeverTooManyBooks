@@ -277,8 +277,8 @@ public class StyleCoder
                     source.getInt(StyleDataStore.PK_LIST_HEADER));
         }
         if (source.has(PK_LIST_FIELD_VISIBILITY)) {
-            style.getFieldVisibility(FieldVisibility.Screen.List)
-                 .setBitValue(source.getLong(PK_LIST_FIELD_VISIBILITY));
+            baseStyle.setFieldVisibility(FieldVisibility.Screen.List,
+                                         source.getLong(PK_LIST_FIELD_VISIBILITY));
         } else {
             // backwards compatibility
             decodeV2ListVisibility(style, source);
@@ -298,8 +298,8 @@ public class StyleCoder
         }
 
         if (source.has(PK_DETAILS_FIELD_VISIBILITY)) {
-            style.getFieldVisibility(FieldVisibility.Screen.Detail)
-                 .setBitValue(source.getLong(PK_DETAILS_FIELD_VISIBILITY));
+            baseStyle.setFieldVisibility(FieldVisibility.Screen.Detail,
+                                         source.getLong(PK_DETAILS_FIELD_VISIBILITY));
         } else {
             // backwards compatibility
             decodeV2DetailVisibility(style, source);
