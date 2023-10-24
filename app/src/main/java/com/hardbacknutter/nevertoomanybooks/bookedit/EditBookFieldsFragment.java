@@ -143,13 +143,10 @@ public class EditBookFieldsFragment
         vb.lblAuthor.setEndIconOnClickListener(v -> editAuthor());
         vb.author.setOnClickListener(v -> editAuthor());
 
-        if (ServiceLocator.getInstance().getGlobalFieldVisibility()
-                          .isVisible(DBKey.FK_SERIES).orElse(true)) {
-            // Series editor (screen)
-            // no listener/callback. We share the book view model in the Activity scope
-            vb.lblSeries.setEndIconOnClickListener(v -> editSeries());
-            vb.seriesTitle.setOnClickListener(v -> editSeries());
-        }
+        // Series editor (screen)
+        // no listener/callback. We share the book view model in the Activity scope
+        vb.lblSeries.setEndIconOnClickListener(v -> editSeries());
+        vb.seriesTitle.setOnClickListener(v -> editSeries());
 
         // Bookshelves editor (dialog)
         vb.lblBookshelves.setEndIconOnClickListener(v -> editBookshelves());
