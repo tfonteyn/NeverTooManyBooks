@@ -52,7 +52,7 @@ public final class GlobalStyle
                                                         BooklistGroup.BOOKSHELF);
 
     /**
-     * Constructor used during app installation/upgrade.
+     * Constructor <strong>only used during app installation/upgrade</strong>.
      */
     public GlobalStyle() {
         super(UUID.randomUUID().toString(), Integer.MIN_VALUE);

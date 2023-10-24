@@ -166,7 +166,7 @@ public abstract class BaseStyle
     /**
      * Constructor for a new style based on hardcoded defaults.
      * <p>
-     * Only used during app installation for the global/defaults.
+     * <strong>Only used during app installation for the global/defaults.</strong>
      *
      * @param id   for the new style
      * @param uuid for the new style
