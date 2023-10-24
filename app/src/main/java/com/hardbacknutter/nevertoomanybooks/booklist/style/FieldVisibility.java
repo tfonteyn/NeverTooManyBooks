@@ -295,11 +295,20 @@ public class FieldVisibility {
      * Which visibility options to use from the user preferences/style.
      */
     public enum Screen {
-        /** Bypass the style and use the global setting. */
+        /**
+         * Bypass the style and use the global setting.
+         * The bitmask value is stored as a single preference key.
+         */
         Global,
-        /** Based on Style, for use in a list/adapter. */
+        /**
+         * Based on Style, for use in a list/adapter.
+         * The bitmask value is stored for each Style in the styles database table.
+         */
         List,
-        /** Based on Style, for use on a details screen, dialog, ... */
+        /**
+         * Based on Style, for use on a details screen, dialog, ...
+         * The bitmask value is stored for each Style in the styles database table.
+         */
         Detail
     }
 }
