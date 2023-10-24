@@ -47,7 +47,6 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -168,12 +167,10 @@ public class EditBookFieldsFragment
         final TypedArray width = res.obtainTypedArray(R.array.cover_edit_width);
         final TypedArray height = res.obtainTypedArray(R.array.cover_edit_height);
         try {
-            final FieldVisibility fieldVisibility = ServiceLocator.getInstance()
-                                                                  .getGlobalFieldVisibility();
 
             for (int cIdx = 0; cIdx < width.length(); cIdx++) {
                 // in edit mode, always show both covers unless globally disabled
-                if (fieldVisibility.isVisible(DBKey.COVER[cIdx]).orElse(true)) {
+                if (ServiceLocator.getInstance().isFieldEnabled(DBKey.COVER[cIdx])) {
                     final int maxWidth = width.getDimensionPixelSize(cIdx, 0);
                     final int maxHeight = height.getDimensionPixelSize(cIdx, 0);
 

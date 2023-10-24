@@ -33,7 +33,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -84,12 +83,9 @@ public class EditAuthorViewModel
             author = Objects.requireNonNull(
                     args.getParcelable(EditLauncher.BKEY_ITEM), EditLauncher.BKEY_ITEM);
 
-            final FieldVisibility fieldVisibility = ServiceLocator.getInstance()
-                                                                  .getGlobalFieldVisibility();
-            useRealAuthorName = fieldVisibility.isVisible(DBKey.AUTHOR_REAL_AUTHOR)
-                                               .orElse(true);
-            useAuthorType = fieldVisibility.isVisible(DBKey.AUTHOR_TYPE__BITMASK)
-                                           .orElse(true);
+            final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+            useRealAuthorName = serviceLocator.isFieldEnabled(DBKey.AUTHOR_REAL_AUTHOR);
+            useAuthorType = serviceLocator.isFieldEnabled(DBKey.AUTHOR_TYPE__BITMASK);
 
             currentEdit = new Author(author);
             final Author tmp = currentEdit.getRealAuthor();

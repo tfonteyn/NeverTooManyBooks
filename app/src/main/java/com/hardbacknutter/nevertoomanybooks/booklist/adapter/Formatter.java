@@ -95,8 +95,7 @@ class Formatter
                 if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_author);
 
-                } else if (serviceLocator.getGlobalFieldVisibility()
-                                         .isVisible(DBKey.AUTHOR_REAL_AUTHOR).orElse(true)
+                } else if (serviceLocator.isFieldEnabled(DBKey.AUTHOR_REAL_AUTHOR)
                            && rowData.contains(DBKey.AUTHOR_REAL_AUTHOR)) {
                     // Specifically check for AUTHOR_REAL_AUTHOR as it will usually be 0
                     // and no lookup will be needed.

@@ -414,8 +414,7 @@ public abstract class BaseField<T, V extends View>
 
     @Override
     public boolean isUsed() {
-        return ServiceLocator.getInstance().getGlobalFieldVisibility()
-                             .isVisible(usedKey).orElse(true);
+        return ServiceLocator.getInstance().isFieldEnabled(usedKey);
     }
 
     @Override

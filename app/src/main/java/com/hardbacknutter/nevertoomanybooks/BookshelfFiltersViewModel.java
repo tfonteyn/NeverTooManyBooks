@@ -34,7 +34,6 @@ import java.util.TreeMap;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.FilterFactory;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -97,12 +96,11 @@ public class BookshelfFiltersViewModel
         // key: the label, sorted locale-alphabetically; value: the DBKey
         final SortedMap<String, String> map = new TreeMap<>();
 
-        final FieldVisibility fieldVisibility = ServiceLocator.getInstance()
-                                                              .getGlobalFieldVisibility();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         FilterFactory.SUPPORTED
                 .entrySet()
                 .stream()
-                .filter(entry -> fieldVisibility.isVisible(entry.getKey()).orElse(true))
+                .filter(entry -> serviceLocator.isFieldEnabled(entry.getKey()))
                 .forEach(entry -> map.put(context.getString(entry.getValue()), entry.getKey()));
 
         return new Pair<>(map.keySet().toArray(Z_ARRAY_STRING),

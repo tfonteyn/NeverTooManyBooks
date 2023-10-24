@@ -223,8 +223,7 @@ public class EditBookViewModel
                                            SqlEncode.date(LocalDateTime.now()));
                         }
                         // if BOOK_CONDITION is wanted, assume the user got a new book.
-                        if (ServiceLocator.getInstance().getGlobalFieldVisibility()
-                                          .isVisible(DBKey.BOOK_CONDITION).orElse(true)
+                        if (ServiceLocator.getInstance().isFieldEnabled(DBKey.BOOK_CONDITION)
                             && !book.contains(DBKey.BOOK_CONDITION)) {
                             book.putInt(DBKey.BOOK_CONDITION, Book.CONDITION_AS_NEW);
                         }

@@ -350,6 +350,18 @@ public class ServiceLocator {
     }
 
     /**
+     * Convenience method to make it easier to identify where we use the global.
+     * (i.e. differentiate between 'isVisible' on a List/Detail screen versus the global.
+     *
+     * @param dbKey to check
+     *
+     * @return {@code true} if the field is globally enabled.
+     */
+    public boolean isFieldEnabled(@NonNull final String dbKey) {
+        return getGlobalFieldVisibility().isVisible(dbKey).orElse(true);
+    }
+
+    /**
      * Get the cover storage helper.
      *
      * @return singleton

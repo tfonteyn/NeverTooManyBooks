@@ -46,7 +46,6 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.StringList;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -724,9 +723,8 @@ public class Author
             case Full: {
                 label = getFormattedName(context, style);
 
-                final FieldVisibility fieldVisibility = ServiceLocator.getInstance()
-                                                                      .getGlobalFieldVisibility();
-                if (fieldVisibility.isVisible(DBKey.AUTHOR_REAL_AUTHOR).orElse(true)) {
+                final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+                if (serviceLocator.isFieldEnabled(DBKey.AUTHOR_REAL_AUTHOR)) {
                     final Author author = getRealAuthor();
                     if (author != null) {
                         label += smallerText(context.getString(
@@ -735,7 +733,7 @@ public class Author
                     }
                 }
 
-                if (fieldVisibility.isVisible(DBKey.AUTHOR_TYPE__BITMASK).orElse(true)) {
+                if (serviceLocator.isFieldEnabled(DBKey.AUTHOR_TYPE__BITMASK)) {
                     final String typeLabels = getTypeLabels(context);
                     if (!typeLabels.isEmpty()) {
                         label += smallerText(typeLabels);

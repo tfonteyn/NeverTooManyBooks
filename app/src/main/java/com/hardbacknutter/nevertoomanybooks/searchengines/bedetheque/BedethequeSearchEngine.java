@@ -103,8 +103,7 @@ public class BedethequeSearchEngine
 
     @Nullable
     private AuthorResolver getAuthorResolver(@NonNull final Context context) {
-        if (ServiceLocator.getInstance().getGlobalFieldVisibility()
-                          .isVisible(DBKey.AUTHOR_REAL_AUTHOR).orElse(true)
+        if (ServiceLocator.getInstance().isFieldEnabled(DBKey.AUTHOR_REAL_AUTHOR)
             && PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(PK_RESOLVE_AUTHORS_ON_BEDETHEQUE, true)) {
             return new BedethequeAuthorResolver(context, this);

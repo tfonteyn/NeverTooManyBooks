@@ -52,7 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
@@ -348,10 +347,9 @@ public class SearchCoordinator
             listElementPrefixString = context.getString(R.string.list_element);
 
             if (args != null) {
-                final FieldVisibility globalVisibility = serviceLocator.getGlobalFieldVisibility();
                 fetchCover = new boolean[]{
-                        globalVisibility.isVisible(DBKey.COVER[0]).orElse(true),
-                        globalVisibility.isVisible(DBKey.COVER[1]).orElse(true)
+                        serviceLocator.isFieldEnabled(DBKey.COVER[0]),
+                        serviceLocator.isFieldEnabled(DBKey.COVER[1])
                 };
 
                 isbnSearchText = args.getString(DBKey.BOOK_ISBN, "");
