@@ -478,21 +478,11 @@ public abstract class BaseStyle
     @Override
     public boolean isShowField(@NonNull final FieldVisibility.Screen screen,
                                @NonNull final String dbKey) {
-
-        if (screen == FieldVisibility.Screen.Global) {
-            return ServiceLocator.getInstance().getGlobalFieldVisibility()
-                                 .isVisible(dbKey)
-                                 .orElse(true);
-        } else {
-            // First check the style itself of course.
-            // But if we have a field which is simply not defined on the respective
-            // FieldVisibility, use the global and if that fails, just return 'true'
-            //noinspection DataFlowIssue
-            return fieldVisibility.get(screen).isVisible(dbKey).orElseGet(
-                    () -> ServiceLocator.getInstance().getGlobalFieldVisibility()
-                                        .isVisible(dbKey)
-                                        .orElse(true));
-        }
+        // First check the style itself,
+        // but if a field not defined on the respective FieldVisibility, use the global.
+        //noinspection DataFlowIssue
+        return fieldVisibility.get(screen).isVisible(dbKey).orElseGet(
+                () -> ServiceLocator.getInstance().isFieldEnabled(dbKey));
     }
 
     @NonNull
@@ -510,12 +500,8 @@ public abstract class BaseStyle
     @Override
     @NonNull
     public FieldVisibility getFieldVisibility(@NonNull final FieldVisibility.Screen screen) {
-        if (screen == FieldVisibility.Screen.Global) {
-            return new FieldVisibility(ServiceLocator.getInstance().getGlobalFieldVisibility());
-        } else {
-            //noinspection DataFlowIssue
-            return new FieldVisibility(fieldVisibility.get(screen));
-        }
+        //noinspection DataFlowIssue
+        return new FieldVisibility(fieldVisibility.get(screen));
     }
 
     public void setFieldVisibility(@NonNull final FieldVisibility.Screen screen,
