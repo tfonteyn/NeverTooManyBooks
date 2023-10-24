@@ -58,7 +58,7 @@ public class BookLevelFieldVisibility
     );
 
     /** The fields which will be visible by default. */
-    private static final Set<String> DEFAULT = Set.of(
+    public static final Set<String> DEFAULT = Set.of(
             DBKey.COVER[0],
             DBKey.FK_SERIES,
             DBKey.SIGNED__BOOL,
@@ -69,7 +69,7 @@ public class BookLevelFieldVisibility
      * Constructor.
      */
     BookLevelFieldVisibility() {
-        super(FIELDS, getDefault());
+        super(FIELDS, getBitValue(DEFAULT));
     }
 
     /**
@@ -79,9 +79,5 @@ public class BookLevelFieldVisibility
      */
     BookLevelFieldVisibility(final long bits) {
         super(FIELDS, bits);
-    }
-
-    public static long getDefault() {
-        return getBitValue(DEFAULT);
     }
 }

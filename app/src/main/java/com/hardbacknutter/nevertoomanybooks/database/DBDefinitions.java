@@ -30,6 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BookDetailsFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BookLevelFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleType;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
@@ -1250,13 +1251,15 @@ public final class DBDefinitions {
         DOM_STYLE_BOOK_DETAIL_FIELDS_VISIBILITY =
                 new Domain.Builder(DBKey.STYLE_DETAILS_SHOW_FIELDS, SqLiteDataType.Integer)
                         .notNull()
-                        .withDefault(BookDetailsFieldVisibility.getDefault())
+                        .withDefault(FieldVisibility.getBitValue(
+                                BookDetailsFieldVisibility.DEFAULT))
                         .build();
 
         DOM_STYLE_BOOK_LEVEL_FIELDS_VISIBILITY =
                 new Domain.Builder(DBKey.STYLE_BOOK_LEVEL_FIELDS_VISIBILITY, SqLiteDataType.Integer)
                         .notNull()
-                        .withDefault(BookLevelFieldVisibility.getDefault())
+                        .withDefault(FieldVisibility.getBitValue(
+                                BookLevelFieldVisibility.DEFAULT))
                         .build();
 
         DOM_STYLE_BOOK_LEVEL_FIELDS_ORDER_BY =

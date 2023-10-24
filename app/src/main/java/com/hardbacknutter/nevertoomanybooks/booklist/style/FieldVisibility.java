@@ -128,7 +128,7 @@ public class FieldVisibility {
      * Style conditional visibility: use the given subset of keys.
      *
      * @param dbKeys the (sub)set of keys supported for this instance
-     * @param bits   the bitmask with the defaults for this instance
+     * @param bits   the bitmask with the visible fields
      */
     FieldVisibility(@NonNull final Set<String> dbKeys,
                     final long bits) {
