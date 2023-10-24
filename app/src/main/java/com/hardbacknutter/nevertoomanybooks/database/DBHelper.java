@@ -119,6 +119,9 @@ public class DBHelper
     private static final SQLiteDatabase.CursorFactory CURSOR_FACTORY =
             (db, d, et, q) -> new SynchronizedCursor(d, et, q, SYNCHRONIZER);
 
+    /** Used in pre-db27 versions. */
+    private static final String LEGACY_FIELDS_VISIBILITY_KEYS = "fields.visibility.";
+
     /** Always use {@link #getCollation(SQLiteDatabase)} to access. */
     @Nullable
     private static Boolean sIsCollationCaseSensitive;
@@ -214,7 +217,6 @@ public class DBHelper
      * @param context Current context
      */
     public static void migratePreferenceKeys(@NonNull final Context context) {
-
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         // Check for pre-db25 multiple-keys
@@ -222,7 +224,8 @@ public class DBHelper
         final List<String> oldVisKeys = prefs.getAll()
                                              .keySet()
                                              .stream()
-                                             .filter(key -> key.startsWith("fields.visibility."))
+                                             .filter(key -> key.startsWith(
+                                                     LEGACY_FIELDS_VISIBILITY_KEYS))
                                              .collect(Collectors.toList());
         if (!oldVisKeys.isEmpty()) {
             final FieldVisibility fieldVisibility = new FieldVisibility();
@@ -245,7 +248,7 @@ public class DBHelper
              .keySet()
              .stream()
              .filter(key -> key.startsWith("style.booklist.")
-                            || key.startsWith("fields.visibility."))
+                            || key.startsWith(LEGACY_FIELDS_VISIBILITY_KEYS))
              .forEach(editor::remove);
 
         editor.remove("tips.tip.BOOKLIST_STYLES_EDITOR")
@@ -495,13 +498,13 @@ public class DBHelper
             final SharedPreferences global = PreferenceManager
                     .getDefaultSharedPreferences(context);
             // change the name of these for easier migration
-            final boolean visSeries = global.getBoolean("fields.visibility."
+            final boolean visSeries = global.getBoolean(LEGACY_FIELDS_VISIBILITY_KEYS
                                                         + DBKey.SERIES_TITLE, true);
-            final boolean visPublisher = global.getBoolean("fields.visibility."
+            final boolean visPublisher = global.getBoolean(LEGACY_FIELDS_VISIBILITY_KEYS
                                                            + DBKey.PUBLISHER_NAME, true);
             global.edit()
-                  .putBoolean("fields.visibility." + DBKey.FK_SERIES, visSeries)
-                  .putBoolean("fields.visibility." + DBKey.FK_PUBLISHER, visPublisher)
+                  .putBoolean(LEGACY_FIELDS_VISIBILITY_KEYS + DBKey.FK_SERIES, visSeries)
+                  .putBoolean(LEGACY_FIELDS_VISIBILITY_KEYS + DBKey.FK_PUBLISHER, visPublisher)
                   .apply();
 
 
