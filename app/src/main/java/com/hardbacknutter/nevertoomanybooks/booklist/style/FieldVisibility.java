@@ -33,6 +33,21 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
+/**
+ * Notes to self...
+ * <p>
+ * 1. the GLOBAL visibility, i.e. whether the user wants to USE (see) a field
+ * ANYWHERE AT ALL and is stored as a bitmask value in a preference key.
+ * See {@link com.hardbacknutter.nevertoomanybooks.settings.FieldVisibilityPreferenceFragment}
+ * and {@link com.hardbacknutter.nevertoomanybooks.ServiceLocator#isFieldEnabled(String)}.
+ * <p>
+ * 2. The visibility of fields on the {@link Screen#List} and {@link Screen#Detail}
+ * is stored as a bitmask on the individual styles, in the database Styles table.
+ * The defaults from the {@link GlobalStyle} are always used for the {@link BuiltinStyle}s
+ * and used as the defaults at <strong>creation time</strong> of the {@link UserStyle}s.
+ * See {@link com.hardbacknutter.nevertoomanybooks.settings.styles.StyleDefaultsFragment}
+ * and {@link Style#getFieldVisibility(Screen)} + {@link #isVisible(String)}.
+ */
 public class FieldVisibility {
 
     /**
