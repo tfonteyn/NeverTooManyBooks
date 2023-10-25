@@ -119,9 +119,6 @@ public class DBHelper
     private static final SQLiteDatabase.CursorFactory CURSOR_FACTORY =
             (db, d, et, q) -> new SynchronizedCursor(d, et, q, SYNCHRONIZER);
 
-    /** Used in pre-db27 versions. */
-    private static final String LEGACY_FIELDS_VISIBILITY_KEYS = "fields.visibility.";
-
     /** Always use {@link #getCollation(SQLiteDatabase)} to access. */
     @Nullable
     private static Boolean sIsCollationCaseSensitive;
@@ -225,7 +222,7 @@ public class DBHelper
                                              .keySet()
                                              .stream()
                                              .filter(key -> key.startsWith(
-                                                     LEGACY_FIELDS_VISIBILITY_KEYS))
+                                                     LegacyUpgrades.FIELDS_VISIBILITY_KEYS))
                                              .collect(Collectors.toList());
         if (!oldVisKeys.isEmpty()) {
             final FieldVisibility fieldVisibility = new FieldVisibility();
@@ -248,7 +245,7 @@ public class DBHelper
              .keySet()
              .stream()
              .filter(key -> key.startsWith("style.booklist.")
-                            || key.startsWith(LEGACY_FIELDS_VISIBILITY_KEYS))
+                            || key.startsWith(LegacyUpgrades.FIELDS_VISIBILITY_KEYS))
              .forEach(editor::remove);
 
         editor.remove("tips.tip.BOOKLIST_STYLES_EDITOR")
@@ -284,8 +281,8 @@ public class DBHelper
               .remove("search.form.advanced")
               .remove("search.site.goodreads.data.enabled")
               .remove("search.site.goodreads.covers.enabled")
-              .remove("show.author.name.given_first")
-              .remove("sort.author.name.given_first")
+              .remove(LegacyUpgrades.SHOW_AUTHOR_NAME_GIVEN_FIRST)
+              .remove(LegacyUpgrades.SORT_AUTHOR_NAME_GIVEN_FIRST)
               .remove("startup.lastVersion")
               .remove("tmp.edit.book.tab.authSer")
               .remove("ui.messages.use")
@@ -498,15 +495,19 @@ public class DBHelper
             final SharedPreferences global = PreferenceManager
                     .getDefaultSharedPreferences(context);
             // change the name of these for easier migration
-            final boolean visSeries = global.getBoolean(LEGACY_FIELDS_VISIBILITY_KEYS
-                                                        + DBKey.SERIES_TITLE, true);
-            final boolean visPublisher = global.getBoolean(LEGACY_FIELDS_VISIBILITY_KEYS
-                                                           + DBKey.PUBLISHER_NAME, true);
-            global.edit()
-                  .putBoolean(LEGACY_FIELDS_VISIBILITY_KEYS + DBKey.FK_SERIES, visSeries)
-                  .putBoolean(LEGACY_FIELDS_VISIBILITY_KEYS + DBKey.FK_PUBLISHER, visPublisher)
-                  .apply();
+            final boolean visSeries = global.getBoolean(
+                    LegacyUpgrades.FIELDS_VISIBILITY_KEYS
+                    + DBKey.SERIES_TITLE, true);
+            final boolean visPublisher = global.getBoolean(
+                    LegacyUpgrades.FIELDS_VISIBILITY_KEYS
+                    + DBKey.PUBLISHER_NAME, true);
 
+            global.edit()
+                  .putBoolean(LegacyUpgrades.FIELDS_VISIBILITY_KEYS
+                              + DBKey.FK_SERIES, visSeries)
+                  .putBoolean(LegacyUpgrades.FIELDS_VISIBILITY_KEYS
+                              + DBKey.FK_PUBLISHER, visPublisher)
+                  .apply();
 
             TBL_BOOKLIST_STYLES.alterTableAddColumns(
                     db,
@@ -595,10 +596,10 @@ public class DBHelper
                             "style.booklist.group.height", true) ? 1 : 0);
 
                     stmt.bindLong(++c, stylePrefs.getBoolean(
-                            "sort.author.name.given_first", false) ? 1 : 0);
+                            LegacyUpgrades.SORT_AUTHOR_NAME_GIVEN_FIRST, false) ? 1 : 0);
 
                     stmt.bindLong(++c, stylePrefs.getBoolean(
-                            "show.author.name.given_first", false) ? 1 : 0);
+                            LegacyUpgrades.SHOW_AUTHOR_NAME_GIVEN_FIRST, false) ? 1 : 0);
 
 
                     stmt.bindLong(++c, stylePrefs.getInt(
@@ -713,10 +714,10 @@ public class DBHelper
         if (oldVersion < 23) {
             // Up to version 22 we had a bug in how we'd store TOC entries which could create
             // duplicate authors. Fixed in 23 but we need to do a clean up during upgrade.
-            removeDuplicateAuthorsV23(db);
+            LegacyUpgrades.removeDuplicateAuthorsV23(db);
             // as a result of the author cleanup, we now might have duplicate toc entries,
             // same algorithm to clean those up
-            removeDuplicateTocEntriesV23(db);
+            LegacyUpgrades.removeDuplicateTocEntriesV23(db);
 
             // Add pen-name support
             TBL_PSEUDONYM_AUTHOR.create(db, true);
@@ -742,9 +743,9 @@ public class DBHelper
 
             final GlobalStyle style = new GlobalStyle();
             style.setSortAuthorByGivenName(
-                    prefs.getBoolean("sort.author.name.given_first", false));
+                    prefs.getBoolean(LegacyUpgrades.SORT_AUTHOR_NAME_GIVEN_FIRST, false));
             style.setShowAuthorByGivenName(
-                    prefs.getBoolean("show.author.name.given_first", false));
+                    prefs.getBoolean(LegacyUpgrades.SHOW_AUTHOR_NAME_GIVEN_FIRST, false));
 
             StyleDaoImpl.insertGlobalDefaults(db, style);
         }
@@ -777,156 +778,164 @@ public class DBHelper
         db.setForeignKeyConstraintsEnabled(true);
     }
 
-    private void removeDuplicateAuthorsV23(@NonNull final SQLiteDatabase db) {
+    private static class LegacyUpgrades {
 
-        // find the names for duplicate author; i.e. identical family and given names.
-        final List<Pair<String, String>> authors = new ArrayList<>();
-        try (Cursor cursor = db.rawQuery(
-                "SELECT " + DBKey.AUTHOR_FAMILY_NAME + ',' + DBKey.AUTHOR_GIVEN_NAMES
-                + " FROM " + TBL_AUTHORS.getName()
-                + " GROUP BY " + DBKey.AUTHOR_FAMILY_NAME + ',' + DBKey.AUTHOR_GIVEN_NAMES
-                + " HAVING COUNT(" + DBKey.PK_ID + ")>1", null)) {
-            while (cursor.moveToNext()) {
-                authors.add(new Pair<>(cursor.getString(0), cursor.getString(1)));
-            }
-        }
-        if (authors.isEmpty()) {
-            return;
-        }
+        private static final String FIELDS_VISIBILITY_KEYS = "fields.visibility.";
+        private static final String SHOW_AUTHOR_NAME_GIVEN_FIRST = "show.author.name.given_first";
+        private static final String SORT_AUTHOR_NAME_GIVEN_FIRST = "sort.author.name.given_first";
 
-        // use the family and given names to find the id's for each duplication
-        final List<List<Long>> authorDuplicates = new ArrayList<>();
-        for (final Pair<String, String> a : authors) {
+        private static void removeDuplicateAuthorsV23(@NonNull final SQLiteDatabase db) {
+
+            // find the names for duplicate author; i.e. identical family and given names.
+            final List<Pair<String, String>> authors = new ArrayList<>();
             try (Cursor cursor = db.rawQuery(
-                    "SELECT " + DBKey.PK_ID + " FROM " + TBL_AUTHORS.getName()
-                    + " WHERE " + DBKey.AUTHOR_FAMILY_NAME + "=?"
-                    + " AND " + DBKey.AUTHOR_GIVEN_NAMES + "=?",
-                    new String[]{a.first, a.second})) {
-                final List<Long> ids = new ArrayList<>();
+                    "SELECT " + DBKey.AUTHOR_FAMILY_NAME + ',' + DBKey.AUTHOR_GIVEN_NAMES
+                    + " FROM " + TBL_AUTHORS.getName()
+                    + " GROUP BY " + DBKey.AUTHOR_FAMILY_NAME + ',' + DBKey.AUTHOR_GIVEN_NAMES
+                    + " HAVING COUNT(" + DBKey.PK_ID + ")>1", null)) {
                 while (cursor.moveToNext()) {
-                    ids.add(cursor.getLong(0));
-                }
-                if (ids.size() > 1) {
-                    authorDuplicates.add(ids);
+                    authors.add(new Pair<>(cursor.getString(0), cursor.getString(1)));
                 }
             }
-        }
-        if (authorDuplicates.isEmpty()) {
-            return;
-        }
-
-        final Logger logger = LoggerFactory.getLogger();
-
-        // for each duplicate author, weed out the duplicates and delete them
-        for (final List<Long> idList : authorDuplicates) {
-            final long keep = idList.get(0);
-            final List<Long> others = idList.subList(1, idList.size());
-
-            final String ids = others.stream()
-                                     .map(String::valueOf)
-                                     .collect(Collectors.joining(","));
-
-            String sql;
-
-            sql = "UPDATE " + TBL_BOOK_AUTHOR.getName() + " SET " + DBKey.FK_AUTHOR + "=" + keep
-                  + " WHERE " + DBKey.FK_AUTHOR + " IN (" + ids + ')';
-            //noinspection CheckStyle,OverlyBroadCatchBlock
-            try (SQLiteStatement stmt = db.compileStatement(sql)) {
-                stmt.executeUpdateDelete();
-            } catch (@NonNull final Exception e) {
-                logger.e(TAG, e, "Update TBL_BOOK_AUTHOR: keep=" + keep + ", ids=" + ids);
-                throw e;
+            if (authors.isEmpty()) {
+                return;
             }
 
-            sql = "UPDATE " + TBL_TOC_ENTRIES.getName() + " SET " + DBKey.FK_AUTHOR + "=" + keep
-                  + " WHERE " + DBKey.FK_AUTHOR + " IN (" + ids + ')';
-            //noinspection CheckStyle,OverlyBroadCatchBlock
-            try (SQLiteStatement stmt = db.compileStatement(sql)) {
-                stmt.executeUpdateDelete();
-            } catch (@NonNull final Exception e) {
-                logger.e(TAG, e, "Update TBL_TOC_ENTRIES: keep=" + keep + ", ids=" + ids);
-                throw e;
+            // use the family and given names to find the id's for each duplication
+            final List<List<Long>> authorDuplicates = new ArrayList<>();
+            for (final Pair<String, String> a : authors) {
+                try (Cursor cursor = db.rawQuery(
+                        "SELECT " + DBKey.PK_ID + " FROM " + TBL_AUTHORS.getName()
+                        + " WHERE " + DBKey.AUTHOR_FAMILY_NAME + "=?"
+                        + " AND " + DBKey.AUTHOR_GIVEN_NAMES + "=?",
+                        new String[]{a.first, a.second})) {
+                    final List<Long> ids = new ArrayList<>();
+                    while (cursor.moveToNext()) {
+                        ids.add(cursor.getLong(0));
+                    }
+                    if (ids.size() > 1) {
+                        authorDuplicates.add(ids);
+                    }
+                }
+            }
+            if (authorDuplicates.isEmpty()) {
+                return;
             }
 
-            sql = "DELETE FROM " + TBL_AUTHORS.getName()
-                  + " WHERE " + DBKey.PK_ID + " IN (" + ids + ')';
-            //noinspection CheckStyle,OverlyBroadCatchBlock
-            try (SQLiteStatement stmt = db.compileStatement(sql)) {
-                stmt.executeUpdateDelete();
-            } catch (@NonNull final Exception e) {
-                logger.e(TAG, e, "Delete TBL_AUTHORS: ids=" + ids);
-                throw e;
+            final Logger logger = LoggerFactory.getLogger();
+
+            // for each duplicate author, weed out the duplicates and delete them
+            for (final List<Long> idList : authorDuplicates) {
+                final long keep = idList.get(0);
+                final List<Long> others = idList.subList(1, idList.size());
+
+                final String ids = others.stream()
+                                         .map(String::valueOf)
+                                         .collect(Collectors.joining(","));
+
+                String sql;
+
+                sql = "UPDATE " + TBL_BOOK_AUTHOR.getName() + " SET " + DBKey.FK_AUTHOR + "=" + keep
+                      + " WHERE " + DBKey.FK_AUTHOR + " IN (" + ids + ')';
+                //noinspection CheckStyle,OverlyBroadCatchBlock
+                try (SQLiteStatement stmt = db.compileStatement(sql)) {
+                    stmt.executeUpdateDelete();
+                } catch (@NonNull final Exception e) {
+                    logger.e(TAG, e, "Update TBL_BOOK_AUTHOR: keep=" + keep + ", ids=" + ids);
+                    throw e;
+                }
+
+                sql = "UPDATE " + TBL_TOC_ENTRIES.getName() + " SET " + DBKey.FK_AUTHOR + "=" + keep
+                      + " WHERE " + DBKey.FK_AUTHOR + " IN (" + ids + ')';
+                //noinspection CheckStyle,OverlyBroadCatchBlock
+                try (SQLiteStatement stmt = db.compileStatement(sql)) {
+                    stmt.executeUpdateDelete();
+                } catch (@NonNull final Exception e) {
+                    logger.e(TAG, e, "Update TBL_TOC_ENTRIES: keep=" + keep + ", ids=" + ids);
+                    throw e;
+                }
+
+                sql = "DELETE FROM " + TBL_AUTHORS.getName()
+                      + " WHERE " + DBKey.PK_ID + " IN (" + ids + ')';
+                //noinspection CheckStyle,OverlyBroadCatchBlock
+                try (SQLiteStatement stmt = db.compileStatement(sql)) {
+                    stmt.executeUpdateDelete();
+                } catch (@NonNull final Exception e) {
+                    logger.e(TAG, e, "Delete TBL_AUTHORS: ids=" + ids);
+                    throw e;
+                }
             }
         }
-    }
 
-    private void removeDuplicateTocEntriesV23(@NonNull final SQLiteDatabase db) {
-        // find the duplicate tocs; i.e. identical author and title.
-        final List<Pair<Long, String>> entries = new ArrayList<>();
-        try (Cursor cursor = db.rawQuery(
-                "SELECT " + DBKey.FK_AUTHOR + ',' + DBKey.TITLE
-                + " FROM " + TBL_TOC_ENTRIES
-                + " GROUP BY " + DBKey.FK_AUTHOR + ',' + DBKey.TITLE
-                + " HAVING COUNT(" + DBKey.PK_ID + ")>1", null)) {
-            while (cursor.moveToNext()) {
-                entries.add(new Pair<>(cursor.getLong(0), cursor.getString(1)));
-            }
-        }
-        if (entries.isEmpty()) {
-            return;
-        }
-
-        // use the author and title to find the id's for each duplication
-        final List<List<Long>> entryDuplicates = new ArrayList<>();
-        for (final Pair<Long, String> toc : entries) {
+        private static void removeDuplicateTocEntriesV23(@NonNull final SQLiteDatabase db) {
+            // find the duplicate tocs; i.e. identical author and title.
+            final List<Pair<Long, String>> entries = new ArrayList<>();
             try (Cursor cursor = db.rawQuery(
-                    "SELECT " + DBKey.PK_ID + " FROM " + TBL_TOC_ENTRIES
-                    + " WHERE " + DBKey.FK_AUTHOR + "=?"
-                    + " AND " + DBKey.TITLE + "=?",
-                    new String[]{String.valueOf(toc.first), toc.second})) {
-                final List<Long> ids = new ArrayList<>();
+                    "SELECT " + DBKey.FK_AUTHOR + ',' + DBKey.TITLE
+                    + " FROM " + TBL_TOC_ENTRIES
+                    + " GROUP BY " + DBKey.FK_AUTHOR + ',' + DBKey.TITLE
+                    + " HAVING COUNT(" + DBKey.PK_ID + ")>1", null)) {
                 while (cursor.moveToNext()) {
-                    ids.add(cursor.getLong(0));
-                }
-                if (ids.size() > 1) {
-                    entryDuplicates.add(ids);
+                    entries.add(new Pair<>(cursor.getLong(0), cursor.getString(1)));
                 }
             }
-        }
-        if (entryDuplicates.isEmpty()) {
-            return;
-        }
-
-        final Logger logger = LoggerFactory.getLogger();
-
-        // for each duplicate toc entry, weed out the duplicates and delete them
-        for (final List<Long> idList : entryDuplicates) {
-            final long keep = idList.get(0);
-            final List<Long> others = idList.subList(1, idList.size());
-
-            final String ids = others.stream()
-                                     .map(String::valueOf)
-                                     .collect(Collectors.joining(","));
-
-            String sql;
-
-            sql = "UPDATE " + TBL_BOOK_TOC_ENTRIES + " SET " + DBKey.FK_TOC_ENTRY + "=" + keep
-                  + " WHERE " + DBKey.FK_TOC_ENTRY + " IN (" + ids + ')';
-            //noinspection CheckStyle,OverlyBroadCatchBlock
-            try (SQLiteStatement stmt = db.compileStatement(sql)) {
-                stmt.executeUpdateDelete();
-            } catch (@NonNull final Exception e) {
-                logger.e(TAG, e, "Update TBL_BOOK_TOC_ENTRIES: keep=" + keep + ", ids=" + ids);
-                throw e;
+            if (entries.isEmpty()) {
+                return;
             }
 
-            sql = "DELETE FROM " + TBL_TOC_ENTRIES + " WHERE " + DBKey.PK_ID + " IN (" + ids + ')';
-            //noinspection CheckStyle,OverlyBroadCatchBlock
-            try (SQLiteStatement stmt = db.compileStatement(sql)) {
-                stmt.executeUpdateDelete();
-            } catch (@NonNull final Exception e) {
-                logger.e(TAG, e, "Delete TBL_TOC_ENTRIES: keep=" + keep + ", ids=" + ids);
-                throw e;
+            // use the author and title to find the id's for each duplication
+            final List<List<Long>> entryDuplicates = new ArrayList<>();
+            for (final Pair<Long, String> toc : entries) {
+                try (Cursor cursor = db.rawQuery(
+                        "SELECT " + DBKey.PK_ID + " FROM " + TBL_TOC_ENTRIES
+                        + " WHERE " + DBKey.FK_AUTHOR + "=?"
+                        + " AND " + DBKey.TITLE + "=?",
+                        new String[]{String.valueOf(toc.first), toc.second})) {
+                    final List<Long> ids = new ArrayList<>();
+                    while (cursor.moveToNext()) {
+                        ids.add(cursor.getLong(0));
+                    }
+                    if (ids.size() > 1) {
+                        entryDuplicates.add(ids);
+                    }
+                }
+            }
+            if (entryDuplicates.isEmpty()) {
+                return;
+            }
+
+            final Logger logger = LoggerFactory.getLogger();
+
+            // for each duplicate toc entry, weed out the duplicates and delete them
+            for (final List<Long> idList : entryDuplicates) {
+                final long keep = idList.get(0);
+                final List<Long> others = idList.subList(1, idList.size());
+
+                final String ids = others.stream()
+                                         .map(String::valueOf)
+                                         .collect(Collectors.joining(","));
+
+                String sql;
+
+                sql = "UPDATE " + TBL_BOOK_TOC_ENTRIES + " SET " + DBKey.FK_TOC_ENTRY + "=" + keep
+                      + " WHERE " + DBKey.FK_TOC_ENTRY + " IN (" + ids + ')';
+                //noinspection CheckStyle,OverlyBroadCatchBlock
+                try (SQLiteStatement stmt = db.compileStatement(sql)) {
+                    stmt.executeUpdateDelete();
+                } catch (@NonNull final Exception e) {
+                    logger.e(TAG, e, "Update TBL_BOOK_TOC_ENTRIES: keep=" + keep + ", ids=" + ids);
+                    throw e;
+                }
+
+                sql = "DELETE FROM " + TBL_TOC_ENTRIES
+                      + " WHERE " + DBKey.PK_ID + " IN (" + ids + ')';
+                //noinspection CheckStyle,OverlyBroadCatchBlock
+                try (SQLiteStatement stmt = db.compileStatement(sql)) {
+                    stmt.executeUpdateDelete();
+                } catch (@NonNull final Exception e) {
+                    logger.e(TAG, e, "Delete TBL_TOC_ENTRIES: keep=" + keep + ", ids=" + ids);
+                    throw e;
+                }
             }
         }
     }
