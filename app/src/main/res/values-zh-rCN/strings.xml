@@ -284,6 +284,7 @@
     <string name="password">密码</string>
     <string name="none">无</string>
     <string name="action_more_ellipsis">更多…</string>
+    <string name="option_bug_report">错误报告</string>
     <string name="pc_bob_list">列表</string>
     <string name="pc_bob_layout">列表布局</string>
     <string name="pt_layout">布局</string>
