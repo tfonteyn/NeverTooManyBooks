@@ -71,7 +71,7 @@ public class SynchronizedStatement
     public long simpleQueryForLongOrZero() {
         final Synchronizer.SyncLock sharedLock = synchronizer.getSharedLock();
         try {
-            return super.simpleQueryForLong();
+            return super.simpleQueryForLongOrZero();
         } finally {
             sharedLock.unlock();
         }
@@ -92,7 +92,7 @@ public class SynchronizedStatement
     public String simpleQueryForStringOrNull() {
         final Synchronizer.SyncLock sharedLock = synchronizer.getSharedLock();
         try {
-            return super.simpleQueryForString();
+            return super.simpleQueryForStringOrNull();
         } finally {
             sharedLock.unlock();
         }
