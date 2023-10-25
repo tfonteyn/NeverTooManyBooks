@@ -314,10 +314,8 @@ public final class BuiltinStyle
             // The predefined "Compact" style: smaller text, no images.
             style.setTextScale(Style.TEXT_SCALE_1_SMALL);
 
-            final FieldVisibility fieldVisibility = style.getFieldVisibility(
-                    FieldVisibility.Screen.List);
-            fieldVisibility.setVisible(DBKey.COVER[0], false);
-            fieldVisibility.setVisible(DBKey.COVER[1], false);
+            style.setFieldVisibility(FieldVisibility.Screen.List, DBKey.COVER[0], false);
+            style.setFieldVisibility(FieldVisibility.Screen.List, DBKey.COVER[1], false);
         }
         return Optional.of(style);
     }

@@ -31,6 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
 public interface WritableStyle
@@ -69,7 +70,7 @@ public interface WritableStyle
      *
      * @param bitmask to set
      */
-    void setHeaderFieldVisibilityValue(@BooklistHeader.Option int bitmask);
+    void setHeaderFieldVisibility(@BooklistHeader.Option int bitmask);
 
     /**
      * Set the list of fields on which we'll sort the lowest level (books) in the BoB.
@@ -78,8 +79,25 @@ public interface WritableStyle
      */
     void setBookLevelFieldsOrderBy(@NonNull Map<String, Sort> map);
 
+    /**
+     * Set the visibility bitmask the given {@link FieldVisibility.Screen}.
+     *
+     * @param screen  containing the key
+     * @param bitmask to set
+     */
     void setFieldVisibility(@NonNull FieldVisibility.Screen screen,
-                            long value);
+                            long bitmask);
+
+    /**
+     * Set the visibility for the given {@link DBKey}.
+     *
+     * @param screen containing the key
+     * @param dbKey  to set
+     * @param show   flag
+     */
+    void setFieldVisibility(@NonNull FieldVisibility.Screen screen,
+                            @NonNull String dbKey,
+                            boolean show);
 
     /**
      * Set the height to use for grouping rows.

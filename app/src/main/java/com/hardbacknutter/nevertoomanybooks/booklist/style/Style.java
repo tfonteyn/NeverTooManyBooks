@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
@@ -313,19 +314,35 @@ public interface Style {
                         @NonNull String dbKey);
 
     /**
-     * Get the {@link FieldVisibility} for the given screen.
+     * Get the visibility keys for the given screen.
+     *
+     * @param screen to get the setting for
+     * @param all    set to {@code true} to get all keys regardless of visibility;
+     *               Use {@code false} to get only the currently visible fields (keys).
+     *
+     * @return a new unmodifiable Set
+     *
+     * @see FieldVisibility#getKeys(boolean)
+     */
+    @NonNull
+    Set<String> getFieldVisibilityKeys(@NonNull FieldVisibility.Screen screen,
+                                       boolean all);
+
+    /**
+     * Get the visibility bitmask value for the given screen.
      *
      * @param screen to get the setting for
      *
-     * @return a <strong>new</strong> visibility object
+     * @return bitmask
+     *
+     * @see FieldVisibility#getBitValue()
      */
-    @NonNull
-    FieldVisibility getFieldVisibility(@NonNull FieldVisibility.Screen screen);
+    long getFieldVisibilityValue(@NonNull FieldVisibility.Screen screen);
 
     /**
      * Get the fields and how to sort on them for the lowest level (books) in the BoB.
      *
-     * @return a <strong>new</strong> map
+     * @return an <strong>unmodifiable</strong> map
      */
     @NonNull
     Map<String, Sort> getBookLevelFieldsOrderBy();
@@ -396,7 +413,7 @@ public interface Style {
     /**
      * Get all groups assigned to this style.
      *
-     * @return a <strong>new</strong> List
+     * @return an <strong>unmodifiable</strong> List
      */
     @NonNull
     List<BooklistGroup> getGroupList();

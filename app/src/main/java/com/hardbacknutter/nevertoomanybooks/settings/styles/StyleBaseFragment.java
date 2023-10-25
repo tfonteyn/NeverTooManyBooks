@@ -34,8 +34,11 @@ import androidx.preference.PreferenceScreen;
 import androidx.preference.SeekBarPreference;
 import androidx.preference.SwitchPreference;
 
+import java.util.stream.Collectors;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.MapDBKey;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.WritableStyle;
@@ -186,12 +189,28 @@ public abstract class StyleBaseFragment
 
 
         // List layout
-        pListBookLevelFields.setSummary(style.getFieldVisibility(FieldVisibility.Screen.List)
-                                             .getPreferencesSummaryText(context));
+        pListBookLevelFields.setSummary(
+                createVisibilitySummary(context, style, FieldVisibility.Screen.List));
         pCoverScale.setSummary(context.getResources().getStringArray(
                 R.array.pe_bob_thumbnail_scale)[style.getCoverScale()]);
         pTextScale.setSummary(context.getResources().getStringArray(
                 R.array.pe_bob_text_scale)[style.getTextScale()]);
+    }
+
+    @NonNull
+    private String createVisibilitySummary(@NonNull final Context context,
+                                           @NonNull final Style style,
+                                           @NonNull final FieldVisibility.Screen screen) {
+        final String labels = style.getFieldVisibilityKeys(screen, false)
+                                   .stream()
+                                   .map(key -> MapDBKey.getLabel(context, key)).sorted()
+                                   .collect(Collectors.joining(", "));
+
+        if (labels.isEmpty()) {
+            return context.getString(R.string.none);
+        } else {
+            return labels;
+        }
     }
 
     /**

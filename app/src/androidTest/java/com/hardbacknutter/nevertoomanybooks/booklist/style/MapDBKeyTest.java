@@ -83,8 +83,7 @@ public class MapDBKeyTest
         final Optional<Style> s1 = helper.getStyle(BuiltinStyle.UUID_FOR_TESTING_ONLY);
         assertTrue(s1.isPresent());
 
-        final Set<String> keys = s1.get().getFieldVisibility(FieldVisibility.Screen.List)
-                                   .getKeys(true);
+        final Set<String> keys = s1.get().getFieldVisibilityKeys(FieldVisibility.Screen.List, true);
         assertFalse(keys.isEmpty());
 
         final long domainCount = keys

@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -30,28 +28,39 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
 /**
  * Notes to self...
  * <p>
- * 1. the GLOBAL visibility, i.e. whether the user wants to USE (see) a field
- * ANYWHERE AT ALL and is stored as a bitmask value in a preference key.
- * See {@link com.hardbacknutter.nevertoomanybooks.settings.FieldVisibilityPreferenceFragment}
- * and {@link com.hardbacknutter.nevertoomanybooks.ServiceLocator#isFieldEnabled(String)}.
+ * <strong>The GLOBAL visibility</strong>
+ * <br/>
+ * This is where the user can disable fields which they don't care about and don't
+ * want to edit/view ANYWHERE AT ALL.
+ * <br/>The setting is stored as a bitmask value in a preference key.
+ * <br/>See {@link com.hardbacknutter.nevertoomanybooks.settings.FieldVisibilityPreferenceFragment}
+ * <br/>and {@link com.hardbacknutter.nevertoomanybooks.ServiceLocator#isFieldEnabled(String)}.
  * <p>
- * 2. The visibility of fields on the {@link Screen#List} and {@link Screen#Detail}
- * is stored as a bitmask on the individual styles, in the database Styles table.
- * The defaults from the {@link GlobalStyle} are always used for the {@link BuiltinStyle}s
- * and used as the defaults at <strong>creation time</strong> of the {@link UserStyle}s.
- * See {@link com.hardbacknutter.nevertoomanybooks.settings.styles.StyleDefaultsFragment}
- * and {@link Style#getFieldVisibility(Screen)} + {@link #isVisible(String)}.
+ * <strong>The STYLE visibility</strong>
+ * <br/>
+ * There are two sets of field-visibilities:
+ * <br/>{@link Screen#List} decides if certain fields are displayed on the book-level in the list.
+ * <br/>{@link Screen#Detail} does the same for the (read-only) book-details screen.
+ * <br/>For fields which are not configurable on these levels,
+ * <strong>The GLOBAL visibility</strong> is used.
+ * <br/>These settings are stored as bitmasks on the individual styles in the database Styles table.
+ * <br/>See {@link com.hardbacknutter.nevertoomanybooks.settings.styles.StyleDefaultsFragment}
+ * <br/>and {@link Style#isShowField(Screen, String)}.
+ * <p>
+ * <strong>The {@link GlobalStyle}</strong>
+ * Provides the defaults for all styles.
+ * <br/>Always used for the {@link BuiltinStyle}s.
+ * <br/>Used as the defaults at <strong>creation time</strong> for the {@link UserStyle}s.
  */
 public class FieldVisibility {
 
     /**
-     * All keys which support visibility configuration.
+     * <strong>ALL</strong> keys which support visibility configuration.
      * The position in the list represents their bit-number in the {@link #bits} value.
      * <p>
      * <strong>NEVER CHANGE THE ORDER. NEW ENTRIES MUST BE ADDED AT THE END.</strong>
@@ -194,7 +203,7 @@ public class FieldVisibility {
 
 
     /**
-     * Get a {code Set} of {@link DBKey}s representing visible fields.
+     * Get a {@code Set} of the {@link DBKey}s supported by this instance.
      *
      * @param all set to {@code true} to get all keys regardless of visibility;
      *            Use {@code false} to get only the currently visible fields (keys).
@@ -253,29 +262,6 @@ public class FieldVisibility {
                     bits &= ~bit;
                 }
             }
-        }
-    }
-
-    /**
-     * Convenience method for use in the Preferences screen.
-     * Get the summary text for the book fields to show in lists.
-     *
-     * @param context Current context
-     *
-     * @return summary text
-     */
-    @NonNull
-    public String getPreferencesSummaryText(@NonNull final Context context) {
-        final String labels = DB_KEYS
-                .stream()
-                .filter(key -> dbKeys.contains(key) && isVisible(key).orElse(true))
-                .map(key -> MapDBKey.getLabel(context, key)).sorted()
-                .collect(Collectors.joining(", "));
-
-        if (labels.isEmpty()) {
-            return context.getString(R.string.none);
-        } else {
-            return labels;
         }
     }
 

@@ -219,14 +219,12 @@ public class StyleDaoImpl
         stmt.bindBoolean(++c, style.isGroupRowUsesPreferredHeight());
 
         stmt.bindLong(++c, style.getHeaderFieldVisibilityValue());
-        stmt.bindLong(++c, style.getFieldVisibility(FieldVisibility.Screen.List)
-                                .getBitValue());
+        stmt.bindLong(++c, style.getFieldVisibilityValue(FieldVisibility.Screen.List));
         stmt.bindString(++c, StyleCoder.getBookLevelFieldsOrderByAsJsonString(style));
         stmt.bindBoolean(++c, style.isSortAuthorByGivenName());
         stmt.bindBoolean(++c, style.isShowAuthorByGivenName());
 
-        stmt.bindLong(++c, style.getFieldVisibility(FieldVisibility.Screen.Detail)
-                                .getBitValue());
+        stmt.bindLong(++c, style.getFieldVisibilityValue(FieldVisibility.Screen.Detail));
 
         stmt.bindLong(++c, style.getExpansionLevel());
         stmt.bindString(++c, getGroupIdsAsCsv(style));
@@ -335,7 +333,7 @@ public class StyleDaoImpl
 
             cv.put(DBKey.STYLE_LIST_HEADER, style.getHeaderFieldVisibilityValue());
             cv.put(DBKey.STYLE_BOOK_LEVEL_FIELDS_VISIBILITY,
-                   style.getFieldVisibility(FieldVisibility.Screen.List).getBitValue());
+                   style.getFieldVisibilityValue(FieldVisibility.Screen.List));
             cv.put(DBKey.STYLE_BOOK_LEVEL_FIELDS_ORDER_BY,
                    StyleCoder.getBookLevelFieldsOrderByAsJsonString(style));
             cv.put(DBKey.STYLE_AUTHOR_SORT_BY_GIVEN_NAME,
@@ -344,7 +342,7 @@ public class StyleDaoImpl
                    style.isShowAuthorByGivenName());
 
             cv.put(DBKey.STYLE_DETAILS_SHOW_FIELDS,
-                   style.getFieldVisibility(FieldVisibility.Screen.Detail).getBitValue());
+                   style.getFieldVisibilityValue(FieldVisibility.Screen.Detail));
         }
 
         return 0 < db.update(DBDefinitions.TBL_BOOKLIST_STYLES.getName(), cv,

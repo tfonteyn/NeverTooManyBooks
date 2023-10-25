@@ -187,8 +187,7 @@ public class BookHolder
     public void onBind(@NonNull final DataHolder rowData) {
         if (use == null) {
             // init once
-            use = style.getFieldVisibility(FieldVisibility.Screen.List)
-                       .getKeys(false)
+            use = style.getFieldVisibilityKeys(FieldVisibility.Screen.List, false)
                        .stream()
                        // Sanity check making sure the domain is present
                        .filter(key -> rowData.contains(MapDBKey.getDomainName(key)))

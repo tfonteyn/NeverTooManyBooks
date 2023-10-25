@@ -138,7 +138,7 @@ public class StyleCoder
         settings.put(StyleDataStore.PK_LIST_HEADER, style.getHeaderFieldVisibilityValue());
         settings.put(PK_LIST_FIELD_ORDER_BY, encodeBookLevelFieldsOrderBy(style));
         settings.put(PK_LIST_FIELD_VISIBILITY,
-                     style.getFieldVisibility(FieldVisibility.Screen.List).getBitValue());
+                     style.getFieldVisibilityValue(FieldVisibility.Screen.List));
 
         settings.put(StyleDataStore.PK_SORT_AUTHOR_NAME_GIVEN_FIRST,
                      style.isSortAuthorByGivenName());
@@ -146,7 +146,7 @@ public class StyleCoder
                      style.isShowAuthorByGivenName());
 
         settings.put(PK_DETAILS_FIELD_VISIBILITY,
-                     style.getFieldVisibility(FieldVisibility.Screen.Detail).getBitValue());
+                     style.getFieldVisibilityValue(FieldVisibility.Screen.Detail));
 
         // Store them
         out.put(STYLE_SETTINGS, settings);
@@ -240,69 +240,63 @@ public class StyleCoder
             if (style.getType() == StyleType.User && source.has(StyleDataStore.PK_GROUPS)) {
                 decodeGroups((WritableStyle) style, source);
             }
-            decodeSettings(source, style);
+            decodeSettings(source, (WritableStyle) style);
         }
 
         return style;
     }
 
     private void decodeSettings(@NonNull final JSONObject source,
-                                @NonNull final Style style) {
-
-        // It's either a StyleType.User or a StyleType.Global
-        // TODO: casting to BaseStyle is not a nice thing to do...
-        final BaseStyle baseStyle = (BaseStyle) style;
+                                @NonNull final WritableStyle style) {
 
         if (source.has(StyleDataStore.PK_LAYOUT)) {
-            baseStyle.setLayout(Style.Layout.byId(
-                    source.getInt(StyleDataStore.PK_LAYOUT)));
+            style.setLayout(Style.Layout.byId(source.getInt(StyleDataStore.PK_LAYOUT)));
         }
         if (source.has(StyleDataStore.PK_COVER_CLICK_ACTION)) {
-            baseStyle.setCoverClickAction(Style.CoverClickAction.byId(
+            style.setCoverClickAction(Style.CoverClickAction.byId(
                     source.getInt(StyleDataStore.PK_COVER_CLICK_ACTION)));
         }
         if (source.has(StyleDataStore.PK_COVER_SCALE)) {
-            baseStyle.setCoverScale(source.getInt(StyleDataStore.PK_COVER_SCALE));
+            style.setCoverScale(source.getInt(StyleDataStore.PK_COVER_SCALE));
         }
         if (source.has(StyleDataStore.PK_TEXT_SCALE)) {
-            baseStyle.setTextScale(source.getInt(StyleDataStore.PK_TEXT_SCALE));
+            style.setTextScale(source.getInt(StyleDataStore.PK_TEXT_SCALE));
         }
         if (source.has(StyleDataStore.PK_GROUP_ROW_HEIGHT)) {
-            baseStyle.setGroupRowUsesPreferredHeight(
+            style.setGroupRowUsesPreferredHeight(
                     source.getBoolean(StyleDataStore.PK_GROUP_ROW_HEIGHT));
         }
 
         if (source.has(StyleDataStore.PK_LIST_HEADER)) {
-            baseStyle.setHeaderFieldVisibilityValue(
-                    source.getInt(StyleDataStore.PK_LIST_HEADER));
+            style.setHeaderFieldVisibility(source.getInt(StyleDataStore.PK_LIST_HEADER));
         }
         if (source.has(PK_LIST_FIELD_VISIBILITY)) {
-            baseStyle.setFieldVisibility(FieldVisibility.Screen.List,
-                                         source.getLong(PK_LIST_FIELD_VISIBILITY));
+            style.setFieldVisibility(FieldVisibility.Screen.List,
+                                     source.getLong(PK_LIST_FIELD_VISIBILITY));
         } else {
             // backwards compatibility
-            decodeV2ListVisibility(style, source);
+            V2.decodeListVisibility(style, source);
         }
         if (source.has(PK_LIST_FIELD_ORDER_BY)) {
-            baseStyle.setBookLevelFieldsOrderBy(decodeBookLevelFieldsOrderBy(
+            style.setBookLevelFieldsOrderBy(decodeBookLevelFieldsOrderBy(
                     source.getJSONArray(PK_LIST_FIELD_ORDER_BY)));
         }
 
         if (source.has(StyleDataStore.PK_SORT_AUTHOR_NAME_GIVEN_FIRST)) {
-            baseStyle.setSortAuthorByGivenName(
+            style.setSortAuthorByGivenName(
                     source.getBoolean(StyleDataStore.PK_SORT_AUTHOR_NAME_GIVEN_FIRST));
         }
         if (source.has(StyleDataStore.PK_SHOW_AUTHOR_NAME_GIVEN_FIRST)) {
-            baseStyle.setShowAuthorByGivenName(
+            style.setShowAuthorByGivenName(
                     source.getBoolean(StyleDataStore.PK_SHOW_AUTHOR_NAME_GIVEN_FIRST));
         }
 
         if (source.has(PK_DETAILS_FIELD_VISIBILITY)) {
-            baseStyle.setFieldVisibility(FieldVisibility.Screen.Detail,
-                                         source.getLong(PK_DETAILS_FIELD_VISIBILITY));
+            style.setFieldVisibility(FieldVisibility.Screen.Detail,
+                                     source.getLong(PK_DETAILS_FIELD_VISIBILITY));
         } else {
             // backwards compatibility
-            decodeV2DetailVisibility(style, source);
+            V2.decodeDetailVisibility(style, source);
         }
     }
 
@@ -348,66 +342,12 @@ public class StyleCoder
         return result;
     }
 
-    private void decodeV2DetailVisibility(@NonNull final Style style,
-                                          @NonNull final JSONObject source) {
-
-        final FieldVisibility visibility = style.getFieldVisibility(FieldVisibility.Screen.Detail);
-
-        if (source.has(V2.DETAILS_COVER[0])) {
-            visibility.setVisible(DBKey.COVER[0], source.getBoolean(V2.DETAILS_COVER[0]));
-        }
-        if (source.has(V2.DETAILS_COVER[1])) {
-            visibility.setVisible(DBKey.COVER[1], source.getBoolean(V2.DETAILS_COVER[1]));
-        }
-        // reminder: this is for backwards compatibility - don't add new fields here!
-    }
-
-    private void decodeV2ListVisibility(@NonNull final Style style,
-                                        @NonNull final JSONObject source) {
-
-        final FieldVisibility visibility = style.getFieldVisibility(FieldVisibility.Screen.List);
-
-        if (source.has(V2.LIST_THUMBNAILS)) {
-            visibility.setVisible(DBKey.COVER[0], source.getBoolean(V2.LIST_THUMBNAILS));
-        }
-        if (source.has(V2.LIST_AUTHOR)) {
-            visibility.setVisible(DBKey.FK_AUTHOR, source.getBoolean(V2.LIST_AUTHOR));
-        }
-        if (source.has(V2.LIST_PUBLISHER)) {
-            visibility.setVisible(DBKey.FK_PUBLISHER, source.getBoolean(V2.LIST_PUBLISHER));
-        }
-        if (source.has(V2.LIST_PUBLICATION_DATE)) {
-            visibility.setVisible(DBKey.BOOK_PUBLICATION__DATE,
-                                  source.getBoolean(V2.LIST_PUBLICATION_DATE));
-        }
-        if (source.has(V2.LIST_FORMAT)) {
-            visibility.setVisible(DBKey.FORMAT, source.getBoolean(V2.LIST_FORMAT));
-        }
-        if (source.has(V2.LIST_LANGUAGE)) {
-            visibility.setVisible(DBKey.LANGUAGE, source.getBoolean(V2.LIST_LANGUAGE));
-        }
-        if (source.has(V2.LIST_LOCATION)) {
-            visibility.setVisible(DBKey.LOCATION, source.getBoolean(V2.LIST_LOCATION));
-        }
-        if (source.has(V2.LIST_RATING)) {
-            visibility.setVisible(DBKey.RATING, source.getBoolean(V2.LIST_RATING));
-        }
-        if (source.has(V2.LIST_BOOKSHELVES)) {
-            visibility.setVisible(DBKey.FK_BOOKSHELF, source.getBoolean(V2.LIST_BOOKSHELVES));
-        }
-        if (source.has(V2.LIST_ISBN)) {
-            visibility.setVisible(DBKey.BOOK_ISBN, source.getBoolean(V2.LIST_ISBN));
-        }
-        // reminder: this is for backwards compatibility - don't add new fields here!
-    }
-
     /**
-     * Preference keys used by the old V2 version. Here for backwards compatibility
-     * so we can still read older backups.
+     * Backwards compatibility with the old V2 version so we can read older backups.
      */
     private static final class V2 {
 
-        static final String[] DETAILS_COVER = {
+        private static final String[] DETAILS_COVER = {
                 "style.details.show.thumbnail.0",
                 "style.details.show.thumbnail.1",
         };
@@ -421,6 +361,66 @@ public class StyleCoder
         private static final String LIST_BOOKSHELVES = "style.booklist.show.bookshelves";
         private static final String LIST_ISBN = "style.booklist.show.isbn";
         private static final String LIST_THUMBNAILS = "style.booklist.show.thumbnails";
+
+        private static void decodeListVisibility(@NonNull final WritableStyle style,
+                                                 @NonNull final JSONObject source) {
+
+            if (source.has(LIST_THUMBNAILS)) {
+                style.setFieldVisibility(FieldVisibility.Screen.List, DBKey.COVER[0],
+                                         source.getBoolean(LIST_THUMBNAILS));
+            }
+            if (source.has(LIST_AUTHOR)) {
+                style.setFieldVisibility(FieldVisibility.Screen.List, DBKey.FK_AUTHOR,
+                                         source.getBoolean(LIST_AUTHOR));
+            }
+            if (source.has(LIST_PUBLISHER)) {
+                style.setFieldVisibility(FieldVisibility.Screen.List, DBKey.FK_PUBLISHER,
+                                         source.getBoolean(LIST_PUBLISHER));
+            }
+            if (source.has(LIST_PUBLICATION_DATE)) {
+                style.setFieldVisibility(FieldVisibility.Screen.List, DBKey.BOOK_PUBLICATION__DATE,
+                                         source.getBoolean(LIST_PUBLICATION_DATE));
+            }
+            if (source.has(LIST_FORMAT)) {
+                style.setFieldVisibility(FieldVisibility.Screen.List, DBKey.FORMAT,
+                                         source.getBoolean(LIST_FORMAT));
+            }
+            if (source.has(LIST_LANGUAGE)) {
+                style.setFieldVisibility(FieldVisibility.Screen.List, DBKey.LANGUAGE,
+                                         source.getBoolean(LIST_LANGUAGE));
+            }
+            if (source.has(LIST_LOCATION)) {
+                style.setFieldVisibility(FieldVisibility.Screen.List, DBKey.LOCATION,
+                                         source.getBoolean(LIST_LOCATION));
+            }
+            if (source.has(LIST_RATING)) {
+                style.setFieldVisibility(FieldVisibility.Screen.List, DBKey.RATING,
+                                         source.getBoolean(LIST_RATING));
+            }
+            if (source.has(LIST_BOOKSHELVES)) {
+                style.setFieldVisibility(FieldVisibility.Screen.List, DBKey.FK_BOOKSHELF,
+                                         source.getBoolean(LIST_BOOKSHELVES));
+            }
+            if (source.has(LIST_ISBN)) {
+                style.setFieldVisibility(FieldVisibility.Screen.List, DBKey.BOOK_ISBN,
+                                         source.getBoolean(LIST_ISBN));
+            }
+            // reminder: this is for backwards compatibility - don't add new fields here!
+        }
+
+        private static void decodeDetailVisibility(@NonNull final WritableStyle style,
+                                                   @NonNull final JSONObject source) {
+
+            if (source.has(DETAILS_COVER[0])) {
+                style.setFieldVisibility(FieldVisibility.Screen.Detail, DBKey.COVER[0],
+                                         source.getBoolean(DETAILS_COVER[0]));
+            }
+            if (source.has(DETAILS_COVER[1])) {
+                style.setFieldVisibility(FieldVisibility.Screen.Detail, DBKey.COVER[1],
+                                         source.getBoolean(DETAILS_COVER[1]));
+            }
+            // reminder: this is for backwards compatibility - don't add new fields here!
+        }
     }
 
 }

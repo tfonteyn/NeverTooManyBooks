@@ -28,7 +28,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.math.MathUtils;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
@@ -36,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -199,7 +199,7 @@ public abstract class BaseStyle
         textScale = rowData.getInt(DBKey.STYLE_TEXT_SCALE);
         groupRowUsesPreferredHeight = rowData.getBoolean(DBKey.STYLE_ROW_USES_PREF_HEIGHT);
 
-        setHeaderFieldVisibilityValue(rowData.getInt(DBKey.STYLE_LIST_HEADER));
+        setHeaderFieldVisibility(rowData.getInt(DBKey.STYLE_LIST_HEADER));
         setBookLevelFieldsOrderBy(StyleCoder.decodeBookLevelFieldsOrderBy(
                 rowData.getString(DBKey.STYLE_BOOK_LEVEL_FIELDS_ORDER_BY)));
 
@@ -260,13 +260,14 @@ public abstract class BaseStyle
         textScale = style.getTextScale();
         groupRowUsesPreferredHeight = style.isGroupRowUsesPreferredHeight();
 
-        setHeaderFieldVisibilityValue(style.getHeaderFieldVisibilityValue());
-        setBookLevelFieldsOrderBy(style.getBookLevelFieldsOrderBy());
+        setHeaderFieldVisibility(style.getHeaderFieldVisibilityValue());
+        setBookLevelFieldsOrderBy(new LinkedHashMap<>(style.getBookLevelFieldsOrderBy()));
 
-        fieldVisibility.put(FieldVisibility.Screen.List, style.getFieldVisibility(
-                FieldVisibility.Screen.List));
-        fieldVisibility.put(FieldVisibility.Screen.Detail, style.getFieldVisibility(
-                FieldVisibility.Screen.Detail));
+        for (final FieldVisibility.Screen screen : FieldVisibility.Screen.values()) {
+            final Set<String> keys = style.getFieldVisibilityKeys(screen, true);
+            final long value = style.getFieldVisibilityValue(screen);
+            fieldVisibility.put(screen, new FieldVisibility(keys, value));
+        }
 
         showAuthorByGivenName = style.isShowAuthorByGivenName();
         sortAuthorByGivenName = style.isSortAuthorByGivenName();
@@ -471,7 +472,7 @@ public abstract class BaseStyle
         return headerFieldVisibility;
     }
 
-    public void setHeaderFieldVisibilityValue(@BooklistHeader.Option final int bitmask) {
+    public void setHeaderFieldVisibility(@BooklistHeader.Option final int bitmask) {
         headerFieldVisibility = bitmask & BooklistHeader.BITMASK_ALL;
     }
 
@@ -487,7 +488,7 @@ public abstract class BaseStyle
 
     @NonNull
     public Map<String, Sort> getBookLevelFieldsOrderBy() {
-        return new LinkedHashMap<>(bookLevelFieldsOrderBy);
+        return Map.copyOf(bookLevelFieldsOrderBy);
     }
 
     public void setBookLevelFieldsOrderBy(@NonNull final Map<String, Sort> map) {
@@ -497,17 +498,31 @@ public abstract class BaseStyle
         BOOK_LEVEL_FIELDS_DEFAULTS.forEach(bookLevelFieldsOrderBy::putIfAbsent);
     }
 
-    @Override
     @NonNull
-    public FieldVisibility getFieldVisibility(@NonNull final FieldVisibility.Screen screen) {
+    @Override
+    public Set<String> getFieldVisibilityKeys(@NonNull final FieldVisibility.Screen screen,
+                                              final boolean all) {
         //noinspection DataFlowIssue
-        return new FieldVisibility(fieldVisibility.get(screen));
+        return fieldVisibility.get(screen).getKeys(all);
+    }
+
+    @Override
+    public long getFieldVisibilityValue(@NonNull final FieldVisibility.Screen screen) {
+        //noinspection DataFlowIssue
+        return fieldVisibility.get(screen).getBitValue();
     }
 
     public void setFieldVisibility(@NonNull final FieldVisibility.Screen screen,
-                                   final long value) {
+                                   final long bitmask) {
         //noinspection DataFlowIssue
-        fieldVisibility.get(screen).setBitValue(value);
+        fieldVisibility.get(screen).setBitValue(bitmask);
+    }
+
+    public void setFieldVisibility(@NonNull final FieldVisibility.Screen screen,
+                                   @NonNull final String dbKey,
+                                   final boolean show) {
+        //noinspection DataFlowIssue
+        fieldVisibility.get(screen).setVisible(dbKey, show);
     }
 
     @Override
@@ -551,7 +566,7 @@ public abstract class BaseStyle
     @Override
     @NonNull
     public List<BooklistGroup> getGroupList() {
-        return new ArrayList<>(groups.values());
+        return List.copyOf(groups.values());
     }
 
     public void setGroupList(@Nullable final List<BooklistGroup> list) {

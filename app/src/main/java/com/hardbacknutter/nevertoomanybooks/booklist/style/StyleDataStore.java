@@ -284,18 +284,18 @@ public class StyleDataStore
                 return;
         }
 
-        final FieldVisibility listFV = style.getFieldVisibility(FieldVisibility.Screen.List);
         final String listDbKey = PK_LIST_SHOW_FIELD_TO_DB_KEY.get(key);
         if (listDbKey != null) {
-            listFV.setVisible(listDbKey, value);
+            style.setFieldVisibility(FieldVisibility.Screen.List,
+                                     listDbKey, value);
             setModified();
             return;
         }
 
-        final FieldVisibility detailFV = style.getFieldVisibility(FieldVisibility.Screen.Detail);
         final String detailDbKey = PK_DETAILS_SHOW_FIELD_TO_DB_KEY.get(key);
         if (detailDbKey != null) {
-            detailFV.setVisible(detailDbKey, value);
+            style.setFieldVisibility(FieldVisibility.Screen.Detail,
+                                     detailDbKey, value);
             setModified();
             return;
         }
@@ -399,7 +399,7 @@ public class StyleDataStore
                              @Nullable final Set<String> values) {
         switch (key) {
             case PK_LIST_HEADER:
-                style.setHeaderFieldVisibilityValue(convert(values, BooklistHeader.BITMASK_ALL));
+                style.setHeaderFieldVisibility(convert(values, BooklistHeader.BITMASK_ALL));
                 break;
 
             case PK_GROUPS_AUTHOR_PRIMARY_TYPE:

@@ -88,9 +88,9 @@ public class UserStyleTest
         assertEquals(s1.isShowHeaderField(BooklistHeader.SHOW_FILTERS),
                      s2.isShowHeaderField(BooklistHeader.SHOW_FILTERS));
 
-        for (final FieldVisibility.Screen item : FieldVisibility.Screen.values()) {
-            assertEquals(s1.getFieldVisibility(item).getBitValue(),
-                         s2.getFieldVisibility(item).getBitValue());
+        for (final FieldVisibility.Screen screen : FieldVisibility.Screen.values()) {
+            assertEquals(s1.getFieldVisibilityValue(screen),
+                         s2.getFieldVisibilityValue(screen));
         }
         assertEquals(s1.getBookLevelFieldsOrderBy(), s2.getBookLevelFieldsOrderBy());
     }
