@@ -93,6 +93,8 @@ public final class TipManager {
                 tip = new Tip(id, "booklist_styles_editor");
             } else if (id == R.string.tip_booklist_style_groups) {
                 tip = new Tip(id, "booklist_style_groups");
+            } else if (id == R.string.tip_booklist_style_defaults) {
+                tip = new Tip(id, "booklist_style_defaults");
             } else if (id == R.string.tip_booklist_style_properties) {
                 tip = new Tip(id, "booklist_style_properties");
             } else if (id == R.string.tip_autorotate_camera_images) {

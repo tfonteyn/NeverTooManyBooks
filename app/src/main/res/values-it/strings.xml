@@ -87,7 +87,7 @@
     <string name="X_option_bob_filter_anthology_yes">Antologie</string>
     <string name="X_pg_general">Generale</string>
     <string name="X_pt_site_settings">Impostazioni del sito Web</string>
-    <string name="X_tip_booklist_global_properties">È possibile utilizzare questa schermata per impostare le caratteristiche predefinite di tutti gli stili dell’elenco libri. La maggior parte delle proprietà può essere sovrascritta dai singoli stili, ma i valori predefiniti sono definiti qui. Puoi cambiare la modalità di visualizzazione degli elenchi all’avvio e regolare una varietà di altre preferenze che verranno applicate a tutti i tuoi stili quando possibile.</string>
+    <string name="tip_booklist_style_defaults">È possibile utilizzare questa schermata per impostare le caratteristiche predefinite di tutti gli stili dell’elenco libri. La maggior parte delle proprietà può essere sovrascritta dai singoli stili, ma i valori predefiniti sono definiti qui. Puoi cambiare la modalità di visualizzazione degli elenchi all’avvio e regolare una varietà di altre preferenze che verranno applicate a tutti i tuoi stili quando possibile.</string>
     <string name="X_txt_import_books_option_all_books">Verranno aggiunti nuovi libri. I libri esistenti verranno aggiornati.</string>
     <string name="X_txt_import_books_option_new_and_changed">Importa solo i libri nuovi, o che sono stati aggiornati più di recente nell’archivio. Utile per sincronizzare due apparecchi.</string>
     <string name="X_txt_thank_you">Grazie!</string>

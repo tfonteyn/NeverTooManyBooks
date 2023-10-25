@@ -91,7 +91,7 @@ public class StyleDefaultsFragment
 
         if (savedInstanceState == null) {
             TipManager.getInstance()
-                      .display(getContext(), R.string.X_tip_booklist_global_properties, null);
+                      .display(getContext(), R.string.tip_booklist_style_defaults, null);
         }
     }
 }

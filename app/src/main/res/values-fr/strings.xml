@@ -88,7 +88,7 @@
     <string name="X_option_bob_filter_anthology_yes">Des anthologies</string>
     <string name="X_pg_general">Général</string>
     <string name="X_pt_site_settings">Paramètres du site</string>
-    <string name="X_tip_booklist_global_properties">Vous pouvez utiliser cet écran pour définir les caractéristiques par défaut de tous les styles de liste de livres. La plupart des propriétés peuvent être remplacées par des styles individuels, mais les valeurs par défaut sont définies ici. Vous pouvez modifier le mode d’affichage des listes au démarrage et définir diverses autres préférences qui seront appliquées à tous vos styles dans la mesure du possible.</string>
+    <string name="tip_booklist_style_defaults">Vous pouvez utiliser cet écran pour définir les caractéristiques par défaut de tous les styles de liste de livres. La plupart des propriétés peuvent être remplacées par des styles individuels, mais les valeurs par défaut sont définies ici. Vous pouvez modifier le mode d’affichage des listes au démarrage et définir diverses autres préférences qui seront appliquées à tous vos styles dans la mesure du possible.</string>
     <string name="X_txt_import_books_option_all_books">De nouveaux livres seront ajoutés. Les livres existants seront mis à jour.</string>
     <string name="X_txt_import_books_option_new_and_changed">Seuls les livres récemment ajoutés ou mis à jour dans la sauvegarde seront mis à jour. Cette option est utile lors de la synchronisation de deux appareils.</string>
     <string name="X_txt_thank_you">Merci !</string>

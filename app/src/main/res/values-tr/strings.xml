@@ -84,7 +84,7 @@
     <string name="X_option_bob_filter_anthology_yes">Antolojiler</string>
     <string name="X_pg_general">Genel</string>
     <string name="X_pt_site_settings">Web sitesi ayarları</string>
-    <string name="X_tip_booklist_global_properties">Tüm kitap listesi stillerinin varsayılan özelliklerini ayarlamak için bu ekranı kullanabilirsiniz. Çoğu özellik bireysel stiller tarafından geçersiz kılınabilir, ancak varsayılan değerler burada tanımlanır. Listelerin başlangıçta nasıl görüntüleneceğini değiştirebilir ve mümkün olduğunda tüm stillerinize uygulanacak çeşitli diğer tercihleri ayarlayabilirsiniz.</string>
+    <string name="tip_booklist_style_defaults">Tüm kitap listesi stillerinin varsayılan özelliklerini ayarlamak için bu ekranı kullanabilirsiniz. Çoğu özellik bireysel stiller tarafından geçersiz kılınabilir, ancak varsayılan değerler burada tanımlanır. Listelerin başlangıçta nasıl görüntüleneceğini değiştirebilir ve mümkün olduğunda tüm stillerinize uygulanacak çeşitli diğer tercihleri ayarlayabilirsiniz.</string>
     <string name="X_txt_import_books_option_all_books">Yeni kitaplar eklenecek. Mevcut kitaplar güncellenecek.</string>
     <string name="X_txt_import_books_option_new_and_changed">Yalnızca yeni olan veya son zamanlarda arşivde güncellenmiş kitapları içe aktar. Bu seçenek özellikle örneğin iki aygıtı eşlerken yararlıdır.</string>
     <string name="X_txt_thank_you">Sağ olun!</string>

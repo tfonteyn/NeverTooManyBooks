@@ -1618,7 +1618,7 @@
     <string name="X_lbl_virtual_library">Virtual Library</string>
     <string name="X_pg_general">General</string>
     <string name="X_pt_site_settings">Website settings</string>
-    <string name="X_tip_booklist_global_properties">You can use this screen to set the default characteristics of all booklist styles. Most properties can be overridden by individual styles, but the default values are defined here. You can change how lists are displayed at startup, and adjust a variety of other preferences that will be applied to all your styles when possible.</string>
+    <string name="tip_booklist_style_defaults">You can use this screen to set the default characteristics of all booklist styles. Most properties can be overridden by individual styles, but the default values are defined here. You can change how lists are displayed at startup, and adjust a variety of other preferences that will be applied to all your styles when possible.</string>
     <string name="X_txt_import_books_option_all_books">New books will be added. Existing books will be updated.</string>
     <string name="X_txt_import_books_option_new_and_changed">Only import books that are new, or which have been updated more recently in the archive. This is useful when synchronizing two devices.</string>
     <string name="X_txt_thank_you">Thank you!</string>
