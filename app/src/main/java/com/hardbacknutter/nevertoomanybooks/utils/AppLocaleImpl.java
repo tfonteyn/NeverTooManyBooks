@@ -62,6 +62,7 @@ public final class AppLocaleImpl
             localeChangedListeners = new ArrayList<>();
     /** Cache for Locales; key: the BOOK language (ISO3). */
     private final Map<String, Locale> cache = new HashMap<>();
+    /** an <strong>unmodifiable</strong> List. */
     @NonNull
     private final List<Locale> systemLocales;
     @NonNull

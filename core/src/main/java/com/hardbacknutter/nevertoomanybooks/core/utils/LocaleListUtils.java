@@ -58,7 +58,7 @@ public final class LocaleListUtils {
      * @param context     Current context
      * @param firstLocale (optional) Locale to add to the top of the list
      *
-     * @return unmodifiable list
+     * @return an <strong>unmodifiable</strong> List
      */
     @NonNull
     public static List<Locale> asList(@NonNull final Context context,
