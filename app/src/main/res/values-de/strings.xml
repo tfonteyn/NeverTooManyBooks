@@ -95,8 +95,7 @@
     <string name="X_whichSendToApplication">Senden via</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
-    <string name="acra_resDialogCommentPrompt">Ihr Kommentar (darf auch leer bleiben):</string>
-    <string name="acra_resDialogText">Anscheinend ist &APP_NAME; abgestürzt. Beschreiben Sie nach Möglichkeit alle relevanten Hinweise und drücken Sie „OK“, um uns eine E-Mail zu diesem Absturz zu senden. Sie werden das E-Mail vor dem Versand sehen können.</string>
+    <string name="acra_dialog_message">Es sieht so aus, als ob &APP_NAME; abgestürzt ist. Tippen Sie auf „%1$s“, um einen Bericht an einem Ort Ihrer Wahl zu speichern. Sie können diesen Bericht verwenden, um ein neues Problem auf der Projektwebsite zu melden.</string>
     <string name="action_add">Hinzufügen</string>
     <string name="action_add_with_details">Mit Details hinzufügen</string>
     <string name="action_clear">Löschen</string>
@@ -198,9 +197,9 @@
     <string name="confirm_scope_for_delete">Lösche den Titel „%1$s“ von %2$s.\n\nWie möchten Sie diese Änderung anwenden?\nWARNUNG: Die Auswahl „%3$s“ kann nicht rückgängig gemacht werden!</string>
     <string name="confirm_test_connection">Es ist ratsam, diese Verbindung zu testen, um später Probleme zu vermeiden.</string>
     <string name="confirm_unsaved_edits">Einige Änderungen wurden noch nicht gespeichert. Beim Beenden gehen diese Änderungen verloren.</string>
-    <string name="debug_email_body">Bitte nehmen Sie sich Zeit, das aufgetretene Problem zu beschreiben.</string>
+    <string name="X_debug_email_body">Bitte nehmen Sie sich Zeit, das aufgetretene Problem zu beschreiben.</string>
     <string name="debug_send_info_text">Dieser Vorgang erstellt eine Sicherheitskopie Ihrer gesamten Datenbank sowie aller Protokolldateien erstellt und an die Entwickler gesendet. Wenn Sie eine dieser Dateien nicht verschicken wollen, löschen Sie diese vor dem Senden aus dem Anhang.</string>
-    <string name="debug_email_subject">Gesammelte Debug-Informationen</string>
+    <string name="X_debug_email_subject">Gesammelte Debug-Informationen</string>
     <string name="disabled">Deaktiviert</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dynamisch</string>
     <string name="enabled">Aktiviert</string>
@@ -784,4 +783,6 @@
     <string name="pe_bob_cover_click_zoom">Vergrößert das Titelbild.</string>
     <string name="pe_bob_cover_click_details">Öffnet die Detailseite des Buches.</string>
     <string name="style_type_defaults">Standardeinstellungen für Stile</string>
+    <string name="acra_report_saved">Sie können nun die Projektseite auf Github besuchen und ein neues Problem melden. Hängen Sie bitte den zuvor gespeicherten Bericht an die Frage an. Wenn Sie noch kein Github-Konto haben, müssen Sie eines erstellen.</string>
+    <string name="action_report">Melden</string>
 </resources>

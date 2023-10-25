@@ -99,8 +99,7 @@
     <string name="X_whichSendToApplication">Envoyer avec</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
-    <string name="acra_resDialogCommentPrompt">Votre commentaire (ou laisser vide) :</string>
-    <string name="acra_resDialogText">&APP_NAME; a planté. Décrivez ci-dessous tout ce qui vous semble opportun et pressez « OK » pour nous envoyer un courriel à propos de ce plantage. Vous pourrez lire votre courriel avant son envoi.</string>
+    <string name="acra_dialog_message">Il semblerait que &APP_NAME; soit tombé en panne. Touchez « %1$s » pour enregistrer un rapport à l’emplacement de votre choix. Vous pouvez utiliser ce rapport pour signaler un nouveau problème sur le site web du projet.</string>
     <string name="action_add">Ajouter</string>
     <string name="action_add_with_details">Ajouter avec détails</string>
     <string name="action_clear">Effacer</string>
@@ -202,9 +201,9 @@
     <string name="confirm_scope_for_delete">Supprimer le titre « %1$s » par %2$s.\n\nComment souhaitez-vous appliquer ce changement ?\nAVERTISSEMENT : Le choix « %3$s » ne peut pas être annulé !</string>
     <string name="confirm_test_connection">Il est conseillé de tester cette connexion pour éviter les problèmes par la suite.</string>
     <string name="confirm_unsaved_edits">Des modifications ne sont pas sauvées, si vous quittez maintenant elles seront perdues.</string>
-    <string name="debug_email_body">Merci de prendre le temps de décrire brièvement le problème que vous rencontrez.</string>
+    <string name="X_debug_email_body">Merci de prendre le temps de décrire brièvement le problème que vous rencontrez.</string>
     <string name="debug_send_info_text">Cela créera une copie de sauvegarde de votre base de données ainsi que de tous les fichiers journaux et l’enverra aux développeurs. Si vous ne souhaitez pas envoyer certains de ces fichiers, supprimez les des pièces jointes du courriel avant l’envoi.</string>
-    <string name="debug_email_subject">Collecte des informations de débogage en cours</string>
+    <string name="X_debug_email_subject">Collecte des informations de débogage en cours</string>
     <string name="disabled">Désactivé</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dynamique</string>
     <string name="enabled">Activée</string>
@@ -789,4 +788,6 @@
     <string name="pe_bob_cover_click_zoom">Permet de zoomer sur l’image de couverture.</string>
     <string name="pe_bob_cover_click_details">Ouvre la page de détails du livre.</string>
     <string name="style_type_defaults">Paramètres par défaut des styles</string>
+    <string name="acra_report_saved">Vous pouvez maintenant visiter la page du projet sur Github et enregistrer un nouveau problème. Veuillez joindre le rapport précédemment enregistré au problème. Si vous n’avez pas encore de compte Github, vous devez en créer un.</string>
+    <string name="action_report">Rapport</string>
 </resources>

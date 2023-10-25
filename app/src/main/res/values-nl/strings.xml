@@ -99,9 +99,8 @@
     <string name="X_whichSendToApplication">Verzenden met</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
-    <string name="acra_resDialogCommentPrompt">Uw commentaar (of laat dit leeg):</string>
-    <string name="acra_resDialogText">Het lijkt er op dat &APP_NAME; is gecrasht. Beschrijf indien mogelijk hieronder wat de oorzaak kan zijn en druk op „OK” om ons een e-mail te sturen over deze crash. Je kan het bericht inzien voordat het wordt verzonden.</string>
-    <string name="action_add">Toevoegen</string>
+    <string name="acra_dialog_message">Het lijkt erop dat &APP_NAME; is gecrasht. Tik op „%1$s” om een rapport op te slaan op een locatie naar keuze. U kunt dit rapport gebruiken om een nieuw probleem te melden op de projectwebsite.</string>
+    <string name="action_add">U kunt nu de  projectpagina op Github bezoeken en een nieuw probleem aanmelden. Voeg het eerder opgeslagen rapport bij het probleem. Als u nog geen Github-account hebt, moet u er een aanmaken.</string>
     <string name="action_add_with_details">Toevoegen met details</string>
     <string name="action_clear">Wissen</string>
     <string name="action_clear_queue">Wachtrij wissen</string>
@@ -197,8 +196,8 @@
     <string name="confirm_scope_for_delete">Verwijder de titel „%1$s” door %2$s.\n\nHoe wilt u deze wijziging toepassen?\nWAARSCHUWING: De keuze „%3$s” kan niet ongedaan worden gemaakt!</string>
     <string name="confirm_test_connection">Het is raadzaam om deze verbinding te testen om later problemen te voorkomen.</string>
     <string name="confirm_unsaved_edits">Je hebt niet opgeslagen veranderingen. Als je nu afsluit gaan die verloren.</string>
-    <string name="debug_email_body">Beschrijf in het kort de problemen die je hebt ondervonden.</string>
-    <string name="debug_email_subject">Verzamelde foutopsporingsgegevens</string>
+    <string name="X_debug_email_body">Beschrijf in het kort de problemen die je hebt ondervonden.</string>
+    <string name="X_debug_email_subject">Verzamelde foutopsporingsgegevens</string>
     <string name="debug_select_items">Selecteer wat u wilt opnemen:</string>
     <string name="debug_send_info_text">Dit maakt een back-up van je hele database en van alle log-bestanden en zend deze naar de ontwikkelaars. Als je deze bestanden niet wilt opsturen, kan je ze van de bijlagen lijst in het e-mailbericht verwijderen voordat je dit verstuurt.</string>
     <string name="disabled">Uitgeschakeld</string>
@@ -784,4 +783,6 @@
     <string name="pe_bob_cover_click_zoom">Inzoomen op de omslagafbeelding.</string>
     <string name="pe_bob_cover_click_details">Opent de detailpagina van het boek.</string>
     <string name="style_type_defaults">Standaardinstellingen stijlen</string>
+    <string name="acra_report_saved">U kunt nu de projectpagina op Github bezoeken en een nieuw probleem aanmelden. Voeg het eerder opgeslagen rapport bij het probleem. Als u nog geen Github-account hebt, moet u er een aanmaken.</string>
+    <string name="action_report">Melden</string>
 </resources>

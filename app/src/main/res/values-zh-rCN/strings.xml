@@ -53,9 +53,8 @@
     <string name="and_others">%1$s …</string>
     <string name="notification_channel_warn">警告</string>
     <string name="notification_channel_info">信息</string>
-    <string name="debug_email_subject">收集调试信息</string>
+    <string name="X_debug_email_subject">收集调试信息</string>
     <string name="debug_select_items">选择您要选择的内容：</string>
-    <string name="acra_resDialogCommentPrompt">您的评论（或留空）：</string>
     <string name="X_httpErrorIO">无法与服务器通信。请稍后再试。</string>
     <string name="httpErrorTimeout">与服务器的连接超时。</string>
     <string name="httpErrorFailedSslHandshake">无法建立安全连接。</string>
@@ -104,8 +103,8 @@
     <string name="fallback_currency_format">%1$s %2$.2f</string>
     <string name="no">取消</string>
     <string name="notification_channel_error">出错了</string>
-    <string name="debug_email_body">请简述您遇到的问题。</string>
-    <string name="acra_resDialogText">&APP_NAME;出错了。请在下面描述您认为可能相关的任何内容，然后按“确定”向我们发送有关崩溃的电子邮件。 您可以在发送前确认电子邮件的内容。</string>
+    <string name="X_debug_email_body">请简述您遇到的问题。</string>
+    <string name="acra_dialog_message">看起来 &APP_NAME; 已经崩溃。点击 “%1$s” 将报告保存到您选择的位置。您可以使用此报告在项目网站上报告新问题。</string>
     <string name="httpError">出现网络错误。</string>
     <string name="error_unexpected_long">发生了一个意外的错误。如果问题仍然存在，请通过设置页面底部的 “%1$s” 选项联系支持。</string>
     <string name="error_certificate_invalid">证书无效或不可访问。</string>
@@ -300,4 +299,7 @@
     <string name="style_type_defaults">风格默认值</string>
     <string name="action_edit_ellipsis">修改…</string>
     <string name="tip_booklist_style_defaults">使用此界面设置所有样式的默认特征。所有内置样式都会使用这些特征，您自己定义的任何样式也会以这些特征为起点。</string>
+    <string name="acra_report_saved">您现在可以访问 Github 上的项目页面并记录新问题。请将之前保存的报告附加到问题中。如果您还没有 Github 账户，则需要创建一个。</string>
+    <string name="action_report">报告</string>
+
 </resources>

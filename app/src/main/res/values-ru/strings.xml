@@ -101,8 +101,6 @@
     <string name="X_whichSendToApplication">Выберите приложение</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
-    <string name="acra_resDialogCommentPrompt">Ваши комментарии (или оставьте пустым):</string>
-    <string name="acra_resDialogText">&APP_NAME; завершился с ошибкой. Пожалуйста, если хотите, опишите что-нибудь, что, по вашему мнению, могло быть связано с этим. Нажмите «ОК», чтобы отправить по почте. Вы увидите e-mail перед отправлением.</string>
     <string name="action_add">Добавить</string>
     <string name="action_add_with_details">Добавить с подробностями</string>
     <string name="action_clear">Очистить</string>
@@ -214,9 +212,10 @@
     <string name="confirm_scope_for_delete">Удалить заголовок «%1$s» пользователем %2$s.\n\nКак вы хотите применить это изменение? Примечание.\nВНИМАНИЕ «%3$s» нельзя отменить!</string>
     <string name="confirm_test_connection">Желательно проверить это соединение, чтобы избежать проблем в дальнейшем.</string>
     <string name="confirm_unsaved_edits">Если вы выйдете сейчас, не сохраненные изменения будут потеряны.</string>
-    <string name="debug_email_body">Пожалуйста, кратко опишите обнаруженную ошибку.</string>
+    <string name="acra_dialog_message">Похоже, что приложение &APP_NAME; потерпело крах. Нажмите «%1$s», чтобы сохранить отчет в выбранном вами месте. Этот отчет можно использовать для сообщения о новой проблеме на сайте проекта.</string>
+    <string name="X_debug_email_body">Пожалуйста, кратко опишите обнаруженную ошибку.</string>
     <string name="debug_send_info_text">Это создаст резервную копию вашей базы данных, а также любых файлов журналов и отправит ее разработчикам. Если вы не хотите отправлять какой-либо из этих файлов, удалите его из приложений письма до отправки.</string>
-    <string name="debug_email_subject">Собрана отладочная информация</string>
+    <string name="X_debug_email_subject">Собрана отладочная информация</string>
     <string name="disabled">Выключен</string>
     <string name="pe_fast_scroller_overlay_dynamic">динамический</string>
     <string name="enabled">Включено</string>
@@ -803,4 +802,6 @@
     <string name="pe_bob_cover_click_zoom">Увеличение изображения обложки.</string>
     <string name="pe_bob_cover_click_details">Откроется страница с подробной информацией о книге.</string>
     <string name="style_type_defaults">Настройки стилей по умолчанию</string>
+    <string name="acra_report_saved">Теперь вы можете зайти на страницу проекта на Github и зарегистрировать новую проблему. Пожалуйста, прикрепите к проблеме сохраненный ранее отчет. Если у вас еще нет учетной записи на Github, вам необходимо ее создать.</string>
+    <string name="action_report">Отправить отчет</string>
 </resources>

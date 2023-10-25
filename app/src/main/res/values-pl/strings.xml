@@ -102,8 +102,6 @@
     <string name="X_whichSendToApplication">Wyślij za pomocą</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
-    <string name="acra_resDialogCommentPrompt">Twoje komentarze (lub po prostu pozostaw puste):</string>
-    <string name="acra_resDialogText">Vypadá to, že &APP_NAME; havaroval. Pokud je to možné, popište cokoliv, o čem si myslíte, že mohou být relevantní níže, a stiskněte „OK”, abyste nám poslali e-mail o havárii. E-mail se zobrazí před odesláním.</string>
     <string name="action_add">Dodaj</string>
     <string name="action_add_with_details">Dodaj ze szczegółami</string>
     <string name="action_clear">Wyczyść</string>
@@ -217,9 +215,10 @@
     <string name="confirm_scope_for_delete">Usuń tytuł „%1$s” do %2$s.\n\nJak chcesz zastosować tę zmianę?\nOSTRZEŻENIE: wyboru „%3$s” nie można cofnąć!</string>
     <string name="confirm_test_connection">Zaleca się przetestowanie tego połączenia, aby później uniknąć problemów.</string>
     <string name="confirm_unsaved_edits">Masz niezapisane zmiany, jeśli wyjdziesz teraz, zostaną utracone.</string>
-    <string name="debug_email_body">Poświęć chwilę na krótki opis problemu, z którym się zetknąłeś.</string>
+    <string name="acra_dialog_message">Wygląda na to, że aplikacja &APP_NAME; uległa awarii. Naciśnij „%1$s”, aby zapisać raport w wybranej lokalizacji. Możesz użyć tego raportu do zgłoszenia nowego błędu na stronie projektu.</string>
+    <string name="X_debug_email_body">Poświęć chwilę na krótki opis problemu, z którym się zetknąłeś.</string>
     <string name="debug_send_info_text">Spowoduje to utworzenie kopii zapasowej bazy danych, a także wszelkich plików dziennika i wysłanie jej do programistów. Jeśli nie chesz, by te dane były wysyłane, usuń je z przygotowanej wiadomości przed jej wysłaniem.</string>
-    <string name="debug_email_subject">Zbieranie informacji o problemach technicznych</string>
+    <string name="X_debug_email_subject">Zbieranie informacji o problemach technicznych</string>
     <string name="disabled">Wyłączony</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dynamiczny</string>
     <string name="enabled">Włączone</string>
@@ -806,4 +805,6 @@
     <string name="pe_bob_cover_click_zoom">Powiększy obraz okładki.</string>
     <string name="pe_bob_cover_click_details">Otworzy stronę szczegółów książki.</string>
     <string name="style_type_defaults">Domyślne ustawienia stylu</string>
+    <string name="acra_report_saved">Możesz teraz odwiedzić stronę projektu na Github i zarejestrować nowe zgłoszenie. Do zgłoszenia należy dołączyć wcześniej zapisany raport. Jeśli nie masz jeszcze konta Github, musisz je utworzyć.</string>
+    <string name="action_report">Zgłoś</string>
 </resources>

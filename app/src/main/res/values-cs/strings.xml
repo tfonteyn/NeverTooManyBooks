@@ -101,8 +101,7 @@
     <string name="X_whichSendToApplication">Odeslat pomocí aplikace</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
-    <string name="acra_resDialogCommentPrompt">Váš komentář (nepovinné):</string>
-    <string name="acra_resDialogText">Vypadá to, že došlo k neočekávanému pádu aplikace &APP_NAME;. Napište nám prosím o tomto problému všechny informace, které považujete za relevantní, a tlačítkem „OK“ nám je odešlete. Před odesláním mailu budete mít ještě možnost jej zkontrolovat.</string>
+    <string name="acra_dialog_message">Vypadá to, že &APP_NAME; se zhroutila. Klepnutím na „%1$s“ uložíte zprávu na vámi zvolené místo. Tuto zprávu můžete použít k nahlášení nového problému na webových stránkách projektu.</string>
     <string name="action_add">Přidat</string>
     <string name="action_add_with_details">Přidejte podrobnosti</string>
     <string name="action_clear">Vymazat</string>
@@ -212,9 +211,9 @@
     <string name="confirm_scope_for_delete">Smazat název „%1$s“ od %2$s.\n\nJak chcete tuto změnu uplatnit?\nVAROVÁNÍ: Volbu „%3$s“ nelze vrátit zpět!</string>
     <string name="confirm_test_connection">Doporučujeme toto připojení otestovat, abyste se později vyhnuli problémům.</string>
     <string name="confirm_unsaved_edits">Máte neuložené změny, pokud nyní ukončíte, budou ztraceny.</string>
-    <string name="debug_email_body">Věnujte prosím čas přesnému popisu problému, se kterým máte zkušenost.</string>
+    <string name="X_debug_email_body">Věnujte prosím čas přesnému popisu problému, se kterým máte zkušenost.</string>
     <string name="debug_send_info_text">Tím vytvoříte záložní kopii vaší databáze a všechny soubory protokolu a odešlete ji vývojářům. Pokud si nepřejete poslat některý z těchto souborů, odstraňte jej z přílohy mailu ještě před jeho odesláním.</string>
-    <string name="debug_email_subject">Shromáždit informace o debugování</string>
+    <string name="X_debug_email_subject">Shromáždit informace o debugování</string>
     <string name="disabled">Vypnutý</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dynamický</string>
     <string name="enabled">Povoleno</string>
@@ -802,4 +801,6 @@
     <string name="pe_bob_cover_click_zoom">Obrázek obálky se přiblíží.</string>
     <string name="pe_bob_cover_click_details">Otevře stránku s podrobnostmi o knize.</string>
     <string name="style_type_defaults">Výchozí nastavení stylů</string>
+    <string name="acra_report_saved">Nyní můžete navštívit stránku projektu na Githubu a přihlásit nový problém. K problému připojte dříve uloženou zprávu. Pokud ještě nemáte účet na Githubu, musíte si ho vytvořit.</string>
+    <string name="action_report">Hlášení</string>
 </resources>

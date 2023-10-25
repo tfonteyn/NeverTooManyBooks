@@ -98,8 +98,6 @@
     <string name="X_whichSendToApplication">Enviar con</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
-    <string name="acra_resDialogCommentPrompt">Sus comentarios (puede dejarlos en blanco):</string>
-    <string name="acra_resDialogText">Parece que &APP_NAME; se ha detenido. Si es posible, indique cualquier detalle que usted considere relevante y pulse OK para enviarnos un correo electrónico sobre el problema. Podrá revisar el correo antes de que se envíe.</string>
     <string name="action_add">Añadir</string>
     <string name="action_add_with_details">Agregar con detalles</string>
     <string name="action_clear">Borrar</string>
@@ -211,9 +209,10 @@
     <string name="confirm_scope_for_delete">Eliminar el título «%1$s» por %2$s.\n\n¿Cómo desea aplicar este cambio?\nADVERTENCIA: ¡La opción «%3$s» no se puede deshacer!</string>
     <string name="confirm_test_connection">Es recomendable probar esta conexión para evitar problemas más adelante.</string>
     <string name="confirm_unsaved_edits">Hay cambios que no se han guardado. Si sale ahora, se perderán.</string>
-    <string name="debug_email_body">Por favor, explique brevemente el problema experimentado.</string>
+    <string name="acra_dialog_message">Parece que &APP_NAME; se ha bloqueado. Pulse «%1$s» para guardar un informe en la ubicación que desee. Puedes utilizar este informe para informar de una nueva incidencia en la página web del proyecto.</string>
+    <string name="X_debug_email_body">Por favor, explique brevemente el problema experimentado.</string>
     <string name="debug_send_info_text">Esto creará una copia de seguridad de su base de datos, así como cualquier archivo de registro y la enviará a los desarrolladores. Si no desea enviar alguno de estos ficheros, elimine los correspondientes adjuntos antes de enviar el correo que se generará.</string>
-    <string name="debug_email_subject">Recopilando información sobre fallos</string>
+    <string name="X_debug_email_subject">Recopilando información sobre fallos</string>
     <string name="disabled">Apagado</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dinámica</string>
     <string name="enabled">Habilitado</string>
@@ -798,4 +797,6 @@
     <string name="pe_bob_cover_click_zoom">Amplía la imagen de la cubierta.</string>
     <string name="pe_bob_cover_click_details">Abrirá la página de detalles del libro.</string>
     <string name="style_type_defaults">Valores predeterminados del estilo</string>
+    <string name="acra_report_saved">Ya puedes visitar la página del proyecto en Github y registrar una nueva incidencia. Adjunta a la incidencia el informe guardado anteriormente. Si aún no tienes una cuenta de Github, tendrás que crear una.</string>
+    <string name="action_report">Informar</string>
 </resources>

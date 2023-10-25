@@ -98,9 +98,7 @@
     <string name="X_whichSendToApplication">Invia tramite</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
-    <string name="acra_resDialogCommentPrompt">I tuoi commenti (o lascia in bianco):</string>
-    <string name="acra_resDialogText">&APP_NAME; sembra essersi bloccato. Se possibile, comunicaci qui sotto qualsiasi cosa ritieni pertinente e clicca «OK» per inviarci un’email relativa al blocco. Potrai verificare l’email prima dell’invio.</string>
-    <string name="action_add">Aggiungi</string>
+    <string name="action_add">Ora è possibile visitare la pagina del progetto  su Github e registrare un nuovo problema. Allegare il report precedentemente salvato al problema. Se non si dispone ancora di un account Github, è necessario crearne uno.</string>
     <string name="action_add_with_details">Aggiungi con i dettagli</string>
     <string name="action_clear">Cancella</string>
     <string name="action_create">Crea</string>
@@ -201,9 +199,10 @@
     <string name="confirm_scope_for_delete">Elimina il titolo «%1$s» di %2$s.\n\nCome desideri applicare questa modifica?\nATTENZIONE: la scelta «%3$s» non può essere annullata!</string>
     <string name="confirm_test_connection">Si consiglia di testare questa connessione per evitare problemi in seguito.</string>
     <string name="confirm_unsaved_edits">Vi sono modifiche non salvate, se esci adesso saranno perse.</string>
-    <string name="debug_email_body">Prenditi qualche secondo per descrivere brevemente il problema riscontrato.</string>
+    <string name="acra_dialog_message">Sembra che &APP_NAME; si sia bloccato. Toccare «%1$s» per salvare un rapporto in una posizione a scelta. È possibile utilizzare questo rapporto per segnalare un nuovo problema sul sito web del progetto.</string>
+    <string name="X_debug_email_body">Prenditi qualche secondo per descrivere brevemente il problema riscontrato.</string>
     <string name="debug_send_info_text">Ciò creerà una copia di backup del database e di tutti i file di registro e lo invierà agli sviluppatori. Cancella i file che non vuoi allegare alla email prima di inviarla.</string>
-    <string name="debug_email_subject">Informazioni di debug raccolte</string>
+    <string name="X_debug_email_subject">Informazioni di debug raccolte</string>
     <string name="disabled">Spento</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dinamico</string>
     <string name="enabled">Abilitato</string>
@@ -787,4 +786,6 @@
     <string name="pe_bob_cover_click_zoom">Ingrandisce l’immagine della copertina.</string>
     <string name="pe_bob_cover_click_details">Apre la pagina dei dettagli del libro.</string>
     <string name="style_type_defaults">Impostazioni predefinite degli stili</string>
+    <string name="acra_report_saved">Ora è possibile visitare la pagina del progetto su Github e creare un nuovo problema. Si prega di allegare al problema il rapporto precedentemente salvato. Se non si dispone ancora di un account Github, è necessario crearne uno.</string>
+    <string name="action_report">Segnala</string>
 </resources>

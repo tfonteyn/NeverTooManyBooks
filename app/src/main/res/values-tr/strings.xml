@@ -95,8 +95,6 @@
     <string name="X_whichSendToApplication">Göndermek için kullanılacak uygulama</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
-    <string name="acra_resDialogCommentPrompt">Yorumlarınız (isteğe bağlı):</string>
-    <string name="acra_resDialogText">Sanırız &APP_NAME; çöktü. Eğer bu çökme ile ilgili olabileceğini düşündüğünüz bir şeyler varsa lütfen “Tamam”a basarak bu çökme hakkında bir e-posta gönderin. Göndermeden önce e-postayı göreceksiniz.</string>
     <string name="action_add">Ekle</string>
     <string name="action_add_with_details">Ayrıntılarla ekle</string>
     <string name="action_clear">Temizle</string>
@@ -204,9 +202,10 @@
     <string name="confirm_scope_for_delete">“%1$s” başlığını %2$s ile silin.\n\nBu değişikliği nasıl uygulamak istersiniz?\nUYARI: “%3$s” seçimi geri alınamaz!</string>
     <string name="confirm_test_connection">Daha sonra sorunları önlemek için bu bağlantıyı test etmeniz önerilir.</string>
     <string name="confirm_unsaved_edits">Saklanmamış değişiklikler var, şimdi çıkarsanız hepsi silinecektir.</string>
-    <string name="debug_email_body">Lütfen yaşamakta olduğunuz sorunu kısaca anlatınız.</string>
+    <string name="acra_dialog_message">Görünüşe göre &APP_NAME; çöktü. Raporu istediğiniz bir konuma kaydetmek için “%1$s” seçeneğine dokunun. Bu raporu proje web sitesinde yeni bir sorun bildirmek için kullanabilirsiniz.</string>
+    <string name="X_debug_email_body">Lütfen yaşamakta olduğunuz sorunu kısaca anlatınız.</string>
     <string name="debug_send_info_text">Bu, herhangi bir günlük dosyasının yanı sıra veritabanınızın yedek bir kopyasını oluşturacak ve geliştiricilere gönderecektir. Eğer bu dosyaları bize göndermek istemezseniz göndermeden önce lütfen e-posta eklerinden kaldırın.</string>
-    <string name="debug_email_subject">Hata ayıklama bilgisi alındı</string>
+    <string name="X_debug_email_subject">Hata ayıklama bilgisi alındı</string>
     <string name="disabled">Kapalı</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dinamik</string>
     <string name="enabled">Etkin</string>
@@ -796,4 +795,6 @@
     <string name="pe_bob_cover_click_zoom">Kapak resmini yakınlaştırır.</string>
     <string name="pe_bob_cover_click_details">Kitap ayrıntıları sayfasını açar.</string>
     <string name="style_type_defaults">Stiller varsayılan ayarları</string>
+    <string name="acra_report_saved">Artık Github’daki proje sayfasını ziyaret edebilir ve yeni bir sorun kaydedebilirsiniz. Lütfen daha önce kaydettiğiniz raporu soruna ekleyin. Henüz bir Github hesabınız yoksa, bir tane oluşturmanız gerekecektir.</string>
+    <string name="action_report">Bildir</string>
 </resources>

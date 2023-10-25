@@ -82,7 +82,7 @@ ext {
     // https://github.com/material-components/material-components-android/releases
     googleMaterialVersion = '1.10.0'
 
-    //googleAutoServiceVersion = "1.0.1"
+//    googleAutoServiceVersion = "1.1.1"
 
     // https://jsoup.org/
     jsoupVersion = "1.16.2"
@@ -94,7 +94,7 @@ ext {
     zxingCoreVersion = "3.5.2"
 
     // https://github.com/ACRA/acra
-    acraVersion = '5.11.2'
+    acraVersion = '5.11.3'
 
     // https://github.com/mockito/mockito
     mockitoVersion = '5.6.0'

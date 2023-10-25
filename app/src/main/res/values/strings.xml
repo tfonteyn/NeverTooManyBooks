@@ -106,11 +106,13 @@
     <string name="notification_channel_info">Info</string>
     <!-- endregion -->
     <!-- region ========== Fatal/Crash/Debug messages. -->
-    <string name="debug_email_subject">Gathered debugging information</string>
-    <string name="debug_email_body">Please take the time to briefly describe the problem you are experiencing.</string>
+    <string name="X_debug_email_subject">Gathered debugging information</string>
+    <string name="X_debug_email_body">Please take the time to briefly describe the problem you are experiencing.</string>
     <string name="debug_select_items">Select what you would like to include:</string>
-    <string name="acra_resDialogText">It looks like &APP_NAME; has crashed. If possible describe anything you think may be relevant below and press “OK” to send us an email about the crash. You will see the email before it is sent.</string>
-    <string name="acra_resDialogCommentPrompt">Your comments (or just leave blank):</string>
+
+    <string name="acra_dialog_message">It looks like &APP_NAME; has crashed. Tap “%1$s” to save a report to a location of your choice. You can use this report to report a new issue on the project website.</string>
+    <string name="acra_report_saved">You can now visit the project page on Github and log a new issue. Please attach the previously saved report to the issue. If you don’t have a Github account yet, you will need to create one.</string>
+    <string name="acra_report_creation_failed">Failed to create the report.</string>
     <!-- endregion -->
     <!-- region ========== HTTP(S) error messages. -->
     <!-- All the httpError strings were copied from:
@@ -1642,6 +1644,8 @@
             translatable="false">Normalize publisher names (EXPERIMENTAL, see Help)</string>
 
     <string name="lbl_defaults">Defaults</string>
+    <!-- [VERIFIED] -->
+    <string name="action_report">Report</string>
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
 

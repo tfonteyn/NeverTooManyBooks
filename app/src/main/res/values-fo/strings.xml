@@ -96,9 +96,9 @@
     <string name="fallback_currency_format">%2$.2f %1$s</string>
     <string name="notification_channel_error">Villa</string>
     <string name="notification_channel_warn">Ávaring</string>
-    <string name="debug_email_subject">Samansavnað kembingarupplýsingar</string>
+    <string name="X_debug_email_subject">Samansavnað kembingarupplýsingar</string>
     <string name="btn_all_books">Allar bøkur</string>
-    <string name="debug_email_body">Vinarliga greið frá trupulleikan upplivaði.</string>
+    <string name="X_debug_email_body">Vinarliga greið frá trupulleikan upplivaði.</string>
     <string name="httpErrorFailedSslHandshake">Kundi ikki sambinda trygt.</string>
     <string name="httpErrorAuth">Kundi ikki vátta.</string>
     <string name="httpError">Ein netvilla uppstóð.</string>
@@ -115,8 +115,6 @@
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="debug_select_items">Vel hvat tú vilt telja uppí:</string>
-    <string name="acra_resDialogText">Tað sær út til at &APP_NAME; hevur krasjað. Um møguligt, greið frá alt tú heldur kemur hetta við niðanfyri og trýst á „OK“, fyri at senda okkum ein teldupost um krasjið. Tú sært hana áðren hon verður send.</string>
-    <string name="acra_resDialogCommentPrompt">Tín viðmerking (ella skriva einki):</string>
     <string name="X_httpErrorIO">Fekk ikki samband við ambætaran. Royn aftur seinni.</string>
     <string name="httpErrorTimeout">Sambandið við ambætaran fór út um tíð.</string>
     <string name="httpErrorFile">Fekk ikk atgongd til fíluna.</string>

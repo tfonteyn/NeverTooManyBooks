@@ -95,8 +95,7 @@
     <string name="X_whichSendToApplication">Αποστολή μέσω</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
-    <string name="acra_resDialogCommentPrompt">Τα σχόλιά σας (ή αφήστε το κενό):</string>
-    <string name="acra_resDialogText">Φαίνεται πως το &APP_NAME; σταμάτησε να λειτουργεί. Εαν είναι δυνατό περιγράψτε παρακάτω ό,τι πιστεύετε πως είναι σχετικό και πατήστε ΟΚ για μας στείλετε email με πληροφορίες για την βλάβη. Θα δείτε το e-mail πρωτού αποσταλεί.</string>
+    <string name="acra_dialog_message">Φαίνεται ότι το &APP_NAME; έχει καταρρεύσει. Πατήστε «%1$s» για να αποθηκεύσετε μια αναφορά σε μια τοποθεσία της επιλογής σας. Μπορείτε να χρησιμοποιήσετε αυτή την αναφορά για να αναφέρετε ένα νέο πρόβλημα στον ιστότοπο του έργου.</string>
     <string name="action_add">Προσθήκη</string>
     <string name="action_add_with_details">Προσθήκη με λεπτομέρειες</string>
     <string name="action_clear">Διαγραφή</string>
@@ -198,9 +197,9 @@
     <string name="confirm_scope_for_delete">Διαγράψτε τον τίτλο «%1$s» κατά %2$s\n\nΠώς θέλετε να εφαρμόσετε αυτήν την αλλαγή;\nΠΡΟΕΙΔΟΠΟΙΗΣΗ: Η επιλογή «%3$s» δεν μπορεί να αναιρεθεί!</string>
     <string name="confirm_test_connection">Συνιστάται να δοκιμάσετε αυτήν τη σύνδεση για να αποφύγετε προβλήματα αργότερα.</string>
     <string name="confirm_unsaved_edits">Υπάρχουν αλλαγές που δεν έχουν αποθηκευτεί, αν γίνει έξοδος τώρα θα χαθούν.</string>
-    <string name="debug_email_body">Παρακαλούμε περιγράψτε συνοπτικά το πρόβλημα που αντιμετωπίζετε.</string>
+    <string name="X_debug_email_body">Παρακαλούμε περιγράψτε συνοπτικά το πρόβλημα που αντιμετωπίζετε.</string>
     <string name="debug_send_info_text">Αυτό θα δημιουργήσει ένα αντίγραφο ασφαλείας της βάσης δεδομένων σας καθώς και οποιαδήποτε αρχεία καταγραφής και θα το στείλει στους προγραμματιστές. Εαν δεν θέλετε να στείλετε αυτά τα αρχεία διαγράψτε τα επισυναπτόμενα αρχεία του e-mail πριν την αποστολή.</string>
-    <string name="debug_email_subject">Συλλέχθησαν πληροφορίες debugging</string>
+    <string name="X_debug_email_subject">Συλλέχθησαν πληροφορίες debugging</string>
     <string name="disabled">Απενεργοποιημένο</string>
     <string name="pe_fast_scroller_overlay_dynamic">Δυναμικός</string>
     <string name="enabled">Ενεργοποιήθηκε</string>
@@ -785,4 +784,6 @@
     <string name="pe_bob_cover_click_zoom">Θα μεγεθύνει την εικόνα του εξωφύλλου.</string>
     <string name="pe_bob_cover_click_details">Ανοίγει τη σελίδα με τις λεπτομέρειες του βιβλίου.</string>
     <string name="style_type_defaults">Στυλ προεπιλεγμένες ρυθμίσεις</string>
+    <string name="acra_report_saved">Μπορείτε τώρα να επισκεφθείτε τη σελίδα του έργου στο Github και να καταγράψετε ένα νέο θέμα. Παρακαλούμε επισυνάψτε την προηγουμένως αποθηκευμένη αναφορά στο θέμα. Αν δεν έχετε ακόμη λογαριασμό στο Github, θα πρέπει να δημιουργήσετε έναν.</string>
+    <string name="action_report">Αναφορά</string>
 </resources>

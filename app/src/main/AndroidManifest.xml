@@ -158,12 +158,19 @@
             android:name=".covers.CropImageActivity"
             android:theme="@style/Theme.App.FullScreen" />
 
+        <!--        <activity-->
+        <!--            android:name="org.acra.dialog.CrashReportDialog"-->
+        <!--            android:excludeFromRecents="true"-->
+        <!--            android:finishOnTaskLaunch="true"-->
+        <!--            android:launchMode="singleInstance" />-->
+
         <activity
-            android:name="org.acra.dialog.CrashReportDialog"
+            android:name=".debug.AcraCustomDialog"
+            android:process=":acra"
+            android:theme="@style/Theme.App"
             android:excludeFromRecents="true"
             android:finishOnTaskLaunch="true"
             android:launchMode="singleInstance" />
-
     </application>
 
 </manifest>
