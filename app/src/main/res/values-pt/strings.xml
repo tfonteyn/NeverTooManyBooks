@@ -442,7 +442,7 @@
     <string name="pt_bob_cover_scale">Tamanho da capa em listas</string>
     <string name="error_import_csv_column_count_mismatch">Incompatibilidade de contagem de colunas na linha %1$d</string>
     <string name="info_calibre_content_server_extension">A extensão do servidor de conteúdo do Calibre não está instalada.</string>
-    <string name="tip_booklist_style_properties">Pode usar este ecrã para definir as características de um estilo específico de lista de livros. Pode alterar o nome, editar os agrupamentos para alterar a hierarquia e ajustar uma variedade de outras preferências para criar um estilo que considere útil.</string>
+    <string name="tip_booklist_style_properties">Utilize este ecrã para definir as características de um estilo específico. Pode alterar o nome, editar os agrupamentos para alterar a hierarquia e ajustar uma variedade de outras preferências para criar um estilo que considere útil.</string>
     <string name="tip_series_book_may_appear_more_than_once">Se os livros forem apresentados em todas as séries a que pertencem, podem aparecer várias vezes na lista. A eliminação de um desses livros tem o efeito de remover todos os exemplares da lista.</string>
     <string name="size_x_small">Muito Pequeno</string>
     <string name="book_format_paperback_large">Capa mole comercial</string>
@@ -717,7 +717,7 @@
     <string name="lbl_description">Descrição</string>
     <string name="lbl_personal_notes">Notas pessoais</string>
     <string name="warning_no_site_supports_this_method">AVISO: nenhum dos sites atualmente selecionados suporta pesquisar por %1$s. Por favor, use o menu do site para ativar sites alternativos ou use um método de pesquisa diferente.</string>
-    <string name="tip_booklist_style_groups">Pode usar este ecrã para modificar a hierarquia de cabeçalhos para um estilo específico da lista de livros. Um “visto” indica que o cabeçalho será mostrado na lista, “não-visto” para escondê-lo e vice-versa. Pode reordenar a hierarquia arrastando o ícone na extrema direita de cada linha para cima ou para baixo.</string>
+    <string name="tip_booklist_style_groups">Utilize este ecrã para modificar a hierarquia dos grupos para um estilo específico. Um \"visto\" indica que o grupo será mostrado na lista, \"desmarcado\" para o ocultar e vice-versa.  Pode reordenar a hierarquia arrastando o ícone no final de cada linha para cima ou para baixo.</string>
     <string name="tip_update_fields_from_internet">Os links externos do site só são processados se o site for realmente contactado. Como resultado, o menu “Exibir em…” da mesma forma, mostrará apenas o que está disponível.</string>
     <string name="confirm_scope_for_change">Mudou:
 \n“%1$s”
@@ -728,7 +728,7 @@
 \nNota: A escolha “%3$s” será aplicada instantaneamente. Se escolher “%4$s”, então um novo %5$s será criado.</string>
     <string name="tip_booklist_styles_editor">Pode usar este ecrã para personalizar a lista de estilos que serão exibidos no seu menu de estilos padrão. Um “visto” indica que o estilo será mostrado na lista, “não-visto” para ocultá-lo e vice-versa. Se nenhum estilo estiver marcado, todos os estilos serão mostrados. Pode reordenar a hierarquia arrastando o ícone no extremo direito de cada linha para cima ou para baixo. Pressionar longamente em qualquer outro lugar numa linha permitirá que edite ou clone os detalhes de um estilo específico. Se clonou um estilo e mudou de ideia, precisará excluí-lo você mesmo.</string>
     <string name="info_cleanup_files">Ficheiros que possam ser eliminados usam actualmente %1$s do cartão SD. Ficheiros de registo e outros dados são guardados no cartão SD a cada atualização, quando faz cópias de segurança da base de dados ou quando a aplicação falha. Prima o botão abaixo para limpar esses ficheiros do seu cartão SD. Se estiverem a ocorrer falhas ou outros erros, considere usar o botão “%2$s” primeiro.</string>
-    <string name="tip_booklist_style_defaults">Pode usar este ecrã para definir as características padrão de todos os estilos de lista de livros. A maioria das propriedades pode ser substituída por estilos individuais, mas os valores por defeito são definidos aqui. Pode alterar a forma como as listas são exibidas no arranque e ajustar uma variedade de outras preferências que serão aplicadas a todos os seus estilos quando possível.</string>
+    <string name="tip_booklist_style_defaults">Utilize este ecrã para definir as características predefinidas de todos os estilos. Estas são utilizadas por todos os estilos incorporados e como ponto de partida para qualquer estilo definido pelo utilizador.</string>
     <string name="lbl_genre">Género</string>
     <string name="lbl_barcode">Código de barras</string>
     <string name="lbl_edition">Edição</string>

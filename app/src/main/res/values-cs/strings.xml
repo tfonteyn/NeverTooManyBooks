@@ -90,7 +90,7 @@
     <string name="X_option_bob_filter_anthology_yes">Anthology</string>
     <string name="X_pg_general">Obecné</string>
     <string name="X_pt_site_settings">Nastavení webových stránek</string>
-    <string name="tip_booklist_style_defaults">Na této obrazovce můžete nastavit výchozí charakteristiky všech stylů seznamu knih. Většina vlastností může být potlačena jednotlivými styly, ale zde jsou definovány výchozí hodnoty. Můžete změnit způsob zobrazení seznamů při spuštění a upravit řadu dalších preferencí, které budou použity na všechny vaše styly, pokud to bude možné.</string>
+    <string name="tip_booklist_style_defaults">Na této obrazovce můžete nastavit výchozí vlastnosti všech stylů. Ty jsou používány všemi vestavěnými styly a jako výchozí bod pro jakýkoli styl, který si sami definujete.</string>
     <string name="X_txt_import_books_option_all_books">Budou přidány nové knihy. Stávající knihy budou aktualizovány.</string>
     <string name="X_txt_import_books_option_new_and_changed">Importujte pouze knihy, které jsou nové nebo které byly aktualizovány v archivu. To je užitečné při synchronizaci dvou zařízení.</string>
     <string name="X_txt_thank_you">Děkujeme!</string>
@@ -662,8 +662,8 @@
     <string name="tip_autorotate_camera_images">Pokud se vždy nacházíte ve stejném směru, zkuste změnit předvolby aplikace tak, aby určovaly rotaci, která se použije automaticky.</string>
     <string name="tip_book_list">Kliknutí na knihu vám ukáže podrobnosti o knize. Dlouhý stisk položky v seznamu vám poskytne více možností.</string>
     <string name="tip_book_search_by_text">Přidání knihy podle ISBN kódu je přesnější než její přidání podle názvu a autora - proto tento postup doporučujeme. Pamatujte, že správný kód můžete ve většině případů nalézt přímo na obalu knihy.</string>
-    <string name="tip_booklist_style_groups">Na této obrazovce můžete upravit hierarchii nadpisů pro určitý styl seznamu knih. Zaškrtnutí označuje nadpis, který bude zobrazen v seznamu, odškrtnutím jej skryjete a naopak. Hierarchii můžete změnit tak, že přetáhnete ikonu v pravé krajní části každého řádku nahoru nebo dolů.</string>
-    <string name="tip_booklist_style_properties">Na této obrazovce můžete nastavit vlastnosti konkrétního stylu seznamu knih. Můžete změnit název, upravit seskupení a změnit hierarchii a upravit řadu dalších preferencí tak, abyste vytvořili styl, který považujete za užitečný.</string>
+    <string name="tip_booklist_style_groups">Tato obrazovka slouží k úpravě hierarchie skupin pro konkrétní styl. \"Zaškrtnutí\" znamená, že skupina bude v seznamu zobrazena, \"zrušením zaškrtnutí\" ji skryjete a naopak.  Hierarchii můžete změnit přetažením ikony na konci každého řádku nahoru nebo dolů.</string>
+    <string name="tip_booklist_style_properties">Tato obrazovka slouží k nastavení vlastností konkrétního stylu. Můžete změnit název, upravit seskupení a změnit hierarchii a upravit řadu dalších předvoleb, abyste vytvořili styl, který považujete za užitečný.</string>
     <string name="tip_booklist_styles_editor">Na této obrazovce můžete přizpůsobit seznam stylů, které se zobrazí v nabídce výchozích stylů. Zaškrtnutí značí, že styl bude zobrazen v seznamu, odškrtnutím jej skryjete a naopak. Pokud nejsou zaškrtnuty žádné styly, zobrazí se všechny styly. Hierarchii můžete změnit tak, že přetáhnete ikonu v pravé krajní části každého řádku nahoru nebo dolů. Dlouhé stisknutí kdekoli v řadě vám umožní upravit nebo klonovat podrobnosti konkrétního stylu. Pokud jste klonovali styl a změnili jste názor, budete jej muset sami odstranit.</string>
     <string name="tip_dialog_title">Rada</string>
     <string name="tip_reset_all">Obnovit rady</string>
