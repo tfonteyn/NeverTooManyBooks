@@ -71,7 +71,7 @@ public class AboutFragment
         vb.debugVersion.setText(code);
 
         vb.btnSourcecodeUrl.setOnClickListener(v -> startActivity(
-                new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.sourcecode_url)))));
+                new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.github_project_url)))));
 
         // just running these on the UI thread...
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();

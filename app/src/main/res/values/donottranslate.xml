@@ -32,10 +32,12 @@
 
     <string name="lbl_github"
             translatable="false">GitHub</string>
-    <string name="sourcecode_url"
+    <string name="github_project_url"
             translatable="false">https://github.com/tfonteyn/NeverTooManyBooks</string>
-    <string name="help_url"
+    <string name="github_help_url"
             translatable="false">https://github.com/tfonteyn/NeverTooManyBooks/wiki</string>
+    <string name="github_issues_url"
+            translatable="false">https://github.com/tfonteyn/NeverTooManyBooks/issues</string>
 
     <!--  acronyms -->
     <string name="lbl_isbn"

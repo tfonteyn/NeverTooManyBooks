@@ -41,8 +41,15 @@ public final class IntentFactory {
     }
 
     @NonNull
-    public static Intent createHelpIntent(@NonNull final Context context) {
-        return new Intent(Intent.ACTION_VIEW, Uri.parse(context.getString(R.string.help_url)));
+    public static Intent createGithubHelpIntent(@NonNull final Context context) {
+        return new Intent(Intent.ACTION_VIEW,
+                          Uri.parse(context.getString(R.string.github_help_url)));
+    }
+
+    @NonNull
+    public static Intent createGithubIssueIntent(@NonNull final Context context) {
+        return new Intent(Intent.ACTION_VIEW,
+                          Uri.parse(context.getString(R.string.github_issues_url)));
     }
 
     @NonNull

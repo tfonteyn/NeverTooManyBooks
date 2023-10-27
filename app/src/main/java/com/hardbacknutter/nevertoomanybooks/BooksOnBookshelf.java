@@ -809,7 +809,7 @@ public class BooksOnBookshelf
             return true;
 
         } else if (menuItemId == R.id.MENU_HELP) {
-            startActivity(IntentFactory.createHelpIntent(this));
+            startActivity(IntentFactory.createGithubHelpIntent(this));
             return true;
 
         } else if (menuItemId == R.id.MENU_ABOUT) {
