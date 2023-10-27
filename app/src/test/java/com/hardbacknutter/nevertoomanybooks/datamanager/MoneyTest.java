@@ -41,7 +41,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class MoneyTest
         extends Base {
 
-    private static final BigDecimal twelveDotThreeFour = BigDecimal.valueOf(12.34d);
+    private static final double VALUE = 12.34d;
+    private static final BigDecimal twelveDotThreeFour = BigDecimal.valueOf(VALUE);
 
     private DataManager dataManager;
 
@@ -157,7 +158,7 @@ public class MoneyTest
     void putComponentsAndGetMoney() {
         final RealNumberParser realNumberParser = new RealNumberParser(locales);
 
-        dataManager.putDouble(DBKey.PRICE_LISTED, 12.34d);
+        dataManager.putDouble(DBKey.PRICE_LISTED, VALUE);
         dataManager.putString(DBKey.PRICE_LISTED_CURRENCY, "GBP");
 
         final Money out = dataManager.getMoney(DBKey.PRICE_LISTED, realNumberParser);
@@ -179,7 +180,7 @@ public class MoneyTest
     void putComponentsAndGetObject() {
         final RealNumberParser realNumberParser = new RealNumberParser(locales);
 
-        dataManager.putDouble(DBKey.PRICE_LISTED, 12.34d);
+        dataManager.putDouble(DBKey.PRICE_LISTED, VALUE);
         dataManager.putString(DBKey.PRICE_LISTED_CURRENCY, "GBP");
 
         final Object out = dataManager.get(DBKey.PRICE_LISTED, realNumberParser);
@@ -203,13 +204,13 @@ public class MoneyTest
     void putComponentsAndGetComponents() {
         final RealNumberParser realNumberParser = new RealNumberParser(locales);
 
-        dataManager.putDouble(DBKey.PRICE_LISTED, 12.34d);
+        dataManager.putDouble(DBKey.PRICE_LISTED, VALUE);
         dataManager.putString(DBKey.PRICE_LISTED_CURRENCY, "GBP");
 
         final double outValue = dataManager.getDouble(DBKey.PRICE_LISTED, realNumberParser);
         final String outCurrency = dataManager.getString(DBKey.PRICE_LISTED_CURRENCY);
 
-        assertEquals(12.34d, outValue);
+        assertEquals(VALUE, outValue);
         assertEquals("GBP", outCurrency);
 
         MoneyVerifier.checkRawData(dataManager, twelveDotThreeFour, "GBP");
@@ -226,7 +227,7 @@ public class MoneyTest
     void putValueAndGetMoney() {
         final RealNumberParser realNumberParser = new RealNumberParser(locales);
 
-        dataManager.putDouble(DBKey.PRICE_LISTED, 12.34d);
+        dataManager.putDouble(DBKey.PRICE_LISTED, VALUE);
 
         final Money out = dataManager.getMoney(DBKey.PRICE_LISTED, realNumberParser);
         assertNotNull(out);
@@ -246,7 +247,7 @@ public class MoneyTest
     void putValueAndGetObject() {
         final RealNumberParser realNumberParser = new RealNumberParser(locales);
 
-        dataManager.putDouble(DBKey.PRICE_LISTED, 12.34d);
+        dataManager.putDouble(DBKey.PRICE_LISTED, VALUE);
 
         final Object out = dataManager.get(DBKey.PRICE_LISTED, realNumberParser);
         assertNotNull(out);

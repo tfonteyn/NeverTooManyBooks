@@ -190,14 +190,16 @@ public class MoneyParser {
     public Money parse(@NonNull final CharSequence valueWithCurrency) {
         try {
             // website html cleaning: replace any "&nbsp;" by " "
-            // and trim the whole thing so charAt(0) below is reliable
+            // and strip the whole thing
             final String vwc = NBSP_LITERAL.matcher(valueWithCurrency)
                                            .replaceAll(" ")
-                                           .trim();
+                                           .strip();
             if (vwc.isEmpty()) {
                 return null;
             }
 
+            // If the string does not start with a digit,
+            // we likely have a currency string as a prefix.
             if (!Character.isDigit(vwc.charAt(0))) {
                 final String[] data = CURRENCY_AS_PREFIX_PATTERN.split(vwc, 2);
                 if (data.length > 1) {
@@ -210,15 +212,17 @@ public class MoneyParser {
 
             Matcher matcher;
 
-            matcher = CURRENCY_AS_SUFFIX_PATTERN.matcher(vwc);
-            if (matcher.find()) {
-                return parse(matcher.group(1), matcher.group(2));
-            }
-
-            // let's see if this was UK shillings/pence
+            // First check if this was UK shillings/pence
             matcher = SHILLING_PENCE_PATTERN.matcher(vwc);
             if (matcher.find()) {
                 return parseBritishPreDecimal(matcher);
+            }
+
+            // We should either have a value without a currency at all,
+            // or a value with a currency as suffix.
+            matcher = CURRENCY_AS_SUFFIX_PATTERN.matcher(vwc);
+            if (matcher.find()) {
+                return parse(matcher.group(1), matcher.group(2));
             }
 
         } catch (@NonNull final IllegalArgumentException e) {

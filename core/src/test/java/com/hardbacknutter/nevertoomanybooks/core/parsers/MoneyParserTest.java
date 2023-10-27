@@ -54,6 +54,11 @@ class MoneyParserTest {
                 Arguments.of(List.of(Locale.UK),
                              "£12", BigDecimal.valueOf(12.0d), MoneyParser.GBP),
 
+                Arguments.of(List.of(Locale.UK),
+                             "12/6", BigDecimal.valueOf(0.625d), MoneyParser.GBP),
+                Arguments.of(List.of(Locale.UK),
+                             "10/-", BigDecimal.valueOf(0.5d), MoneyParser.GBP),
+
                 // Variations of EUR and Locale.{eu}
                 Arguments.of(List.of(new Locale("de", "DE")),
                              "12,34&nbsp;€", twelveDotThreeFour, MoneyParser.EUR),
