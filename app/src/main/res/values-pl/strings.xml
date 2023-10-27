@@ -43,7 +43,6 @@
         <item quantity="many">%1$s gwiazdek</item>
         <item quantity="other">%1$s gwiazdki</item>
     </plurals>
-    <string name="X_acra_resToastText">&APP_NAME; niespodziewanie się zawiesił. Pomóż nam ulepszyć aplikację, zgłaszając tę awarię.</string>
     <string name="X_action_clear_credentials">Wyczyść dane o certyfikatach</string>
     <string name="X_action_execute">Wykonaj</string>
     <string name="X_action_move">Przenieś</string>
@@ -51,28 +50,20 @@
     <string name="X_action_previous">Wstecz</string>
     <string name="X_action_reset">Resetuj</string>
     <string name="X_action_send">Wyślij</string>
-    <string name="X_action_swap">Wymieniać</string>
     <string name="X_action_try_again">Spróbuj ponownie</string>
     <string name="X_action_update">Zaktualizuj</string>
     <string name="X_action_validate">Uprawomocnić</string>
-    <string name="X_error_report">Prześlij opinię</string>
-    <string name="X_btn_continue_edit">Kontynuuj edycję</string>
     <string name="X_btn_customize">Dostosuj…</string>
-    <string name="X_btn_do_not_show_again">Nie pokazuj ponownie</string>
     <string name="X_btn_show_list">Pokaż listę</string>
     <string name="confirm_continue">Jesteś pewien, że chcesz kontynuować?</string>
     <string name="X_error_authentication_failed">Uwierzytelnianie nie powiodło się</string>
-    <string name="X_error_download_failed">Pobieranie nie udane</string>
     <string name="error_record_must_contain_column">Rekord musi zawierać pole o nazwie „%1$s”.</string>
     <string name="X_error_network_site_has_problems">Witryna ma problemy.</string>
-    <string name="X_error_not_available">%1$s jest niedostępny.</string>
     <string name="X_httpErrorIO">Nie można nawiązać połączenia z serwerem. Spróbuj ponownie później.</string>
     <string name="X_info_authorized_needed">Autoryzuj dostęp</string>
     <string name="X_info_not_authorized">Nieautoryzowany</string>
     <string name="X_info_site_authorization_successful">Autoryzacja %1$s powiodła się</string>
     <string name="X_lbl_completed">Zakończony</string>
-    <string name="X_lbl_cover_long">Obraz okładki</string>
-    <string name="X_lbl_delete_book">Usuń książkę</string>
     <string name="X_lbl_failed">Nie powiodło się</string>
     <string name="X_lbl_folder">Folder</string>
     <string name="X_lbl_image">Obraz</string>
@@ -80,24 +71,15 @@
     <string name="X_lbl_queue">Kolejka</string>
     <string name="X_lbl_queued">W kolejce</string>
     <string name="X_lbl_select_fields_to_update">Wybierz pola do aktualizacji</string>
-    <string name="X_lbl_select_image">Wybierz zdjęcie…</string>
-    <string name="X_lbl_select_style">Wybierz styl</string>
     <string name="X_lbl_thumbnails">Miniatury</string>
-    <string name="X_lbl_toc_multiple_authors">Wielu autorów</string>
     <string name="X_lbl_updated">Zaktualizowano</string>
-    <string name="X_lbl_virtual_library">Wirtualna biblioteka</string>
     <string name="X_neither">Żaden</string>
     <string name="X_option_bob_filter_anthology_no">Wszystkie oprócz antologii</string>
     <string name="X_option_bob_filter_anthology_yes">Antologie</string>
     <string name="X_pg_general">Ogólne</string>
-    <string name="X_pt_site_settings">Ustawienia strony internetowej</string>
     <string name="tip_booklist_style_defaults">Ten ekran służy do ustawiania domyślnych właściwości wszystkich stylów. Są one używane przez wszystkie wbudowane style i stanowią punkt wyjścia dla każdego stylu zdefiniowanego przez użytkownika.</string>
-    <string name="X_txt_import_books_option_all_books">Nowe książki zostaną dodane. Istniejące książki zostaną zaktualizowane.</string>
-    <string name="X_txt_import_books_option_new_and_changed">Importuj tylko książki, które są nowe lub zostały zaktualizowane w archiwum ostatnio. Jest to przydatne podczas synchronizacji dwóch urządzeń.</string>
-    <string name="X_txt_thank_you">Dziękuję Ci!</string>
     <string name="X_use_default_setting">Użyj ustawień domyślnych</string>
     <string name="X_vldt_failed_for_x">Walidacja pola nie powiodła się dla „%1$s”</string>
-    <string name="X_warning_no_matching_book_found_long">Zeskanowana książka nie została odnaleziona. Spóbuj ponownie z kodem, który może znajdować się w środku okładki lub wprowadź dane ręcznie.</string>
     <string name="X_whichImageCaptureApplication">Zrób zdjęcie w aplikacji</string>
     <string name="X_whichSendToApplication">Wyślij za pomocą</string>
     <string name="a_b">%1$s%2$s</string>
@@ -216,9 +198,6 @@
     <string name="confirm_test_connection">Zaleca się przetestowanie tego połączenia, aby później uniknąć problemów.</string>
     <string name="confirm_unsaved_edits">Masz niezapisane zmiany, jeśli wyjdziesz teraz, zostaną utracone.</string>
     <string name="acra_dialog_message">Wygląda na to, że aplikacja &APP_NAME; uległa awarii. Naciśnij „%1$s”, aby zapisać raport w wybranej lokalizacji. Możesz użyć tego raportu do zgłoszenia nowego błędu na stronie projektu.</string>
-    <string name="X_debug_email_body">Poświęć chwilę na krótki opis problemu, z którym się zetknąłeś.</string>
-    <string name="debug_send_info_text">Spowoduje to utworzenie kopii zapasowej bazy danych, a także wszelkich plików dziennika i wysłanie jej do programistów. Jeśli nie chesz, by te dane były wysyłane, usuń je z przygotowanej wiadomości przed jej wysłaniem.</string>
-    <string name="X_debug_email_subject">Zbieranie informacji o problemach technicznych</string>
     <string name="disabled">Wyłączony</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dynamiczny</string>
     <string name="enabled">Włączone</string>
@@ -291,7 +270,6 @@
     <string name="option_info_archive_format_json">Wszystkie dane w formacie JSON.</string>
     <string name="option_info_lbl_archive_is_export_only">Dotyczy to tylko eksportowania danych; import nie jest obsługiwany.</string>
     <string name="option_info_lbl_archive_type_backup">Pełne archiwum kopii zapasowej / przywracania</string>
-    <string name="option_archive_type_backup_tar">Kopia zapasowa (.tar)</string>
     <string name="option_archive_type_backup_zip">Kopia zapasowa (.zip)</string>
     <string name="option_archive_type_csv">Książki (.csv)</string>
     <string name="option_info_archive_type_csv">Eksport książek do pliku CSV</string>
@@ -556,7 +534,6 @@
     <string name="pe_ui_theme_light">Światło</string>
     <string name="pt_barcode_scanner">Skaner kodów kreskowych</string>
     <string name="pt_bob_show_details">Szczegóły książki pokazane na liście</string>
-    <string name="pc_bob">Listy książek</string>
     <string name="lbl_filters">Filtry</string>
     <string name="pc_image_cache">Pamięć podręczna zdjęć</string>
     <string name="pt_bob_groups">Grupowanie</string>
@@ -578,7 +555,6 @@
     <string name="progress_msg_optimizing">Optymalizacja bazy danych…</string>
     <string name="progress_msg_please_wait">Zaczekaj…</string>
     <string name="progress_msg_rebuilding_search_index">Przebudowywanie indeksu wyszukiwania…</string>
-    <string name="progress_msg_saving_image">Zapisywanie obrazu…</string>
     <string name="progress_msg_searching">Wyszukiwanie…</string>
     <string name="progress_msg_searching_editions">Szukanie wydań…</string>
     <string name="progress_msg_searching_site">Wyszukiwanie %1$s</string>
@@ -676,7 +652,6 @@
     <string name="tip_view_only_help">Możesz przesuwać palcem w lewo lub w prawo, aby przejść do innych książek.</string>
     <string name="info_cleanup_files">Pliki pomocnicze możliwe do usunięcia zajmują %1$s na karcie SD. Logi i inne dane są zapisywane przy każdej aktualizacji, kopii danych i gdy program odmówi posłuszeństwa. Kliknij w przycisk poniżej by usunąć te pliki z karty SD. Jeśli pojawiają się problemy i program działa nieprawidłowo, rozważ wysłanie informacji do programistów - kliknij „%2$s” najpierw.</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d książek, w %2$d wpisów</string>
-    <string name="info_export_backup_all">Wszystkie książki, okładki, preferencje i niestandardowe style zostaną wyeksportowane do archiwum.</string>
     <string name="info_export_books_option_since_last_full_backup">Wszystkie książki dodane lub zaktualizowane od ostatniej pełnej kopii zapasowej.</string>
     <string name="option_info_import_books_option_all">Importuj nowe książki i nadpisz istniejące książki. Użyj tego do przywrócenia kopii zapasowej.</string>
     <string name="option_info_import_books_option_new_and_updated">Importuj nowe książki i synchronizuj istniejące książki na podstawie daty ich ostatniej modyfikacji.</string>
@@ -775,7 +750,6 @@
     <string name="site_description_english_catalogue_FSF">Angielski i więcej; Katalog; Fantasy i science fiction</string>
     <string name="site_description_french_catalogue_eu_comics">Francuski i więcej; Katalog; Komiksy europejskie</string>
     <string name="site_description_general_shopping">Ogólne; Zakupy</string>
-    <string name="site_description_portuguese_shopping">Portugalski i więcej; Zakupy</string>
     <string name="info_maintenance_sync_deleted_book_records">Spowoduje to sprawdzenie historii usuniętych książek z poprzedniego importu z innego urządzenia i synchronizację tych usunięć. Innymi słowy, książki usunięte na innym urządzeniu zostaną również usunięte na tym urządzeniu.</string>
     <string name="option_clear_deleted_book_records">Wyczyść historię usuniętych książek</string>
     <string name="info_maintenance_clear_deleted_book_records">Spowoduje to wyczyszczenie historii usuniętych książek. Żadne książki nie zostaną usunięte.</string>
@@ -794,7 +768,6 @@
     <string name="pt_layout">Układ</string>
     <string name="pe_list">Lista</string>
     <string name="pe_grid">Siatka</string>
-    <string name="pt_bob_grid_spancount">Kolumny siatki</string>
     <!-- NOT APPLICABLE FOR BOOKS IN POLISH; Just show "On"; it will still be used for other languages. -->
     <string name="ps_show_titles_reordered_on">Wł</string>
     <!-- NOT APPLICABLE FOR BOOKS IN POLISH; Just show "Off"; it will still be used for other languages. -->

@@ -42,7 +42,6 @@
         <item quantity="other">%1$s hvězd</item>
         <item quantity="many">%1$s hvězd</item>
     </plurals>
-    <string name="X_acra_resToastText">Došlo k neočekávanému pádu aplikace &APP_NAME;. Prosím pomozte nám zlepšit aplikaci a informujte nás o tomto problému.</string>
     <string name="X_action_clear_credentials">Vymazat pověření</string>
     <string name="X_action_execute">Spustit</string>
     <string name="X_action_move">Přesunout</string>
@@ -50,28 +49,20 @@
     <string name="X_action_previous">Předch.</string>
     <string name="X_action_reset">Resetovat</string>
     <string name="X_action_send">Odeslat</string>
-    <string name="X_action_swap">Vyměnit</string>
     <string name="X_action_try_again">Zkusit znovu</string>
     <string name="X_action_update">Aktualizovat</string>
     <string name="X_action_validate">Ověřit</string>
-    <string name="X_error_report">Odeslat zpětnou vazbu</string>
-    <string name="X_btn_continue_edit">Pokračovat v úpravách</string>
     <string name="X_btn_customize">Přizpůsobit…</string>
-    <string name="X_btn_do_not_show_again">Příště již nezobrazovat</string>
     <string name="X_btn_show_list">Zobrazit seznam</string>
     <string name="confirm_continue">Jste si jistý, že chcete pokračovat?</string>
     <string name="X_error_authentication_failed">Ověření se nezdařilo</string>
-    <string name="X_error_download_failed">Stažení se nezdařilo</string>
     <string name="error_record_must_contain_column">Záznam musí obsahovat pole s názvem „%1$s“.</string>
     <string name="X_error_network_site_has_problems">Web má problémy.</string>
-    <string name="X_error_not_available">%1$s není k dispozici.</string>
     <string name="X_httpErrorIO">Se serverem nelze komunikovat. Zkuste to později.</string>
     <string name="X_info_authorized_needed">Autorizovat přístup</string>
     <string name="X_info_not_authorized">Neautorizováno</string>
     <string name="X_info_site_authorization_successful">%1$s autorizace v pořádku</string>
     <string name="X_lbl_completed">Kompletní</string>
-    <string name="X_lbl_cover_long">Obal knihy</string>
-    <string name="X_lbl_delete_book">Smazat knihu</string>
     <string name="X_lbl_failed">Neúspěšný</string>
     <string name="X_lbl_folder">Složka</string>
     <string name="X_lbl_image">Obrázek</string>
@@ -79,24 +70,15 @@
     <string name="X_lbl_queue">Fronta</string>
     <string name="X_lbl_queued">Fronta</string>
     <string name="X_lbl_select_fields_to_update">Zvolit pole k aktualizaci</string>
-    <string name="X_lbl_select_image">Zvolit obrázek…</string>
-    <string name="X_lbl_select_style">Zvolit styl</string>
     <string name="X_lbl_thumbnails">Náhledy</string>
-    <string name="X_lbl_toc_multiple_authors">Více autorů</string>
     <string name="X_lbl_updated">Aktualizováno</string>
-    <string name="X_lbl_virtual_library">Virtuální knihovna</string>
     <string name="X_neither">Ani</string>
     <string name="X_option_bob_filter_anthology_no">Všechno kromě Anthologies</string>
     <string name="X_option_bob_filter_anthology_yes">Anthology</string>
     <string name="X_pg_general">Obecné</string>
-    <string name="X_pt_site_settings">Nastavení webových stránek</string>
     <string name="tip_booklist_style_defaults">Na této obrazovce můžete nastavit výchozí vlastnosti všech stylů. Ty jsou používány všemi vestavěnými styly a jako výchozí bod pro jakýkoli styl, který si sami definujete.</string>
-    <string name="X_txt_import_books_option_all_books">Budou přidány nové knihy. Stávající knihy budou aktualizovány.</string>
-    <string name="X_txt_import_books_option_new_and_changed">Importujte pouze knihy, které jsou nové nebo které byly aktualizovány v archivu. To je užitečné při synchronizaci dvou zařízení.</string>
-    <string name="X_txt_thank_you">Děkujeme!</string>
     <string name="X_use_default_setting">Použít výchozí nastavení</string>
     <string name="X_vldt_failed_for_x">Selhala validace pro „%1$s“</string>
-    <string name="X_warning_no_matching_book_found_long">Nepodařilo se nalézt hledanou knihu. Zkuste prosím zadat potřebné údaje manuálně.</string>
     <string name="X_whichImageCaptureApplication">Vyfotit pomocí aplikace</string>
     <string name="X_whichSendToApplication">Odeslat pomocí aplikace</string>
     <string name="a_b">%1$s%2$s</string>
@@ -211,9 +193,6 @@
     <string name="confirm_scope_for_delete">Smazat název „%1$s“ od %2$s.\n\nJak chcete tuto změnu uplatnit?\nVAROVÁNÍ: Volbu „%3$s“ nelze vrátit zpět!</string>
     <string name="confirm_test_connection">Doporučujeme toto připojení otestovat, abyste se později vyhnuli problémům.</string>
     <string name="confirm_unsaved_edits">Máte neuložené změny, pokud nyní ukončíte, budou ztraceny.</string>
-    <string name="X_debug_email_body">Věnujte prosím čas přesnému popisu problému, se kterým máte zkušenost.</string>
-    <string name="debug_send_info_text">Tím vytvoříte záložní kopii vaší databáze a všechny soubory protokolu a odešlete ji vývojářům. Pokud si nepřejete poslat některý z těchto souborů, odstraňte jej z přílohy mailu ještě před jeho odesláním.</string>
-    <string name="X_debug_email_subject">Shromáždit informace o debugování</string>
     <string name="disabled">Vypnutý</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dynamický</string>
     <string name="enabled">Povoleno</string>
@@ -287,7 +266,6 @@
     <string name="option_info_archive_format_json">Všechna data ve formátu JSON.</string>
     <string name="option_info_lbl_archive_is_export_only">Toto je pouze pro export dat; import není podporován.</string>
     <string name="option_info_lbl_archive_type_backup">Úplný archiv zálohy / obnovy</string>
-    <string name="option_archive_type_backup_tar">Záložní kopie (.tar)</string>
     <string name="option_archive_type_backup_zip">Záložní kopie (.zip)</string>
     <string name="option_archive_type_csv">Knihy (.csv)</string>
     <string name="option_info_archive_type_csv">Export knih do souboru CSV</string>
@@ -552,7 +530,6 @@
     <string name="pe_ui_theme_light">Světlo</string>
     <string name="pt_barcode_scanner">Čtečka kódů</string>
     <string name="pt_bob_show_details">Podrobnosti knihy zobrazené v seznamu</string>
-    <string name="pc_bob">Seznamy knih</string>
     <string name="lbl_filters">Filtry knih</string>
     <string name="pc_image_cache">Obrázky mezipaměti</string>
     <string name="pt_bob_groups">Seskupení</string>
@@ -574,7 +551,6 @@
     <string name="progress_msg_optimizing">Optimalizování databáze…</string>
     <string name="progress_msg_please_wait">Prosím čekejte…</string>
     <string name="progress_msg_rebuilding_search_index">Obnovování indexu pro vyhledávání…</string>
-    <string name="progress_msg_saving_image">Uložení obrázku…</string>
     <string name="progress_msg_searching">Hledání…</string>
     <string name="progress_msg_searching_editions">Hledání edicí…</string>
     <string name="progress_msg_searching_site">Vyhledávám na %1$s</string>
@@ -672,7 +648,6 @@
     <string name="tip_view_only_help">Můžete posouvat doleva nebo doprava a přejít k dalším knihám.</string>
     <string name="info_cleanup_files">Dočasné soubory momentálně zabírají %1$s na SD kartě. Logovací soubory a další data jsou ukládána na SD kartu při každé aktualizaci, při zálohování databáze, nebo při pádu aplikace. Stiskněte tlačítko níže pro odstranění těchto dat. Pokud jste se však v minulosti setkal s pádem aplikace, nebo dalšími problémy při jejím používání, uvažujte prosím nejprve o zaslání těchto informací prostřednictvím tlačítka „%2$s“.</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d knih ve heslech %2$d</string>
-    <string name="info_export_backup_all">Všechny knihy, obaly, předvolby a vlastní styly budou exportovány do archivu.</string>
     <string name="info_export_books_option_since_last_full_backup">Všechny knihy byly přidány nebo aktualizovány od poslední úplné zálohy.</string>
     <string name="option_info_import_books_option_all">Importujte nové knihy a přepište existující knihy. Použijte k obnovení zálohy.</string>
     <string name="option_info_import_books_option_new_and_updated">Importujte nové knihy a synchronizujte existující knihy na základě data jejich poslední úpravy.</string>
@@ -771,7 +746,6 @@
     <string name="site_description_english_catalogue_FSF">Angličtina a více; Katalog; Fantasy a science fiction</string>
     <string name="site_description_french_catalogue_eu_comics">Francouzština a další; Katalog; Evropský komiks</string>
     <string name="site_description_general_shopping">Obecné; Nakupování</string>
-    <string name="site_description_portuguese_shopping">Portugalština a další; Nakupování</string>
     <string name="info_maintenance_sync_deleted_book_records">Zkontroluje se historie smazaných knih z předchozího importu z jiného zařízení a tato smazání se synchronizují. Jinými slovy, knihy smazané v jiném zařízení budou smazány i v tomto zařízení.</string>
     <string name="option_clear_deleted_book_records">Vymazání historie smazaných knih</string>
     <string name="info_maintenance_clear_deleted_book_records">Tato funkce vymaže historii smazaných knih. Žádné skutečné knihy nebudou odstraněny.</string>
@@ -790,7 +764,6 @@
     <string name="pt_layout">Rozložení</string>
     <string name="pe_list">Seznam</string>
     <string name="pe_grid">Mřížka</string>
-    <string name="pt_bob_grid_spancount">Sloupce mřížky</string>
     <!-- NOT APPLICABLE FOR BOOKS IN CZECH; Just show "On"; it will still be used for other languages. -->
     <string name="ps_show_titles_reordered_on">Na adrese</string>
     <!-- NOT APPLICABLE FOR BOOKS IN CZECH; Just show "Off"; it will still be used for other languages. -->

@@ -96,9 +96,7 @@
     <string name="fallback_currency_format">%2$.2f %1$s</string>
     <string name="notification_channel_error">Villa</string>
     <string name="notification_channel_warn">Ávaring</string>
-    <string name="X_debug_email_subject">Samansavnað kembingarupplýsingar</string>
     <string name="btn_all_books">Allar bøkur</string>
-    <string name="X_debug_email_body">Vinarliga greið frá trupulleikan upplivaði.</string>
     <string name="httpErrorFailedSslHandshake">Kundi ikki sambinda trygt.</string>
     <string name="httpErrorAuth">Kundi ikki vátta.</string>
     <string name="httpError">Ein netvilla uppstóð.</string>

@@ -48,7 +48,6 @@
     <string name="X_action_reset">Redefinir</string>
     <string name="X_action_send">Enviar</string>
     <string name="X_action_try_again">Tentar novamente</string>
-    <string name="X_error_report">Enviar feedback</string>
     <string name="X_httpErrorIO">Não foi possível comunicar com o servidor. Tente novamente mais tarde.</string>
     <string name="X_lbl_folder">Pasta</string>
     <string name="X_lbl_image">Imagem</string>
@@ -84,8 +83,6 @@
     <string name="bob_empty_field">(Vazio)</string>
     <string name="cancelled">Cancelado</string>
     <string name="acra_dialog_message">Parece que o &APP_NAME; foi bloqueado. Toque em “%1$s” para guardar um relatório numa localização à sua escolha. Pode utilizar este relatório para comunicar um novo problema no site do projeto.</string>
-    <string name="X_debug_email_body">Por favor reserve algum tempo para descrever brevemente o problema que encontrou.</string>
-    <string name="X_debug_email_subject">Informações de depuração recolhidas</string>
     <string name="debug_select_items">Seleccione o que gostaria de incluir:</string>
     <string name="error_certificate_invalid">O certificado é inválido ou inacessível.</string>
     <string name="error_network_failed_try_again">Verifique a conexão e tente novamente.</string>
@@ -247,7 +244,6 @@
     <string name="progress_msg_searching_site">A pesquisar %1$s</string>
     <string name="progress_msg_searching_editions">À procura de outras edições…</string>
     <string name="progress_msg_downloading">A transferir…</string>
-    <string name="progress_msg_saving_image">A guardar imagem…</string>
     <string name="progress_msg_x_created">%1$d criado</string>
     <string name="progress_msg_x_updated">%1$d atualizado</string>
     <string name="progress_msg_x_skipped">%1$d ignorado</string>
@@ -378,7 +374,6 @@
 \nOs livros em si não serão excluídos.
 \n
 \nConsidere editar o editor e alterar o nome do editor para o de outro editor para preservar estes dados.</string>
-    <string name="X_warning_no_matching_book_found_long">O livro não foi encontrado. Às vezes, pode encontrar o código de barras correcto no interior da capa frontal. Caso contrário, insira os detalhes manualmente.</string>
     <string name="warning_image_copy_failed">A imagem não pôde ser copiada.</string>
     <string name="vldt_integer_expected_for_x">Esperado um valor inteiro para “%1$s”</string>
     <string name="vldt_real_expected_for_x">Espera-se um número real para “%1$s”</string>
@@ -432,7 +427,6 @@
     <string name="lbl_date_added">Data de Adição</string>
     <string name="lbl_date_added_year">Ano de Adição</string>
     <string name="pc_formatting">Formatação</string>
-    <string name="pc_bob">Listas de livros</string>
     <string name="pc_lists">Listas</string>
     <string name="pt_allow_editing_external_id">Permitir a edição do ID do livro do site</string>
     <string name="pt_bob_list_rebuild_state">Estado de inicialização da lista de livros</string>
@@ -485,7 +479,6 @@
     <string name="info_rebuild_scheduled">Reconstrução agendada</string>
     <string name="lbl_purge_blns">Limpar o estado do nó</string>
     <string name="info_purge_blns_all">Limpar o estado do nó de todas as listas</string>
-    <string name="debug_send_info_text">Isso criará uma cópia de segurança da sua base de dados, bem como quaisquer ficheiros de registo e enviá-lo para os programadores. Se você não deseja enviar nenhum desses arquivos, exclua-os dos anexos do e-mail antes de enviar.</string>
     <string name="ps_bob_books_under_multiple_primary_author_only">apenas sob o seu autor principal</string>
     <string name="pt_sort_author_name_given_first">Ordenação do nome do autor</string>
     <string name="info_select_fields_to_update">Os campos selecionados serão atualizados a partir da internet. Os campos não selecionados permanecerão inalterados.</string>
@@ -500,15 +493,10 @@
     <string name="lbl_keywords">Palavras-chave</string>
     <string name="lbl_database">Base de dados</string>
     <string name="lbl_about">Sobre</string>
-    <string name="X_lbl_toc_multiple_authors">Vários autores</string>
-    <string name="X_btn_do_not_show_again">Não mostrar novamente</string>
     <string name="X_lbl_thumbnails">Miniaturas</string>
     <string name="lbl_number">Número</string>
     <string name="lbl_site_book_id">ID do livro do site</string>
     <string name="lbl_select_website">Selecione um site:</string>
-    <string name="X_acra_resToastText">&APP_NAME; bloqueou inesperadamente. Por favor, ajude-nos a melhorar a aplicação reportando este erro.</string>
-    <string name="X_lbl_virtual_library">Biblioteca Virtual</string>
-    <string name="X_pt_site_settings">Configurações do site</string>
     <string name="lbl_strip_info_mapped_bookshelf_wishlist">Estante atribuída à sua lista de desejos</string>
     <string name="X_lbl_updated">Atualizado</string>
     <string name="confirm_rebuild_index">Isto recriará os índices quando a aplicação for reiniciada. Tem certeza de que deseja continuar\?</string>
@@ -528,11 +516,8 @@
     <string name="lbl_filter">Filtro</string>
     <string name="unknown_author">[Autor desconhecido]</string>
     <string name="lbl_library">Biblioteca</string>
-    <string name="X_action_swap">Trocar</string>
     <string name="X_btn_customize">Personalizar…</string>
     <string name="confirm_continue">Tem certeza de que deseja continuar\?</string>
-    <string name="X_txt_thank_you">Obrigado!</string>
-    <string name="X_txt_import_books_option_all_books">Novos livros serão adicionados. Os livros existentes serão atualizados.</string>
     <string name="lbl_sync_date">Desde</string>
     <string name="size_x_large">Muito Grande</string>
     <string name="option_fab_add_book_manually">Adicionar manualmente</string>
@@ -557,9 +542,7 @@
     <string name="option_bob_filter_isbn_yes">Com ISBN</string>
     <string name="lbl_select_fields">Selecionar campos</string>
     <string name="X_action_update">Atualizar</string>
-    <string name="X_btn_continue_edit">Continuar a editar</string>
     <string name="X_lbl_clear_filters">Limpar filtros</string>
-    <string name="X_error_download_failed">Falha na transferência</string>
     <string name="lbl_date_published">Data de Publicação</string>
     <string name="pe_ui_theme_day_night">Dia / Noite</string>
     <string name="lbl_search_filtered_on_x">Filtrado em: %1$s</string>
@@ -587,7 +570,6 @@
     <string name="lbl_book_type_collection">Colecção</string>
     <string name="lbl_cover_front">Capa</string>
     <string name="lbl_cover_back">Contracapa</string>
-    <string name="X_lbl_cover_long">Imagem da capa</string>
     <string name="option_info_import_books_option_new_only">Importe apenas livros novos. Quaisquer actualizações de livros existentes serão ignoradas.</string>
     <string name="option_import_books_option_new_and_updated">Livros novos e atualizações</string>
     <string name="option_info_import_books_option_new_and_updated">Importar livros novos e sincronizar livros existentes com base na sua última data de modificação.</string>
@@ -622,7 +604,6 @@
     <string name="lbl_sorting">Ordenação</string>
     <string name="X_info_authorized_needed">Autorizar Acesso</string>
     <string name="X_info_not_authorized">Não Autorizado</string>
-    <string name="X_lbl_select_style">Selecione Estilo</string>
     <string name="X_pg_general">Geral</string>
     <string name="X_vldt_failed_for_x">Falha na validação de “%1$s”</string>
     <string name="X_use_default_setting">Usar valores padrão</string>
@@ -653,7 +634,6 @@
     <string name="lbl_date_first_publication_month">Mês da 1ª Pub.</string>
     <string name="lbl_archive_format">Formato</string>
     <string name="option_archive_type_backup_zip">Cópia (.zip)</string>
-    <string name="option_archive_type_backup_tar">Cópia (.tar)</string>
     <string name="option_archive_type_json">Exportação JSON (.json)</string>
     <string name="option_info_archive_format_json">Todos os dados no formato JSON.</string>
     <string name="option_info_lbl_archive_is_export_only">Isto é apenas para exportação de dados; a importação não é suportada.</string>
@@ -695,7 +675,6 @@
     <string name="lbl_name">Nome</string>
     <string name="lbl_read">Lido</string>
     <string name="X_btn_show_list">Mostrar lista</string>
-    <string name="X_error_not_available">%1$s não está disponível.</string>
     <string name="X_info_site_authorization_successful">%1$s autorização bem sucedida</string>
     <string name="X_lbl_completed">Concluído</string>
     <string name="pt_maintenance">Manutenção</string>
@@ -746,7 +725,6 @@
     <string name="lbl_author_type">Tipo de autor</string>
     <string name="lbl_export_books_option_since_last_full_backup">Livros novos e atualizados</string>
     <string name="title_backup_and_export">Cópia de Segurança e Exportação</string>
-    <string name="info_export_backup_all">Todos os livros, capas, preferências e estilos personalizados serão exportados para o ficheiro.</string>
     <string name="lbl_export_options">Selecione o que será exportado.</string>
     <string name="info_export_books_option_since_last_full_backup">Livros adicionados ou atualizados desde a última cópia de segurança completa.</string>
     <string name="option_info_archive_type_csv">Exportação dos livros para um ficheiro CSV</string>
@@ -775,12 +753,9 @@
     <string name="X_lbl_queued">Na fila</string>
     <string name="X_lbl_registration">Registo %1$s</string>
     <string name="X_lbl_select_fields_to_update">Selecionar campos a serem atualizados</string>
-    <string name="X_lbl_delete_book">Excluir livro</string>
     <string name="X_lbl_failed">Falhou</string>
     <string name="X_lbl_preferred_styles">Estilos preferidos</string>
     <string name="X_lbl_queue">Fila</string>
-    <string name="X_lbl_select_image">Selecione a imagem…</string>
-    <string name="X_txt_import_books_option_new_and_changed">Importe apenas livros novos ou que tenham sido atualizados mais recentemente no ficheiro. Isso é útil para sincronizar dois dispositivos.</string>
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
     <string name="lbl_original_title">Título original</string>
     <string name="lbl_original_title_long">Título original se este livro for uma tradução</string>
@@ -794,7 +769,6 @@
     <string name="site_description_english_catalogue_FSF">Inglês e mais; Catálogo; Fantasia e ficção científica</string>
     <string name="site_description_french_catalogue_eu_comics">Francês e mais; Catálogo; Banda desenhada europeia</string>
     <string name="site_description_general_shopping">Geral; Compras</string>
-    <string name="site_description_portuguese_shopping">Português e mais; Compras</string>
     <string name="info_maintenance_sync_deleted_book_records">Isto irá verificar o histórico de livros eliminados de uma importação anterior de outro dispositivo e sincronizar essas eliminações. Por outras palavras, os livros eliminados no outro dispositivo também serão eliminados neste dispositivo.</string>
     <string name="option_clear_deleted_book_records">Limpar o histórico de livros eliminados</string>
     <string name="info_maintenance_clear_deleted_book_records">Esta ação limpa o histórico de livros eliminados. Não serão eliminados quaisquer livros actuais.</string>
@@ -812,7 +786,6 @@
     <string name="pt_layout">Disposição</string>
     <string name="pe_list">Lista</string>
     <string name="pe_grid">Grelha</string>
-    <string name="pt_bob_grid_spancount">Colunas da grelha</string>
     <string name="pt_bob_cover_click">Tocar numa imagem de capa.</string>
     <string name="pe_bob_cover_click_zoom">Aumentará o zoom da imagem da capa.</string>
     <string name="pe_bob_cover_click_details">Abre a página de detalhes do livro.</string>

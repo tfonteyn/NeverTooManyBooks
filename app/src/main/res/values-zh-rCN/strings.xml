@@ -53,7 +53,6 @@
     <string name="and_others">%1$s …</string>
     <string name="notification_channel_warn">警告</string>
     <string name="notification_channel_info">信息</string>
-    <string name="X_debug_email_subject">收集调试信息</string>
     <string name="debug_select_items">选择您要选择的内容：</string>
     <string name="X_httpErrorIO">无法与服务器通信。请稍后再试。</string>
     <string name="httpErrorTimeout">与服务器的连接超时。</string>
@@ -103,7 +102,6 @@
     <string name="fallback_currency_format">%1$s %2$.2f</string>
     <string name="no">取消</string>
     <string name="notification_channel_error">出错了</string>
-    <string name="X_debug_email_body">请简述您遇到的问题。</string>
     <string name="acra_dialog_message">看起来 &APP_NAME; 已经崩溃。点击 “%1$s” 将报告保存到您选择的位置。您可以使用此报告在项目网站上报告新问题。</string>
     <string name="httpError">出现网络错误。</string>
     <string name="error_unexpected_long">发生了一个意外的错误。如果问题仍然存在，请通过设置页面底部的 “%1$s” 选项联系支持。</string>
@@ -149,7 +147,6 @@
     <string name="warning_x_is_not_a_valid_code">“%1$s”不是有效代码</string>
     <string name="warning_no_editions">没有可用的附加版本信息。</string>
     <string name="warning_no_matching_book_found">找不到匹配的书</string>
-    <string name="X_warning_no_matching_book_found_long">找不到这本书。 您有时可以在扉页找到正确的条形码，否则请手动输入详细信息。</string>
     <string name="warning_image_not_found">找不到图像。</string>
     <string name="warning_image_copy_failed">无法复制图像。</string>
     <string name="warning_if_day_set_month_and_year_must_be">如果指定了日期，则必须指定月份和年份。</string>
@@ -177,7 +174,6 @@
     <string name="progress_msg_searching_site">搜索%1$s</string>
     <string name="progress_msg_searching_editions">正在搜索其他版本…</string>
     <string name="progress_msg_connecting">连接中…</string>
-    <string name="progress_msg_saving_image">正在保存图片…</string>
     <string name="progress_msg_cleaning_up">清理中…</string>
     <string name="info_story_in_multiple_books">“%1$s”存在与多本书中：
 \n
@@ -289,7 +285,6 @@
     <string name="pt_layout">布局</string>
     <string name="pe_list">列表</string>
     <string name="pe_grid">网格</string>
-    <string name="pt_bob_grid_spancount">网格列</string>
     <!-- NOT APPLICABLE FOR BOOKS IN CHINESE; Just show "On"; it will still be used for other languages. -->
     <string name="ps_show_titles_reordered_on">关于</string>
     <!-- NOT APPLICABLE FOR BOOKS IN CHINESE; Just show "Off"; it will still be used for other languages. -->

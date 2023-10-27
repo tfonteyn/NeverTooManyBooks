@@ -42,7 +42,6 @@
         <item quantity="many">%1$s звезд</item>
         <item quantity="other">%1$s звезд</item>
     </plurals>
-    <string name="X_acra_resToastText">&APP_NAME;" завершилось с ошибкой. Пожалуйста, помогите нам сделать приложение лучше, отправив эту ошибку."</string>
     <string name="X_action_clear_credentials">Очистить учетные данные</string>
     <string name="X_action_execute">Выполнить</string>
     <string name="X_action_move">Перенести</string>
@@ -50,28 +49,20 @@
     <string name="X_action_previous">Пред.</string>
     <string name="X_action_reset">Сбросить</string>
     <string name="X_action_send">Отправить</string>
-    <string name="X_action_swap">обменивать</string>
     <string name="X_action_try_again">Повторить попытку</string>
     <string name="X_action_update">Обновить</string>
     <string name="X_action_validate">проверять</string>
-    <string name="X_error_report">Отправить отзыв</string>
-    <string name="X_btn_continue_edit">Продолжить редактирование</string>
     <string name="X_btn_customize">Настроить…</string>
-    <string name="X_btn_do_not_show_again">Больше не показывать</string>
     <string name="X_btn_show_list">Показать список</string>
     <string name="confirm_continue">Вы уверены что хотите продолжить?</string>
     <string name="X_error_authentication_failed">Ошибка аутентификации</string>
-    <string name="X_error_download_failed">Загрузка не удалась</string>
     <string name="error_record_must_contain_column">Запись должна содержать поле с именем «%1$s».</string>
     <string name="X_error_network_site_has_problems">На сайте есть проблемы.</string>
-    <string name="X_error_not_available">%1$s недоступен.</string>
     <string name="X_httpErrorIO">Не удалось подключиться к серверу. Повторите попытку позже.</string>
     <string name="X_info_authorized_needed">Авторизация</string>
     <string name="X_info_not_authorized">Не авторизовано</string>
     <string name="X_info_site_authorization_successful">Авторизация %1$s прошла успешно</string>
     <string name="X_lbl_completed">Завершено</string>
-    <string name="X_lbl_cover_long">Эскиз обложки</string>
-    <string name="X_lbl_delete_book">Удалить книгу</string>
     <string name="X_lbl_failed">Неудача</string>
     <string name="X_lbl_folder">Папка</string>
     <string name="X_lbl_image">Изображение</string>
@@ -79,24 +70,15 @@
     <string name="X_lbl_queue">Очередь</string>
     <string name="X_lbl_queued">В очереди</string>
     <string name="X_lbl_select_fields_to_update">Выберите поля для обновления</string>
-    <string name="X_lbl_select_image">Выбор картинки…</string>
-    <string name="X_lbl_select_style">Выбрать стиль</string>
     <string name="X_lbl_thumbnails">Миниатюры</string>
-    <string name="X_lbl_toc_multiple_authors">Несколько авторов</string>
     <string name="X_lbl_updated">Oбновлено</string>
-    <string name="X_lbl_virtual_library">Виртуальная библиотека</string>
     <string name="X_neither">Ни один</string>
     <string name="X_option_bob_filter_anthology_no">Все, кроме антологий</string>
     <string name="X_option_bob_filter_anthology_yes">Антологии</string>
     <string name="X_pg_general">Основные</string>
-    <string name="X_pt_site_settings">Настройки сайта</string>
     <string name="tip_booklist_style_defaults">На этом экране задаются характеристики по умолчанию для всех стилей. Они используются всеми встроенными стилями и являются отправной точкой для любого стиля, который вы определяете самостоятельно.</string>
-    <string name="X_txt_import_books_option_all_books">Будут добавлены новые книги. существующие книги будут обновлены.</string>
-    <string name="X_txt_import_books_option_new_and_changed">Импортировать только новые книги или только те, что обновлены более поздно. Это удобно, когда синхронизируются несклоько устройств.</string>
-    <string name="X_txt_thank_you">Спасибо!</string>
     <string name="X_use_default_setting">Использовать настройки по умолчанию</string>
     <string name="X_vldt_failed_for_x">Проверка не удалась для «%1$s»</string>
-    <string name="X_warning_no_matching_book_found_long">Не найдена книга, соответствующая отсканированному штрих-коду. Возможно правильный штрих-код находится внутри книги. Иначе, пожалуйста, введите детализированную информацию о книге вручную.</string>
     <string name="X_whichImageCaptureApplication">Делать снимки с помощью</string>
     <string name="X_whichSendToApplication">Выберите приложение</string>
     <string name="a_b">%1$s%2$s</string>
@@ -213,9 +195,6 @@
     <string name="confirm_test_connection">Желательно проверить это соединение, чтобы избежать проблем в дальнейшем.</string>
     <string name="confirm_unsaved_edits">Если вы выйдете сейчас, не сохраненные изменения будут потеряны.</string>
     <string name="acra_dialog_message">Похоже, что приложение &APP_NAME; потерпело крах. Нажмите «%1$s», чтобы сохранить отчет в выбранном вами месте. Этот отчет можно использовать для сообщения о новой проблеме на сайте проекта.</string>
-    <string name="X_debug_email_body">Пожалуйста, кратко опишите обнаруженную ошибку.</string>
-    <string name="debug_send_info_text">Это создаст резервную копию вашей базы данных, а также любых файлов журналов и отправит ее разработчикам. Если вы не хотите отправлять какой-либо из этих файлов, удалите его из приложений письма до отправки.</string>
-    <string name="X_debug_email_subject">Собрана отладочная информация</string>
     <string name="disabled">Выключен</string>
     <string name="pe_fast_scroller_overlay_dynamic">динамический</string>
     <string name="enabled">Включено</string>
@@ -288,7 +267,6 @@
     <string name="option_info_archive_format_json">Все данные в формате JSON.</string>
     <string name="option_info_lbl_archive_is_export_only">Это только для экспорта данных; импорт не поддерживается.</string>
     <string name="option_info_lbl_archive_type_backup">Полное резервное копирование / восстановление архива</string>
-    <string name="option_archive_type_backup_tar">резервная копия (.tar)</string>
     <string name="option_archive_type_backup_zip">резервная копия (.zip)</string>
     <string name="option_archive_type_csv">книги (.csv)</string>
     <string name="option_info_archive_type_csv">Экспорт книг в файл CSV</string>
@@ -553,7 +531,6 @@
     <string name="pe_ui_theme_light">свет</string>
     <string name="pt_barcode_scanner">Сканер штрих-кода</string>
     <string name="pt_bob_show_details">Информация о книге отображается в списке</string>
-    <string name="pc_bob">Списки книг</string>
     <string name="lbl_filters">Фильтры книг</string>
     <string name="pc_image_cache">Кэш изображений</string>
     <string name="pt_bob_groups">Группирование</string>
@@ -575,7 +552,6 @@
     <string name="progress_msg_optimizing">Оптимизация баз данных…</string>
     <string name="progress_msg_please_wait">Подождите…</string>
     <string name="progress_msg_rebuilding_search_index">Перестроение индексов поиска…</string>
-    <string name="progress_msg_saving_image">Сохранение изображения…</string>
     <string name="progress_msg_searching">Поиск…</string>
     <string name="progress_msg_searching_editions">Поиск изданий…</string>
     <string name="progress_msg_searching_site">Поиск в %1$s</string>
@@ -673,7 +649,6 @@
     <string name="tip_view_only_help">вы можете потянуть экран вправо или влево, чтобы перейти на другие книги. </string>
     <string name="info_cleanup_files">Файлы, подлежащие очистке сейчас занимают %1$s на SD-карте. Лог-файлы и другие данные сохраняются на SD-карте при каждом обновлении, когда происходит резервное копирование базы, или в случае аварийного завершения программы. Нажмите кнопку внизу экрана, чтобы очистить эти файлы с SD-карты. Если у вас аварийно завершается программа или происходят иные ошибки, пожалуйста, сначала воспользуйтесь кнопкой «%2$s».</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d книг, в %2$d элементах</string>
-    <string name="info_export_backup_all">Все книги, обложки, настройки и пользовательские стили будут экспортированы в архив.</string>
     <string name="info_export_books_option_since_last_full_backup">Все добавленные или обновленные книги с последнего бэкапа.</string>
     <string name="option_info_import_books_option_all">Импортируйте новые книги и перезаписывайте существующие книги. Используйте это для восстановления резервной копии.</string>
     <string name="option_info_import_books_option_new_and_updated">Импортируйте новые книги и синхронизируйте существующие книги по дате их последнего изменения.</string>
@@ -772,7 +747,6 @@
     <string name="site_description_english_catalogue_FSF">Английский и более; Каталог; Фэнтези и научная фантастика</string>
     <string name="site_description_french_catalogue_eu_comics">Французский и более; Каталог; Европейские комиксы</string>
     <string name="site_description_general_shopping">Общий; Покупки</string>
-    <string name="site_description_portuguese_shopping">Португальский и не только; Покупки</string>
     <string name="info_maintenance_sync_deleted_book_records">Это позволит проверить историю удаленных книг из предыдущего импорта с другого устройства и синхронизировать эти удаления. Другими словами, книги, удаленные на другом устройстве, будут удалены и на этом устройстве.</string>
     <string name="option_clear_deleted_book_records">Очистить историю удаленных книг</string>
     <string name="info_maintenance_clear_deleted_book_records">Это очистит историю удаленных книг. При этом фактические книги удалены не будут.</string>
@@ -791,7 +765,6 @@
     <string name="pt_layout">Макет</string>
     <string name="pe_list">Список</string>
     <string name="pe_grid">Сетка</string>
-    <string name="pt_bob_grid_spancount">Колонки сетки</string>
     <!-- NOT APPLICABLE FOR BOOKS IN RUSSIAN; Just show "On"; it will still be used for other languages. -->
     <string name="ps_show_titles_reordered_on">На сайте</string>
     <!-- NOT APPLICABLE FOR BOOKS IN RUSSIAN; Just show "Off"; it will still be used for other languages. -->

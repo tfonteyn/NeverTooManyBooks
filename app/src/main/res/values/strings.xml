@@ -106,8 +106,6 @@
     <string name="notification_channel_info">Info</string>
     <!-- endregion -->
     <!-- region ========== Fatal/Crash/Debug messages. -->
-    <string name="X_debug_email_subject">Gathered debugging information</string>
-    <string name="X_debug_email_body">Please take the time to briefly describe the problem you are experiencing.</string>
     <string name="debug_select_items">Select what you would like to include:</string>
 
     <string name="acra_dialog_message">It looks like &APP_NAME; has crashed. Tap “%1$s” to save a report to a location of your choice. You can use this report to report a new issue on the project website.</string>
@@ -146,9 +144,6 @@
          specified for connecting to a server is inaccessible -->
     <string name="error_certificate_invalid">The certificate is invalid or inaccessible.</string>
     <string name="error_network_site_access_failed">There was a network problem while accessing %1$s. Please check if the website is up, and if the problem persists please contact support.</string>
-    <!-- A website did respond to a request, but the response was not valid.
-         We report to the user that the site is not working as expected. -->
-    <string name="X_error_network_site_has_problems">The website is not working as expected.</string>
     <!-- [VERIFIED] -->
     <string name="error_network_failed_try_again">Check connection and try again.</string>
     <!-- A website deliberately blocked us from accessing it. -->
@@ -157,8 +152,7 @@
     <string name="error_http_401_authorization_failed">Authorization failed</string>
     <!-- 'Site' Authorization failure. Param 1: the website name -->
     <string name="error_http_401_site_authorization_failed">%1$s authorization resulted in an error.</string>
-    <!-- Generic Authentication failure. -->
-    <string name="X_error_authentication_failed">Authentication failed</string>
+
     <!-- 'Site' Authentication failure. Param 1: the website name -->
     <string name="error_site_authentication_failed">%1$s authentication failed</string>
     <!-- 'Site' Forbidden. Param 1: the website name -->
@@ -254,7 +248,6 @@
     <string name="warning_already_in_list">Already in the list!</string>
     <!-- result of a search -->
     <string name="warning_no_matching_book_found">No matching book found</string>
-    <string name="X_warning_no_matching_book_found_long">The book was not found. You can sometimes find the correct barcode on the inside front cover. Otherwise please enter the details manually.</string>
     <!-- the ISBN (or similar codes) entered is not valid -->
     <string name="warning_x_is_not_a_valid_code">“%1$s” is not a valid code</string>
     <string name="warning_image_not_found">Image could not be found.</string>
@@ -321,7 +314,6 @@
     <!-- [VERIFIED] Progress dialog message displayed when doing a long network operation to a web site -->
     <string name="progress_msg_connecting">Connecting…</string>
     <string name="progress_msg_downloading">Downloading…</string>
-    <string name="progress_msg_saving_image">Saving image…</string>
     <!-- Progress message displayed when automatically updating book fields. Param 1: a book title  -->
     <string name="progress_msg_skip_s">Skipping “%1$s”</string>
     <!-- Progress message displayed when importing: the number of books/covers created so far. -->
@@ -388,8 +380,6 @@
     <string name="site_description_french_catalogue_eu_comics">French and more; Catalogue; European Comics</string>
     <!-- website info: languages; type; specifics. -->
     <string name="site_description_general_shopping">General; Shop</string>
-    <!-- website info: languages; type; specifics. -->
-    <string name="site_description_portuguese_shopping">Portuguese and more; Shop</string>
     <!-- endregion -->
     <!-- region ========== Tips which are shown in some places on how to use a screen. -->
     <string name="tip_dialog_title">Tip</string>
@@ -841,7 +831,7 @@
         buttons on the "sorting / styles" dialog -->
     <string name="action_more_ellipsis">More…</string>
     <string name="action_less_ellipsis">Less…</string>
-    <!-- [VERIFIED] - Title of wizard button prompting user to start data migration [CHAR LIMIT=32] -->
+    <!-- [VERIFIED] -->
     <string name="X_action_move">Move</string>
     <!-- [VERIFIED] -->
     <string name="X_action_execute">Execute</string>
@@ -965,8 +955,6 @@
     <string name="lbl_cover_front">Cover</string>
     <!-- Single book back/second cover. -->
     <string name="lbl_cover_back">Back cover</string>
-    <!-- Single book cover - Long label. -->
-    <string name="X_lbl_cover_long">Cover image</string>
     <!-- [VERIFIED] -->
     <string name="X_lbl_image">Image</string>
     <!-- Multiple book covers. Short label. -->
@@ -1074,8 +1062,6 @@
     <!-- region ========== Backup, Export and Import. -->
     <!-- Dialog /screen / Navigation panel menu option -->
     <string name="title_backup_and_export">Backup &amp; Export</string>
-    <!-- Export 'simple dialog' note for making a backup.  -->
-    <string name="info_export_backup_all">All books, covers, preferences and custom styles will be exported to the archive.</string>
     <!-- Dialog export all options. -->
     <string name="lbl_export_options">Select what will be exported.</string>
     <string name="lbl_export_books_option_all">All books</string>
@@ -1086,7 +1072,6 @@
     <string name="lbl_archive_format">Format</string>
     <!-- Text in a dropdown menu. Must be fairly short. -->
     <string name="option_archive_type_backup_zip">Backup (.zip)</string>
-    <string name="option_archive_type_backup_tar">Backup (.tar)</string>
     <string name="option_archive_type_csv">Books (.csv)</string>
     <string name="option_archive_type_json">JSON export (.json)</string>
     <string name="option_archive_type_db">Database file (.db)</string>
@@ -1160,8 +1145,6 @@
     <!-- Preference Category -->
     <string name="pc_edit"
             translatable="false">@string/action_edit</string>
-    <!-- Preference Category -->
-    <string name="pc_bob">Booklists</string>
     <!-- Preference Category -->
     <string name="pc_lists">Lists</string>
     <!-- Preference Category -->
@@ -1349,8 +1332,6 @@
     <string name="info_purge_blns_item_name">Clear the node state for %1$s “%2$s”?</string>
     <!-- [VERIFIED]  Collect debug information and prepare an email to the developers -->
     <string name="option_bug_report">Bug report</string>
-    <!-- Explanatory note for the bug report. -->
-    <string name="debug_send_info_text">This will create a backup copy of your database as well as any log files and send it to the developers. If you do not wish to send any of these files, delete them from the mail attachments before sending.</string>
     <!-- The user can choose which files to include in a debug report. -->
     <string name="option_bug_report_database"
             translatable="false">@string/lbl_database</string>
@@ -1407,8 +1388,6 @@
     <string name="pe_list">List</string>
     <!-- The Booklist layout is a grid of covers (new since v5) -->
     <string name="pe_grid">Grid</string>
-    <!-- If the Booklist layout is a grid of covers, the amount of columns in the grid. -->
-    <string name="pt_bob_grid_spancount">Grid columns</string>
     <!-- SwitchPreference - Show thumbnail image for each book -->
     <string name="pt_bob_cover_show">Show covers</string>
 
@@ -1591,44 +1570,32 @@
     <string name="lbl_settings">Settings</string>
     <!-- endregion -->
     <!-- region ========== Unused, but not removing as we have translations which might be useful later. -->
-    <string name="X_acra_resToastText">&APP_NAME; has crashed unexpectedly. Please help us to make the application better by reporting this crash.</string>
-    <string name="X_action_swap">Swap</string>
+    <!-- A website did respond to a request, but the response was not valid.
+         We report to the user that the site is not working as expected. -->
+    <string name="X_error_network_site_has_problems">The website is not working as expected.</string>
+    <!-- Generic Authentication failure. -->
+    <string name="X_error_authentication_failed">Authentication failed</string>
     <string name="X_action_update">Update</string>
-    <string name="X_btn_continue_edit">Continue editing</string>
     <string name="X_btn_customize">Customize…</string>
-    <string name="X_btn_do_not_show_again">Do not show again</string>
     <string name="X_btn_show_list">Show list</string>
     <string name="X_lbl_clear_filters">Clear filters</string>
-    <string name="X_error_download_failed">Download failed</string>
-    <string name="X_error_not_available">%1$s is not available.</string>
     <string name="X_info_authorized_needed">Authorize Access</string>
     <string name="X_info_not_authorized">Not Authorized</string>
     <string name="X_info_site_authorization_successful">%1$s authorization successful</string>
     <string name="X_lbl_completed">Completed</string>
     <string name="X_lbl_created">Created</string>
-    <string name="X_lbl_delete_book">Delete book</string>
     <string name="X_lbl_failed">Failed</string>
     <string name="X_lbl_preferred_styles">Preferred styles</string>
     <string name="X_lbl_queue">Queue</string>
     <string name="X_lbl_queued">Queued</string>
     <string name="X_lbl_registration">%1$s registration</string>
     <string name="X_lbl_select_fields_to_update">Select fields to update</string>
-    <string name="X_lbl_select_image">Select image…</string>
-    <string name="X_lbl_select_style">Select Style</string>
     <string name="X_lbl_thumbnails">Thumbnails</string>
-    <string name="X_lbl_toc_multiple_authors">Multiple authors</string>
     <string name="X_lbl_updated">Updated</string>
-    <string name="X_lbl_virtual_library">Virtual Library</string>
     <string name="X_pg_general">General</string>
-    <string name="X_pt_site_settings">Website settings</string>
-    <string name="X_txt_import_books_option_all_books">New books will be added. Existing books will be updated.</string>
-    <string name="X_txt_import_books_option_new_and_changed">Only import books that are new, or which have been updated more recently in the archive. This is useful when synchronizing two devices.</string>
-    <string name="X_txt_thank_you">Thank you!</string>
     <string name="X_vldt_failed_for_x">Validation failed for “%1$s”</string>
     <!-- [VERIFIED] -->
     <string name="X_lbl_system">(System)</string>
-    <!-- [VERIFIED] Button that sends feedback about a crashed application -->
-    <string name="X_error_report">Send feedback</string>
     <!-- [VERIFIED] -->
     <string name="X_use_default_setting">Use default values</string>
     <!-- [VERIFIED] -->
