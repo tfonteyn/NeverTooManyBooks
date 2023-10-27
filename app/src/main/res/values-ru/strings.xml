@@ -93,7 +93,7 @@
     <string name="action_duplicate">копия</string>
     <string name="action_edit">Изменить</string>
     <string name="action_edit_ellipsis">Изменить…</string>
-    <string name="action_export">Экспорт</string>
+    <string name="action_export">Экспортировать</string>
     <string name="X_action_go">Выбрать</string>
     <string name="action_help">Справка</string>
     <string name="action_import">Импортировать</string>
@@ -144,7 +144,7 @@
     <string name="action_learn_more">Подробнее</string>
     <string name="action_less_ellipsis">Меньше…</string>
     <string name="action_more_ellipsis">Ещё…</string>
-    <string name="action_show_options">опции</string>
+    <string name="action_show_options">Параметры</string>
     <string name="action_show_toc_long">Показать оглавление</string>
     <string name="action_start_export">Начать экспорт</string>
     <string name="action_start_import">Начать импорт</string>
@@ -415,7 +415,7 @@
     <string name="lbl_date_read_year">Год прочтения</string>
     <string name="X_lbl_registration">Регистрация в %1$s</string>
     <string name="lbl_scope_of_change">Масштаб изменения</string>
-    <string name="lbl_search_filtered_on_x">отфильтрованный: %1$s</string>
+    <string name="lbl_search_filtered_by_x">Фильтр: %1$s</string>
     <string name="lbl_search_for_books">Поиск книг</string>
     <string name="lbl_search_isbn">поиск по ISBN</string>
     <string name="lbl_select_fields">Выберите поля</string>
@@ -444,7 +444,7 @@
     <string name="lbl_tab_alternative_editions">Альтернативные издания</string>
     <string name="lbl_tab_details">Детали</string>
     <string name="lbl_tab_lbl_ext_id">Внешний идентификатор</string>
-    <string name="lbl_tab_notes">заметки</string>
+    <string name="lbl_tab_notes">Примечания</string>
     <string name="lbl_tab_publication">публикация</string>
     <string name="lbl_table_of_content_short">оглавление</string>
     <string name="lbl_table_of_content">оглавление</string>
@@ -599,7 +599,7 @@
     <string name="pt_thumbnails_cache_resized">Миниатюры кэша с измененным размером</string>
     <string name="pt_thumbnails_rotate_auto">Повернуть фотографии</string>
     <string name="pt_ui_language">язык</string>
-    <string name="pt_ui_system_locale">Локаль системы</string>
+    <string name="pt_ui_system_locale">Язык системы</string>
     <string name="pt_ui_theme">тема</string>
     <string name="pt_website_search_order_and_enable">Важные разговоры, включить и отключить</string>
     <string name="ps_author_name_family_first">например «Достоевский, Фёдор»</string>

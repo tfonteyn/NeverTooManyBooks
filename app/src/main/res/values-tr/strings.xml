@@ -87,10 +87,10 @@
     <string name="action_duplicate">Çift</string>
     <string name="action_edit">Düzenle</string>
     <string name="action_edit_ellipsis">Düzenle…</string>
-    <string name="action_export">İhracat</string>
+    <string name="action_export">Dışa aktar</string>
     <string name="X_action_go">Git</string>
     <string name="action_help">Yardım</string>
-    <string name="action_import">Ithal etmek</string>
+    <string name="action_import">İçe aktar</string>
     <string name="action_merge">Birleşmek</string>
     <string name="action_not_now">Şimdi değil</string>
     <string name="action_reset_to_default">Varsayılana sıfırla</string>
@@ -405,7 +405,7 @@
     <string name="lbl_date_read_year">Okuma yılı</string>
     <string name="X_lbl_registration">%1$s Kayıt</string>
     <string name="lbl_scope_of_change">Değişiklik kapsamı</string>
-    <string name="lbl_search_filtered_on_x">Süzülmüş: %1$s</string>
+    <string name="lbl_search_filtered_by_x">Filtre ölçütü: %1$s</string>
     <string name="lbl_search_for_books">Kitap ara</string>
     <string name="lbl_search_isbn">ISBN arama</string>
     <string name="lbl_select_fields">Alanları seçin</string>
@@ -589,7 +589,7 @@
     <string name="pt_thumbnails_cache_resized">Önbellek yeniden boyutlandırılmış küçük resimler</string>
     <string name="pt_thumbnails_rotate_auto">Fotoğrafları döndür</string>
     <string name="pt_ui_language">Dil</string>
-    <string name="pt_ui_system_locale">Sistem Yerel Ayarı</string>
+    <string name="pt_ui_system_locale">Sistem dili</string>
     <string name="pt_ui_theme">Tema</string>
     <string name="pt_website_search_order_and_enable">Öncelikli, etkinleştir ve devre dışı bırak</string>
     <string name="ps_author_name_family_first">Örneğin “Nesin, Aziz”</string>

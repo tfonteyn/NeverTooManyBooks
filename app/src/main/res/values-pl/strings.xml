@@ -94,7 +94,7 @@
     <string name="action_duplicate">Kopia</string>
     <string name="action_edit">Edytuj</string>
     <string name="action_edit_ellipsis">Edytuj…</string>
-    <string name="action_export">Eksport</string>
+    <string name="action_export">Eksportuj</string>
     <string name="X_action_go">OK</string>
     <string name="action_help">Pomoc</string>
     <string name="action_import">Importuj</string>
@@ -418,7 +418,7 @@
     <string name="lbl_date_read_year">Przeczytaj rok</string>
     <string name="X_lbl_registration">Rejestracja w %1$s</string>
     <string name="lbl_scope_of_change">Zakres zmiany</string>
-    <string name="lbl_search_filtered_on_x">Przefiltrowany: %1$s</string>
+    <string name="lbl_search_filtered_by_x">Filtrowane według: %1$s</string>
     <string name="lbl_search_for_books">Szukaj książek</string>
     <string name="lbl_search_isbn">Szukj wg ISBN</string>
     <string name="lbl_select_fields">Wybierz pola</string>
@@ -602,7 +602,7 @@
     <string name="pt_thumbnails_cache_resized">Zmienione obrazy są buforowane</string>
     <string name="pt_thumbnails_rotate_auto">Obracaj zdjęcia</string>
     <string name="pt_ui_language">Język</string>
-    <string name="pt_ui_system_locale">Ustawienia regionalne systemu</string>
+    <string name="pt_ui_system_locale">Język systemu</string>
     <string name="pt_ui_theme">Motyw</string>
     <string name="pt_website_search_order_and_enable">Priorytetowe, włącz i wyłącz</string>
     <string name="ps_author_name_family_first">np. „Lem, Stanisław”</string>

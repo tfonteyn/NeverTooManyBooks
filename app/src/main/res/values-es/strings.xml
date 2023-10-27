@@ -413,7 +413,7 @@
     <string name="lbl_date_read_year">Año de lectura</string>
     <string name="X_lbl_registration">Registro en %1$s</string>
     <string name="lbl_scope_of_change">Alcance del cambio</string>
-    <string name="lbl_search_filtered_on_x">Filtrado: %1$s</string>
+    <string name="lbl_search_filtered_by_x">Filtrados por: %1$s</string>
     <string name="lbl_search_for_books">Buscar libro</string>
     <string name="lbl_search_isbn">Buscar ISBN</string>
     <string name="lbl_select_fields">Seleccione campos</string>
@@ -600,7 +600,7 @@
     <string name="pt_thumbnails_cache_resized">Miniaturas redimensionadas en caché</string>
     <string name="pt_thumbnails_rotate_auto">Girar imágenes</string>
     <string name="pt_ui_language">Idioma</string>
-    <string name="pt_ui_system_locale">Sistema local</string>
+    <string name="pt_ui_system_locale">Idioma del sistema</string>
     <string name="pt_ui_theme">El tema</string>
     <string name="pt_website_search_order_and_enable">Prioridad, habilitar y deshabilitar</string>
     <string name="ps_author_name_family_first">por ejemplo «Pérez Galdós, Benito»</string>

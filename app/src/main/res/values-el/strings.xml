@@ -400,7 +400,7 @@
     <string name="lbl_date_read_year">Έτος Ανάγνωσης</string>
     <string name="X_lbl_registration">%1$s Εγγραφή</string>
     <string name="lbl_scope_of_change">Πεδίο εφαρμογής της αλλαγής</string>
-    <string name="lbl_search_filtered_on_x">Φιλτραρισμένο: %1$s</string>
+    <string name="lbl_search_filtered_by_x">Φιλτράρισμα κατά: %1$s</string>
     <string name="lbl_search_for_books">Αναζήτηση για βιβλία</string>
     <string name="lbl_search_isbn">ISBN Αναζήτηση</string>
     <string name="lbl_select_fields">Επιλεγξτε πεδία</string>
@@ -587,7 +587,7 @@
     <string name="pt_thumbnails_cache_resized">Η μνήμη cache επέστρεψε τις μικρογραφίες</string>
     <string name="pt_thumbnails_rotate_auto">Περιστρέψτε τις εικόνες</string>
     <string name="pt_ui_language">Γλώσσα</string>
-    <string name="pt_ui_system_locale">Τοπικό σύστημα</string>
+    <string name="pt_ui_system_locale">Γλώσσα συστήματος</string>
     <string name="pt_ui_theme">Θέμα</string>
     <string name="pt_website_search_order_and_enable">Προτεραιότητα, ενεργοποίηση και απενεργοποίηση</string>
     <string name="ps_author_name_family_first">για παράδειγμα «Παλαμάς, Κωστής»</string>

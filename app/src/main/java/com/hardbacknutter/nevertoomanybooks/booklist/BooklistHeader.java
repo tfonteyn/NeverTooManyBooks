@@ -104,7 +104,7 @@ public class BooklistHeader {
                     .collect(Collectors.joining(", "));
 
             if (!text.isEmpty()) {
-                filterText = context.getString(R.string.lbl_search_filtered_on_x, text);
+                filterText = context.getString(R.string.lbl_search_filtered_by_x, text);
             }
         }
     }

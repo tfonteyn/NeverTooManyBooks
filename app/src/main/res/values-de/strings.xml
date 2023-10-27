@@ -88,7 +88,7 @@
     <string name="action_duplicate">Vervielfältigen</string>
     <string name="action_edit">Bearbeiten</string>
     <string name="action_edit_ellipsis">Bearbeiten…</string>
-    <string name="action_export">Export</string>
+    <string name="action_export">Exportieren</string>
     <string name="X_action_go">Los</string>
     <string name="action_help">Hilfe</string>
     <string name="action_import">Importieren</string>
@@ -399,7 +399,7 @@
     <string name="lbl_date_read_year">Jahr</string>
     <string name="X_lbl_registration">%1$s-Registrierung</string>
     <string name="lbl_scope_of_change">Umfang der Änderung</string>
-    <string name="lbl_search_filtered_on_x">Gefiltert: %1$s</string>
+    <string name="lbl_search_filtered_by_x">Gefiltert nach: %1$s</string>
     <string name="lbl_search_for_books">Suche nach Büchern</string>
     <string name="lbl_search_isbn">ISBN-Suche</string>
     <string name="lbl_select_fields">Felder auswählen</string>

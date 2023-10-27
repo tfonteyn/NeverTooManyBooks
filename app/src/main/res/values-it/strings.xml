@@ -90,7 +90,7 @@
     <string name="action_duplicate">Duplicare</string>
     <string name="action_edit">Modifica</string>
     <string name="action_edit_ellipsis">Modifica…</string>
-    <string name="action_export">Esportare</string>
+    <string name="action_export">Esporta</string>
     <string name="X_action_go">Pradėti</string>
     <string name="action_help">Guida</string>
     <string name="action_import">Importa</string>
@@ -402,7 +402,7 @@
     <string name="lbl_date_read_year">Leggi Anno</string>
     <string name="X_lbl_registration">Registrazione su %1$s </string>
     <string name="lbl_scope_of_change">Intervallo modifica</string>
-    <string name="lbl_search_filtered_on_x">Filtrato: %1$s</string>
+    <string name="lbl_search_filtered_by_x">Filtrata per: %1$s</string>
     <string name="lbl_search_for_books">Cerca per libro</string>
     <string name="lbl_search_isbn">Cerca ISBN</string>
     <string name="lbl_select_fields">Seleziona i campi</string>
@@ -589,7 +589,7 @@
     <string name="pt_thumbnails_cache_resized">Memorizza le miniature ridimensionate</string>
     <string name="pt_thumbnails_rotate_auto">Ruota le immagini</string>
     <string name="pt_ui_language">Lingua</string>
-    <string name="pt_ui_system_locale">Impostazioni locali di sistema</string>
+    <string name="pt_ui_system_locale">Lingua di sistema</string>
     <string name="pt_ui_theme">Tema</string>
     <string name="pt_website_search_order_and_enable">Priorità, abilita e disabilita</string>
     <string name="ps_author_name_family_first">es. «Alighieri, Dante»</string>

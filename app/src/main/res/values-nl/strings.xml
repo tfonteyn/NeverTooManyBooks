@@ -390,7 +390,7 @@
     <string name="lbl_read_start">Begindatum lezen</string>
     <string name="lbl_read_timeout">Time-out lezen (seconden)</string>
     <string name="lbl_scope_of_change">Omvang van de verandering</string>
-    <string name="lbl_search_filtered_on_x">Gefiltered: %1$s</string>
+    <string name="lbl_search_filtered_by_x">Gefiltered op: %1$s</string>
     <string name="lbl_search_for_books">Zoeken naar boeken</string>
     <string name="lbl_search_isbn">ISBN zoeken</string>
     <string name="lbl_select_fields">Selecteer velden</string>
@@ -413,7 +413,7 @@
     <string name="lbl_tab_alternative_editions">Alt. edities</string>
     <string name="lbl_tab_details">Details</string>
     <string name="lbl_tab_lbl_ext_id">Extern ID</string>
-    <string name="lbl_tab_notes">Notities</string>
+    <string name="lbl_tab_notes">Opmerkingen</string>
     <string name="lbl_tab_publication">Uitgave</string>
     <string name="lbl_table_of_content">Inhoudsopgave</string>
     <string name="lbl_table_of_content_entry">Vermelding in de inhoudsopgave</string>
@@ -627,7 +627,7 @@
     <string name="pt_thumbnails_cache_resized">Cache herschaalde afbeeldingen</string>
     <string name="pt_thumbnails_rotate_auto">Roteer afbeeldingen</string>
     <string name="pt_ui_language">Taal</string>
-    <string name="pt_ui_system_locale">Systeem taal</string>
+    <string name="pt_ui_system_locale">Systeemtaal</string>
     <string name="pt_ui_theme">Thema</string>
     <string name="pt_website_search_order_and_enable">Prioriteit, inschakelen &amp; uitschakelen</string>
     <string name="pv_bob_header_filters">Boekfilters</string>

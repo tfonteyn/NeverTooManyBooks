@@ -296,5 +296,14 @@
     <string name="tip_booklist_style_defaults">使用此界面设置所有样式的默认特征。所有内置样式都会使用这些特征，您自己定义的任何样式也会以这些特征为起点。</string>
     <string name="acra_report_saved">您现在可以访问 Github 上的项目页面并记录新问题。请将之前保存的报告附加到问题中。如果您还没有 Github 账户，则需要创建一个。</string>
     <string name="action_report">报告</string>
+    <string name="action_export">导出</string>
+    <string name="lbl_search_filtered_by_x">过滤条件: %1$s</string>
+    <string name="action_import">导入</string>
+    <string name="option_import">导入</string>
+    <string name="lbl_import">导入</string>
+    <string name="lbl_location">位置</string>
+    <string name="lbl_tab_notes">备注</string>
+    <string name="action_show_options">选项</string>
+    <string name="pt_ui_system_locale">N系统语言</string>
 
 </resources>

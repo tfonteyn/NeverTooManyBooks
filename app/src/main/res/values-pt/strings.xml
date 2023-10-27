@@ -545,7 +545,7 @@
     <string name="X_lbl_clear_filters">Limpar filtros</string>
     <string name="lbl_date_published">Data de Publicação</string>
     <string name="pe_ui_theme_day_night">Dia / Noite</string>
-    <string name="lbl_search_filtered_on_x">Filtrado em: %1$s</string>
+    <string name="lbl_search_filtered_by_x">Filtrado por: %1$s</string>
     <string name="lbl_strip_info_mapped_bookshelf_owned_books">Estante atribuída a livros que já possui</string>
     <string name="confirm_email_file">Gostaria de enviar este ficheiro como um e-mail?</string>
     <string name="X_action_validate">Validar</string>
@@ -592,7 +592,7 @@
     <string name="option_bob_filter_isbn_no">Sem ISBN</string>
     <string name="lbl_lending">Empréstimos</string>
     <string name="lbl_lend_book_to_colon">Emprestar este livro a:</string>
-    <string name="lbl_tab_notes">Notas</string>
+    <string name="lbl_tab_notes">Observações</string>
     <string name="enabled">Activado</string>
     <string name="lbl_local_search_long">Pesquisa Local Avançada</string>
     <string name="lbl_about_contact">Contacto:</string>
@@ -608,7 +608,7 @@
     <string name="X_vldt_failed_for_x">Falha na validação de “%1$s”</string>
     <string name="X_use_default_setting">Usar valores padrão</string>
     <string name="lbl_location_long">Localização do livro</string>
-    <string name="pt_ui_system_locale">Localização do sistema</string>
+    <string name="pt_ui_system_locale">Idioma do sistema</string>
     <string name="pt_ui_theme">Tema da Interface</string>
     <string name="camera_next_action">Acção depois de tirar uma foto</string>
     <string name="confirm_no_missing_covers_search_from_top">Todos os livros abaixo desta linha têm capas. Procurar outra vez do topo?</string>

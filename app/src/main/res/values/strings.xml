@@ -716,6 +716,7 @@
     <string name="option_isfdb_menu_populate_toc">Populate Titles (ISFDB only)</string>
     <!-- Whether a book can be updated without user-permission. -->
     <string name="option_auto_updates">Allow automatic updates from the internet.</string>
+    <!-- [VERIFIED] -->
     <string name="option_import">Import</string>
     <string name="option_backup_and_export"
             translatable="false">@string/title_backup_and_export</string>
@@ -827,9 +828,9 @@
     <string name="action_done">Done</string>
     <!-- [VERIFIED] -->
     <string name="action_undo">Undo</string>
-    <!-- [VERIFIED] from "platform_packages_apps_settings_strings.xml#nfc_more_title"
-        buttons on the "sorting / styles" dialog -->
+    <!-- [VERIFIED] button: see more items -->
     <string name="action_more_ellipsis">More…</string>
+    <!-- button: see less items -->
     <string name="action_less_ellipsis">Less…</string>
     <!-- [VERIFIED] -->
     <string name="X_action_move">Move</string>
@@ -842,13 +843,16 @@
     <string name="action_merge">Merge</string>
     <!-- Duplication or Clone. Not the same as 'copy'. -->
     <string name="action_duplicate">Duplicate</string>
+    <!-- [VERIFIED] -->
     <string name="action_show_options">Options</string>
     <string name="action_clear_queue">Clear queue</string>
     <string name="action_stop_scanning">Stop scanning</string>
     <!-- The user wants to permanently hide a particular message/alert/... -->
     <string name="action_disable_message">Disable message</string>
+    <!-- [VERIFIED] -->
     <string name="action_import">Import</string>
     <string name="action_start_import">Start import</string>
+    <!-- [VERIFIED] -->
     <string name="action_export">Export</string>
     <string name="action_start_export">Start export</string>
     <string name="action_synchronize">Synchronize</string>
@@ -877,7 +881,7 @@
     <string name="lbl_details_have_changed">Details have changed</string>
     <!-- Dialog title. -->
     <string name="lbl_test_connection">Test connection</string>
-    <!-- Dialog title. -->
+    <!-- [VERIFIED] Dialog title. -->
     <string name="lbl_import">Import</string>
     <!-- Dialog title. -->
     <string name="lbl_import_books">Import Books</string>
@@ -1243,8 +1247,8 @@
     <string name="pt_primary_author_type">Primary author type</string>
     <!-- [VERIFIED] ListPreference title: "UI Language" -->
     <string name="pt_ui_language">Language</string>
-    <!-- ListPreference title: UI Language; option 1 in the list -->
-    <string name="pt_ui_system_locale">System Locale</string>
+    <!--  [VERIFIED] ListPreference title: UI Language; option 1 in the list -->
+    <string name="pt_ui_system_locale">System language</string>
     <!-- ListPreference title: UI Theme -->
     <string name="pt_ui_theme">Interface Theme</string>
     <!-- ListPreference value: UI Theme -->
@@ -1441,8 +1445,8 @@
     <string name="option_bob_filter_isbn_no">Without ISBN</string>
     <string name="X_option_bob_filter_anthology_yes">Anthologies</string>
     <string name="X_option_bob_filter_anthology_no">All but Anthologies</string>
-    <!-- Param 1: a filter name -->
-    <string name="lbl_search_filtered_on_x">Filtered on: %1$s</string>
+    <!-- [VERIFIED] Param 1: a filter name -->
+    <string name="lbl_search_filtered_by_x">Filtered by: %1$s</string>
     <!-- endregion -->
     <!-- region ========== Automatic update book fields from the internet. -->
     <!-- Booklist screen / Book details screen - context/options menu.
@@ -1476,7 +1480,7 @@
     <string name="lbl_tab_details">Details</string>
     <!-- Edit book: Name of the 'Publication' tab. need to be very short -->
     <string name="lbl_tab_publication">Publication</string>
-    <!-- Edit book: Name of the 'Notes' tab. need to be very short-->
+    <!-- [VERIFIED] Edit book: Name of the 'Notes' tab. need to be very short-->
     <string name="lbl_tab_notes">Notes</string>
     <!-- Edit book: Name of the 'Table Of Content' tab. need to be very short -->
     <string name="lbl_tab_table_of_content"
@@ -1610,6 +1614,7 @@
     <string name="pt_normalize_publisher_name"
             translatable="false">Normalize publisher names (EXPERIMENTAL, see Help)</string>
 
+    <!-- [VERIFIED] -->
     <string name="lbl_defaults">Defaults</string>
     <!-- [VERIFIED] -->
     <string name="action_report">Report</string>

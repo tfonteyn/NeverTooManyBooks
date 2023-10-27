@@ -94,7 +94,7 @@
     <string name="action_duplicate">Kopírovat</string>
     <string name="action_edit">Upravit</string>
     <string name="action_edit_ellipsis">Upravit…</string>
-    <string name="action_export">Vývozní</string>
+    <string name="action_export">Exportovat</string>
     <string name="X_action_go">Přejít</string>
     <string name="action_help">Nápověda</string>
     <string name="action_import">Importovat</string>
@@ -381,7 +381,7 @@
     <string name="lbl_library">Knihovny</string>
     <string name="lbl_local_search">Místní vyhledávání</string>
     <string name="lbl_local_search_long">Rozšířené místní vyhledávání</string>
-    <string name="lbl_location">Umístění</string>
+    <string name="lbl_location">Poloha</string>
     <string name="lbl_location_long">Umístění knihy</string>
     <string name="option_bug_report_logfiles">Záznam souborů</string>
     <string name="lbl_login_to_search">Přihlaste se k vyhledávání</string>
@@ -414,7 +414,7 @@
     <string name="lbl_date_read_year">Rok čtení</string>
     <string name="X_lbl_registration">%1$s registrace</string>
     <string name="lbl_scope_of_change">Rozsah změny</string>
-    <string name="lbl_search_filtered_on_x">Filtrovaný: %1$s</string>
+    <string name="lbl_search_filtered_by_x">Filtrováno podle: %1$s</string>
     <string name="lbl_search_for_books">Hledat knihy</string>
     <string name="lbl_search_isbn">Hledat ISBN</string>
     <string name="lbl_select_fields">Zvolit pole</string>
@@ -598,7 +598,7 @@
     <string name="pt_thumbnails_cache_resized">Změněné snímky jsou uloženy do mezipaměti</string>
     <string name="pt_thumbnails_rotate_auto">Otočit obrázky</string>
     <string name="pt_ui_language">Jazyk</string>
-    <string name="pt_ui_system_locale">Národní prostředí systému</string>
+    <string name="pt_ui_system_locale">Jazyk systému</string>
     <string name="pt_ui_theme">Téma</string>
     <string name="pt_website_search_order_and_enable">Priorita, povolení a zakázání</string>
     <string name="ps_author_name_family_first">tj. „Čapek, Karel“</string>

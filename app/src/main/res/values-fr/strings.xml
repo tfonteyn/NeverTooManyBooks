@@ -92,7 +92,7 @@
     <string name="action_duplicate">Dupliquer</string>
     <string name="action_edit">Modifier</string>
     <string name="action_edit_ellipsis">Modifier…</string>
-    <string name="action_export">Exportation</string>
+    <string name="action_export">Exporter</string>
     <string name="X_action_go">OK</string>
     <string name="action_help">Aide</string>
     <string name="action_import">Importer</string>
@@ -370,7 +370,7 @@
     <string name="lbl_library">Bibliothèque</string>
     <string name="lbl_local_search">Recherche locale</string>
     <string name="lbl_local_search_long">Recherche locale avancée</string>
-    <string name="lbl_location">Emplacement</string>
+    <string name="lbl_location">Localisation</string>
     <string name="lbl_location_long">Localisation du livre</string>
     <string name="option_bug_report_logfiles">Fichiers journaux</string>
     <string name="lbl_login_to_search">connectez-vous pour rechercher</string>
@@ -403,7 +403,7 @@
     <string name="lbl_date_read_year">Année de lecture</string>
     <string name="X_lbl_registration">Enregistrement %1$s</string>
     <string name="lbl_scope_of_change">Périmètre du changement</string>
-    <string name="lbl_search_filtered_on_x">Filtré : %1$s</string>
+    <string name="lbl_search_filtered_by_x">Données filtrées par : %1$s</string>
     <string name="lbl_search_for_books">Rechercher des livres</string>
     <string name="lbl_search_isbn">recherche par ISBN</string>
     <string name="lbl_select_fields">Sélection des champs</string>
@@ -590,7 +590,7 @@
     <string name="pt_thumbnails_cache_resized">Mettre les couvertures en cache</string>
     <string name="pt_thumbnails_rotate_auto">Faire pivoter les images</string>
     <string name="pt_ui_language">Langue</string>
-    <string name="pt_ui_system_locale">Paramètres de langue du système</string>
+    <string name="pt_ui_system_locale">Langue du système</string>
     <string name="pt_ui_theme">Thema</string>
     <string name="pt_website_search_order_and_enable">Priorité, activer et désactiver</string>
     <string name="ps_author_name_family_first">par exemple « Verne, Jules »</string>
