@@ -1,2 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="a_b">%1$s%2$s</string>
+    <plurals name="n_stars">
+        <item quantity="other">%1$s sao</item>
+    </plurals>
+    <plurals name="displaying_n_books">
+        <item quantity="other">%1$d cuốn sách</item>
+    </plurals>
+    <string name="name_colon_value">%1$s: %2$s</string>
+    <string name="notification_channel_info">Thông tin</string>
+    <plurals name="n_books_found">
+        <item quantity="other">Tìm thấy %1$d cuốn sách</item>
+    </plurals>
+    <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
+    <string name="and_others_plus">%1$s … <small>[+%2$d]</small></string>
+    <string name="notification_channel_error">Lỗi</string>
+    <string name="name_hash_nr">%1$s #%2$d</string>
+    <string name="notification_channel_warn">Cảnh báo</string>
+    <string name="x_of_y">%1$d của %2$d</string>
+    <string name="list_element">• %s</string>
+    <string name="and_others">%1$s …</string>
+    <string name="fallback_currency_format">%1$s %2$.2f</string>
+</resources>
