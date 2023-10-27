@@ -1,4 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
 <resources>
     <string name="a_b">%1$s%2$s</string>
     <plurals name="n_stars">
@@ -21,4 +41,31 @@
     <string name="list_element">• %s</string>
     <string name="and_others">%1$s …</string>
     <string name="fallback_currency_format">%1$s %2$.2f</string>
+    <string name="error_network_site_access_failed">Đã xảy ra sự cố mạng khi truy cập %1$s. Vui lòng kiểm tra xem trang web có hoạt động không và nếu sự cố vẫn tiếp diễn, vui lòng liên hệ với bộ phận hỗ trợ.</string>
+    <string name="error_search_could_not_be_started">Tìm kiếm sách không thành công.</string>
+    <string name="error_storage_not_writable">Vui lòng kiểm tra xem bộ nhớ có thể ghi được không và có đủ dung lượng không.</string>
+    <string name="error_search_failed_network">Vui lòng mở Cài đặt và kiểm tra tùy chọn mạng và Trang tìm kiếm của bạn.
+\nĐồng thời kiểm tra cài đặt mạng thiết bị của bạn.</string>
+    <string name="error_site_access_blocked">Truy cập đã bị chặn bởi trang web.</string>
+    <string name="error_insufficient_storage">Không đủ dung lượng lưu trữ.</string>
+    <string name="error_file_not_found">Không tìm thấy tập tin: %1$s</string>
+    <string name="X_error_authentication_failed">Quá trình xác thực đã thất bại</string>
+    <string name="error_no_image_editor">Không tìm thấy trình chỉnh sửa hình ảnh.</string>
+    <string name="error_auto_toc_population_failed">Tự động điền tiêu đề không thành công.</string>
+    <string name="error_http_403_forbidden">Trang web đã chặn quyền truy cập.</string>
+    <string name="error_import_file_not_supported">Không thể nhập tập tin đã chọn.</string>
+    <string name="error_email_failed">Không gửi được email.</string>
+    <string name="error_search_x_failed_y">Tìm kiếm trên %1$s không thành công: %2$s</string>
+    <string name="error_file_not_recognized">Tập tin đã chọn không được nhận dạng.</string>
+    <string name="error_certificate_invalid">Chứng chỉ không hợp lệ hoặc không thể truy cập được.</string>
+    <string name="error_unknown_host">Đã xảy ra sự cố kết nối với dịch vụ trên “%1$s”.</string>
+    <string name="error_network_failed_try_again">Hãy kiểm tra kết nối và thử lại.</string>
+    <string name="error_network_please_connect">Vui lòng kết nối Internet.</string>
+    <string name="error_site_authentication_failed">Xác thực %1$s không thành công</string>
+    <string name="error_updates_aborted">Cập nhật bị hủy bỏ</string>
+    <string name="error_http_401_authorization_failed">Ủy quyền thất bại</string>
+    <string name="error_storage_not_accessible">Vui lòng kiểm tra xem bộ nhớ có thể truy cập được không.</string>
+    <string name="error_http_401_site_authorization_failed">Ủy quyền %1$s đã dẫn đến lỗi.</string>
+    <string name="error_http_403_site_forbidden">%1$s đã chặn quyền truy cập.</string>
+    <string name="X_error_network_site_has_problems">Trang web không hoạt động như mong đợi.</string>
 </resources>
