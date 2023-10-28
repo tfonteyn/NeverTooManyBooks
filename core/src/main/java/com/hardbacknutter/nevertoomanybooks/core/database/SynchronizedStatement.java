@@ -28,7 +28,7 @@ import androidx.annotation.Nullable;
 /**
  * Wrapper for {@link SQLiteStatement} that ensures locking is used.
  */
-@SuppressWarnings({"unused", "WeakerAccess", "MissingJavadoc"})
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class SynchronizedStatement
         extends ExtSQLiteStatement {
 

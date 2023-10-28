@@ -189,24 +189,29 @@ public class LoggerImpl
      * DEBUG only.
      */
     @SuppressWarnings("unused")
+    private void debugArguments(@NonNull final Activity activity,
+                                @NonNull final String tag,
+                                @NonNull final String method) {
+        debugArguments(tag, method, ((Activity) activity).getIntent().getExtras());
+    }
+
+    /**
+     * DEBUG only.
+     */
+    @SuppressWarnings("unused")
+    private void debugArguments(@NonNull final Fragment fragment,
+                                @NonNull final String tag,
+                                @NonNull final String method) {
+        debugArguments(tag, method, ((Fragment) fragment).getArguments());
+    }
+
     private void debugArguments(@NonNull final String tag,
                                 @NonNull final String method,
-                                @NonNull final Object fragmentOrActivity) {
-        if (fragmentOrActivity instanceof Activity) {
-            final Bundle extras = ((Activity) fragmentOrActivity).getIntent().getExtras();
-            if (extras != null) {
-                d(tag, method, "extras=" + extras);
-                if (extras.containsKey(Book.BKEY_BOOK_DATA)) {
-                    d(tag, method, "extras=" + extras.getParcelable(Book.BKEY_BOOK_DATA));
-                }
-            }
-        } else if (fragmentOrActivity instanceof Fragment) {
-            final Bundle args = ((Fragment) fragmentOrActivity).getArguments();
-            if (args != null) {
-                d(tag, method, "args=" + args);
-                if (args.containsKey(Book.BKEY_BOOK_DATA)) {
-                    d(tag, method, "args=" + args.getParcelable(Book.BKEY_BOOK_DATA));
-                }
+                                @Nullable final Bundle args) {
+        if (args != null) {
+            d(tag, method, "args=" + args);
+            if (args.containsKey(Book.BKEY_BOOK_DATA)) {
+                d(tag, method, "args[Book]=" + args.getParcelable(Book.BKEY_BOOK_DATA));
             }
         }
     }

@@ -70,6 +70,9 @@ public class SqliteShellFragment
             + " UNION "
             + "SELECT 'T' AS T, tbl_name FROM sqlite_temp_master WHERE type='table'"
             + " ORDER BY tbl_name";
+    private static final String TR_START = "<tr>";
+    private static final String TR_END = "</tr>";
+    private static final int TEXT_ZOOM = 75;
 
     private boolean allowUpdates;
     /** View Binding. */
@@ -117,7 +120,7 @@ public class SqliteShellFragment
         getToolbar().addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
 
         final WebSettings settings = vb.output.getSettings();
-        settings.setTextZoom(75);
+        settings.setTextZoom(TEXT_ZOOM);
 
         vb.input.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_GO) {
@@ -176,20 +179,20 @@ public class SqliteShellFragment
 
                     final StringBuilder sb = new StringBuilder("<table>");
                     final String[] columnNames = cursor.getColumnNames();
-                    sb.append("<tr>");
+                    sb.append(TR_START);
                     for (final String column : columnNames) {
                         sb.append("<td><i>").append(column).append("</i></td>");
                     }
-                    sb.append("</tr>");
+                    sb.append(TR_END);
 
-                    int maxLines = this.maxLines;
-                    while (cursor.moveToNext() && maxLines > 0) {
+                    int lines = this.maxLines;
+                    while (cursor.moveToNext() && lines > 0) {
                         final StringBuilder line = new StringBuilder();
                         for (int c = 0; c < cursor.getColumnCount(); c++) {
                             line.append("<td>").append(cursor.getString(c)).append("</td>");
                         }
-                        sb.append("<tr>").append(line).append("</tr>");
-                        maxLines--;
+                        sb.append(TR_START).append(line).append(TR_END);
+                        lines--;
                     }
                     sb.append("</table>");
 
