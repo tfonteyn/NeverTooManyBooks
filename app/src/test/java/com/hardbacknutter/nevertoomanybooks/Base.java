@@ -45,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryThingSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
@@ -237,11 +236,6 @@ public class Base {
                                          nullable(String.class)))
                 .thenAnswer((Answer<String>) invocation ->
                         getLocalizedSiteUrl("amazon", true));
-
-        when(sharedPreferences.getString(eq(LibraryThingSearchEngine.PK_HOST_URL),
-                                         nullable(String.class)))
-                .thenAnswer((Answer<String>) invocation ->
-                        getLocalizedSiteUrl("librarything", false));
     }
 
     @NonNull

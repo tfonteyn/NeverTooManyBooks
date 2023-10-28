@@ -37,12 +37,10 @@ import javax.xml.parsers.SAXParserFactory;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -65,9 +63,6 @@ public class LibraryThingSearchEngine
         implements SearchEngine.ViewBookByExternalId,
                    SearchEngine.AlternativeEditions {
 
-    /** Preferences - Type: {@code String}. */
-    public static final String PK_HOST_URL = EngineId.LibraryThing.getPreferenceKey()
-                                             + '.' + Prefs.pk_host_url;
     @Nullable
     private FutureHttpGet<Boolean> futureHttpGet;
 
