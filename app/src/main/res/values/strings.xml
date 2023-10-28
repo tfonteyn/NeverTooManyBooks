@@ -111,7 +111,6 @@
 
     <string name="acra_dialog_message">It looks like &APP_NAME; has crashed. Tap “%1$s” to save a report to a location of your choice. You can use this report to report a new issue on the project website.</string>
     <string name="acra_report_saved">You can now visit the project page on Github and log a new issue. Please attach the previously saved report to the issue. If you don’t have a Github account yet, you will need to create one.</string>
-    <string name="acra_report_creation_failed">Failed to create the report.</string>
     <!-- endregion -->
     <!-- region ========== HTTP(S) error messages. -->
     <!-- All the httpError strings were copied from:

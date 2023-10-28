@@ -118,7 +118,7 @@ public class AcraCustomDialog
                         .create()
                         .show();
             } else {
-                showMessageAndFinishActivity(getString(R.string.acra_report_creation_failed));
+                showMessageAndFinishActivity(getString(R.string.error_unexpected));
             }
         });
     }
@@ -127,7 +127,7 @@ public class AcraCustomDialog
         crashReportHelper.cancelReports();
         message.process(e -> LoggerFactory.getLogger().e(TAG, e));
 
-        showMessageAndFinishActivity(getString(R.string.acra_report_creation_failed));
+        showMessageAndFinishActivity(getString(R.string.error_unexpected));
     }
 
     private void showMessageAndFinishActivity(@NonNull final CharSequence message) {
