@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -29,5 +29,19 @@
         Allowing cleartext as a workaround.
         -->
         <domain includeSubdomains="true">images-amazon.com</domain>
+
+        <!--
+        for future reference. You CAN add absolute IP addresses here:
+           <domain includeSubdomains="true">192.168.0.100</domain>
+           <domain includeSubdomains="true">10.0.0.100</domain>
+           ...
+           but they are SEEN as domain names:
+
+        sdk/sources/android-34/android/security/net/config/ApplicationConfig.java
+                #getConfigForHostname(String hostname)
+
+            hence it's not possible to add a range unless you provide ALL
+            of the individual IP addresses one-by-one as a domain entry.
+        -->
     </domain-config>
 </network-security-config>
