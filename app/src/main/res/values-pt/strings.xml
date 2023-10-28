@@ -498,7 +498,6 @@
     <string name="lbl_site_book_id">ID do livro do site</string>
     <string name="lbl_select_website">Selecione um site:</string>
     <string name="lbl_strip_info_mapped_bookshelf_wishlist">Estante atribuída à sua lista de desejos</string>
-    <string name="X_lbl_updated">Atualizado</string>
     <string name="confirm_rebuild_index">Isto recriará os índices quando a aplicação for reiniciada. Tem certeza de que deseja continuar\?</string>
     <string name="lbl_author">Autor</string>
     <string name="lbl_authors">Autores</string>
@@ -542,7 +541,6 @@
     <string name="option_bob_filter_isbn_yes">Com ISBN</string>
     <string name="lbl_select_fields">Selecionar campos</string>
     <string name="X_action_update">Atualizar</string>
-    <string name="X_lbl_clear_filters">Limpar filtros</string>
     <string name="lbl_date_published">Data de Publicação</string>
     <string name="pe_ui_theme_day_night">Dia / Noite</string>
     <string name="lbl_search_filtered_by_x">Filtrado por: %1$s</string>
@@ -556,9 +554,7 @@
     <string name="action_stop_scanning">Parar a leitura</string>
     <string name="action_disable_message">Desativar mensagem</string>
     <string name="action_import">Importar</string>
-    <string name="action_start_import">Iniciar importação</string>
     <string name="action_export">Exportar</string>
-    <string name="action_start_export">Iniciar exportação</string>
     <string name="action_synchronize">Sincronizar</string>
     <string name="action_show_toc_long">Mostrar tabela de conteúdos</string>
     <string name="lbl_bookshelf">Prateleira</string>
@@ -602,10 +598,8 @@
     <string name="lbl_websites">Sites</string>
     <string name="option_delete_removed_books">Excluir livros locais que já não estão presentes no servidor</string>
     <string name="lbl_sorting">Ordenação</string>
-    <string name="X_info_authorized_needed">Autorizar Acesso</string>
     <string name="X_info_not_authorized">Não Autorizado</string>
     <string name="X_pg_general">Geral</string>
-    <string name="X_vldt_failed_for_x">Falha na validação de “%1$s”</string>
     <string name="X_use_default_setting">Usar valores padrão</string>
     <string name="lbl_location_long">Localização do livro</string>
     <string name="pt_ui_system_locale">Idioma do sistema</string>
@@ -674,7 +668,7 @@
     <string name="btn_all_books">Todos os livros</string>
     <string name="lbl_name">Nome</string>
     <string name="lbl_read">Lido</string>
-    <string name="X_btn_show_list">Mostrar lista</string>
+    <string name="btn_show_list">Mostrar lista</string>
     <string name="X_info_site_authorization_successful">%1$s autorização bem sucedida</string>
     <string name="X_lbl_completed">Concluído</string>
     <string name="pt_maintenance">Manutenção</string>
@@ -750,12 +744,6 @@
     <string name="lbl_table_of_content_short">Conteúdo</string>
     <string name="lbl_virtual_libraries">Bibliotecas virtuais nesta biblioteca</string>
     <string name="X_lbl_created">Criado</string>
-    <string name="X_lbl_queued">Na fila</string>
-    <string name="X_lbl_registration">Registo %1$s</string>
-    <string name="X_lbl_select_fields_to_update">Selecionar campos a serem atualizados</string>
-    <string name="X_lbl_failed">Falhou</string>
-    <string name="X_lbl_preferred_styles">Estilos preferidos</string>
-    <string name="X_lbl_queue">Fila</string>
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
     <string name="lbl_original_title">Título original</string>
     <string name="lbl_original_title_long">Título original se este livro for uma tradução</string>

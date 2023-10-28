@@ -703,6 +703,8 @@
     <!-- whether an action will only apply to the current bookshelf. -->
     <string name="btn_just_this_shelf">This shelf only</string>
 
+    <string name="btn_show_list">Show list</string>
+
     <!-- whether an action will apply only to the selected booklist (tree) node. -->
     <string name="option_apply_to_this_node_only">This node only</string>
     <!-- whether an action will apply to all items related to the selected booklist (tree) node. -->
@@ -855,10 +857,8 @@
     <string name="action_disable_message">Disable message</string>
     <!-- [VERIFIED] -->
     <string name="action_import">Import</string>
-    <string name="action_start_import">Start import</string>
     <!-- [VERIFIED] -->
     <string name="action_export">Export</string>
-    <string name="action_start_export">Start export</string>
     <string name="action_synchronize">Synchronize</string>
     <!-- Small screens. Ideally 3-5 characters long. -->
     <string name="action_show_toc"
@@ -1177,8 +1177,6 @@
     <string name="pt_storage_volume">Storage volume</string>
     <!-- Preference Category -->
     <string name="pt_maintenance">Maintenance</string>
-    <string name="pt_more"
-            translatable="false">@string/action_more_ellipsis</string>
     <!-- Preference Category -->
     <string name="pt_field_visibility">Field Visibility</string>
     <!-- Preference summary: screen where the user can select/deselect fields to be shown; e.g. user might want to hide fields they don't use. -->
@@ -1587,23 +1585,12 @@
     <string name="X_error_authentication_failed">Authentication failed</string>
     <string name="X_action_update">Update</string>
     <string name="X_btn_customize">Customize…</string>
-    <string name="X_btn_show_list">Show list</string>
-    <string name="X_lbl_clear_filters">Clear filters</string>
-    <string name="X_info_authorized_needed">Authorize Access</string>
     <string name="X_info_not_authorized">Not Authorized</string>
     <string name="X_info_site_authorization_successful">%1$s authorization successful</string>
     <string name="X_lbl_completed">Completed</string>
     <string name="X_lbl_created">Created</string>
-    <string name="X_lbl_failed">Failed</string>
-    <string name="X_lbl_preferred_styles">Preferred styles</string>
-    <string name="X_lbl_queue">Queue</string>
-    <string name="X_lbl_queued">Queued</string>
-    <string name="X_lbl_registration">%1$s registration</string>
-    <string name="X_lbl_select_fields_to_update">Select fields to update</string>
     <string name="X_lbl_thumbnails">Thumbnails</string>
-    <string name="X_lbl_updated">Updated</string>
     <string name="X_pg_general">General</string>
-    <string name="X_vldt_failed_for_x">Validation failed for “%1$s”</string>
     <!-- [VERIFIED] -->
     <string name="X_lbl_system">(System)</string>
     <!-- [VERIFIED] -->
