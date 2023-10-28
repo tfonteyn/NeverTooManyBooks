@@ -39,6 +39,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.settings.widgets.HostUrlValidator;
 import com.hardbacknutter.nevertoomanybooks.utils.Delay;
 
 /**
@@ -102,7 +103,7 @@ public abstract class BasePreferenceFragment
      * This will make sure the current fragment can be the top-fragment (then finish)
      * or be called from another fragment (then pop).
      */
-    void popBackStackOrFinish() {
+    protected void popBackStackOrFinish() {
         if (getParentFragmentManager().getBackStackEntryCount() > 0) {
             getParentFragmentManager().popBackStack();
         } else {
@@ -159,18 +160,23 @@ public abstract class BasePreferenceFragment
 
     /**
      * Initialise a field with an editable url.
+     * The summary will indicate if the URL is valid or not.
      *
-     * @param key the preference key to init
+     * @param pHostUrl the preference to init
+     *
+     * @return the validator
      */
-    protected void initHostUrlPreference(@NonNull final CharSequence key) {
-        final EditTextPreference etp = findPreference(key);
-        //noinspection DataFlowIssue
-        etp.setOnBindEditTextListener(editText -> {
+    @NonNull
+    protected HostUrlValidator initHostUrlPreference(@NonNull final EditTextPreference pHostUrl) {
+        final HostUrlValidator hostUrlValidator = new HostUrlValidator();
+        pHostUrl.setSummaryProvider(hostUrlValidator);
+        pHostUrl.setOnBindEditTextListener(editText -> {
             editText.setInputType(InputType.TYPE_CLASS_TEXT
                                   | InputType.TYPE_TEXT_VARIATION_URI);
             editText.selectAll();
         });
-        etp.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
+
+        return hostUrlValidator;
     }
 
     /**

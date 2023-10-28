@@ -129,6 +129,8 @@
     <string name="httpErrorFile">Couldn’t access the file.</string>
     <!-- [VERIFIED] - Displayed when a request failed because the file wasn't found. -->
     <string name="httpErrorFileNotFound">Couldn’t find the requested file.</string>
+
+    <string name="error_invalid_url">Invalid address (URL)</string>
     <!-- endregion -->
     <!-- region ========== General error messages. -->
     <string name="error_unexpected">An unexpected error occurred.</string>
@@ -805,6 +807,8 @@
     <!-- [VERIFIED] -->
     <string name="action_skip">Skip</string>
     <!-- [VERIFIED] -->
+    <string name="action_report">Report</string>
+    <!-- [VERIFIED] -->
     <string name="X_action_reset">Reset</string>
     <!-- [VERIFIED] -->
     <string name="action_reset_to_default">Reset to default</string>
@@ -1132,6 +1136,8 @@
 
     <!-- endregion -->
     <!-- region ========== Global settings. -->
+    <!-- [VERIFIED] -->
+    <string name="lbl_defaults">Defaults</string>
     <!-- Generic place holder text for preference fields which are NOT SET.
          The actual text is different from hint_empty_field in Translations.
          [VERIFIED] Copied from androidx.preferences# not_set; WITHOUT brackets-->
@@ -1613,11 +1619,6 @@
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="pt_normalize_publisher_name"
             translatable="false">Normalize publisher names (EXPERIMENTAL, see Help)</string>
-
-    <!-- [VERIFIED] -->
-    <string name="lbl_defaults">Defaults</string>
-    <!-- [VERIFIED] -->
-    <string name="action_report">Report</string>
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
 

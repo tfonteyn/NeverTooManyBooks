@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,16 +20,42 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.amazon;
 
 import android.os.Bundle;
+import android.view.View;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.EditTextPreference;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.widgets.HostUrlValidator;
 
+/**
+ * The user can edit the Amazon URL to direct it to their local site.
+ * We do check the URL for being valid, but do NOT run a connection test.
+ * (the less we connect to Amazon the better).
+ */
 @Keep
 public class AmazonPreferencesFragment
         extends BasePreferenceFragment {
+
+    private final OnBackPressedCallback backPressedCallback =
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    if (hostUrlValidator.isValidUrl(pHostUrl)) {
+                        popBackStackOrFinish();
+                    } else {
+                        hostUrlValidator.showUrlInvalidDialog(pHostUrl,
+                                                              () -> popBackStackOrFinish());
+                    }
+                }
+            };
+
+    private EditTextPreference pHostUrl;
+    private HostUrlValidator hostUrlValidator;
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
@@ -37,6 +63,18 @@ public class AmazonPreferencesFragment
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_site_amazon, rootKey);
 
-        initHostUrlPreference(AmazonSearchEngine.PK_HOST_URL);
+        pHostUrl = findPreference(AmazonSearchEngine.PK_HOST_URL);
+        //noinspection DataFlowIssue
+        hostUrlValidator = initHostUrlPreference(pHostUrl);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        //noinspection DataFlowIssue
+        getActivity().getOnBackPressedDispatcher()
+                     .addCallback(getViewLifecycleOwner(), backPressedCallback);
     }
 }

@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -31,8 +32,6 @@ import androidx.preference.SwitchPreference;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
-
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
@@ -50,7 +49,8 @@ public abstract class ConnectionValidationBasePreferenceFragment
 
     private ConnectionValidatorViewModel vm;
 
-    private CharSequence pkEnabled;
+    @Nullable
+    private SwitchPreference pEnabled;
 
     @Nullable
     private ProgressDelegate progressDelegate;
@@ -59,7 +59,11 @@ public abstract class ConnectionValidationBasePreferenceFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    proposeValidation();
+                    if (pEnabled != null && pEnabled.isChecked()) {
+                        proposeValidation();
+                    } else {
+                        popBackStackOrFinish();
+                    }
                 }
             };
 
@@ -68,13 +72,27 @@ public abstract class ConnectionValidationBasePreferenceFragment
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
         vm = new ViewModelProvider(this).get(ConnectionValidatorViewModel.class);
-        // init is done in child classes
+        // vm.init(...) is called from initValidator(...)
     }
 
-    protected void init(@StringRes final int siteResId,
-                        @NonNull final CharSequence pkEnabled) {
+    /**
+     * Setup the connection validator for the given site id.
+     * <p>
+     * Must be called immediately after calling {@link #setPreferencesFromResource}.
+     *
+     * @param siteResId to init
+     */
+    protected void initValidator(@StringRes final int siteResId) {
         vm.init(siteResId);
-        this.pkEnabled = pkEnabled;
+    }
+
+    /**
+     * Set a reference to the 'enabled' switch for this sync engine.
+     *
+     * @param pEnabled the SwitchPreference
+     */
+    protected void initEnableSwitch(@Nullable final SwitchPreference pEnabled) {
+        this.pEnabled = pEnabled;
     }
 
     @Override
@@ -92,37 +110,36 @@ public abstract class ConnectionValidationBasePreferenceFragment
         vm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
     }
 
-    private void proposeValidation() {
-        Objects.requireNonNull(pkEnabled, "pkEnabled");
-        final SwitchPreference sp = findPreference(pkEnabled);
+    /**
+     * Called when the user taps "back" AND if the sync engine is enabled.
+     * <p>
+     * Prompt the user to either start a connection test, or continue with the "back" action.
+     */
+    @CallSuper
+    protected void proposeValidation() {
         //noinspection DataFlowIssue
-        if (sp.isChecked()) {
-            //noinspection DataFlowIssue
-            new MaterialAlertDialogBuilder(getContext())
-                    .setIcon(R.drawable.ic_baseline_info_24)
-                    .setTitle(R.string.lbl_test_connection)
-                    .setMessage(R.string.confirm_test_connection)
-                    .setNegativeButton(R.string.action_not_now, (d, w) ->
-                            popBackStackOrFinish())
-                    .setPositiveButton(android.R.string.ok, (d, w) -> {
-                        d.dismiss();
-                        if (progressDelegate == null) {
-                            progressDelegate = new ProgressDelegate(getProgressFrame())
-                                    .setTitle(R.string.progress_msg_connecting)
-                                    .setPreventSleep(true)
-                                    .setIndeterminate(true)
-                                    .setOnCancelListener(v -> vm.cancelTask(
-                                            R.id.TASK_ID_VALIDATE_CONNECTION));
-                        }
-                        //noinspection DataFlowIssue
-                        progressDelegate.show(() -> getActivity().getWindow());
-                        vm.validateConnection();
-                    })
-                    .create()
-                    .show();
-        } else {
-            popBackStackOrFinish();
-        }
+        new MaterialAlertDialogBuilder(getContext())
+                .setIcon(R.drawable.ic_baseline_info_24)
+                .setTitle(R.string.lbl_test_connection)
+                .setMessage(R.string.confirm_test_connection)
+                .setNegativeButton(R.string.action_not_now, (d, w) ->
+                        popBackStackOrFinish())
+                .setPositiveButton(android.R.string.ok, (d, w) -> {
+                    d.dismiss();
+                    if (progressDelegate == null) {
+                        progressDelegate = new ProgressDelegate(getProgressFrame())
+                                .setTitle(R.string.progress_msg_connecting)
+                                .setPreventSleep(true)
+                                .setIndeterminate(true)
+                                .setOnCancelListener(v -> vm.cancelTask(
+                                        R.id.TASK_ID_VALIDATE_CONNECTION));
+                    }
+                    //noinspection DataFlowIssue
+                    progressDelegate.show(() -> getActivity().getWindow());
+                    vm.validateConnection();
+                })
+                .create()
+                .show();
     }
 
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForReadingContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetDirectoryUriContract;
 import com.hardbacknutter.nevertoomanybooks.settings.ConnectionValidationBasePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.widgets.HostUrlValidator;
 
 @Keep
 public class CalibrePreferencesFragment
@@ -61,15 +62,17 @@ public class CalibrePreferencesFragment
     private final ActivityResultLauncher<String> openCaUriLauncher =
             registerForActivityResult(new GetContentUriForReadingContract(),
                                       o -> o.ifPresent(this::onOpenCaUri));
+    private EditTextPreference pHostUrl;
+    private HostUrlValidator hostUrlValidator;
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
-        init(R.string.site_calibre, CalibreHandler.PK_ENABLED);
         setPreferencesFromResource(R.xml.preferences_calibre, rootKey);
 
-        initHostUrlPreference(CalibreContentServer.PK_HOST_URL);
+        initValidator(R.string.site_calibre);
+        initEnableSwitch(findPreference(CalibreHandler.PK_ENABLED));
 
         EditTextPreference etp;
 
@@ -98,6 +101,9 @@ public class CalibrePreferencesFragment
             }
         });
 
+        pHostUrl = findPreference(CalibreContentServer.PK_HOST_URL);
+        //noinspection DataFlowIssue
+        hostUrlValidator = initHostUrlPreference(pHostUrl);
 
         caPref = findPreference(PSK_CA_FROM_FILE);
         //noinspection DataFlowIssue
@@ -129,6 +135,15 @@ public class CalibrePreferencesFragment
                     o.ifPresent(uri -> CalibreContentServer.setFolderUri(getContext(), uri));
                     setFolderSummary(folderPref);
                 });
+    }
+
+    @Override
+    protected void proposeValidation() {
+        if (!hostUrlValidator.isValidUrl(pHostUrl)) {
+            hostUrlValidator.showUrlInvalidDialog(pHostUrl, this::popBackStackOrFinish);
+            return;
+        }
+        super.proposeValidation();
     }
 
     /**

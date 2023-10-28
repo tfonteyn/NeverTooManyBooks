@@ -55,8 +55,10 @@ public class StripInfoBePreferencesFragment
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
-        init(R.string.site_stripinfo_be, StripInfoHandler.PK_ENABLED);
         setPreferencesFromResource(R.xml.preferences_site_stripinfo, rootKey);
+
+        initValidator(R.string.site_stripinfo_be);
+        initEnableSwitch(findPreference(StripInfoHandler.PK_ENABLED));
 
         final boolean useRealAuthor = ServiceLocator.getInstance()
                                                     .isFieldEnabled(DBKey.AUTHOR_REAL_AUTHOR);
