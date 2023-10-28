@@ -405,6 +405,8 @@ public class AmazonSearchEngine
             return;
         }
 
+        // 2023-10-28: verified to work on amazon.com, amazon.co.uk, amazon.com.be
+        // but some books (.com?) have a "from $xx" which does not have "a-color-price"
         final Element price = swatchElement.selectFirst("span.a-color-price");
         if (price == null) {
             LoggerFactory.getLogger().w(TAG, "parsePrice", "no a-color-price?");
