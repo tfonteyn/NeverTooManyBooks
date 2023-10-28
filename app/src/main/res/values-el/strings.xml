@@ -759,4 +759,5 @@
     <string name="style_type_defaults">Στυλ προεπιλεγμένες ρυθμίσεις</string>
     <string name="acra_report_saved">Μπορείτε τώρα να επισκεφθείτε τη σελίδα του έργου στο Github και να καταγράψετε ένα νέο θέμα. Παρακαλούμε επισυνάψτε την προηγουμένως αποθηκευμένη αναφορά στο θέμα. Αν δεν έχετε ακόμη λογαριασμό στο Github, θα πρέπει να δημιουργήσετε έναν.</string>
     <string name="action_report">Αναφορά</string>
+    <string name="error_invalid_url">Μη έγκυρη διεύθυνση (URL)</string>
 </resources>

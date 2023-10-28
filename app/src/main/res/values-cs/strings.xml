@@ -776,4 +776,5 @@
     <string name="style_type_defaults">Výchozí nastavení stylů</string>
     <string name="acra_report_saved">Nyní můžete navštívit stránku projektu na Githubu a přihlásit nový problém. K problému připojte dříve uloženou zprávu. Pokud ještě nemáte účet na Githubu, musíte si ho vytvořit.</string>
     <string name="action_report">Hlášení</string>
+    <string name="error_invalid_url">Neplatná adresa (URL)</string>
 </resources>

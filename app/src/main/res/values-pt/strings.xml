@@ -792,4 +792,5 @@
     <string name="style_type_defaults">Predefinições de estilo</string>
     <string name="acra_report_saved">Pode agora visitar a página do projeto no Github e registar um novo problema. Anexe o relatório guardado anteriormente ao problema. Se ainda não tiver uma conta no Github, terá de criar uma.</string>
     <string name="action_report">Informar</string>
+    <string name="error_invalid_url">Endereço inválido (URL)</string>
 </resources>

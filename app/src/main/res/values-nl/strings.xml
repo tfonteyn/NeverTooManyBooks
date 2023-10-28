@@ -758,4 +758,5 @@
     <string name="style_type_defaults">Standaardinstellingen stijlen</string>
     <string name="acra_report_saved">U kunt nu de projectpagina op Github bezoeken en een nieuw probleem aanmelden. Voeg het eerder opgeslagen rapport bij het probleem. Als u nog geen Github-account hebt, moet u er een aanmaken.</string>
     <string name="action_report">Melden</string>
+    <string name="error_invalid_url">Ongeldig adres (URL)</string>
 </resources>

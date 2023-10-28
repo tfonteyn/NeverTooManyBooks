@@ -761,4 +761,5 @@
     <string name="style_type_defaults">Impostazioni predefinite degli stili</string>
     <string name="acra_report_saved">Ora è possibile visitare la pagina del progetto su Github e creare un nuovo problema. Si prega di allegare al problema il rapporto precedentemente salvato. Se non si dispone ancora di un account Github, è necessario crearne uno.</string>
     <string name="action_report">Segnala</string>
+    <string name="error_invalid_url">Indirizzo (URL) non valido</string>
 </resources>

@@ -144,4 +144,5 @@
     <string name="X_use_default_setting">Dùng chế độ cài đặt mặc định</string>
     <string name="username">Tên người dùng</string>
     <string name="yes">Có</string>
+    <string name="error_invalid_url">Địa chỉ (URL) không hợp lệ</string>
 </resources>
