@@ -265,7 +265,7 @@
     <string name="option_auto_updates">Επιτρέψτε τις αυτόματες ενημερώσεις από το διαδίκτυο.</string>
     <string name="lbl_available">Διαθέσιμη</string>
     <string name="lbl_backup">Αντιγράφων ασφαλείας</string>
-    <string name="lbl_barcode">Barcode</string>
+    <string name="lbl_barcode">Ραβδωτός κώδικας</string>
     <string name="lbl_book">Βιβλίο</string>
     <string name="pc_bob_list">Λίστα</string>
     <string name="pc_bob_layout">Διάταξη λίστας</string>
