@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,9 +18,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+  -->
+
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!-- Quotes „…“  - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d Buch</item>
@@ -658,15 +661,15 @@
     <string name="warning_if_month_set_year_must_be">Wenn das Monat angegeben wird, muss auch das Jahr angegeben werden.</string>
     <string name="warning_image_copy_failed">Bild konnte nicht kopiert werden.</string>
     <string name="warning_image_not_found">Bild konnte nicht gefunden werden.</string>
-    <string name="warning_immediate_global_changes">HINWEIS: Alle gespeicherten Änderungen werden sofort übernommen.</string>
-    <string name="warning_import_csv">Warnung. Der Import von Daten kann Informationen von bestehenden Büchern überschreiben, wenn die ID der Importdatei mit der bestehenden ID übereinstimmt. Normalerweise ist es kein Problem wenn ein Feld in der exportierten Datei geändert wurde. Bitte stellen Sie bei einem neuen Buch sicher, dass das ID-Feld leer ist.</string>
+    <string name="warning_immediate_global_changes">WARNUNG: Gespeicherte Änderungen werden sofort für alle Bücher übernommen.</string>
+    <string name="warning_import_csv">ACHTUNG: Beim Importieren von Daten können bestehende Buchdatensätze mit neuen Informationen aktualisiert werden, wenn die Spalte UUID nicht vorhanden ist und die ID in der Importdatei mit einer bestehenden ID übereinstimmt. Dies ist normalerweise kein Problem, wenn Sie ein Feld in einer exportierten Datei geändert haben. Wenn Sie einen neuen Buchdatensatz erstellt haben oder die Bücher einer anderen Person importieren, vergewissern Sie sich, dass das UUID-Feld vorhanden ist oder das ID-Feld leer ist.</string>
     <string name="warning_import_csv_unescaped_quote">Unescaped-Anführungszeichen in Zeile %1$d, Position %2$d</string>
-    <string name="warning_import_failed_for_lines_lots">Die Analyse für die Zeilen \n%1$s\n und %2$d weitere ist fehlgeschlagen.</string>
-    <string name="warning_import_failed_for_lines_some">Analyse für die Zeilen \n%1$s\n fehlgeschlagen.</string>
+    <string name="warning_import_failed_for_these_books_and_more">und %1$d weitere.</string>
+    <string name="warning_import_failed_for_these_books">Der Import ist für diese Bücher/Zeilen fehlgeschlagen:</string>
     <string name="warning_no_editions">Keine zusätzlichen Ausgabeninformationen verfügbar.</string>
     <string name="warning_no_matching_book_found">Kein passendes Buch gefunden</string>
     <string name="warning_no_search_data_for_active_sites">Keine gültigen Suchdaten für aktive Websites.</string>
-    <string name="warning_no_site_supports_this_method">WARNUNG: Keine der derzeit ausgewählten Websites unterstützt die Suche nach %1$s. Bitte verwenden Sie das Website-Menü, um alternative Websites zu aktivieren, oder verwenden Sie eine andere Suchmethode.</string>
+    <string name="warning_no_site_supports_this_method">ACHTUNG: Keine der derzeit ausgewählten Websites unterstützt die Suche nach %1$s. Bitte verwenden Sie das Website-Menü, um alternative Websites zu aktivieren, oder verwenden Sie eine andere Suchmethode.</string>
     <string name="warning_nothing_selected">Nichts ausgewählt</string>
     <string name="warning_requires_at_least_1_field">Mindestens ein Feld darf nicht leer sein.</string>
     <string name="warning_requires_isbn">Diese Aktion erfordert eine gültige ISBN.</string>

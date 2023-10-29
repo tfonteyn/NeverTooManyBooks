@@ -214,15 +214,14 @@
     <string name="error_type_not_supported">Type not supported: %1$s …</string>
     <!-- endregion -->
     <!-- region ========== Warning messages. -->
-    <string name="warning_import_csv">Warning. Importing data may update existing book records with new information if the uuid column is not present and the id in the import file is the same as an existing id. This is usually fine if you changed a field in an exported file. If you created a new book record, or are importing someone else’s books, ensure the uuid field is present or the id field is blank.</string>
-    <!-- Importing a CSV book list; individual lines can fail. Report the exact position.
-     This is a warning only; import will continue. -->
+    <string name="warning_import_csv">WARNING: Importing data may update existing book records with new information if the UUID column is not present and the ID in the import file is the same as an existing ID. This is usually fine if you changed a field in an exported file. If you created a new book record, or are importing someone else’s books, ensure the UUID field is present or the ID field is blank.</string>
+    <!-- Importing a CSV book list; an individual line failed: report the exact position. -->
     <string name="warning_import_csv_unescaped_quote">Unescaped quote at row %1$d, position %2$d</string>
-    <!-- Importing a book list partially failed with less than 10 lines failing -->
-    <string name="warning_import_failed_for_lines_some">Parsing failed for lines \n%1$s\n</string>
-    <!-- Importing a book list partially failed with more than 10 lines failing.
-         Only 10 line numbers will be listed -->
-    <string name="warning_import_failed_for_lines_lots">Parsing failed for lines \n%1$s\n and %2$d more.</string>
+    <!-- Importing a list of books partially failed. This text is displayed as a header above a list of failures. -->
+    <string name="warning_import_failed_for_these_books">Import failed for these books/rows:</string>
+    <!-- Importing a book list partially failed with more than 10 lines failing. Only 10 line numbers will be listed.
+         This text is displayed as a footer below a list of failures stating how many more lines failed. -->
+    <string name="warning_import_failed_for_these_books_and_more">and %1$d more.</string>
     <string name="warning_export_contains_no_data">There was nothing to export.</string>
     <!-- A search WAS done, but there is no book-data available; this is not an error. -->
     <string name="warning_book_not_found">Unable to find the specified book.</string>
@@ -231,7 +230,7 @@
     <!-- The user tried to start a search but did not enter any/sufficient data to actually search for -->
     <string name="warning_no_search_data_for_active_sites">No valid search data for active sites.</string>
     <!-- Information note when a user changes a globally linked name; e.g. an Author name, a location... -->
-    <string name="warning_immediate_global_changes">NOTE: All saved changes apply instantly and globally.</string>
+    <string name="warning_immediate_global_changes">WARNING: Saved changes are instantly applied to all books.</string>
     <!-- some unique field already exists; e.g. accidentally creating a duplicate Bookshelf -->
     <string name="warning_x_already_exists">%1$s already exists.</string>
     <!-- Pref. screen for enabling/disabling/ordering search websites -->

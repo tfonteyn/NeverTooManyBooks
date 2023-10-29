@@ -683,11 +683,11 @@
     <string name="warning_if_month_set_year_must_be">Als de maand is gespecificeerd moet ook het jaar worden ingevuld.</string>
     <string name="warning_image_copy_failed">Afbeelding kon niet gekopieerd worden.</string>
     <string name="warning_image_not_found">Afbeelding werdt niet gevonden.</string>
-    <string name="warning_immediate_global_changes">Let op: Veranderingen worden direct en globaal toegepast.</string>
-    <string name="warning_import_csv">Waarschuwing. Het importeren van gegevens kan bestaande boekgegevens onbedoeld bijwerken met nieuwe informatie als de UUID-kolom niet aanwezig is en de id in het import-bestand dezelfde is als het bestaande id. Dit is meestal geen bezwaar als je een veld in een exportbestand hebt veranderd. Als je een nieuw boek item hebt gemaakt, of iemand anders zijn boeken importeert, zorg dan dat het UUID veld aanwezig is of dat het id veld leeg is.</string>
+    <string name="warning_immediate_global_changes">WAARSCHUWING: Opgeslagen wijzigingen worden direct toegepast op alle boeken.</string>
+    <string name="warning_import_csv">WAARSCHUWING: Het importeren van gegevens kan bestaande boekrecords bijwerken met nieuwe informatie als de UUID-kolom niet aanwezig is en de ID in het importbestand dezelfde is als een bestaande ID. Dit is meestal prima als je een veld in een geëxporteerd bestand hebt gewijzigd. Als je een nieuwe boekrecord hebt gemaakt of de boeken van iemand anders importeert, moet je ervoor zorgen dat het UUID-veld aanwezig is of dat het ID-veld leeg is.</string>
     <string name="warning_import_csv_unescaped_quote">Niet ge-escaped aanhalingsteken op rij %1$d, positie %2$d</string>
-    <string name="warning_import_failed_for_lines_lots">Het parseren is mislukt voor regels\n%1$s\n en %2$d meer.</string>
-    <string name="warning_import_failed_for_lines_some">Het parseren is mislukt voor regels\n%1$s\n</string>
+    <string name="warning_import_failed_for_these_books_and_more">en nog %1$d anderen.</string>
+    <string name="warning_import_failed_for_these_books">Importeren is mislukt voor deze boeken/rijen:</string>
     <string name="warning_no_editions">Geen andere uitgave informatie beschikbaar.</string>
     <string name="warning_no_matching_book_found">Geen overeenkomstig boek gevonden</string>
     <string name="warning_no_search_data_for_active_sites">Geen geldige zoekgegevens voor actieve sites.</string>

@@ -676,11 +676,11 @@
     <string name="warning_if_month_set_year_must_be">Jeśli określono miesiąc, należy również określić rok.</string>
     <string name="warning_image_copy_failed">Nie można skopiować obrazu.</string>
     <string name="warning_image_not_found">Nie można znaleźć obrazu.</string>
-    <string name="warning_immediate_global_changes">UWAGA: Wszystkie zapisane zmiany są globalne.</string>
-    <string name="warning_import_csv">Uwaga! Zaimportowane dane mogą nadpisać istniejące, jeśli pokryje się identyfikator (pole _id). Jest to zwykle oczekiwane zachowanie, gdy edytowałeś wyeksportowany wcześniej plik. Jeśli dodajesz nową książkę, pozostaw pole _id puste.</string>
+    <string name="warning_immediate_global_changes">OSTRZEŻENIE: Zapisane zmiany są natychmiast stosowane do wszystkich książek.</string>
+    <string name="warning_import_csv">OSTRZEŻENIE: Importowanie danych może zaktualizować istniejące rekordy książki o nowe informacje, jeśli kolumna UUID nie jest obecna, a identyfikator w pliku importu jest taki sam jak istniejący identyfikator. Zwykle jest to w porządku, jeśli zmieniono pole w wyeksportowanym pliku. Jeśli utworzyłeś nowy rekord książki lub importujesz książki innej osoby, upewnij się, że pole UUID jest obecne lub pole ID jest puste.</string>
     <string name="warning_import_csv_unescaped_quote">Nieokreślony znak cytatu w wierszu %1$d, pozycja %2$d</string>
-    <string name="warning_import_failed_for_lines_lots">Analiza nie powiodła się dla linii \n%1$s\n i %2$d innych.</string>
-    <string name="warning_import_failed_for_lines_some">Analiza nie powiodła się dla linii \n%1$s\n</string>
+    <string name="warning_import_failed_for_these_books_and_more">i %1$d innych.</string>
+    <string name="warning_import_failed_for_these_books">Import nie powiódł się dla tych książek/wierszy:</string>
     <string name="warning_no_editions">Brak wydań.</string>
     <string name="warning_no_matching_book_found">Nie znaleziono pasującej książki</string>
     <string name="warning_no_search_data_for_active_sites">Brak prawidłowych danych wyszukiwania dla aktywnych witryn.</string>

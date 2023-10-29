@@ -510,14 +510,13 @@ public class ImportFragment
         }
 
         final List<String> failures = result.createFailuresReport(getContext());
-        final String reportFailure;
+        String reportFailure = '\n' + getString(R.string.warning_import_failed_for_these_books)
+                               + '\n' + String.join("\n", failures);
+
         if (result.booksFailed > ImportResults.MAX_FAIL_LINES_REPORTED) {
-            reportFailure = getString(R.string.warning_import_failed_for_lines_lots,
-                                      String.join("\n", failures),
-                                      result.booksFailed - failures.size());
-        } else {
-            reportFailure = getString(R.string.warning_import_failed_for_lines_some,
-                                      String.join("\n", failures));
+            reportFailure += '\n' + getString(
+                    R.string.warning_import_failed_for_these_books_and_more,
+                    result.booksFailed - failures.size());
         }
         return reportSuccess + "\n" + reportFailure;
     }

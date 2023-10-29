@@ -662,11 +662,11 @@
     <string name="warning_if_month_set_year_must_be">Αν προσδιοριστεί μήνας, τότε πρέπει να προσδιοριστεί και έτος.</string>
     <string name="warning_image_copy_failed">Δεν ήταν δυνατή η αντιγραφή της εικόνας.</string>
     <string name="warning_image_not_found">Δεν βρέθηκε εικόνα.</string>
-    <string name="warning_immediate_global_changes">ΣΗΜΕΙΩΣΗ: Όλες οι αποθηκευμένες αλλαγές εφαρμόζονται στιγμιαία και παντού.</string>
-    <string name="warning_import_csv">Προσοχή. Η εισαγωγή δεδομένων μπορεί να ενημερώσει υπάρχοντα βιβλία με νέες πληροφορίες εαν η στήλη uuid δεν είναι παρούσα και το id στο αρχείο εισαγωγής είναι το ίδιο με κάποιο υπάρχον id. Αυτό είναι εντάξει εαν έχει αλλαχτεί κάποιο πεδίο σε ένα εξαγμένο αρχείο. Εαν δημιουργήσατε μια νεα βιβλιογραφική εγγραφή ή εαν εισάγετε τα βιβλία κάποιου άλλου, σιγουρευτείτε ότι το πεδίο uuid είναι παρόν ή το πεδίο id είναι κενό.</string>
+    <string name="warning_immediate_global_changes">ΠΡΟΣΟΧΗ: Οι αποθηκευμένες αλλαγές εφαρμόζονται αμέσως σε όλα τα βιβλία.</string>
+    <string name="warning_import_csv">ΠΡΟΕΙΔΟΠΟΙΗΣΗ: Η εισαγωγή δεδομένων μπορεί να ενημερώσει τις υπάρχουσες εγγραφές βιβλίων με νέες πληροφορίες, εάν η στήλη UUID δεν υπάρχει και το αναγνωριστικό στο αρχείο εισαγωγής είναι το ίδιο με ένα υπάρχον αναγνωριστικό. Αυτό είναι συνήθως εντάξει αν αλλάξατε ένα πεδίο σε ένα εξαγόμενο αρχείο. Εάν δημιουργήσατε μια νέα εγγραφή βιβλίου ή εισάγετε τα βιβλία κάποιου άλλου, βεβαιωθείτε ότι το πεδίο UUID είναι παρόν ή ότι το πεδίο ID είναι κενό.</string>
     <string name="warning_import_csv_unescaped_quote">Χαρακτηριστικό απόσβεσης μη έτοιμο στη σειρά %1$d, θέση %2$d</string>
-    <string name="warning_import_failed_for_lines_lots">Η ανάλυση του απέτυχε για τις γραμμές \n%1$s\n και %2$d ακόμη.</string>
-    <string name="warning_import_failed_for_lines_some">Η ανάλυση του απέτυχε για τις γραμμές \n%1$s\n</string>
+    <string name="warning_import_failed_for_these_books_and_more">και %1$d ακόμη.</string>
+    <string name="warning_import_failed_for_these_books">Η εισαγωγή απέτυχε για αυτά τα βιβλία/σειρές:</string>
     <string name="warning_no_editions">Δεν υπάρχουν διαθέσιμες εκδόσεις.</string>
     <string name="warning_no_matching_book_found">Δεν βρέθηκε βιβλίο που να ταιριάζει</string>
     <string name="warning_no_search_data_for_active_sites">Δεν υπάρχουν έγκυρα δεδομένα αναζήτησης για ενεργούς ιστότοπους.</string>

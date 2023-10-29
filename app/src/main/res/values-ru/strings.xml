@@ -673,11 +673,11 @@
     <string name="warning_if_month_set_year_must_be">Если указан месяц, также необходимо указать год.</string>
     <string name="warning_image_copy_failed">Изображение не может быть скопировано.</string>
     <string name="warning_image_not_found">Изображение не может быть найдено.</string>
-    <string name="warning_immediate_global_changes">ЗАМЕЧАНИЕ: Все сохраняемые изменения применяются немедленно.</string>
-    <string name="warning_import_csv">Предупреждение. Импорт данных может заменить существующие записи книг обновлённой информацией, в случае, если номер в файле совпадает с существующим номером. Обычно это то, что требуется, если вы обновляете поле в файле экспорта. Если вы добавляете запись новой книге, убедитесь, что поле id не заполнено.</string>
+    <string name="warning_immediate_global_changes">ВНИМАНИЕ: Сохраненные изменения мгновенно применяются ко всем книгам.</string>
+    <string name="warning_import_csv">ПРЕДУПРЕЖДЕНИЕ: Импорт данных может обновить существующие записи о книгах новой информацией, если столбец UUID отсутствует, а идентификатор в файле импорта совпадает с существующим идентификатором. Обычно это нормально, если вы изменили какое-либо поле в экспортированном файле. Если вы создали новую запись о книге или импортируете чужие книги, убедитесь, что поле UUID присутствует или поле ID пустое.</string>
     <string name="warning_import_csv_unescaped_quote">Неэкранированный кавычка в строке %1$d, позиция %2$d</string>
-    <string name="warning_import_failed_for_lines_lots">Сбой разбора для строк \n%1$s\n и еще %2$d.</string>
-    <string name="warning_import_failed_for_lines_some">Сбой разбора для строк \n%1$s\n</string>
+    <string name="warning_import_failed_for_these_books_and_more">и еще %1$d.</string>
+    <string name="warning_import_failed_for_these_books">Для этих книг/рядов импорт не удался:</string>
     <string name="warning_no_editions">Нет дополнительной информации о выпуске.</string>
     <string name="warning_no_matching_book_found">Нет совпавших книг</string>
     <string name="warning_no_search_data_for_active_sites">Нет действительных поисковых данных для активных сайтов.</string>

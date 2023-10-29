@@ -118,19 +118,15 @@
     <string name="error_record_must_contain_column">记录必须包含一个名为“%1$s”的字段。</string>
     <string name="error_backup_failed">备份失败。</string>
     <string name="error_export_failed">导出失败。</string>
-    <string name="warning_import_csv">警告。 如果 uuid 列不存在且导入文件中的 id 与现有 id 相同，则导入数据可能会使用新信息更新现有的书籍记录。 如果您更改了导出文件中的字段，这通常没问题。 如果您创建了新的图书记录，或者正在导入其他人的图书，请确保 uuid 字段存在或 id 字段为空。</string>
+    <string name="warning_import_csv">警告：如果 UUID 列不存在，且导入文件中的 ID 与现有 ID 相同，则导入数据可能会用新信息更新现有图书记录。如果您更改了导出文件中的某个字段，通常不会有问题。如果您创建了新的账簿记录，或正在导入他人的账簿，请确保 UUID 字段存在或 ID 字段为空。</string>
     <string name="warning_import_csv_unescaped_quote">行 %1$d，位置 %2$d 的未转义引号</string>
-    <string name="warning_import_failed_for_lines_some">行解析失败
-\n %1$s
-\n</string>
-    <string name="warning_import_failed_for_lines_lots">行解析失败
-\n %1$s
-\n 还有 %2$d 个。</string>
+    <string name="warning_import_failed_for_these_books">这些书籍/行的导入失败：</string>
+    <string name="warning_import_failed_for_these_books_and_more">还有 %1$d 个。</string>
     <string name="warning_export_contains_no_data">没有内容可以导出。</string>
     <string name="warning_book_not_found">找不到指定的书。</string>
     <string name="warning_book_not_always_found">并非所有站点都返回有效数据。</string>
     <string name="warning_no_search_data_for_active_sites">无有效搜索数据。</string>
-    <string name="warning_immediate_global_changes">注意：所有保存的更改都会立即全局应用。</string>
+    <string name="warning_immediate_global_changes">警告：保存的更改会立即应用于所有书籍。</string>
     <string name="warning_enable_at_least_1_website">为每个类别启用至少一个网站。</string>
     <string name="warning_select_at_least_1_group">至少选择一组。</string>
     <string name="warning_nothing_selected">无选择</string>

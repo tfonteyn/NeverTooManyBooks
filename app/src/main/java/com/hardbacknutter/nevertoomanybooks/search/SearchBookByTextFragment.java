@@ -150,7 +150,7 @@ public class SearchBookByTextFragment
                 return;
             }
         }
-        // Null or no sites which support searching by Text
+        // There are no sites which support searching by Text
         vb.btnSearch.setEnabled(false);
         //noinspection DataFlowIssue
         final int textColor = AttrUtils

@@ -675,11 +675,11 @@
     <string name="warning_if_month_set_year_must_be">Si se especifica el mes, debe especificarse también el año.</string>
     <string name="warning_image_copy_failed">La imagen no se pudo copiar.</string>
     <string name="warning_image_not_found">No se pudo encontrar la imagen.</string>
-    <string name="warning_immediate_global_changes">NOTA: Todos los cambios guardados se aplican de manera instantánea y global.</string>
-    <string name="warning_import_csv">¡Atención! La importación de datos puede actualizar los datos de libros existentes con nueva información si el ID del fichero de importación existe ya en la base de datos. Esto puede ser aceptable si se modifica un campo de un fichero exportado. Si crea un registro para un nuevo libro, compruebe que el campo ID está en blanco.</string>
+    <string name="warning_immediate_global_changes">AVISO: Los cambios guardados se aplican instantáneamente a todos los libros.</string>
+    <string name="warning_import_csv">ADVERTENCIA: La importación de datos puede actualizar los registros de libros existentes con nueva información si la columna UUID no está presente y el ID en el archivo de importación es el mismo que un ID existente. Esto suele ser correcto si ha cambiado un campo en un archivo exportado. Si ha creado un nuevo registro de libros, o está importando los libros de otra persona, asegúrese de que el campo UUID está presente o de que el campo ID está en blanco.</string>
     <string name="warning_import_csv_unescaped_quote">Carácter de comillas sin escapes en la fila %1$d, posición %2$d</string>
-    <string name="warning_import_failed_for_lines_lots">El análisis falló para las líneas \n%1$s\n y %2$d más.</string>
-    <string name="warning_import_failed_for_lines_some">El análisis falló para las líneas \n%1$s\n</string>
+    <string name="warning_import_failed_for_these_books_and_more">y %1$d más.</string>
+    <string name="warning_import_failed_for_these_books">La importación ha fallado para estos libros/filas:</string>
     <string name="warning_no_editions">No hay información adicional de edición disponible.</string>
     <string name="warning_no_matching_book_found">No se ha encontrado ningún libro</string>
     <string name="warning_no_search_data_for_active_sites">No hay datos de búsqueda válidos para sitios activos.</string>

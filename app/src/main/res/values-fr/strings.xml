@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,9 +18,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+  -->
+
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
 --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
     <plurals name="displaying_n_books">
@@ -658,15 +661,17 @@
     <string name="warning_cannot_delete_1st_bs">Impossible de supprimer la première bibliothèque.</string>
     <string name="warning_enable_at_least_1_website">Activer au moins un site Web pour chaque catégorie.</string>
     <string name="warning_export_contains_no_data">Il n’y avait rien à exporter.</string>
-    <string name="warning_if_day_set_month_and_year_must_be" tools:ignore="TypographyQuotes">Si le jour est précisé, le mois et l’année doivent l’être aussi.</string>
-    <string name="warning_if_month_set_year_must_be" tools:ignore="TypographyQuotes">Si le mois est précisé, l’année doit l’être aussi.</string>
+    <string name="warning_if_day_set_month_and_year_must_be"
+            tools:ignore="TypographyQuotes">Si le jour est précisé, le mois et l’année doivent l’être aussi.</string>
+    <string name="warning_if_month_set_year_must_be"
+            tools:ignore="TypographyQuotes">Si le mois est précisé, l’année doit l’être aussi.</string>
     <string name="warning_image_copy_failed">L’image n’a pas pu être copiée.</string>
     <string name="warning_image_not_found">L’image est introuvable.</string>
-    <string name="warning_immediate_global_changes">Note : toutes les modifications sont prises en compte immédiatement et globalement.</string>
-    <string name="warning_import_csv">Attention ! L’import de données peut provoquer la mise à jour de livres avec de nouvelles informations si les identifiants importés sont identiques à ceux existants. Cela est généralement correct si vous n’avez modifié qu’un champ dans un fichier exporté. Si vous avez intégralement créé un livre, assurez vous que le champ identifiant est vide.</string>
+    <string name="warning_immediate_global_changes">ATTENTION : Les modifications enregistrées sont instantanément appliquées à tous les livres.</string>
+    <string name="warning_import_csv">ATTENTION : L’importation de données peut mettre à jour des enregistrements de livres existants avec de nouvelles informations si la colonne UUID n’est pas présente et que l’ID dans le fichier d’importation est le même qu’un ID existant. Cela ne pose généralement pas de problème si vous avez modifié un champ dans un fichier exporté. Si vous avez créé un nouvel enregistrement de livre ou si vous importez les livres de quelqu’un d’autre, assurez-vous que le champ UUID est présent ou que le champ ID est vide.</string>
     <string name="warning_import_csv_unescaped_quote">Caractère de guillemet non échappé à la ligne %1$d, position %2$d</string>
-    <string name="warning_import_failed_for_lines_lots">L’analyse a échoué pour les lignes \n%1$s\n et %2$d autres.</string>
-    <string name="warning_import_failed_for_lines_some">L’analyse a échoué pour les lignes \n%1$s\n</string>
+    <string name="warning_import_failed_for_these_books_and_more">et %1$d autres.</string>
+    <string name="warning_import_failed_for_these_books">L’importation a échoué pour ces livres/rangs :</string>
     <string name="warning_no_editions">Aucune information d’édition supplémentaire disponible.</string>
     <string name="warning_no_matching_book_found">Aucun livre correspondant n’a été trouvé</string>
     <string name="warning_no_search_data_for_active_sites">Aucune donnée de recherche valide pour les sites actifs.</string>

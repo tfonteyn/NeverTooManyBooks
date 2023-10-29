@@ -176,12 +176,8 @@
     <string name="error_import_csv_line_to_long">Linha muito longa (linha=%1$d, comprimento=%2$d)</string>
     <string name="error_record_must_contain_column">O registro deve conter um campo chamado “%1$s”.</string>
     <string name="error_export_failed">Falha na exportação.</string>
-    <string name="warning_import_failed_for_lines_some">Falha na análise de linhas
-\n%1$s
-\n</string>
-    <string name="warning_import_failed_for_lines_lots">Falha na análise das linhas
-\n%1$s
-\n e mais %2$d.</string>
+    <string name="warning_import_failed_for_these_books">A importação falhou para estes livros/linhas:</string>
+    <string name="warning_import_failed_for_these_books_and_more">e mais %1$d.</string>
     <string name="warning_export_contains_no_data">Não havia nada para exportar.</string>
     <string name="error_network_site_access_failed">Ocorreu um problema de rede ao aceder a %1$s. Verifique se o site está no ar e, se o problema persistir, entre em contacto com o suporte.</string>
     <string name="error_http_401_site_authorization_failed">A autorização %1$s resultou num erro.</string>
@@ -200,7 +196,7 @@
     <string name="error_import_failed_for_record">Falha na importação (%1$s).</string>
     <string name="error_import_csv_line">Erro desconhecido na linha %1$d</string>
     <string name="error_import_csv_missing_columns_x">O ficheiro deve conter uma coluna com um dos seguintes nomes: %1$s</string>
-    <string name="warning_immediate_global_changes">NOTA: Todas as alterações guardadas são aplicadas instantaneamente e globalmente.</string>
+    <string name="warning_immediate_global_changes">AVISO: As alterações guardadas são aplicadas instantaneamente a todos os livros.</string>
     <string name="warning_no_search_data_for_active_sites">Não há dados de pesquisa válidos para os sites ativos.</string>
     <string name="warning_x_already_exists">%1$s já existe.</string>
     <string name="warning_enable_at_least_1_website">Active pelo menos um site para cada categoria.</string>
@@ -362,7 +358,7 @@
     <string name="lbl_author_type_contributor">Contribuidor</string>
     <string name="lbl_condition_dust_cover_none">Nenhum</string>
     <string name="option_storage_select">Usar “%1$s”</string>
-    <string name="warning_import_csv">Aviso. A importação de dados pode atualizar registos de livros existentes com novas informações se a coluna uuid não estiver presente e o id no ficheiro de importação for o mesmo que um id existente. Isso geralmente é bom se alterou um campo num ficheiro exportado. Se criou um novo registo de livro ou está a importar livros de outra pessoa, assegure-se que o campo uuid está presente e que o campo id está em branco.</string>
+    <string name="warning_import_csv">AVISO: A importação de dados pode atualizar os registos de livros existentes com novas informações se a coluna UUID não estiver presente e o ID no ficheiro de importação for o mesmo que um ID existente. Normalmente, isto não tem qualquer problema se tiver alterado um campo num ficheiro exportado. Se tiver criado um novo registo de livro ou estiver a importar os livros de outra pessoa, certifique-se de que o campo UUID está presente ou que o campo ID está em branco.</string>
     <string name="option_cover_edit">Iniciar editor</string>
     <string name="confirm_delete_series">Excluir a série “%1$s”?
 \n
