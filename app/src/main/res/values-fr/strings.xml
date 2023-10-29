@@ -161,7 +161,7 @@
     <string name="confirm_merge_authors">L’auteur que vous renommez existe déjà. Voulez-vous les fusionner ?</string>
     <string name="confirm_merge_bookshelves">La bibliothèque que vous renommez existe déjà. Voulez-vous les fusionner ?</string>
     <string name="confirm_merge_publishers">L’éditeur que vous renommez existe déjà. Voulez-vous les fusionner \?</string>
-    <string name="confirm_merge_series">L’éditeur que vous renommez existe déjà. Voulez-vous les fusionner ?</string>
+    <string name="confirm_merge_series">La série que vous renommez existe déjà. Voulez-vous les fusionner ?</string>
     <string name="confirm_overwrite_cover">Les champs sélectionnés vont être mis à jour tels que montré ; en option, les couvertures peuvent être téléchargées pour tous les livres.\n\nVoulez-vous remplacer toutes les couvertures existantes ? Attention, cela peut prendre du temps.</string>
     <string name="confirm_rebuild_fts">Les données de l’index de recherche seront reconstruites au redémarrage de l’application. Es-tu sur de vouloir continuer ?</string>
     <string name="confirm_rebuild_index">Les index seront reconstruits au redémarrage de l’application. Es-tu sur de vouloir continuer ?</string>
