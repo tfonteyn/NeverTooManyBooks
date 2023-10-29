@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -421,7 +418,7 @@
     <string name="lbl_tab_details">Détails</string>
     <string name="lbl_tab_lbl_ext_id">ID externe</string>
     <string name="lbl_tab_notes">Notes</string>
-    <string name="lbl_tab_publication">Édition</string>
+    <string name="lbl_tab_publication">Publication</string>
     <string name="lbl_table_of_content_short">Contenu</string>
     <string name="lbl_table_of_content">Table des matières</string>
     <string name="lbl_table_of_content_entry">Entrée dans la table des matières</string>
@@ -620,8 +617,7 @@
     <string name="tip_book_search_by_text">L’ajout de livres par ISBN est plus précis que par auteur ou titre, et généralement préférable. Rappelez-vous qu’il est parfois possible de trouver le bon code barre à l’intérieur de la couverture.</string>
     <string name="tip_booklist_style_groups">Cet écran permet de modifier la hiérarchie des groupes pour un style spécifique. Une \"coche\" indique que le groupe sera affiché dans la liste, une \"décoche\" le cache et vice versa.  Vous pouvez réorganiser la hiérarchie en faisant glisser l\'icône située à l\'extrémité de chaque ligne vers le haut ou vers le bas.</string>
     <string name="tip_booklist_style_properties">Cet écran permet de définir les caractéristiques d\'un style spécifique. Vous pouvez changer le nom, modifier les groupes pour changer la hiérarchie et ajuster une variété d\'autres préférences pour construire un style que vous trouvez utile.</string>
-    <string name="tip_booklist_styles_editor"
-            tools:ignore="TypographyQuotes">Vous pouvez utiliser cet écran pour personnaliser la liste des styles qui seront affichés dans votre menu de styles par défaut. Une coche indique que le style sera affiché dans la liste, décochez-la pour le masquer et inversement. Si aucun style n’est coché, tous les styles seront affichés. Vous pouvez réorganiser la hiérarchie en faisant glisser l’icône située à l’extrême droite de chaque ligne. Un appui prolongé n’importe où sur une ligne vous permettra d’éditer ou de cloner les détails d’un style spécifique. Si vous avez cloné un style et changé d’avis, vous devrez le supprimer vous-même.</string>
+    <string name="tip_booklist_styles_editor" tools:ignore="TypographyQuotes">Vous pouvez utiliser cet écran pour personnaliser la liste des styles qui seront affichés dans votre menu de styles par défaut. Une coche indique que le style sera affiché dans la liste, décochez-la pour le masquer et inversement. Si aucun style n’est coché, tous les styles seront affichés. Vous pouvez réorganiser la hiérarchie en faisant glisser l’icône située à l’extrême droite de chaque ligne. Un appui prolongé n’importe où sur une ligne vous permettra d’éditer ou de cloner les détails d’un style spécifique. Si vous avez cloné un style et changé d’avis, vous devrez le supprimer vous-même.</string>
     <string name="tip_dialog_title">Astuce</string>
     <string name="tip_reset_all">Réinitialiser les astuces</string>
     <string name="tip_reset_done">Les astuces ont été réinitialisées</string>
