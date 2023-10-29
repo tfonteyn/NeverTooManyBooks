@@ -72,7 +72,7 @@
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_dialog_message">Het lijkt erop dat &APP_NAME; is gecrasht. Tik op „%1$s” om een rapport op te slaan op een locatie naar keuze. U kunt dit rapport gebruiken om een nieuw probleem te melden op de projectwebsite.</string>
-    <string name="action_add">U kunt nu de  projectpagina op Github bezoeken en een nieuw probleem aanmelden. Voeg het eerder opgeslagen rapport bij het probleem. Als u nog geen Github-account hebt, moet u er een aanmaken.</string>
+    <string name="action_add">Toevoegen</string>
     <string name="action_add_with_details">Toevoegen met details</string>
     <string name="action_clear">Wissen</string>
     <string name="action_clear_queue">Wachtrij wissen</string>
