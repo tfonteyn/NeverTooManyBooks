@@ -23,7 +23,8 @@
 <!DOCTYPE resources [
     <!ENTITY APP_NAME "NeverTooManyBooks">
     ]>
-<!--suppress LongLine --><resources>
+<!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine -->
+<resources>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s（%2$s）</string>
     <string name="list_element">• %s</string>
