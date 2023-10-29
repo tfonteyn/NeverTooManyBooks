@@ -104,7 +104,8 @@
     <string name="lbl_certificate_issued_by">Emitido por: %1$s</string>
     <string name="lbl_certificate_issued_to">Emitido para: %1$s</string>
     <string name="lbl_certificates">Certificados</string>
-    <string name="lbl_ebook_file_type">Tipo de ficheiro de livro eletrónico</string>
+    <string name="lbl_ebook_file_type"
+            tools:ignore="Typos">Tipo de ficheiro de livro eletrónico</string>
     <string name="lbl_color">Cor</string>
     <string name="lbl_country">País</string>
     <string name="lbl_credentials">Credenciais do usuário</string>
