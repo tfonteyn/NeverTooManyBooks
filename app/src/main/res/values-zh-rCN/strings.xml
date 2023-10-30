@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,13 +17,10 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
-    <!ENTITY APP_NAME "NeverTooManyBooks">
-    ]>
-<!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine -->
-<resources>
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
+<!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s（%2$s）</string>
     <string name="list_element">• %s</string>
@@ -110,7 +106,7 @@
     <string name="error_storage_not_writable">请检查存储是否可写，并且有足够的空间。</string>
     <string name="error_search_x_failed_y">搜索%1$s失败：%2$s</string>
     <string name="error_file_not_found">找不到文件：%1$s</string>
-    <string name="error_import_failed_for_record">导入失败（%1$s）。</string>
+    <string name="error_import_failed_for_record">导入失败（%1$s)</string>
     <string name="error_import_csv_missing_columns_x">文件必须包含具有以下名称之一的列：%1$s</string>
     <string name="error_import_csv_line">%1$d 行中出现未知错误</string>
     <string name="error_import_csv_line_to_long">行长度过长（行=%1$d，长度=%2$d）</string>
