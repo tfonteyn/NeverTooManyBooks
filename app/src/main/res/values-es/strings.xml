@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -198,8 +195,8 @@
     <string name="error_import_csv_line">Error desconocido en la fila %1$d</string>
     <string name="error_import_csv_line_to_long">La línea es demasiado larga (fila=%1$d, longitud=%2$d)</string>
     <string name="error_import_csv_missing_columns_x">El fichero debe tener una columna con uno de los nombres siguientes: %1$s</string>
-    <string name="error_import_failed">Error al importar.</string>
-    <string name="error_import_failed_for_record">Error al importar (%1$s).</string>
+    <string name="error_import_failed">Error al importar</string>
+    <string name="error_import_failed_for_record">Error al importar (%1$s)</string>
     <string name="error_import_file_not_supported">El archivo seleccionado no se puede importar.</string>
     <string name="error_network_failed_try_again">Comprueba la conexión y vuelve a intentarlo.</string>
     <string name="error_network_please_connect">Debes conectarte a Internet.</string>
