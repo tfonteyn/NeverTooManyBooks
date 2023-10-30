@@ -96,7 +96,7 @@
     <string name="action_search">Rechercher</string>
     <string name="action_select">Sélectionner</string>
     <string name="option_select_all">Tout sélectionner</string>
-    <string name="option_select_none">Tout déselectionner</string>
+    <string name="option_select_none">Tout désélectionner</string>
     <string name="action_show_all">Tout afficher</string>
     <string name="action_skip">Ignorer</string>
     <string name="action_synchronize">Synchroniser</string>
@@ -189,8 +189,8 @@
     <string name="error_import_csv_line">Erreur inconnue à la ligne %1$d</string>
     <string name="error_import_csv_line_to_long">La ligne est trop longue (ligne=%1$d, longueur=%2$d)</string>
     <string name="error_import_csv_missing_columns_x">Le fichier doit contenir au moins une des colonnes suivantes : %1$s</string>
-    <string name="error_import_failed">Restauration échouée.</string>
-    <string name="error_import_failed_for_record">Restauration échouée (%1$s).</string>
+    <string name="error_import_failed">Échec de l’importation.</string>
+    <string name="error_import_failed_for_record">Échec de l’importation (%1$s).</string>
     <string name="error_import_file_not_supported">Le fichier sélectionné ne peut pas être importé.</string>
     <string name="error_network_failed_try_again">Vérifiez la connexion et réessayez.</string>
     <string name="error_network_please_connect">Connectez-vous à Internet.</string>
@@ -359,7 +359,7 @@
     <string name="lbl_library">Bibliothèque</string>
     <string name="lbl_local_search">Recherche locale</string>
     <string name="lbl_local_search_long">Recherche locale avancée</string>
-    <string name="lbl_location">Localisation</string>
+    <string name="lbl_location">Lieu</string>
     <string name="lbl_location_long">Localisation du livre</string>
     <string name="option_bug_report_logfiles">Fichiers journaux</string>
     <string name="lbl_login_to_search">connectez-vous pour rechercher</string>
@@ -449,10 +449,10 @@
     <string name="title_backup_and_export">Sauvegarde et exportation</string>
     <string name="option_apply_to_this_node_only">Ce nœud uniquement</string>
     <string name="option_apply_to_all_related_books">Tous les livres liés</string>
-    <string name="option_barcode_scan_mode_manual">Manuellement</string>
+    <string name="option_barcode_scan_mode_manual">Manuel</string>
     <string name="option_barcode_scan_mode_continuous">Numériser en continu</string>
     <string name="option_book_sync_list_with_details">Synchroniser/positionner la liste</string>
-    <string name="option_cover_crop">Recadrer</string>
+    <string name="option_cover_crop">Rogner</string>
     <string name="option_cover_edit">Démarrer l’éditeur</string>
     <string name="option_cover_replace">Remplacer…</string>
     <string name="option_cover_replace_from_alt_editions">À partir d’autres éditions…</string>
@@ -518,7 +518,7 @@
     <string name="info_export_report">Un fichier de %1$s appelé « %2$s » a été créé dans le dossier sélectionné. Vous devez le copier manuellement ailleurs pour protéger les données en cas d’endommagement, de perte ou de vol de votre appareil.</string>
     <string name="info_export_successful">Exportation réussie</string>
     <string name="option_info_delete_removed_books">Les livres supprimés sur l’autre appareil seront également supprimés sur cet appareil.</string>
-    <string name="info_import_complete">Import terminé</string>
+    <string name="info_import_complete">Importation terminée</string>
     <string name="info_import_partially_complete">Importation partielle effectuée</string>
     <string name="progress_msg_cleaning_up">Nettoyer…</string>
     <string name="progress_msg_connecting">Connexion en cours…</string>

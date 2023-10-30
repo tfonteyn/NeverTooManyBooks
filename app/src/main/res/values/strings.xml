@@ -192,10 +192,10 @@
     <!-- The archive we're trying to import is an unsupported version (too old or too new) -->
     <string name="error_unsupported_version_v">Unsupported version: %1$d</string>
     <string name="error_import_archive_invalid">The archive file is corrupt or otherwise invalid.</string>
-    <!-- generic import failure -->
-    <string name="error_import_failed">Import failed.</string>
-    <!-- import failure for a specific {@link RecordType} -->
-    <string name="error_import_failed_for_record">Import failed (%1$s).</string>
+    <!-- [VERIFIED] generic import failure -->
+    <string name="error_import_failed">Import unsuccessful</string>
+    <!-- [VERIFIED] import failure for a specific {@link RecordType} -->
+    <string name="error_import_failed_for_record">Import unsuccessful (%1$s)</string>
     <!-- CSV import fails: missing a mandatory column which can have one of the listed names -->
     <string name="error_import_csv_missing_columns_x">File must contain a column with one of the following names: %1$s</string>
     <!-- CSV import fails: the line was not readable / could not be decoded -->
@@ -656,7 +656,7 @@
     <string name="option_author_works_book">Books only</string>
     <!-- "view all works of an author" menu option - show only TOC entries -->
     <string name="option_author_works_toc">Only Table Of Content titles</string>
-    <!-- Cover image context menu option -->
+    <!-- [VERIFIED] Cover image context menu option -->
     <string name="option_cover_crop">Crop</string>
     <!-- Cover image context menu option -->
     <string name="option_cover_edit">Start editor</string>
@@ -695,8 +695,11 @@
     <!-- Booklist FAB menu option / screen title -->
     <string name="option_fab_add_book_by_external_id">Website book id</string>
 
+    <!-- [VERIFIED] -->
     <string name="option_select_all">Select all</string>
-    <string name="option_select_none">Unselect all</string>
+    <!-- [VERIFIED] -->
+    <string name="option_select_none">Deselect all</string>
+
     <!-- Whether an action will apply to all bookshelves, or... -->
     <string name="lbl_all_bookshelves">All bookshelves</string>
     <!-- whether an action will only apply to the current bookshelf. -->
@@ -710,7 +713,8 @@
     <string name="option_apply_to_all_related_books">All related books</string>
 
     <string name="pt_scan_mode">Scan mode</string>
-    <string name="option_barcode_scan_mode_manual">Manually</string>
+    <!-- [VERIFIED] -->
+    <string name="option_barcode_scan_mode_manual">Manual</string>
     <string name="option_barcode_scan_mode_continuous">Scan continuously</string>
 
     <!-- Whether to enforce strict ISBN numbers when searching etc...  -->
@@ -1007,13 +1011,13 @@
     <!-- Field label: the original title of a translated book; Long version of the label "lbl_original_title_long".-->
     <string name="lbl_original_title_long">Original title if this book is a translation</string>
     <string name="lbl_barcode">Barcode</string>
-    <!-- Label for the description which the app fetches from internet sites -->
+    <!-- [VERIFIED] Label for the description which the app fetches from internet sites -->
     <string name="lbl_description">Description</string>
     <!-- Label for the notes a user can make on their own copy of a book. -->
     <string name="lbl_personal_notes">Personal notes</string>
-    <!-- short label for the Location field -->
+    <!-- [VERIFIED] short label for the Location (where is the book?) field -->
     <string name="lbl_location">Location</string>
-    <!-- long label for the Location field -->
+    <!-- long label for the Location  (where is the book?) field -->
     <string name="lbl_location_long">Location of the book</string>
     <!-- Header for a screen section which groups all publication data. -->
     <string name="lbl_publication">Publication</string>
@@ -1126,7 +1130,7 @@
     <!-- Info text for "option_sync_deleted_book_records" -->
     <string name="option_info_delete_removed_books">Books deleted on the other device will also be deleted on this device.</string>
 
-    <!-- progress final message - all data was imported. -->
+    <!-- [VERIFIED] progress final message - all data was imported. -->
     <string name="info_import_complete">Import complete</string>
     <!-- progress final message - some data was imported. The user probably canceled before we finished. -->
     <string name="info_import_partially_complete">Partial import done</string>

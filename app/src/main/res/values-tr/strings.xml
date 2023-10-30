@@ -90,7 +90,7 @@
     <string name="action_save">Kaydet</string>
     <string name="action_search">Ara</string>
     <string name="action_select">Seç</string>
-    <string name="option_select_all">Hepsini seç</string>
+    <string name="option_select_all">Tümünü seç</string>
     <string name="option_select_none">Tümünün seçimini kaldır</string>
     <string name="action_show_all">Tümünü göster</string>
     <string name="action_skip">Atla</string>
@@ -191,8 +191,8 @@
     <string name="error_import_csv_line">%1$d. satırda bilinmeyen hata</string>
     <string name="error_import_csv_line_to_long">Satır çok uzun (satır=%1$d, uzunluk=%2$d)</string>
     <string name="error_import_csv_missing_columns_x">Dosya, %1$s adlarından birini kullanan bir sütun içermeli</string>
-    <string name="error_import_failed">İçe aktarma başarısız.</string>
-    <string name="error_import_failed_for_record">İçe aktarma başarısız (%1$s).</string>
+    <string name="error_import_failed">İçe aktarılamadı.</string>
+    <string name="error_import_failed_for_record">İçe aktarılamadı (%1$s).</string>
     <string name="error_import_file_not_supported">Seçilen dosya içe aktarılamaz.</string>
     <string name="error_network_failed_try_again">Bağlantıyı kontrol edip tekrar deneyin.</string>
     <string name="error_network_please_connect">Lütfen İnternet’e bağlanın.</string>
@@ -313,7 +313,7 @@
     <string name="lbl_date_published">Yayımlandığı Tarih</string>
     <string name="lbl_day">Gün</string>
     <string name="option_delete_removed_books">Artık sunucuda bulunmayan kitapları silin</string>
-    <string name="lbl_description">Özet</string>
+    <string name="lbl_description">Açıklama</string>
     <string name="lbl_details_have_changed">Ayrıntılar değiştirildi</string>
     <string name="lbl_duplicate_book">Kitabı kopyala</string>
     <string name="lbl_dust_cover">Toz ceket</string>
@@ -451,10 +451,10 @@
     <string name="title_backup_and_export">Yedekleme ve Dışa Aktarma</string>
     <string name="option_apply_to_this_node_only">Bu düğüm sadece</string>
     <string name="option_apply_to_all_related_books">Ilgili tüm kitaplar</string>
-    <string name="option_barcode_scan_mode_manual">Manuel olarak</string>
+    <string name="option_barcode_scan_mode_manual">El ile</string>
     <string name="option_barcode_scan_mode_continuous">Sürekli tarama</string>
     <string name="option_book_sync_list_with_details">Listeyi senkronize edin/konumlandırın</string>
-    <string name="option_cover_crop">Küçük resmi kırp</string>
+    <string name="option_cover_crop">Kırp</string>
     <string name="option_cover_edit">Düzenleyiciyi başlat</string>
     <string name="option_cover_replace">Değiştir…</string>
     <string name="option_cover_replace_from_alt_editions">Diğer sürümlerden…</string>
@@ -520,7 +520,7 @@
     <string name="info_export_report">Seçilen klasörde “%2$s” adında bir %1$s dosyası oluşturuldu. Cihazınızın hasar görmesi, kaybolması veya çalınması durumunda verileri korumak için elle başka bir yere kopyalamanız gerekir.</string>
     <string name="info_export_successful">İhracat başarılı</string>
     <string name="option_info_delete_removed_books">Diğer cihazda silinen kitaplar bu cihazda da silinecektir.</string>
-    <string name="info_import_complete">İçe aktarma başarılı</string>
+    <string name="info_import_complete">İçe aktrm tamamlandı</string>
     <string name="info_import_partially_complete">Kısmi ithalat yapıldı</string>
     <string name="progress_msg_cleaning_up">Temizlemek…</string>
     <string name="progress_msg_connecting">Bağlanılıyor…</string>

@@ -148,5 +148,12 @@
     <string name="X_use_default_setting">Dùng chế độ cài đặt mặc định</string>
     <string name="username">Tên người dùng</string>
     <string name="yes">Có</string>
+    <string name="option_cover_crop">"Cắt"</string>
     <string name="error_invalid_url">Địa chỉ (URL) không hợp lệ</string>
+    <string name="option_select_all">"Chọn tất cả"</string>
+    <string name="option_select_none">"Bỏ chọn tất cả"</string>
+    <string name="lbl_description">Mô tả</string>
+    <string name="option_barcode_scan_mode_manual">Thủ công</string>
+    <string name="info_import_complete">"Nhập xong"</string>
+    <string name="error_import_failed">"Nhập không thành công"</string>
 </resources>

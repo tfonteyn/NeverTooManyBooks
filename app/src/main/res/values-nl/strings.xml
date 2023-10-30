@@ -182,8 +182,8 @@
     <string name="error_import_csv_line">Onbekende fout in rij %1$d</string>
     <string name="error_import_csv_line_to_long">Lijn is te lang (lijn=%1$d, lengte=%2$d)</string>
     <string name="error_import_csv_missing_columns_x">Import bestand moet een kolom met de volgende namen bevatten: %1$s</string>
-    <string name="error_import_failed">Import mislukt.</string>
-    <string name="error_import_failed_for_record">Import mislukt (%1$s).</string>
+    <string name="error_import_failed">Importeren mislukt.</string>
+    <string name="error_import_failed_for_record">Importeren mislukt (%1$s).</string>
     <string name="error_import_file_not_supported">Het geselecteerde bestand kan niet worden geïmporteerd.</string>
     <string name="error_network_failed_try_again">Controleer de verbinding en probeer het opnieuw.</string>
     <string name="error_network_please_connect">Maak verbinding met internet.</string>
@@ -224,7 +224,7 @@
     <string name="info_export_report">Een %1$s bestand genaamd „%2$s” werd aangemaakt in de geselecteerde map. U moet het handmatig naar elders kopiëren om de gegevens te beschermen in geval van beschadiging, verlies of diefstal van uw apparaat.</string>
     <string name="info_export_successful">Export succesvol</string>
     <string name="option_info_delete_removed_books">Boeken die op het andere apparaat verwijderd zijn, worden ook op dit apparaat verwijderd.</string>
-    <string name="info_import_complete">Import Compleet</string>
+    <string name="info_import_complete">Importeren voltooid</string>
     <string name="info_import_partially_complete">Gedeeltelijke import voltooid</string>
     <string name="info_isfdb_warning_limited_to">(alleen ondersteund door de ISFDB-website)</string>
     <string name="info_purge_blns_all">Wis de node status van alle lijsten</string>
@@ -438,7 +438,7 @@
     <string name="option_auto_updates">Laat automatische verbeteringen van het internet toe.</string>
     <string name="option_apply_to_this_node_only">Alleen dit knooppunt</string>
     <string name="option_apply_to_all_related_books">Alle gerelateerde boeken</string>
-    <string name="option_barcode_scan_mode_manual">Manueel</string>
+    <string name="option_barcode_scan_mode_manual">Handmatig</string>
     <string name="option_barcode_scan_mode_continuous">Continu scannen</string>
     <string name="option_bob_filter_isbn_no">Zonder ISBN</string>
     <string name="option_bob_filter_isbn_yes">Met ISBN</string>
@@ -503,8 +503,8 @@
     <string name="option_purge_image_cache">Afbeeldingen cache wissen</string>
     <string name="option_rebuild_fts">Volledige tekst zoekgegevens opnieuw opbouwen</string>
     <string name="option_rebuild_index">Herbouw de indexen</string>
-    <string name="option_select_all">Selecteer alles</string>
-    <string name="option_select_none">Alles deselecteren</string>
+    <string name="option_select_all">Alles selecteren</string>
+    <string name="option_select_none">Alle selecties opheffen</string>
     <string name="option_set_complete">Markeer als volledig</string>
     <string name="option_set_incomplete">Markeer als onvolledig</string>
     <string name="option_set_read">Markeer als gelezen</string>

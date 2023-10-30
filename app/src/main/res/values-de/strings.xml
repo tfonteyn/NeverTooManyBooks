@@ -91,8 +91,8 @@
     <string name="action_save">Speichern</string>
     <string name="action_search">Suchen</string>
     <string name="action_select">Auswählen</string>
-    <string name="option_select_all">Wählen Sie Alle</string>
-    <string name="option_select_none">Alles wiederufen</string>
+    <string name="option_select_all">Alle auswählen</string>
+    <string name="option_select_none">Auswahl für alle aufheben</string>
     <string name="action_show_all">Alle anzeigen</string>
     <string name="action_skip">Überspringen</string>
     <string name="action_synchronize">Synchronisieren</string>
@@ -185,8 +185,8 @@
     <string name="error_import_csv_line">Unbekannter Fehler in Zeile %1$d</string>
     <string name="error_import_csv_line_to_long">Zeile ist zu lang (Zeile=%1$d, Länge=%2$d)</string>
     <string name="error_import_csv_missing_columns_x">Die Datei muss eine Spalte mit den folgenden Namen enthalten: %1$s</string>
-    <string name="error_import_failed">Import gescheitert.</string>
-    <string name="error_import_failed_for_record">Import gescheitert (%1$s).</string>
+    <string name="error_import_failed">Import fehlgeschlagen</string>
+    <string name="error_import_failed_for_record">Import fehlgeschlagen (%1$s)</string>
     <string name="error_import_file_not_supported">Die ausgewählte Datei kann nicht importiert werden.</string>
     <string name="error_network_failed_try_again">Prüfe die Verbindung und versuche es noch einmal.</string>
     <string name="error_network_please_connect">Bitte stelle eine Verbindung zum Internet her.</string>
@@ -355,7 +355,7 @@
     <string name="lbl_library">Bibliothek</string>
     <string name="lbl_local_search">Lokale Suche</string>
     <string name="lbl_local_search_long">Erweiterte lokale Suche</string>
-    <string name="lbl_location">Standort</string>
+    <string name="lbl_location">Ort</string>
     <string name="lbl_location_long">Standort des Buches</string>
     <string name="option_bug_report_logfiles">Protokolldateien</string>
     <string name="lbl_login_to_search">Melden Sie sich an, um zu suchen</string>
@@ -514,7 +514,7 @@
     <string name="info_export_report">Eine %1$s-Datei namens “%2$s” wurde im ausgewählten Ordner erstellt. Sie sollten sie manuell an einen anderen Ort kopieren, um die Daten zu schützen, falls Ihr Gerät beschädigt wird, verloren geht oder gestohlen wird.</string>
     <string name="info_export_successful">Export erfolgreich</string>
     <string name="option_info_delete_removed_books">Bücher, die auf dem anderen Gerät gelöscht wurden, werden auch auf diesem Gerät gelöscht.</string>
-    <string name="info_import_complete">Import vollständig</string>
+    <string name="info_import_complete">Import abgeschlossen</string>
     <string name="info_import_partially_complete">Teilweise importiert</string>
     <string name="progress_msg_cleaning_up">Aufräumen…</string>
     <string name="progress_msg_connecting">Verbindung wird hergestellt…</string>

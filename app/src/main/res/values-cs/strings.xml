@@ -98,7 +98,7 @@
     <string name="action_search">Hledat</string>
     <string name="action_select">Vybrat</string>
     <string name="option_select_all">Vybrat vše</string>
-    <string name="option_select_none">Odznačit vše</string>
+    <string name="option_select_none">Zrušit výběr všech položek</string>
     <string name="action_show_all">Zobrazit vše</string>
     <string name="action_skip">Přeskočit</string>
     <string name="action_synchronize">Synchronizovat</string>
@@ -199,8 +199,8 @@
     <string name="error_import_csv_line">Neznámá chyba v řádku %1$d</string>
     <string name="error_import_csv_line_to_long">Řádek je příliš dlouhý (řádek=%1$d, délka=%2$d)</string>
     <string name="error_import_csv_missing_columns_x">Soubor musí obsahovat sloupec s jedním z následujících jmen: %1$s</string>
-    <string name="error_import_failed">Import se nezdařil.</string>
-    <string name="error_import_failed_for_record">Import se nezdařil (%1$s).</string>
+    <string name="error_import_failed">Import se nezdařil</string>
+    <string name="error_import_failed_for_record">Import se nezdařil (%1$s)</string>
     <string name="error_import_file_not_supported">Vybraný soubor nelze importovat.</string>
     <string name="error_network_failed_try_again">Zkontrolujte připojení a zkuste to znovu.</string>
     <string name="error_network_please_connect">Připojte se prosím k internetu.</string>
@@ -370,7 +370,7 @@
     <string name="lbl_library">Knihovny</string>
     <string name="lbl_local_search">Místní vyhledávání</string>
     <string name="lbl_local_search_long">Rozšířené místní vyhledávání</string>
-    <string name="lbl_location">Poloha</string>
+    <string name="lbl_location">Místo</string>
     <string name="lbl_location_long">Umístění knihy</string>
     <string name="option_bug_report_logfiles">Záznam souborů</string>
     <string name="lbl_login_to_search">Přihlaste se k vyhledávání</string>

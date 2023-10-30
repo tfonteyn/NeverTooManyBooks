@@ -97,7 +97,7 @@
     <string name="action_search">Поиск</string>
     <string name="action_select">Выбрать</string>
     <string name="option_select_all">Выбрать все</string>
-    <string name="option_select_none">Снять все</string>
+    <string name="option_select_none">Отменить все</string>
     <string name="action_show_all">Показать все</string>
     <string name="action_skip">Пропустить</string>
     <string name="action_synchronize">Синхронизировать</string>
@@ -201,8 +201,8 @@
     <string name="error_import_csv_line">Неизвестная ошибка в строке %1$d</string>
     <string name="error_import_csv_line_to_long">Строка слишком длинная (строка=%1$d, длина=%2$d)</string>
     <string name="error_import_csv_missing_columns_x">Файл должен содержать столбец с одним из следующих имён: %1$s</string>
-    <string name="error_import_failed">Импорт не удался.</string>
-    <string name="error_import_failed_for_record">Импорт не удался (%1$s).</string>
+    <string name="error_import_failed">Сбой импорта.</string>
+    <string name="error_import_failed_for_record">Сбой импорта (%1$s).</string>
     <string name="error_import_file_not_supported">Выбранный файл не может быть импортирован.</string>
     <string name="error_network_failed_try_again">Проверьте подключение и повторите попытку.</string>
     <string name="error_network_please_connect">Подключитесь к Интернету.</string>
@@ -371,7 +371,7 @@
     <string name="lbl_library">библиотека</string>
     <string name="lbl_local_search">Локальный поиск</string>
     <string name="lbl_local_search_long">Расширенный локальный поиск</string>
-    <string name="lbl_location">Местоположение</string>
+    <string name="lbl_location">Место съемки</string>
     <string name="lbl_location_long">Местоположение книги</string>
     <string name="option_bug_report_logfiles">Лог-файлы</string>
     <string name="lbl_login_to_search">Авторизуйтесь для поиска</string>
@@ -430,7 +430,7 @@
     <string name="lbl_styles_long">Cтили списка книг</string>
     <string name="lbl_sync_date">C</string>
     <string name="lbl_tab_alternative_editions">Альтернативные издания</string>
-    <string name="lbl_tab_details">Детали</string>
+    <string name="lbl_tab_details">Сведения</string>
     <string name="lbl_tab_lbl_ext_id">Внешний идентификатор</string>
     <string name="lbl_tab_notes">Примечания</string>
     <string name="lbl_tab_publication">публикация</string>
@@ -464,7 +464,7 @@
     <string name="option_barcode_scan_mode_manual">Вручную</string>
     <string name="option_barcode_scan_mode_continuous">Сканировать непрерывно</string>
     <string name="option_book_sync_list_with_details">Синхронизировать/позиционировать список</string>
-    <string name="option_cover_crop">Обрезать эскиз</string>
+    <string name="option_cover_crop">Кадрировать</string>
     <string name="option_cover_edit">Запустить редактор</string>
     <string name="option_cover_replace">Заменить…</string>
     <string name="option_cover_replace_from_alt_editions">Из других изданий…</string>

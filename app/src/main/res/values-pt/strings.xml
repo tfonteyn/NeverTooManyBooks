@@ -113,7 +113,7 @@
     <string name="lbl_date_published_year">Ano de Publicação</string>
     <string name="lbl_day">Dia</string>
     <string name="lbl_language">Idioma</string>
-    <string name="lbl_location">Localização</string>
+    <string name="lbl_location">Local</string>
     <string name="lbl_moving_data">Movendo dados</string>
     <string name="lbl_price_paid">Preço pago</string>
     <string name="lbl_publication">Publicação</string>
@@ -312,7 +312,7 @@
     <string name="info_isfdb_warning_limited_to">(suportado apenas pelo site do ISFDB)</string>
     <string name="tip_import_isbn_list">Importar um ficheiro de texto com números ISBN. O ficheiro deve ter um único ISBN por cada linha. Os resultados serão colocados na fila.</string>
     <string name="option_storage_edit_settings">Editar configurações</string>
-    <string name="option_barcode_scan_mode_manual">Manualmente</string>
+    <string name="option_barcode_scan_mode_manual">Manual</string>
     <string name="option_barcode_scan_mode_continuous">Ler continuamente</string>
     <string name="option_isbn_strict">ISBN estrito</string>
     <string name="confirm_remove_toc_entry">Remover o título “%1$s” por %2$s deste livro?</string>
@@ -405,7 +405,7 @@
     <string name="option_cover_rotate_ccw">Anti-Horário</string>
     <string name="option_fab_add_book_by_barcode_scan">Ler um código de barras</string>
     <string name="option_fab_add_book_by_isbn">Pesquisa por ISBN</string>
-    <string name="option_select_none">Desseleccionar tudo</string>
+    <string name="option_select_none">Desmarcar tudo</string>
     <string name="btn_just_this_shelf">Apenas esta prateleira</string>
     <string name="lbl_all_bookshelves">Todas as prateleiras</string>
     <string name="option_isfdb_menu_populate_toc">Preencher títulos (somente ISFDB)</string>

@@ -97,8 +97,8 @@
     <string name="action_save">Zapisz</string>
     <string name="action_search">Szukaj</string>
     <string name="action_select">Wybierz</string>
-    <string name="option_select_all">Zaznacz wszystko</string>
-    <string name="option_select_none">Odznacz wszystko</string>
+    <string name="option_select_all">Zaznacz wszystkie</string>
+    <string name="option_select_none">Usuń zaznaczenie wszystkich</string>
     <string name="action_show_all">Pokaż wszystko</string>
     <string name="action_skip">Pomiń</string>
     <string name="action_synchronize">Synchronizować</string>
@@ -204,8 +204,8 @@
     <string name="error_import_csv_line">Nieznany błąd w wierszu %1$d</string>
     <string name="error_import_csv_line_to_long">Linia jest za długa (wiersz=%1$d, długość=%2$d)</string>
     <string name="error_import_csv_missing_columns_x">Plik musi zawierać jedno z pól: %1$s</string>
-    <string name="error_import_failed">Import nie powiódł się.</string>
-    <string name="error_import_failed_for_record">Import nie powiódł się (%1$s).</string>
+    <string name="error_import_failed">Nie udało się zaimportować.</string>
+    <string name="error_import_failed_for_record">Nie udało się zaimportować (%1$s).</string>
     <string name="error_import_file_not_supported">Wybranego pliku nie można zaimportować.</string>
     <string name="error_network_failed_try_again">Sprawdź połączenie i spróbuj ponownie.</string>
     <string name="error_network_please_connect">Połącz się z internetem.</string>
@@ -433,7 +433,7 @@
     <string name="lbl_styles_long">Style listy książek</string>
     <string name="lbl_sync_date">Odkąd</string>
     <string name="lbl_tab_alternative_editions">Alt. wer.</string>
-    <string name="lbl_tab_details">Detale</string>
+    <string name="lbl_tab_details">Szczegóły</string>
     <string name="lbl_tab_lbl_ext_id">Zewnętrzny ID</string>
     <string name="lbl_tab_notes">Notatki</string>
     <string name="lbl_tab_publication">Publikacja</string>
@@ -464,10 +464,10 @@
     <string name="title_backup_and_export">Kopia zapasowa i eksport</string>
     <string name="option_apply_to_this_node_only">Tylko ten węzeł</string>
     <string name="option_apply_to_all_related_books">Wszystkie powiązane książki</string>
-    <string name="option_barcode_scan_mode_manual">Ręcznie</string>
+    <string name="option_barcode_scan_mode_manual">Ręczna</string>
     <string name="option_barcode_scan_mode_continuous">Skanowanie ciągłe</string>
     <string name="option_book_sync_list_with_details">Synchronizuj/ustaw listę</string>
-    <string name="option_cover_crop">Obciąć</string>
+    <string name="option_cover_crop">Przytnij</string>
     <string name="option_cover_edit">Uruchom edytor</string>
     <string name="option_cover_replace">Zastąp…</string>
     <string name="option_cover_replace_from_alt_editions">Z innego wydania…</string>

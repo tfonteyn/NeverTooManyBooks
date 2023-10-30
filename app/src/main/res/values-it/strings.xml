@@ -93,7 +93,7 @@
     <string name="action_save">Salva</string>
     <string name="action_search">Ieškoti</string>
     <string name="action_select">Seleziona</string>
-    <string name="option_select_all">Seleziona tutto</string>
+    <string name="option_select_all">Seleziona tutti</string>
     <string name="option_select_none">Deseleziona tutto</string>
     <string name="action_show_all">Mostra tutte</string>
     <string name="action_skip">Ignora</string>
@@ -188,8 +188,8 @@
     <string name="error_import_csv_line">Errore sconosciuto nella riga %1$d</string>
     <string name="error_import_csv_line_to_long">La riga è troppo lunga (riga=%1$d, lunghezza=%2$d)</string>
     <string name="error_import_csv_missing_columns_x">Il file deve contenere una colonna con uno dei seguenti nomi: %1$s</string>
-    <string name="error_import_failed">Importazione fallita.</string>
-    <string name="error_import_failed_for_record">Importazione fallita (%1$s).</string>
+    <string name="error_import_failed">Importazione non riuscita.</string>
+    <string name="error_import_failed_for_record">Importazione non riuscita (%1$s).</string>
     <string name="error_import_file_not_supported">Il file selezionato non può essere importato.</string>
     <string name="error_network_failed_try_again">Controlla la connessione e riprova.</string>
     <string name="error_network_please_connect">Connettiti a Internet.</string>
@@ -358,7 +358,7 @@
     <string name="lbl_library">Biblioteca</string>
     <string name="lbl_local_search">Ricerca locale</string>
     <string name="lbl_local_search_long">Ricerca locale avanzata</string>
-    <string name="lbl_location">Posizione</string>
+    <string name="lbl_location">Luogo</string>
     <string name="lbl_location_long">Locazione del libro</string>
     <string name="option_bug_report_logfiles">Log files</string>
     <string name="lbl_login_to_search">Accedi per cercare</string>
@@ -448,7 +448,7 @@
     <string name="title_backup_and_export">Backup ed esportazione</string>
     <string name="option_apply_to_this_node_only">Solo questo nodo</string>
     <string name="option_apply_to_all_related_books">Tutti i libri correlati</string>
-    <string name="option_barcode_scan_mode_manual">Manualmente</string>
+    <string name="option_barcode_scan_mode_manual">Manuale</string>
     <string name="option_barcode_scan_mode_continuous">Scansione continua</string>
     <string name="option_book_sync_list_with_details">Sincronizza/posiziona la lista</string>
     <string name="option_cover_crop">Ritaglia</string>
@@ -517,7 +517,7 @@
     <string name="info_export_report">Nella cartella selezionata è stato creato un file %1$s chiamato «%2$s». È necessario copiarlo manualmente altrove per proteggere i dati in caso di danneggiamento, smarrimento o furto del dispositivo.</string>
     <string name="info_export_successful">Esportazione riuscita</string>
     <string name="option_info_delete_removed_books">I libri eliminati sull’altro dispositivo saranno eliminati anche su questo dispositivo.</string>
-    <string name="info_import_complete">Importazione Completata</string>
+    <string name="info_import_complete">Importazione completata</string>
     <string name="info_import_partially_complete">Importazione parziale eseguita</string>
     <string name="progress_msg_cleaning_up">Pulire…</string>
     <string name="progress_msg_connecting">Connessione…</string>
