@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,11 +17,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
-    <!ENTITY APP_NAME "NeverTooManyBooks">
-    ]>
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d kitap</item>
@@ -191,8 +188,8 @@
     <string name="error_import_csv_line">%1$d. satırda bilinmeyen hata</string>
     <string name="error_import_csv_line_to_long">Satır çok uzun (satır=%1$d, uzunluk=%2$d)</string>
     <string name="error_import_csv_missing_columns_x">Dosya, %1$s adlarından birini kullanan bir sütun içermeli</string>
-    <string name="error_import_failed">İçe aktarılamadı.</string>
-    <string name="error_import_failed_for_record">İçe aktarılamadı (%1$s).</string>
+    <string name="error_import_failed">İçe aktarılamadı</string>
+    <string name="error_import_failed_for_record">İçe aktarılamadı (%1$s)</string>
     <string name="error_import_file_not_supported">Seçilen dosya içe aktarılamaz.</string>
     <string name="error_network_failed_try_again">Bağlantıyı kontrol edip tekrar deneyin.</string>
     <string name="error_network_please_connect">Lütfen İnternet’e bağlanın.</string>
