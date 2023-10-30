@@ -760,5 +760,5 @@
     <string name="acra_report_saved">Ya puedes visitar la página del proyecto en Github y registrar una nueva incidencia. Adjunta a la incidencia el informe guardado anteriormente. Si aún no tienes una cuenta de Github, tendrás que crear una.</string>
     <string name="action_report">Informar</string>
     <string name="error_invalid_url">Dirección no válida (URL)</string>
-    <string name="lbl_certificate_validity_period">Validez: %1$s</string>
+    <string name="lbl_certificate_validity_period">Validez: %1$s - %2$s</string>
 </resources>

@@ -1372,8 +1372,9 @@
     <string name="lbl_certificate_issued_to">Issued to: %1$s</string>
     <!-- [VERIFIED] - Label for an information field on an SSL Certificate Dialog -->
     <string name="lbl_certificate_issued_by">Issued by: %1$s</string>
-    <!-- [VERIFIED] - Label for an information field on an SSL Certificate Dialog -->
-    <string name="lbl_certificate_validity_period">Validity: %1$s</string>
+    <!-- [VERIFIED] - Label for an information field on an SSL Certificate Dialog.
+         param 1: date-from; param 2: date-until -->
+    <string name="lbl_certificate_validity_period">Validity: %1$s - %2$s</string>
 
     <!-- endregion -->
     <!-- region ========== Style settings. -->

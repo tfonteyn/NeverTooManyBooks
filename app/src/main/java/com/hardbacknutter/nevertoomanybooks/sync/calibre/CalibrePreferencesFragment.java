@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync.calibre;
 
+import android.content.Context;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
@@ -38,6 +40,9 @@ import java.io.InputStream;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForReadingContract;
@@ -202,14 +207,33 @@ public class CalibrePreferencesFragment
     @NonNull
     private String createCaSummary() {
         try {
+            final Context context = getContext();
             //noinspection DataFlowIssue
-            final X509Certificate ca = CalibreContentServer.getCertificate(getContext());
+            final X509Certificate ca = CalibreContentServer.getCertificate(context);
             ca.checkValidity();
+
+            final Configuration configuration = context.getResources().getConfiguration();
+
+            final DateTimeFormatter formatter = DateTimeFormatter
+                    .ofLocalizedDate(FormatStyle.MEDIUM)
+                    .withLocale(configuration.getLocales().get(0));
+
+            final String from = formatter.format(ca.getNotBefore()
+                                                   .toInstant()
+                                                   .atZone(ZoneId.systemDefault())
+                                                   .toLocalDate());
+            final String until = formatter.format(ca.getNotAfter()
+                                                    .toInstant()
+                                                    .atZone(ZoneId.systemDefault())
+                                                    .toLocalDate());
+
             return getString(R.string.lbl_certificate_issued_to,
                              ca.getSubjectX500Principal().getName())
                    + '\n'
                    + getString(R.string.lbl_certificate_issued_by,
-                               ca.getIssuerX500Principal().getName());
+                               ca.getIssuerX500Principal().getName())
+                   + '\n'
+                   + getString(R.string.lbl_certificate_validity_period, from, until);
 
         } catch (@NonNull final CertificateException e) {
             return getString(R.string.error_certificate_invalid);

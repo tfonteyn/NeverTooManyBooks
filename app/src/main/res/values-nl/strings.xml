@@ -746,5 +746,5 @@
     <string name="acra_report_saved">U kunt nu de projectpagina op Github bezoeken en een nieuw probleem aanmelden. Voeg het eerder opgeslagen rapport bij het probleem. Als u nog geen Github-account hebt, moet u er een aanmaken.</string>
     <string name="action_report">Melden</string>
     <string name="error_invalid_url">Ongeldig adres (URL)</string>
-    <string name="lbl_certificate_validity_period">Geldigheid: %1$s</string>
+    <string name="lbl_certificate_validity_period">Geldigheid: %1$s - %2$s</string>
 </resources>

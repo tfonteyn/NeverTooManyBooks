@@ -750,5 +750,5 @@
     <string name="acra_report_saved">Vous pouvez maintenant visiter la page du projet sur Github et enregistrer un nouveau problème. Veuillez joindre le rapport précédemment enregistré au problème. Si vous n’avez pas encore de compte Github, vous devez en créer un.</string>
     <string name="action_report">Rapport</string>
     <string name="error_invalid_url">Adresse (URL) invalide</string>
-    <string name="lbl_certificate_validity_period">Validité : %1$s</string>
+    <string name="lbl_certificate_validity_period">Validité : %1$s - %2$s</string>
 </resources>

@@ -746,5 +746,5 @@
     <string name="acra_report_saved">Sie können nun die Projektseite auf Github besuchen und ein neues Problem melden. Hängen Sie bitte den zuvor gespeicherten Bericht an die Frage an. Wenn Sie noch kein Github-Konto haben, müssen Sie eines erstellen.</string>
     <string name="action_report">Melden</string>
     <string name="error_invalid_url">Ungültige Adresse (URL)</string>
-    <string name="lbl_certificate_validity_period">Gültigkeit: %1$s</string>
+    <string name="lbl_certificate_validity_period">Gültigkeit: %1$s - %2$s</string>
 </resources>

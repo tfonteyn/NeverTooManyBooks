@@ -755,5 +755,5 @@
     <string name="acra_report_saved">Artık Github’daki proje sayfasını ziyaret edebilir ve yeni bir sorun kaydedebilirsiniz. Lütfen daha önce kaydettiğiniz raporu soruna ekleyin. Henüz bir Github hesabınız yoksa, bir tane oluşturmanız gerekecektir.</string>
     <string name="action_report">Bildir</string>
     <string name="error_invalid_url">Geçersiz adres (URL)</string>
-    <string name="lbl_certificate_validity_period">Geçerlilik: %1$s</string>
+    <string name="lbl_certificate_validity_period">Geçerlilik: %1$s - %2$s</string>
 </resources>
