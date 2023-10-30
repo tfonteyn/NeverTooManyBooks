@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -182,8 +179,8 @@
     <string name="error_import_csv_line">Onbekende fout in rij %1$d</string>
     <string name="error_import_csv_line_to_long">Lijn is te lang (lijn=%1$d, lengte=%2$d)</string>
     <string name="error_import_csv_missing_columns_x">Import bestand moet een kolom met de volgende namen bevatten: %1$s</string>
-    <string name="error_import_failed">Importeren mislukt.</string>
-    <string name="error_import_failed_for_record">Importeren mislukt (%1$s).</string>
+    <string name="error_import_failed">Importeren mislukt</string>
+    <string name="error_import_failed_for_record">Importeren mislukt (%1$s)</string>
     <string name="error_import_file_not_supported">Het geselecteerde bestand kan niet worden geïmporteerd.</string>
     <string name="error_network_failed_try_again">Controleer de verbinding en probeer het opnieuw.</string>
     <string name="error_network_please_connect">Maak verbinding met internet.</string>
