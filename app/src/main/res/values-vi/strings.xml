@@ -17,13 +17,10 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
-    <!ENTITY APP_NAME "NeverTooManyBooks">
-    ]>
-<!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine -->
-<resources>
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
+<!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
     <string name="a_b">%1$s%2$s</string>
     <plurals name="n_stars">
         <item quantity="other">%1$s sao</item>
@@ -156,4 +153,28 @@
     <string name="option_barcode_scan_mode_manual">Thủ công</string>
     <string name="info_import_complete">"Nhập xong"</string>
     <string name="error_import_failed">"Nhập không thành công"</string>
+    <string name="httpErrorTimeout">Kết nối đến máy chủ đã hết thời gian chờ.</string>
+    <string name="pc_camera">Máy ảnh</string>
+    <string name="lbl_unread">Chưa đọc</string>
+    <string name="error_import_failed_for_record">Nhập không thành công (%1$s)</string>
+    <string name="X_lbl_system">(Hệ thống)</string>
+    <string name="X_lbl_folder">Thư mục</string>
+    <string name="lbl_certificate_issued_by">Cấp bởi: %1$s</string>
+    <string name="lbl_day">Ngày</string>
+    <string name="lbl_certificate_issued_to">Cấp cho: %1$s</string>
+    <string name="cd_clear_text_end_icon">Xóa văn bản</string>
+    <string name="lbl_moving_data">Di chuyển dữ liệu</string>
+    <string name="bob_empty_field">(Trống)</string>
+    <string name="action_email">Gửi email</string>
+    <string name="httpErrorFailedSslHandshake">Không thể thiết lập kết nối an toàn.</string>
+    <string name="action_not_now">Để sau</string>
+    <string name="X_whichImageCaptureApplication">Chụp ảnh bằng</string>
+    <string name="progress_msg_please_wait">Đợi…</string>
+    <string name="lbl_certificate_ca">Chứng chỉ CA</string>
+    <string name="lbl_available">Có mặt</string>
+    <string name="action_select">Chọn</string>
+    <string name="action_show_all">Hiển thị tất cả</string>
+    <string name="option_bug_report">Báo cáo lỗi</string>
+    <string name="progress_msg_searching">Đang tìm kiếm…</string>
+    <string name="action_discard">Yok say</string>
 </resources>
