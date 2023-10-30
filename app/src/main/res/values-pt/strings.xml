@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “...”  (older «…» are no longer used as verified with a native speaker) - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pt">
@@ -104,8 +101,7 @@
     <string name="lbl_certificate_issued_by">Emitido por: %1$s</string>
     <string name="lbl_certificate_issued_to">Emitido para: %1$s</string>
     <string name="lbl_certificates">Certificados</string>
-    <string name="lbl_ebook_file_type"
-            tools:ignore="Typos">Tipo de ficheiro de livro eletrónico</string>
+    <string name="lbl_ebook_file_type" tools:ignore="Typos">Tipo de ficheiro de livro eletrónico</string>
     <string name="lbl_color">Cor</string>
     <string name="lbl_country">País</string>
     <string name="lbl_credentials">Credenciais do usuário</string>
@@ -161,7 +157,7 @@
     <string name="yes">Sim</string>
     <string name="error_search_x_failed_y">Falha ao pesquisar em %1$s: %2$s</string>
     <string name="error_search_could_not_be_started">A pesquisa do livro falhou.</string>
-    <string name="error_import_failed">Falha na importação.</string>
+    <string name="error_import_failed">Falha na importação</string>
     <string name="error_backup_failed">Falha na cópia de segurança.</string>
     <string name="warning_book_not_always_found">Nem todos os sites devolveram dados válidos.</string>
     <string name="warning_book_not_found">Não é possível localizar o livro especificado.</string>
@@ -194,7 +190,7 @@
     <string name="error_import_file_not_supported">O ficheiro seleccionado não pode ser importado.</string>
     <string name="error_file_not_recognized">O ficheiro seleccionado não é reconhecido.</string>
     <string name="error_import_archive_invalid">O ficheiro arquivado está corrompido ou é inválido.</string>
-    <string name="error_import_failed_for_record">Falha na importação (%1$s).</string>
+    <string name="error_import_failed_for_record">Falha na importação (%1$s)</string>
     <string name="error_import_csv_line">Erro desconhecido na linha %1$d</string>
     <string name="error_import_csv_missing_columns_x">O ficheiro deve conter uma coluna com um dos seguintes nomes: %1$s</string>
     <string name="warning_immediate_global_changes">AVISO: As alterações guardadas são aplicadas instantaneamente a todos os livros.</string>
