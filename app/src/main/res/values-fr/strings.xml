@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,11 +17,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
-    <!ENTITY APP_NAME "NeverTooManyBooks">
-    ]>
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
 --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
     <plurals name="displaying_n_books">
@@ -189,8 +186,8 @@
     <string name="error_import_csv_line">Erreur inconnue à la ligne %1$d</string>
     <string name="error_import_csv_line_to_long">La ligne est trop longue (ligne=%1$d, longueur=%2$d)</string>
     <string name="error_import_csv_missing_columns_x">Le fichier doit contenir au moins une des colonnes suivantes : %1$s</string>
-    <string name="error_import_failed">Échec de l’importation.</string>
-    <string name="error_import_failed_for_record">Échec de l’importation (%1$s).</string>
+    <string name="error_import_failed">Échec de l’importation</string>
+    <string name="error_import_failed_for_record">Échec de l’importation (%1$s)</string>
     <string name="error_import_file_not_supported">Le fichier sélectionné ne peut pas être importé.</string>
     <string name="error_network_failed_try_again">Vérifiez la connexion et réessayez.</string>
     <string name="error_network_please_connect">Connectez-vous à Internet.</string>
@@ -661,10 +658,8 @@
     <string name="warning_cannot_delete_1st_bs">Impossible de supprimer la première bibliothèque.</string>
     <string name="warning_enable_at_least_1_website">Activer au moins un site Web pour chaque catégorie.</string>
     <string name="warning_export_contains_no_data">Il n’y avait rien à exporter.</string>
-    <string name="warning_if_day_set_month_and_year_must_be"
-            tools:ignore="TypographyQuotes">Si le jour est précisé, le mois et l’année doivent l’être aussi.</string>
-    <string name="warning_if_month_set_year_must_be"
-            tools:ignore="TypographyQuotes">Si le mois est précisé, l’année doit l’être aussi.</string>
+    <string name="warning_if_day_set_month_and_year_must_be" tools:ignore="TypographyQuotes">Si le jour est précisé, le mois et l’année doivent l’être aussi.</string>
+    <string name="warning_if_month_set_year_must_be" tools:ignore="TypographyQuotes">Si le mois est précisé, l’année doit l’être aussi.</string>
     <string name="warning_image_copy_failed">L’image n’a pas pu être copiée.</string>
     <string name="warning_image_not_found">L’image est introuvable.</string>
     <string name="warning_immediate_global_changes">ATTENTION : Les modifications enregistrées sont instantanément appliquées à tous les livres.</string>
