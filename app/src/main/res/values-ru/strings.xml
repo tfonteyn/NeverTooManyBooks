@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,11 +17,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
-    <!ENTITY APP_NAME "NeverTooManyBooks">
-    ]>
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d книга</item>
@@ -201,8 +198,8 @@
     <string name="error_import_csv_line">Неизвестная ошибка в строке %1$d</string>
     <string name="error_import_csv_line_to_long">Строка слишком длинная (строка=%1$d, длина=%2$d)</string>
     <string name="error_import_csv_missing_columns_x">Файл должен содержать столбец с одним из следующих имён: %1$s</string>
-    <string name="error_import_failed">Сбой импорта.</string>
-    <string name="error_import_failed_for_record">Сбой импорта (%1$s).</string>
+    <string name="error_import_failed">Сбой импорта</string>
+    <string name="error_import_failed_for_record">Сбой импорта (%1$s)</string>
     <string name="error_import_file_not_supported">Выбранный файл не может быть импортирован.</string>
     <string name="error_network_failed_try_again">Проверьте подключение и повторите попытку.</string>
     <string name="error_network_please_connect">Подключитесь к Интернету.</string>
