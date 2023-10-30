@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,9 +18,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+  -->
+
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d книга</item>
@@ -461,14 +464,13 @@
     <string name="option_barcode_scan_mode_manual">Вручную</string>
     <string name="option_barcode_scan_mode_continuous">Сканировать непрерывно</string>
     <string name="option_book_sync_list_with_details">Синхронизировать/позиционировать список</string>
-    <string name="option_cover_crop">Кадрировать</string>
-    <string name="option_cover_edit">Запустить редактор</string>
+    <string name="action_crop">Кадрировать</string>
     <string name="option_cover_replace">Заменить…</string>
     <string name="option_cover_replace_from_alt_editions">Из других изданий…</string>
     <string name="option_cover_replace_from_camera">С камеры…</string>
     <string name="option_cover_replace_from_gallery">Из галереи…</string>
     <string name="option_cover_rotate">Повернуть…</string>
-    <string name="option_cover_rotate_automatic">автоматическая</string>
+    <string name="option_cover_rotate_automatic">Автоматически</string>
     <string name="option_cover_rotate_ccw">Против часовой</string>
     <string name="option_cover_rotate_cw">По часовой</string>
     <string name="option_download_ebook_format">Скачать электронную книгу (%1$s)</string>
@@ -516,7 +518,7 @@
     <string name="pe_ui_theme_light">свет</string>
     <string name="pt_barcode_scanner">Сканер штрих-кода</string>
     <string name="pt_bob_show_details">Информация о книге отображается в списке</string>
-    <string name="lbl_filters">Фильтры книг</string>
+    <string name="lbl_filters">Фильтры</string>
     <string name="pc_image_cache">Кэш изображений</string>
     <string name="pt_bob_groups">Группирование</string>
     <string name="pc_ui">Пользовательский интерфейс</string>
@@ -595,7 +597,7 @@
     <string name="ps_bob_books_under_multiple_primary_author_only">Только под первым автор</string>
     <string name="ps_bob_books_under_multiple_primary_publisher_only">только под своим основным издателем</string>
     <string name="ps_bob_books_under_multiple_primary_series_only">Только под первым серии</string>
-    <string name="pv_bob_header_filters">Фильтры книг</string>
+    <string name="pv_bob_header_filters">Фильтры</string>
     <string name="pv_bob_header_nr_of_books">Показывать номера книг</string>
     <string name="pv_bob_header_style_name">Название стиля</string>
     <string name="size_hidden">скрытый</string>
@@ -763,4 +765,5 @@
     <string name="acra_report_saved">Теперь вы можете зайти на страницу проекта на Github и зарегистрировать новую проблему. Пожалуйста, прикрепите к проблеме сохраненный ранее отчет. Если у вас еще нет учетной записи на Github, вам необходимо ее создать.</string>
     <string name="action_report">Отправить отчет</string>
     <string name="error_invalid_url">Неверный адрес (URL)</string>
+    <string name="lbl_certificate_validity_period">Срок действия: %1$s</string>
 </resources>

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,12 +18,23 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
-<!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
+  -->
+
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
+<!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine -->
+<resources>
+    <string name="X_lbl_folder">文件夹</string>
+    <string name="X_lbl_image">图片</string>
+    <string name="X_whichImageCaptureApplication">使用以下应用截图</string>
+    <string name="X_whichSendToApplication">通过以下应用发送</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s（%2$s）</string>
+    <string name="lbl_settings">设置</string>
+    <string name="lbl_storage_settings">存储</string>
+    <string name="lbl_unread">未读邮件</string>
+    <string name="lbl_year">年</string>
     <string name="list_element">• %s</string>
     <string name="name_hash_nr">%1$s #%2$d</string>
     <string name="whichEditApplication">编辑方式</string>
@@ -51,6 +63,7 @@
     <string name="notification_channel_warn">警告</string>
     <string name="notification_channel_info">信息</string>
     <string name="debug_select_items">选择您要选择的内容：</string>
+    <string name="X_action_try_again">重试</string>
     <string name="X_httpErrorIO">无法与服务器通信。请稍后再试。</string>
     <string name="httpErrorTimeout">与服务器的连接超时。</string>
     <string name="httpErrorFailedSslHandshake">无法建立安全连接。</string>
@@ -66,9 +79,14 @@
     <string name="error_network_failed_try_again">请检查您的网络连接后重试。</string>
     <string name="error_http_401_authorization_failed">验证失败</string>
     <string name="error_http_401_site_authorization_failed">%1$s 验证导致错误。</string>
+    <string name="X_action_reset">重置</string>
     <string name="X_action_send">发送</string>
+    <string name="X_action_clear_credentials">清除凭据</string>
+    <string name="X_action_execute">执行</string>
+    <string name="X_action_move">移动</string>
     <string name="X_action_next">下一步</string>
     <string name="X_action_previous">上一页</string>
+    <string name="X_btn_customize">自定义</string>
     <string name="X_error_authentication_failed">验证失败</string>
     <string name="error_site_authentication_failed">%1$s验证失败</string>
     <string name="error_storage_not_accessible">请检查App存储权限。</string>
@@ -114,6 +132,7 @@
     <string name="error_record_must_contain_column">记录必须包含一个名为“%1$s”的字段。</string>
     <string name="error_backup_failed">备份失败。</string>
     <string name="error_export_failed">导出失败。</string>
+    <string name="lbl_condition_dust_cover_none">无</string>
     <string name="warning_import_csv">警告：如果 UUID 列不存在，且导入文件中的 ID 与现有 ID 相同，则导入数据可能会用新信息更新现有图书记录。如果您更改了导出文件中的某个字段，通常不会有问题。如果您创建了新的账簿记录，或正在导入他人的账簿，请确保 UUID 字段存在或 ID 字段为空。</string>
     <string name="warning_import_csv_unescaped_quote">行 %1$d，位置 %2$d 的未转义引号</string>
     <string name="warning_import_failed_for_these_books">这些书籍/行的导入失败：</string>
@@ -152,6 +171,7 @@
     <string name="progress_msg_please_wait">请稍等…</string>
     <string name="vldt_read_start_after_end">阅读开始日期，在结束日期之后</string>
     <string name="vldt_real_author_must_be_valid">必须为空或现有作者</string>
+    <string name="lbl_country">国家/地区</string>
     <string name="error_site_access_blocked">访问被该网站阻止。</string>
     <string name="vldt_non_blank_required">需要非空值</string>
     <string name="vldt_non_blank_required_for_x">“%1$s”需要非空值</string>
@@ -175,6 +195,9 @@
     <string name="progress_msg_upgrading">更新中…</string>
     <string name="progress_msg_rebuilding_search_index">重建搜索索引…</string>
     <string name="info_authorized">已授权</string>
+    <string name="lbl_filters">过滤器</string>
+    <string name="pe_camera_front">前置摄像头</string>
+    <string name="pe_camera_other">其他</string>
     <string name="preference_not_set">未设置</string>
     <string name="yes">确定</string>
     <string name="info_story_in_single_book">“%1$s” 存在与一本书中：
@@ -228,6 +251,8 @@
     <string name="book_format_paperback_large">平装本</string>
     <string name="info_tap_on_image_to_select">点击大图来选择它。</string>
     <string name="info_download_successful">下载成功</string>
+    <string name="lbl_about">简介</string>
+    <string name="pc_advanced_options">高级</string>
     <string name="lbl_author">作者</string>
     <string name="lbl_author_type">作者类型</string>
     <string name="lbl_authors">作者</string>
@@ -250,20 +275,24 @@
     <string name="action_email">电子邮件</string>
     <string name="action_learn_more">了解详情</string>
     <string name="size_bytes">%1$.0fB</string>
+    <string name="pv_bob_header_filters">过滤器</string>
     <string name="size_hidden">已隐藏</string>
     <string name="book_format_softcover">软封面</string>
     <string name="size_x_large">极大</string>
     <string name="book_format_paperback">平装</string>
     <string name="book_format_other">其他</string>
     <string name="book_format_comic">漫画</string>
-    <string name="book_format_digest">电子书</string>
     <string name="book_format_audiobook">有声书</string>
     <string name="book_color_full_color">彩印本</string>
     <string name="book_format_dimensions">方向</string>
     <string name="book_color_black_and_white">黑白本</string>
     <string name="style_builtin_author_series">作者，系列</string>
     <string name="action_undo">撤消</string>
+    <string name="pt_bob_font_size">字体大小</string>
+    <string name="pt_ui_language">语言</string>
     <string name="unknown">未知</string>
+    <string name="pc_camera">相机</string>
+    <string name="pe_camera_back">后置摄像头</string>
     <string name="cancelled">已取消</string>
     <string name="unknown_author">[作者不详]</string>
     <string name="unknown_title">[标题不明]</string>
@@ -272,13 +301,17 @@
     <string name="none">无</string>
     <string name="action_more_ellipsis">更多…</string>
     <string name="option_bug_report">错误报告</string>
+    <string name="lbl_available">在线</string>
+    <string name="lbl_importing">正在导入...</string>
+    <string name="lbl_backup">备份</string>
+    <string name="lbl_book">书</string>
     <string name="pc_bob_list">列表</string>
     <string name="pc_bob_layout">列表布局</string>
+    <string name="lbl_group">群组</string>
     <string name="pt_layout">布局</string>
     <string name="pe_list">列表</string>
     <string name="pe_grid">网格</string>
     <!-- NOT APPLICABLE FOR BOOKS IN CHINESE; Just show "On"; it will still be used for other languages. -->
-    <string name="ps_show_titles_reordered_on">关于</string>
     <!-- NOT APPLICABLE FOR BOOKS IN CHINESE; Just show "Off"; it will still be used for other languages. -->
     <string name="ps_show_titles_reordered_off">关闭</string>
     <!-- NOT APPLICABLE FOR BOOKS IN CHINESE. A single vertical bar character. -->
@@ -289,21 +322,34 @@
     <string name="acra_report_saved">您现在可以访问 Github 上的项目页面并记录新问题。请将之前保存的报告附加到问题中。如果您还没有 Github 账户，则需要创建一个。</string>
     <string name="action_report">报告</string>
     <string name="action_export">导出</string>
+    <string name="X_action_update">更新</string>
     <string name="lbl_search_filtered_by_x">过滤条件: %1$s</string>
     <string name="action_import">导入</string>
     <string name="option_import">导入</string>
+    <string name="lbl_filter">过滤</string>
     <string name="lbl_import">导入</string>
+    <string name="lbl_language">语言</string>
     <string name="lbl_location">地点</string>
     <string name="lbl_tab_notes">备注</string>
     <string name="action_show_options">选项</string>
+    <string name="X_pg_general">常规</string>
+    <string name="X_use_default_setting">使用默认设置</string>
     <string name="pt_ui_system_locale">N系统语言</string>
     <string name="error_invalid_url">无效地址（URL）</string>
     <string name="option_select_all">"全选"</string>
     <string name="option_select_none">"取消全选"</string>
     <string name="lbl_tab_details">"详细信息"</string>
-    <string name="option_cover_crop">"剪裁"</string>
+    <string name="action_crop">"剪裁"</string>
+    <string name="lbl_certificate_ca">CA 证书</string>
+    <string name="lbl_certificate_issued_by">颁发者：%1$s</string>
+    <string name="lbl_certificate_issued_to">颁发给： %1$s</string>
+    <string name="lbl_color">颜色</string>
+    <string name="lbl_credentials">用户凭据</string>
+    <string name="lbl_day">天</string>
+    <string name="lbl_name">姓名</string>
     <string name="lbl_description">描述</string>
     <string name="option_barcode_scan_mode_manual">手动</string>
     <string name="info_import_complete">"导入已完成"</string>
     <string name="error_import_failed">"导入失败"</string>
+    <string name="lbl_certificate_validity_period">有效期： %1$s</string>
 </resources>

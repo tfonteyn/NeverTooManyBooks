@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,9 +18,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+  -->
+
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
     <string name="a_b">%1$s%2$s</string>
     <plurals name="n_stars">
@@ -39,6 +42,7 @@
     <string name="name_hash_nr">%1$s #%2$d</string>
     <string name="notification_channel_warn">Cảnh báo</string>
     <string name="x_of_y">%1$d của %2$d</string>
+    <string name="lbl_year">Năm</string>
     <string name="list_element">• %s</string>
     <string name="and_others">%1$s …</string>
     <string name="fallback_currency_format">%1$s %2$.2f</string>
@@ -69,11 +73,13 @@
     <string name="error_http_401_site_authorization_failed">Ủy quyền %1$s đã dẫn đến lỗi.</string>
     <string name="error_http_403_site_forbidden">%1$s đã chặn quyền truy cập.</string>
     <string name="X_error_network_site_has_problems">Trang web không hoạt động như mong đợi.</string>
+    <string name="lbl_group">Nhóm</string>
     <string name="action_report">Báo cáo</string>
     <string name="lbl_system_default">(Ứng dụng mặc định của hệ thống)</string>
     <string name="lbl_about">Giới thiệu</string>
     <string name="action_add">Thêm</string>
     <string name="pc_advanced_options">Nâng cao</string>
+    <string name="lbl_importing">Đang nhập...</string>
     <string name="lbl_backup">Sao lưu</string>
     <string name="cancelled">Đã hủy</string>
     <string name="action_clear">Xóa</string>
@@ -94,6 +100,7 @@
     <string name="action_done">Xong</string>
     <string name="action_edit">Chỉnh sửa</string>
     <string name="action_edit_ellipsis">Chỉnh sửa…</string>
+    <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="whichEditApplication">Chỉnh sửa bằng</string>
     <string name="X_action_execute">Thực hiện</string>
     <string name="action_export">Xuất</string>
@@ -104,6 +111,8 @@
     <string name="X_action_go">Đến</string>
     <string name="action_help">Trợ giúp</string>
     <string name="X_lbl_image">Hình ảnh</string>
+    <string name="lbl_condition_dust_cover_none">Không</string>
+    <string name="option_cover_rotate_automatic">Tự động</string>
     <string name="option_import">Nhập</string>
     <string name="action_import">Nhập</string>
     <string name="lbl_import">Nhập</string>
@@ -114,6 +123,8 @@
     <string name="lbl_location">Vị trí</string>
     <string name="action_more_ellipsis">Thêm…</string>
     <string name="X_action_move">Chuyển</string>
+    <string name="pv_bob_header_filters">Bộ lọc</string>
+    <string name="lbl_filters">Bộ lọc</string>
     <string name="lbl_name">Tên</string>
     <string name="X_action_next">Tiếp theo</string>
     <string name="no">Không</string>
@@ -122,6 +133,8 @@
     <string name="preference_not_set">Chưa đặt</string>
     <string name="whichViewApplication">Mở bằng</string>
     <string name="action_show_options">Tùy chọn</string>
+    <string name="pe_camera_back">Máy ảnh mặt sau</string>
+    <string name="pe_camera_front">Máy ảnh mặt trước</string>
     <string name="pe_camera_other">Khác</string>
     <string name="password">Mật khẩu</string>
     <string name="X_action_previous">Trước</string>
@@ -145,7 +158,9 @@
     <string name="X_use_default_setting">Dùng chế độ cài đặt mặc định</string>
     <string name="username">Tên người dùng</string>
     <string name="yes">Có</string>
-    <string name="option_cover_crop">"Cắt"</string>
+    <string name="size_hidden">Ẩn giấu</string>
+    <string name="book_format_other">Khác</string>
+    <string name="action_crop">"Cắt"</string>
     <string name="error_invalid_url">Địa chỉ (URL) không hợp lệ</string>
     <string name="option_select_all">"Chọn tất cả"</string>
     <string name="option_select_none">"Bỏ chọn tất cả"</string>
@@ -160,8 +175,10 @@
     <string name="X_lbl_system">(Hệ thống)</string>
     <string name="X_lbl_folder">Thư mục</string>
     <string name="lbl_certificate_issued_by">Cấp bởi: %1$s</string>
+    <string name="lbl_credentials">Thông tin xác thực người dùng</string>
     <string name="lbl_day">Ngày</string>
     <string name="lbl_certificate_issued_to">Cấp cho: %1$s</string>
+    <string name="progress_msg_searching_site">Đang tìm kiếm %1$s</string>
     <string name="cd_clear_text_end_icon">Xóa văn bản</string>
     <string name="lbl_moving_data">Di chuyển dữ liệu</string>
     <string name="bob_empty_field">(Trống)</string>
@@ -177,4 +194,5 @@
     <string name="option_bug_report">Báo cáo lỗi</string>
     <string name="progress_msg_searching">Đang tìm kiếm…</string>
     <string name="action_discard">Yok say</string>
+    <string name="lbl_certificate_validity_period">Tính hợp lệ: %1$s</string>
 </resources>

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,9 +18,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+  -->
+
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d książka</item>
@@ -464,8 +467,7 @@
     <string name="option_barcode_scan_mode_manual">Ręczna</string>
     <string name="option_barcode_scan_mode_continuous">Skanowanie ciągłe</string>
     <string name="option_book_sync_list_with_details">Synchronizuj/ustaw listę</string>
-    <string name="option_cover_crop">Przytnij</string>
-    <string name="option_cover_edit">Uruchom edytor</string>
+    <string name="action_crop">Przytnij</string>
     <string name="option_cover_replace">Zastąp…</string>
     <string name="option_cover_replace_from_alt_editions">Z innego wydania…</string>
     <string name="option_cover_replace_from_camera">Z aparatu…</string>
@@ -766,4 +768,5 @@
     <string name="acra_report_saved">Możesz teraz odwiedzić stronę projektu na Github i zarejestrować nowe zgłoszenie. Do zgłoszenia należy dołączyć wcześniej zapisany raport. Jeśli nie masz jeszcze konta Github, musisz je utworzyć.</string>
     <string name="action_report">Zgłoś</string>
     <string name="error_invalid_url">Nieprawidłowy adres (URL)</string>
+    <string name="lbl_certificate_validity_period">Ważność: %1$s</string>
 </resources>

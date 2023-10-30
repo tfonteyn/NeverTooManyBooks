@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,9 +18,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+  -->
+
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!-- Quotes „…“  - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d Buch</item>
@@ -134,7 +137,7 @@
     <string name="btn_this_book">Dieses Buch</string>
     <string name="size_bytes">%1$.0fB</string>
     <string name="pc_camera">Kamera</string>
-    <string name="pe_camera_back">Hauptkamera</string>
+    <string name="pe_camera_back">Kamera auf der Rückseite</string>
     <string name="pe_camera_front">Frontkamera</string>
     <string name="camera_next_action">Aktion nach dem Aufnehmen eines Fotos</string>
     <string name="pe_camera_other">Andere</string>
@@ -445,8 +448,7 @@
     <string name="option_barcode_scan_mode_manual">Manuell</string>
     <string name="option_barcode_scan_mode_continuous">Kontinuierlich scannen</string>
     <string name="option_book_sync_list_with_details">Liste synchronisieren/positionieren</string>
-    <string name="option_cover_crop">Zuschneiden</string>
-    <string name="option_cover_edit">Starten Sie den Editor</string>
+    <string name="action_crop">Zuschneiden</string>
     <string name="option_cover_replace">Ersetzen…</string>
     <string name="option_cover_replace_from_alt_editions">Von anderen Ausgaben…</string>
     <string name="option_cover_replace_from_camera">Von Kamera…</string>
@@ -500,7 +502,7 @@
     <string name="pe_ui_theme_light">Licht</string>
     <string name="pt_barcode_scanner">Barcodelesegerät</string>
     <string name="pt_bob_show_details">In der Liste angezeigte Buchdetails</string>
-    <string name="lbl_filters">Buchfilter</string>
+    <string name="lbl_filters">Filter</string>
     <string name="pc_image_cache">Bilder-Cache</string>
     <string name="pt_bob_groups">Gruppierung</string>
     <string name="pc_ui">Benutzeroberfläche</string>
@@ -582,7 +584,7 @@
     <string name="ps_bob_books_under_multiple_primary_author_only">Nur unter primärem Autor</string>
     <string name="ps_bob_books_under_multiple_primary_publisher_only">nur unter ihrem Hauptverleger</string>
     <string name="ps_bob_books_under_multiple_primary_series_only">Nur unter primärem Serie</string>
-    <string name="pv_bob_header_filters">Buchfilter</string>
+    <string name="pv_bob_header_filters">Filter</string>
     <string name="pv_bob_header_nr_of_books">Anzahl der Bücher anzeigen</string>
     <string name="pv_bob_header_style_name">Stilname</string>
     <string name="pv_reformat_titles_prefixes">die|Die|der|Der|das|Das|ein|Ein|eine|Eine|eines|Eines|einer|Einer|einem|Einem|einen|Einen</string>
@@ -744,4 +746,5 @@
     <string name="acra_report_saved">Sie können nun die Projektseite auf Github besuchen und ein neues Problem melden. Hängen Sie bitte den zuvor gespeicherten Bericht an die Frage an. Wenn Sie noch kein Github-Konto haben, müssen Sie eines erstellen.</string>
     <string name="action_report">Melden</string>
     <string name="error_invalid_url">Ungültige Adresse (URL)</string>
+    <string name="lbl_certificate_validity_period">Gültigkeit: %1$s</string>
 </resources>

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,9 +18,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+  -->
+
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d libro</item>
@@ -459,8 +462,7 @@
     <string name="option_barcode_scan_mode_manual">Manual</string>
     <string name="option_barcode_scan_mode_continuous">Escanear continuamente</string>
     <string name="option_book_sync_list_with_details">Sincronizar/posicionar la lista</string>
-    <string name="option_cover_crop">Recortar</string>
-    <string name="option_cover_edit">Iniciar editor</string>
+    <string name="action_crop">Recortar</string>
     <string name="option_cover_replace">Sustituir…</string>
     <string name="option_cover_replace_from_alt_editions">De otras ediciones…</string>
     <string name="option_cover_replace_from_camera">Desde la cámara…</string>
@@ -514,7 +516,7 @@
     <string name="pe_ui_theme_light">Luz</string>
     <string name="pt_barcode_scanner">Escáner de código de barras</string>
     <string name="pt_bob_show_details">Detalles del libro que se muestran en la lista</string>
-    <string name="lbl_filters">Filtros adicionales</string>
+    <string name="lbl_filters">Filtros</string>
     <string name="pc_image_cache">Caché de imágenes</string>
     <string name="pt_bob_groups">Grupos</string>
     <string name="pc_ui">Interfaz de usuario</string>
@@ -596,7 +598,7 @@
     <string name="ps_bob_books_under_multiple_primary_author_only">Sólo bajo primer autor</string>
     <string name="ps_bob_books_under_multiple_primary_publisher_only">solo bajo su editor principal</string>
     <string name="ps_bob_books_under_multiple_primary_series_only">Sólo bajo primer serie</string>
-    <string name="pv_bob_header_filters">Filtros adicionales</string>
+    <string name="pv_bob_header_filters">Filtros</string>
     <string name="pv_bob_header_nr_of_books">Mostrar el número de libros</string>
     <string name="pv_bob_header_style_name">Nombre de estilo</string>
     <string name="pv_reformat_titles_prefixes">el|la|lo|los|las|un|una|unos|unas</string>
@@ -758,4 +760,5 @@
     <string name="acra_report_saved">Ya puedes visitar la página del proyecto en Github y registrar una nueva incidencia. Adjunta a la incidencia el informe guardado anteriormente. Si aún no tienes una cuenta de Github, tendrás que crear una.</string>
     <string name="action_report">Informar</string>
     <string name="error_invalid_url">Dirección no válida (URL)</string>
+    <string name="lbl_certificate_validity_period">Validez: %1$s</string>
 </resources>

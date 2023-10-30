@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,9 +18,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+  -->
+
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d βιβλίο</item>
@@ -446,8 +449,7 @@
     <string name="option_barcode_scan_mode_manual">Μη αυτόματο</string>
     <string name="option_barcode_scan_mode_continuous">Συνεχής σάρωση</string>
     <string name="option_book_sync_list_with_details">Συγχρονισμός/τοποθέτηση της λίστας</string>
-    <string name="option_cover_crop">Περικοπή</string>
-    <string name="option_cover_edit">Ξεκινήστε τον επεξεργαστή</string>
+    <string name="action_crop">Περικοπή</string>
     <string name="option_cover_replace">Αντικατάσταση…</string>
     <string name="option_cover_replace_from_alt_editions">Από άλλες εκδόσεις…</string>
     <string name="option_cover_replace_from_camera">Από κάμερα…</string>
@@ -501,7 +503,7 @@
     <string name="pe_ui_theme_light">Φως</string>
     <string name="pt_barcode_scanner">Σάρωση γραμμοκώδικα</string>
     <string name="pt_bob_show_details">Λεπτομέρειες βιβλίου εμφανίζονται στη λίστα</string>
-    <string name="lbl_filters">Φίλτρα Βιβλίων</string>
+    <string name="lbl_filters">Φίλτρα</string>
     <string name="pc_image_cache">Cache εικόνας</string>
     <string name="pt_bob_groups">Ομαδοποιήσεις</string>
     <string name="pc_ui">Περιβάλλον Χρήστη</string>
@@ -583,7 +585,7 @@
     <string name="ps_bob_books_under_multiple_primary_author_only">Κάτω από κύρια συντάκτης μόνο</string>
     <string name="ps_bob_books_under_multiple_primary_publisher_only">μόνο στον κύριο εκδότη τους</string>
     <string name="ps_bob_books_under_multiple_primary_series_only">Κάτω από κύρια Σειρά μόνο</string>
-    <string name="pv_bob_header_filters">Φίλτρα Βιβλίων</string>
+    <string name="pv_bob_header_filters">Φίλτρα</string>
     <string name="pv_bob_header_nr_of_books">Εμφάνιση αριθμού βιβλίων</string>
     <string name="pv_bob_header_style_name">Όνομα στυλ</string>
     <string name="pv_reformat_titles_prefixes">ο|η|το|οι|οι|τα|ένας|μια|ένα</string>
@@ -745,4 +747,5 @@
     <string name="acra_report_saved">Μπορείτε τώρα να επισκεφθείτε τη σελίδα του έργου στο Github και να καταγράψετε ένα νέο θέμα. Παρακαλούμε επισυνάψτε την προηγουμένως αποθηκευμένη αναφορά στο θέμα. Αν δεν έχετε ακόμη λογαριασμό στο Github, θα πρέπει να δημιουργήσετε έναν.</string>
     <string name="action_report">Αναφορά</string>
     <string name="error_invalid_url">Μη έγκυρη διεύθυνση (URL)</string>
+    <string name="lbl_certificate_validity_period">Ισχύς: %1$s</string>
 </resources>

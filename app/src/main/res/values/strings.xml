@@ -657,9 +657,8 @@
     <!-- "view all works of an author" menu option - show only TOC entries -->
     <string name="option_author_works_toc">Only Table Of Content titles</string>
     <!-- [VERIFIED] Cover image context menu option -->
-    <string name="option_cover_crop">Crop</string>
-    <!-- Cover image context menu option -->
-    <string name="option_cover_edit">Start editor</string>
+    <string name="action_crop">Crop</string>
+
     <!-- [VERIFIED] from "platform_frameworks_base_strings.xml#replace"
         Context menu for a cover image submenu title -->
     <string name="option_cover_replace">Replace…</string>
@@ -671,7 +670,7 @@
     <string name="option_cover_replace_from_alt_editions">From Other Editions…</string>
     <!-- Context menu for a cover image submenu title -->
     <string name="option_cover_rotate">Rotate…</string>
-    <!-- Cover image context menu option -->
+    <!-- [VERIFIED] Cover image context menu option -->
     <string name="option_cover_rotate_automatic">Automatic</string>
     <!-- Cover image context menu option -->
     <string name="option_cover_rotate_cw">Clockwise</string>
@@ -1304,7 +1303,7 @@
             translatable="false">@string/pc_camera</string>
     <!-- [VERIFIED] ListPreference value -->
     <string name="pe_camera_front">Front Camera</string>
-    <!-- [VERIFIED] ListPreference value -->
+    <!-- ListPreference value -->
     <string name="pe_camera_back">Back Camera</string>
     <!-- [VERIFIED] ListPreference value -->
     <string name="pe_camera_other">Other</string>
@@ -1373,6 +1372,9 @@
     <string name="lbl_certificate_issued_to">Issued to: %1$s</string>
     <!-- [VERIFIED] - Label for an information field on an SSL Certificate Dialog -->
     <string name="lbl_certificate_issued_by">Issued by: %1$s</string>
+    <!-- [VERIFIED] - Label for an information field on an SSL Certificate Dialog -->
+    <string name="lbl_certificate_validity_period">Validity: %1$s</string>
+
     <!-- endregion -->
     <!-- region ========== Style settings. -->
     <!-- Preference Category -->

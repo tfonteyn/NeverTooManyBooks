@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,9 +18,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+  -->
+
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d boek</item>
@@ -77,7 +80,7 @@
     <string name="action_delete">Verwijderen</string>
     <string name="action_disable_message">Bericht uitschakelen</string>
     <string name="action_discard">Weggooien</string>
-    <string name="action_done">Gereed</string>
+    <string name="action_done">Klaar</string>
     <string name="action_duplicate">Dupliceer</string>
     <string name="action_edit">Bewerken</string>
     <string name="action_edit_ellipsis">Bewerken…</string>
@@ -329,7 +332,7 @@
     <string name="lbl_export_options">Selecteer wat je wil exporteren.</string>
     <string name="lbl_family_name">Achternaam</string>
     <string name="lbl_filter">Filter</string>
-    <string name="lbl_filters">Boekfilters</string>
+    <string name="lbl_filters">Filters</string>
     <string name="lbl_format">Formaat</string>
     <string name="lbl_genre">Genre</string>
     <string name="lbl_given_names">Voornamen</string>
@@ -449,8 +452,7 @@
     <string name="option_bug_report">Bugrapport</string>
     <string name="option_bug_report_database_upgrade">Database-upgradebestanden</string>
     <string name="option_bug_report_logfiles">Log bestanden</string>
-    <string name="option_cover_crop">Bijsnijden</string>
-    <string name="option_cover_edit">Start de editor</string>
+    <string name="action_crop">Bijsnijden</string>
     <string name="option_cover_replace">Vervangen…</string>
     <string name="option_cover_replace_from_alt_editions">Van andere uitgaven…</string>
     <string name="option_cover_replace_from_camera">Van Camera…</string>
@@ -528,8 +530,8 @@
     <string name="pe_bob_row_menu_button">Laat altijd een knop zien.</string>
     <string name="pe_bob_row_menu_button_when_space">Toon een knop als er ruimte is, gebruik anders lang klikken.</string>
     <string name="pe_bob_row_menu_long_click">Gebruik altijd een lange klik.</string>
-    <string name="pe_camera_back">Camera aan de achterkant</string>
-    <string name="pe_camera_front">Camera aan de voorkant</string>
+    <string name="pe_camera_back">Camera aan de achtezijde</string>
+    <string name="pe_camera_front">Camera aan de voorzijde</string>
     <string name="pe_camera_other">Overig</string>
     <string name="pe_edit_book_isbn_checks_loose">Ruim</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dynamisch</string>
@@ -615,7 +617,7 @@
     <string name="pt_ui_system_locale">Systeemtaal</string>
     <string name="pt_ui_theme">Thema</string>
     <string name="pt_website_search_order_and_enable">Prioriteit, inschakelen &amp; uitschakelen</string>
-    <string name="pv_bob_header_filters">Boekfilters</string>
+    <string name="pv_bob_header_filters">Filters</string>
     <string name="pv_bob_header_nr_of_books">Aantal boeken</string>
     <string name="pv_bob_header_style_name">Stijl naam</string>
     <string name="pv_reformat_titles_prefixes">de|De|een|Een|het|Het</string>
@@ -744,4 +746,5 @@
     <string name="acra_report_saved">U kunt nu de projectpagina op Github bezoeken en een nieuw probleem aanmelden. Voeg het eerder opgeslagen rapport bij het probleem. Als u nog geen Github-account hebt, moet u er een aanmaken.</string>
     <string name="action_report">Melden</string>
     <string name="error_invalid_url">Ongeldig adres (URL)</string>
+    <string name="lbl_certificate_validity_period">Geldigheid: %1$s</string>
 </resources>

@@ -17,9 +17,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+  -->
+
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d kniha</item>
@@ -460,8 +462,7 @@
     <string name="option_barcode_scan_mode_manual">Ručně</string>
     <string name="option_barcode_scan_mode_continuous">Průběžné skenování</string>
     <string name="option_book_sync_list_with_details">Synchronizujte/umístěte seznam</string>
-    <string name="option_cover_crop">Oříznout</string>
-    <string name="option_cover_edit">Spusťte editor</string>
+    <string name="action_crop">Oříznout</string>
     <string name="option_cover_replace">Nahradit…</string>
     <string name="option_cover_replace_from_alt_editions">Z jiné edice…</string>
     <string name="option_cover_replace_from_camera">Z fotoaparátu…</string>
@@ -515,7 +516,7 @@
     <string name="pe_ui_theme_light">Světlo</string>
     <string name="pt_barcode_scanner">Čtečka kódů</string>
     <string name="pt_bob_show_details">Podrobnosti knihy zobrazené v seznamu</string>
-    <string name="lbl_filters">Filtry knih</string>
+    <string name="lbl_filters">Filtry</string>
     <string name="pc_image_cache">Obrázky mezipaměti</string>
     <string name="pt_bob_groups">Seskupení</string>
     <string name="pc_ui">Uživatelské rozhraní</string>
@@ -594,7 +595,7 @@
     <string name="ps_bob_books_under_multiple_primary_author_only">Pouze pod primárním autor</string>
     <string name="ps_bob_books_under_multiple_primary_publisher_only">pouze pod jejich primárním vydavatelem</string>
     <string name="ps_bob_books_under_multiple_primary_series_only">Pouze pod primárním série</string>
-    <string name="pv_bob_header_filters">Filtry knih</string>
+    <string name="pv_bob_header_filters">Filtry</string>
     <string name="pv_bob_header_nr_of_books">Počet knih</string>
     <string name="pv_bob_header_style_name">Název stylu</string>
     <string name="size_hidden">Skrytý</string>
@@ -762,4 +763,5 @@
     <string name="acra_report_saved">Nyní můžete navštívit stránku projektu na Githubu a přihlásit nový problém. K problému připojte dříve uloženou zprávu. Pokud ještě nemáte účet na Githubu, musíte si ho vytvořit.</string>
     <string name="action_report">Hlášení</string>
     <string name="error_invalid_url">Neplatná adresa (URL)</string>
+    <string name="lbl_certificate_validity_period">Platnost: %1$s</string>
 </resources>

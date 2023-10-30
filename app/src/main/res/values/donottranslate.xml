@@ -278,8 +278,8 @@
     <!-- ListPreference - After taking a picture, take the next action. -->
     <string-array name="pe_camera_next_action">
         <item>@string/none</item>
-        <item>@string/option_cover_crop</item>
-        <item>@string/option_cover_edit</item>
+        <item>@string/action_crop</item>
+        <item>@string/action_edit</item>
     </string-array>
     <string-array name="pv_camera_next_action">
         <item>0</item>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -78,9 +78,9 @@
     <item
         android:id="@id/MENU_THUMB_CROP"
         android:icon="@drawable/ic_baseline_crop_24"
-        android:title="@string/option_cover_crop" />
+        android:title="@string/action_crop" />
     <item
         android:id="@id/MENU_EDIT"
         android:icon="@drawable/ic_baseline_edit_24"
-        android:title="@string/option_cover_edit" />
+        android:title="@string/action_edit" />
 </menu>

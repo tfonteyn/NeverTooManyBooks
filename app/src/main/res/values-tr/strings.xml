@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,9 +18,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+  -->
+
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d kitap</item>
@@ -451,8 +454,7 @@
     <string name="option_barcode_scan_mode_manual">El ile</string>
     <string name="option_barcode_scan_mode_continuous">Sürekli tarama</string>
     <string name="option_book_sync_list_with_details">Listeyi senkronize edin/konumlandırın</string>
-    <string name="option_cover_crop">Kırp</string>
-    <string name="option_cover_edit">Düzenleyiciyi başlat</string>
+    <string name="action_crop">Kırp</string>
     <string name="option_cover_replace">Değiştir…</string>
     <string name="option_cover_replace_from_alt_editions">Diğer sürümlerden…</string>
     <string name="option_cover_replace_from_camera">Kameradan…</string>
@@ -506,7 +508,7 @@
     <string name="pe_ui_theme_light">ışık</string>
     <string name="pt_barcode_scanner">Barkod okuyucu</string>
     <string name="pt_bob_show_details">Listede gösterilen Kitap Detayları</string>
-    <string name="lbl_filters">Kitap süzgeçleri</string>
+    <string name="lbl_filters">Filtreler</string>
     <string name="pc_image_cache">Görüntüler önbelleği</string>
     <string name="pt_bob_groups">Öbeklemeler</string>
     <string name="pc_ui">Kullanıcı arayüzü</string>
@@ -585,7 +587,7 @@
     <string name="ps_bob_books_under_multiple_primary_author_only">Yalnızca birincil yazar altında</string>
     <string name="ps_bob_books_under_multiple_primary_publisher_only">yalnızca birincil yayıncıları altında</string>
     <string name="ps_bob_books_under_multiple_primary_series_only">Yalnızca birincil dizi altında</string>
-    <string name="pv_bob_header_filters">Kitap süzgeçleri</string>
+    <string name="pv_bob_header_filters">Filtreler</string>
     <string name="pv_bob_header_nr_of_books">Kitap sayısını göster</string>
     <string name="pv_bob_header_style_name">Stil adı</string>
     <string name="size_hidden">Gizli</string>
@@ -753,4 +755,5 @@
     <string name="acra_report_saved">Artık Github’daki proje sayfasını ziyaret edebilir ve yeni bir sorun kaydedebilirsiniz. Lütfen daha önce kaydettiğiniz raporu soruna ekleyin. Henüz bir Github hesabınız yoksa, bir tane oluşturmanız gerekecektir.</string>
     <string name="action_report">Bildir</string>
     <string name="error_invalid_url">Geçersiz adres (URL)</string>
+    <string name="lbl_certificate_validity_period">Geçerlilik: %1$s</string>
 </resources>
