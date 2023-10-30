@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,11 +17,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
-    <!ENTITY APP_NAME "NeverTooManyBooks">
-    ]>
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d książka</item>
@@ -204,8 +201,8 @@
     <string name="error_import_csv_line">Nieznany błąd w wierszu %1$d</string>
     <string name="error_import_csv_line_to_long">Linia jest za długa (wiersz=%1$d, długość=%2$d)</string>
     <string name="error_import_csv_missing_columns_x">Plik musi zawierać jedno z pól: %1$s</string>
-    <string name="error_import_failed">Nie udało się zaimportować.</string>
-    <string name="error_import_failed_for_record">Nie udało się zaimportować (%1$s).</string>
+    <string name="error_import_failed">Nie udało się zaimportować</string>
+    <string name="error_import_failed_for_record">Nie udało się zaimportować (%1$s)</string>
     <string name="error_import_file_not_supported">Wybranego pliku nie można zaimportować.</string>
     <string name="error_network_failed_try_again">Sprawdź połączenie i spróbuj ponownie.</string>
     <string name="error_network_please_connect">Połącz się z internetem.</string>
