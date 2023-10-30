@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,11 +17,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
-    <!ENTITY APP_NAME "NeverTooManyBooks">
-    ]>
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d libro</item>
@@ -188,8 +185,8 @@
     <string name="error_import_csv_line">Errore sconosciuto nella riga %1$d</string>
     <string name="error_import_csv_line_to_long">La riga è troppo lunga (riga=%1$d, lunghezza=%2$d)</string>
     <string name="error_import_csv_missing_columns_x">Il file deve contenere una colonna con uno dei seguenti nomi: %1$s</string>
-    <string name="error_import_failed">Importazione non riuscita.</string>
-    <string name="error_import_failed_for_record">Importazione non riuscita (%1$s).</string>
+    <string name="error_import_failed">Importazione non riuscita</string>
+    <string name="error_import_failed_for_record">Importazione non riuscita (%1$s)</string>
     <string name="error_import_file_not_supported">Il file selezionato non può essere importato.</string>
     <string name="error_network_failed_try_again">Controlla la connessione e riprova.</string>
     <string name="error_network_please_connect">Connettiti a Internet.</string>
