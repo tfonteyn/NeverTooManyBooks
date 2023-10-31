@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,11 +17,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
-    <!ENTITY APP_NAME "NeverTooManyBooks">
-    ]>
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
     <string name="a_b">%1$s%2$s</string>
     <plurals name="n_stars">
@@ -102,7 +99,7 @@
     <string name="action_done">Xong</string>
     <string name="action_edit">Chỉnh sửa</string>
     <string name="action_edit_ellipsis">Chỉnh sửa…</string>
-    <string name="error_backup_failed">Lưu trữ thất bại</string>
+    <string name="error_backup_failed">Lưu trữ thất bại.</string>
     <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="whichEditApplication">Chỉnh sửa bằng</string>
     <string name="X_action_execute">Thực hiện</string>
