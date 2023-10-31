@@ -26,6 +26,7 @@
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine -->
 <resources>
     <string name="X_lbl_folder">文件夹</string>
+    <string name="lbl_cover_front">封面</string>
     <string name="X_lbl_image">图片</string>
     <string name="X_whichImageCaptureApplication">使用以下应用截图</string>
     <string name="X_whichSendToApplication">通过以下应用发送</string>
@@ -33,6 +34,9 @@
     <string name="a_bracket_b_bracket">%1$s（%2$s）</string>
     <string name="lbl_settings">设置</string>
     <string name="lbl_storage_settings">存储</string>
+    <string name="lbl_library">书架</string>
+    <string name="lbl_sort_ascending">升序</string>
+    <string name="lbl_sort_descending">降序</string>
     <string name="lbl_unread">未读邮件</string>
     <string name="lbl_year">年</string>
     <string name="list_element">• %s</string>
@@ -83,6 +87,7 @@
     <string name="X_action_send">发送</string>
     <string name="X_action_clear_credentials">清除凭据</string>
     <string name="X_action_execute">执行</string>
+    <string name="action_less_ellipsis">收起</string>
     <string name="X_action_move">移动</string>
     <string name="X_action_next">下一步</string>
     <string name="X_action_previous">上一页</string>
@@ -171,6 +176,7 @@
     <string name="progress_msg_please_wait">请稍等…</string>
     <string name="vldt_read_start_after_end">阅读开始日期，在结束日期之后</string>
     <string name="vldt_real_author_must_be_valid">必须为空或现有作者</string>
+    <string name="lbl_pages">页数</string>
     <string name="lbl_country">国家/地区</string>
     <string name="error_site_access_blocked">访问被该网站阻止。</string>
     <string name="vldt_non_blank_required">需要非空值</string>
@@ -178,7 +184,7 @@
     <string name="vldt_blank_required_for_x">“%1$s”需要空值</string>
     <string name="vldt_boolean_expected_for_x">“%1$s” 应为布尔值 (0,1,t,f,true,false)</string>
     <string name="progress_msg_loading">加载中…</string>
-    <string name="progress_msg_downloading">下载中…</string>
+    <string name="progress_msg_downloading">正在下载…</string>
     <string name="info_tap_on_thumbnail_to_zoom">点击缩略图以显示大图。</string>
     <string name="progress_msg_skip_s">跳过“%1$s”</string>
     <string name="progress_msg_optimizing">优化中…</string>
@@ -196,6 +202,7 @@
     <string name="progress_msg_rebuilding_search_index">重建搜索索引…</string>
     <string name="info_authorized">已授权</string>
     <string name="lbl_filters">过滤器</string>
+    <string name="pe_fast_scroller_overlay_dynamic">动态的</string>
     <string name="pe_camera_front">前置摄像头</string>
     <string name="pe_camera_other">其他</string>
     <string name="preference_not_set">未设置</string>
@@ -214,11 +221,12 @@
     <string name="tip_booklist_styles_editor">您可以使用此页面自定义将显示在默认样式菜单中的样式列表。“勾选”表示样式将显示在列表中，“取消勾选”表示隐藏它，反之亦然。如果没有选中任何样式，则将显示所有样式。您可以通过向上或向下拖动每行最右边的图标来重新排列层次结构。长按一行中的任何其他位置将允许您编辑或克隆特定样式的细节。如果你克隆了一个样式，然后改变了主意，你需要自己删除它。</string>
     <string name="size_x_small">极小</string>
     <string name="book_format_hardcover">精装</string>
-    <string name="book_format_softcover_oblong">平装本 - 长方形</string>
     <string name="style_type_user_defined">用户自定义</string>
     <string name="lbl_styles">风格</string>
     <string name="lbl_style">风格</string>
+    <string name="lbl_date_added">收藏日期</string>
     <string name="lbl_export_books_option_all">所有书籍</string>
+    <string name="option_archive_type_backup_zip">备份 (.zip)</string>
     <string name="option_import_books_option_all">所有书籍</string>
     <string name="lbl_group_read_and_unread">已读 &amp; 未读</string>
     <string name="book_format_hardcover_oblong">精装本 - 长方形</string>
@@ -277,7 +285,6 @@
     <string name="size_bytes">%1$.0fB</string>
     <string name="pv_bob_header_filters">过滤器</string>
     <string name="size_hidden">已隐藏</string>
-    <string name="book_format_softcover">软封面</string>
     <string name="size_x_large">极大</string>
     <string name="book_format_paperback">平装</string>
     <string name="book_format_other">其他</string>
@@ -298,6 +305,7 @@
     <string name="unknown_title">[标题不明]</string>
     <string name="username">用户名</string>
     <string name="password">密码</string>
+    <string name="disabled">关闭</string>
     <string name="none">无</string>
     <string name="action_more_ellipsis">更多…</string>
     <string name="option_bug_report">错误报告</string>
@@ -332,6 +340,7 @@
     <string name="lbl_location">地点</string>
     <string name="lbl_tab_notes">备注</string>
     <string name="action_show_options">选项</string>
+    <string name="X_lbl_completed">已完结</string>
     <string name="X_pg_general">常规</string>
     <string name="X_use_default_setting">使用默认设置</string>
     <string name="pt_ui_system_locale">N系统语言</string>
@@ -339,6 +348,7 @@
     <string name="option_select_all">"全选"</string>
     <string name="option_select_none">"取消全选"</string>
     <string name="lbl_tab_details">"详细信息"</string>
+    <string name="lbl_author_type_cover_artist">封面</string>
     <string name="action_crop">"剪裁"</string>
     <string name="lbl_certificate_ca">CA 证书</string>
     <string name="lbl_certificate_issued_by">颁发者：%1$s</string>
@@ -347,6 +357,7 @@
     <string name="lbl_credentials">用户凭据</string>
     <string name="lbl_day">天</string>
     <string name="lbl_name">姓名</string>
+    <string name="lbl_title">标题</string>
     <string name="lbl_description">描述</string>
     <string name="option_barcode_scan_mode_manual">手动</string>
     <string name="info_import_complete">"导入已完成"</string>
