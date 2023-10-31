@@ -310,7 +310,7 @@
     <string name="action_more_ellipsis">更多…</string>
     <string name="option_bug_report">错误报告</string>
     <string name="lbl_available">在线</string>
-    <string name="lbl_importing">正在导入...</string>
+    <string name="lbl_importing">正在导入…</string>
     <string name="lbl_backup">备份</string>
     <string name="lbl_book">书</string>
     <string name="pc_bob_list">列表</string>

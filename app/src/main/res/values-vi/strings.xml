@@ -80,7 +80,7 @@
     <string name="lbl_about">Giới thiệu</string>
     <string name="action_add">Thêm</string>
     <string name="pc_advanced_options">Nâng cao</string>
-    <string name="lbl_importing">Đang nhập...</string>
+    <string name="lbl_importing">Đang nhập…</string>
     <string name="lbl_backup">Sao lưu</string>
     <string name="cancelled">Đã hủy</string>
     <string name="action_clear">Xóa</string>
