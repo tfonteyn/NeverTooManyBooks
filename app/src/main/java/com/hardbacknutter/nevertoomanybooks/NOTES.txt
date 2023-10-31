@@ -45,13 +45,19 @@ Booklist style sorting by date-read or date-added etc...:
 
 ----------------------------------------------------------------------------------------------------
 
-### 5.0.1
+### 5.1.0
 
 NEW:
+- Global defaults for styles: allows changing the defaults as used by the builtin styles.
+- The style grouping by "Read & Unread" adds "Reading" (enhancement #26) showing books
+  which have a read-start-date set, but which you have not finished yet.
+- A crash-report can now be saved to storage, and users get redirected to
+  the project Github issues page.
+- Supports Android 14 (includes issue #23)
 
 FIXES:
-
-FIXES:
+- the generic error message "Please check that storage is writable..." has been split/redone,
+  and will now be much clearer as to what is really wrong.
 
 REMOVED:
 
