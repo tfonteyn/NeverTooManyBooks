@@ -764,4 +764,5 @@
     <string name="action_report">Hlášení</string>
     <string name="error_invalid_url">Neplatná adresa (URL)</string>
     <string name="lbl_certificate_validity_period">Platnost: %1$s - %2$s</string>
+    <string name="lbl_reading">Rozečtené</string>
 </resources>

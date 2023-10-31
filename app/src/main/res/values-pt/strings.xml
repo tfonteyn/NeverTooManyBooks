@@ -777,4 +777,5 @@
     <string name="action_report">Informar</string>
     <string name="error_invalid_url">Endereço inválido (URL)</string>
     <string name="lbl_certificate_validity_period">Validade: %1$s - %2$s</string>
+    <string name="lbl_reading">A ler</string>
 </resources>

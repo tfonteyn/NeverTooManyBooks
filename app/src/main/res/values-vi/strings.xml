@@ -218,4 +218,5 @@
     <string name="progress_msg_searching">Đang tìm kiếm…</string>
     <string name="action_discard">Yok say</string>
     <string name="lbl_certificate_validity_period">Tính hợp lệ: %1$s - %2$s</string>
+    <string name="lbl_reading">Đang đọc</string>
 </resources>

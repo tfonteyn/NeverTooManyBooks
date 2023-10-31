@@ -75,6 +75,7 @@ public final class FilterFactory {
     public static PFilter<?> createFilter(@NonNull final String dbKey) {
         switch (dbKey) {
             case DBKey.READ__BOOL: {
+                // ENHANCE: expand this to use {@link ReadStatus} just like the Read/Unread style
                 return new PBooleanFilter(
                         dbKey, R.string.lbl_read, R.array.pe_bob_filter_read,
                         TBL_BOOKS, DOM_BOOK_READ);

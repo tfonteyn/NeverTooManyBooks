@@ -751,4 +751,5 @@
     <string name="action_report">Rapport</string>
     <string name="error_invalid_url">Adresse (URL) invalide</string>
     <string name="lbl_certificate_validity_period">Validité : %1$s - %2$s</string>
+    <string name="lbl_reading">En cours</string>
 </resources>

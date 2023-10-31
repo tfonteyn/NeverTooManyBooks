@@ -761,4 +761,5 @@
     <string name="action_report">Informar</string>
     <string name="error_invalid_url">Dirección no válida (URL)</string>
     <string name="lbl_certificate_validity_period">Validez: %1$s - %2$s</string>
+    <string name="lbl_reading">Leyendo</string>
 </resources>

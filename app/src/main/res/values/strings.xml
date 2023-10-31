@@ -1568,18 +1568,22 @@
     <!-- [VERIFIED] -->
     <string name="lbl_system_default">(System default)</string>
 
+    <!-- Label for the list of sorting options. -->
     <string name="lbl_sorting">Sorting</string>
-    <!-- Sorting unsorted -->
+    <!-- Sorting option: unsorted -->
     <string name="lbl_sort_unsorted">Unsorted</string>
-    <!-- Sorting A-Z -->
+    <!-- Sorting option: A-Z -->
     <string name="lbl_sort_ascending">Ascending</string>
-    <!-- Sorting Z-A -->
+    <!-- Sorting option: Z-A -->
     <string name="lbl_sort_descending">Descending</string>
 
-    <!-- Book status/flag -->
+    <!-- Book status/flag: I have read and finished this book. -->
     <string name="lbl_read">Read</string>
-    <!-- [VERIFIED] - Book status/flag -->
+    <!-- [VERIFIED] - Book status/flag: I have not read this book yet. -->
     <string name="lbl_unread">Unread</string>
+    <!-- Book status/flag: I'm currently reading this book -->
+    <string name="lbl_reading">Reading</string>
+
     <!-- [VERIFIED] - heading/titles for settings/preference screens. -->
     <string name="lbl_settings">Settings</string>
     <!-- endregion -->

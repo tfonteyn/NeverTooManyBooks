@@ -363,4 +363,5 @@
     <string name="info_import_complete">"导入已完成"</string>
     <string name="error_import_failed">"导入失败"</string>
     <string name="lbl_certificate_validity_period">有效期： %1$s - %2$s</string>
+    <string name="lbl_reading">阅读中</string>
 </resources>

@@ -180,6 +180,7 @@ public class BooklistGroup {
     private static final DomainExpression BD_DATE_ACQUIRED =
             new DomainExpression(DOM_BOOK_DATE_ACQUIRED, Sort.Desc);
 
+    private static final String _AND_ = " AND ";
     private static final String CASE = "CASE";
     private static final String _WHEN_ = " WHEN ";
     private static final String _THEN_ = " THEN ";
@@ -405,6 +406,8 @@ public class BooklistGroup {
      *
      * @return new GroupKey instance
      *
+     * @throws IllegalArgumentException for an unknown group -> bug
+     *
      * @see AuthorBooklistGroup
      * @see BookshelfBooklistGroup
      * @see PublisherBooklistGroup
@@ -461,10 +464,23 @@ public class BooklistGroup {
             case READ_STATUS: {
                 // Formatting is done after fetching.
                 final DomainExpression keyDomainExpression = new DomainExpression(
-                        new Domain.Builder(BlgKey.READ, SqLiteDataType.Text)
+                        new Domain.Builder(BlgKey.READ_STATUS, SqLiteDataType.Text)
                                 .notNull()
                                 .build(),
-                        TBL_BOOKS.dot(DBKey.READ__BOOL),
+                        // Ww could also test for books where the start/end dates
+                        // are set and the flag is NOT set...
+                        // But that situation should never occur anyhow... flw
+                        CASE
+                        // Read
+                        + _WHEN_ + TBL_BOOKS.dot(DBKey.READ__BOOL) + "=1"
+                        + _THEN_ + ReadStatus.Read.getId()
+                        // Reading
+                        + _WHEN_ + TBL_BOOKS.dot(DBKey.READ_START__DATE) + " <> ''"
+                        + _AND_ + TBL_BOOKS.dot(DBKey.READ_END__DATE) + " = ''"
+                        + _THEN_ + ReadStatus.Reading.getId()
+                        // Unread
+                        + _ELSE_ + ReadStatus.Unread.getId()
+                        + _END,
                         Sort.Asc);
                 return new GroupKey(id, R.string.lbl_group_read_and_unread, "r",
                                     keyDomainExpression);
@@ -954,7 +970,7 @@ public class BooklistGroup {
         public static final String SERIES_TITLE_1CHAR = "blg_ser_tit_1ch";
         public static final String PUBLISHER_NAME_1CHAR = "blg_pub_1ch";
         public static final String BOOK_TITLE_1CHAR = "blg_tit_1ch";
-        public static final String READ = "blg_rd_sts";
+        public static final String READ_STATUS = "blg_rd_sts";
 
         /**
          * Specific domains for sorting.

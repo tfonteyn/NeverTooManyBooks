@@ -747,4 +747,5 @@
     <string name="action_report">Melden</string>
     <string name="error_invalid_url">Ungültige Adresse (URL)</string>
     <string name="lbl_certificate_validity_period">Gültigkeit: %1$s - %2$s</string>
+    <string name="lbl_reading">Am Lesen</string>
 </resources>
