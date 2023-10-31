@@ -38,11 +38,11 @@ android {
                 "de.mannodermaus.junit5.AndroidJUnit5Builder"
 
         /**
-         * RELEASE: 2023-08-15. Continuously update to latest version.
+         * RELEASE: 2023-10-31. Continuously update to latest version.
          * Some sites don't return full data unless the user agent is set to a valid browser.
          */
         buildConfigField("String", "BROWSER_USER_AGENT",
-                "\"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0\"")
+                "\"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/119.0\"")
 
     }
 
