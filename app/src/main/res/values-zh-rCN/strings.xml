@@ -91,7 +91,7 @@
     <string name="X_action_move">移动</string>
     <string name="X_action_next">下一步</string>
     <string name="X_action_previous">上一页</string>
-    <string name="X_btn_customize">自定义</string>
+    <string name="X_btn_customize">自定义…</string>
     <string name="X_error_authentication_failed">验证失败</string>
     <string name="error_site_authentication_failed">%1$s验证失败</string>
     <string name="error_storage_not_accessible">请检查App存储权限。</string>
