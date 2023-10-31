@@ -269,24 +269,42 @@ public abstract class SearchEngineBase
      * Convenience method which uses the engines specific network configuration
      * to create a suitable {@link FutureHttpGet}.
      *
-     * @param context        Current context
-     * @param useCompression set to {@code true} to add the standard gzip request header.
-     * @param <T>            return type
+     * @param context Current context
+     * @param <T>     return type
      *
      * @return new {@link FutureHttpGet} instance
      */
     @NonNull
-    public <T> FutureHttpGet<T> createFutureGetRequest(@NonNull final Context context,
-                                                       final boolean useCompression) {
+    public <T> FutureHttpGet<T> createFutureGetRequest(@NonNull final Context context) {
         final FutureHttpGet<T> httpGet = new FutureHttpGet<>(config.getEngineId().getLabelResId());
 
         // Improve compatibility by sending standard headers.
         // Some headers are overridden in the ImageDownloader as needed.
 
-        httpGet.setRequestProperty(HttpConstants.ACCEPT_LANGUAGE,
-                                   createAcceptLanguageHeader(context));
+        // Host & User-Agent are set in {@link FutureHttpBase#execute}
+        // but can be overridden as needed.
+
+        //Host: developer.android.com
+        //User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/119.0
+        //Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        //Accept-Language: en-GB,en;q=0.8,nl-BE;q=0.5,de-DE;q=0.3
+        //Accept-Encoding: gzip, deflate, br
+        //DNT: 1
+        //Connection: keep-alive
+        //Upgrade-Insecure-Requests: 1
+        //Sec-Fetch-Dest: document
+        //Sec-Fetch-Mode: navigate
+        //Sec-Fetch-Site: none
+        //Sec-Fetch-User: ?1
+
         httpGet.setRequestProperty(HttpConstants.ACCEPT,
                                    HttpConstants.ACCEPT_KITCHEN_SINK);
+        httpGet.setRequestProperty(HttpConstants.ACCEPT_LANGUAGE,
+                                   createAcceptLanguageHeader(context));
+        httpGet.setRequestProperty(HttpConstants.ACCEPT_ENCODING,
+                                   HttpConstants.ACCEPT_ENCODING_GZIP);
+
+        httpGet.setRequestProperty(HttpConstants.DNT, "1");
 
         httpGet.setRequestProperty(HttpConstants.CONNECTION,
                                    HttpConstants.CONNECTION_KEEP_ALIVE);
@@ -304,10 +322,7 @@ public abstract class SearchEngineBase
 
         // httpGet.setRequestProperty(HttpConstants.CACHE_CONTROL, HttpConstants.CACHE_CONTROL_0);
 
-        if (useCompression) {
-            httpGet.setRequestProperty(HttpConstants.ACCEPT_ENCODING,
-                                       HttpConstants.ACCEPT_ENCODING_GZIP);
-        }
+
 
         httpGet.setConnectTimeout(config.getConnectTimeoutInMs(context))
                .setReadTimeout(config.getReadTimeoutInMs(context))
@@ -343,10 +358,12 @@ public abstract class SearchEngineBase
             accept.append(',').append(userLanguage);
             noDups.add(userLanguage);
         }
+
+        final int offset = random.nextInt(2);
+
         // use 0.8 or 0.7
         //noinspection CheckStyle
-        accept.append(";q=0.").append(8 + random.nextInt(2));
-
+        accept.append(";q=0.").append(8 + offset);
 
         addQ = false;
         if (!noDups.contains(siteLanguageTag)) {
@@ -363,7 +380,7 @@ public abstract class SearchEngineBase
         if (addQ) {
             // use 0.5 or 0.4
             //noinspection CheckStyle
-            accept.append(";q=0.").append(4 + random.nextInt(2));
+            accept.append(";q=0.").append(4 + offset);
         }
 
         // Always add english if not there already.
@@ -371,7 +388,7 @@ public abstract class SearchEngineBase
         if (!noDups.contains("en")) {
             accept.append(',').append("en");
             // use 0.3 or 0.2
-            accept.append(";q=0.").append(2 + random.nextInt(2));
+            accept.append(";q=0.").append(2 + offset);
         }
 
         return accept.toString();
@@ -422,7 +439,7 @@ public abstract class SearchEngineBase
 
         synchronized (this) {
             if (imageDownloader == null) {
-                imageDownloader = new ImageDownloader(createFutureGetRequest(context, true));
+                imageDownloader = new ImageDownloader(createFutureGetRequest(context));
             }
         }
         final String tempFilename = ImageDownloader.getTempFilename(

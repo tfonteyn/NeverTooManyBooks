@@ -286,7 +286,7 @@ public class OpenLibrarySearchEngine
                            @NonNull final Book book)
             throws StorageException, SearchException {
 
-        futureHttpGet = createFutureGetRequest(context, true);
+        futureHttpGet = createFutureGetRequest(context);
 
         try {
             // get and store the result into a string.

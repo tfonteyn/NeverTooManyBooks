@@ -119,7 +119,7 @@ public class LibraryThingSearchEngine
                                                   @NonNull final String validIsbn)
             throws SearchException {
 
-        futureHttpGet = createFutureGetRequest(context, true);
+        futureHttpGet = createFutureGetRequest(context);
 
         final LibraryThingEditionHandler handler = new LibraryThingEditionHandler();
 

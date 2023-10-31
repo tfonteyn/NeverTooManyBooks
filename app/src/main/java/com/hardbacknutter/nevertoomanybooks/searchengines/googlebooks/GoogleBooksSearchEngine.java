@@ -142,7 +142,7 @@ public class GoogleBooksSearchEngine
             throws StorageException,
                    SearchException {
 
-        futureHttpGet = createFutureGetRequest(context, true);
+        futureHttpGet = createFutureGetRequest(context);
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         // get the booklist, can return multiple books ('entry' elements)

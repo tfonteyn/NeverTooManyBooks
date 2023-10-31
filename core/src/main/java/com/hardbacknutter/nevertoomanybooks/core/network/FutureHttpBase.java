@@ -30,7 +30,7 @@ import java.io.UncheckedIOException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CancellationException;
@@ -70,7 +70,8 @@ public abstract class FutureHttpBase<T> {
     @StringRes
     private final int siteResId;
 
-    private final Map<String, String> requestProperties = new HashMap<>();
+    /** LinkedHashMap so the order we use is preserved. */
+    private final Map<String, String> requestProperties = new LinkedHashMap<>();
 
     /** see {@link #setRetryCount(int)}. */
     int nrOfTries = NR_OF_TRIES;
@@ -98,10 +99,6 @@ public abstract class FutureHttpBase<T> {
      */
     FutureHttpBase(@StringRes final int siteResId) {
         this.siteResId = siteResId;
-
-        // Set the default user agent.
-        // Potentially overridden by calling #setRequestProperty.
-        requestProperties.put(HttpConstants.USER_AGENT, BuildConfig.BROWSER_USER_AGENT);
     }
 
     /**
@@ -270,7 +267,7 @@ public abstract class FutureHttpBase<T> {
     }
 
     @Nullable
-    T execute(@NonNull final String url,
+    T execute(@NonNull final String urlStr,
               @NonNull final String method,
               final boolean doOutput,
               @NonNull final Function<HttpURLConnection, T> action)
@@ -282,7 +279,9 @@ public abstract class FutureHttpBase<T> {
             futureHttp = ASyncExecutor.SERVICE.submit(() -> {
                 HttpURLConnection request = null;
                 try {
-                    request = (HttpURLConnection) new URL(url).openConnection();
+                    final URL url = new URL(urlStr);
+
+                    request = (HttpURLConnection) url.openConnection();
                     request.setRequestMethod(method);
                     request.setDoOutput(doOutput);
 
@@ -292,6 +291,10 @@ public abstract class FutureHttpBase<T> {
                     if (followRedirects != null) {
                         request.setInstanceFollowRedirects(followRedirects);
                     }
+
+                    request.setRequestProperty(HttpConstants.HOST, url.getHost());
+                    request.setRequestProperty(HttpConstants.USER_AGENT,
+                                               BuildConfig.BROWSER_USER_AGENT);
 
                     for (final Map.Entry<String, String> entry : requestProperties.entrySet()) {
                         request.setRequestProperty(entry.getKey(), entry.getValue());

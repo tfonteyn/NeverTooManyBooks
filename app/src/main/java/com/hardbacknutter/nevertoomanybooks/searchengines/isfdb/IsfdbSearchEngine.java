@@ -1525,7 +1525,7 @@ public class IsfdbSearchEngine
                                          @NonNull final MoneyParser moneyParser)
             throws StorageException, SearchException {
 
-        futureHttpGet = createFutureGetRequest(context, true);
+        futureHttpGet = createFutureGetRequest(context);
 
         final IsfdbPublicationListHandler listHandler =
                 new IsfdbPublicationListHandler(context, this, fetchCovers,

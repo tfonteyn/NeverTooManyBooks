@@ -63,7 +63,7 @@ public final class HttpConstants {
      * Accept</a>
      */
     public static final String ACCEPT = "Accept";
-    /** Firefox sends (2023-05-22) this default. */
+    /** Firefox sends (2023-10-31) this default. */
     public static final String ACCEPT_KITCHEN_SINK =
             "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8";
 
@@ -146,10 +146,24 @@ public final class HttpConstants {
 
     /**
      * HTTP Request Header.
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Host">
+     * Host</a>
+     */
+    public static final String HOST = "Host";
+
+    /**
+     * HTTP Request Header.
      * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent">
      * User-Agent</a>
      */
     public static final String USER_AGENT = "User-Agent";
+
+    /**
+     * HTTP Request Header.
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/DNT">
+     * DNT</a>
+     */
+    public static final String DNT = "DNT";
 
     /** HTTP Response Header. */
     public static final String RESPONSE_HEADER_LOCATION = "location";
