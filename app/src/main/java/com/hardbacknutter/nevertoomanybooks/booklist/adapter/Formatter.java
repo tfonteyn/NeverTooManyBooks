@@ -30,13 +30,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.ReadStatus;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -56,8 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
  */
 class Formatter
         implements FormatFunction {
-
-    private static final String TAG = "Formatter";
 
     @NonNull
     private final Context context;
@@ -87,11 +83,10 @@ class Formatter
                                @NonNull final String key) {
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
-        final String text = rowData.getString(key);
-
         // NEWTHINGS: BooklistGroup
         switch (groupId) {
             case BooklistGroup.AUTHOR: {
+                final String text = rowData.getString(key);
                 if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_author);
 
@@ -112,6 +107,7 @@ class Formatter
                 return text;
             }
             case BooklistGroup.SERIES: {
+                final String text = rowData.getString(key);
                 if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_series);
 
@@ -129,13 +125,13 @@ class Formatter
                 }
             }
             case BooklistGroup.PUBLISHER: {
+                final String text = rowData.getString(key);
                 if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_publisher);
 
                 } else if (serviceLocator.getReorderHelper().forDisplay(context)) {
                     // We don't have full Objects here for Series/Publisher so we can't use
                     // their methods for auto-reordering.
-                    //
                     return serviceLocator.getReorderHelper()
                                          .reorder(context, text, (Locale) null, locales);
                 } else {
@@ -146,6 +142,7 @@ class Formatter
                 return ReadStatus.getById(rowData.getInt(key)).getLabel(context);
             }
             case BooklistGroup.LANGUAGE: {
+                final String text = rowData.getString(key);
                 if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_language);
                 } else {
@@ -153,44 +150,25 @@ class Formatter
                 }
             }
             case BooklistGroup.CONDITION: {
-                if (text.isEmpty()) {
-                    return context.getString(R.string.unknown);
-                } else {
-                    try {
-                        final int i = Integer.parseInt(text);
-                        if (i < conditionDescriptions.length) {
-                            return conditionDescriptions[i];
-                        }
-                    } catch (@NonNull final NumberFormatException ignore) {
-                        // ignore
-                    }
-                    // We should never get here... flw
-                    return text;
+                final int condition = rowData.getInt(key);
+                if (condition < conditionDescriptions.length) {
+                    return conditionDescriptions[condition];
                 }
+                // We should never get here... flw
+                return conditionDescriptions[0];
             }
             case BooklistGroup.RATING: {
+                // DOM_BOOK_RATING is a 'real' but the GroupKey will cast it to an integer.
+                final int rating = rowData.getInt(key);
                 // This is the text based formatting, as used by the level/scroller text.
-                if (text.isEmpty()) {
-                    return context.getString(R.string.bob_empty_rating);
-                } else {
-                    try {
-                        // Locale independent.
-                        final int i = Integer.parseInt(text);
-                        // If valid, get the name
-                        if (i >= 0 && i <= Book.RATING_STARS) {
-                            return context.getResources()
-                                          .getQuantityString(R.plurals.n_stars, i, i);
-                        }
-                    } catch (@NonNull final NumberFormatException e) {
-                        if (BuildConfig.DEBUG /* always */) {
-                            LoggerFactory.getLogger()
-                                         .e(TAG, e, "RATING=" + text);
-                        }
-                    }
-                    return text;
+                if (rating > 0 && rating <= Book.RATING_STARS) {
+                    return context.getResources()
+                                  .getQuantityString(R.plurals.n_stars, rating, rating);
                 }
+                return context.getString(R.string.bob_empty_rating);
             }
             case BooklistGroup.LENDING: {
+                final String text = rowData.getString(key);
                 if (text.isEmpty()) {
                     return context.getString(R.string.lbl_available);
                 } else {
@@ -204,6 +182,8 @@ class Formatter
             case BooklistGroup.DATE_PUBLISHED_YEAR:
             case BooklistGroup.DATE_FIRST_PUBLICATION_YEAR:
             case BooklistGroup.DATE_READ_YEAR: {
+                // It's an int, but we just display it or not, so use String
+                final String text = rowData.getString(key);
                 if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_year);
                 } else {
@@ -217,32 +197,20 @@ class Formatter
             case BooklistGroup.DATE_PUBLISHED_MONTH:
             case BooklistGroup.DATE_FIRST_PUBLICATION_MONTH:
             case BooklistGroup.DATE_READ_MONTH: {
-                if (text.isEmpty()) {
-                    return context.getString(R.string.bob_empty_month);
-                } else {
-                    try {
-                        final int m = Integer.parseInt(text);
-                        // If valid, get the short name
-                        if (m > 0 && m <= 12) {
-                            return Month.of(m).getDisplayName(TextStyle.FULL_STANDALONE,
-                                                              locales.get(0));
-                        }
-                    } catch (@NonNull final NumberFormatException e) {
-                        if (BuildConfig.DEBUG /* always */) {
-                            LoggerFactory.getLogger().d(TAG, "format",
-                                                        "text=`" + text + '`',
-                                                        e);
-                        }
-                    }
-                    // Was invalid, just show the original
-                    return text;
+                final int month = rowData.getInt(key);
+                if (month > 0 && month <= 12) {
+                    return Month.of(month).getDisplayName(TextStyle.FULL_STANDALONE,
+                                                          locales.get(0));
                 }
+                return context.getString(R.string.bob_empty_month);
             }
 
             case BooklistGroup.DATE_ACQUIRED_DAY:
             case BooklistGroup.DATE_ADDED_DAY:
             case BooklistGroup.DATE_LAST_UPDATE_DAY:
             case BooklistGroup.DATE_READ_DAY: {
+                // It's an int, but we just display it or not, so use String
+                final String text = rowData.getString(key);
                 if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_day);
                 } else {
@@ -250,8 +218,7 @@ class Formatter
                 }
             }
 
-            // BooklistGroup.BOOK only here to please lint
-            case BooklistGroup.BOOK:
+
             case BooklistGroup.FORMAT:
             case BooklistGroup.GENRE:
             case BooklistGroup.LOCATION:
@@ -261,7 +228,10 @@ class Formatter
             case BooklistGroup.SERIES_TITLE_1ST_CHAR:
             case BooklistGroup.AUTHOR_FAMILY_NAME_1ST_CHAR:
             case BooklistGroup.PUBLISHER_NAME_1ST_CHAR:
+                // BooklistGroup.BOOK only here to please lint
+            case BooklistGroup.BOOK:
             default: {
+                final String text = rowData.getString(key);
                 if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_field);
                 } else {
