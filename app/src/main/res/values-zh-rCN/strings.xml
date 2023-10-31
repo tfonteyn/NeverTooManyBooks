@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,13 +17,10 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
-    <!ENTITY APP_NAME "NeverTooManyBooks">
-    ]>
-<!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine -->
-<resources>
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
+<!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
     <string name="X_lbl_folder">文件夹</string>
     <string name="lbl_cover_front">封面</string>
     <string name="X_lbl_image">图片</string>
@@ -87,7 +83,7 @@
     <string name="X_action_send">发送</string>
     <string name="X_action_clear_credentials">清除凭据</string>
     <string name="X_action_execute">执行</string>
-    <string name="action_less_ellipsis">收起</string>
+    <string name="action_less_ellipsis">收起…</string>
     <string name="X_action_move">移动</string>
     <string name="X_action_next">下一步</string>
     <string name="X_action_previous">上一页</string>
@@ -364,4 +360,7 @@
     <string name="error_import_failed">"导入失败"</string>
     <string name="lbl_certificate_validity_period">有效期： %1$s - %2$s</string>
     <string name="lbl_reading">阅读中</string>
+    <string name="book_format_softcover">平装</string>
+    <string name="book_format_softcover_oblong">平装 - 长方形</string>
+    <string name="book_format_digest">小型</string>
 </resources>
