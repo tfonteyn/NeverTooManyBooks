@@ -31,6 +31,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 
 /**
+ * Used to create an ordering of the read-status.
+ * <p>
  * The ID numerical order is such that we can {@link Sort#Desc} on it
  * and get the {@link BooklistGroup#READ_STATUS} to display as:
  * <ul>
@@ -38,13 +40,27 @@ import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
  * <li>Unread</li>
  * <li>Reading: least interesting</li>
  * </ul>
- * The 'Unknown' status is never generated, but used as
- * a fallback option which should never be seen.
+ * The numerical value {@link #id} is used in SQL but not stored other than in the
+ * temporary book-list table.
+ * The UI then uses that value to lookup the enum,
+ * and calls {@link #getLabel(Context)} for formatting/displaying.
  */
 public enum ReadStatus {
+    /** Currently reading - the read-start-date is set, the read-end-date is not. */
     Reading(0, R.string.lbl_reading),
+    /**
+     * {@link com.hardbacknutter.nevertoomanybooks.database.DBDefinitions#DOM_BOOK_READ}
+     * is {@code false}.
+     */
     Unread(1, R.string.lbl_unread),
+    /**
+     * {@link com.hardbacknutter.nevertoomanybooks.database.DBDefinitions#DOM_BOOK_READ}
+     * is {@code true}.
+     */
     Read(2, R.string.lbl_read),
+    /**
+     * Never used/generated, but serves as a fallback option which should never be seen.
+     */
     Unknown(3, R.string.bob_empty_read_status);
 
     private final int id;
