@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.view.View;
 
 import androidx.annotation.ArrayRes;
 import androidx.annotation.LayoutRes;
@@ -30,6 +31,9 @@ import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.BooleanHolder;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.ModificationListener;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.PFilterHolder;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 
@@ -43,8 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 public class PBooleanFilter
         implements PFilter<Boolean> {
 
-    /** The layout id; also used as row type. */
-    public static final int LAYOUT_ID = R.layout.row_edit_bookshelf_filter_boolean;
     @NonNull
     protected final Domain domain;
     @NonNull
@@ -143,7 +145,13 @@ public class PBooleanFilter
     @LayoutRes
     @Override
     public int getPrefLayoutId() {
-        return LAYOUT_ID;
+        return R.layout.row_edit_bookshelf_filter_boolean;
     }
 
+    @NonNull
+    @Override
+    public PFilterHolder createHolder(@NonNull final View view,
+                                      @NonNull final ModificationListener modificationListener) {
+        return new BooleanHolder(view, modificationListener);
+    }
 }

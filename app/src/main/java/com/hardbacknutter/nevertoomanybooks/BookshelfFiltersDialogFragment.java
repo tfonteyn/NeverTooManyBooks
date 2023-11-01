@@ -21,10 +21,7 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,39 +37,24 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.divider.MaterialDividerItemDecoration;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.FilterFactory;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.PBitmaskFilter;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.PBooleanFilter;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.PEntityListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.PStringEqualityFilter;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.ModificationListener;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.PFilterListAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfFiltersContentBinding;
-import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfFilterBitmaskBinding;
-import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfFilterBooleanBinding;
-import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfFilterEntityListBinding;
-import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfFilterStringEqualityBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceAlertDialogBuilder;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 
 public class BookshelfFiltersDialogFragment
         extends FFBaseDialogFragment {
 
     public static final String TAG = "BookshelfFiltersDlg";
 
-    private FilterListAdapter listAdapter;
+    private PFilterListAdapter listAdapter;
     /** View Binding. */
     @SuppressWarnings("FieldCanBeLocal")
     private DialogEditBookshelfFiltersContentBinding vb;
@@ -81,8 +63,20 @@ public class BookshelfFiltersDialogFragment
 
 
     private final ModificationListener modificationListener =
-            isModified -> vm.setModified(isModified);
+            new ModificationListener() {
+                @Override
+                public void onModified(final int pos) {
+                    listAdapter.notifyItemChanged(pos);
+                    vm.setModified(true);
+                }
 
+                @Override
+                public void onDelete(final int pos) {
+                    vm.getFilterList().remove(pos);
+                    listAdapter.notifyItemRemoved(pos);
+                    vm.setModified(true);
+                }
+            };
 
     /**
      * No-arg constructor for OS use.
@@ -113,7 +107,8 @@ public class BookshelfFiltersDialogFragment
         setSubtitle(vm.getBookshelf().getName());
 
         //noinspection DataFlowIssue
-        listAdapter = new FilterListAdapter(getContext(), vm.getFilterList(), modificationListener);
+        listAdapter = new PFilterListAdapter(getContext(), vm.getFilterList(),
+                                             modificationListener);
         vb.filterList.setAdapter(listAdapter);
         vb.filterList.addItemDecoration(
                 new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL));
@@ -154,7 +149,6 @@ public class BookshelfFiltersDialogFragment
         return false;
     }
 
-    // We don't set the modified flag on adding a filter - the filter is NOT activated yet here.
     private void onAdd() {
         final Context context = getContext();
         //noinspection DataFlowIssue
@@ -168,6 +162,8 @@ public class BookshelfFiltersDialogFragment
                         final PFilter<?> filter = FilterFactory.createFilter(dbKey);
                         if (filter != null) {
                             vm.getFilterList().add(filter);
+                            // We don't set the modified flag on adding a filter.
+                            // The filter is NOT yet activated.
                             listAdapter.notifyItemInserted(vm.getFilterList().size());
                         }
                     }
@@ -185,12 +181,6 @@ public class BookshelfFiltersDialogFragment
             Launcher.setResult(this, vm.getRequestKey(), vm.isModified());
         }
         return success;
-    }
-
-    @FunctionalInterface
-    private interface ModificationListener {
-
-        void setModified(boolean modified);
     }
 
     public static class Launcher
@@ -257,244 +247,4 @@ public class BookshelfFiltersDialogFragment
         }
     }
 
-    private static class FilterListAdapter
-            extends RecyclerView.Adapter<Holder> {
-
-        @NonNull
-        private final List<PFilter<?>> filters;
-        @NonNull
-        private final ModificationListener modificationListener;
-        private final LayoutInflater layoutInflater;
-
-        /**
-         * Constructor.
-         *
-         * @param context              Current context
-         * @param filters              List of items
-         * @param modificationListener listener which will be notified if a filter is modified
-         */
-        FilterListAdapter(@NonNull final Context context,
-                          @NonNull final List<PFilter<?>> filters,
-                          @NonNull final ModificationListener modificationListener) {
-            layoutInflater = LayoutInflater.from(context);
-            this.filters = filters;
-            this.modificationListener = modificationListener;
-        }
-
-        @NonNull
-        @Override
-        public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
-                                         final int viewType) {
-            final View view = layoutInflater.inflate(viewType, parent, false);
-
-            final Holder holder;
-            if (viewType == PBooleanFilter.LAYOUT_ID) {
-                holder = new BooleanHolder(view, modificationListener);
-            } else if (viewType == PStringEqualityFilter.LAYOUT_ID) {
-                holder = new StringEqualityHolder(view, modificationListener);
-            } else if (viewType == PEntityListFilter.LAYOUT_ID) {
-                holder = new EntityListHolder<>(view, modificationListener);
-            } else if (viewType == PBitmaskFilter.LAYOUT_ID) {
-                holder = new BitmaskHolder(view, modificationListener);
-            } else {
-                throw new IllegalArgumentException("Unknown viewType");
-            }
-
-            if (holder.delBtn != null) {
-                holder.delBtn.setOnClickListener(v -> {
-                    final int pos = holder.getBindingAdapterPosition();
-                    filters.remove(pos);
-                    notifyItemRemoved(pos);
-                    modificationListener.setModified(true);
-                });
-            }
-            return holder;
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull final Holder holder,
-                                     final int position) {
-            final PFilter<?> pFilter = filters.get(position);
-            //noinspection unchecked
-            ((BindableViewHolder<PFilter<?>>) holder).onBind(pFilter);
-        }
-
-        @Override
-        public int getItemViewType(final int position) {
-            return filters.get(position).getPrefLayoutId();
-        }
-
-        @Override
-        public int getItemCount() {
-            return filters.size();
-        }
-    }
-
-    private abstract static class Holder
-            extends RecyclerView.ViewHolder {
-
-        @Nullable
-        final Button delBtn;
-        @NonNull
-        final ModificationListener modificationListener;
-
-        Holder(@NonNull final View itemView,
-               @NonNull final ModificationListener modificationListener) {
-            super(itemView);
-            this.modificationListener = modificationListener;
-            delBtn = itemView.findViewById(R.id.btn_del);
-        }
-    }
-
-    private static class BooleanHolder
-            extends Holder
-            implements BindableViewHolder<PBooleanFilter> {
-
-        @NonNull
-        private final RowEditBookshelfFilterBooleanBinding vb;
-
-        BooleanHolder(@NonNull final View itemView,
-                      @NonNull final ModificationListener modificationListener) {
-            super(itemView, modificationListener);
-            vb = RowEditBookshelfFilterBooleanBinding.bind(itemView);
-        }
-
-        public void onBind(@NonNull final PBooleanFilter filter) {
-            final Context context = itemView.getContext();
-            vb.lblFilter.setText(filter.getLabel(context));
-            vb.valueTrue.setText(filter.getValueText(context, true));
-            vb.valueFalse.setText(filter.getValueText(context, false));
-
-            vb.filter.setOnCheckedChangeListener(null);
-            final Boolean value = filter.getValue();
-            if (value == null) {
-                vb.filter.clearCheck();
-            } else {
-                vb.valueTrue.setChecked(value);
-                vb.valueFalse.setChecked(!value);
-            }
-
-            vb.filter.setOnCheckedChangeListener((group, checkedId) -> {
-                if (checkedId == -1) {
-                    filter.setValue(null);
-                } else {
-                    filter.setValue(checkedId == vb.valueTrue.getId());
-                }
-                modificationListener.setModified(true);
-            });
-        }
-    }
-
-    private static class StringEqualityHolder
-            extends Holder
-            implements BindableViewHolder<PStringEqualityFilter> {
-
-        @NonNull
-        private final RowEditBookshelfFilterStringEqualityBinding vb;
-
-        StringEqualityHolder(@NonNull final View itemView,
-                             @NonNull final ModificationListener modificationListener) {
-            super(itemView, modificationListener);
-            vb = RowEditBookshelfFilterStringEqualityBinding.bind(itemView);
-        }
-
-        public void onBind(@NonNull final PStringEqualityFilter filter) {
-            final Context context = itemView.getContext();
-            vb.lblFilter.setText(filter.getLabel(context));
-            vb.filter.setText(filter.getValueText(context));
-
-            // We cannot share this adapter/formatter between multiple Holder instances
-            // as they depends on the DBKey of the filter.
-            @Nullable
-            final ExtArrayAdapter<String> adapter = FilterFactory
-                    .createAdapter(context, filter.getDBKey());
-            // likewise, always set the adapter even when null
-            vb.filter.setAdapter(adapter);
-            vb.filter.addTextChangedListener((ExtTextWatcher) s -> {
-                filter.setValueText(context, s.toString());
-                modificationListener.setModified(true);
-            });
-        }
-    }
-
-    private static class EntityListHolder<T extends Entity>
-            extends Holder
-            implements BindableViewHolder<PEntityListFilter<T>> {
-
-        @NonNull
-        private final RowEditBookshelfFilterEntityListBinding vb;
-
-        EntityListHolder(@NonNull final View itemView,
-                         @NonNull final ModificationListener modificationListener) {
-            super(itemView, modificationListener);
-            vb = RowEditBookshelfFilterEntityListBinding.bind(itemView);
-        }
-
-        public void onBind(@NonNull final PEntityListFilter<T> filter) {
-            final Context context = itemView.getContext();
-            vb.lblFilter.setText(filter.getLabel(context));
-            vb.filter.setText(filter.getValueText(context));
-
-            vb.ROWONCLICKTARGET.setOnClickListener(v -> {
-                final List<T> entities = filter.getEntities();
-                final List<Long> ids = entities.stream()
-                                               .map(Entity::getId)
-                                               .collect(Collectors.toList());
-                final List<String> labels = entities.stream()
-                                                    .map(entity -> entity.getLabel(context))
-                                                    .collect(Collectors.toList());
-
-                new MultiChoiceAlertDialogBuilder<Long>(context)
-                        .setTitle(filter.getLabel(context))
-                        .setItems(ids, labels)
-                        .setSelectedItems(filter.getValue())
-                        .setPositiveButton(android.R.string.ok, value -> {
-                            filter.setValue(value);
-                            vb.filter.setText(filter.getValueText(context));
-                            modificationListener.setModified(true);
-                        })
-                        .create()
-                        .show();
-            });
-        }
-    }
-
-    private static class BitmaskHolder
-            extends Holder
-            implements BindableViewHolder<PBitmaskFilter> {
-
-        @NonNull
-        private final RowEditBookshelfFilterBitmaskBinding vb;
-
-        BitmaskHolder(@NonNull final View itemView,
-                      @NonNull final ModificationListener modificationListener) {
-            super(itemView, modificationListener);
-            vb = RowEditBookshelfFilterBitmaskBinding.bind(itemView);
-        }
-
-        @Override
-        public void onBind(@NonNull final PBitmaskFilter filter) {
-            final Context context = itemView.getContext();
-            vb.lblFilter.setText(filter.getLabel(context));
-            vb.filter.setText(filter.getValueText(context));
-
-            vb.ROWONCLICKTARGET.setOnClickListener(v -> {
-                final Map<Integer, String> bitsAndLabels = filter.getBitsAndLabels(context);
-                final List<Integer> ids = new ArrayList<>(bitsAndLabels.keySet());
-                final List<String> labels = new ArrayList<>(bitsAndLabels.values());
-
-                new MultiChoiceAlertDialogBuilder<Integer>(context)
-                        .setTitle(context.getString(R.string.lbl_edition))
-                        .setItems(ids, labels)
-                        .setSelectedItems(filter.getValue())
-                        .setPositiveButton(android.R.string.ok, value -> {
-                            filter.setValue(value);
-                            vb.filter.setText(filter.getValueText(context));
-                            modificationListener.setModified(true);
-                        })
-                        .create()
-                        .show();
-            });
-        }
-    }
 }

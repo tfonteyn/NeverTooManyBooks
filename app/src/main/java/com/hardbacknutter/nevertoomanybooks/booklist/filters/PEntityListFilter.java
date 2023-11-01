@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
 import android.content.Context;
+import android.view.View;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -37,6 +38,9 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.EntityListHolder;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.ModificationListener;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.PFilterHolder;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
@@ -57,9 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 public class PEntityListFilter<T extends Entity>
         implements PFilter<Set<Long>> {
 
-    /** The layout id; also used as row type. */
-    public static final int LAYOUT_ID = R.layout.row_edit_bookshelf_filter_entity_list;
-
     @StringRes
     private final int labelResId;
     @NonNull
@@ -71,7 +72,7 @@ public class PEntityListFilter<T extends Entity>
     @NonNull
     private final Supplier<List<T>> listSupplier;
 
-    private final Set<Long> value = new HashSet<>();
+    protected final Set<Long> value = new HashSet<>();
     @Nullable
     private Map<Long, Entity> entityMap;
 
@@ -185,6 +186,13 @@ public class PEntityListFilter<T extends Entity>
     @LayoutRes
     @Override
     public int getPrefLayoutId() {
-        return LAYOUT_ID;
+        return R.layout.row_edit_bookshelf_filter_entity_list;
+    }
+
+    @NonNull
+    @Override
+    public PFilterHolder createHolder(@NonNull final View view,
+                                      @NonNull final ModificationListener modificationListener) {
+        return new EntityListHolder<>(view, modificationListener);
     }
 }

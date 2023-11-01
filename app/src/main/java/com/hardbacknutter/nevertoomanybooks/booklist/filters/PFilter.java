@@ -20,12 +20,15 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
 import android.content.Context;
+import android.view.View;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.ModificationListener;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.PFilterHolder;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 
 /**
@@ -98,6 +101,7 @@ public interface PFilter<T>
      * UI usage: get the text to show the user representing the value.
      *
      * @param context Current context
+     * @param value   to stringify
      *
      * @return string
      */
@@ -112,9 +116,16 @@ public interface PFilter<T>
 
     /**
      * UI usage: get the layout id for use in the Filter setup dialog.
+     * <p>
+     * Warning: also used as row view-type in the adapter.
      *
      * @return layout res id
      */
     @LayoutRes
     int getPrefLayoutId();
+
+    @NonNull
+    PFilterHolder createHolder(@NonNull View view,
+                               @NonNull ModificationListener
+                                       modificationListener);
 }

@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
 import android.content.Context;
+import android.view.View;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -30,6 +31,9 @@ import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.ModificationListener;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.PFilterHolder;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.StringEqualityHolder;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
@@ -45,9 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  */
 public class PStringEqualityFilter
         implements PFilter<String> {
-
-    /** The layout id; also used as row type. */
-    public static final int LAYOUT_ID = R.layout.row_edit_bookshelf_filter_string_equality;
 
     @StringRes
     private final int labelResId;
@@ -200,6 +201,13 @@ public class PStringEqualityFilter
     @LayoutRes
     @Override
     public int getPrefLayoutId() {
-        return LAYOUT_ID;
+        return R.layout.row_edit_bookshelf_filter_string_equality;
+    }
+
+    @NonNull
+    @Override
+    public PFilterHolder createHolder(@NonNull final View view,
+                                      @NonNull final ModificationListener modificationListener) {
+        return new StringEqualityHolder(view, modificationListener);
     }
 }
