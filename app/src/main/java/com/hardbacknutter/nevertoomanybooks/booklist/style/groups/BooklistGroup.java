@@ -471,14 +471,8 @@ public class BooklistGroup {
                         // are set and the flag is NOT set...
                         // But that situation should never occur anyhow... flw
                         CASE
-                        // Read
-                        + _WHEN_ + TBL_BOOKS.dot(DBKey.READ__BOOL) + "=1"
-                        + _THEN_ + ReadStatus.Read.getId()
-                        // Reading
-                        + _WHEN_ + TBL_BOOKS.dot(DBKey.READ_START__DATE) + " <> ''"
-                        + _AND_ + TBL_BOOKS.dot(DBKey.READ_END__DATE) + " = ''"
-                        + _THEN_ + ReadStatus.Reading.getId()
-                        // Unread
+                        + _WHEN_ + ReadStatus.W_READ + _THEN_ + ReadStatus.Read.getId()
+                        + _WHEN_ + ReadStatus.W_READING + _THEN_ + ReadStatus.Reading.getId()
                         + _ELSE_ + ReadStatus.Unread.getId()
                         + _END,
                         Sort.Asc);

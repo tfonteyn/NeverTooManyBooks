@@ -23,12 +23,20 @@ package com.hardbacknutter.nevertoomanybooks.booklist.style.groups;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import java.util.Arrays;
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Details;
+import com.hardbacknutter.nevertoomanybooks.entities.Entity;
+
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 
 /**
  * Used to create an ordering of the read-status.
@@ -44,24 +52,36 @@ import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
  * temporary book-list table.
  * The UI then uses that value to lookup the enum,
  * and calls {@link #getLabel(Context)} for formatting/displaying.
+ * <p>
+ *  <strong>Never change the ID values</strong>, they get stored in the db.
  */
-public enum ReadStatus {
+public enum ReadStatus
+        implements Entity {
     /** Currently reading - the read-start-date is set, the read-end-date is not. */
-    Reading(0, R.string.lbl_reading),
+    Reading(1, R.string.lbl_reading),
     /**
      * {@link com.hardbacknutter.nevertoomanybooks.database.DBDefinitions#DOM_BOOK_READ}
      * is {@code false}.
      */
-    Unread(1, R.string.lbl_unread),
+    Unread(2, R.string.lbl_unread),
     /**
      * {@link com.hardbacknutter.nevertoomanybooks.database.DBDefinitions#DOM_BOOK_READ}
      * is {@code true}.
      */
-    Read(2, R.string.lbl_read),
+    Read(3, R.string.lbl_read),
     /**
      * Never used/generated, but serves as a fallback option which should never be seen.
      */
-    Unknown(3, R.string.bob_empty_read_status);
+    Unknown(0, R.string.bob_empty_read_status);
+
+    /** WHEN/WHERE clause. */
+    public static final String W_READING =
+            TBL_BOOKS.dot(DBKey.READ_START__DATE) + "<>''"
+            + " AND " + TBL_BOOKS.dot(DBKey.READ_END__DATE) + "=''";
+    /** WHEN/WHERE clause. */
+    public static final String W_READ = TBL_BOOKS.dot(DBKey.READ__BOOL) + "=1";
+    /** WHEN/WHERE clause. */
+    public static final String W_UNREAD = TBL_BOOKS.dot(DBKey.READ__BOOL) + "=0";
 
     private final int id;
     @StringRes
@@ -78,12 +98,22 @@ public enum ReadStatus {
         return Arrays.stream(values()).filter(v -> v.id == id).findFirst().orElse(Unknown);
     }
 
-    public int getId() {
+    @NonNull
+    public static List<ReadStatus> getAll() {
+        // Do NOT return the unknown status!
+        // Use the same order as the numerical order.
+        return List.of(Reading, Unread, Read);
+    }
+
+    public long getId() {
         return id;
     }
 
     @NonNull
-    public String getLabel(@NonNull final Context context) {
+    @Override
+    public String getLabel(@NonNull final Context context,
+                           @NonNull final Details details,
+                           @Nullable final Style style) {
         return context.getString(labelId);
     }
 }
