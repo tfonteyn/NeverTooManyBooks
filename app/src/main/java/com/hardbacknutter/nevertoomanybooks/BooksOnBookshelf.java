@@ -297,6 +297,7 @@ public class BooksOnBookshelf
             new BookshelfFiltersDialogFragment.Launcher(
                     RK_FILTERS, modified -> {
                 if (modified) {
+                    vm.setSelectedPosition(0, RecyclerView.NO_POSITION);
                     buildBookList();
                 }
             });
