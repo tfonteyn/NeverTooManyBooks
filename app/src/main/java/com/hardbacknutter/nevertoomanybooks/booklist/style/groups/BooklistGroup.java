@@ -445,8 +445,9 @@ public class BooklistGroup {
                                     new DomainExpression(DOM_BOOK_CONDITION, TBL_BOOKS, Sort.Desc));
             }
             case RATING: {
-                // Formatting is done after fetching; sort with highest rated first
-                // The data is cast to an integer as a precaution/paranoia.
+                // Formatting is done after fetching; sort with highest rated first.
+                // The data is cast to an integer as a precaution/paranoia,
+                // but also to avoid having to post-process every row in code.
                 return new GroupKey(id, R.string.lbl_rating, "rt", new DomainExpression(
                         DOM_BOOK_RATING,
                         "CAST(" + TBL_BOOKS.dot(DBKey.RATING) + " AS INTEGER)",
@@ -940,6 +941,9 @@ public class BooklistGroup {
 
     }
 
+    /**
+     * The equivalent to {@link DBKey}s for the BooklistGroup specific domains.
+     */
     @SuppressWarnings("WeakerAccess")
     public static final class BlgKey {
 
