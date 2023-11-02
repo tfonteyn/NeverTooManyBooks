@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.booklist;
+package com.hardbacknutter.nevertoomanybooks.booklist.header;
 
 import android.content.Context;
 
@@ -49,11 +49,10 @@ public class BooklistHeader {
     public static final int SHOW_STYLE_NAME = 1 << 3;
     public static final int SHOW_FILTERS = 1 << 4;
     /** the amount of details to show in the header. This is also the default. */
-    public static final int BITMASK_ALL =
-            SHOW_BOOK_COUNT
-            | SHOW_SEARCH_CRITERIA
-            | SHOW_STYLE_NAME
-            | SHOW_FILTERS;
+    public static final int BITMASK_ALL = SHOW_BOOK_COUNT
+                                          | SHOW_SEARCH_CRITERIA
+                                          | SHOW_STYLE_NAME
+                                          | SHOW_FILTERS;
 
     @Nullable
     private String styleName;
@@ -110,29 +109,30 @@ public class BooklistHeader {
     }
 
     @Nullable
-    public String getStyleName() {
+    String getStyleName() {
         return styleName;
     }
 
     @Nullable
-    public String getBookCount() {
+    String getBookCount() {
         return bookCount;
     }
 
     @Nullable
-    public String getFilterText() {
+    String getFilterText() {
         return filterText;
     }
 
     @Nullable
-    public String getSearchText() {
+    String getSearchText() {
         return searchText;
     }
 
-    @IntDef(flag = true, value = {SHOW_BOOK_COUNT,
-                                  SHOW_SEARCH_CRITERIA,
-                                  SHOW_STYLE_NAME,
-                                  SHOW_FILTERS})
+    @IntDef(flag = true, value = {
+            SHOW_BOOK_COUNT,
+            SHOW_SEARCH_CRITERIA,
+            SHOW_STYLE_NAME,
+            SHOW_FILTERS})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Option {
 

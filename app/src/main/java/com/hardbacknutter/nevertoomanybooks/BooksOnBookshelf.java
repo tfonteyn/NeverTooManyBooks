@@ -27,7 +27,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Debug;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -68,7 +67,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AddBookBySearchContract;
@@ -94,9 +92,9 @@ import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsFragment;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookExternalIdFragment;
 import com.hardbacknutter.nevertoomanybooks.booklist.BoBTask;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.adapter.BooklistAdapter;
+import com.hardbacknutter.nevertoomanybooks.booklist.header.HeaderAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
@@ -105,7 +103,6 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.SpinnerInteractionListe
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfBinding;
-import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfHeaderBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditInPlaceParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.EditStringLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -139,7 +136,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.NavDrawer;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 
 /**
  * Activity that displays a flattened book hierarchy based on the Booklist* classes.
@@ -2214,86 +2210,6 @@ public class BooksOnBookshelf
                 row++;
             }
             return best;
-        }
-    }
-
-    private static class HeaderViewHolder
-            extends RecyclerView.ViewHolder
-            implements BindableViewHolder<BooklistHeader> {
-
-        @NonNull
-        private final BooksonbookshelfHeaderBinding vb;
-
-        HeaderViewHolder(@NonNull final BooksonbookshelfHeaderBinding vb) {
-            super(vb.getRoot());
-            this.vb = vb;
-        }
-
-        @Override
-        public void onBind(@NonNull final BooklistHeader headerContent) {
-            String header;
-            header = headerContent.getStyleName();
-            vb.styleName.setText(header);
-            vb.styleName.setVisibility(header != null ? View.VISIBLE : View.GONE);
-
-            header = headerContent.getFilterText();
-            vb.filterText.setText(header);
-            vb.filterText.setVisibility(header != null ? View.VISIBLE : View.GONE);
-
-            header = headerContent.getSearchText();
-            vb.searchText.setText(header);
-            vb.searchText.setVisibility(header != null ? View.VISIBLE : View.GONE);
-
-            header = headerContent.getBookCount();
-            vb.bookCount.setText(header);
-            vb.bookCount.setVisibility(header != null ? View.VISIBLE : View.GONE);
-        }
-    }
-
-    private static class HeaderAdapter
-            extends RecyclerView.Adapter<HeaderViewHolder> {
-
-        @NonNull
-        private final LayoutInflater inflater;
-        @NonNull
-        private final Supplier<BooklistHeader> headerSupplier;
-
-        /**
-         * Constructor.
-         *
-         * @param context        Current context
-         * @param headerSupplier a supplier to get the current header values from
-         */
-        HeaderAdapter(@NonNull final Context context,
-                      @NonNull final Supplier<BooklistHeader> headerSupplier) {
-            inflater = LayoutInflater.from(context);
-            this.headerSupplier = headerSupplier;
-            setHasStableIds(true);
-        }
-
-        @NonNull
-        @Override
-        public HeaderViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
-                                                   final int viewType) {
-            return new HeaderViewHolder(
-                    BooksonbookshelfHeaderBinding.inflate(inflater, parent, false));
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull final HeaderViewHolder holder,
-                                     final int position) {
-            holder.onBind(headerSupplier.get());
-        }
-
-        @Override
-        public int getItemCount() {
-            return 1;
-        }
-
-        @Override
-        public long getItemId(final int position) {
-            // we only have one row; return a dummy value which is not a row-id in the list-table
-            return Integer.MAX_VALUE;
         }
     }
 

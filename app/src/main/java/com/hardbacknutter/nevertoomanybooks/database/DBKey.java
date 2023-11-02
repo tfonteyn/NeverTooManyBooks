@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.database;
 
 import java.util.Set;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 
 /**
@@ -268,7 +269,7 @@ public final class DBKey {
      */
     public static final String STYLE_COVER_SCALE = "cover_scale";
     /**
-     * @see com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader
+     * @see BooklistHeader
      */
     public static final String STYLE_LIST_HEADER = "list_header";
     public static final String STYLE_DETAILS_SHOW_FIELDS = "detail_fields_vis";

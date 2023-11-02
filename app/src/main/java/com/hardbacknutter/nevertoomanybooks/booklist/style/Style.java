@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
+import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BookshelfBooklistGroup;

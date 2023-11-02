@@ -26,7 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
+import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BookDetailsFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BookLevelFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;

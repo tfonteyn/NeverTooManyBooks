@@ -26,7 +26,7 @@ import androidx.annotation.NonNull;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
+import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
 
 import org.junit.Test;
 
