@@ -30,41 +30,36 @@ import java.util.Map;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.fields.FieldArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.LanguageFormatter;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_COLOR;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_CONTENT_TYPE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_EDITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_FORMAT;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_ISBN;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_LANGUAGE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_SIGNED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOKSHELF;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
 
 public final class FilterFactory {
 
+    // Not always the same mapping as {@link MapDBKey}
     public static final Map<String, Integer> SUPPORTED = Map.of(
-            DBKey.READ__BOOL, R.string.lbl_read,
-            DBKey.SIGNED__BOOL, R.string.lbl_signed,
-
             DBKey.BOOK_ISBN, R.string.lbl_isbn,
-            DBKey.LOANEE_NAME, R.string.lbl_lend_out,
-
             DBKey.COLOR, R.string.lbl_color,
+            DBKey.EDITION__BITMASK, R.string.lbl_edition,
+            DBKey.FK_BOOKSHELF, R.string.lbl_bookshelf,
+            //FIXME: the key name is a mistake but makes no difference
+            // in functionality.
+            // It should have been BOOK_CONTENT_TYPE
+            // fix this during an upgrade where we can update
+            // the TBL_BOOKSHELF_FILTERS#filter_name column.
+            DBKey.FK_TOC_ENTRY, R.string.lbl_book_type,
             DBKey.FORMAT, R.string.lbl_format,
             DBKey.LANGUAGE, R.string.lbl_language,
-
-            DBKey.EDITION__BITMASK, R.string.lbl_edition,
-
-            DBKey.FK_BOOKSHELF, R.string.lbl_bookshelf,
-            DBKey.FK_TOC_ENTRY, R.string.lbl_book_type
+            // Different from MapDBKey. Here it MUST be "lbl_lend_out"
+            DBKey.LOANEE_NAME, R.string.lbl_lend_out,
+            DBKey.READ__BOOL, R.string.lbl_read,
+            DBKey.SIGNED__BOOL, R.string.lbl_signed
     );
 
     private FilterFactory() {
@@ -79,7 +74,7 @@ public final class FilterFactory {
             case DBKey.SIGNED__BOOL: {
                 return new PBooleanFilter(
                         dbKey, R.string.lbl_signed, R.array.pe_bob_filter_signed,
-                        TBL_BOOKS, DOM_BOOK_SIGNED);
+                        TBL_BOOKS, DBDefinitions.DOM_BOOK_SIGNED);
             }
 
 
@@ -87,30 +82,30 @@ public final class FilterFactory {
             case DBKey.BOOK_ISBN: {
                 return new PHasValueFilter(
                         dbKey, R.string.lbl_isbn, R.array.pe_bob_filter_isbn,
-                        TBL_BOOKS, DOM_BOOK_ISBN);
+                        TBL_BOOKS, DBDefinitions.DOM_BOOK_ISBN);
             }
             // Is the book lend out or not.
             case DBKey.LOANEE_NAME: {
                 return new PHasValueFilter(
                         dbKey, R.string.lbl_lend_out, R.array.pe_bob_filter_lending,
-                        TBL_BOOK_LOANEE, DOM_LOANEE);
+                        TBL_BOOK_LOANEE, DBDefinitions.DOM_LOANEE);
             }
 
 
             case DBKey.COLOR: {
                 return new PStringEqualityFilter(
                         dbKey, R.string.lbl_color,
-                        TBL_BOOKS, DOM_BOOK_COLOR);
+                        TBL_BOOKS, DBDefinitions.DOM_BOOK_COLOR);
             }
             case DBKey.FORMAT: {
                 return new PStringEqualityFilter(
                         dbKey, R.string.lbl_format,
-                        TBL_BOOKS, DOM_BOOK_FORMAT);
+                        TBL_BOOKS, DBDefinitions.DOM_BOOK_FORMAT);
             }
             case DBKey.LANGUAGE: {
                 final PStringEqualityFilter filter = new PStringEqualityFilter(
                         dbKey, R.string.lbl_language,
-                        TBL_BOOKS, DOM_BOOK_LANGUAGE);
+                        TBL_BOOKS, DBDefinitions.DOM_BOOK_LANGUAGE);
 
                 filter.setFormatter(context -> new LanguageFormatter(
                         context.getResources().getConfiguration().getLocales().get(0),
@@ -122,7 +117,7 @@ public final class FilterFactory {
             case DBKey.EDITION__BITMASK: {
                 return new PBitmaskFilter(
                         dbKey, R.string.lbl_edition,
-                        TBL_BOOKS, DOM_BOOK_EDITION,
+                        TBL_BOOKS, DBDefinitions.DOM_BOOK_EDITION,
                         Book.Edition::getAll);
             }
 
@@ -130,14 +125,15 @@ public final class FilterFactory {
             case DBKey.FK_BOOKSHELF: {
                 return new PEntityListFilter<>(
                         dbKey, R.string.lbl_bookshelves,
-                        TBL_BOOK_BOOKSHELF, DOM_FK_BOOKSHELF,
+                        TBL_BOOK_BOOKSHELF, DBDefinitions.DOM_FK_BOOKSHELF,
                         () -> ServiceLocator.getInstance().getBookshelfDao().getAll());
             }
 
             case DBKey.FK_TOC_ENTRY: {
+                // FIXME: see note with SUPPORTED above
                 return new PEntityListFilter<>(
                         dbKey, R.string.lbl_book_type,
-                        TBL_BOOKS, DOM_BOOK_CONTENT_TYPE,
+                        TBL_BOOKS, DBDefinitions.DOM_BOOK_CONTENT_TYPE,
                         Book.ContentType::getAll);
             }
 
@@ -178,6 +174,7 @@ public final class FilterFactory {
                         new LanguageFormatter(userLocale, serviceLocator.getLanguages()));
             }
             case DBKey.FK_TOC_ENTRY: {
+                // FIXME: see note with SUPPORTED above
                 return FieldArrayAdapter.createEntityDropDown(
                         context, Book.ContentType.getAll());
             }
