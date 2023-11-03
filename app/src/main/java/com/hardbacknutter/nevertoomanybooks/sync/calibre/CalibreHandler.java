@@ -52,8 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
-import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 
@@ -226,25 +224,10 @@ public class CalibreHandler {
     }
 
     /**
-     * Called from a list screen. i.e. the data comes from a row {@link DataHolder}.
+     * Handle the menu item selected.
      *
      * @param context  Current context
-     * @param menuItem to check
-     * @param rowData  data to use
-     *
-     * @return {@code true} if the event was handled, {@code false} otherwise.
-     */
-    public boolean onMenuItemSelected(@NonNull final Context context,
-                                      @NonNull final MenuItem menuItem,
-                                      @NonNull final DataHolder rowData) {
-        return onMenuItemSelected(context, menuItem, DataHolderUtils.requireBook(rowData));
-    }
-
-    /**
-     * Called from a details screen. i.e. the data comes from a {@link Book}.
-     *
-     * @param context  Current context
-     * @param menuItem to check
+     * @param menuItem the user selected
      * @param book     data to use
      *
      * @return {@code true} if the event was handled, {@code false} otherwise.

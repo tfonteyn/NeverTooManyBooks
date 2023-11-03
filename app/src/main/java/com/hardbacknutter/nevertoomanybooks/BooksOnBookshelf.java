@@ -1312,9 +1312,11 @@ public class BooksOnBookshelf
         }
 
         // other handlers.
-        if (calibreHandler != null
-            && calibreHandler.onMenuItemSelected(this, menuItem, rowData)) {
-            return true;
+        if (calibreHandler != null) {
+            final Book book = Book.from(rowData.getLong(DBKey.FK_BOOK));
+            if (calibreHandler.onMenuItemSelected(this, menuItem, book)) {
+                return true;
+            }
         }
 
         return vm.getMenuHandlers()
