@@ -275,8 +275,6 @@ public class BooksOnBookshelfViewModel
         if (booklist != null) {
             booklist.close();
         }
-
-        super.onCleared();
     }
 
     /**
