@@ -161,7 +161,7 @@ public class BooksOnBookshelfViewModel
 
     private final MutableLiveData<int[]> onPositionsUpdated = new MutableLiveData<>();
 
-    private final MutableLiveData<Pair<Integer, Integer>> onSelectAdapterPosition =
+    private final MutableLiveData<Pair<Integer, Integer>> highlightSelection =
             new MutableLiveData<>();
 
     /** Holder for all search criteria. See {@link SearchCriteria} for more info. */
@@ -258,11 +258,11 @@ public class BooksOnBookshelfViewModel
      * Observable: select (highlight) the current row.
      *
      * @return first: previous adapter position which should be un-selected
-     *         second: current adapter position to select
+     *         second: current adapter position to select; can be {@code RecyclerView.NO_POSITION}
      */
     @NonNull
-    LiveData<Pair<Integer, Integer>> onSelectAdapterPosition() {
-        return onSelectAdapterPosition;
+    LiveData<Pair<Integer, Integer>> onHighlightSelection() {
+        return highlightSelection;
     }
 
     @NonNull
@@ -634,7 +634,7 @@ public class BooksOnBookshelfViewModel
     /**
      * Set the book id and its adapter position to which we like to return to after a rebuild.
      * <p>
-     * Pass {@code 0} to disable.
+     * Pass {@code 0} and {@code RecyclerView.NO_POSITION} to disable.
      * <p>
      * Dev. note: reminder: book can appear on multiple positions.
      *
@@ -645,7 +645,9 @@ public class BooksOnBookshelfViewModel
                              final int adapterPosition) {
         selectedBookId = bookId;
 
-        onSelectAdapterPosition.setValue(new Pair<>(selectedAdapterPosition, adapterPosition));
+        // Call with previous selectedAdapterPosition and new position
+        highlightSelection.setValue(new Pair<>(selectedAdapterPosition, adapterPosition));
+        // and replace previous with new.
         selectedAdapterPosition = adapterPosition;
     }
 

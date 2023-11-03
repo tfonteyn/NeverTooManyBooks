@@ -501,8 +501,8 @@ public class BooksOnBookshelf
         vm.onFailure().observe(this, this::onBuildFailed);
         vm.onFinished().observe(this, this::onBuildFinished);
 
-        vm.onSelectAdapterPosition().observe(this, p ->
-                positioningHelper.onSelectAdapterPosition(p.first, p.second));
+        vm.onHighlightSelection().observe(this, p ->
+                positioningHelper.onHighlightSelection(p.first, p.second));
 
         vm.getOnPositionsUpdated().observe(this, positions -> {
             // Protect against activity restarts where this can get called BEFORE
@@ -2056,10 +2056,10 @@ public class BooksOnBookshelf
          * LiveData callback to select (highlight) the current row.
          *
          * @param previousAdapterPosition to un-select
-         * @param currentAdapterPosition  to select
+         * @param currentAdapterPosition  to select, can be {@code RecyclerView.NO_POSITION}
          */
-        void onSelectAdapterPosition(final int previousAdapterPosition,
-                                     final int currentAdapterPosition) {
+        void onHighlightSelection(final int previousAdapterPosition,
+                                  final int currentAdapterPosition) {
             final LinearLayoutManager layoutManager =
                     (LinearLayoutManager) recyclerView.getLayoutManager();
 
@@ -2071,10 +2071,13 @@ public class BooksOnBookshelf
                     view.setSelected(false);
                 }
             }
-            //noinspection DataFlowIssue
-            view = layoutManager.findViewByPosition(currentAdapterPosition + headerItemCount);
-            if (view != null) {
-                view.setSelected(true);
+
+            if (currentAdapterPosition != RecyclerView.NO_POSITION) {
+                //noinspection DataFlowIssue
+                view = layoutManager.findViewByPosition(currentAdapterPosition + headerItemCount);
+                if (view != null) {
+                    view.setSelected(true);
+                }
             }
         }
 
