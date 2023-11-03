@@ -27,6 +27,8 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Optional;
+
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.EditBookshelvesFragment;
@@ -36,7 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 public class EditBookshelvesContract
-        extends ActivityResultContract<Long, Long> {
+        extends ActivityResultContract<Long, Optional<Long>> {
 
     private static final String TAG = "EditBookshelvesContract";
 
@@ -63,18 +65,18 @@ public class EditBookshelvesContract
 
     @NonNull
     @Override
-    public Long parseResult(final int resultCode,
-                            @Nullable final Intent intent) {
+    public Optional<Long> parseResult(final int resultCode,
+                                      @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             LoggerFactory.getLogger()
                          .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
-            return 0L;
+            return Optional.empty();
         }
 
         // the last edited/inserted shelf
-        return intent.getLongExtra(DBKey.FK_BOOKSHELF, Bookshelf.DEFAULT);
+        return Optional.of(intent.getLongExtra(DBKey.FK_BOOKSHELF, Bookshelf.DEFAULT));
     }
 }

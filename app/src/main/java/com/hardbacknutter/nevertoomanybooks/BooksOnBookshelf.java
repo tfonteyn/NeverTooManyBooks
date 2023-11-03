@@ -273,9 +273,9 @@ public class BooksOnBookshelf
 
     /** Manage the book shelves. */
     private final ActivityResultLauncher<Long> manageBookshelvesLauncher =
-            registerForActivityResult(new EditBookshelvesContract(),
-                                      bookshelfId -> vm.onManageBookshelvesFinished(this,
-                                                                                    bookshelfId));
+            registerForActivityResult(new EditBookshelvesContract(), o -> o.ifPresent(
+                    bookshelfId -> vm.onManageBookshelvesFinished(this, bookshelfId)));
+
     /**
      * Accept the result from the dialog.
      */
