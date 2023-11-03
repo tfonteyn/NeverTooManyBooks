@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Debug;
 
 import androidx.annotation.Dimension;
 import androidx.annotation.IntRange;
@@ -36,6 +37,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -54,10 +56,12 @@ import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.booklist.adapter.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -66,6 +70,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.MenuHandlerFactory;
@@ -159,10 +164,13 @@ public class BooksOnBookshelfViewModel
 
     private final BoBTask boBTask = new BoBTask();
 
-    private final MutableLiveData<int[]> onPositionsUpdated = new MutableLiveData<>();
+    private final MutableLiveData<int[]> positionsUpdated = new MutableLiveData<>();
 
     private final MutableLiveData<Pair<Integer, Integer>> highlightSelection =
             new MutableLiveData<>();
+
+    private final MutableLiveData<Boolean> triggerRebuildList = new MutableLiveData<>();
+    private final MutableLiveData<List<BooklistNode>> triggerDisplayList = new MutableLiveData<>();
 
     /** Holder for all search criteria. See {@link SearchCriteria} for more info. */
     @Nullable
@@ -255,6 +263,21 @@ public class BooksOnBookshelfViewModel
     }
 
     /**
+     * Trigger a rebuild of the book list.
+     *
+     * @return flag, whether the LayoutManager needs to be recreated or not.
+     */
+    @NonNull
+    MutableLiveData<Boolean> onTriggerRebuildList() {
+        return triggerRebuildList;
+    }
+
+    @NonNull
+    MutableLiveData<List<BooklistNode>> onTriggerDisplayList() {
+        return triggerDisplayList;
+    }
+
+    /**
      * Observable: select (highlight) the current row.
      *
      * @return first: previous adapter position which should be un-selected
@@ -266,8 +289,8 @@ public class BooksOnBookshelfViewModel
     }
 
     @NonNull
-    LiveData<int[]> getOnPositionsUpdated() {
-        return onPositionsUpdated;
+    LiveData<int[]> onPositionsUpdated() {
+        return positionsUpdated;
     }
 
     @Override
@@ -434,8 +457,8 @@ public class BooksOnBookshelfViewModel
      * @param context     Current context
      * @param bookshelfId of desired {@link Bookshelf}
      */
-    void setBookshelf(@NonNull final Context context,
-                      final long bookshelfId) {
+    void selectBookshelf(@NonNull final Context context,
+                         final long bookshelfId) {
         final long previousBookshelfId = bookshelf == null ? 0 : bookshelf.getId();
 
         bookshelf = ServiceLocator.getInstance().getBookshelfDao()
@@ -868,6 +891,8 @@ public class BooksOnBookshelfViewModel
 
     /**
      * Update the 'complete' status of the given Author.
+     * <p>
+     * Triggers a {@link BooklistAdapter#requery(int[])} for the changed positions.
      *
      * @param author   Author to update
      * @param complete new status
@@ -881,12 +906,14 @@ public class BooksOnBookshelfViewModel
                             .stream()
                             .mapToInt(BooklistNode::getAdapterPosition)
                             .toArray();
-            onPositionsUpdated.setValue(positions);
+            positionsUpdated.setValue(positions);
         }
     }
 
     /**
      * Update the 'complete' status of the given Series.
+     * <p>
+     * Triggers a {@link BooklistAdapter#requery(int[])} for the changed positions.
      *
      * @param series   Series to update
      * @param complete new status
@@ -900,7 +927,7 @@ public class BooksOnBookshelfViewModel
                             .stream()
                             .mapToInt(BooklistNode::getAdapterPosition)
                             .toArray();
-            onPositionsUpdated.setValue(positions);
+            positionsUpdated.setValue(positions);
         }
     }
 
@@ -914,25 +941,36 @@ public class BooksOnBookshelfViewModel
                      final boolean read) {
         final Book book = Book.from(id);
         if (bookDao.setRead(book, read)) {
-            updateBooklistOnBookRead(book.getId(), book.getBoolean(DBKey.READ__BOOL));
+            onBookReadStatusChanged(book);
         }
     }
 
     /**
-     * Update the <strong>book-list</strong> 'read' status of the given book.
+     * Should be called when the read-status of a book was changed.
      *
-     * @param id   Book to update
-     * @param read new status
+     * @param book which was changed
+     *
+     * @return {@code true} if a full rebuild of the list was triggered
      */
-    void updateBooklistOnBookRead(@IntRange(from = 1) final long id,
-                                  final boolean read) {
-        Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
-        final int[] positions =
-                booklist.updateBookRead(id, read)
-                        .stream()
-                        .mapToInt(BooklistNode::getAdapterPosition)
-                        .toArray();
-        onPositionsUpdated.setValue(positions);
+    private boolean onBookReadStatusChanged(@NonNull final Book book) {
+        if (getStyle().hasGroup(BooklistGroup.READ_STATUS)) {
+            // The book might move to another group - no choice, we must rebuild
+            triggerRebuildList.setValue(false);
+            return true;
+
+        } else {
+            // The change will not affect the group the book is in,
+            // update the <strong>book-list</strong> 'read' status of the given book.
+            final long id = book.getId();
+            final boolean read = book.getBoolean(DBKey.READ__BOOL);
+            Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
+            final int[] positions = booklist.updateBookRead(id, read)
+                                            .stream()
+                                            .mapToInt(BooklistNode::getAdapterPosition)
+                                            .toArray();
+            positionsUpdated.setValue(positions);
+            return false;
+        }
     }
 
     /**
@@ -941,92 +979,202 @@ public class BooksOnBookshelfViewModel
      * @param id     Book to update
      * @param loanee new loanee or {@code null} for a returned book
      */
-    void lendBook(@IntRange(from = 1) final long id,
-                  @SuppressWarnings("SameParameterValue") @Nullable final String loanee) {
+    void setBookLoanee(@IntRange(from = 1) final long id,
+                       @SuppressWarnings("SameParameterValue") @Nullable final String loanee) {
         if (ServiceLocator.getInstance().getLoaneeDao().setLoanee(id, loanee)) {
-            updateBooklistOnBookLend(id, loanee);
+            onBookLoaneeChanged(id, loanee);
         }
     }
 
     /**
-     * Update the <strong>book-list</strong> 'loanee' status of the given book.
+     * Should be called when a loanee of a book was changed.
      *
-     * @param bookId to update
+     * @param id     Book to update
      * @param loanee new loanee or {@code null} for a returned book
+     *
+     * @return {@code true} if a full rebuild of the list was triggered
      */
-    void updateBooklistOnBookLend(@IntRange(from = 1) final long bookId,
-                                  @Nullable final String loanee) {
-        Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
-        final int[] positions = booklist.updateBookLoanee(bookId, loanee)
-                                        .stream()
-                                        .mapToInt(BooklistNode::getAdapterPosition)
-                                        .toArray();
-        onPositionsUpdated.setValue(positions);
+    boolean onBookLoaneeChanged(@IntRange(from = 1) final long id,
+                                @SuppressWarnings("SameParameterValue") @Nullable final String loanee) {
+        if (getStyle().hasGroup(BooklistGroup.LENDING)) {
+            // The book might move to another group - no choice, we must rebuild
+            triggerRebuildList.setValue(false);
+            return true;
+        } else {
+            // The change will not affect the group the book is in,
+            // update the <strong>book-list</strong> 'loanee' of the given book.
+            Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
+            final int[] positions = booklist.updateBookLoanee(id, loanee)
+                                            .stream()
+                                            .mapToInt(BooklistNode::getAdapterPosition)
+                                            .toArray();
+            positionsUpdated.setValue(positions);
+            return false;
+        }
     }
 
     /**
-     * Update the <strong>book-list</strong> 'cover' of the given book.
+     * Should be called when a cover of a book was changed.
      *
-     * @param bookId to update
+     * @param bookId which was changed
+     *
+     * @return {@code true} if a full rebuild of the list was triggered
      */
-    void updateBooklistOnBookCover(@IntRange(from = 1) final long bookId) {
+    private boolean onBookCoverChanged(@IntRange(from = 1) final long bookId) {
+        // The change will not affect the group the book is in.
         final int[] positions = getVisibleBookNodes(bookId)
                 .stream()
                 .mapToInt(BooklistNode::getAdapterPosition)
                 .toArray();
-        onPositionsUpdated.setValue(positions);
+        positionsUpdated.setValue(positions);
+        return false;
     }
 
     /**
-     * Delete the given Series.
+     * Receives notifications that an inline-string column was updated.
+     *
+     * @param dbKey    the request-key, a {@link DBKey}, from the update event
+     * @param original the original string
+     * @param modified the updated string
+     */
+    void onInlineStringUpdate(@NonNull final String dbKey,
+                              @NonNull final String original,
+                              @NonNull final String modified) {
+        if (getStyle().isShowField(FieldVisibility.Screen.List, dbKey)) {
+            // The entity is shown on the book level, do a full rebuild
+            triggerRebuildList.setValue(false);
+        } else {
+            // Update only the levels, and trigger an adapter update
+            // ENHANCE: update the modified row without a rebuild.
+            triggerRebuildList.setValue(false);
+        }
+    }
+
+    /**
+     * Receives notifications that an {@link Entity} (but NOT a Book) potentially was updated.
+     *
+     * @param dbKey  the request-key, a {@link DBKey}, from the update event
+     * @param entity the entity that potentially was updated
+     */
+    void onEntityUpdate(@NonNull final String dbKey,
+                        @NonNull final Entity entity) {
+        if (getStyle().isShowField(FieldVisibility.Screen.List, dbKey)) {
+            // The entity is shown on the book level, do a full rebuild
+            triggerRebuildList.setValue(false);
+        } else {
+            // Update only the levels, and trigger an adapter update
+            // ENHANCE: update the modified row without a rebuild.
+            triggerRebuildList.setValue(false);
+        }
+    }
+
+    /**
+     * Receives notifications that a {@link Book} potentially was updated.
+     * <p>
+     * For a limited set of keys, we directly update the list table which is very fast.
+     * <p>
+     * Other keys, or full books, will always trigger a list rebuild.
+     *
+     * @param book the book
+     * @param keys the item(s) that potentially were changed,
+     *             or {@code null} to indicate ALL data was potentially changed.
+     */
+    void onBookUpdated(@Nullable final Book book,
+                       @Nullable final String... keys) {
+        // Reminder: the actual Book table and/or relations are ALREADY UPDATED.
+        // The only thing we are updating here is the temporary BookList table
+        // as itself and/or the displayed data
+
+        if (keys != null && Arrays.asList(keys).contains(DBKey.READ__BOOL)) {
+            Objects.requireNonNull(book);
+            if (onBookReadStatusChanged(book)) {
+                // Full rebuild was triggered
+                return;
+            }
+        }
+
+        if (keys != null && Arrays.asList(keys).contains(DBKey.LOANEE_NAME)) {
+            Objects.requireNonNull(book);
+            if (onBookLoaneeChanged(book.getId(), book.getLoanee().orElse(null))) {
+                // Full rebuild was triggered
+                return;
+            }
+        }
+
+        if (keys != null && Arrays.asList(keys).contains(DBKey.COVER[0])) {
+            Objects.requireNonNull(book);
+            if (onBookCoverChanged(book.getId())) {
+                // Full rebuild was triggered
+                return;
+            }
+        }
+
+        // ENHANCE: update the modified row without a rebuild for more keys
+        triggerRebuildList.setValue(false);
+    }
+
+
+    /**
+     * Delete the given {@link Series}.
      *
      * @param context Current context
      * @param series  to delete
-     *
-     * @return {@code true} on a successful delete
      */
-    boolean delete(@NonNull final Context context,
-                   @NonNull final Series series) {
-        return ServiceLocator.getInstance().getSeriesDao().delete(context, series);
+    void delete(@NonNull final Context context,
+                @NonNull final Series series) {
+        if (ServiceLocator.getInstance().getSeriesDao().delete(context, series)) {
+            triggerRebuildList.setValue(false);
+        }
     }
 
     /**
-     * Delete the given Publisher.
+     * Delete the given {@link Publisher}.
      *
      * @param context   Current context
      * @param publisher to delete
-     *
-     * @return {@code true} on a successful delete
      */
-    boolean delete(@NonNull final Context context,
-                   @NonNull final Publisher publisher) {
-        return ServiceLocator.getInstance().getPublisherDao().delete(context, publisher);
+    void delete(@NonNull final Context context,
+                @NonNull final Publisher publisher) {
+        if (ServiceLocator.getInstance().getPublisherDao().delete(context, publisher)) {
+            triggerRebuildList.setValue(false);
+        }
     }
 
     /**
      * Delete the given {@link Bookshelf}.
      *
      * @param bookshelf to delete
-     *
-     * @return {@code true} on a successful delete
      */
-    boolean delete(@NonNull final Bookshelf bookshelf) {
-        return ServiceLocator.getInstance().getBookshelfDao().delete(bookshelf);
+    void delete(@NonNull final Bookshelf bookshelf) {
+        if (ServiceLocator.getInstance().getBookshelfDao().delete(bookshelf)) {
+            triggerRebuildList.setValue(false);
+        }
     }
 
     /**
      * Delete the given Book.
      *
      * @param bookId to delete
-     *
-     * @return {@code true} on a successful delete
      */
-    boolean deleteBook(@IntRange(from = 1) final long bookId) {
-        final boolean success = bookDao.delete(bookId);
-        if (success) {
+    void deleteBook(@IntRange(from = 1) final long bookId) {
+        if (bookDao.delete(bookId)) {
             onBookDeleted(bookId);
         }
-        return success;
+    }
+
+    /**
+     * Should be called when a a book was deleted.
+     *
+     * @param bookId which was deleted
+     */
+    void onBookDeleted(final long bookId) {
+        if (bookId == 0 || bookId == selectedBookId) {
+            resetSelectedBook();
+        }
+        // We don't try to remove the row without a rebuild as this could quickly become complex...
+        // e.g. if there is(was) only a single book on the level, we'd have to recursively
+        // cleanup each level above the book
+        triggerRebuildList.setValue(false);
     }
 
     /**
@@ -1089,7 +1237,7 @@ public class BooksOnBookshelfViewModel
     void onManageBookshelvesFinished(@NonNull final Context context,
                                      final long bookshelfId) {
         if (bookshelfId != 0 && bookshelfId != getBookshelf().getId()) {
-            setBookshelf(context, bookshelfId);
+            selectBookshelf(context, bookshelfId);
             forceRebuildInOnResume = true;
         }
     }
@@ -1132,7 +1280,16 @@ public class BooksOnBookshelfViewModel
         return boBTask.isActive();
     }
 
+    /**
+     * Called when the list build succeeded.
+     *
+     * @param outcome from the task; contains the (optional) target rows.
+     */
     void onBuildFinished(@NonNull final BoBTask.Outcome outcome) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
+            Debug.stopMethodTracing();
+        }
+
         // the new build is completely done. We can safely discard the previous one.
         if (booklist != null) {
             booklist.close();
@@ -1145,20 +1302,55 @@ public class BooksOnBookshelfViewModel
 
         // preserve the new state by default
         rebuildMode = RebuildBooklist.FromSaved;
+
+        triggerDisplayList.setValue(outcome.getTargetNodes());
     }
 
-    void onBuildCancelled() {
+    /**
+     * Called when the list build was cancelled.
+     *
+     * @param context Current context
+     */
+    void onBuildCancelled(@NonNull final Context context) {
         resetSelectedBook();
-    }
 
-    void onBuildFailed() {
-        resetSelectedBook();
-    }
-
-    void onBookDeleted(final long bookId) {
-        if (bookId == 0 || bookId == selectedBookId) {
-            resetSelectedBook();
+        if (isListLoaded()) {
+            triggerDisplayList.setValue(null);
+        } else {
+            recoverAfterFailedBuild(context);
         }
+    }
+
+    /**
+     * Called when the list build failed.
+     *
+     * @param context Current context
+     * @param e       Exception from the task
+     */
+    void onBuildFailed(@NonNull final Context context,
+                       @NonNull final Throwable e) {
+        LoggerFactory.getLogger().e(TAG, e);
+
+        resetSelectedBook();
+
+        if (isListLoaded()) {
+            triggerDisplayList.setValue(null);
+        } else {
+            recoverAfterFailedBuild(context);
+        }
+    }
+
+    private void recoverAfterFailedBuild(@NonNull final Context context) {
+        // Something is REALLY BAD
+        // This is usually (BUT NOT ALWAYS) due to the developer making an oopsie
+        // with the Styles. i.e. the style used to build is very likely corrupt.
+        // Another reason can be during development when the database structure
+        // was changed...
+        final Style style = getStyle();
+        // so we reset the style to recover.. and restarting the app will work.
+        onStyleChanged(context, BuiltinStyle.DEFAULT_UUID);
+        // but we STILL FORCE A CRASH, SO WE CAN COLLECT DEBUG INFORMATION!
+        throw new IllegalStateException("Style=" + style);
     }
 
     @NonNull

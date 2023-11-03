@@ -62,10 +62,8 @@ import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.fastscroller.FastScroller;
@@ -90,12 +88,10 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBookli
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsFragment;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookExternalIdFragment;
-import com.hardbacknutter.nevertoomanybooks.booklist.BoBTask;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.adapter.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.HeaderAdapter;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
@@ -122,7 +118,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
-import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -130,7 +125,6 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibrePreferencesFragment;
-import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
@@ -208,6 +202,13 @@ public class BooksOnBookshelf
     /** The Activity ViewModel. */
     private BooksOnBookshelfViewModel vm;
 
+    /**
+     * Edit the app settings.
+     */
+    private final ActivityResultLauncher<String> editSettingsLauncher =
+            registerForActivityResult(new SettingsContract(), o -> o.ifPresent(
+                    this::onSettingsChanged));
+
     /** Do an import. */
     private final ActivityResultLauncher<Void> importLauncher =
             registerForActivityResult(new ImportContract(), o -> o.ifPresent(
@@ -222,10 +223,6 @@ public class BooksOnBookshelf
     private final ActivityResultLauncher<EditStyleContract.Input> editStyleLauncher =
             registerForActivityResult(new EditStyleContract(), o -> o.ifPresent(
                     data -> vm.onEditStyleFinished(this, data)));
-
-    private final ActivityResultLauncher<String> editSettingsLauncher =
-            registerForActivityResult(new SettingsContract(), o -> o.ifPresent(
-                    this::onSettingsChanged));
 
     /**
      * Display a Book. We still call
@@ -282,8 +279,39 @@ public class BooksOnBookshelf
     private final EditLenderDialogFragment.Launcher editLenderLauncher =
             new EditLenderDialogFragment.Launcher(
                     DBKey.LOANEE_NAME,
-                    (bookId, loanee) -> vm.updateBooklistOnBookLend(bookId, loanee));
-
+                    (bookId, loanee) -> vm.onBookLoaneeChanged(bookId, loanee));
+    private final EditStringLauncher editColorLauncher = new EditStringLauncher(
+            DBKey.COLOR, EditColorDialogFragment::new, (dbKey, original, modified)
+            -> vm.onInlineStringUpdate(dbKey, original, modified));
+    private final EditStringLauncher editFormatLauncher = new EditStringLauncher(
+            DBKey.FORMAT, EditFormatDialogFragment::new, (dbKey, original, modified)
+            -> vm.onInlineStringUpdate(dbKey, original, modified));
+    private final EditStringLauncher editGenreLauncher = new EditStringLauncher(
+            DBKey.GENRE, EditGenreDialogFragment::new, (dbKey, original, modified)
+            -> vm.onInlineStringUpdate(dbKey, original, modified));
+    private final EditStringLauncher editLanguageLauncher = new EditStringLauncher(
+            DBKey.LANGUAGE, EditLanguageDialogFragment::new, (dbKey, original, modified)
+            -> vm.onInlineStringUpdate(dbKey, original, modified));
+    private final EditStringLauncher editLocationLauncher = new EditStringLauncher(
+            DBKey.LOCATION, EditLocationDialogFragment::new, (dbKey, original, modified)
+            -> vm.onInlineStringUpdate(dbKey, original, modified));
+    private final EditInPlaceParcelableLauncher<Bookshelf> editBookshelfLauncher =
+            new EditInPlaceParcelableLauncher<>(
+                    DBKey.FK_BOOKSHELF, EditBookshelfDialogFragment::new, (dbKey, entity)
+                    -> vm.onEntityUpdate(dbKey, entity));
+    private final EditInPlaceParcelableLauncher<Author> editAuthorLauncher =
+            new EditInPlaceParcelableLauncher<>(
+                    DBKey.FK_AUTHOR, EditAuthorDialogFragment::new, (dbKey, entity)
+                    -> vm.onEntityUpdate(dbKey, entity));
+    private final EditInPlaceParcelableLauncher<Series> editSeriesLauncher =
+            new EditInPlaceParcelableLauncher<>(
+                    DBKey.FK_SERIES, EditSeriesDialogFragment::new, (dbKey, entity)
+                    -> vm.onEntityUpdate(dbKey, entity));
+    private final EditInPlaceParcelableLauncher<Publisher> editPublisherLauncher =
+            new EditInPlaceParcelableLauncher<>(
+                    DBKey.FK_PUBLISHER,
+                    EditPublisherDialogFragment::new, (dbKey, entity)
+                            -> vm.onEntityUpdate(dbKey, entity));
     /** Encapsulates the FAB button/menu. */
     private FabMenu fabMenu;
 
@@ -300,46 +328,6 @@ public class BooksOnBookshelf
 
     /** Delegate which will handle all positioning/scrolling. */
     private PositioningHelper positioningHelper;
-
-    private final EditInPlaceParcelableLauncher<Bookshelf> editBookshelfLauncher =
-            new EditInPlaceParcelableLauncher<>(DBKey.FK_BOOKSHELF,
-                                                EditBookshelfDialogFragment::new,
-                                                this::onEntityUpdate);
-
-    private final EditInPlaceParcelableLauncher<Author> editAuthorLauncher =
-            new EditInPlaceParcelableLauncher<>(DBKey.FK_AUTHOR,
-                                                EditAuthorDialogFragment::new,
-                                                this::onEntityUpdate);
-
-    private final EditInPlaceParcelableLauncher<Series> editSeriesLauncher =
-            new EditInPlaceParcelableLauncher<>(DBKey.FK_SERIES,
-                                                EditSeriesDialogFragment::new,
-                                                this::onEntityUpdate);
-
-    private final EditInPlaceParcelableLauncher<Publisher> editPublisherLauncher =
-            new EditInPlaceParcelableLauncher<>(DBKey.FK_PUBLISHER,
-                                                EditPublisherDialogFragment::new,
-                                                this::onEntityUpdate);
-
-    private final EditStringLauncher editColorLauncher =
-            new EditStringLauncher(DBKey.COLOR, EditColorDialogFragment::new,
-                                   this::onInlineStringUpdate);
-
-    private final EditStringLauncher editFormatLauncher =
-            new EditStringLauncher(DBKey.FORMAT, EditFormatDialogFragment::new,
-                                   this::onInlineStringUpdate);
-
-    private final EditStringLauncher editGenreLauncher =
-            new EditStringLauncher(DBKey.GENRE, EditGenreDialogFragment::new,
-                                   this::onInlineStringUpdate);
-
-    private final EditStringLauncher editLanguageLauncher =
-            new EditStringLauncher(DBKey.LANGUAGE, EditLanguageDialogFragment::new,
-                                   this::onInlineStringUpdate);
-
-    private final EditStringLauncher editLocationLauncher =
-            new EditStringLauncher(DBKey.LOCATION, EditLocationDialogFragment::new,
-                                   this::onInlineStringUpdate);
     /**
      * The adapter used to fill the Bookshelf selector.
      */
@@ -497,20 +485,41 @@ public class BooksOnBookshelf
         vm = new ViewModelProvider(this).get(BooksOnBookshelfViewModel.class);
         vm.init(this, getIntent().getExtras());
 
-        vm.onCancelled().observe(this, this::onBuildCancelled);
-        vm.onFailure().observe(this, this::onBuildFailed);
-        vm.onFinished().observe(this, this::onBuildFinished);
+        vm.onCancelled().observe(this, message -> {
+            vb.progressCircle.hide();
+            message.process(ignored -> vm.onBuildCancelled(this));
+        });
+        vm.onFailure().observe(this, message -> {
+            vb.progressCircle.hide();
+            message.process(e -> vm.onBuildFailed(this, e));
+        });
+        vm.onFinished().observe(this, message -> {
+            vb.progressCircle.hide();
+            message.process(outcome -> vm.onBuildFinished(outcome));
+        });
 
         vm.onHighlightSelection().observe(this, p ->
-                positioningHelper.onHighlightSelection(p.first, p.second));
+                positioningHelper.highlightSelection(p.first, p.second));
 
-        vm.getOnPositionsUpdated().observe(this, positions -> {
+        vm.onPositionsUpdated().observe(this, positions -> {
             // Protect against activity restarts where this can get called BEFORE
             // the adapter has been recreated.
             if (adapter != null) {
                 adapter.requery(positions);
             }
         });
+
+        vm.onTriggerRebuildList().observe(this, recreateLayoutManager -> {
+            if (!vm.isBuilding()) {
+                saveListPosition();
+                if (recreateLayoutManager) {
+                    createLayoutManager();
+                }
+                buildBookList();
+            }
+        });
+
+        vm.onTriggerDisplayList().observe(this, this::displayList);
     }
 
     /**
@@ -910,6 +919,17 @@ public class BooksOnBookshelf
         displayList(vm.getVisibleBookNodes(bookId));
     }
 
+    @Override
+    public void onBookUpdated(@Nullable final Book book,
+                              @Nullable final String... keys) {
+        vm.onBookUpdated(book, keys);
+    }
+
+    @Override
+    public void onBookDeleted(final long bookId) {
+        vm.onBookDeleted(bookId);
+    }
+
     /**
      * User clicked a row.
      * <ul>
@@ -1227,7 +1247,7 @@ public class BooksOnBookshelf
         final int rowGroupId = rowData.getInt(DBKey.BL_NODE_GROUP);
         switch (rowGroupId) {
             case BooklistGroup.BOOK: {
-                if (onRowMenuForBook(rowData, menuItemId)) {
+                if (onRowMenuForBook(adapterPosition, rowData, menuItemId)) {
                     return true;
                 }
                 break;
@@ -1327,23 +1347,27 @@ public class BooksOnBookshelf
     /**
      * Handle the row/context menu for a {@link Book}.
      *
-     * @param rowData    the row data
-     * @param menuItemId selected menu item
+     * @param adapterPosition the row where the menu item was selected
+     * @param rowData         the row data
+     * @param menuItemId      selected menu item
      *
      * @return {@code true} if handled.
      */
-    private boolean onRowMenuForBook(@NonNull final DataHolder rowData,
+    private boolean onRowMenuForBook(final int adapterPosition,
+                                     @NonNull final DataHolder rowData,
                                      @IdRes final int menuItemId) {
+
+        final long bookId = rowData.getLong(DBKey.FK_BOOK);
+        vm.setSelectedPosition(bookId, adapterPosition);
+
         if (menuItemId == R.id.MENU_BOOK_SET_READ
             || menuItemId == R.id.MENU_BOOK_SET_UNREAD) {
-            final long bookId = rowData.getLong(DBKey.FK_BOOK);
             // toggle the read status
             final boolean status = !rowData.getBoolean(DBKey.READ__BOOL);
             vm.setBookRead(bookId, status);
             return true;
 
         } else if (menuItemId == R.id.MENU_BOOK_EDIT) {
-            final long bookId = rowData.getLong(DBKey.FK_BOOK);
             editByIdLauncher.launch(bookId);
             return true;
 
@@ -1353,15 +1377,9 @@ public class BooksOnBookshelf
             return true;
 
         } else if (menuItemId == R.id.MENU_BOOK_DELETE) {
-            final long bookId = rowData.getLong(DBKey.FK_BOOK);
             final String title = rowData.getString(DBKey.TITLE);
             final List<Author> authors = vm.getAuthorsByBookId(bookId);
-            StandardDialogs.deleteBook(this, title, authors, () -> {
-                if (vm.deleteBook(bookId)) {
-                    saveListPosition();
-                    buildBookList();
-                }
-            });
+            StandardDialogs.deleteBook(this, title, authors, () -> vm.deleteBook(bookId));
             return true;
 
         } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET_SINGLE_BOOK) {
@@ -1370,13 +1388,11 @@ public class BooksOnBookshelf
             return true;
 
         } else if (menuItemId == R.id.MENU_BOOK_LOAN_ADD) {
-            final long bookId = rowData.getLong(DBKey.FK_BOOK);
             editLenderLauncher.launch(bookId, rowData.getString(DBKey.TITLE));
             return true;
 
         } else if (menuItemId == R.id.MENU_BOOK_LOAN_DELETE) {
-            final long bookId = rowData.getLong(DBKey.FK_BOOK);
-            vm.lendBook(bookId, null);
+            vm.setBookLoanee(bookId, null);
             return true;
 
         } else if (menuItemId == R.id.MENU_SHARE) {
@@ -1454,12 +1470,7 @@ public class BooksOnBookshelf
 
         } else if (menuItemId == R.id.MENU_SERIES_DELETE) {
             final Series series = DataHolderUtils.requireSeries(rowData);
-            StandardDialogs.deleteSeries(this, series, () -> {
-                if (vm.delete(this, series)) {
-                    saveListPosition();
-                    buildBookList();
-                }
-            });
+            StandardDialogs.deleteSeries(this, series, () -> vm.delete(this, series));
             return true;
 
         } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET) {
@@ -1489,12 +1500,7 @@ public class BooksOnBookshelf
 
         } else if (menuItemId == R.id.MENU_PUBLISHER_DELETE) {
             final Publisher publisher = DataHolderUtils.requirePublisher(rowData);
-            StandardDialogs.deletePublisher(this, publisher, () -> {
-                if (vm.delete(this, publisher)) {
-                    saveListPosition();
-                    buildBookList();
-                }
-            });
+            StandardDialogs.deletePublisher(this, publisher, () -> vm.delete(this, publisher));
             return true;
 
         } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET) {
@@ -1522,12 +1528,7 @@ public class BooksOnBookshelf
 
         } else if (menuItemId == R.id.MENU_BOOKSHELF_DELETE) {
             final Bookshelf bookshelf = DataHolderUtils.requireBookshelf(rowData);
-            StandardDialogs.deleteBookshelf(this, bookshelf, () -> {
-                if (vm.delete(bookshelf)) {
-                    saveListPosition();
-                    buildBookList();
-                }
-            });
+            StandardDialogs.deleteBookshelf(this, bookshelf, () -> vm.delete(bookshelf));
             return true;
 
         } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET) {
@@ -1674,6 +1675,7 @@ public class BooksOnBookshelf
         vm.resetPreferredListRebuildMode(this);
 
         saveListPosition();
+        // New style, so the layout might have changed
         createLayoutManager();
         buildBookList();
     }
@@ -1695,104 +1697,14 @@ public class BooksOnBookshelf
      */
     private void onBookshelfSelected(final long bookshelfId) {
         if (bookshelfId != vm.getBookshelf().getId()) {
-            vm.setBookshelf(this, bookshelfId);
+            vm.selectBookshelf(this, bookshelfId);
 
             saveListPosition();
+            // New style, so the layout might have changed
             createLayoutManager();
             buildBookList();
         }
     }
-
-    /**
-     * Receives notifications that an inline-string column was updated.
-     *
-     * @param requestKey the request-key, a {@link DBKey}, from the update event
-     * @param original   the original string
-     * @param modified   the updated string
-     */
-    private void onInlineStringUpdate(@NonNull final String requestKey,
-                                      @NonNull final String original,
-                                      @NonNull final String modified) {
-//        if (vm.getStyle(this).isShowField(Style.Screen.List, requestKey)) {
-//            // The entity is shown on the book level, do a full rebuild
-//            saveListPosition();
-//            buildBookList();
-//        } else {
-        // Update only the levels, and trigger an adapter update
-        // ENHANCE: update the modified row without a rebuild.
-        saveListPosition();
-        buildBookList();
-//        }
-    }
-
-    /**
-     * Receives notifications that an {@link Entity} (but NOT a Book) potentially was updated.
-     *
-     * @param requestKey the request-key, a {@link DBKey}, from the update event
-     * @param entity     the entity that potentially was updated
-     */
-    private void onEntityUpdate(@NonNull final String requestKey,
-                                @NonNull final Entity entity) {
-//        if (vm.getStyle(this).isShowField(Style.Screen.List, requestKey)) {
-//            // The entity is shown on the book level, do a full rebuild
-//            saveListPosition();
-//            buildBookList();
-//        } else {
-        // Update only the levels, and trigger an adapter update
-        // ENHANCE: update the modified row without a rebuild.
-        saveListPosition();
-        buildBookList();
-//        }
-    }
-
-    /**
-     * Receives notifications that a {@link Book} potentially was updated.
-     * <p>
-     * For a limited set of keys, we directly update the list table which is very fast.
-     * <p>
-     * Other keys, or full books, will always trigger a list rebuild.
-     *
-     * @param book the book
-     * @param keys the item(s) that potentially were changed,
-     *             or {@code null} to indicate ALL data was potentially changed.
-     */
-    @Override
-    public void onBookUpdated(@Nullable final Book book,
-                              @Nullable final String... keys) {
-
-        // Reminder: the actual Book table (and/or relations) are ALREADY UPDATED.
-        // The only thing we are updating here is the temporary BookList table as needed
-        // and/or the displayed data
-
-        if (keys != null && Arrays.asList(keys).contains(DBKey.READ__BOOL)) {
-            Objects.requireNonNull(book);
-            vm.updateBooklistOnBookRead(book.getId(), book.getBoolean(DBKey.READ__BOOL));
-
-        } else if (keys != null && Arrays.asList(keys).contains(DBKey.LOANEE_NAME)) {
-            Objects.requireNonNull(book);
-            vm.updateBooklistOnBookLend(book.getId(), book.getLoanee().orElse(null));
-
-        } else if (keys != null && Arrays.asList(keys).contains(DBKey.COVER[0])) {
-            Objects.requireNonNull(book);
-            vm.updateBooklistOnBookCover(book.getId());
-
-        } else {
-            // ENHANCE: update the modified row without a rebuild.
-            saveListPosition();
-            buildBookList();
-        }
-    }
-
-    @Override
-    public void onBookDeleted(final long bookId) {
-        vm.onBookDeleted(bookId);
-        // We don't try to remove the row without a rebuild as this could quickly become complex...
-        // e.g. if there is(was) only a single book on the level, we'd have to recursively
-        // cleanup each level above the book
-        saveListPosition();
-        buildBookList();
-    }
-
 
     /**
      * Start the list builder.
@@ -1842,75 +1754,6 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Called when the list build was cancelled.
-     *
-     * @param message from the task
-     */
-    private void onBuildCancelled(@NonNull final LiveDataEvent<BoBTask.Outcome> message) {
-        vb.progressCircle.hide();
-
-        message.process(ignored -> {
-            vm.onBuildCancelled();
-
-            if (vm.isListLoaded()) {
-                displayList(null);
-            } else {
-                recoverAfterFailedBuild();
-            }
-        });
-    }
-
-    /**
-     * Called when the list build failed.
-     *
-     * @param message from the task
-     */
-    private void onBuildFailed(@NonNull final LiveDataEvent<Throwable> message) {
-        vb.progressCircle.hide();
-        message.process(e -> {
-            LoggerFactory.getLogger().e(TAG, e);
-
-            vm.onBuildFailed();
-
-            if (vm.isListLoaded()) {
-                displayList(null);
-            } else {
-                recoverAfterFailedBuild();
-            }
-        });
-    }
-
-    private void recoverAfterFailedBuild() {
-        // Something is REALLY BAD
-        // This is usually (BUT NOT ALWAYS) due to the developer making an oopsie
-        // with the Styles. i.e. the style used to build is very likely corrupt.
-        // Another reason can be during development when the database structure
-        // was changed...
-        final Style style = vm.getStyle();
-        // so we reset the style to recover.. and restarting the app will work.
-        vm.onStyleChanged(this, BuiltinStyle.DEFAULT_UUID);
-        // but we STILL FORCE A CRASH, SO WE CAN COLLECT DEBUG INFORMATION!
-        throw new IllegalStateException("Style=" + style);
-    }
-
-    /**
-     * Called when the list build succeeded.
-     *
-     * @param message from the task; contains the (optional) target rows.
-     */
-    private void onBuildFinished(@NonNull final LiveDataEvent<BoBTask.Outcome> message) {
-        vb.progressCircle.hide();
-
-        message.process(outcome -> {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
-                Debug.stopMethodTracing();
-            }
-            vm.onBuildFinished(outcome);
-            displayList(outcome.getTargetNodes());
-        });
-    }
-
-    /**
      * Display the list based on the current cursor, and either scroll to the desired
      * target node(s) or, if none, to the last saved position.
      *
@@ -1950,14 +1793,16 @@ public class BooksOnBookshelf
 
                 positioningHelper.scrollTo(adapterPosition, viewOffset, adapter.getItemCount());
                 // wait for layout cycle and display the book details if possible
-                vb.content.list.post(() -> showBookDetailsIfWeCan(adapterPosition,
-                                                                  vm.getSelectedBookId()));
+                vb.content.list.post(() -> showBookDetailsIfWeCan(vm.getSelectedBookId(),
+                                                                  adapterPosition
+                ));
             } else if (targetNodes.size() == 1) {
                 // There is a single target node; scroll to it
                 final BooklistNode node = positioningHelper.scrollTo(targetNodes);
                 // wait for layout cycle and display the book details if possible
-                vb.content.list.post(() -> showBookDetailsIfWeCan(node.getAdapterPosition(),
-                                                                  node.getBookId()));
+                vb.content.list.post(() -> showBookDetailsIfWeCan(node.getBookId(),
+                                                                  node.getAdapterPosition()
+                ));
             } else {
                 // We'll need to find the "best" node (from all target nodes).
                 // First scroll to the saved position which will serve as the starting point
@@ -1972,8 +1817,9 @@ public class BooksOnBookshelf
                     // Use the target nodes to find the "best" node and scroll to it
                     final BooklistNode node = positioningHelper.scrollTo(targetNodes);
                     // again wait for layout cycle and display the book details if possible
-                    vb.content.list.post(() -> showBookDetailsIfWeCan(node.getAdapterPosition(),
-                                                                      node.getBookId()));
+                    vb.content.list.post(() -> showBookDetailsIfWeCan(node.getBookId(),
+                                                                      node.getAdapterPosition()
+                    ));
                 });
             }
         }
@@ -1982,12 +1828,12 @@ public class BooksOnBookshelf
     /**
      * Display the given book in the embedded details fragment IF POSSIBLE.
      *
-     * @param adapterPosition the booklist adapter position
      * @param bookId          of the book to open
+     * @param adapterPosition the booklist adapter position
      */
     @SuppressLint("Range")
-    private void showBookDetailsIfWeCan(final int adapterPosition,
-                                        @IntRange(from = 0) final long bookId) {
+    private void showBookDetailsIfWeCan(@IntRange(from = 0) final long bookId,
+                                        final int adapterPosition) {
         if (bookId > 0 && hasEmbeddedDetailsFrame()) {
             vm.setSelectedPosition(bookId, adapterPosition);
             openEmbeddedBookDetails(bookId);
@@ -2053,28 +1899,31 @@ public class BooksOnBookshelf
         }
 
         /**
-         * LiveData callback to select (highlight) the current row.
+         * Highlight (select) the current row and unhighlight (unselect) the previous one.
          *
-         * @param previousAdapterPosition to un-select
+         * @param previousAdapterPosition to un-select, can be {@code RecyclerView.NO_POSITION}
          * @param currentAdapterPosition  to select, can be {@code RecyclerView.NO_POSITION}
          */
-        void onHighlightSelection(final int previousAdapterPosition,
-                                  final int currentAdapterPosition) {
+        void highlightSelection(final int previousAdapterPosition,
+                                final int currentAdapterPosition) {
             final LinearLayoutManager layoutManager =
                     (LinearLayoutManager) recyclerView.getLayoutManager();
 
-            View view;
-            if (previousAdapterPosition != currentAdapterPosition) {
-                //noinspection DataFlowIssue
-                view = layoutManager.findViewByPosition(previousAdapterPosition + headerItemCount);
-                if (view != null) {
-                    view.setSelected(false);
+            if (previousAdapterPosition != RecyclerView.NO_POSITION) {
+                if (previousAdapterPosition != currentAdapterPosition) {
+                    //noinspection DataFlowIssue
+                    final View view = layoutManager.findViewByPosition(
+                            previousAdapterPosition + headerItemCount);
+                    if (view != null) {
+                        view.setSelected(false);
+                    }
                 }
             }
 
             if (currentAdapterPosition != RecyclerView.NO_POSITION) {
                 //noinspection DataFlowIssue
-                view = layoutManager.findViewByPosition(currentAdapterPosition + headerItemCount);
+                final View view = layoutManager.findViewByPosition(currentAdapterPosition
+                                                                   + headerItemCount);
                 if (view != null) {
                     view.setSelected(true);
                 }
@@ -2289,7 +2138,10 @@ public class BooksOnBookshelf
          */
         private void expandAllNodes(@IntRange(from = 1) final int topLevel,
                                     final boolean expand) {
-            // It is possible that the list will be empty, if so, ignore
+            // It is possible that the list will be empty, if so, ignore.
+            // Note we're getting the count from the adapter; i.e. from the current Cursor
+            // only... (which is != total count) but we're only checking the > 0
+            // so that's perfectly fine (and faster)
             if (adapter != null && adapter.getItemCount() > 0) {
                 vm.expandAllNodes(topLevel, expand);
                 // position on the last-saved node
