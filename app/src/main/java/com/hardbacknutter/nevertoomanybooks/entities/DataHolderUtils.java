@@ -243,22 +243,4 @@ public final class DataHolderUtils {
         }
         throw new IllegalArgumentException("DataHolder does not contain any Publisher");
     }
-
-    /**
-     * Extract a Book from the given {@link DataHolder}.
-     *
-     * @param holder with data
-     *
-     * @return Book
-     *
-     * @throws IllegalArgumentException if there is incompatible data in the DataHolder.
-     */
-    @NonNull
-    public static Book requireBook(@NonNull final DataHolder holder) {
-        final long bookId = holder.getLong(DBKey.FK_BOOK);
-        if (bookId > 0) {
-            return Book.from(bookId);
-        }
-        throw new IllegalArgumentException("DataHolder does not contain any Book");
-    }
 }

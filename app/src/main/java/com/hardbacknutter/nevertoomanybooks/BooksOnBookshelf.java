@@ -1008,7 +1008,7 @@ public class BooksOnBookshelf
                 menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && !isAvailable);
 
                 if (calibreHandler != null) {
-                    final Book book = DataHolderUtils.requireBook(rowData);
+                    final Book book = Book.from(rowData.getLong(DBKey.FK_BOOK));
                     calibreHandler.onPrepareMenu(this, menu, book);
                 }
 
@@ -1348,7 +1348,7 @@ public class BooksOnBookshelf
             return true;
 
         } else if (menuItemId == R.id.MENU_BOOK_DUPLICATE) {
-            final Book book = DataHolderUtils.requireBook(rowData);
+            final Book book = Book.from(bookId);
             duplicateLauncher.launch(book.duplicate(this));
             return true;
 
@@ -1365,7 +1365,7 @@ public class BooksOnBookshelf
             return true;
 
         } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET_SINGLE_BOOK) {
-            final Book book = DataHolderUtils.requireBook(rowData);
+            final Book book = Book.from(bookId);
             updateBookLauncher.launch(book);
             return true;
 
@@ -1380,7 +1380,7 @@ public class BooksOnBookshelf
             return true;
 
         } else if (menuItemId == R.id.MENU_SHARE) {
-            final Book book = DataHolderUtils.requireBook(rowData);
+            final Book book = Book.from(bookId);
             startActivity(book.getShareIntent(this, vm.getStyle()));
             return true;
         }
