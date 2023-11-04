@@ -36,6 +36,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.TopRowListPosition;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.FilterFactory;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
@@ -322,12 +323,13 @@ public class BookshelfDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
+            final TopRowListPosition topRowListPosition = bookshelf.getTopRowPosition();
             final long iId;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
                 stmt.bindString(1, bookshelf.getName());
                 stmt.bindLong(2, styleId);
-                stmt.bindLong(3, bookshelf.getBooklistAdapterPosition());
-                stmt.bindLong(4, bookshelf.getFirstVisibleItemViewOffset());
+                stmt.bindLong(3, topRowListPosition.getAdapterPosition());
+                stmt.bindLong(4, topRowListPosition.getViewOffset());
                 iId = stmt.executeInsert();
             }
 
@@ -366,12 +368,13 @@ public class BookshelfDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
+            final TopRowListPosition topRowListPosition = bookshelf.getTopRowPosition();
             final boolean success;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
                 stmt.bindString(1, bookshelf.getName());
                 stmt.bindLong(2, styleId);
-                stmt.bindLong(3, bookshelf.getBooklistAdapterPosition());
-                stmt.bindLong(4, bookshelf.getFirstVisibleItemViewOffset());
+                stmt.bindLong(3, topRowListPosition.getAdapterPosition());
+                stmt.bindLong(4, topRowListPosition.getViewOffset());
                 stmt.bindLong(5, bookshelf.getId());
 
                 success = 0 < stmt.executeUpdateDelete();

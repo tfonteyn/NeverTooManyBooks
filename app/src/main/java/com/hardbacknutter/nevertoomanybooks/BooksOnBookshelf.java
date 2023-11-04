@@ -41,7 +41,6 @@ import androidx.annotation.IntRange;
 import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.util.Pair;
 import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -90,6 +89,7 @@ import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsFragment;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookExternalIdFragment;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
+import com.hardbacknutter.nevertoomanybooks.booklist.TopRowListPosition;
 import com.hardbacknutter.nevertoomanybooks.booklist.adapter.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.HeaderAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
@@ -896,16 +896,16 @@ public class BooksOnBookshelf
      *     <li>The adapter position at the top of the screen.</li>
      *     <li>The pixel offset of that row from the top of the screen.</li>
      * </ol>
-     * Note that we convert the list/layout position to the adapter position and store the latter.
      * <p>
-     * TODO: we're calling this probably from places where we shouldn't
-     *  example: should we call this from #onRowChanged or #onBookDeleted ?
+     * This should be called each time the user starts a potentially list-changing action.
+     * Examples:
+     * {@link #onRowClicked(View, int)},
+     * {@link #onRowContextMenuItemSelected(View, int, MenuItem)}
+     * {@link #onNavigationItemSelected(MenuItem)}
      */
     private void saveListPosition() {
-        if (!isDestroyed()) {
-            final Pair<Integer, Integer> positionAndOffset =
-                    positioningHelper.getAdapterPositionAndViewOffset();
-            vm.saveListPosition(this, positionAndOffset.first, positionAndOffset.second);
+        if (!isDestroyed() && !vm.isBuilding()) {
+            vm.saveBookshelfTopRowPosition(this, positioningHelper.getTopRowPosition());
         }
     }
 
@@ -1787,15 +1787,13 @@ public class BooksOnBookshelf
         if (adapter.getItemCount() > 0) {
             if (targetNodes == null || targetNodes.isEmpty()) {
                 // There are no target nodes, just scroll to the saved position
-                final Pair<Integer, Integer> savedListPosition = vm.getSavedListPosition();
-                final int adapterPosition = savedListPosition.first;
-                final int viewOffset = savedListPosition.second;
-
-                positioningHelper.scrollTo(adapterPosition, viewOffset, adapter.getItemCount());
+                final TopRowListPosition topRowPos = vm.getBookshelfTopRowPosition();
+                positioningHelper.scrollTo(topRowPos, adapter.getItemCount());
                 // wait for layout cycle and display the book details if possible
-                vb.content.list.post(() -> showBookDetailsIfWeCan(vm.getSelectedBookId(),
-                                                                  adapterPosition
-                ));
+                vb.content.list.post(() -> showBookDetailsIfWeCan(
+                        vm.getSelectedBookId(),
+                        topRowPos.getAdapterPosition()));
+
             } else if (targetNodes.size() == 1) {
                 // There is a single target node; scroll to it
                 final BooklistNode node = positioningHelper.scrollTo(targetNodes);
@@ -1807,19 +1805,15 @@ public class BooksOnBookshelf
                 // We'll need to find the "best" node (from all target nodes).
                 // First scroll to the saved position which will serve as the starting point
                 // for finding the "best" node.
-                final Pair<Integer, Integer> savedListPosition = vm.getSavedListPosition();
-                final int adapterPosition = savedListPosition.first;
-                final int viewOffset = savedListPosition.second;
-                positioningHelper.scrollTo(adapterPosition, viewOffset, adapter.getItemCount());
-
-                // wait for layout cycle
+                final TopRowListPosition topRowPos = vm.getBookshelfTopRowPosition();
+                positioningHelper.scrollTo(topRowPos, adapter.getItemCount());
+                // wait for layout cycle so the list will have valid first/last visible row.
                 vb.content.list.post(() -> {
                     // Use the target nodes to find the "best" node and scroll to it
                     final BooklistNode node = positioningHelper.scrollTo(targetNodes);
                     // again wait for layout cycle and display the book details if possible
                     vb.content.list.post(() -> showBookDetailsIfWeCan(node.getBookId(),
-                                                                      node.getAdapterPosition()
-                    ));
+                                                                      node.getAdapterPosition()));
                 });
             }
         }
@@ -1933,19 +1927,20 @@ public class BooksOnBookshelf
         /**
          * Retrieve the current adapter position and view-offset of the top-most visible row.
          *
-         * @return a {@link Pair} with (adapterPosition, viewOffset)
+         * @return adapter position of the top row
          */
         @NonNull
-        Pair<Integer, Integer> getAdapterPositionAndViewOffset() {
+        TopRowListPosition getTopRowPosition() {
             final LinearLayoutManager layoutManager =
                     (LinearLayoutManager) recyclerView.getLayoutManager();
 
             //noinspection DataFlowIssue
             final int firstVisiblePos = layoutManager.findFirstVisibleItemPosition();
             if (firstVisiblePos == RecyclerView.NO_POSITION) {
-                return new Pair<>(0, 0);
+                return new TopRowListPosition(0, 0);
             }
 
+            // convert the layout position to the BookList adapter position.
             int adapterPosition = firstVisiblePos - headerItemCount;
             // can theoretically happen with an empty list which has a header
             if (adapterPosition < 0) {
@@ -1964,7 +1959,7 @@ public class BooksOnBookshelf
                         topView.getLayoutParams();
                 viewOffset = topView.getTop() - lp.topMargin - paddingTop;
             }
-            return new Pair<>(adapterPosition, viewOffset);
+            return new TopRowListPosition(adapterPosition, viewOffset);
         }
 
         /**
@@ -2013,18 +2008,16 @@ public class BooksOnBookshelf
         /**
          * Scroll the list to the given adapter-position/view-offset.
          *
-         * @param adapterPosition to scroll to
-         * @param offset          the view offset to apply
-         * @param maxPosition     the last/maximum position to which we can scroll
-         *                        (i.e. the length of the list)
+         * @param topRowListPosition to scroll to
+         * @param maxPosition        the last/maximum position to which we can scroll
+         *                           (i.e. the length of the list)
          */
-        void scrollTo(final int adapterPosition,
-                      final int offset,
+        void scrollTo(@NonNull final TopRowListPosition topRowListPosition,
                       final int maxPosition) {
             final LinearLayoutManager layoutManager =
                     (LinearLayoutManager) recyclerView.getLayoutManager();
 
-            final int position = adapterPosition + headerItemCount;
+            final int position = topRowListPosition.getAdapterPosition() + headerItemCount;
 
             // sanity check
             if (position <= headerItemCount) {
@@ -2037,7 +2030,8 @@ public class BooksOnBookshelf
                 layoutManager.scrollToPosition(position);
             } else {
                 //noinspection DataFlowIssue
-                layoutManager.scrollToPositionWithOffset(position, offset);
+                layoutManager.scrollToPositionWithOffset(position,
+                                                         topRowListPosition.getViewOffset());
             }
         }
 

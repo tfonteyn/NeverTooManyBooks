@@ -23,11 +23,9 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -38,6 +36,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.TopRowListPosition;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
@@ -107,10 +106,8 @@ public class Bookshelf
     private String styleUuid;
 
     /** The booklist adapter position of top row. */
-    private int adapterPosition = RecyclerView.NO_POSITION;
-
-    /** The booklist adapter position view offset of top row. */
-    private int adapterPositionViewOffset;
+    private TopRowListPosition topRowAdapterPosition = new TopRowListPosition(
+            RecyclerView.NO_POSITION, 0);
 
     /**
      * Constructor without ID.
@@ -148,8 +145,9 @@ public class Bookshelf
         name = rowData.getString(DBKey.BOOKSHELF_NAME);
         styleUuid = rowData.getString(DBKey.STYLE_UUID);
 
-        adapterPosition = rowData.getInt(DBKey.BOOKSHELF_BL_TOP_POS);
-        adapterPositionViewOffset = rowData.getInt(DBKey.BOOKSHELF_BL_TOP_OFFSET);
+        topRowAdapterPosition = new TopRowListPosition(rowData.getInt(DBKey.BOOKSHELF_BL_TOP_POS),
+                                                       rowData.getInt(
+                                                               DBKey.BOOKSHELF_BL_TOP_OFFSET));
 
         filters.addAll(ServiceLocator.getInstance().getBookshelfDao().getFilters(this.id));
     }
@@ -168,8 +166,7 @@ public class Bookshelf
 
         filters.addAll(ServiceLocator.getInstance().getBookshelfDao().getFilters(id));
 
-        adapterPosition = in.readInt();
-        adapterPositionViewOffset = in.readInt();
+        topRowAdapterPosition = new TopRowListPosition(in.readInt(), in.readInt());
     }
 
     /**
@@ -197,7 +194,7 @@ public class Bookshelf
     }
 
     /**
-     * Get the first of the specified bookshelf found.
+     * Get the first of the specified bookshelf id's found.
      *
      * @param context Current context
      * @param ids     list of bookshelves to get in order of preference
@@ -370,48 +367,28 @@ public class Bookshelf
     }
 
     /**
-     * Get the stored view offset to use for re-displaying this bookshelf's booklist.
-     * Due to CoordinatorLayout behaviour, the returned value
-     * <strong>can be negative, this is NORMAL</strong>.
+     * Get the list position of the first visible view.
      *
-     * @return offset value for {@link LinearLayoutManager#scrollToPositionWithOffset(int, int)}
+     * @return position
      *
-     * @see #saveListPosition(Context, int, int)
+     * @see #saveTopRowPosition(Context, TopRowListPosition)
      */
-    public int getFirstVisibleItemViewOffset() {
-        return adapterPositionViewOffset;
-    }
-
-
-    /**
-     * Get the stored booklist adapter position to use for re-displaying
-     * this bookshelf's booklist.
-     * Normally in the range 0..x, but can theoretically be {@link RecyclerView#NO_POSITION} !
-     *
-     * @return The booklist adapter position
-     *
-     * @see #saveListPosition(Context, int, int)
-     */
-    @IntRange(from = RecyclerView.NO_POSITION)
-    public int getBooklistAdapterPosition() {
-        return adapterPosition;
+    @NonNull
+    public TopRowListPosition getTopRowPosition() {
+        return topRowAdapterPosition;
     }
 
     /**
-     * Save the current booklist adapter position on the current bookshelf.
+     * Save the current list position for this bookshelf.
      *
-     * @param context    Current context
-     * @param position   The booklist adapter position of the first visible view.
-     * @param viewOffset Value of {@link RecyclerView#getChildAt(int)} #getTop()
+     * @param context  Current context
+     * @param position The list position of the first visible view.
      *
-     * @see #getBooklistAdapterPosition()
-     * @see #getFirstVisibleItemViewOffset()
+     * @see #getTopRowPosition()
      */
-    public void saveListPosition(@NonNull final Context context,
-                                 final int position,
-                                 final int viewOffset) {
-        adapterPosition = position;
-        adapterPositionViewOffset = viewOffset;
+    public void saveTopRowPosition(@NonNull final Context context,
+                                   @NonNull final TopRowListPosition position) {
+        topRowAdapterPosition = position;
 
         try {
             ServiceLocator.getInstance().getBookshelfDao().update(context, this);
@@ -464,8 +441,8 @@ public class Bookshelf
         dest.writeString(name);
         dest.writeString(styleUuid);
 
-        dest.writeInt(adapterPosition);
-        dest.writeInt(adapterPositionViewOffset);
+        dest.writeInt(topRowAdapterPosition.getAdapterPosition());
+        dest.writeInt(topRowAdapterPosition.getViewOffset());
     }
 
     /**
@@ -546,8 +523,7 @@ public class Bookshelf
         return "Bookshelf{"
                + "id=" + id
                + ", name=`" + name + '`'
-               + ", adapterPosition=" + adapterPosition
-               + ", adapterPositionViewOffset=" + adapterPositionViewOffset
+               + ", adapterPosition=" + topRowAdapterPosition
                + ", styleUuid=" + styleUuid
                + '}';
     }

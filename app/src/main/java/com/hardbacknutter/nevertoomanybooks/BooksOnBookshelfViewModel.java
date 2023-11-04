@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
+import com.hardbacknutter.nevertoomanybooks.booklist.TopRowListPosition;
 import com.hardbacknutter.nevertoomanybooks.booklist.adapter.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
@@ -596,26 +597,24 @@ public class BooksOnBookshelfViewModel
         }
     }
 
+    @NonNull
+    TopRowListPosition getBookshelfTopRowPosition() {
+        Objects.requireNonNull(bookshelf, Bookshelf.TAG);
+        return bookshelf.getTopRowPosition();
+    }
+
     /**
      * Save the current booklist adapter position on the current {@link Bookshelf}.
      *
-     * @param context    Current context
-     * @param position   The booklist <strong>adapter</strong> position of the first visible view.
-     * @param viewOffset Value of {@link RecyclerView#getChildAt(int)} #getTop()
+     * @param context        Current context
+     * @param topRowPosition The booklist position of the first visible view.
      */
-    void saveListPosition(@NonNull final Context context,
-                          final int position,
-                          final int viewOffset) {
+    void saveBookshelfTopRowPosition(@NonNull final Context context,
+                                     @NonNull final TopRowListPosition topRowPosition) {
         if (listLoaded) {
             Objects.requireNonNull(bookshelf, Bookshelf.TAG);
-            bookshelf.saveListPosition(context, position, viewOffset);
+            bookshelf.saveTopRowPosition(context, topRowPosition);
         }
-    }
-
-    Pair<Integer, Integer> getSavedListPosition() {
-        Objects.requireNonNull(bookshelf, Bookshelf.TAG);
-        return new Pair<>(bookshelf.getBooklistAdapterPosition(),
-                          bookshelf.getFirstVisibleItemViewOffset());
     }
 
     /**
@@ -638,7 +637,6 @@ public class BooksOnBookshelfViewModel
     void setForceRebuildInOnResume() {
         forceRebuildInOnResume = true;
     }
-
 
     /**
      * Check if the list has (ever) loaded successfully.
@@ -1112,7 +1110,6 @@ public class BooksOnBookshelfViewModel
         // ENHANCE: update the modified row without a rebuild for more keys
         triggerRebuildList.setValue(false);
     }
-
 
     /**
      * Delete the given {@link Series}.
