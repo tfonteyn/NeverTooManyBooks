@@ -65,9 +65,6 @@ public abstract class BasePreferenceFragment
     @Nullable
     private Toolbar toolbar;
 
-    @Nullable
-    private String autoScrollToKey;
-
     @NonNull
     protected View getProgressFrame() {
         if (progressFrame == null) {
@@ -92,10 +89,6 @@ public abstract class BasePreferenceFragment
     @CallSuper
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
-        final Bundle args = getArguments();
-        if (args != null) {
-            autoScrollToKey = args.getString(BKEY_AUTO_SCROLL_TO_KEY);
-        }
     }
 
     /**
@@ -118,9 +111,17 @@ public abstract class BasePreferenceFragment
     public void onResume() {
         super.onResume();
 
-        if (autoScrollToKey != null) {
-            scrollToPreference(autoScrollToKey);
-            autoScrollToKey = null;
+        final Bundle args = getArguments();
+        if (args != null) {
+            final String autoScrollToKey = args.getString(BKEY_AUTO_SCROLL_TO_KEY);
+            if (autoScrollToKey != null) {
+                final Preference preference = findPreference(autoScrollToKey);
+                if (preference != null) {
+                    scrollToPreference(preference);
+                }
+                // we're only scrolling ONCE
+                args.remove(BKEY_AUTO_SCROLL_TO_KEY);
+            }
         }
     }
 
