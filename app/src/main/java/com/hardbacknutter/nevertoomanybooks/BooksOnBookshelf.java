@@ -1791,41 +1791,36 @@ public class BooksOnBookshelf
                 headerAdapter, adapter);
 
         vb.content.list.setAdapter(concatAdapter);
+        // Set visible before we do any scrolling,
+        // as we need the (internal) requestLayout() call to do its work
         vb.content.list.setVisibility(View.VISIBLE);
         vb.bookshelfSpinner.setEnabled(true);
 
         if (adapter.getItemCount() > 0) {
-            if (targetNodes == null || targetNodes.isEmpty()) {
-                // There are no target nodes, just scroll to the saved position
-                final TopRowListPosition topRowPos = vm.getBookshelfTopRowPosition();
-                positioningHelper.scrollTo(topRowPos, adapter.getItemCount());
-                // wait for layout cycle and display the book details if possible
-                vb.content.list.post(() -> showBookDetailsIfWeCan(
-                        vm.getSelectedBookId(),
-                        topRowPos.getAdapterPosition()));
+            // Scroll to the previously stored position
+            final TopRowListPosition topRowPos = vm.getBookshelfTopRowPosition();
+            positioningHelper.scrollTo(topRowPos.getAdapterPosition(),
+                                       topRowPos.getViewOffset(),
+                                       adapter.getItemCount());
 
-            } else if (targetNodes.size() == 1) {
-                // There is a single target node; scroll to it
-                final BooklistNode node = positioningHelper.scrollTo(targetNodes);
-                // wait for layout cycle and display the book details if possible
-                vb.content.list.post(() -> showBookDetailsIfWeCan(node.getBookId(),
-                                                                  node.getAdapterPosition()
-                ));
-            } else {
-                // We'll need to find the "best" node (from all target nodes).
-                // First scroll to the saved position which will serve as the starting point
-                // for finding the "best" node.
-                final TopRowListPosition topRowPos = vm.getBookshelfTopRowPosition();
-                positioningHelper.scrollTo(topRowPos, adapter.getItemCount());
-                // wait for layout cycle so the list will have valid first/last visible row.
-                vb.content.list.post(() -> {
-                    // Use the target nodes to find the "best" node and scroll to it
+            // wait for layout cycle so the list will have valid first/last visible row.
+            vb.content.list.post(() -> {
+                if (targetNodes == null || targetNodes.isEmpty()) {
+                    // There are no target nodes, display the book details if possible
+                    showBookDetailsIfWeCan(vm.getSelectedBookId(), topRowPos.getAdapterPosition());
+                } else {
+                    // Use the target nodes to find the "best" node
+                    // and scroll it to the center of the screen
                     final BooklistNode node = positioningHelper.scrollTo(targetNodes);
-                    // again wait for layout cycle and display the book details if possible
-                    vb.content.list.post(() -> showBookDetailsIfWeCan(node.getBookId(),
-                                                                      node.getAdapterPosition()));
-                });
-            }
+                    // Sanity check, should never happen... flw
+                    if (node != null) {
+                        // again wait for layout cycle and display the book details if possible
+                        vb.content.list.post(() -> showBookDetailsIfWeCan(
+                                node.getBookId(),
+                                node.getAdapterPosition()));
+                    }
+                }
+            });
         }
     }
 
@@ -1957,9 +1952,14 @@ public class BooksOnBookshelf
                 adapterPosition = 0;
             }
 
+            final int viewOffset = getViewOffset(0);
+            return new TopRowListPosition(adapterPosition, viewOffset);
+        }
+
+        private int getViewOffset(final int index) {
             final int viewOffset;
             // the list.getChildAt; not the layoutManager.getChildAt (not sure why...)
-            final View topView = recyclerView.getChildAt(0);
+            final View topView = recyclerView.getChildAt(index);
             if (topView == null) {
                 viewOffset = 0;
             } else {
@@ -1969,103 +1969,103 @@ public class BooksOnBookshelf
                         topView.getLayoutParams();
                 viewOffset = topView.getTop() - lp.topMargin - paddingTop;
             }
-            return new TopRowListPosition(adapterPosition, viewOffset);
-        }
-
-        /**
-         * Scroll to the "best" of the given target nodes.
-         * <p>
-         * Note that the list will be <strong>centered</strong> on the best node.
-         * i.e. potentially not on the exact same location as it was before.
-         *
-         * @param targetNodes candidates to scroll to.
-         *
-         * @return the node we ended up at.
-         */
-        @NonNull
-        BooklistNode scrollTo(@NonNull final List<BooklistNode> targetNodes) {
-            final LinearLayoutManager layoutManager =
-                    (LinearLayoutManager) recyclerView.getLayoutManager();
-
-            // the layout positions (i.e. including the header row)
-            //noinspection DataFlowIssue
-            int firstVisiblePosition = layoutManager.findFirstCompletelyVisibleItemPosition();
-            int lastVisiblePosition = layoutManager.findLastCompletelyVisibleItemPosition();
-
-            if (firstVisiblePosition > 0) {
-                firstVisiblePosition = firstVisiblePosition - headerItemCount;
-            }
-            if (lastVisiblePosition > 0) {
-                lastVisiblePosition = lastVisiblePosition - headerItemCount;
-            }
-
-            final BooklistNode best;
-            if (targetNodes.size() == 1) {
-                best = targetNodes.get(0);
-            } else {
-                best = findBestNode(targetNodes, firstVisiblePosition, lastVisiblePosition);
-            }
-
-            final int destPos = best.getAdapterPosition();
-
-            if (destPos < firstVisiblePosition || destPos > lastVisiblePosition) {
-                final int offset = recyclerView.getHeight() / 4;
-                layoutManager.scrollToPositionWithOffset(destPos + headerItemCount, offset);
-            }
-            return best;
+            return viewOffset;
         }
 
         /**
          * Scroll the list to the given adapter-position/view-offset.
          *
-         * @param topRowListPosition to scroll to
-         * @param maxPosition        the last/maximum position to which we can scroll
-         *                           (i.e. the length of the list)
+         * @param adapterPosition to scroll to
+         * @param viewOffset      to set
+         * @param maxPosition     the last/maximum position to which we can scroll
+         *                        (i.e. the length of the list)
          */
-        void scrollTo(@NonNull final TopRowListPosition topRowListPosition,
+        void scrollTo(final int adapterPosition,
+                      final int viewOffset,
                       final int maxPosition) {
             final LinearLayoutManager layoutManager =
                     (LinearLayoutManager) recyclerView.getLayoutManager();
 
-            final int position = topRowListPosition.getAdapterPosition() + headerItemCount;
+            final int position = adapterPosition + headerItemCount;
 
             // sanity check
             if (position <= headerItemCount) {
+                // Scroll to the top
                 //noinspection DataFlowIssue
-                layoutManager.scrollToPositionWithOffset(0, 0);
+                layoutManager.scrollToPosition(0);
 
             } else if (position >= maxPosition) {
-                // the list is shorter than it used to be, just scroll to the end
+                // The list is shorter than it used to be,
+                // scroll to the end disregarding the offset
                 //noinspection DataFlowIssue
                 layoutManager.scrollToPosition(position);
             } else {
                 //noinspection DataFlowIssue
-                layoutManager.scrollToPositionWithOffset(position,
-                                                         topRowListPosition.getViewOffset());
+                layoutManager.scrollToPositionWithOffset(position, viewOffset);
             }
         }
 
-        @NonNull
-        private BooklistNode findBestNode(@NonNull final List<BooklistNode> targetNodes,
-                                          final int firstVisibleAdapterPosition,
-                                          final int lastVisibleAdapterPosition) {
-            // Assume first is best
-            BooklistNode best = targetNodes.get(0);
-            // Position of the row in the (vertical) center of the screen
-            final int centerAdapterPosition =
-                    (lastVisibleAdapterPosition + firstVisibleAdapterPosition) / 2;
-            // distance from currently visible center row
-            int distance = Math.abs(best.getAdapterPosition() - centerAdapterPosition);
-            // Loop all other rows, looking for a nearer one
-            int row = 1;
-            while (distance > 0 && row < targetNodes.size()) {
-                final BooklistNode node = targetNodes.get(row);
-                final int newDist = Math.abs(node.getAdapterPosition() - centerAdapterPosition);
-                if (newDist < distance) {
-                    distance = newDist;
-                    best = node;
+        /**
+         * Scroll to the "best" of the given target nodes.
+         * <p>
+         * The {@link #recyclerView} <strong>MUST></strong> have been through a layout phase.
+         * <p>
+         * If the best node is currently on-screen, no scrolling will be done,
+         * otherwise the list will be scrolled <strong>centering</strong> the best node.
+         *
+         * @param targetNodes candidates to scroll to.
+         *
+         * @return the node we ended up at.
+         *
+         * @throws IllegalArgumentException debug only: if the list had less then 2 nodes
+         */
+        @Nullable
+        BooklistNode scrollTo(@NonNull final List<BooklistNode> targetNodes) {
+            final LinearLayoutManager layoutManager =
+                    (LinearLayoutManager) recyclerView.getLayoutManager();
+
+            // the LAYOUT positions; i.e. including the header row
+            //noinspection DataFlowIssue
+            final int firstLayoutPos = layoutManager.findFirstCompletelyVisibleItemPosition();
+            final int lastLayoutPos = layoutManager.findLastCompletelyVisibleItemPosition();
+
+            // Sanity check, should never happen... flw
+            if (firstLayoutPos == RecyclerView.NO_POSITION) {
+                return null;
+            }
+
+            final int firstAdapterPos = Math.max(0, firstLayoutPos - headerItemCount);
+            final int lastAdapterPos = Math.max(0, lastLayoutPos - headerItemCount);
+
+            BooklistNode best;
+            if (targetNodes.size() == 1) {
+                best = targetNodes.get(0);
+
+            } else {
+                final int centerPos = Math.max(0, (firstAdapterPos + lastAdapterPos) / 2);
+
+                // Assume first is best
+                best = targetNodes.get(0);
+                // distance from currently visible center row
+                int distance = Math.abs(best.getAdapterPosition() - centerPos);
+                // Loop all other rows, looking for a nearer one
+                int row = 1;
+                while (distance > 0 && row < targetNodes.size()) {
+                    final BooklistNode node = targetNodes.get(row);
+                    final int newDist = Math.abs(node.getAdapterPosition() - centerPos);
+                    if (newDist < distance) {
+                        distance = newDist;
+                        best = node;
+                    }
+                    row++;
                 }
-                row++;
+            }
+
+            final int destPos = best.getAdapterPosition();
+            // If the destination is off-screen, scroll to it.
+            if (destPos < firstAdapterPos || destPos > lastAdapterPos) {
+                // back to LAYOUT position by adding the header
+                layoutManager.scrollToPosition(destPos + headerItemCount);
             }
             return best;
         }
