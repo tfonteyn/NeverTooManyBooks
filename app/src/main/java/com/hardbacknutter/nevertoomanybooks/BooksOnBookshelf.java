@@ -1608,11 +1608,11 @@ public class BooksOnBookshelf
     }
 
     @SuppressWarnings("SameParameterValue")
-    private void showNavigationSubMenu(@IdRes final int anchorMenuItemId,
+    private void showNavigationSubMenu(@IdRes final int subMenuId,
                                        @NonNull final MenuItem menuItem,
                                        @MenuRes final int menuRes) {
 
-        final View anchor = navDrawer.getMenuItemView(anchorMenuItemId);
+        final View anchor = navDrawer.getMenuItemView(subMenuId);
 
         final ExtPopupMenu popupMenu = new ExtPopupMenu(this)
                 .inflate(menuRes);
@@ -1633,18 +1633,18 @@ public class BooksOnBookshelf
      * Allow the user to decide between books on "this bookshelf only" or on all bookshelves
      * and then update all the selected books.
      *
-     * @param v           View clicked; the anchor for the popup menu
+     * @param anchor      View clicked; the anchor for the popup menu
      * @param rowData     for the row which was selected
      * @param dialogTitle text to show to the user.
      */
-    private void updateBooksFromInternetData(@NonNull final View v,
+    private void updateBooksFromInternetData(@NonNull final View anchor,
                                              @NonNull final DataHolder rowData,
                                              @NonNull final CharSequence dialogTitle) {
         new ExtPopupMenu(this)
                 .inflate(R.menu.update_books)
                 .setTitle(dialogTitle)
                 .setMessage(getString(R.string.menu_update_books))
-                .showAsDropDown(v, menuItem -> {
+                .showAsDropDown(anchor, menuItem -> {
                     final int itemId = menuItem.getItemId();
                     Boolean onlyThisShelf = null;
 
