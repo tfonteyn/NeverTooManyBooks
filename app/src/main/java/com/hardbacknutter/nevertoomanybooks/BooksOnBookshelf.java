@@ -1017,98 +1017,27 @@ public class BooksOnBookshelf
         final int rowGroupId = rowData.getInt(DBKey.BL_NODE_GROUP);
         switch (rowGroupId) {
             case BooklistGroup.BOOK: {
-                final MenuInflater inflater = getMenuInflater();
-                inflater.inflate(R.menu.book, menu);
-
-                if (!hasEmbeddedDetailsFrame()) {
-                    // explicitly hide; but otherwise leave it to the details-frame menu handler.
-                    menu.findItem(R.id.MENU_SYNC_LIST_WITH_DETAILS).setVisible(false);
-                }
-
-                if (calibreHandler != null) {
-                    calibreHandler.onCreateMenu(menu, inflater);
-                }
-                vm.getMenuHandlers().forEach(h -> h.onCreateMenu(this, menu, inflater));
-
-                final boolean isRead = rowData.getBoolean(DBKey.READ__BOOL);
-                menu.findItem(R.id.MENU_BOOK_SET_READ).setVisible(!isRead);
-                menu.findItem(R.id.MENU_BOOK_SET_UNREAD).setVisible(isRead);
-
-                // specifically check LOANEE_NAME independent from the style in use.
-                final boolean useLending = ServiceLocator.getInstance()
-                                                         .isFieldEnabled(DBKey.LOANEE_NAME);
-                final boolean isAvailable = vm.isAvailable(rowData);
-                menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isAvailable);
-                menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && !isAvailable);
-
-                if (calibreHandler != null) {
-                    final Book book = Book.from(rowData.getLong(DBKey.FK_BOOK));
-                    calibreHandler.onPrepareMenu(this, menu, book);
-                }
-
-                vm.getMenuHandlers().forEach(h -> h.onPrepareMenu(this, menu, rowData));
+                createRowMenuForBook(rowData, menu);
                 break;
             }
             case BooklistGroup.AUTHOR: {
-                final MenuInflater inflater = getMenuInflater();
-                inflater.inflate(R.menu.author, menu);
-                vm.getMenuHandlers().forEach(h -> h.onCreateMenu(this, menu, inflater));
-
-                final boolean complete = rowData.getBoolean(DBKey.AUTHOR_IS_COMPLETE);
-                menu.findItem(R.id.MENU_AUTHOR_SET_COMPLETE).setVisible(!complete);
-                menu.findItem(R.id.MENU_AUTHOR_SET_INCOMPLETE).setVisible(complete);
-
-                vm.getMenuHandlers().forEach(h -> h.onPrepareMenu(this, menu, rowData));
+                createRowMenuForAuthor(rowData, menu);
                 break;
             }
             case BooklistGroup.SERIES: {
-                if (rowData.getLong(DBKey.FK_SERIES) != 0) {
-                    final MenuInflater inflater = getMenuInflater();
-                    inflater.inflate(R.menu.series, menu);
-                    vm.getMenuHandlers().forEach(h -> h.onCreateMenu(this, menu, inflater));
-
-                    final boolean complete = rowData.getBoolean(DBKey.SERIES_IS_COMPLETE);
-                    menu.findItem(R.id.MENU_SERIES_SET_COMPLETE).setVisible(!complete);
-                    menu.findItem(R.id.MENU_SERIES_SET_INCOMPLETE).setVisible(complete);
-
-                    vm.getMenuHandlers().forEach(h -> h.onPrepareMenu(this, menu, rowData));
-
-                } else {
-                    // It's a "(No Series)" node
-                    menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
-                             getResources().getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
-                             R.string.menu_update_books)
-                        .setIcon(R.drawable.ic_baseline_cloud_download_24);
-                }
+                createRowMenuForSeries(rowData, menu);
                 break;
             }
             case BooklistGroup.PUBLISHER: {
-                if (rowData.getLong(DBKey.FK_PUBLISHER) != 0) {
-                    getMenuInflater().inflate(R.menu.publisher, menu);
-                } else {
-                    // It's a "(No Publisher)" node
-                    menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
-                             getResources().getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
-                             R.string.menu_update_books)
-                        .setIcon(R.drawable.ic_baseline_cloud_download_24);
-                }
+                createRowMenuForPublisher(rowData, menu);
                 break;
             }
             case BooklistGroup.BOOKSHELF: {
-                if (!rowData.getString(DBKey.FK_BOOKSHELF).isEmpty()) {
-                    getMenuInflater().inflate(R.menu.bookshelf, menu);
-                }
-                // Note that a "(No Bookshelf)" does NOT exist.
-                // Books are always on a shelf.
+                createRowMenuForBookshelf(rowData, menu);
                 break;
             }
             case BooklistGroup.LANGUAGE: {
-                if (!rowData.getString(DBKey.LANGUAGE).isEmpty()) {
-                    menu.add(Menu.NONE, R.id.MENU_LANGUAGE_EDIT,
-                             getResources().getInteger(R.integer.MENU_ORDER_EDIT),
-                             R.string.action_edit_ellipsis)
-                        .setIcon(R.drawable.ic_baseline_edit_24);
-                }
+                createRowMenuForLanguage(rowData, menu);
                 break;
             }
             case BooklistGroup.LOCATION: {
@@ -1359,6 +1288,48 @@ public class BooksOnBookshelf
     }
 
     /**
+     * Create the row/context menu for a {@link Book}.
+     *
+     * @param rowData the row data
+     * @param menu    to attach to
+     *
+     * @see #onRowMenuForBook(int, DataHolder, int)
+     */
+    private void createRowMenuForBook(final DataHolder rowData,
+                                      final Menu menu) {
+        final MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.book, menu);
+
+        if (!hasEmbeddedDetailsFrame()) {
+            // explicitly hide; but otherwise leave it to the details-frame menu handler.
+            menu.findItem(R.id.MENU_SYNC_LIST_WITH_DETAILS).setVisible(false);
+        }
+
+        if (calibreHandler != null) {
+            calibreHandler.onCreateMenu(menu, inflater);
+        }
+        vm.getMenuHandlers().forEach(h -> h.onCreateMenu(this, menu, inflater));
+
+        final boolean isRead = rowData.getBoolean(DBKey.READ__BOOL);
+        menu.findItem(R.id.MENU_BOOK_SET_READ).setVisible(!isRead);
+        menu.findItem(R.id.MENU_BOOK_SET_UNREAD).setVisible(isRead);
+
+        // specifically check LOANEE_NAME independent from the style in use.
+        final boolean useLending = ServiceLocator.getInstance()
+                                                 .isFieldEnabled(DBKey.LOANEE_NAME);
+        final boolean isAvailable = vm.isAvailable(rowData);
+        menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isAvailable);
+        menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && !isAvailable);
+
+        if (calibreHandler != null) {
+            final Book book = Book.from(rowData.getLong(DBKey.FK_BOOK));
+            calibreHandler.onPrepareMenu(this, menu, book);
+        }
+
+        vm.getMenuHandlers().forEach(h -> h.onPrepareMenu(this, menu, rowData));
+    }
+
+    /**
      * Handle the row/context menu for a {@link Book}.
      *
      * @param adapterPosition the row where the menu item was selected
@@ -1366,6 +1337,8 @@ public class BooksOnBookshelf
      * @param menuItemId      selected menu item
      *
      * @return {@code true} if handled.
+     *
+     * @see #createRowMenuForBook(DataHolder, Menu)
      */
     private boolean onRowMenuForBook(final int adapterPosition,
                                      @NonNull final DataHolder rowData,
@@ -1418,6 +1391,27 @@ public class BooksOnBookshelf
     }
 
     /**
+     * Create the row/context menu for an {@link Author}.
+     *
+     * @param rowData the row data
+     * @param menu    to attach to
+     *
+     * @see #onRowMenuForAuthor(View, DataHolder, int)
+     */
+    private void createRowMenuForAuthor(final DataHolder rowData,
+                                        final Menu menu) {
+        final MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.author, menu);
+        vm.getMenuHandlers().forEach(h -> h.onCreateMenu(this, menu, inflater));
+
+        final boolean complete = rowData.getBoolean(DBKey.AUTHOR_IS_COMPLETE);
+        menu.findItem(R.id.MENU_AUTHOR_SET_COMPLETE).setVisible(!complete);
+        menu.findItem(R.id.MENU_AUTHOR_SET_INCOMPLETE).setVisible(complete);
+
+        vm.getMenuHandlers().forEach(h -> h.onPrepareMenu(this, menu, rowData));
+    }
+
+    /**
      * Handle the row/context menu for an {@link Author}.
      *
      * @param v          View clicked; the anchor for a potential popup menu
@@ -1425,6 +1419,8 @@ public class BooksOnBookshelf
      * @param menuItemId selected menu item
      *
      * @return {@code true} if handled.
+     *
+     * @see #createRowMenuForAuthor(DataHolder, Menu)
      */
     private boolean onRowMenuForAuthor(@NonNull final View v,
                                        @NonNull final DataHolder rowData,
@@ -1458,6 +1454,36 @@ public class BooksOnBookshelf
     }
 
     /**
+     * Create the row/context menu for a {@link Series}.
+     *
+     * @param rowData the row data
+     * @param menu    to attach to
+     *
+     * @see #onRowMenuForSeries(View, DataHolder, int)
+     */
+    private void createRowMenuForSeries(final DataHolder rowData,
+                                        final Menu menu) {
+        if (rowData.getLong(DBKey.FK_SERIES) != 0) {
+            final MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.series, menu);
+            vm.getMenuHandlers().forEach(h -> h.onCreateMenu(this, menu, inflater));
+
+            final boolean complete = rowData.getBoolean(DBKey.SERIES_IS_COMPLETE);
+            menu.findItem(R.id.MENU_SERIES_SET_COMPLETE).setVisible(!complete);
+            menu.findItem(R.id.MENU_SERIES_SET_INCOMPLETE).setVisible(complete);
+
+            vm.getMenuHandlers().forEach(h -> h.onPrepareMenu(this, menu, rowData));
+
+        } else {
+            // It's a "(No Series)" node
+            menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
+                     getResources().getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
+                     R.string.menu_update_books)
+                .setIcon(R.drawable.ic_baseline_cloud_download_24);
+        }
+    }
+
+    /**
      * Handle the row/context menu for a {@link Series}.
      *
      * @param v          View clicked; the anchor for a potential popup menu
@@ -1465,6 +1491,8 @@ public class BooksOnBookshelf
      * @param menuItemId selected menu item
      *
      * @return {@code true} if handled.
+     *
+     * @see #createRowMenuForSeries(DataHolder, Menu)
      */
     private boolean onRowMenuForSeries(@NonNull final View v,
                                        @NonNull final DataHolder rowData,
@@ -1496,6 +1524,27 @@ public class BooksOnBookshelf
     }
 
     /**
+     * Create the row/context menu for a {@link Publisher}.
+     *
+     * @param rowData the row data
+     * @param menu    to attach to
+     *
+     * @see #onRowMenuForPublisher(View, DataHolder, int)
+     */
+    private void createRowMenuForPublisher(final DataHolder rowData,
+                                           final Menu menu) {
+        if (rowData.getLong(DBKey.FK_PUBLISHER) != 0) {
+            getMenuInflater().inflate(R.menu.publisher, menu);
+        } else {
+            // It's a "(No Publisher)" node
+            menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
+                     getResources().getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
+                     R.string.menu_update_books)
+                .setIcon(R.drawable.ic_baseline_cloud_download_24);
+        }
+    }
+
+    /**
      * Handle the row/context menu for a {@link Publisher}.
      *
      * @param v          View clicked; the anchor for a potential popup menu
@@ -1503,6 +1552,8 @@ public class BooksOnBookshelf
      * @param menuItemId selected menu item
      *
      * @return {@code true} if handled.
+     *
+     * @see #createRowMenuForPublisher(DataHolder, Menu)
      */
     private boolean onRowMenuForPublisher(@NonNull final View v,
                                           @NonNull final DataHolder rowData,
@@ -1526,12 +1577,31 @@ public class BooksOnBookshelf
     }
 
     /**
+     * Create the row/context menu for a {@link Bookshelf}.
+     *
+     * @param rowData the row data
+     * @param menu    to attach to
+     *
+     * @see #onRowMenuForBookshelf(DataHolder, int)
+     */
+    private void createRowMenuForBookshelf(final DataHolder rowData,
+                                           final Menu menu) {
+        if (!rowData.getString(DBKey.FK_BOOKSHELF).isEmpty()) {
+            getMenuInflater().inflate(R.menu.bookshelf, menu);
+        }
+        // Note that a "(No Bookshelf)" does NOT exist.
+        // Books are always on a shelf.
+    }
+
+    /**
      * Handle the row/context menu for a {@link Bookshelf}.
      *
      * @param rowData    the row data
      * @param menuItemId selected menu item
      *
      * @return {@code true} if handled.
+     *
+     * @see #createRowMenuForBookshelf(DataHolder, Menu)
      */
     private boolean onRowMenuForBookshelf(@NonNull final DataHolder rowData,
                                           @IdRes final int menuItemId) {
@@ -1554,12 +1624,32 @@ public class BooksOnBookshelf
     }
 
     /**
+     * Create the row/context menu for a {@link BooklistGroup#LANGUAGE}.
+     *
+     * @param rowData the row data
+     * @param menu    to attach to
+     *
+     * @see #onRowMenuForLanguage(DataHolder, int)
+     */
+    private void createRowMenuForLanguage(final DataHolder rowData,
+                                          final Menu menu) {
+        if (!rowData.getString(DBKey.LANGUAGE).isEmpty()) {
+            menu.add(Menu.NONE, R.id.MENU_LANGUAGE_EDIT,
+                     getResources().getInteger(R.integer.MENU_ORDER_EDIT),
+                     R.string.action_edit_ellipsis)
+                .setIcon(R.drawable.ic_baseline_edit_24);
+        }
+    }
+
+    /**
      * Handle the row/context menu for a {@link BooklistGroup#LANGUAGE}.
      *
      * @param rowData    the row data
      * @param menuItemId selected menu item
      *
      * @return {@code true} if handled.
+     *
+     * @see #createRowMenuForLanguage(DataHolder, Menu)
      */
     private boolean onRowMenuForLanguage(@NonNull final DataHolder rowData,
                                          @IdRes final int menuItemId) {
