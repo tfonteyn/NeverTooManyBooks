@@ -141,10 +141,13 @@ public class BookHolder
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
-            // add a text view to display the "position/rowId" for a book
+            // Add a text view to display the "position/rowId" for a book.
+            // Displayed on top of the image so the layout is not changed.
             dbgRowIdView = new TextView(context);
             dbgRowIdView.setId(View.generateViewId());
             dbgRowIdView.setTextColor(Color.BLUE);
+            dbgRowIdView.setBackgroundColor(Color.WHITE);
+            dbgRowIdView.setZ(5);
             //noinspection CheckStyle
             dbgRowIdView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
 
@@ -154,11 +157,9 @@ public class BookHolder
             final ConstraintSet set = new ConstraintSet();
             set.clone(parentLayout);
             set.connect(dbgRowIdView.getId(), ConstraintSet.TOP,
-                        R.id.cover_image_0, ConstraintSet.BOTTOM);
-            set.connect(dbgRowIdView.getId(), ConstraintSet.BOTTOM,
-                        ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM);
-            set.connect(dbgRowIdView.getId(), ConstraintSet.END,
-                        R.id.col1, ConstraintSet.START);
+                        R.id.cover_image_0, ConstraintSet.TOP);
+            set.connect(dbgRowIdView.getId(), ConstraintSet.START,
+                        R.id.cover_image_0, ConstraintSet.START);
             set.setVerticalBias(dbgRowIdView.getId(), 1.0f);
 
             set.applyTo(parentLayout);
