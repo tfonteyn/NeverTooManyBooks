@@ -93,6 +93,7 @@ public class BooksOnBookshelfViewModel
     private static final String GROUP_NOT_DEFINED = "Group not defined: ";
     private static final String ERROR_NULL_BOOKLIST = "booklist";
 
+    @SuppressWarnings("NonFinalStaticVariableUsedInClassInitialization")
     private static final Map<Integer, BLGRecord> BLG_RECORD = Map.ofEntries(
             Map.entry(BooklistGroup.AUTHOR,
                       new BLGRecord(DBKey.FK_AUTHOR,
@@ -117,6 +118,7 @@ public class BooksOnBookshelfViewModel
                                     R.string.lbl_bookshelf))
     );
 
+    @SuppressWarnings("NonFinalStaticVariableUsedInClassInitialization")
     private static final Map<Integer, BLGDateRecord> BLG_DATE_RECORD = Map.ofEntries(
             Map.entry(BooklistGroup.DATE_ACQUIRED_YEAR,
                       new BLGDateRecord(R.string.lbl_date_acquired,
