@@ -465,13 +465,9 @@ public class BooksOnBookshelfViewModel
 
         if (previousBookshelfId != bookshelf.getId()) {
             currentLayout = null;
-            resetSelectedBook();
+            selectedBookId = 0;
+            selectedAdapterPosition = RecyclerView.NO_POSITION;
         }
-    }
-
-    private void resetSelectedBook() {
-        selectedBookId = 0;
-        selectedAdapterPosition = RecyclerView.NO_POSITION;
     }
 
     @SuppressWarnings("UnusedReturnValue")
@@ -1159,7 +1155,9 @@ public class BooksOnBookshelfViewModel
      */
     void onBookDeleted(final long bookId) {
         if (bookId == 0 || bookId == selectedBookId) {
-            resetSelectedBook();
+            selectedBookId = 0;
+            // set the position to the row above the deleted book
+            selectedAdapterPosition = Math.max(0, selectedAdapterPosition - 1);
         }
         // We don't try to remove the row without a rebuild as this could quickly become complex...
         // e.g. if there is(was) only a single book on the level, we'd have to recursively
