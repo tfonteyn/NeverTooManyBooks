@@ -41,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -262,13 +261,13 @@ public class BookshelfDaoImpl
      * @param bookId  of the book
      * @param list    the list of bookshelves
      *
-     * @throws DaoWriteException    on failure
+     * @throws DaoInsertException    on failure
      * @throws TransactionException a transaction must be started before calling this method
      */
     public void insertOrUpdate(@NonNull final Context context,
                                @IntRange(from = 1) final long bookId,
                                @NonNull final Collection<Bookshelf> list)
-            throws DaoWriteException {
+            throws DaoInsertException {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
@@ -312,7 +311,7 @@ public class BookshelfDaoImpl
     @Override
     public long insert(@NonNull final Context context,
                        @NonNull final Bookshelf bookshelf)
-            throws DaoWriteException {
+            throws DaoInsertException {
 
         // validate the style first
         final long styleId = bookshelf.getStyle().getId();
@@ -356,7 +355,7 @@ public class BookshelfDaoImpl
     @Override
     public void update(@NonNull final Context context,
                        @NonNull final Bookshelf bookshelf)
-            throws DaoWriteException {
+            throws DaoUpdateException {
 
         // validate the style first
         final long styleId = bookshelf.getStyle().getId();
