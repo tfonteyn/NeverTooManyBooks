@@ -18,7 +18,7 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-## Download the latest release: [5.0.0 apk](https://github.com/tfonteyn/NeverTooManyBooks/releases/tag/v5.0.0)
+## Download the latest release: [5.1.0 apk](https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v5.1.0)
 
 This is a book collection application, to keep track of your books and comics.
 
@@ -84,6 +84,27 @@ comments on this fork should be directed at myself and not
 at the original creators.
 
 ## History
+
+### 5.1.0
+
+NEW:
+
+- Full support for Android 14 (includes fix #23)
+- Global defaults for styles: allows changing the defaults as used by the builtin styles.
+- The style grouping "Read & Unread" (read-status) adds "Reading" (enhancement #26) showing books
+  which have a read-start-date set, but which you have not finished yet.
+- The filter for 'Read' also provides the 'Reading' option.
+- A crash-report can now be saved to storage, and users get redirected to
+  the project Github issues page.
+
+FIXES:
+
+- improved/optimized scrolling to the correct book row after a rebuild
+- the generic error message "Please check that storage is writable..." has been split/redone,
+  and will now be much clearer as to what is really wrong.
+- user editable URLs are now checked for being syntactically valid.
+
+---
 
 ### 5.0.0
 
