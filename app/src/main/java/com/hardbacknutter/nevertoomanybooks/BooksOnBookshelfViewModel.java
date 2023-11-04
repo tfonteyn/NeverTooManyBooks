@@ -64,7 +64,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -173,7 +172,6 @@ public class BooksOnBookshelfViewModel
             new MutableLiveData<>();
 
     private final MutableLiveData<Boolean> triggerRebuildList = new MutableLiveData<>();
-    private final MutableLiveData<List<BooklistNode>> triggerDisplayList = new MutableLiveData<>();
 
     /** Holder for all search criteria. See {@link SearchCriteria} for more info. */
     @Nullable
@@ -273,11 +271,6 @@ public class BooksOnBookshelfViewModel
     @NonNull
     MutableLiveData<Boolean> onTriggerRebuildList() {
         return triggerRebuildList;
-    }
-
-    @NonNull
-    MutableLiveData<List<BooklistNode>> onTriggerDisplayList() {
-        return triggerDisplayList;
     }
 
     /**
@@ -1307,45 +1300,9 @@ public class BooksOnBookshelfViewModel
 
         // preserve the new state by default
         rebuildMode = RebuildBooklist.FromSaved;
-
-        triggerDisplayList.setValue(outcome.getTargetNodes());
     }
 
-    /**
-     * Called when the list build was cancelled.
-     *
-     * @param context Current context
-     */
-    void onBuildCancelled(@NonNull final Context context) {
-        resetSelectedBook();
-
-        if (isListLoaded()) {
-            triggerDisplayList.setValue(null);
-        } else {
-            recoverAfterFailedBuild(context);
-        }
-    }
-
-    /**
-     * Called when the list build failed.
-     *
-     * @param context Current context
-     * @param e       Exception from the task
-     */
-    void onBuildFailed(@NonNull final Context context,
-                       @NonNull final Throwable e) {
-        LoggerFactory.getLogger().e(TAG, e);
-
-        resetSelectedBook();
-
-        if (isListLoaded()) {
-            triggerDisplayList.setValue(null);
-        } else {
-            recoverAfterFailedBuild(context);
-        }
-    }
-
-    private void recoverAfterFailedBuild(@NonNull final Context context) {
+    void recoverAfterFailedBuild(@NonNull final Context context) {
         // Something is REALLY BAD
         // This is usually (BUT NOT ALWAYS) due to the developer making an oopsie
         // with the Styles. i.e. the style used to build is very likely corrupt.

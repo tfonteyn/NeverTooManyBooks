@@ -484,15 +484,31 @@ public class BooksOnBookshelf
 
         vm.onCancelled().observe(this, message -> {
             vb.progressCircle.hide();
-            message.process(ignored -> vm.onBuildCancelled(this));
+            message.process(ignored -> {
+                if (vm.isListLoaded()) {
+                    displayList(null);
+                } else {
+                    vm.recoverAfterFailedBuild(this);
+                }
+            });
         });
         vm.onFailure().observe(this, message -> {
             vb.progressCircle.hide();
-            message.process(e -> vm.onBuildFailed(this, e));
+            message.process(e -> {
+                LoggerFactory.getLogger().e(TAG, e);
+                if (vm.isListLoaded()) {
+                    displayList(null);
+                } else {
+                    vm.recoverAfterFailedBuild(this);
+                }
+            });
         });
         vm.onFinished().observe(this, message -> {
             vb.progressCircle.hide();
-            message.process(outcome -> vm.onBuildFinished(outcome));
+            message.process(outcome -> {
+                vm.onBuildFinished(outcome);
+                displayList(outcome.getTargetNodes());
+            });
         });
 
         vm.onHighlightSelection().observe(this, p ->
@@ -515,8 +531,6 @@ public class BooksOnBookshelf
                 buildBookList();
             }
         });
-
-        vm.onTriggerDisplayList().observe(this, this::displayList);
     }
 
     /**
