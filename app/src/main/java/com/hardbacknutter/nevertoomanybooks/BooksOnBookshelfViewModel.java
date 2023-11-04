@@ -215,14 +215,11 @@ public class BooksOnBookshelfViewModel
 
     /**
      * The book id we want the new list to display more-or-less in the center.
-     * Takes precedence above {@link #selectedAdapterPosition}
      */
     private long selectedBookId;
 
     /**
-     * The selected (book) adapter position for the book (to be) displayed in the details frame.
-     *
-     * @see #selectedBookId
+     * The currently selected (highlighted) adapter position.
      */
     private int selectedAdapterPosition = RecyclerView.NO_POSITION;
 
@@ -234,12 +231,12 @@ public class BooksOnBookshelfViewModel
      * @return a {@link TaskProgress} with the progress counter, a text message, ...
      */
     @NonNull
-    public LiveData<LiveDataEvent<TaskProgress>> onProgress() {
+    LiveData<LiveDataEvent<TaskProgress>> onProgress() {
         return boBTask.onProgress();
     }
 
     @NonNull
-    public LiveData<LiveDataEvent<BoBTask.Outcome>> onCancelled() {
+    LiveData<LiveDataEvent<BoBTask.Outcome>> onCancelled() {
         return boBTask.onCancelled();
     }
 
@@ -249,7 +246,7 @@ public class BooksOnBookshelfViewModel
      * @return the result is the Exception
      */
     @NonNull
-    public LiveData<LiveDataEvent<Throwable>> onFailure() {
+    LiveData<LiveDataEvent<Throwable>> onFailure() {
         return boBTask.onFailure();
     }
 
@@ -259,7 +256,7 @@ public class BooksOnBookshelfViewModel
      * @return the {@link BoBTask.Outcome} which can be considered to be complete and correct.
      */
     @NonNull
-    public LiveData<LiveDataEvent<BoBTask.Outcome>> onFinished() {
+    LiveData<LiveDataEvent<BoBTask.Outcome>> onFinished() {
         return boBTask.onFinished();
     }
 
@@ -269,7 +266,7 @@ public class BooksOnBookshelfViewModel
      * @return flag, whether the LayoutManager needs to be recreated or not.
      */
     @NonNull
-    MutableLiveData<Boolean> onTriggerRebuildList() {
+    LiveData<Boolean> onTriggerRebuildList() {
         return triggerRebuildList;
     }
 
@@ -522,6 +519,11 @@ public class BooksOnBookshelfViewModel
         currentLayout = null;
     }
 
+    @Nullable
+    Style.Layout getCurrentLayout() {
+        return currentLayout;
+    }
+
     /**
      * Set/remember the layout we're using.
      *
@@ -529,11 +531,6 @@ public class BooksOnBookshelfViewModel
      */
     void setCurrentLayout(@NonNull final Style.Layout currentLayout) {
         this.currentLayout = currentLayout;
-    }
-
-    @Nullable
-    Style.Layout getCurrentLayout() {
-        return currentLayout;
     }
 
     /**
