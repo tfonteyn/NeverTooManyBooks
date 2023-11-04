@@ -478,12 +478,11 @@ public class BooksOnBookshelfViewModel
         final Bookshelf newBookshelf = Bookshelf
                 .getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.ALL_BOOKS)
                 .orElseThrow();
-        if (!newBookshelf.equals(bookshelf)) {
-            // if it was.. switch to it.
-            bookshelf = newBookshelf;
-            return true;
+        if (newBookshelf.equals(bookshelf)) {
+            return false;
         }
-        return false;
+        bookshelf = newBookshelf;
+        return true;
     }
 
     /**
