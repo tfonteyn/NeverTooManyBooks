@@ -642,18 +642,19 @@ public class BooksOnBookshelfViewModel
     }
 
     /**
-     * Set the book id and its adapter position to which we like to return to after a rebuild.
+     * Set the book id around which we want to center the list after a rebuild.
+     * Set and propagate the new adapter position to highlight the current row.
      * <p>
-     * Pass {@code 0} and {@code RecyclerView.NO_POSITION} to disable.
-     * <p>
-     * Dev. note: reminder: book can appear on multiple positions.
+     * Dev. note: reminder: book can appear on multiple positions hence the need for both params.
      *
      * @param bookId          to store
-     * @param adapterPosition to store
+     *                        use {@code 0} to disable centering
+     * @param adapterPosition to highlight;
+     *                        use {@code RecyclerView.NO_POSITION} to remove all highlighting
      */
-    void setSelectedPosition(@IntRange(from = 0) final long bookId,
-                             final int adapterPosition) {
-        selectedBookId = bookId;
+    void setSelectedBook(@IntRange(from = 0) final long bookId,
+                         @IntRange(from = RecyclerView.NO_POSITION) final int adapterPosition) {
+        this.selectedBookId = bookId;
 
         // Call with previous selectedAdapterPosition and new position
         highlightSelection.setValue(new Pair<>(selectedAdapterPosition, adapterPosition));

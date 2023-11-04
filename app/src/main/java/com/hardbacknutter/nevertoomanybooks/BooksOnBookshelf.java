@@ -318,7 +318,8 @@ public class BooksOnBookshelf
             new BookshelfFiltersDialogFragment.Launcher(
                     RK_FILTERS, modified -> {
                 if (modified) {
-                    vm.setSelectedPosition(0, RecyclerView.NO_POSITION);
+                    // After applying filters, we always start the list at the top.
+                    vm.setSelectedBook(0, RecyclerView.NO_POSITION);
                     buildBookList();
                 }
             });
@@ -968,7 +969,7 @@ public class BooksOnBookshelf
             // It's a book, open the details page.
             final long bookId = rowData.getLong(DBKey.FK_BOOK);
             // store the id as the current 'central' book for repositioning after a rebuild
-            vm.setSelectedPosition(bookId, adapterPosition);
+            vm.setSelectedBook(bookId, adapterPosition);
 
             if (hasEmbeddedDetailsFrame()) {
                 //  On larger screens, opens the book details fragment embedded.
@@ -1371,7 +1372,7 @@ public class BooksOnBookshelf
                                      @IdRes final int menuItemId) {
 
         final long bookId = rowData.getLong(DBKey.FK_BOOK);
-        vm.setSelectedPosition(bookId, adapterPosition);
+        vm.setSelectedBook(bookId, adapterPosition);
 
         if (menuItemId == R.id.MENU_BOOK_SET_READ
             || menuItemId == R.id.MENU_BOOK_SET_UNREAD) {
@@ -1838,11 +1839,11 @@ public class BooksOnBookshelf
     private void showBookDetailsIfWeCan(@IntRange(from = 0) final long bookId,
                                         final int adapterPosition) {
         if (bookId > 0 && hasEmbeddedDetailsFrame()) {
-            vm.setSelectedPosition(bookId, adapterPosition);
+            vm.setSelectedBook(bookId, adapterPosition);
             openEmbeddedBookDetails(bookId);
         } else {
-            // Make sure to disable the current stored book id and position
-            vm.setSelectedPosition(0, RecyclerView.NO_POSITION);
+            // Make sure to disable the current stored position
+            vm.setSelectedBook(0, RecyclerView.NO_POSITION);
         }
     }
 
