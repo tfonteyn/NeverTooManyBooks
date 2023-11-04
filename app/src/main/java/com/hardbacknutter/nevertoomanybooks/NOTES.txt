@@ -57,6 +57,7 @@ NEW:
   the project Github issues page.
 
 FIXES:
+- improved/optimized scrolling to the correct book row after a rebuild
 - the generic error message "Please check that storage is writable..." has been split/redone,
   and will now be much clearer as to what is really wrong.
 - user editable URLs are now checked for being syntactically valid.
