@@ -524,7 +524,6 @@ public class BooksOnBookshelf
 
         vm.onTriggerRebuildList().observe(this, recreateLayoutManager -> {
             if (!vm.isBuilding()) {
-                saveListPosition();
                 if (recreateLayoutManager) {
                     createLayoutManager();
                 }
@@ -784,6 +783,8 @@ public class BooksOnBookshelf
      * @return {@code true} if the menuItem was handled.
      */
     private boolean onNavigationItemSelected(@NonNull final MenuItem menuItem) {
+        saveListPosition();
+
         final int menuItemId = menuItem.getItemId();
 
         if (menuItemId == R.id.SUBMENU_SYNC) {
@@ -938,6 +939,7 @@ public class BooksOnBookshelf
 
     @Override
     public void onBookDeleted(final long bookId) {
+        saveListPosition();
         vm.onBookDeleted(bookId);
     }
 
@@ -953,6 +955,8 @@ public class BooksOnBookshelf
      */
     private void onRowClicked(@NonNull final View v,
                               final int adapterPosition) {
+        saveListPosition();
+
         //noinspection DataFlowIssue
         final DataHolder rowData = adapter.readDataAt(adapterPosition);
         // Paranoia: if the user can click it, then the row exists.
@@ -979,9 +983,7 @@ public class BooksOnBookshelf
                         rowData.getLong(DBKey.PK_ID)));
             }
         } else {
-            // it's a level, expand/collapse.
-            saveListPosition();
-
+            // it's a level, expand/collapse
             final long nodeRowId = rowData.getLong(DBKey.BL_LIST_VIEW_NODE_ROW_ID);
             vm.setNode(nodeRowId, BooklistNode.NextState.Toggle, 1);
             // don't pass the node, we want the list to scroll back to
@@ -1217,6 +1219,8 @@ public class BooksOnBookshelf
     private boolean onRowContextMenuItemSelected(@NonNull final View v,
                                                  final int adapterPosition,
                                                  @NonNull final MenuItem menuItem) {
+        saveListPosition();
+
         //noinspection DataFlowIssue
         final DataHolder rowData = adapter.readDataAt(adapterPosition);
         // Paranoia: if the user can click it, then the row exists.
@@ -1235,8 +1239,6 @@ public class BooksOnBookshelf
             return true;
 
         } else if (menuItemId == R.id.MENU_LEVEL_EXPAND) {
-            saveListPosition();
-
             final long nodeRowId = rowData.getLong(DBKey.BL_LIST_VIEW_NODE_ROW_ID);
             vm.setNode(nodeRowId, BooklistNode.NextState.Expand,
                        vm.getStyle().getGroupCount());
@@ -1682,10 +1684,11 @@ public class BooksOnBookshelf
      * @param uuid of the style to apply
      */
     private void onStyleSelected(@NonNull final String uuid) {
-        vm.onStyleChanged(this, uuid);
-        vm.resetPreferredListRebuildMode(this);
-
         saveListPosition();
+
+        vm.resetPreferredListRebuildMode(this);
+        vm.onStyleChanged(this, uuid);
+
         // New style, so the layout might have changed
         createLayoutManager();
         buildBookList();
@@ -1708,9 +1711,10 @@ public class BooksOnBookshelf
      */
     private void onBookshelfSelected(final long bookshelfId) {
         if (bookshelfId != vm.getBookshelf().getId()) {
-            vm.selectBookshelf(this, bookshelfId);
-
+            // Save for the soon-to-be previous bookshelf
             saveListPosition();
+
+            vm.selectBookshelf(this, bookshelfId);
             // New style, so the layout might have changed
             createLayoutManager();
             buildBookList();
