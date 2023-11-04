@@ -36,6 +36,8 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -1267,6 +1269,12 @@ public class BooksOnBookshelfViewModel
      * Queue a rebuild of the underlying cursor and data.
      */
     void buildBookList() {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
+            Debug.startMethodTracing("trace-" + LocalDateTime
+                    .now().withNano(0)
+                    .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        }
+
         Objects.requireNonNull(bookshelf, ERROR_NULL_BOOKLIST);
         Objects.requireNonNull(searchCriteria, "searchCriteria");
 

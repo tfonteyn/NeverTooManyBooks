@@ -25,7 +25,6 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Debug;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -58,8 +57,6 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.security.cert.CertificateException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -1735,12 +1732,6 @@ public class BooksOnBookshelf
                             .remove(fragment)
                             .commit();
                 }
-            }
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
-                Debug.startMethodTracing("trace-" + LocalDateTime
-                        .now().withNano(0)
-                        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
             }
 
             // force the adapter to stop displaying by disabling the list.
