@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -49,7 +49,7 @@
             android:id="@+id/lbl_filter"
             style="@style/RowEditor.Text.Primary"
             tools:ignore="SelectableText"
-            tools:text="@string/lbl_edition"
+            tools:text="@string/action_select"
             />
 
         <TextView
@@ -57,7 +57,7 @@
             style="@style/RowEditor.Text.Secondary"
             android:layout_marginStart="@dimen/field_margin_start"
             tools:ignore="SelectableText"
-            tools:text="@string/lbl_edition_first_edition"
+            tools:text="@string/warning_nothing_selected"
             />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

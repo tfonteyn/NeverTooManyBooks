@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -44,7 +44,7 @@
         app:layout_constraintStart_toEndOf="@id/btn_del"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="SelectableText"
-        tools:text="@string/lbl_read"
+        tools:text="@string/action_select"
         />
 
     <RadioGroup
@@ -61,14 +61,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:checked="true"
-            tools:text="@string/option_bob_filter_read_yes"
+            tools:text="@string/enabled"
             />
 
         <RadioButton
             android:id="@+id/valueFalse"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="@string/option_bob_filter_read_no"
+            tools:text="@string/disabled"
             />
     </RadioGroup>
 </androidx.constraintlayout.widget.ConstraintLayout>

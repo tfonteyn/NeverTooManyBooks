@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -44,7 +44,7 @@
         app:layout_constraintStart_toEndOf="@id/btn_del"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="SelectableText"
-        tools:text="@string/lbl_color"
+        tools:text="@string/action_select"
         />
 
     <com.google.android.material.textfield.TextInputLayout
@@ -61,7 +61,7 @@
             style="@style/autoCompleteTextEntry"
             android:imeOptions="actionNext"
             tools:ignore="LabelFor"
-            tools:text="@sample/data.json/color/name"
+            tools:text="@string/warning_nothing_selected"
             />
 
     </com.google.android.material.textfield.TextInputLayout>
