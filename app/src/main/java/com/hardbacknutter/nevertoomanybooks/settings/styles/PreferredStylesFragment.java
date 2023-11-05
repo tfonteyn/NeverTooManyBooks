@@ -228,6 +228,16 @@ public class PreferredStylesFragment
         super.onDestroyView();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
+    @Override
+    public void onResume() {
+        super.onResume();
+        // We're always refreshing here which is overkill.
+        // We should only do this if the user just returned from editing the default.
+        vm.refreshStyleList();
+        listAdapter.notifyDataSetChanged();
+    }
+
     @Override
     public void onPause() {
         //noinspection DataFlowIssue

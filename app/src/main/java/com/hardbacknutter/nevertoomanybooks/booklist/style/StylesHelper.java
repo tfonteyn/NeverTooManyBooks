@@ -209,13 +209,6 @@ public class StylesHelper {
         return cache;
     }
 
-    /**
-     * Clear the cached Styles. Called after the user updates a (list of) Style.
-     */
-    public void clearCache() {
-        cache.clear();
-    }
-
 
     /**
      * Convenience wrapper that gets called after an import to re-sort all styles.
@@ -256,7 +249,7 @@ public class StylesHelper {
         }
 
         // keep it safe and easy, just clear the caches; almost certainly overkill
-        clearCache();
+        cache.clear();
     }
 
 
@@ -321,14 +314,21 @@ public class StylesHelper {
             }
             // Reminder: do NOT require a positive value here!
             // It's perfectly fine to update builtin styles;
-            // ONLY new styles must be rejected
+            // ONLY NEW styles must be rejected
             if (style.getId() == 0) {
                 throw new IllegalStateException("A new Style cannot be updated");
             }
         }
 
         if (styleDaoSupplier.get().update(context, style)) {
-            cache.put(style.getUuid(), style);
+            if (style.getType() == StyleType.Global) {
+                // ensure both the global style and any inheriting styles get reloaded
+                globalStyle = null;
+                cache.clear();
+            } else {
+                // replace (or insert) in the cache
+                cache.put(style.getUuid(), style);
+            }
             return true;
         }
         return false;

@@ -103,6 +103,11 @@ public class PreferredStylesViewModel
         dirty = isDirty;
     }
 
+    void refreshStyleList() {
+        styleList.clear();
+        styleList.addAll(stylesHelper.getStyles(true));
+    }
+
     @NonNull
     List<Style> getStyleList() {
         return styleList;

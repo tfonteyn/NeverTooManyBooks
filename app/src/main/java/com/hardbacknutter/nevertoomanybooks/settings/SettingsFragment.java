@@ -408,8 +408,6 @@ public class SettingsFragment
                 case StyleDataStore.PK_SORT_AUTHOR_NAME_GIVEN_FIRST:
                 case ReorderHelper.PK_SORT_TITLE_REORDERED:
                 case ReorderHelper.PK_SHOW_TITLE_REORDERED: {
-                    // ensure the new style defaults are used
-                    ServiceLocator.getInstance().getStyles().clearCache();
                     // Set the activity result so our caller will recreate itself
                     vm.setOnBackRequiresActivityRecreation();
                     break;

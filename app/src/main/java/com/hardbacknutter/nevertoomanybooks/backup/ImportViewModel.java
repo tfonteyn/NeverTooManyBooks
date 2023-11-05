@@ -30,7 +30,6 @@ import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.core.utils.UriInfo;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
@@ -122,11 +121,8 @@ public class ImportViewModel
     void postProcessStyles(@NonNull final Context context,
                            @NonNull final ImportResults result) {
         if (result.styles > 0) {
-            final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
             // Resort the styles menu as per their (new) order.
-            stylesHelper.updateMenuOrder(context);
-            // Force a refresh of the cached styles.
-            stylesHelper.clearCache();
+            ServiceLocator.getInstance().getStyles().updateMenuOrder(context);
         }
     }
 }

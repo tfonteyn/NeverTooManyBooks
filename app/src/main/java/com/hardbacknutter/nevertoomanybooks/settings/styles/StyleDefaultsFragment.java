@@ -47,12 +47,7 @@ public class StyleDefaultsFragment
                 public void handleOnBackPressed() {
                     //noinspection DataFlowIssue
                     final boolean modified = vm.updateOrInsertStyle(getContext());
-
                     if (modified) {
-                        // Builtin styles inherit from the global style, force recreation.
-                        // User styles don't... but for future compatibility they
-                        // are cleared is well.
-                        ServiceLocator.getInstance().getStyles().clearCache();
                         settingsViewModel.setForceRebuildBooklist();
                     }
 
