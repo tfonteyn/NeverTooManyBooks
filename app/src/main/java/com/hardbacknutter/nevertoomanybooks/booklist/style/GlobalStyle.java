@@ -55,11 +55,13 @@ public final class GlobalStyle
      */
     public GlobalStyle() {
         super(UUID.randomUUID().toString(), Integer.MIN_VALUE);
+        fieldVisibility.put(FieldVisibility.Screen.List, new BookLevelFieldVisibility());
+        fieldVisibility.put(FieldVisibility.Screen.Detail, new BookDetailsFieldVisibility());
         setGroupIds(GROUPS);
     }
 
     /**
-     * Constructor to <strong>load from database</strong>.
+     * Constructor to <strong>load from the database</strong>.
      *
      * @param rowData with data
      */

@@ -94,7 +94,7 @@ public abstract class BaseStyle
 
     /** Configuration for the fields shown on the given {@link FieldVisibility.Screen}. */
     @NonNull
-    private final Map<FieldVisibility.Screen, FieldVisibility> fieldVisibility =
+    protected final Map<FieldVisibility.Screen, FieldVisibility> fieldVisibility =
             new EnumMap<>(FieldVisibility.Screen.class);
 
     /**
@@ -175,9 +175,6 @@ public abstract class BaseStyle
               final long id) {
         this.uuid = uuid;
         this.id = id;
-
-        fieldVisibility.put(FieldVisibility.Screen.List, new BookLevelFieldVisibility());
-        fieldVisibility.put(FieldVisibility.Screen.Detail, new BookDetailsFieldVisibility());
     }
 
     /**
