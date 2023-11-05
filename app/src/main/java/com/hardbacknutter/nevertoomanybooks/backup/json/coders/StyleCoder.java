@@ -164,9 +164,13 @@ public class StyleCoder
                      .stream()
                      .map(BooklistGroup::getId)
                      .collect(Collectors.toList())));
-        options.put(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE, style.getPrimaryAuthorType());
+        if (style.hasGroup(BooklistGroup.AUTHOR)) {
+            options.put(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE, style.getPrimaryAuthorType());
+        }
         for (final Style.UnderEach item : Style.UnderEach.values()) {
-            options.put(item.getPrefKey(), style.isShowBooksUnderEachGroup(item.getGroupId()));
+            if (style.hasGroup(item.getGroupId())) {
+                options.put(item.getPrefKey(), style.isShowBooksUnderEachGroup(item.getGroupId()));
+            }
         }
     }
 
