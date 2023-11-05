@@ -164,21 +164,27 @@ public abstract class BaseStyle
     private boolean groupRowUsesPreferredHeight;
 
     /**
-     * Constructor for a new style based on hardcoded defaults.
-     * <p>
-     * <strong>Only used during app installation for the global/defaults.</strong>
+     * Constructor.
      *
-     * @param id   for the new style
      * @param uuid for the new style
+     * @param id   for the new style
+     *
+     * @throws IllegalArgumentException if the UUID is not a valid string
      */
     BaseStyle(@NonNull final String uuid,
               final long id) {
+        if (uuid.isEmpty()) {
+            throw new IllegalArgumentException("uuid.isEmpty()");
+        }
         this.uuid = uuid;
         this.id = id;
     }
 
     /**
-     * Load the style data from the database.
+     * Constructor. Load the style data from the database.
+     * <p>
+     * Used by {@link StyleType#Global} and {@link StyleType#User},
+     * but NOT by {@link StyleType#Builtin}.
      *
      * @param rowData to use
      */
@@ -230,62 +236,51 @@ public abstract class BaseStyle
         }
     }
 
-
     /**
-     * Copy constructor. Used for cloning.
-     * <p>
-     * The id and uuid are passed in as they need to override
-     * the originals values, see {@link #clone(Context)}.
+     * Copy all the <strong>non-group</strong> options
+     * from the given style into this style.
      *
-     * @param id    for the new style
-     * @param uuid  for the new style
-     * @param style to clone
+     * @param from to copy from
      */
-    BaseStyle(@NonNull final String uuid,
-              @IntRange(from = 0) final long id,
-              @NonNull final Style style) {
-        this.uuid = uuid;
-        this.id = id;
-
-        preferred = style.isPreferred();
-        menuPosition = style.getMenuPosition();
+    void copyNonGroupSettings(@NonNull final Style from) {
+        preferred = from.isPreferred();
+        menuPosition = from.getMenuPosition();
 
         // 'simple' options
-        layout = style.getLayout();
-        coverClickAction = style.getCoverClickAction();
-        coverScale = style.getCoverScale();
-        textScale = style.getTextScale();
-        groupRowUsesPreferredHeight = style.isGroupRowUsesPreferredHeight();
+        layout = from.getLayout();
+        coverClickAction = from.getCoverClickAction();
+        coverScale = from.getCoverScale();
+        textScale = from.getTextScale();
+        groupRowUsesPreferredHeight = from.isGroupRowUsesPreferredHeight();
 
-        setHeaderFieldVisibility(style.getHeaderFieldVisibilityValue());
-        setBookLevelFieldsOrderBy(new LinkedHashMap<>(style.getBookLevelFieldsOrderBy()));
+        setHeaderFieldVisibility(from.getHeaderFieldVisibilityValue());
+        setBookLevelFieldsOrderBy(new LinkedHashMap<>(from.getBookLevelFieldsOrderBy()));
 
         for (final FieldVisibility.Screen screen : FieldVisibility.Screen.values()) {
-            final Set<String> keys = style.getFieldVisibilityKeys(screen, true);
-            final long value = style.getFieldVisibilityValue(screen);
+            final Set<String> keys = from.getFieldVisibilityKeys(screen, true);
+            final long value = from.getFieldVisibilityValue(screen);
             fieldVisibility.put(screen, new FieldVisibility(keys, value));
         }
 
-        showAuthorByGivenName = style.isShowAuthorByGivenName();
-        sortAuthorByGivenName = style.isSortAuthorByGivenName();
-
-        // groups
-        expansionLevel = style.getExpansionLevel();
-        setGroupList(style.getGroupList());
-        // group-options
-        setPrimaryAuthorType(style.getPrimaryAuthorType());
-        for (final Style.UnderEach item : Style.UnderEach.values()) {
-            final int groupId = item.getGroupId();
-            setShowBooksUnderEachGroup(groupId, style.isShowBooksUnderEachGroup(groupId));
-        }
+        showAuthorByGivenName = from.isShowAuthorByGivenName();
+        sortAuthorByGivenName = from.isSortAuthorByGivenName();
     }
 
-    @NonNull
-    static String requireUuid(@NonNull final String uuid) {
-        if (uuid.isEmpty()) {
-            throw new IllegalArgumentException("uuid.isEmpty()");
+    /**
+     * Copy all the <strong>group</strong> options (but not he actual groups)
+     * from the given style into this style.
+     *
+     * @param from to copy from
+     */
+    void copyGroupOptions(@NonNull final Style from) {
+        setGroupList(from.getGroupList());
+        // group-options
+        setExpansionLevel(from.getExpansionLevel());
+        setPrimaryAuthorType(from.getPrimaryAuthorType());
+        for (final UnderEach item : UnderEach.values()) {
+            final int groupId = item.getGroupId();
+            setShowBooksUnderEachGroup(groupId, from.isShowBooksUnderEachGroup(groupId));
         }
-        return uuid;
     }
 
     /**
@@ -294,16 +289,20 @@ public abstract class BaseStyle
      * @param context Current context
      *
      * @return a new {@link WritableStyle} instance
-     *
-     * @throws IllegalArgumentException if the given UUID is empty
      */
     @Override
     @NonNull
     public WritableStyle clone(@NonNull final Context context) {
-        requireUuid(uuid);
-
         // A cloned style is *always* a UserStyle regardless of the original type
-        return new UserStyle(context, 0, UUID.randomUUID().toString(), this);
+        //noinspection ClassReferencesSubclass
+        final UserStyle cloned = new UserStyle(UUID.randomUUID().toString(), 0);
+        cloned.setName(this.getLabel(context));
+
+        cloned.copyNonGroupSettings(this);
+        cloned.setGroupList(this.getGroupList());
+        cloned.copyGroupOptions(this);
+
+        return cloned;
     }
 
     @Override
@@ -603,11 +602,24 @@ public abstract class BaseStyle
                 .orElse(Author.TYPE_UNKNOWN);
     }
 
+    /**
+     * Set the primary Author type value for the {@link BooklistGroup#AUTHOR} group.
+     * If this style does not have the group, this method does nothing.
+     *
+     * @param type to set
+     */
     public void setPrimaryAuthorType(@Author.Type final int type) {
         getGroupById(BooklistGroup.AUTHOR)
                 .ifPresent(group -> ((AuthorBooklistGroup) group).setPrimaryType(type));
     }
 
+    /**
+     * Set the {@link UnderEach} value for the given group.
+     * If this style does not have the group, this method does nothing.
+     *
+     * @param groupId to set
+     * @param value   to set
+     */
     public void setShowBooksUnderEachGroup(@BooklistGroup.Id final int groupId,
                                            final boolean value) {
         getGroupById(groupId)

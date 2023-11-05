@@ -26,8 +26,6 @@ import androidx.annotation.Nullable;
 
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.backup.json.coders.StyleCoder;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
@@ -43,19 +41,7 @@ public class UserStyle
     private String name;
 
     /**
-     * Constructor for <strong>importing</strong> styles.
-     *
-     * @param uuid UUID of the style
-     *
-     * @see StyleCoder
-     */
-    private UserStyle(@NonNull final String uuid) {
-        super(requireUuid(uuid), 0,
-              ServiceLocator.getInstance().getStyles().getGlobalStyle());
-    }
-
-    /**
-     * Constructor for styles <strong>loaded from database</strong>.
+     * Constructor to <strong>load from the database</strong>.
      *
      * @param rowData with data
      */
@@ -65,26 +51,18 @@ public class UserStyle
     }
 
     /**
-     * Copy constructor. Used for cloning.
-     * <p>
-     * The id and uuid are passed in as they need to override
-     * the originals values, see {@link #clone(Context)}.
+     * Copy constructor.
      *
-     * @param context Current context
-     * @param id      for the new style
-     * @param uuid    for the new style
-     * @param style   to clone
+     * @param uuid for the new style
+     * @param id   for the new style
      */
-    protected UserStyle(@NonNull final Context context,
-                        final long id,
-                        @NonNull final String uuid,
-                        @NonNull final Style style) {
-        super(requireUuid(uuid), id, style);
-        name = style.getLabel(context);
+    protected UserStyle(@NonNull final String uuid,
+                        final long id) {
+        super(uuid, id);
     }
 
     /**
-     * Constructor - load the style from the database.
+     * Constructor. Load the style data from the database.
      *
      * @param rowData data
      *
@@ -96,15 +74,20 @@ public class UserStyle
     }
 
     /**
-     * Constructor - load the style from an import (backup file).
+     * Constructor - create a template style inheriting from {@link GlobalStyle}.
+     * GROUP OPTIONS ARE NOT COPIED FROM THE GLOBAL-STYLE!
      *
-     * @param uuid data
+     * @param uuid for the new style
+     * @param styleDefaults the defaults to use
      *
      * @return the loaded Style
      */
     @NonNull
-    public static Style createFromImport(@NonNull final String uuid) {
-        return new UserStyle(uuid);
+    public static Style createFromImport(@NonNull final String uuid,
+                                         @NonNull final Style styleDefaults) {
+        final UserStyle userStyle = new UserStyle(uuid, 0);
+        userStyle.copyNonGroupSettings(styleDefaults);
+        return userStyle;
     }
 
     @Override

@@ -220,28 +220,12 @@ public final class BuiltinStyle
     /**
      * Constructor.
      *
-     * @param definition    to use
-     * @param styleDefaults the defaults to use
-     * @param preferred     flag
-     * @param menuPosition  to set
+     * @param definition to use
      */
     @VisibleForTesting
-    public BuiltinStyle(@NonNull final Definition definition,
-                        @NonNull final Style styleDefaults,
-                        final boolean preferred,
-                        final int menuPosition) {
-        // The defaults are taken from the global style.
-        super(requireUuid(definition.getUuid()), definition.getId(), styleDefaults);
-
+    public BuiltinStyle(@NonNull final Definition definition) {
+        super(definition.getUuid(), definition.getId());
         this.labelResId = definition.getLabelResId();
-
-        setPreferred(preferred);
-        setMenuPosition(menuPosition);
-
-        setGroupIds(Arrays.stream(definition.getGroupIds())
-                          .boxed()
-                          .collect(Collectors.toList()));
-        // none of the builtin styles have extra group settings
     }
 
     /**
@@ -278,8 +262,8 @@ public final class BuiltinStyle
     }
 
     /**
-     * Load the style data from the database filling in the defaults from
-     * the given defaults.
+     * Constructor. Load the style data from the database,
+     * using the given defaults.
      * <p>
      * This method will return {@code Optional.empty()} if the style is deprecated.
      *
@@ -291,7 +275,6 @@ public final class BuiltinStyle
     @NonNull
     public static Optional<Style> createFromDatabase(@NonNull final Style styleDefaults,
                                                      @NonNull final DataHolder rowData) {
-
         final int id = rowData.getInt(DBKey.PK_ID);
         final Definition styleDef = ALL.stream()
                                        .filter(def -> def.getId() == id)
@@ -302,12 +285,18 @@ public final class BuiltinStyle
             return Optional.empty();
         }
 
-        final boolean preferred = rowData.getBoolean(DBKey.STYLE_IS_PREFERRED);
-        final int menuPosition = rowData.getInt(DBKey.STYLE_MENU_POSITION);
+        final BuiltinStyle style = new BuiltinStyle(styleDef);
+        // Group options come from the default (i.e. global-style)
+        style.copyNonGroupSettings(styleDefaults);
+        // Groups come from the definitions
+        style.setGroupIds(Arrays.stream(styleDef.getGroupIds())
+                                .boxed()
+                                .collect(Collectors.toList()));
+        // Group options come from the default (i.e. global-style)
+        style.copyGroupOptions(styleDefaults);
 
-
-        final BuiltinStyle style = new BuiltinStyle(styleDef, styleDefaults,
-                                                    preferred, menuPosition);
+        style.setPreferred(rowData.getBoolean(DBKey.STYLE_IS_PREFERRED));
+        style.setMenuPosition(rowData.getInt(DBKey.STYLE_MENU_POSITION));
 
         // NEWTHINGS: BuiltinStyle: add a new builtin style if needed
         if (id == ID_COMPACT) {

@@ -209,17 +209,17 @@ public class StyleCoder
             }
         }
 
+        final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
         final Style style;
         switch (type) {
             case User: {
-                style = UserStyle.createFromImport(uuid);
+                style = UserStyle.createFromImport(uuid, stylesHelper.getGlobalStyle());
                 if (data.has(DBKey.STYLE_NAME)) {
                     ((UserStyle) style).setName(data.getString(DBKey.STYLE_NAME));
                 }
                 break;
             }
             case Builtin: {
-                final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
                 style = stylesHelper.getStyle(uuid).orElseGet(
                         // It's a recognized Builtin Style, but it's deprecated.
                         // We return the default builtin style instead.
@@ -227,7 +227,7 @@ public class StyleCoder
                 break;
             }
             case Global: {
-                style = ServiceLocator.getInstance().getStyles().getGlobalStyle();
+                style = stylesHelper.getGlobalStyle();
                 break;
             }
             default:

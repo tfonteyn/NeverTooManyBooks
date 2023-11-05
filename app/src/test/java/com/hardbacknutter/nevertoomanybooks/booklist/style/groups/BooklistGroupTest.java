@@ -24,7 +24,6 @@ import java.util.HashSet;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 
 import org.junit.jupiter.api.Test;
@@ -51,8 +50,8 @@ class BooklistGroupTest {
                             .findFirst();
         assertTrue(definition.isPresent());
 
-        final GlobalStyle styleDefaults = new GlobalStyle();
-        final Style style = new BuiltinStyle(definition.get(), styleDefaults, true, 1);
+        final Style style = new BuiltinStyle(definition.get());
+        // no further style init, we just need it for some basic defaults.
 
         final Collection<String> prefixes = new HashSet<>();
         for (int id = 0; id <= BooklistGroup.GROUP_KEY_MAX; id++) {
