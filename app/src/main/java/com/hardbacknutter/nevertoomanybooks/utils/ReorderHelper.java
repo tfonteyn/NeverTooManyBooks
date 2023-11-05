@@ -84,6 +84,7 @@ public final class ReorderHelper {
      * @return {@code true} if titles should be reordered. e.g. "The title" -> "title, The"
      */
     public boolean forDisplay(@NonNull final Context context) {
+        // ENHANCE: move this to the global style and let styles inherit this setting
         return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(PK_SHOW_TITLE_REORDERED, false);
     }
