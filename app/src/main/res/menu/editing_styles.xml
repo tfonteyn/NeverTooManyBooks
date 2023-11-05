@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -41,6 +41,15 @@
         android:orderInCategory="@integer/MENU_ORDER_DELETE"
         android:title="@string/action_delete"
         app:showAsAction="ifRoom" />
+
+    <group android:id="@id/MENU_GROUP_EDIT_DEFAULT">
+        <item
+            android:id="@id/MENU_EDIT_DEFAULT"
+            android:icon="@drawable/ic_baseline_settings_24"
+            android:orderInCategory="@integer/MENU_ORDER_EDIT_DEFAULTS"
+            android:title="@string/action_edit_defaults"
+            />
+    </group>
 
     <group android:id="@id/MENU_GROUP_BLNS">
         <item

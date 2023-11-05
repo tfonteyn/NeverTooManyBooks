@@ -297,6 +297,16 @@ public class PreferredStylesFragment
             });
             return true;
 
+        } else if (itemId == R.id.MENU_EDIT_DEFAULT) {
+            getParentFragmentManager()
+                    .beginTransaction()
+                    .setReorderingAllowed(true)
+                    .addToBackStack(StyleDefaultsFragment.TAG)
+                    .replace(R.id.main_fragment,
+                             StyleDefaultsFragment.create(),
+                             StyleDefaultsFragment.TAG)
+                    .commit();
+
         } else if (itemId == R.id.MENU_PURGE_BLNS) {
             final Context context = getContext();
             //noinspection DataFlowIssue

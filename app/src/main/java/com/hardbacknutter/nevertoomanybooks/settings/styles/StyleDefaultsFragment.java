@@ -27,16 +27,18 @@ import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsViewModel;
 
 @Keep
 public class StyleDefaultsFragment
         extends StyleBaseFragment {
+
+    public static final String TAG = "StyleDefaultsFragment";
 
     private SettingsViewModel settingsViewModel;
 
@@ -55,6 +57,15 @@ public class StyleDefaultsFragment
                     getParentFragmentManager().popBackStack();
                 }
             };
+
+    @NonNull
+    public static Fragment create() {
+        final Fragment fragment = new StyleDefaultsFragment();
+        final Bundle args = new Bundle(1);
+        args.putBoolean(StyleViewModel.BKEY_GLOBAL_STYLE, true);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,

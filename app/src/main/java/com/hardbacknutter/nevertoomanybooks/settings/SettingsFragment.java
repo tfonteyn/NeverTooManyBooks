@@ -50,11 +50,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchSitesAllListsContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
@@ -91,7 +89,7 @@ public class SettingsFragment
     private static final String PSK_SEARCH_SITE_ORDER = "psk_search_site_order";
     private static final String PSK_CALIBRE = "psk_calibre";
 
-    private static final String PSK_STYLE_DEFAULTS = "psk_style_defaults";
+    public static final String PSK_STYLE_DEFAULTS = "psk_style_defaults";
 
     private final ActivityResultLauncher<Void> editSitesLauncher =
             registerForActivityResult(new SearchSitesAllListsContract(),
@@ -404,8 +402,6 @@ public class SettingsFragment
                                           @Nullable final String key) {
         if (key != null) {
             switch (key) {
-                case StyleDataStore.PK_SHOW_AUTHOR_NAME_GIVEN_FIRST:
-                case StyleDataStore.PK_SORT_AUTHOR_NAME_GIVEN_FIRST:
                 case ReorderHelper.PK_SORT_TITLE_REORDERED:
                 case ReorderHelper.PK_SHOW_TITLE_REORDERED: {
                     // Set the activity result so our caller will recreate itself
