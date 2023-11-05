@@ -375,7 +375,7 @@ public class PreferredStylesFragment
             final Style style = getItem(position);
 
             holder.vb.styleName.setText(style.getLabel(context));
-            holder.vb.type.setText(style.getType().getTypeResId());
+            holder.vb.type.setText(style.getType().getLabel(context));
             holder.vb.groups.setText(style.getGroupsSummaryText(context));
 
             // set the 'preferred' state of the current row

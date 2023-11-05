@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,9 +18,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+  -->
+
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
     <string name="X_lbl_folder">文件夹</string>
     <string name="lbl_cover_front">封面</string>
@@ -87,7 +90,7 @@
     <string name="X_action_move">移动</string>
     <string name="X_action_next">下一步</string>
     <string name="X_action_previous">上一页</string>
-    <string name="X_btn_customize">自定义…</string>
+    <string name="X_action_customize">自定义…</string>
     <string name="X_error_authentication_failed">验证失败</string>
     <string name="error_site_authentication_failed">%1$s验证失败</string>
     <string name="error_storage_not_accessible">请检查App存储权限。</string>
@@ -320,7 +323,7 @@
     <string name="ps_show_titles_reordered_off">关闭</string>
     <!-- NOT APPLICABLE FOR BOOKS IN CHINESE. A single vertical bar character. -->
     <string name="pv_reformat_titles_prefixes">"|"</string>
-    <string name="style_type_defaults">风格默认值</string>
+    <string name="X_style_type_defaults">风格默认值</string>
     <string name="action_edit_ellipsis">修改…</string>
     <string name="tip_booklist_style_defaults">使用此界面设置所有样式的默认特征。所有内置样式都会使用这些特征，您自己定义的任何样式也会以这些特征为起点。</string>
     <string name="acra_report_saved">您现在可以访问 Github 上的项目页面并记录新问题。请将之前保存的报告附加到问题中。如果您还没有 Github 账户，则需要创建一个。</string>
@@ -336,9 +339,8 @@
     <string name="lbl_location">地点</string>
     <string name="lbl_tab_notes">备注</string>
     <string name="action_show_options">选项</string>
-    <string name="X_lbl_completed">已完结</string>
-    <string name="X_pg_general">常规</string>
-    <string name="X_use_default_setting">使用默认设置</string>
+    <string name="X_lbl_general">常规</string>
+    <string name="X_action_use_default_setting">使用默认设置</string>
     <string name="pt_ui_system_locale">N系统语言</string>
     <string name="error_invalid_url">无效地址（URL）</string>
     <string name="option_select_all">"全选"</string>
@@ -363,4 +365,5 @@
     <string name="book_format_softcover">平装</string>
     <string name="book_format_softcover_oblong">平装 - 长方形</string>
     <string name="book_format_digest">小型</string>
+    <string name="action_edit_defaults">编辑默认设置</string>
 </resources>

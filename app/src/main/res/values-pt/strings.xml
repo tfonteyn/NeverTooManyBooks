@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,9 +18,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+  -->
+
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!-- Quotes “...”  (older «…» are no longer used as verified with a native speaker) - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pt">
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d livro</item>
@@ -460,7 +463,7 @@
     <string name="ps_manage_fields">Os campos selecionados são visíveis nos ecrãs de adicionar/editar livros. Os campos não selecionados ficam ocultos.</string>
     <string name="pt_search_prefer_isbn10">Use o ISBN-10 sempre que possível</string>
     <string name="pt_primary_author_type">Tipo de autor principal</string>
-    <string name="pe_edit_book_isbn_checks_loose">Solto</string>
+    <string name="loose">Solto</string>
     <string name="pe_bob_list_rebuild_state_preferred">Use a expansão preferida</string>
     <string name="pe_bob_list_rebuild_state_expanded">Começar sempre expandido</string>
     <string name="pe_bob_row_menu_button_when_space">Mostre um botão se houver espaço, caso contrário, use o clique longo.</string>
@@ -507,7 +510,7 @@
     <string name="lbl_filter">Filtro</string>
     <string name="unknown_author">[Autor desconhecido]</string>
     <string name="lbl_library">Biblioteca</string>
-    <string name="X_btn_customize">Personalizar…</string>
+    <string name="X_action_customize">Personalizar…</string>
     <string name="confirm_continue">Tem certeza de que deseja continuar\?</string>
     <string name="lbl_sync_date">Desde</string>
     <string name="size_x_large">Muito Grande</string>
@@ -591,8 +594,8 @@
     <string name="option_delete_removed_books">Excluir livros locais que já não estão presentes no servidor</string>
     <string name="lbl_sorting">Ordenação</string>
     <string name="X_info_not_authorized">Não Autorizado</string>
-    <string name="X_pg_general">Geral</string>
-    <string name="X_use_default_setting">Usar valores padrão</string>
+    <string name="X_lbl_general">Geral</string>
+    <string name="X_action_use_default_setting">Usar valores padrão</string>
     <string name="lbl_location_long">Localização do livro</string>
     <string name="pt_ui_system_locale">Idioma do sistema</string>
     <string name="pt_ui_theme">Tema da Interface</string>
@@ -645,7 +648,7 @@
     <string name="pt_bob_list_state_expansion_level">Expansão por defeito da lista de livros</string>
     <string name="pt_show_author_name_given_first">Formatação do nome do autor</string>
     <string name="ps_bob_books_under_multiple_each_author">sob cada autor</string>
-    <string name="option_bob_filter_read_yes">Livros lidos</string>
+    <string name="X_option_bob_filter_read_yes">Livros lidos</string>
     <string name="ps_bob_books_under_multiple_each_publisher">em cada editor</string>
     <string name="lbl_filters">Filtros</string>
     <string name="lbl_add_filter">Adicionar filtro</string>
@@ -662,7 +665,6 @@
     <string name="lbl_read">Lido</string>
     <string name="btn_show_list">Mostrar lista</string>
     <string name="X_info_site_authorization_successful">%1$s autorização bem sucedida</string>
-    <string name="X_lbl_completed">Concluído</string>
     <string name="pt_maintenance">Manutenção</string>
     <string name="pe_bob_list_rebuild_state_preserve">Preservar o estado atual</string>
     <string name="option_bug_report_logfiles">Ficheiros de registo</string>
@@ -704,7 +706,7 @@
     <string name="confirm_registration_benefits">Esta função beneficia do registo em %1$s. Gostaria de ver mais informações, ou desativar esta mensagem?
 \n Pode encontrar estas informações posteriormente na secção “%2$s” das configurações.</string>
     <string name="action_add_with_details">Adicionar com detalhes</string>
-    <string name="lbl_importing">A importar…</string>
+    <string name="lbl_importing">Importando…</string>
     <string name="lbl_backup">Cópia de segurança</string>
     <string name="lbl_family_name">Sobrenome</string>
     <string name="lbl_given_names">Nomes Próprios</string>
@@ -726,7 +728,7 @@
     <string name="option_purge_bedetheque_authors_cache">Limpar cache de autores do Bedetheque</string>
     <string name="option_rebuild_fts">Reconstruir dados da Pesquisa de Texto Completo</string>
     <string name="info_purge_blns_item_name">Limpar o estado do nó para %1$s “%2$s”\?</string>
-    <string name="option_bob_filter_read_no">Livros Não Lidos</string>
+    <string name="X_option_bob_filter_read_no">Livros Não Lidos</string>
     <string name="option_bob_filter_signed_yes">Livros Assinados</string>
     <string name="option_bob_filter_signed_no">Livros não assinados</string>
     <string name="option_bob_filter_lend_out_yes">Livros emprestados</string>
@@ -735,7 +737,6 @@
     <string name="unknown_title">[Título desconhecido]</string>
     <string name="lbl_table_of_content_short">Conteúdo</string>
     <string name="lbl_virtual_libraries">Bibliotecas virtuais nesta biblioteca</string>
-    <string name="X_lbl_created">Criado</string>
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
     <string name="lbl_original_title">Título original</string>
     <string name="lbl_original_title_long">Título original se este livro for uma tradução</string>
@@ -769,10 +770,11 @@
     <string name="pt_bob_cover_click">Tocar numa imagem de capa.</string>
     <string name="pe_bob_cover_click_zoom">Aumentará o zoom da imagem da capa.</string>
     <string name="pe_bob_cover_click_details">Abre a página de detalhes do livro.</string>
-    <string name="style_type_defaults">Predefinições de estilo</string>
+    <string name="X_style_type_defaults">Predefinições de estilo</string>
     <string name="acra_report_saved">Pode agora visitar a página do projeto no Github e registar um novo problema. Anexe o relatório guardado anteriormente ao problema. Se ainda não tiver uma conta no Github, terá de criar uma.</string>
     <string name="action_report">Informar</string>
     <string name="error_invalid_url">Endereço inválido (URL)</string>
     <string name="lbl_certificate_validity_period">Validade: %1$s - %2$s</string>
     <string name="lbl_reading">A ler</string>
+    <string name="action_edit_defaults">Editar definições predefinidas</string>
 </resources>

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,9 +18,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+  -->
+
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d książka</item>
@@ -50,7 +53,7 @@
     <string name="X_action_try_again">Spróbuj ponownie</string>
     <string name="X_action_update">Zaktualizuj</string>
     <string name="X_action_validate">Uprawomocnić</string>
-    <string name="X_btn_customize">Dostosuj…</string>
+    <string name="X_action_customize">Dostosuj…</string>
     <string name="btn_show_list">Pokaż listę</string>
     <string name="confirm_continue">Jesteś pewien, że chcesz kontynuować?</string>
     <string name="X_error_authentication_failed">Uwierzytelnianie nie powiodło się</string>
@@ -59,16 +62,15 @@
     <string name="X_httpErrorIO">Nie można nawiązać połączenia z serwerem. Spróbuj ponownie później.</string>
     <string name="X_info_not_authorized">Nieautoryzowany</string>
     <string name="X_info_site_authorization_successful">Autoryzacja %1$s powiodła się</string>
-    <string name="X_lbl_completed">Zakończony</string>
     <string name="X_lbl_folder">Folder</string>
     <string name="X_lbl_image">Obraz</string>
     <string name="X_lbl_thumbnails">Miniatury</string>
     <string name="X_neither">Żaden</string>
     <string name="X_option_bob_filter_anthology_no">Wszystkie oprócz antologii</string>
     <string name="X_option_bob_filter_anthology_yes">Antologie</string>
-    <string name="X_pg_general">Ogólne</string>
+    <string name="X_lbl_general">Ogólne</string>
     <string name="tip_booklist_style_defaults">Ten ekran służy do ustawiania domyślnych właściwości wszystkich stylów. Są one używane przez wszystkie wbudowane style i stanowią punkt wyjścia dla każdego stylu zdefiniowanego przez użytkownika.</string>
-    <string name="X_use_default_setting">Użyj ustawień domyślnych</string>
+    <string name="X_action_use_default_setting">Użyj ustawień domyślnych</string>
     <string name="X_whichImageCaptureApplication">Zrób zdjęcie w aplikacji</string>
     <string name="X_whichSendToApplication">Wyślij za pomocą</string>
     <string name="a_b">%1$s%2$s</string>
@@ -310,7 +312,6 @@
     <string name="lbl_cover_front">Okładka</string>
     <string name="lbl_covers">Okładki</string>
     <string name="lbl_covers_long">Okładki książek</string>
-    <string name="X_lbl_created">Utworzono</string>
     <string name="lbl_credentials">Dane logowania użytkownika</string>
     <string name="lbl_currency">Waluta</string>
     <string name="lbl_database">Baza danych</string>
@@ -357,7 +358,7 @@
     <string name="option_header_import_books_option_new_and_updated_cutoff_date">Importuj tylko książki zmodyfikowane od</string>
     <string name="option_import_books_option_new_only">Tylko nowe książki</string>
     <string name="lbl_import_options">Wybierz, co zostanie zaimportowane.</string>
-    <string name="lbl_importing">Importowanie…</string>
+    <string name="lbl_importing">Importuję…</string>
     <string name="lbl_is_complete">Jest gotowy</string>
     <string name="lbl_keywords">Słowa kluczowe</string>
     <string name="lbl_language">Język</string>
@@ -502,15 +503,15 @@
     <string name="option_bob_filter_isbn_yes">Z ISBN</string>
     <string name="option_bob_filter_lend_out_no">Książki dostępne</string>
     <string name="option_bob_filter_lend_out_yes">Książki wypożyczone</string>
-    <string name="option_bob_filter_read_no">Książki nieprzeczytane</string>
-    <string name="option_bob_filter_read_yes">Książki czytane</string>
+    <string name="X_option_bob_filter_read_no">Książki nieprzeczytane</string>
+    <string name="X_option_bob_filter_read_yes">Książki czytane</string>
     <string name="option_bob_filter_signed_no">Książki niepodpisane</string>
     <string name="option_bob_filter_signed_yes">Podpisane książki</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Złóż wszystko</string>
     <string name="pe_bob_list_rebuild_state_expanded">Rozwiń wszystkie</string>
     <string name="pe_bob_list_rebuild_state_preferred">Użyj preferowanego stanu</string>
     <string name="pe_bob_list_rebuild_state_preserve">Zachowaj obecny stan</string>
-    <string name="pe_edit_book_isbn_checks_loose">Luźny</string>
+    <string name="loose">Luźny</string>
     <string name="pe_thumbnails_cache_resized_each_time">Zmień rozmiar obrazów za każdym razem, gdy są potrzebne (zużywa mniej pamięci, przewijanie będzie wolniejsze)</string>
     <string name="pe_thumbnails_cache_resized_stored">Buforuj obrazy o zmienionym rozmiarze (przewijanie będzie szybsze, zużyje więcej pamięci)</string>
     <string name="pe_ui_theme_dark">Ciemny</string>
@@ -761,10 +762,11 @@
     <string name="pt_bob_cover_click">Stuknięcie obrazu okładki.</string>
     <string name="pe_bob_cover_click_zoom">Powiększy obraz okładki.</string>
     <string name="pe_bob_cover_click_details">Otworzy stronę szczegółów książki.</string>
-    <string name="style_type_defaults">Domyślne ustawienia stylu</string>
+    <string name="X_style_type_defaults">Domyślne ustawienia stylu</string>
     <string name="acra_report_saved">Możesz teraz odwiedzić stronę projektu na Github i zarejestrować nowe zgłoszenie. Do zgłoszenia należy dołączyć wcześniej zapisany raport. Jeśli nie masz jeszcze konta Github, musisz je utworzyć.</string>
     <string name="action_report">Zgłoś</string>
     <string name="error_invalid_url">Nieprawidłowy adres (URL)</string>
     <string name="lbl_certificate_validity_period">Ważność: %1$s - %2$s</string>
     <string name="lbl_reading">Czytane</string>
+    <string name="action_edit_defaults">Edycja ustawień domyślnych</string>
 </resources>

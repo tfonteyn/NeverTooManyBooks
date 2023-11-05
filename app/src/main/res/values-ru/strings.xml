@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,9 +18,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+  -->
+
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d книга</item>
@@ -49,7 +52,7 @@
     <string name="X_action_try_again">Повторить попытку</string>
     <string name="X_action_update">Обновить</string>
     <string name="X_action_validate">проверять</string>
-    <string name="X_btn_customize">Настроить…</string>
+    <string name="X_action_customize">Настроить…</string>
     <string name="btn_show_list">Показать список</string>
     <string name="confirm_continue">Вы уверены что хотите продолжить?</string>
     <string name="X_error_authentication_failed">Ошибка аутентификации</string>
@@ -58,16 +61,15 @@
     <string name="X_httpErrorIO">Не удалось подключиться к серверу. Повторите попытку позже.</string>
     <string name="X_info_not_authorized">Не авторизовано</string>
     <string name="X_info_site_authorization_successful">Авторизация %1$s прошла успешно</string>
-    <string name="X_lbl_completed">Завершено</string>
     <string name="X_lbl_folder">Папка</string>
     <string name="X_lbl_image">Изображение</string>
     <string name="X_lbl_thumbnails">Миниатюры</string>
     <string name="X_neither">Ни один</string>
     <string name="X_option_bob_filter_anthology_no">Все, кроме антологий</string>
     <string name="X_option_bob_filter_anthology_yes">Антологии</string>
-    <string name="X_pg_general">Основные</string>
+    <string name="X_lbl_general">Общие</string>
     <string name="tip_booklist_style_defaults">На этом экране задаются характеристики по умолчанию для всех стилей. Они используются всеми встроенными стилями и являются отправной точкой для любого стиля, который вы определяете самостоятельно.</string>
-    <string name="X_use_default_setting">Использовать настройки по умолчанию</string>
+    <string name="X_action_use_default_setting">Использовать настройки по умолчанию</string>
     <string name="X_whichImageCaptureApplication">Делать снимки с помощью</string>
     <string name="X_whichSendToApplication">Выберите приложение</string>
     <string name="a_b">%1$s%2$s</string>
@@ -307,7 +309,6 @@
     <string name="lbl_cover_front">обложка</string>
     <string name="lbl_covers">обложки</string>
     <string name="lbl_covers_long">Обложки</string>
-    <string name="X_lbl_created">Создано</string>
     <string name="lbl_credentials">Учетные данные пользователя</string>
     <string name="lbl_currency">валюта</string>
     <string name="lbl_database">База данных</string>
@@ -499,15 +500,15 @@
     <string name="option_bob_filter_isbn_yes">С ISBN</string>
     <string name="option_bob_filter_lend_out_no">Книги доступны</string>
     <string name="option_bob_filter_lend_out_yes">Книги в долг</string>
-    <string name="option_bob_filter_read_no">Книги непрочитанные</string>
-    <string name="option_bob_filter_read_yes">Книги читают</string>
+    <string name="X_option_bob_filter_read_no">Книги непрочитанные</string>
+    <string name="X_option_bob_filter_read_yes">Книги читают</string>
     <string name="option_bob_filter_signed_no">Книги без подписи</string>
     <string name="option_bob_filter_signed_yes">Книги подписаны</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Сложить все</string>
     <string name="pe_bob_list_rebuild_state_expanded">Расширить все</string>
     <string name="pe_bob_list_rebuild_state_preferred">Используйте предпочтительное состояние</string>
     <string name="pe_bob_list_rebuild_state_preserve">Сохранить текущее состояние</string>
-    <string name="pe_edit_book_isbn_checks_loose">свободно</string>
+    <string name="loose">свободно</string>
     <string name="pe_thumbnails_cache_resized_each_time">Не кэшировать (используется меньше места, но пролистывание будет медленнее)</string>
     <string name="pe_thumbnails_cache_resized_stored">Кэшировать(используется больше места, но пролистывание быстрее)</string>
     <string name="pe_ui_theme_dark">темный</string>
@@ -758,10 +759,11 @@
     <string name="pt_bob_cover_click">Нажатие на изображение обложки.</string>
     <string name="pe_bob_cover_click_zoom">Увеличение изображения обложки.</string>
     <string name="pe_bob_cover_click_details">Откроется страница с подробной информацией о книге.</string>
-    <string name="style_type_defaults">Настройки стилей по умолчанию</string>
+    <string name="X_style_type_defaults">Настройки стилей по умолчанию</string>
     <string name="acra_report_saved">Теперь вы можете зайти на страницу проекта на Github и зарегистрировать новую проблему. Пожалуйста, прикрепите к проблеме сохраненный ранее отчет. Если у вас еще нет учетной записи на Github, вам необходимо ее создать.</string>
     <string name="action_report">Отправить отчет</string>
     <string name="error_invalid_url">Неверный адрес (URL)</string>
     <string name="lbl_certificate_validity_period">Срок действия: %1$s - %2$s</string>
     <string name="lbl_reading">Читаю</string>
+    <string name="action_edit_defaults">Редактирование настроек по умолчанию</string>
 </resources>

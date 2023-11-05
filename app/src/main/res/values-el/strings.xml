@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,9 +18,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+  -->
+
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d βιβλίο</item>
@@ -43,7 +46,7 @@
     <string name="X_action_try_again">Δοκιμάστε ξανά</string>
     <string name="X_action_update">Ενημέρωση</string>
     <string name="X_action_validate">Επικυρώνω</string>
-    <string name="X_btn_customize">Προσαρμογή…</string>
+    <string name="X_action_customize">Προσαρμογή…</string>
     <string name="btn_show_list">Εμφάνιση λίστας</string>
     <string name="confirm_continue">Εισαι σιγουρος οτι θελεις να συνεχισεις;</string>
     <string name="X_error_authentication_failed">Η ταυτοποίηση απέτυχε</string>
@@ -52,16 +55,15 @@
     <string name="X_httpErrorIO">Δεν ήταν δυνατή η επικοινωνία με τον διακομιστή. Προσπαθήστε ξανά αργότερα.</string>
     <string name="X_info_not_authorized">Χωρίς άδεια</string>
     <string name="X_info_site_authorization_successful">Επιτυχής η αδειοδότηση %1$s</string>
-    <string name="X_lbl_completed">Ολοκληρώθηκαν</string>
     <string name="X_lbl_folder">Φάκελος</string>
     <string name="X_lbl_image">Εικόνα</string>
     <string name="X_lbl_thumbnails">Μικρογραφίες</string>
     <string name="X_neither">κανενα απο τα δυο</string>
     <string name="X_option_bob_filter_anthology_no">Όλοι εκτός από Ανθολογίες</string>
     <string name="X_option_bob_filter_anthology_yes">Ανθολογίες</string>
-    <string name="X_pg_general">Γενικά</string>
+    <string name="X_lbl_general">Γενικά</string>
     <string name="tip_booklist_style_defaults">Χρησιμοποιήστε αυτή την οθόνη για να ορίσετε τα προεπιλεγμένα χαρακτηριστικά όλων των στυλ. Αυτά χρησιμοποιούνται από όλα τα ενσωματωμένα στυλ και ως σημείο εκκίνησης για κάθε στυλ που ορίζετε εσείς οι ίδιοι.</string>
-    <string name="X_use_default_setting">Χρήση προεπιλεγμένων ρυθμίσεων</string>
+    <string name="X_action_use_default_setting">Χρήση προεπιλεγμένων ρυθμίσεων</string>
     <string name="X_whichImageCaptureApplication">Λήψη εικόνας με</string>
     <string name="X_whichSendToApplication">Αποστολή μέσω</string>
     <string name="a_b">%1$s%2$s</string>
@@ -292,7 +294,6 @@
     <string name="lbl_cover_front">εξώφυλλο βιβλίου</string>
     <string name="lbl_covers">Καλύπτει</string>
     <string name="lbl_covers_long">Εικόνες εξωφύλλων</string>
-    <string name="X_lbl_created">Δημιουργήθηκε</string>
     <string name="lbl_credentials">Διαπιστευτήρια χρήστη</string>
     <string name="lbl_currency">Νομίσματα</string>
     <string name="lbl_database">Βάση δεδομένων</string>
@@ -339,7 +340,7 @@
     <string name="option_header_import_books_option_new_and_updated_cutoff_date">Εισαγάγετε μόνο βιβλία που έχουν \n τροποποιηθεί από αυτήν την ημερομηνία</string>
     <string name="option_import_books_option_new_only">Μόνο νέα βιβλία</string>
     <string name="lbl_import_options">Επιλέξτε τι θα εισαχθεί.</string>
-    <string name="lbl_importing">Γίνεται εισαγωγή…</string>
+    <string name="lbl_importing">Εισαγωγή…</string>
     <string name="lbl_is_complete">Ολοκληρώθηκε</string>
     <string name="lbl_keywords">Λέξεις κλειδιά</string>
     <string name="lbl_language">Γλώσσα</string>
@@ -484,15 +485,15 @@
     <string name="option_bob_filter_isbn_yes">Με ISBN</string>
     <string name="option_bob_filter_lend_out_no">Βιβλία διαθέσιμα</string>
     <string name="option_bob_filter_lend_out_yes">Βιβλία δανείου</string>
-    <string name="option_bob_filter_read_no">Βιβλία μη αναγνωσμένα</string>
-    <string name="option_bob_filter_read_yes">Τα βιβλία διαβάζουν</string>
+    <string name="X_option_bob_filter_read_no">Βιβλία μη αναγνωσμένα</string>
+    <string name="X_option_bob_filter_read_yes">Τα βιβλία διαβάζουν</string>
     <string name="option_bob_filter_signed_no">Βιβλία χωρίς υπογραφή</string>
     <string name="option_bob_filter_signed_yes">Υπογεγραμμένα βιβλία</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Διπλώστε όλα</string>
     <string name="pe_bob_list_rebuild_state_expanded">Επεκτείνετε όλα</string>
     <string name="pe_bob_list_rebuild_state_preferred">Χρησιμοποιήστε την προτιμώμενη κατάσταση</string>
     <string name="pe_bob_list_rebuild_state_preserve">Διατηρήστε την τρέχουσα κατάσταση</string>
-    <string name="pe_edit_book_isbn_checks_loose">Χαλαρά</string>
+    <string name="loose">Χαλαρά</string>
     <string name="pe_thumbnails_cache_resized_each_time">Αλλαγή μεγέθους όποτε χρειάζεται (χρήση λιγότερου αποθηκευτικού χώρου, πιο αργό scrolling)</string>
     <string name="pe_thumbnails_cache_resized_stored">Αποθήκευση μικρογραφιών αλλαγμένου μεγέθους στην προσωρινή μνήμη (χρήση περισσότερου αποθηλευτικού χώρου, πιο γρήγορο scrolling στις λίστες)</string>
     <string name="pe_ui_theme_dark">Σκούρο</string>
@@ -740,10 +741,11 @@
     <string name="pt_bob_cover_click">Πατώντας σε μια εικόνα εξωφύλλου.</string>
     <string name="pe_bob_cover_click_zoom">Θα μεγεθύνει την εικόνα του εξωφύλλου.</string>
     <string name="pe_bob_cover_click_details">Ανοίγει τη σελίδα με τις λεπτομέρειες του βιβλίου.</string>
-    <string name="style_type_defaults">Στυλ προεπιλεγμένες ρυθμίσεις</string>
+    <string name="X_style_type_defaults">Στυλ προεπιλεγμένες ρυθμίσεις</string>
     <string name="acra_report_saved">Μπορείτε τώρα να επισκεφθείτε τη σελίδα του έργου στο Github και να καταγράψετε ένα νέο θέμα. Παρακαλούμε επισυνάψτε την προηγουμένως αποθηκευμένη αναφορά στο θέμα. Αν δεν έχετε ακόμη λογαριασμό στο Github, θα πρέπει να δημιουργήσετε έναν.</string>
     <string name="action_report">Αναφορά</string>
     <string name="error_invalid_url">Μη έγκυρη διεύθυνση (URL)</string>
     <string name="lbl_certificate_validity_period">Ισχύς: %1$s - %2$s</string>
     <string name="lbl_reading">Ανάγνωση</string>
+    <string name="action_edit_defaults">Επεξεργασία προεπιλεγμένων ρυθμίσεων</string>
 </resources>

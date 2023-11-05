@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,9 +18,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+  -->
+
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d kniha</item>
@@ -49,7 +52,7 @@
     <string name="X_action_try_again">Zkusit znovu</string>
     <string name="X_action_update">Aktualizovat</string>
     <string name="X_action_validate">Ověřit</string>
-    <string name="X_btn_customize">Přizpůsobit…</string>
+    <string name="X_action_customize">Přizpůsobit…</string>
     <string name="btn_show_list">Zobrazit seznam</string>
     <string name="confirm_continue">Jste si jistý, že chcete pokračovat?</string>
     <string name="X_error_authentication_failed">Ověření se nezdařilo</string>
@@ -58,16 +61,15 @@
     <string name="X_httpErrorIO">Se serverem nelze komunikovat. Zkuste to později.</string>
     <string name="X_info_not_authorized">Neautorizováno</string>
     <string name="X_info_site_authorization_successful">%1$s autorizace v pořádku</string>
-    <string name="X_lbl_completed">Kompletní</string>
     <string name="X_lbl_folder">Složka</string>
     <string name="X_lbl_image">Obrázek</string>
     <string name="X_lbl_thumbnails">Náhledy</string>
     <string name="X_neither">Ani</string>
     <string name="X_option_bob_filter_anthology_no">Všechno kromě Anthologies</string>
     <string name="X_option_bob_filter_anthology_yes">Anthology</string>
-    <string name="X_pg_general">Obecné</string>
+    <string name="X_lbl_general">Obecné</string>
     <string name="tip_booklist_style_defaults">Na této obrazovce můžete nastavit výchozí vlastnosti všech stylů. Ty jsou používány všemi vestavěnými styly a jako výchozí bod pro jakýkoli styl, který si sami definujete.</string>
-    <string name="X_use_default_setting">Použít výchozí nastavení</string>
+    <string name="X_action_use_default_setting">Použít výchozí nastavení</string>
     <string name="X_whichImageCaptureApplication">Vyfotit pomocí aplikace</string>
     <string name="X_whichSendToApplication">Odeslat pomocí aplikace</string>
     <string name="a_b">%1$s%2$s</string>
@@ -306,7 +308,6 @@
     <string name="lbl_cover_front">Obal knihy</string>
     <string name="lbl_covers">Obálky na knihy</string>
     <string name="lbl_covers_long">Obálky na knihy</string>
-    <string name="X_lbl_created">Vytvořeno</string>
     <string name="lbl_credentials">Identifikační údaje uživatele</string>
     <string name="lbl_currency">Měna</string>
     <string name="lbl_database">Databáze</string>
@@ -353,7 +354,7 @@
     <string name="option_header_import_books_option_new_and_updated_cutoff_date">Importujte pouze knihy, které \n byly od tohoto data změněny</string>
     <string name="option_import_books_option_new_only">Pouze nové knihy</string>
     <string name="lbl_import_options">Vyberte, co bude importováno.</string>
-    <string name="lbl_importing">Import…</string>
+    <string name="lbl_importing">Probíhá import…</string>
     <string name="lbl_is_complete">Je kompletní</string>
     <string name="lbl_keywords">Klíčová slova</string>
     <string name="lbl_language">Jazyk</string>
@@ -498,15 +499,15 @@
     <string name="option_bob_filter_isbn_yes">S ISBN</string>
     <string name="option_bob_filter_lend_out_no">Dostupné knihy</string>
     <string name="option_bob_filter_lend_out_yes">Knihy o půjčce</string>
-    <string name="option_bob_filter_read_no">Knihy nepřečtené</string>
-    <string name="option_bob_filter_read_yes">Knihy číst</string>
+    <string name="X_option_bob_filter_read_no">Knihy nepřečtené</string>
+    <string name="X_option_bob_filter_read_yes">Knihy číst</string>
     <string name="option_bob_filter_signed_no">Knihy nepodepsané</string>
     <string name="option_bob_filter_signed_yes">Podepsané knihy</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Složte vše</string>
     <string name="pe_bob_list_rebuild_state_expanded">Rozšířit vše</string>
     <string name="pe_bob_list_rebuild_state_preferred">Použijte upřednostňovaný stav</string>
     <string name="pe_bob_list_rebuild_state_preserve">Zachovat aktuální stav</string>
-    <string name="pe_edit_book_isbn_checks_loose">Uvolněný</string>
+    <string name="loose">Uvolněný</string>
     <string name="pe_thumbnails_cache_resized_each_time">Změna velikosti obrázků pokaždé, když je potřeba (používá méně paměti, rolování bude pomalejší)</string>
     <string name="pe_thumbnails_cache_resized_stored">Obrázky se změnou velikosti mezipaměti (rolování bude rychlejší, využívá více paměti)</string>
     <string name="pe_ui_theme_dark">Temný</string>
@@ -757,10 +758,11 @@
     <string name="pt_bob_cover_click">Klepnutí na obrázek obálky.</string>
     <string name="pe_bob_cover_click_zoom">Obrázek obálky se přiblíží.</string>
     <string name="pe_bob_cover_click_details">Otevře stránku s podrobnostmi o knize.</string>
-    <string name="style_type_defaults">Výchozí nastavení stylů</string>
+    <string name="X_style_type_defaults">Výchozí nastavení stylů</string>
     <string name="acra_report_saved">Nyní můžete navštívit stránku projektu na Githubu a přihlásit nový problém. K problému připojte dříve uloženou zprávu. Pokud ještě nemáte účet na Githubu, musíte si ho vytvořit.</string>
     <string name="action_report">Hlášení</string>
     <string name="error_invalid_url">Neplatná adresa (URL)</string>
     <string name="lbl_certificate_validity_period">Platnost: %1$s - %2$s</string>
     <string name="lbl_reading">Rozečtené</string>
+    <string name="action_edit_defaults">Úprava výchozího nastavení</string>
 </resources>

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,9 +18,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+  -->
+
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d libro</item>
@@ -46,7 +49,7 @@
     <string name="X_action_try_again">Reintentar</string>
     <string name="X_action_update">Actualizar</string>
     <string name="X_action_validate">Validar</string>
-    <string name="X_btn_customize">Configurar…</string>
+    <string name="X_action_customize">Personalizar…</string>
     <string name="btn_show_list">Mostrar lista</string>
     <string name="confirm_continue">¿Estás seguro de que quieres continuar?</string>
     <string name="X_error_authentication_failed">Autenticación fallida</string>
@@ -55,16 +58,15 @@
     <string name="X_httpErrorIO">No se ha podido establecer comunicación con el servidor. Inténtalo de nuevo más tarde.</string>
     <string name="X_info_not_authorized">No Autorizado</string>
     <string name="X_info_site_authorization_successful">Autorización satisfactoria en %1$s</string>
-    <string name="X_lbl_completed">Completado</string>
     <string name="X_lbl_folder">Carpeta</string>
     <string name="X_lbl_image">Imagen</string>
     <string name="X_lbl_thumbnails">Miniaturas</string>
     <string name="X_neither">Ninguno de los dos</string>
     <string name="X_option_bob_filter_anthology_no">Todos menos antologías</string>
     <string name="X_option_bob_filter_anthology_yes">Antologías</string>
-    <string name="X_pg_general">General</string>
+    <string name="X_lbl_general">General</string>
     <string name="tip_booklist_style_defaults">Utilice esta pantalla para establecer las características por defecto de todos los estilos. Éstas son utilizadas por todos los estilos incorporados y como punto de partida para cualquier estilo que defina usted mismo.</string>
-    <string name="X_use_default_setting">Usar configuración predeterminada</string>
+    <string name="X_action_use_default_setting">Usar configuración predeterminada</string>
     <string name="X_whichImageCaptureApplication">Capturar imagen con</string>
     <string name="X_whichSendToApplication">Enviar con</string>
     <string name="a_b">%1$s%2$s</string>
@@ -305,7 +307,6 @@
     <string name="lbl_cover_front">Portada</string>
     <string name="lbl_covers">Portadas</string>
     <string name="lbl_covers_long">Portadas</string>
-    <string name="X_lbl_created">Creado</string>
     <string name="lbl_credentials">Credenciales de usuario</string>
     <string name="lbl_currency">Moneda</string>
     <string name="lbl_database">Base de datos</string>
@@ -497,15 +498,15 @@
     <string name="option_bob_filter_isbn_yes">Con ISBN</string>
     <string name="option_bob_filter_lend_out_no">Libros disponibles</string>
     <string name="option_bob_filter_lend_out_yes">Libros prestados</string>
-    <string name="option_bob_filter_read_no">Libros no leídos</string>
-    <string name="option_bob_filter_read_yes">Libros leidos</string>
+    <string name="X_option_bob_filter_read_no">Libros no leídos</string>
+    <string name="X_option_bob_filter_read_yes">Libros leidos</string>
     <string name="option_bob_filter_signed_no">Libros sin firmar</string>
     <string name="option_bob_filter_signed_yes">Libros firmados</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Doblar todo</string>
     <string name="pe_bob_list_rebuild_state_expanded">Expandir todo</string>
     <string name="pe_bob_list_rebuild_state_preferred">Usar estado preferido</string>
     <string name="pe_bob_list_rebuild_state_preserve">Preservar el estado actual</string>
-    <string name="pe_edit_book_isbn_checks_loose">Libre</string>
+    <string name="loose">Libre</string>
     <string name="pe_thumbnails_cache_resized_each_time">Redimensionar cada vez que se necesitan (se utiliza menos almacenamiento, el desplazamiento será más lento)</string>
     <string name="pe_thumbnails_cache_resized_stored">Miniaturas redimensionadas en caché (usa más almacenamiento, desplazamiento más rápido)</string>
     <string name="pe_ui_theme_dark">Negro</string>
@@ -753,10 +754,11 @@
     <string name="pt_bob_cover_click">Pulsar sobre una imagen de portada.</string>
     <string name="pe_bob_cover_click_zoom">Amplía la imagen de la cubierta.</string>
     <string name="pe_bob_cover_click_details">Abrirá la página de detalles del libro.</string>
-    <string name="style_type_defaults">Valores predeterminados del estilo</string>
+    <string name="X_style_type_defaults">Valores predeterminados del estilo</string>
     <string name="acra_report_saved">Ya puedes visitar la página del proyecto en Github y registrar una nueva incidencia. Adjunta a la incidencia el informe guardado anteriormente. Si aún no tienes una cuenta de Github, tendrás que crear una.</string>
     <string name="action_report">Informar</string>
     <string name="error_invalid_url">Dirección no válida (URL)</string>
     <string name="lbl_certificate_validity_period">Validez: %1$s - %2$s</string>
     <string name="lbl_reading">Leyendo</string>
+    <string name="action_edit_defaults">Editar la configuración predeterminada</string>
 </resources>

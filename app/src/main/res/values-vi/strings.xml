@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,9 +18,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+  -->
+
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
     <string name="a_b">%1$s%2$s</string>
     <plurals name="n_stars">
@@ -92,7 +95,7 @@
     <string name="lbl_pages">Trang</string>
     <string name="lbl_country">Quốc gia</string>
     <string name="action_create">Tạo</string>
-    <string name="X_btn_customize">Tùy chỉnh…</string>
+    <string name="X_action_customize">Tùy chỉnh…</string>
     <string name="lbl_defaults">Mặc định</string>
     <string name="action_delete">Xóa</string>
     <string name="lbl_tab_details">Chi tiết</string>
@@ -109,8 +112,7 @@
     <string name="pe_list">Danh sách</string>
     <string name="pe_grid">Lưới</string>
     <string name="pt_bob_font_size">Cỡ chữ</string>
-    <string name="X_lbl_completed">Đã hoàn thành</string>
-    <string name="X_pg_general">Chung</string>
+    <string name="X_lbl_general">Chung</string>
     <string name="X_action_go">Đến</string>
     <string name="action_help">Trợ giúp</string>
     <string name="lbl_cover_front">Ảnh bìa</string>
@@ -165,7 +167,7 @@
     <string name="action_undo">Hoàn tác</string>
     <string name="unknown">Không xác định</string>
     <string name="X_action_update">Cập nhật</string>
-    <string name="X_use_default_setting">Dùng chế độ cài đặt mặc định</string>
+    <string name="X_action_use_default_setting">Dùng chế độ cài đặt mặc định</string>
     <string name="username">Tên người dùng</string>
     <string name="yes">Có</string>
     <string name="size_hidden">Ẩn giấu</string>
@@ -216,4 +218,5 @@
     <string name="action_discard">Yok say</string>
     <string name="lbl_certificate_validity_period">Tính hợp lệ: %1$s - %2$s</string>
     <string name="lbl_reading">Đang đọc</string>
+    <string name="action_edit_defaults">Chỉnh sửa cài đặt mặc định</string>
 </resources>

@@ -20,6 +20,8 @@
 
 package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
@@ -37,7 +39,7 @@ public enum StyleType {
     /**
      * The global style, i.e. the defaults.
      */
-    Global(2, R.string.style_type_defaults);
+    Global(2, R.string.lbl_defaults);
 
     private final int id;
     @StringRes
@@ -70,10 +72,12 @@ public enum StyleType {
     /**
      * Get a short description of this type.
      *
-     * @return String resource id
+     * @param context Current context
+     *
+     * @return the label
      */
-    @StringRes
-    public int getTypeResId() {
-        return typeResId;
+    @NonNull
+    public String getLabel(@NonNull final Context context) {
+        return context.getString(typeResId);
     }
 }

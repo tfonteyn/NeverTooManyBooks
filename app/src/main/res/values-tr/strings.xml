@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,9 +18,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+  -->
+
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d kitap</item>
@@ -43,7 +46,7 @@
     <string name="X_action_try_again">Tekrar dene</string>
     <string name="X_action_update">Güncelle</string>
     <string name="X_action_validate">Doğrulama</string>
-    <string name="X_btn_customize">Kişiselleştir…</string>
+    <string name="X_action_customize">Özelleştir…</string>
     <string name="btn_show_list">Gösteri listesi</string>
     <string name="confirm_continue">Devam etmek istediğine emin misin?</string>
     <string name="X_error_authentication_failed">Kimlik doğrulama başarısız oldu</string>
@@ -52,16 +55,15 @@
     <string name="X_httpErrorIO">Sunucuyla iletişim kurulamadı. Daha sonra tekrar deneyin.</string>
     <string name="X_info_not_authorized">Yetkilendirilmemiş</string>
     <string name="X_info_site_authorization_successful">%1$s yetkilendirmesi başarılı</string>
-    <string name="X_lbl_completed">Tamamlandı</string>
     <string name="X_lbl_folder">Klasör</string>
     <string name="X_lbl_image">Resim</string>
     <string name="X_lbl_thumbnails">Ufak resimler</string>
     <string name="X_neither">Hiç biri</string>
     <string name="X_option_bob_filter_anthology_no">Antolojiler hariç hepsi</string>
     <string name="X_option_bob_filter_anthology_yes">Antolojiler</string>
-    <string name="X_pg_general">Genel</string>
+    <string name="X_lbl_general">Genel</string>
     <string name="tip_booklist_style_defaults">Tüm stillerin varsayılan özelliklerini ayarlamak için bu ekranı kullanın. Bunlar tüm yerleşik stiller tarafından ve kendi tanımladığınız herhangi bir stil için başlangıç noktası olarak kullanılır.</string>
-    <string name="X_use_default_setting">Varsayılan ayarları kullan</string>
+    <string name="X_action_use_default_setting">Varsayılan ayarları kullan</string>
     <string name="X_whichImageCaptureApplication">Fotoğraf çekmek için şu uygulamayı kullan</string>
     <string name="X_whichSendToApplication">Göndermek için kullanılacak uygulama</string>
     <string name="a_b">%1$s%2$s</string>
@@ -297,7 +299,6 @@
     <string name="lbl_cover_front">Kitap kapağı</string>
     <string name="lbl_covers">kapakları</string>
     <string name="lbl_covers_long">Kapak görselleri</string>
-    <string name="X_lbl_created">Oluşturuldu</string>
     <string name="lbl_credentials">Kullanıcı kimlik bilgileri</string>
     <string name="lbl_currency">Para birimi</string>
     <string name="lbl_database">Veri tabanı</string>
@@ -489,15 +490,15 @@
     <string name="option_bob_filter_isbn_yes">ISBN ile</string>
     <string name="option_bob_filter_lend_out_no">Mevcut kitaplar</string>
     <string name="option_bob_filter_lend_out_yes">Borç kitapları</string>
-    <string name="option_bob_filter_read_no">Kitaplar okunmadı</string>
-    <string name="option_bob_filter_read_yes">Kitap okumak</string>
+    <string name="X_option_bob_filter_read_no">Kitaplar okunmadı</string>
+    <string name="X_option_bob_filter_read_yes">Kitap okumak</string>
     <string name="option_bob_filter_signed_no">İmzasız kitaplar</string>
     <string name="option_bob_filter_signed_yes">İmzalanan kitaplar</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Tümünü katla</string>
     <string name="pe_bob_list_rebuild_state_expanded">Hepsini genişlet</string>
     <string name="pe_bob_list_rebuild_state_preferred">Tercih edilen durumu kullan</string>
     <string name="pe_bob_list_rebuild_state_preserve">Mevcut durumu koru</string>
-    <string name="pe_edit_book_isbn_checks_loose">Serbest</string>
+    <string name="loose">Serbest</string>
     <string name="pe_thumbnails_cache_resized_each_time">Gerekli olduğunda her seferinde yeniden boyutlandır (daha az yer kaplar, kaydırma daha yavaş olacaktır)</string>
     <string name="pe_thumbnails_cache_resized_stored">Yeniden boyutlandırılmış ufak resimleri bellekte tut (daha fazla yer kaplar, dizelgeler daha hızlı kayar)</string>
     <string name="pe_ui_theme_dark">Karanlık</string>
@@ -748,10 +749,11 @@
     <string name="pt_bob_cover_click">Bir kapak resmine dokunun.</string>
     <string name="pe_bob_cover_click_zoom">Kapak resmini yakınlaştırır.</string>
     <string name="pe_bob_cover_click_details">Kitap ayrıntıları sayfasını açar.</string>
-    <string name="style_type_defaults">Stiller varsayılan ayarları</string>
+    <string name="X_style_type_defaults">Stiller varsayılan ayarları</string>
     <string name="acra_report_saved">Artık Github’daki proje sayfasını ziyaret edebilir ve yeni bir sorun kaydedebilirsiniz. Lütfen daha önce kaydettiğiniz raporu soruna ekleyin. Henüz bir Github hesabınız yoksa, bir tane oluşturmanız gerekecektir.</string>
     <string name="action_report">Bildir</string>
     <string name="error_invalid_url">Geçersiz adres (URL)</string>
     <string name="lbl_certificate_validity_period">Geçerlilik: %1$s - %2$s</string>
     <string name="lbl_reading">Okunuyor</string>
+    <string name="action_edit_defaults">Varsayılan ayarları düzenleme</string>
 </resources>

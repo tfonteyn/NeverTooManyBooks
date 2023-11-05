@@ -537,8 +537,6 @@
     <string name="lbl_styles">Styles</string>
     <!-- Multiple Styles - Long label. -->
     <string name="lbl_styles_long">Booklist styles</string>
-    <!-- The global default values used as defaults for the builtin styles. -->
-    <string name="style_type_defaults">Styles default settings</string>
     <!-- Style type -->
     <string name="style_type_builtin">Builtin</string>
     <!-- Style type -->
@@ -788,6 +786,9 @@
     <string name="action_edit">Edit</string>
     <!-- [VERIFIED] -->
     <string name="action_edit_ellipsis">Edit…</string>
+
+    <string name="action_edit_defaults">Edit default settings</string>
+
     <!-- [VERIFIED] -->
     <string name="action_delete">Delete</string>
     <!-- [VERIFIED] -->
@@ -891,7 +892,7 @@
     <string name="lbl_import">Import</string>
     <!-- Dialog title. -->
     <string name="lbl_import_books">Import Books</string>
-    <!-- Progress Dialog title. -->
+    <!-- [VERIFIED] Progress Dialog title. -->
     <string name="lbl_importing">Importing…</string>
     <!-- Dialog title. -->
     <string name="lbl_backup">Backup</string>
@@ -965,8 +966,6 @@
     <string name="lbl_cover_front">Cover</string>
     <!-- Single book back/second cover. -->
     <string name="lbl_cover_back">Back cover</string>
-    <!-- [VERIFIED] -->
-    <string name="X_lbl_image">Image</string>
     <!-- Multiple book covers. Short label. -->
     <string name="lbl_covers">Covers</string>
     <!-- Multiple book covers. Long label. -->
@@ -1265,8 +1264,6 @@
     <string name="pe_ui_theme_light">Light</string>
     <!-- ListPreference title: option title -->
     <string name="pt_edit_book_isbn_checks">ISBN validity checks</string>
-    <!-- ListPreference value: ISBN checks are 'loose' i.e. not-strict. -->
-    <string name="pe_edit_book_isbn_checks_loose">Loose</string>
     <!-- ListPreference title: Booklist startup-state preferences -->
     <string name="pt_bob_list_rebuild_state">Booklist startup state</string>
     <!-- ListPreference value: Booklist tree-view expansion -->
@@ -1444,9 +1441,11 @@
     <string name="lbl_filters">Filters</string>
     <!-- Single filter -->
     <string name="lbl_filter">Filter</string>
+    <!-- Dialog title -->
     <string name="lbl_add_filter">Add filter</string>
-    <string name="option_bob_filter_read_yes">Books Read</string>
-    <string name="option_bob_filter_read_no">Books Unread</string>
+
+    <string name="X_option_bob_filter_read_yes">Books Read</string>
+    <string name="X_option_bob_filter_read_no">Books Unread</string>
     <string name="option_bob_filter_signed_yes">Books Signed</string>
     <string name="option_bob_filter_signed_no">Books Unsigned</string>
     <string name="option_bob_filter_lend_out_yes">Books lend out</string>
@@ -1455,6 +1454,7 @@
     <string name="option_bob_filter_isbn_no">Without ISBN</string>
     <string name="X_option_bob_filter_anthology_yes">Anthologies</string>
     <string name="X_option_bob_filter_anthology_no">All but Anthologies</string>
+
     <!-- [VERIFIED] Param 1: a filter name -->
     <string name="lbl_search_filtered_by_x">Filtered by: %1$s</string>
     <!-- endregion -->
@@ -1501,28 +1501,28 @@
     <string name="lbl_tab_alternative_editions">Alt. Ed.</string>
     <!-- endregion -->
     <!-- region ========== Single words used for multiple purposes. -->
-    <!-- [VERIFIED] from "platform_packages_apps_contacts_strings.xml#yes_button" -->
+    <!-- [VERIFIED] -->
     <string name="yes">Yes</string>
-    <!-- [VERIFIED] from "platform_packages_apps_contacts_strings.xml#no_button" -->
+    <!-- [VERIFIED] -->
     <string name="no">No</string>
-    <!-- [VERIFIED] from "platform_packages_apps_packageinstaller_strings.xml#app_name_unknown"
-        Generic string. e.g. "the reason is unknown"; "condition is unknown"; "status is unknown" -->
+    <!-- [VERIFIED] e.g. "the reason is unknown"; "condition is unknown"; "status is unknown" -->
     <string name="unknown">Unknown</string>
-    <!-- [VERIFIED] from "platform_frameworks_base_strings.xml#write_fail_reason_cancelled" -->
+    <!-- [VERIFIED] -->
     <string name="cancelled">Cancelled</string>
-    <!-- [VERIFIED] from "platform_packages_apps_settings_strings.xml#vpn_username" -->
+    <!-- [VERIFIED] -->
     <string name="username">Username</string>
-    <!-- [VERIFIED] from "platform_packages_apps_settings_strings.xml#vpn_password"  -->
+    <!-- [VERIFIED] -->
     <string name="password">Password</string>
-    <!-- Generic string. -->
+    <!-- e.g. some setting is "Enabled", switched on. -->
     <string name="enabled">Enabled</string>
+    <!-- e.g. some setting is "Disabled", switched off. -->
     <string name="disabled">Disabled</string>
-    <!-- [VERIFIED] from "platform_packages_apps_settings_strings.xml#notification_log_details_none"
-        e.g. indicates nothing was selected; nothing was found; .... -->
+    <!-- [VERIFIED] e.g. indicates nothing was selected; nothing was found; .... -->
     <string name="none">None</string>
-    <!-- whether to enforce certain checks. Opposite of 'loose' -->
+    <!-- Certain checks are strictly enforced. Opposite of 'Loose' -->
     <string name="strict">Strict</string>
-    <string name="X_neither">Neither</string>
+    <!-- Certain checks are only loosely enforced. Opposite of 'Strict' -->
+    <string name="loose">Loose</string>
     <!-- 'and' as used in lists:  x and y -->
     <string name="list_and">and</string>
     <!-- endregion -->
@@ -1541,7 +1541,7 @@
     <!-- Specifically used for an unknown book title (mostly in import/export logic).
          Translations must add the [] around the string. -->
     <string name="unknown_title">[Unknown title]</string>
-    <!-- Specifically used for an unknown book title (mostly in import/export logic).
+    <!-- Specifically used for an unknown book author (mostly in import/export logic).
          Translations must add the [] around the string. -->
     <string name="unknown_author">[Unknown author]</string>
     <!-- Default 'name' for anything that has a name -->
@@ -1588,25 +1588,36 @@
     <string name="lbl_settings">Settings</string>
     <!-- endregion -->
     <!-- region ========== Unused, but not removing as we have translations which might be useful later. -->
+    <!-- [VERIFIED] -->
+    <string name="X_action_customize">Customize…</string>
+    <!-- [VERIFIED] -->
+    <string name="X_action_use_default_setting">Use default values</string>
+    <!-- [VERIFIED] -->
+    <string name="X_action_update">Update</string>
+    <!-- [VERIFIED] -->
+    <string name="X_lbl_folder">Folder</string>
+    <!-- [VERIFIED] -->
+    <string name="X_lbl_general">General</string>
+    <!-- [VERIFIED] -->
+    <string name="X_lbl_image">Image</string>
+    <!-- [VERIFIED] -->
+    <string name="X_lbl_system">(System)</string>
+
+
+    <string name="X_neither">Neither</string>
+    <string name="X_lbl_thumbnails">Thumbnails</string>
+
+    <!-- The global default values used as defaults for the builtin styles. -->
+    <string name="X_style_type_defaults">Styles default settings</string>
+
     <!-- A website did respond to a request, but the response was not valid.
          We report to the user that the site is not working as expected. -->
     <string name="X_error_network_site_has_problems">The website is not working as expected.</string>
     <!-- Generic Authentication failure. -->
     <string name="X_error_authentication_failed">Authentication failed</string>
-    <string name="X_action_update">Update</string>
-    <string name="X_btn_customize">Customize…</string>
     <string name="X_info_not_authorized">Not Authorized</string>
     <string name="X_info_site_authorization_successful">%1$s authorization successful</string>
-    <string name="X_lbl_completed">Completed</string>
-    <string name="X_lbl_created">Created</string>
-    <string name="X_lbl_thumbnails">Thumbnails</string>
-    <string name="X_pg_general">General</string>
-    <!-- [VERIFIED] -->
-    <string name="X_lbl_system">(System)</string>
-    <!-- [VERIFIED] -->
-    <string name="X_use_default_setting">Use default values</string>
-    <!-- [VERIFIED] -->
-    <string name="X_lbl_folder">Folder</string>
+
     <!-- endregion -->
 
 

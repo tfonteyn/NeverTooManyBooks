@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,9 +18,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+  -->
+
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d libro</item>
@@ -46,7 +49,7 @@
     <string name="X_action_try_again">Riprova</string>
     <string name="X_action_update">Aggiorna</string>
     <string name="X_action_validate">Convalidare</string>
-    <string name="X_btn_customize">Personalizza…</string>
+    <string name="X_action_customize">Personalizza…</string>
     <string name="btn_show_list">Mostra elenco</string>
     <string name="confirm_continue">Sei sicuro di voler continuare?</string>
     <string name="X_error_authentication_failed">Autenticazione fallita</string>
@@ -55,16 +58,15 @@
     <string name="X_httpErrorIO">Comunicazione con il server non riuscita. Riprova più tardi.</string>
     <string name="X_info_not_authorized">Non autorizzato</string>
     <string name="X_info_site_authorization_successful">Autorizzazione %1$s concessa</string>
-    <string name="X_lbl_completed">Completato</string>
     <string name="X_lbl_folder">Cartella</string>
     <string name="X_lbl_image">Immagine</string>
     <string name="X_lbl_thumbnails">Miniature</string>
     <string name="X_neither">Nessuno dei due</string>
     <string name="X_option_bob_filter_anthology_no">Tutti tranne antologie</string>
     <string name="X_option_bob_filter_anthology_yes">Antologie</string>
-    <string name="X_pg_general">Generale</string>
+    <string name="X_lbl_general">Generale</string>
     <string name="tip_booklist_style_defaults">Questa schermata consente di impostare le caratteristiche predefinite di tutti gli stili. Queste vengono utilizzate da tutti gli stili incorporati e come punto di partenza per qualsiasi stile definito dall\'utente.</string>
-    <string name="X_use_default_setting">Utilizza le impostazioni predefinite</string>
+    <string name="X_action_use_default_setting">Utilizza le impostazioni predefinite</string>
     <string name="X_whichImageCaptureApplication">Acquisisci immagine con</string>
     <string name="X_whichSendToApplication">Invia tramite</string>
     <string name="a_b">%1$s%2$s</string>
@@ -294,7 +296,6 @@
     <string name="lbl_cover_front">Copertura</string>
     <string name="lbl_covers">Copertine</string>
     <string name="lbl_covers_long">Immagini delle copertine</string>
-    <string name="X_lbl_created">Creazione</string>
     <string name="lbl_credentials">Credenziali utente</string>
     <string name="lbl_currency">Moneta</string>
     <string name="lbl_database">Banca dati</string>
@@ -341,7 +342,7 @@
     <string name="option_header_import_books_option_new_and_updated_cutoff_date">Importa solo libri che sono stati\nmodificati dopo questa data</string>
     <string name="option_import_books_option_new_only">Solo nuovi libri</string>
     <string name="lbl_import_options">Seleziona cosa verrà importato.</string>
-    <string name="lbl_importing">Importazione in corso…</string>
+    <string name="lbl_importing">Importazione…</string>
     <string name="lbl_is_complete">È completo</string>
     <string name="lbl_keywords">Parole</string>
     <string name="lbl_language">Lingua</string>
@@ -486,15 +487,15 @@
     <string name="option_bob_filter_isbn_yes">Con ISBN</string>
     <string name="option_bob_filter_lend_out_no">Libri disponibili</string>
     <string name="option_bob_filter_lend_out_yes">Libri in prestito</string>
-    <string name="option_bob_filter_read_no">Libri non letti</string>
-    <string name="option_bob_filter_read_yes">Libri letti</string>
+    <string name="X_option_bob_filter_read_no">Libri non letti</string>
+    <string name="X_option_bob_filter_read_yes">Libri letti</string>
     <string name="option_bob_filter_signed_no">Libri non firmati</string>
     <string name="option_bob_filter_signed_yes">Libri firmati</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Piega tutto</string>
     <string name="pe_bob_list_rebuild_state_expanded">Espandi tutto</string>
     <string name="pe_bob_list_rebuild_state_preferred">Usa lo stato preferito</string>
     <string name="pe_bob_list_rebuild_state_preserve">Preserva lo stato corrente</string>
-    <string name="pe_edit_book_isbn_checks_loose">Libero</string>
+    <string name="loose">Libero</string>
     <string name="pe_thumbnails_cache_resized_each_time">Ridimensiona ogni volta (richiede meno spazio di memorizzazione, ma lo scorrimento sarà più lento)</string>
     <string name="pe_thumbnails_cache_resized_stored">Memorizza le miniature ridimensionate (richiede più spazio di memorizzazione, ma gli elenchi scorreranno più velocemente)</string>
     <string name="pe_ui_theme_dark">Nero</string>
@@ -742,10 +743,11 @@
     <string name="pt_bob_cover_click">Toccare l’immagine di copertina.</string>
     <string name="pe_bob_cover_click_zoom">Ingrandisce l’immagine della copertina.</string>
     <string name="pe_bob_cover_click_details">Apre la pagina dei dettagli del libro.</string>
-    <string name="style_type_defaults">Impostazioni predefinite degli stili</string>
+    <string name="X_style_type_defaults">Impostazioni predefinite degli stili</string>
     <string name="acra_report_saved">Ora è possibile visitare la pagina del progetto su Github e creare un nuovo problema. Si prega di allegare al problema il rapporto precedentemente salvato. Se non si dispone ancora di un account Github, è necessario crearne uno.</string>
     <string name="action_report">Segnala</string>
     <string name="error_invalid_url">Indirizzo (URL) non valido</string>
     <string name="lbl_certificate_validity_period">Validità: %1$s - %2$s</string>
     <string name="lbl_reading">In lettura</string>
+    <string name="action_edit_defaults">Modifica delle impostazioni predefinite</string>
 </resources>

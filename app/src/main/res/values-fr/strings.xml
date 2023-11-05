@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,9 +18,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+  -->
+
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
 --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
     <plurals name="displaying_n_books">
@@ -47,7 +50,7 @@
     <string name="X_action_try_again">Réessayer</string>
     <string name="X_action_update">Mettre à jour</string>
     <string name="X_action_validate">Valider</string>
-    <string name="X_btn_customize">Personnaliser…</string>
+    <string name="X_action_customize">Personnaliser…</string>
     <string name="btn_show_list">Afficher la liste</string>
     <string name="confirm_continue">Es-tu sur de vouloir continuer ?</string>
     <string name="X_error_authentication_failed">Authentification échouée</string>
@@ -56,16 +59,15 @@
     <string name="X_httpErrorIO">Impossible d’établir une communication avec le serveur. Veuillez réessayer ultérieurement.</string>
     <string name="X_info_not_authorized">Non autorisé</string>
     <string name="X_info_site_authorization_successful">Autorisation %1$s accordée</string>
-    <string name="X_lbl_completed">Terminé</string>
     <string name="X_lbl_folder">Dossier</string>
     <string name="X_lbl_image">Image</string>
     <string name="X_lbl_thumbnails">Miniatures</string>
     <string name="X_neither">Non plus</string>
     <string name="X_option_bob_filter_anthology_no">Tous sauf des anthologies</string>
     <string name="X_option_bob_filter_anthology_yes">Des anthologies</string>
-    <string name="X_pg_general">Général</string>
+    <string name="X_lbl_general">Général</string>
     <string name="tip_booklist_style_defaults">Cet écran permet de définir les caractéristiques par défaut de tous les styles. Celles-ci sont utilisées par tous les styles intégrés et comme point de départ pour tout style que vous définissez vous-même.</string>
-    <string name="X_use_default_setting">Utiliser les paramètres par défaut</string>
+    <string name="X_action_use_default_setting">Utiliser les paramètres par défaut</string>
     <string name="X_whichImageCaptureApplication">Capturer une image avec</string>
     <string name="X_whichSendToApplication">Envoyer avec</string>
     <string name="a_b">%1$s%2$s</string>
@@ -295,7 +297,6 @@
     <string name="lbl_cover_front">Couverture</string>
     <string name="lbl_covers">Couvertures</string>
     <string name="lbl_covers_long">Images de couverture</string>
-    <string name="X_lbl_created">Créé</string>
     <string name="lbl_credentials">Identifiants de l’utilisateur</string>
     <string name="lbl_currency">Devise</string>
     <string name="lbl_database">Base de données</string>
@@ -342,7 +343,7 @@
     <string name="option_header_import_books_option_new_and_updated_cutoff_date">Importer uniquement les livres qui ont été \n modifiés depuis cette date</string>
     <string name="option_import_books_option_new_only">Nouveaux livres uniquement</string>
     <string name="lbl_import_options">Sélectionnez ce qui sera importé.</string>
-    <string name="lbl_importing">Importer…</string>
+    <string name="lbl_importing">Importation en cours…</string>
     <string name="lbl_is_complete">Est complet</string>
     <string name="lbl_keywords">Mots clés</string>
     <string name="lbl_language">Langue</string>
@@ -487,15 +488,15 @@
     <string name="option_bob_filter_isbn_yes">Avec ISBN</string>
     <string name="option_bob_filter_lend_out_no">Livres disponibles</string>
     <string name="option_bob_filter_lend_out_yes">Livres en prêt</string>
-    <string name="option_bob_filter_read_no">Livres non lus</string>
-    <string name="option_bob_filter_read_yes">Livres lus</string>
+    <string name="X_option_bob_filter_read_no">Livres non lus</string>
+    <string name="X_option_bob_filter_read_yes">Livres lus</string>
     <string name="option_bob_filter_signed_no">Livres non signés</string>
     <string name="option_bob_filter_signed_yes">Livres signés</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Tout plier</string>
     <string name="pe_bob_list_rebuild_state_expanded">Développer tout</string>
     <string name="pe_bob_list_rebuild_state_preferred">Utiliser l’état préféré</string>
     <string name="pe_bob_list_rebuild_state_preserve">Préserver l’état actuel</string>
-    <string name="pe_edit_book_isbn_checks_loose">Libre</string>
+    <string name="loose">Libre</string>
     <string name="pe_thumbnails_cache_resized_each_time">Redimensionner à chaque fois que nécessaire (moins d’espace nécessaire, défilement des listes plus lent)</string>
     <string name="pe_thumbnails_cache_resized_stored">Mettre les couvertures en cache (plus d’espace nécessaire, défilement des listes plus rapide)</string>
     <string name="pe_ui_theme_dark">Noir</string>
@@ -743,10 +744,11 @@
     <string name="pt_bob_cover_click">Taper sur une image de couverture.</string>
     <string name="pe_bob_cover_click_zoom">Permet de zoomer sur l’image de couverture.</string>
     <string name="pe_bob_cover_click_details">Ouvre la page de détails du livre.</string>
-    <string name="style_type_defaults">Paramètres par défaut des styles</string>
+    <string name="X_style_type_defaults">Paramètres par défaut des styles</string>
     <string name="acra_report_saved">Vous pouvez maintenant visiter la page du projet sur Github et enregistrer un nouveau problème. Veuillez joindre le rapport précédemment enregistré au problème. Si vous n’avez pas encore de compte Github, vous devez en créer un.</string>
     <string name="action_report">Rapport</string>
     <string name="error_invalid_url">Adresse (URL) invalide</string>
     <string name="lbl_certificate_validity_period">Validité : %1$s - %2$s</string>
     <string name="lbl_reading">En cours</string>
+    <string name="action_edit_defaults">Modifier les paramètres par défaut</string>
 </resources>

@@ -131,13 +131,13 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/style_type_defaults">
+        android:title="@string/lbl_styles">
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleDefaultsFragment"
             android:icon="@drawable/ic_baseline_style_24"
             android:key="psk_style_defaults"
-            android:title="@string/style_type_defaults"
+            android:title="@string/action_edit_defaults"
             />
     </PreferenceCategory>
 

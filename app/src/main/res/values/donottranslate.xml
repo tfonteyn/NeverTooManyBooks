@@ -194,7 +194,7 @@
     <!-- ListPreference - the level of validity checking of ISBN numbers while editing (by the user) of a book. -->
     <string-array name="pe_edit_book_isbn_checks">
         <item>@string/none</item>
-        <item>@string/pe_edit_book_isbn_checks_loose</item>
+        <item>@string/loose</item>
         <item>@string/strict</item>
     </string-array>
     <string-array name="pv_edit_book_isbn_checks">
@@ -301,28 +301,21 @@
     <!-- ========== booklist style preferences ========== -->
     <!-- *************************************************************************************** -->
 
-    <!-- ListPreference - Booklist Filter -->
-    <string-array name="pe_bob_filter_read">
-        <item>@string/btn_all_books</item>
-        <item>@string/option_bob_filter_read_no</item>
-        <item>@string/option_bob_filter_read_yes</item>
-    </string-array>
-
-    <!-- ListPreference - Booklist Filter -->
+    <!-- ListPreference - Booklist Filter - the [0] value is a fallback and not normally shown.-->
     <string-array name="pe_bob_filter_signed">
         <item>@string/btn_all_books</item>
         <item>@string/option_bob_filter_signed_no</item>
         <item>@string/option_bob_filter_signed_yes</item>
     </string-array>
 
-    <!-- ListPreference - Booklist Filter -->
+    <!-- ListPreference - Booklist Filter - the [0] value is a fallback and not normally shown.-->
     <string-array name="pe_bob_filter_lending">
         <item>@string/btn_all_books</item>
         <item>@string/option_bob_filter_lend_out_no</item>
         <item>@string/option_bob_filter_lend_out_yes</item>
     </string-array>
 
-    <!-- ListPreference - Booklist Filter -->
+    <!-- ListPreference - Booklist Filter - the [0] value is a fallback and not normally shown.-->
     <string-array name="pe_bob_filter_isbn">
         <item>@string/btn_all_books</item>
         <item>@string/option_bob_filter_isbn_no</item>

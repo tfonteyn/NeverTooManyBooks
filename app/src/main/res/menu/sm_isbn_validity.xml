@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -35,7 +35,7 @@
             android:title="@string/none" />
         <item
             android:id="@+id/MENU_ISBN_VALIDITY_LOOSE"
-            android:title="@string/pe_edit_book_isbn_checks_loose" />
+            android:title="@string/loose" />
         <item
             android:id="@+id/MENU_ISBN_VALIDITY_STRICT"
             android:title="@string/strict" />

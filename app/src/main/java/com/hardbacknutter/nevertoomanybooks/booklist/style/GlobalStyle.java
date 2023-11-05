@@ -27,7 +27,6 @@ import androidx.annotation.NonNull;
 import java.util.List;
 import java.util.UUID;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
@@ -90,6 +89,6 @@ public final class GlobalStyle
     @NonNull
     @Override
     public String getLabel(@NonNull final Context context) {
-        return context.getString(R.string.style_type_defaults);
+        return StyleType.Global.getLabel(context);
     }
 }

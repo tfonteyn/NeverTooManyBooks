@@ -56,6 +56,7 @@
     <integer name="MENU_ORDER_LENDING">710</integer>
     <integer name="MENU_ORDER_SHARE">720</integer>
 
+    <integer name="MENU_ORDER_EDIT_DEFAULTS">725</integer>
     <integer name="MENU_ORDER_PURGE_BLNS">730</integer>
 
     <integer name="MENU_ORDER_CALIBRE">750</integer>
@@ -283,6 +284,10 @@
     <item name="MENU_SYNC_STRIP_INFO"
           type="id" />
 
+    <item name="MENU_GROUP_EDIT_DEFAULT"
+          type="id" />
+    <item name="MENU_EDIT_DEFAULT"
+          type="id" />
 
     <!-- Thumbnail context menu -->
     <item name="SUBMENU_THUMB_REPLACE"
