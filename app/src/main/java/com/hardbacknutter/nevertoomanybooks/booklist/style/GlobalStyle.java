@@ -66,7 +66,6 @@ public final class GlobalStyle
      */
     private GlobalStyle(@NonNull final DataHolder rowData) {
         super(rowData);
-        setGroupIds(GROUPS);
     }
 
     /**
