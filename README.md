@@ -18,7 +18,7 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-## Download the latest release: [5.1.0 apk](https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v5.1.0)
+## Download the latest release: [5.1.0 apk](https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v5.1.0/NeverTooManyBooks-5.1.0.apk)
 
 This is a book collection application, to keep track of your books and comics.
 
