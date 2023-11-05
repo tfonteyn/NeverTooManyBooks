@@ -211,32 +211,17 @@ public class DBHelper
     /**
      * Migrate and remove all keys which were declared obsolete.
      *
+     * <ul>
+     *     <li>migrate pre-db25 global field visibility keys</li>
+     *     <li>remove obsolete keys</li>
+     * </ul>
+     *
      * @param context Current context
      */
     public static void migratePreferenceKeys(@NonNull final Context context) {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        // Check for pre-db25 multiple-keys
-        final Pattern dot = Pattern.compile("\\.");
-        final List<String> oldVisKeys = prefs.getAll()
-                                             .keySet()
-                                             .stream()
-                                             .filter(key -> key.startsWith(
-                                                     LegacyUpgrades.FIELDS_VISIBILITY_KEYS))
-                                             .collect(Collectors.toList());
-        if (!oldVisKeys.isEmpty()) {
-            final FieldVisibility fieldVisibility = new FieldVisibility();
-            oldVisKeys.forEach(oldKey -> {
-                final boolean value = prefs.getBoolean(oldKey, false);
-                final String dbKey = dot.split(oldKey, 3)[2];
-                fieldVisibility.setVisible(dbKey, value);
-            });
-
-            prefs.edit()
-                 .putLong(FieldVisibilityPreferenceFragment.PK_FIELD_VISIBILITY,
-                          fieldVisibility.getBitValue())
-                 .apply();
-        }
+        LegacyUpgrades.migrateV24GlobalFieldVisibility(prefs);
 
         // Now remove all obsolete keys.
         final SharedPreferences.Editor editor = prefs.edit();
@@ -936,6 +921,34 @@ public class DBHelper
                     logger.e(TAG, e, "Delete TBL_TOC_ENTRIES: keep=" + keep + ", ids=" + ids);
                     throw e;
                 }
+            }
+        }
+
+        /**
+         * Check and migrate pre-db25 global field visibility keys.
+         *
+         * @param prefs to migrate
+         */
+        private static void migrateV24GlobalFieldVisibility(@NonNull final SharedPreferences prefs) {
+            final Pattern dot = Pattern.compile("\\.");
+            final List<String> oldVisKeys = prefs.getAll()
+                                                 .keySet()
+                                                 .stream()
+                                                 .filter(key -> key.startsWith(
+                                                         FIELDS_VISIBILITY_KEYS))
+                                                 .collect(Collectors.toList());
+            if (!oldVisKeys.isEmpty()) {
+                final FieldVisibility fieldVisibility = new FieldVisibility();
+                oldVisKeys.forEach(oldKey -> {
+                    final boolean value = prefs.getBoolean(oldKey, false);
+                    final String dbKey = dot.split(oldKey, 3)[2];
+                    fieldVisibility.setVisible(dbKey, value);
+                });
+
+                prefs.edit()
+                     .putLong(FieldVisibilityPreferenceFragment.PK_FIELD_VISIBILITY,
+                              fieldVisibility.getBitValue())
+                     .apply();
             }
         }
     }
