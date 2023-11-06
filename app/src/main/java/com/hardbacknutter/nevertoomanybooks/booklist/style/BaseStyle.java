@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -67,6 +66,7 @@ public abstract class BaseStyle
      * Also note this is an <strong>ORDERED LIST!</strong>
      */
     private static final Map<String, Sort> BOOK_LEVEL_FIELDS_DEFAULTS = new LinkedHashMap<>();
+    private static final String ERROR_UUID_IS_EMPTY = "uuid.isEmpty()";
 
     static {
         // The default is sorting by book title only
@@ -173,11 +173,13 @@ public abstract class BaseStyle
      */
     BaseStyle(@NonNull final String uuid,
               final long id) {
-        if (uuid.isEmpty()) {
-            throw new IllegalArgumentException("uuid.isEmpty()");
-        }
         this.uuid = uuid;
         this.id = id;
+
+        // Sanity check
+        if (uuid.isEmpty()) {
+            throw new IllegalArgumentException(ERROR_UUID_IS_EMPTY);
+        }
     }
 
     /**
@@ -187,10 +189,17 @@ public abstract class BaseStyle
      * but NOT by {@link StyleType#Builtin}.
      *
      * @param rowData to use
+     *
+     * @throws IllegalArgumentException if the UUID is not a valid string
      */
     BaseStyle(@NonNull final DataHolder rowData) {
         uuid = rowData.getString(DBKey.STYLE_UUID);
         id = rowData.getLong(DBKey.PK_ID);
+
+        // Sanity check
+        if (uuid.isEmpty()) {
+            throw new IllegalArgumentException(ERROR_UUID_IS_EMPTY);
+        }
 
         preferred = rowData.getBoolean(DBKey.STYLE_IS_PREFERRED);
         menuPosition = rowData.getInt(DBKey.STYLE_MENU_POSITION);
@@ -573,11 +582,7 @@ public abstract class BaseStyle
     }
 
     public void setGroupIds(@NonNull final List<Integer> groupIds) {
-        final List<BooklistGroup> list = groupIds
-                .stream()
-                .map(groupId -> BooklistGroup.newInstance(groupId, this))
-                .collect(Collectors.toList());
-        setGroupList(list);
+        setGroupList(BooklistGroup.createList(groupIds, this));
     }
 
     @Override

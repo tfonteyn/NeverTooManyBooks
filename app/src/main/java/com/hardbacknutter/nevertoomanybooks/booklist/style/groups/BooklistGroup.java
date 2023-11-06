@@ -220,6 +220,7 @@ public class BooklistGroup {
      * @return instance
      */
     @SuppressLint("SwitchIntDef")
+    @VisibleForTesting
     @NonNull
     public static BooklistGroup newInstance(@Id final int id,
                                             @NonNull final Style style) {
@@ -237,6 +238,22 @@ public class BooklistGroup {
             default:
                 return new BooklistGroup(id);
         }
+    }
+
+    /**
+     * Create a list with new BooklistGroup's using the list of specified ids.
+     *
+     * @param idList of the groups to create
+     * @param style  Style reference.
+     *
+     * @return list
+     */
+    @NonNull
+    public static List<BooklistGroup> createList(@NonNull final List<Integer> idList,
+                                                 @NonNull final Style style) {
+        return idList.stream()
+                     .map(groupId -> newInstance(groupId, style))
+                     .collect(Collectors.toList());
     }
 
     /**
