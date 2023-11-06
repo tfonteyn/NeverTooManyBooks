@@ -577,30 +577,6 @@ public class Author
     }
 
     /**
-     * Return the formatted version of the name.
-     *
-     * @param context Current context
-     * @param style   to apply
-     *
-     * @return formatted, but unfiltered, name
-     */
-    @NonNull
-    private String getFormattedName(@NonNull final Context context,
-                                    @Nullable final Style style) {
-        final boolean givenNameFirst;
-        if (style != null) {
-            givenNameFirst = style.isShowAuthorByGivenName();
-        } else {
-            givenNameFirst = ServiceLocator.getInstance()
-                                           .getStyles()
-                                           .getGlobalStyle()
-                                           .isShowAuthorByGivenName();
-        }
-
-        return getFormattedName(givenNameFirst);
-    }
-
-    /**
      * Get the 'complete' status of the Author.
      *
      * @return {@code true} if the Author is complete
@@ -717,11 +693,11 @@ public class Author
     @NonNull
     public String getLabel(@NonNull final Context context,
                            @NonNull final Details details,
-                           @Nullable final Style style) {
+                           @NonNull final Style style) {
         String label;
         switch (details) {
             case Full: {
-                label = getFormattedName(context, style);
+                label = getFormattedName(style.isShowAuthorByGivenName());
 
                 final ServiceLocator serviceLocator = ServiceLocator.getInstance();
                 if (serviceLocator.isFieldEnabled(DBKey.AUTHOR_REAL_AUTHOR)) {
@@ -729,7 +705,7 @@ public class Author
                     if (author != null) {
                         label += smallerText(context.getString(
                                 R.string.lbl_author_pseudonym_of_X,
-                                author.getFormattedName(context, style)));
+                                author.getFormattedName(style.isShowAuthorByGivenName())));
                     }
                 }
 
@@ -743,23 +719,14 @@ public class Author
             }
             case AutoSelect:
             case Normal: {
-                label = getFormattedName(context, style);
+                label = getFormattedName(style.isShowAuthorByGivenName());
                 break;
             }
             case Short: {
                 if (givenNames.isEmpty()) {
                     label = familyName;
                 } else {
-                    final boolean givenNameFirst;
-                    if (style != null) {
-                        givenNameFirst = style.isShowAuthorByGivenName();
-                    } else {
-                        givenNameFirst = ServiceLocator.getInstance()
-                                                       .getStyles()
-                                                       .getGlobalStyle().isShowAuthorByGivenName();
-                    }
-
-                    if (givenNameFirst) {
+                    if (style.isShowAuthorByGivenName()) {
                         label = givenNames.substring(0, 1) + ' ' + familyName;
                     } else {
                         label = familyName + ' ' + givenNames.charAt(0);
@@ -787,13 +754,13 @@ public class Author
      * {@link SpannableString} with both pen-name and real-name of this Author.
      *
      * @param context Current context
-     * @param style   (optional) to use
+     * @param style   to use
      *
      * @return styled and formatted name
      */
     @NonNull
     public CharSequence getStyledName(@NonNull final Context context,
-                                      @Nullable final Style style) {
+                                      @NonNull final Style style) {
         final CharSequence name = getStyledName(context, style, (CharSequence) null);
         if (realAuthor == null) {
             return name;
@@ -808,7 +775,7 @@ public class Author
      * <strong>IMPORTANT: will only display correctly when used with a TextView.</strong>
      *
      * @param context   Current context
-     * @param style     (optional) to use
+     * @param style     to use
      * @param pseudonym optional Author to combine with the actual name
      *
      * @return styled and formatted name
@@ -817,7 +784,7 @@ public class Author
      */
     @NonNull
     public CharSequence getStyledName(@NonNull final Context context,
-                                      @Nullable final Style style,
+                                      @NonNull final Style style,
                                       @Nullable final Author pseudonym) {
         final CharSequence penName =
                 pseudonym == null ? null : pseudonym.getStyledName(context, style,
@@ -842,7 +809,7 @@ public class Author
      * {@link SpannableString} with both pseudonym and real name of this Author.
      *
      * @param context Current context
-     * @param style   (optional) to use
+     * @param style   to use
      * @param penName optional Author pen-name to combine with the actual name
      *
      * @return styled and formatted name
@@ -851,10 +818,10 @@ public class Author
      */
     @NonNull
     public CharSequence getStyledName(@NonNull final Context context,
-                                      @Nullable final Style style,
+                                      @NonNull final Style style,
                                       @Nullable final CharSequence penName) {
 
-        final String realName = getFormattedName(context, style);
+        final String realName = getFormattedName(style.isShowAuthorByGivenName());
 
         if (penName == null) {
             return realName;

@@ -48,6 +48,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
@@ -199,7 +200,9 @@ public class EditBookViewModel
 
             menuHandlers = MenuHandlerFactory.create();
 
-            final Languages languages = ServiceLocator.getInstance().getLanguages();
+            final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+            final Style globalStyle = serviceLocator.getStyles().getGlobalStyle();
+            final Languages languages = serviceLocator.getLanguages();
             final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
             realNumberParser = new RealNumberParser(LocaleListUtils.asList(context));
@@ -207,8 +210,8 @@ public class EditBookViewModel
             dateFormatter = new DateFieldFormatter(userLocale, false);
             languageFormatter = new LanguageFormatter(userLocale, languages);
             doubleNumberFormatter = new DoubleNumberFormatter(realNumberParser);
-            listFormatterAutoDetails = new ListFormatter<>(Details.AutoSelect, null);
-            listFormatterNormalDetails = new ListFormatter<>(Details.Normal, null);
+            listFormatterAutoDetails = new ListFormatter<>(Details.AutoSelect, globalStyle);
+            listFormatterNormalDetails = new ListFormatter<>(Details.Normal, globalStyle);
 
             if (args != null) {
                 // 1. Do we have a Book? e.g. after an internet search
@@ -223,7 +226,7 @@ public class EditBookViewModel
                                            SqlEncode.date(LocalDateTime.now()));
                         }
                         // if BOOK_CONDITION is wanted, assume the user got a new book.
-                        if (ServiceLocator.getInstance().isFieldEnabled(DBKey.BOOK_CONDITION)
+                        if (serviceLocator.isFieldEnabled(DBKey.BOOK_CONDITION)
                             && !book.contains(DBKey.BOOK_CONDITION)) {
                             book.putInt(DBKey.BOOK_CONDITION, Book.CONDITION_AS_NEW);
                         }

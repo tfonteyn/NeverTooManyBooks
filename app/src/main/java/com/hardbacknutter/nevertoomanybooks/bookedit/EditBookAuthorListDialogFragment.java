@@ -37,6 +37,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.ShowContextMenu;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
@@ -434,7 +435,9 @@ public class EditBookAuthorListDialogFragment
                           @NonNull final List<Author> items,
                           @NonNull final StartDragListener dragStartListener) {
             super(context, items, dragStartListener);
-            formatter = new EntityFormatter<>(Details.Full, null);
+            formatter = new EntityFormatter<>(Details.Full, ServiceLocator.getInstance()
+                                                                          .getStyles()
+                                                                          .getGlobalStyle());
         }
 
         @NonNull

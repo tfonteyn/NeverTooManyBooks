@@ -61,14 +61,14 @@ public interface AuthorWork {
      *
      * @param context Current context
      * @param details the amount of details wanted
-     * @param style   (optional) to use
+     * @param style   to use
      *
      * @return the label to use.
      */
     @NonNull
     String getLabel(@NonNull Context context,
                     @NonNull Details details,
-                    @Nullable Style style);
+                    @NonNull Style style);
 
     /**
      * Get the first-publication-date for this work.

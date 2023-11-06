@@ -54,7 +54,7 @@ public class ListFormatter<T extends Entity>
 
     @NonNull
     private final String delimiter;
-    @Nullable
+    @NonNull
     private final Style style;
 
     /**
@@ -64,7 +64,7 @@ public class ListFormatter<T extends Entity>
      * @param style   (optional) to use
      */
     public ListFormatter(@NonNull final Details details,
-                         @Nullable final Style style) {
+                         @NonNull final Style style) {
         this(details, DEFAULT_DELIMITER, style);
     }
 
@@ -73,12 +73,12 @@ public class ListFormatter<T extends Entity>
      *
      * @param details   how much details to show
      * @param delimiter to use if details is {@link Details#Normal}
-     * @param style     (optional) to use
+     * @param style     to use
      */
     @SuppressWarnings("WeakerAccess")
     public ListFormatter(@NonNull final Details details,
                          @NonNull final String delimiter,
-                         @Nullable final Style style) {
+                         @NonNull final Style style) {
         this.details = details;
         this.delimiter = delimiter;
         this.style = style;

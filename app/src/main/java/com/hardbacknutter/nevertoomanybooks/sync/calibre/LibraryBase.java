@@ -24,7 +24,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
@@ -107,8 +106,8 @@ abstract class LibraryBase
     @NonNull
     @Override
     public String getLabel(@NonNull final Context context,
-                           @Nullable final Details details,
-                           @Nullable final Style style) {
+                           @NonNull final Details details,
+                           @NonNull final Style style) {
         return name;
     }
 

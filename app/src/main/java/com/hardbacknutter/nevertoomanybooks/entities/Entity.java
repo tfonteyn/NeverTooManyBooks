@@ -54,7 +54,10 @@ public interface Entity {
      */
     @NonNull
     default String getLabel(@NonNull final Context context) {
-        return getLabel(context, Details.AutoSelect, null);
+        return getLabel(context, Details.AutoSelect,
+                        ServiceLocator.getInstance()
+                                      .getStyles()
+                                      .getGlobalStyle());
     }
 
     /**
@@ -63,14 +66,14 @@ public interface Entity {
      *
      * @param context Current context
      * @param details the amount of details wanted
-     * @param style   (optional) to use
+     * @param style   to use
      *
      * @return the label to use.
      */
     @NonNull
     String getLabel(@NonNull Context context,
                     @NonNull Details details,
-                    @Nullable Style style);
+                    @NonNull Style style);
 
 
     /**

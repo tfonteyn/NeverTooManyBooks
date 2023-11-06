@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -43,7 +43,7 @@ public class EntityFormatter<T extends Entity>
 
     @NonNull
     private final Details details;
-    @Nullable
+    @NonNull
     private final Style style;
 
     /**
@@ -53,7 +53,7 @@ public class EntityFormatter<T extends Entity>
      * @param style   to use
      */
     public EntityFormatter(@NonNull final Details details,
-                           @Nullable final Style style) {
+                           @NonNull final Style style) {
         this.details = details;
         this.style = style;
     }

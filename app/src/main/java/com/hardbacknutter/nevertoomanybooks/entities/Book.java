@@ -1530,7 +1530,7 @@ public class Book
         @Override
         public String getLabel(@NonNull final Context context,
                                @Nullable final Details details,
-                               @Nullable final Style style) {
+                               @NonNull final Style style) {
             return context.getString(labelResId);
         }
     }
