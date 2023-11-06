@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.WritableStyle;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -63,26 +64,27 @@ public class PreferredStylesViewModelTest
     public TestRule rule = new InstantTaskExecutorRule();
     private PreferredStylesViewModel listVm;
 
-    private StylesHelper stylesHelper;
-
     @Before
     public void setup()
             throws DaoWriteException, StorageException {
         super.setup();
-        stylesHelper = ServiceLocator.getInstance().getStyles();
+        final Style aDefault = ServiceLocator.getInstance().getStyles().getDefault();
+        listVm = new PreferredStylesViewModel();
+        listVm.init(createArgs(aDefault));
+    }
 
+    @AfterClass
+    public static void afterwards() {
+        final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
         // delete any user-styles we created in previous tests.
-        for (final String name : List.of(NAME_CLONE_BUILTIN, NAME_CLONE_USER)) {
+        for (final String prefix : List.of(NAME_CLONE_BUILTIN, NAME_CLONE_USER)) {
             stylesHelper.getStyles(true)
                         .stream()
                         .filter(style -> style.getType() == StyleType.User)
                         .map(style -> (UserStyle) style)
-                        .filter(userStyle -> name.equals(userStyle.getName()))
-                        .forEach(userStyle -> stylesHelper.delete(userStyle));
+                        .filter(userStyle -> userStyle.getName().startsWith(prefix))
+                        .forEach(stylesHelper::delete);
         }
-
-        listVm = new PreferredStylesViewModel();
-        listVm.init(createArgs(stylesHelper.getDefault()));
     }
 
     @NonNull
@@ -104,6 +106,8 @@ public class PreferredStylesViewModelTest
     }
 
     private void cloneBuiltin(final boolean asPreferred) {
+        listVm.refreshStyleList();
+
         final List<Style> styleList = listVm.getStyleList();
         final int initialSize = styleList.size();
         // sanity check
@@ -142,9 +146,11 @@ public class PreferredStylesViewModelTest
 
 
         // Modify the name, just to modify 'something'
-        styleVm.getStyleDataStore().putString(StyleDataStore.PK_NAME, NAME_CLONE_BUILTIN);
+        final String modifiedName = NAME_CLONE_BUILTIN + System.nanoTime();
+        styleVm.getStyleDataStore().putString(StyleDataStore.PK_NAME, modifiedName);
         // pretend leaving the style-editor, this will trigger a call to:
-        styleVm.updateOrInsertStyle(context);
+        final boolean dbResult = styleVm.updateOrInsertStyle(context);
+        assertTrue(dbResult);
 
         final long editedStyleId = editedStyle.getId();
         final String editedStyleUuid = editedStyle.getUuid();
@@ -160,7 +166,7 @@ public class PreferredStylesViewModelTest
         final Style addedStyle = listVm.getStyle(initialPosition);
         assertEquals(addedStyle.getId(), editedStyleId);
         assertEquals(addedStyle.getUuid(), editedStyleUuid);
-        assertEquals(NAME_CLONE_BUILTIN, editedStyleName);
+        assertEquals(modifiedName, editedStyleName);
         assertEquals(addedStyle.isPreferred(), editedStylePreferred);
 
         // The initial one should be demoted
@@ -176,9 +182,13 @@ public class PreferredStylesViewModelTest
         }
     }
 
-
+    /**
+     * Relies on finding a user-defined style!
+     */
     @Test
     public void cloneUserDefined() {
+        listVm.refreshStyleList();
+
         final List<Style> styleList = listVm.getStyleList();
         final int initialSize = styleList.size();
         // sanity check
@@ -186,7 +196,7 @@ public class PreferredStylesViewModelTest
 
         // Find a random user-defined style
         Style initialStyle;
-        int initialPosition = 1;
+        int initialPosition = 0;
         initialStyle = styleList.get(initialPosition);
         try {
             // Skip all entries until we find a User style.
@@ -215,7 +225,8 @@ public class PreferredStylesViewModelTest
 
 
         // Modify the name, just to modify 'something'
-        styleVm.getStyleDataStore().putString(StyleDataStore.PK_NAME, NAME_CLONE_USER);
+        final String modifiedName = NAME_CLONE_USER + System.nanoTime();
+        styleVm.getStyleDataStore().putString(StyleDataStore.PK_NAME, modifiedName);
         // pretend leaving the style-editor, this will trigger a call to:
         styleVm.updateOrInsertStyle(context);
 
@@ -233,7 +244,7 @@ public class PreferredStylesViewModelTest
         final Style addedStyle = listVm.getStyle(initialPosition);
         assertEquals(addedStyle.getId(), editedStyleId);
         assertEquals(addedStyle.getUuid(), editedStyleUuid);
-        assertEquals(NAME_CLONE_USER, editedStyleName);
+        assertEquals(modifiedName, editedStyleName);
         assertEquals(addedStyle.isPreferred(), editedStylePreferred);
 
         final int movedInitialPosition = listVm.findRow(initialStyle);
@@ -241,8 +252,13 @@ public class PreferredStylesViewModelTest
         assertEquals(initialPosition + 1, movedInitialPosition);
     }
 
+    /**
+     * Relies on finding a user-defined style!
+     */
     @Test
     public void editExisting() {
+        listVm.refreshStyleList();
+
         final List<Style> styleList = listVm.getStyleList();
         final int initialSize = styleList.size();
         // sanity check
@@ -250,7 +266,7 @@ public class PreferredStylesViewModelTest
 
         // Find a random user-defined style
         Style initialStyle;
-        int initialPosition = 1;
+        int initialPosition = 0;
         initialStyle = styleList.get(initialPosition);
         try {
             // Skip all entries until we find a User style.
@@ -278,7 +294,8 @@ public class PreferredStylesViewModelTest
 
 
         // Modify the name, just to modify 'something'
-        styleVm.getStyleDataStore().putString(StyleDataStore.PK_NAME, NAME_CLONE_USER);
+        final String modifiedName = NAME_CLONE_USER + System.nanoTime();
+        styleVm.getStyleDataStore().putString(StyleDataStore.PK_NAME, modifiedName);
         // pretend leaving the style-editor, this will trigger a call to:
         styleVm.updateOrInsertStyle(context);
 
@@ -296,7 +313,7 @@ public class PreferredStylesViewModelTest
         final Style addedStyle = listVm.getStyle(initialPosition);
         assertEquals(addedStyle.getId(), editedStyleId);
         assertEquals(addedStyle.getUuid(), editedStyleUuid);
-        assertEquals(NAME_CLONE_USER, editedStyleName);
+        assertEquals(modifiedName, editedStyleName);
         assertEquals(addedStyle.isPreferred(), editedStylePreferred);
     }
 }

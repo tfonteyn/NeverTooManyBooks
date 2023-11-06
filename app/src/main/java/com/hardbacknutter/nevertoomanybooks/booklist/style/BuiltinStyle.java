@@ -49,13 +49,20 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 public final class BuiltinStyle
         extends BaseStyle {
 
-    /** Absolute/initial default. */
-    public static final int DEFAULT_ID;
-    /** Absolute/initial default. */
+    /**
+     * The style which will get used when there is something wrong with the Style
+     * which we were supposed to be using; i.e. this is a FALLBACK.
+     * while the {@link GlobalStyle} is a holder for the global DEFAULT values.
+     */
     public static final String DEFAULT_UUID;
-    /** We need a random style with a filter for testing. */
+    /**
+     * Matching id for {@link #DEFAULT_UUID}.
+     */
+    public static final int DEFAULT_ID;
+
+    /** We need a random style for testing. Currently set to -9: ID_PUBLICATION_DATA. */
     @VisibleForTesting
-    public static final String UUID_FOR_TESTING_ONLY;
+    public static final int ID_FOR_TESTING_ONLY = -9;
 
 
     private static final int ID_AUTHOR_THEN_SERIES = -1;
@@ -81,6 +88,7 @@ public final class BuiltinStyle
     private static final int ID_RATING = -17;
     private static final int ID_BOOKSHELF = -18;
     private static final int ID_DATE_LAST_UPDATE = -19;
+
     /**
      * It's an <strong>ordered list - NEVER change the order</strong>.
      * It should only ever be exposed as a {@link Collection};
@@ -203,16 +211,10 @@ public final class BuiltinStyle
         DEFAULT_ID = ID_AUTHOR_THEN_SERIES;
 
         DEFAULT_UUID = ALL.stream()
-                          .filter(def -> def.getId() == ID_AUTHOR_THEN_SERIES)
+                          .filter(def -> def.getId() == DEFAULT_ID)
                           .findFirst()
                           .map(Definition::getUuid)
                           .orElseThrow();
-
-        UUID_FOR_TESTING_ONLY = ALL.stream()
-                                   .filter(def -> def.getId() == ID_PUBLICATION_DATA)
-                                   .findFirst()
-                                   .map(Definition::getUuid)
-                                   .orElseThrow();
     }
 
     /**

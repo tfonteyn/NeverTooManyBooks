@@ -63,7 +63,7 @@ public class UserCollectionTest
     private final Bookshelf ownedBookshelf = new Bookshelf(
             "owned", BuiltinStyle.DEFAULT_UUID);
     private final Bookshelf wishlistBookshelf = new Bookshelf(
-            "wishlist", BuiltinStyle.UUID_FOR_TESTING_ONLY);
+            "wishlist", BuiltinStyle.DEFAULT_UUID);
     @Mock
     BookshelfMapper bookshelfMapper;
     private StripInfoSearchEngine searchEngine;

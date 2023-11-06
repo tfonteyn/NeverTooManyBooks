@@ -29,7 +29,10 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
@@ -64,6 +67,17 @@ public abstract class BaseDBTest {
         CoverVolume.initVolume(context, 0);
         ServiceLocator.getInstance().getDb();
     }
+
+    @NonNull
+    protected Optional<Style> getTestStyle() {
+        return BuiltinStyle.ALL.stream()
+                               .filter(def -> def.getId() == BuiltinStyle.ID_FOR_TESTING_ONLY)
+                               .findFirst()
+                               .map(BuiltinStyle.Definition::getUuid)
+                               .map(uuid -> serviceLocator.getStyles().getStyle(uuid))
+                               .orElseThrow();
+    }
+
 
     /** Load and parse a JSoup document from a raw html resource. */
     @NonNull

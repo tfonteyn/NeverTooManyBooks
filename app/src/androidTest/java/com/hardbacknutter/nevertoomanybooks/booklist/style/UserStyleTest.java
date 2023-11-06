@@ -40,8 +40,7 @@ public class UserStyleTest
 
     @Test
     public void clone01() {
-        final StylesHelper helper = serviceLocator.getStyles();
-        final Optional<Style> s1 = helper.getStyle(BuiltinStyle.UUID_FOR_TESTING_ONLY);
+        final Optional<Style> s1 = getTestStyle();
         assertTrue(s1.isPresent());
 
         // clone a BuiltinStyle

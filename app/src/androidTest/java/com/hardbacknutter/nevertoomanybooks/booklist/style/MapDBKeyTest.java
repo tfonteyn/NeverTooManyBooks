@@ -57,8 +57,7 @@ public class MapDBKeyTest
      */
     @Test
     public void sortableBookLevelKeysHaveLabels() {
-        final StylesHelper helper = serviceLocator.getStyles();
-        final Optional<Style> s1 = helper.getStyle(BuiltinStyle.UUID_FOR_TESTING_ONLY);
+        final Optional<Style> s1 = getTestStyle();
         assertTrue(s1.isPresent());
 
         final Set<String> keys = s1.get().getBookLevelFieldsOrderBy().keySet();
@@ -79,8 +78,7 @@ public class MapDBKeyTest
      */
     @Test
     public void visibilityKeysHaveDomainNames() {
-        final StylesHelper helper = serviceLocator.getStyles();
-        final Optional<Style> s1 = helper.getStyle(BuiltinStyle.UUID_FOR_TESTING_ONLY);
+        final Optional<Style> s1 = getTestStyle();
         assertTrue(s1.isPresent());
 
         final Set<String> keys = s1.get().getFieldVisibilityKeys(FieldVisibility.Screen.List, true);
@@ -100,8 +98,7 @@ public class MapDBKeyTest
      */
     @Test
     public void sortableBookLevelKeysHaveDomainNames() {
-        final StylesHelper helper = serviceLocator.getStyles();
-        final Optional<Style> s1 = helper.getStyle(BuiltinStyle.UUID_FOR_TESTING_ONLY);
+        final Optional<Style> s1 = getTestStyle();
         assertTrue(s1.isPresent());
 
         final Set<String> keys = s1.get().getBookLevelFieldsOrderBy().keySet();

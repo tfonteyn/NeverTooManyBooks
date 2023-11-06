@@ -24,10 +24,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 
 import org.junit.Test;
@@ -44,8 +42,7 @@ public class BoBTaskTest
      */
     @Test
     public void visibilityKeysHaveDomainExpressions() {
-        final StylesHelper helper = serviceLocator.getStyles();
-        final Optional<Style> s1 = helper.getStyle(BuiltinStyle.UUID_FOR_TESTING_ONLY);
+        final Optional<Style> s1 = getTestStyle();
         assertTrue(s1.isPresent());
 
         final Set<String> keys = s1.get().getFieldVisibilityKeys(FieldVisibility.Screen.List, true);
@@ -68,8 +65,7 @@ public class BoBTaskTest
      */
     @Test
     public void sortableBookLevelKeysHaveDomainExpressions() {
-        final StylesHelper helper = serviceLocator.getStyles();
-        final Optional<Style> s1 = helper.getStyle(BuiltinStyle.UUID_FOR_TESTING_ONLY);
+        final Optional<Style> s1 = getTestStyle();
         assertTrue(s1.isPresent());
 
         final Set<String> keys = s1.get().getBookLevelFieldsOrderBy().keySet();

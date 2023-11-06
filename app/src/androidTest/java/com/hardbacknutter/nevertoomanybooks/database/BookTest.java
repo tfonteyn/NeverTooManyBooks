@@ -340,7 +340,7 @@ public class BookTest {
         final Context context = serviceLocator.getLocalizedAppContext();
 
         final StylesHelper helper = serviceLocator.getStyles();
-        final Optional<Style> s1 = helper.getStyle(BuiltinStyle.UUID_FOR_TESTING_ONLY);
+        final Optional<Style> s1 = helper.getStyle(BuiltinStyle.DEFAULT_UUID);
         assertTrue(s1.isPresent());
 
         final BookDao bookDao = serviceLocator.getBookDao();
