@@ -750,10 +750,8 @@ public class DBHelper
             // (including the builtin which is pointless but easier)
             try (SQLiteStatement stmt = db.compileStatement(
                     "UPDATE " + TBL_BOOKLIST_STYLES.getName() + " SET "
-                    + DBKey.STYLE_PUBLISHER_SHOW_REORDERED + "=?,"
                     + DBKey.STYLE_TITLE_SHOW_REORDERED + "=?")) {
                 stmt.bindLong(1, value);
-                stmt.bindLong(2, value);
                 stmt.executeUpdateDelete();
             }
         }
