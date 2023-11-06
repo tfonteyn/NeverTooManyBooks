@@ -558,12 +558,12 @@
     <string name="pt_search_reformat_color">Standardisieren Namen der Buchfarben</string>
     <string name="pt_search_reformat_format">Standardisieren Namen der Buchformate</string>
     <string name="pt_search_uses_publisher">Suche verwendet Verleger</string>
-    <string name="pt_author_name_formatting">Formatierung des Autornamens</string>
+    <string name="X_pt_author_name_formatting">Formatierung des Autornamens</string>
     <string name="pt_show_title_reordered">Titel anzeigen als…</string>
     <string name="ps_show_titles_reordered_off">Der Titel</string>
     <string name="error_type_not_supported">Typ nicht unterstützt: %1$s …</string>
     <string name="ps_show_titles_reordered_on">Titel, Der</string>
-    <string name="pt_sort_author_name_given_first">Autorennamen sortieren</string>
+    <string name="X_pt_sort_author_name_given_first">Autorennamen sortieren</string>
     <string name="pt_sort_title_reordered">Titel sortieren nach</string>
     <string name="pt_cover_undo_enabled">Rückgängigmachen von Operationen auf Buchumschläge</string>
     <string name="ps_cover_undo_disabled">Ein Buchumschlag bearbeiten/ersetzen kann nicht rückgängig gemacht werden (verbraucht weniger Speicherplatz)</string>
@@ -574,8 +574,8 @@
     <string name="pt_ui_system_locale">Systemsprache</string>
     <string name="pt_ui_theme">Thema</string>
     <string name="pt_website_search_order_and_enable">Priorität, aktivieren und deaktivieren</string>
-    <string name="ps_author_name_example_family_first">z.B. „Kafka, Franz“</string>
-    <string name="ps_author_name_example_given_first">z.B. „Franz  Kafka“</string>
+    <string name="ps_show_author_name_family_first">Anzeige mit dem Familiennamen zuerst.\\nz.B. „Kafka, Franz“</string>
+    <string name="ps_show_author_name_given_first">Anzeige mit den Vornamen zuerst.\\nz.B. „Franz  Kafka“</string>
     <string name="ps_bob_books_under_multiple_each_author">Unter jedem Autor</string>
     <string name="ps_bob_books_under_multiple_each_publisher">unter jedem Verlag</string>
     <string name="ps_bob_books_under_multiple_each_series">Unter jedem Serie</string>
@@ -748,4 +748,6 @@
     <string name="lbl_certificate_validity_period">Gültigkeit: %1$s - %2$s</string>
     <string name="lbl_reading">Am Lesen</string>
     <string name="action_edit_defaults">Standardeinstellungen bearbeiten</string>
+    <string name="ps_sort_author_name_given_first">Sortierung nach den Vornamen zuerst.\\nz.B. „Franz  Kafka“</string>
+    <string name="ps_sort_author_name_family_first">Sortierung nach dem Familiennamen zuerst.\\nz.B. „Kafka, Franz“</string>
 </resources>

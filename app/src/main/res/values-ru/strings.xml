@@ -574,9 +574,9 @@
     <string name="pt_search_reformat_color">Стандартизировать названия книг</string>
     <string name="pt_search_reformat_format">Стандартизировать имена в формате книги</string>
     <string name="pt_search_uses_publisher">Поиск использует издатель</string>
-    <string name="pt_author_name_formatting">Форматирование имени автора</string>
+    <string name="X_pt_author_name_formatting">Форматирование имени автора</string>
     <string name="pt_show_title_reordered">Показать названия как…</string>
-    <string name="pt_sort_author_name_given_first">Сортировка имени автора</string>
+    <string name="X_pt_sort_author_name_given_first">Сортировка имени автора</string>
     <string name="pt_sort_title_reordered">Сортировать названия по</string>
     <string name="pt_cover_undo_enabled">Отмена операций на обложках книг</string>
     <string name="ps_cover_undo_disabled">Редактирование/замена обложки не может быть отменено (используется меньший объем памяти)</string>
@@ -587,8 +587,8 @@
     <string name="pt_ui_system_locale">Язык системы</string>
     <string name="pt_ui_theme">тема</string>
     <string name="pt_website_search_order_and_enable">Важные разговоры, включить и отключить</string>
-    <string name="ps_author_name_example_family_first">например «Достоевский, Фёдор»</string>
-    <string name="ps_author_name_example_given_first">например «Фёдор Достоевский»</string>
+    <string name="ps_show_author_name_family_first">Отображать сначала фамилии.\\nнапример «Достоевский, Фёдор»</string>
+    <string name="ps_show_author_name_given_first">Отобразить сначала фамилии.\\nнапример «Фёдор Достоевский»</string>
     <string name="ps_bob_books_under_multiple_each_author">Под каждым автор</string>
     <string name="ps_bob_books_under_multiple_each_publisher">под каждым издателем</string>
     <string name="ps_bob_books_under_multiple_each_series">Под каждым серии</string>
@@ -767,4 +767,6 @@
     <string name="lbl_certificate_validity_period">Срок действия: %1$s - %2$s</string>
     <string name="lbl_reading">Читаю</string>
     <string name="action_edit_defaults">Редактирование настроек по умолчанию</string>
+    <string name="ps_sort_author_name_given_first">Отсортировать по фамилиям.\\nнапример «Фёдор Достоевский»</string>
+    <string name="ps_sort_author_name_family_first">Сортировка по фамилии в первую очередь.\\nнапример «Достоевский, Фёдор»</string>
 </resources>

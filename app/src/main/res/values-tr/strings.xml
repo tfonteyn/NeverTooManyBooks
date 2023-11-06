@@ -564,9 +564,9 @@
     <string name="pt_search_reformat_color">“Kitap rengi” adlarını standartlaştırma</string>
     <string name="pt_search_reformat_format">“Kitap formatı” adlarını standartlaştırın</string>
     <string name="pt_search_uses_publisher">Arama yayıncı kullanıyor</string>
-    <string name="pt_author_name_formatting">Yazar adı biçimlendirme</string>
+    <string name="X_pt_author_name_formatting">Yazar adı biçimlendirme</string>
     <string name="pt_show_title_reordered">Başlıkları farklı göster…</string>
-    <string name="pt_sort_author_name_given_first">Yazar adı sıralama</string>
+    <string name="X_pt_sort_author_name_given_first">Yazar adı sıralama</string>
     <string name="pt_sort_title_reordered">Başlıkları sırala</string>
     <string name="pt_cover_undo_enabled">Kitap kapaklarındaki işlemleri geri alma</string>
     <string name="ps_cover_undo_disabled">Kapak düzenleme/değiştirme geri alınamaz (daha az depolama alanı kullanır)</string>
@@ -577,8 +577,8 @@
     <string name="pt_ui_system_locale">Sistem dili</string>
     <string name="pt_ui_theme">Tema</string>
     <string name="pt_website_search_order_and_enable">Öncelikli, etkinleştir ve devre dışı bırak</string>
-    <string name="ps_author_name_example_family_first">Örneğin “Nesin, Aziz”</string>
-    <string name="ps_author_name_example_given_first">Örneğin “Aziz Nesin”</string>
+    <string name="ps_show_author_name_family_first">Önce aile adı ile görüntüleyin.\\nÖrneğin “Nesin, Aziz”</string>
+    <string name="ps_show_author_name_given_first">Önce verilen adlarla görüntüleyin.\\nÖrneğin “Aziz Nesin”</string>
     <string name="ps_bob_books_under_multiple_each_author">Her yazar altında</string>
     <string name="ps_bob_books_under_multiple_each_publisher">her yayıncının altında</string>
     <string name="ps_bob_books_under_multiple_each_series">Her dizi altında</string>
@@ -757,4 +757,6 @@
     <string name="lbl_certificate_validity_period">Geçerlilik: %1$s - %2$s</string>
     <string name="lbl_reading">Okunuyor</string>
     <string name="action_edit_defaults">Varsayılan ayarları düzenleme</string>
+    <string name="ps_sort_author_name_given_first">Önce verilen isimlere göre sıralayın.\\nÖrneğin “Aziz Nesin”</string>
+    <string name="ps_sort_author_name_family_first">Önce soyadına göre sıralayın.\\nÖrneğin “Nesin, Aziz”</string>
 </resources>

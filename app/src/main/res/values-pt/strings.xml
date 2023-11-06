@@ -475,7 +475,7 @@
     <string name="lbl_purge_blns">Limpar o estado do nó</string>
     <string name="info_purge_blns_all">Limpar o estado do nó de todas as listas</string>
     <string name="ps_bob_books_under_multiple_primary_author_only">apenas sob o seu autor principal</string>
-    <string name="pt_sort_author_name_given_first">Ordenação do nome do autor</string>
+    <string name="X_pt_sort_author_name_given_first">Ordenação do nome do autor</string>
     <string name="info_select_fields_to_update">Os campos selecionados serão atualizados a partir da internet. Os campos não selecionados permanecerão inalterados.</string>
     <string name="option_bob_filter_lend_out_no">Livros disponíveis</string>
     <string name="X_option_bob_filter_anthology_yes">Antologias</string>
@@ -505,7 +505,7 @@
     <string name="pt_show_title_reordered">Mostrar títulos como…</string>
     <string name="error_type_not_supported">Tipo não suportado: %1$s …</string>
     <string name="ps_show_titles_reordered_on">título, O</string>
-    <string name="ps_author_name_example_family_first">por exemplo, “de Camões, Luís”</string>
+    <string name="ps_show_author_name_family_first">Mostrar com o nome de família em primeiro lugar.\\npor exemplo, “de Camões, Luís”</string>
     <string name="pt_bob_books_under_multiple_authors">Mostrar livros com vários autores</string>
     <string name="lbl_filter">Filtro</string>
     <string name="unknown_author">[Autor desconhecido]</string>
@@ -646,7 +646,7 @@
     <string name="pv_bob_header_filters">Filtros</string>
     <string name="pt_line_spacing">Espaçamento entre linhas</string>
     <string name="pt_bob_list_state_expansion_level">Expansão por defeito da lista de livros</string>
-    <string name="pt_author_name_formatting">Formatação do nome do autor</string>
+    <string name="X_pt_author_name_formatting">Formatação do nome do autor</string>
     <string name="ps_bob_books_under_multiple_each_author">sob cada autor</string>
     <string name="X_option_bob_filter_read_yes">Livros lidos</string>
     <string name="ps_bob_books_under_multiple_each_publisher">em cada editor</string>
@@ -670,7 +670,7 @@
     <string name="option_bug_report_logfiles">Ficheiros de registo</string>
     <string name="option_bug_report_database_upgrade">Ficheiros de atualização da base de dados</string>
     <string name="lbl_sql_query">Consulta SQL</string>
-    <string name="ps_author_name_example_given_first">por exemplo, “Luís de Camões”</string>
+    <string name="ps_show_author_name_given_first">Mostrar com os nomes próprios em primeiro lugar.\\npor exemplo, “Luís de Camões”</string>
     <string name="pt_bob_books_under_multiple_series">Mostrar livros em várias séries</string>
     <string name="pe_bob_row_menu_button">Mostre sempre um botão.</string>
     <string name="ps_bob_books_under_multiple_primary_series_only">apenas nas suas séries principais</string>
@@ -778,4 +778,6 @@
     <string name="lbl_certificate_validity_period">Validade: %1$s - %2$s</string>
     <string name="lbl_reading">A ler</string>
     <string name="action_edit_defaults">Editar definições predefinidas</string>
+    <string name="ps_sort_author_name_given_first">Ordenar primeiro pelos nomes próprios.\\npor exemplo, “Luís de Camões”</string>
+    <string name="ps_sort_author_name_family_first">Ordenar primeiro pelo apelido.\\npor exemplo, “de Camões, Luís”</string>
 </resources>

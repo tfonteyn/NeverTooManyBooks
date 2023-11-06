@@ -1404,7 +1404,8 @@
     <!-- SwitchPreference - Show thumbnail image for each book -->
     <string name="pt_bob_cover_show">Show covers</string>
 
-    <!-- ListPreference - When a user taps on the thumbnail/cover-image... -->
+    <!-- ListPreference - When a user taps on the thumbnail/cover-image...
+         Will have the option(s) listed underneath. -->
     <string name="pt_bob_cover_click">Tapping on a cover image.</string>
     <string name="pe_bob_cover_click_zoom">Will zoom in on the cover image.</string>
     <string name="pe_bob_cover_click_details">Will open the book details page.</string>
@@ -1417,17 +1418,20 @@
     <string name="pt_line_spacing">Line spacing</string>
     <!-- SeekBarPreference -->
     <string name="pt_bob_list_state_expansion_level">Default booklist expansion</string>
-    <!-- SwitchPreference - Display Authors by family (default) or given name. -->
-    <string name="pt_author_name_formatting">Author name formatting</string>
-    <!-- SwitchPreference - Sorting Authors by family (default) or given name. -->
-    <string name="pt_sort_author_name_given_first">Author name sorting</string>
 
-    <!-- Preference summary strings on how to show/sort author-name.
+    <!-- Preference summary strings on how to SORT an Author name.
          Translator: use your favourite Author in your country. -->
-    <string name="ps_author_name_example_given_first">e.g. “Connie Willis”</string>
-    <!-- Preference summary strings on how to show/sort author-name.
+    <string name="ps_sort_author_name_given_first">Sort on the given names first.\ne.g. “Connie Willis”</string>
+    <!-- Preference summary strings on how to SORT an Author name.
          Translator: use your favourite Author in your country. -->
-    <string name="ps_author_name_example_family_first">e.g. “Willis, Connie”</string>
+    <string name="ps_sort_author_name_family_first">Sort on the family name first.\n.e.g. “Willis, Connie”</string>
+
+    <!-- Preference summary strings on how to SHOW an Author name.
+         Translator: use your favourite Author in your country. -->
+    <string name="ps_show_author_name_given_first">Display with the given names first.\ne.g. “Connie Willis”</string>
+    <!-- Preference summary strings on how to SHOW an Author name.
+         Translator: use your favourite Author in your country. -->
+    <string name="ps_show_author_name_family_first">Display with the family name first.\n.e.g. “Willis, Connie”</string>
 
 
     <!-- SwitchPreference - option title -->
@@ -1613,6 +1617,11 @@
 
     <string name="X_neither">Neither</string>
     <string name="X_lbl_thumbnails">Thumbnails</string>
+
+    <!-- SwitchPreference - Display Authors by family (default) or given name. -->
+    <string name="X_pt_author_name_formatting">Author name formatting</string>
+    <!-- SwitchPreference - Sorting Authors by family (default) or given name. -->
+    <string name="X_pt_sort_author_name_given_first">Author name sorting</string>
 
     <!-- The global default values used as defaults for the builtin styles. -->
     <string name="X_style_type_defaults">Styles default settings</string>

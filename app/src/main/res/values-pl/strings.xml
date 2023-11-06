@@ -577,9 +577,9 @@
     <string name="pt_search_reformat_color">Standaryzuj nazwy „kolorów książek”</string>
     <string name="pt_search_reformat_format">Standaryzuj nazwy „formatu książki”</string>
     <string name="pt_search_uses_publisher">Wyszukiwanie używa wydawcy</string>
-    <string name="pt_author_name_formatting">Formatowanie nazwiska autora</string>
+    <string name="X_pt_author_name_formatting">Formatowanie nazwiska autora</string>
     <string name="pt_show_title_reordered">Pokaż tytuły jako…</string>
-    <string name="pt_sort_author_name_given_first">Sortowanie nazwisk autorów</string>
+    <string name="X_pt_sort_author_name_given_first">Sortowanie nazwisk autorów</string>
     <string name="pt_sort_title_reordered">Sortuj tytuły według</string>
     <string name="pt_cover_undo_enabled">Cofanie operacji na okładkach książek</string>
     <string name="ps_cover_undo_disabled">Edycji/zmiany okładki nie można cofnąć (zużywa mniej pamięci)</string>
@@ -590,8 +590,8 @@
     <string name="pt_ui_system_locale">Język systemu</string>
     <string name="pt_ui_theme">Motyw</string>
     <string name="pt_website_search_order_and_enable">Priorytetowe, włącz i wyłącz</string>
-    <string name="ps_author_name_example_family_first">np. „Lem, Stanisław”</string>
-    <string name="ps_author_name_example_given_first">np. „Stanisław Lem”</string>
+    <string name="ps_show_author_name_family_first">Wyświetl najpierw nazwisko rodowe.\\nnp. „Lem, Stanisław”</string>
+    <string name="ps_show_author_name_given_first">Wyświetlanie z podanymi imionami w pierwszej kolejności.\\nnp. „Stanisław Lem”</string>
     <string name="ps_bob_books_under_multiple_each_author">Pod każdym autor</string>
     <string name="ps_bob_books_under_multiple_each_publisher">pod każdym wydawcą</string>
     <string name="ps_bob_books_under_multiple_each_series">Pod każdym seria</string>
@@ -770,4 +770,6 @@
     <string name="lbl_certificate_validity_period">Ważność: %1$s - %2$s</string>
     <string name="lbl_reading">Czytane</string>
     <string name="action_edit_defaults">Edycja ustawień domyślnych</string>
+    <string name="ps_sort_author_name_given_first">Sortuj według imion w pierwszej kolejności.\\nnp. „Stanisław Lem”</string>
+    <string name="ps_sort_author_name_family_first">Sortuj według nazwiska w pierwszej kolejności.\\nnp. „Lem, Stanisław”</string>
 </resources>

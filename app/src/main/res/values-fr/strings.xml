@@ -562,12 +562,12 @@
     <string name="pt_search_reformat_color">Normaliser les noms de « couleur de livre »</string>
     <string name="pt_search_reformat_format">Normaliser les noms de « format livre »</string>
     <string name="pt_search_uses_publisher">La recherche utilise l’éditeur</string>
-    <string name="pt_author_name_formatting">Formatage du nom de l’auteur</string>
+    <string name="X_pt_author_name_formatting">Formatage du nom de l’auteur</string>
     <string name="pt_show_title_reordered">Afficher les titres en tant que…</string>
     <string name="ps_show_titles_reordered_off">Le titre</string>
     <string name="error_type_not_supported">Type non pris en charge : %1$s …</string>
     <string name="ps_show_titles_reordered_on">titre, Le</string>
-    <string name="pt_sort_author_name_given_first">Tri par nom d’auteur</string>
+    <string name="X_pt_sort_author_name_given_first">Tri par nom d’auteur</string>
     <string name="pt_sort_title_reordered">Trier les titres par</string>
     <string name="pt_cover_undo_enabled">Annulation des opérations sur les couvertures de livres</string>
     <string name="ps_cover_undo_disabled">L’édition/le remplacement d’une couverture ne peut pas être annulé(e) (moins d’espace de stockage)</string>
@@ -578,8 +578,8 @@
     <string name="pt_ui_system_locale">Langue du système</string>
     <string name="pt_ui_theme">Thema</string>
     <string name="pt_website_search_order_and_enable">Priorité, activer et désactiver</string>
-    <string name="ps_author_name_example_family_first">par exemple « Verne, Jules »</string>
-    <string name="ps_author_name_example_given_first">par exemple « Jules Verne »</string>
+    <string name="ps_show_author_name_family_first">Afficher le nom de famille en premier.\\npar exemple « Verne, Jules »</string>
+    <string name="ps_show_author_name_given_first">Afficher les prénoms en premier.\\npar exemple « Jules Verne »</string>
     <string name="ps_bob_books_under_multiple_each_author">Sous chaque auteur</string>
     <string name="ps_bob_books_under_multiple_each_publisher">sous chaque éditeur</string>
     <string name="ps_bob_books_under_multiple_each_series">Sous chaque séries</string>
@@ -752,4 +752,8 @@
     <string name="lbl_certificate_validity_period">Validité : %1$s - %2$s</string>
     <string name="lbl_reading">En cours</string>
     <string name="action_edit_defaults">Modifier les paramètres par défaut</string>
+    <string name="ps_publisher_name_example">par exemple « Lombard, Le»</string>
+    <string name="ps_publisher_name_example_reordered">par exemple « Le Lombard»</string>
+    <string name="ps_sort_author_name_given_first">Trier sur les prénoms en premier.\\npar exemple « Jules Verne »</string>
+    <string name="ps_sort_author_name_family_first">Trier sur le nom de famille en premier.\\npar exemple « Verne, Jules »</string>
 </resources>
