@@ -194,8 +194,8 @@
             android:defaultValue="true"
             android:icon="@drawable/ic_baseline_reorder_24"
             android:key="show.author.name.given_first"
-            android:summaryOff="@string/ps_author_name_example_family_first"
-            android:summaryOn="@string/ps_author_name_example_given_first"
+            android:summaryOff="@string/ps_show_author_name_family_first"
+            android:summaryOn="@string/ps_show_author_name_given_first"
             android:title="@string/pc_formatting"
             />
 
@@ -203,8 +203,8 @@
             android:defaultValue="false"
             android:icon="@drawable/ic_baseline_sort_24"
             android:key="sort.author.name.given_first"
-            android:summaryOff="@string/ps_author_name_example_family_first"
-            android:summaryOn="@string/ps_author_name_example_given_first"
+            android:summaryOff="@string/ps_sort_author_name_family_first"
+            android:summaryOn="@string/ps_sort_author_name_given_first"
             android:title="@string/lbl_sorting"
             />
 
