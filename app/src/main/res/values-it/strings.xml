@@ -588,8 +588,9 @@
     <string name="pv_bob_header_filters">Filtri</string>
     <string name="pv_bob_header_nr_of_books">Mostra numero di libri</string>
     <string name="pv_bob_header_style_name">Nome dello stile</string>
+    <!-- use the default single quote character and NOT the stylized! -->
     <string name="pv_reformat_titles_prefixes"
-            tools:ignore="TypographyQuotes">il|lo|la|l’|i||gli|le|un’|uno|una|un</string>
+            tools:ignore="TypographyQuotes">il|Il|lo|Lo|la|La|l\'|L\'|i|I|gli|Gli|le|Le|un\'|Un\'|uno|Uno|una|Una|un|Un</string>
     <string name="size_hidden">Nascosto</string>
     <string name="size_large">Grande</string>
     <string name="size_medium">Medio</string>
