@@ -62,7 +62,9 @@ public final class BuiltinStyle
     @SuppressWarnings("DeprecatedIsStillUsed")
     @Deprecated
     private static final int ID_DEPRECATED_1 = -2;
-    private static final int ID_COMPACT = -3;
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    @Deprecated
+    private static final int ID_DEPRECATED_2 = -3;
     private static final int ID_BOOK_TITLE_FIRST_LETTER = -4;
     private static final int ID_SERIES = -5;
     private static final int ID_GENRE = -6;
@@ -96,10 +98,9 @@ public final class BuiltinStyle
 
             // UNREAD_AUTHOR_THEN_SERIES
             Definition.deprecated(ID_DEPRECATED_1, "f479e979-c43f-4b0b-9c5b-6942964749df"),
-            Definition.create(ID_COMPACT,
-                              "5e4c3137-a05f-4c4c-853a-bd1dacb6cd16",
-                              R.string.style_builtin_compact,
-                              List.of(BooklistGroup.AUTHOR)),
+            // COMPACT
+            Definition.deprecated(ID_DEPRECATED_2, "5e4c3137-a05f-4c4c-853a-bd1dacb6cd16"),
+
             Definition.create(ID_BOOK_TITLE_FIRST_LETTER,
                               "16b4ecdf-edef-4bf2-a682-23f7230446c8",
                               R.string.style_builtin_1st_char_book_title,
@@ -301,14 +302,6 @@ public final class BuiltinStyle
         style.setPreferred(rowData.getBoolean(DBKey.STYLE_IS_PREFERRED));
         style.setMenuPosition(rowData.getInt(DBKey.STYLE_MENU_POSITION));
 
-        // NEWTHINGS: BuiltinStyle: add a new builtin style if needed
-        if (id == ID_COMPACT) {
-            // The predefined "Compact" style: smaller text, no images.
-            style.setTextScale(Style.TEXT_SCALE_1_SMALL);
-
-            style.setFieldVisibility(FieldVisibility.Screen.List, DBKey.COVER[0], false);
-            style.setFieldVisibility(FieldVisibility.Screen.List, DBKey.COVER[1], false);
-        }
         return Optional.of(style);
     }
 
