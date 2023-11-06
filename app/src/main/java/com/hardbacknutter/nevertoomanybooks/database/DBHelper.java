@@ -94,7 +94,7 @@ public class DBHelper
         extends SQLiteOpenHelper {
 
     /** Current version. */
-    public static final int DATABASE_VERSION = 27;
+    public static final int DATABASE_VERSION = 28;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -266,6 +266,7 @@ public class DBHelper
               .remove("search.form.advanced")
               .remove("search.site.goodreads.data.enabled")
               .remove("search.site.goodreads.covers.enabled")
+              .remove(LegacyUpgrades.SHOW_TITLE_REORDERED)
               .remove(LegacyUpgrades.SHOW_AUTHOR_NAME_GIVEN_FIRST)
               .remove(LegacyUpgrades.SORT_AUTHOR_NAME_GIVEN_FIRST)
               .remove("startup.lastVersion")
@@ -734,6 +735,28 @@ public class DBHelper
 
             StyleDaoImpl.insertGlobalDefaults(db, style);
         }
+        if (oldVersion < 28) {
+            TBL_BOOKLIST_STYLES.alterTableAddColumns(
+                    db,
+                    DBDefinitions.DOM_STYLE_PUBLISHER_SHOW_REORDERED,
+                    DBDefinitions.DOM_STYLE_TITLE_SHOW_REORDERED);
+
+            final int value =
+                    PreferenceManager.getDefaultSharedPreferences(context)
+                                     .getBoolean(LegacyUpgrades.SHOW_TITLE_REORDERED, false)
+                    ? 1 : 0;
+
+            // We apply the setting to ALL styles as it was the default for all.
+            // (including the builtin which is pointless but easier)
+            try (SQLiteStatement stmt = db.compileStatement(
+                    "UPDATE " + TBL_BOOKLIST_STYLES.getName() + " SET "
+                    + DBKey.STYLE_PUBLISHER_SHOW_REORDERED + "=?,"
+                    + DBKey.STYLE_TITLE_SHOW_REORDERED + "=?")) {
+                stmt.bindLong(1, value);
+                stmt.bindLong(2, value);
+                stmt.executeUpdateDelete();
+            }
+        }
 
         // SqLite 3.35.0 from 2021-03-12 adds ALTER TABLE DROP COLUMN
         // SqLite 3.25.0 from 2018-09-15 added ALTER TABLE RENAME COLUMN
@@ -763,11 +786,18 @@ public class DBHelper
         db.setForeignKeyConstraintsEnabled(true);
     }
 
-    private static class LegacyUpgrades {
+    /**
+     * A garbage bin with code used only during upgrades.
+     */
+    public static final class LegacyUpgrades {
 
+        private static final String SHOW_TITLE_REORDERED = "show.title.reordered";
         private static final String FIELDS_VISIBILITY_KEYS = "fields.visibility.";
         private static final String SHOW_AUTHOR_NAME_GIVEN_FIRST = "show.author.name.given_first";
         private static final String SORT_AUTHOR_NAME_GIVEN_FIRST = "sort.author.name.given_first";
+
+        private LegacyUpgrades() {
+        }
 
         private static void removeDuplicateAuthorsV23(@NonNull final SQLiteDatabase db) {
 

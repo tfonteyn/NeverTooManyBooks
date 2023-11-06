@@ -52,6 +52,10 @@ public interface WritableStyle
      */
     void setShowAuthorByGivenName(boolean value);
 
+    void setShowReorderedPublisherName(boolean value);
+
+    void setShowReorderedTitle(boolean value);
+
     /**
      * Set the preference whether to <strong>sort</strong> the Author full name
      * with their given-name first, or their family name first.

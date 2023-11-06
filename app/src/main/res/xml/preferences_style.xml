@@ -80,11 +80,11 @@
         >
         <ListPreference
             android:defaultValue="0"
+            android:entries="@array/pe_bob_layout"
+            android:entryValues="@array/pv_bob_layout"
             android:icon="@drawable/ic_baseline_aod_24"
             android:key="style.booklist.layout"
             android:title="@string/pt_layout"
-            android:entries="@array/pe_bob_layout"
-            android:entryValues="@array/pv_bob_layout"
             />
 
         <Preference
@@ -106,11 +106,11 @@
 
         <ListPreference
             android:defaultValue="0"
+            android:entries="@array/pe_bob_cover_click"
+            android:entryValues="@array/pv_bob_cover_click"
             android:icon="@drawable/ic_baseline_image_24"
             android:key="style.booklist.cover.click"
             android:title="@string/pt_bob_cover_click"
-            android:entries="@array/pe_bob_cover_click"
-            android:entryValues="@array/pv_bob_cover_click"
             />
 
         <!-- default Style.IMAGE_SCALE_2_MEDIUM == 2 -->
@@ -173,6 +173,19 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:title="@string/lbl_titles">
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_baseline_reorder_24"
+            android:key="show.title.reordered"
+            android:summaryOff="@string/ps_show_titles_reordered_off"
+            android:summaryOn="@string/ps_show_titles_reordered_on"
+            android:title="@string/pc_formatting" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:key="psk_style_author"
         android:title="@string/lbl_author"
         >
@@ -181,20 +194,19 @@
             android:defaultValue="true"
             android:icon="@drawable/ic_baseline_reorder_24"
             android:key="show.author.name.given_first"
-            android:summaryOff="@string/ps_author_name_family_first"
-            android:summaryOn="@string/ps_author_name_given_first"
-            android:title="@string/pt_show_author_name_given_first"
+            android:summaryOff="@string/ps_author_name_example_family_first"
+            android:summaryOn="@string/ps_author_name_example_given_first"
+            android:title="@string/pc_formatting"
             />
 
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_baseline_sort_24"
             android:key="sort.author.name.given_first"
-            android:summaryOff="@string/ps_author_name_family_first"
-            android:summaryOn="@string/ps_author_name_given_first"
-            android:title="@string/pt_sort_author_name_given_first"
+            android:summaryOff="@string/ps_author_name_example_family_first"
+            android:summaryOn="@string/ps_author_name_example_given_first"
+            android:title="@string/lbl_sorting"
             />
-
 
         <!-- Enabled if Group 'Author' is present in this style.
              The default is 'not set', which means we take the Author in position 1 to be the primary.
@@ -255,6 +267,15 @@
         app:isPreferenceVisible="false"
         tools:isPreferenceVisible="true"
         >
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_baseline_reorder_24"
+            android:key="show.publisher.name.reordered"
+            android:summaryOff="@string/ps_publisher_name_example"
+            android:summaryOn="@string/ps_publisher_name_example_reordered"
+            android:title="@string/pc_formatting"
+            />
 
         <!-- Enabled if Group 'Publisher' is present in this style. -->
         <SwitchPreference

@@ -80,14 +80,26 @@ public class StyleDataStore
 
 
     /**
-     * How to show author names.
+     * How to show Author names.
      *
      * @see BaseStyle#setShowAuthorByGivenName(boolean)
      */
     public static final String PK_SHOW_AUTHOR_NAME_GIVEN_FIRST = "show.author.name.given_first";
+    /**
+     * How to show Publisher names.
+     *
+     * @see BaseStyle#setShowReorderedPublisherName(boolean)
+     */
+    public static final String PK_SHOW_PUBLISHER_NAME_REORDERED = "show.publisher.name.reordered";
+    /**
+     * How to show Book/Series/TOC titles.
+     *
+     * @see BaseStyle#setShowReorderedTitle(boolean)
+     */
+    public static final String PK_SHOW_TITLES_REORDERED = "show.title.reordered";
 
     /**
-     * How to sort author names.
+     * How to sort Author names.
      *
      * @see BaseStyle#setSortAuthorByGivenName(boolean)
      */
@@ -278,6 +290,16 @@ public class StyleDataStore
                 setModified();
                 return;
 
+            case PK_SHOW_PUBLISHER_NAME_REORDERED:
+                style.setShowReorderedPublisherName(value);
+                setModified();
+                return;
+
+            case PK_SHOW_TITLES_REORDERED:
+                style.setShowReorderedTitle(value);
+                setModified();
+                return;
+
             case PK_SORT_AUTHOR_NAME_GIVEN_FIRST:
                 style.setSortAuthorByGivenName(value);
                 setModified();
@@ -316,8 +338,16 @@ public class StyleDataStore
         switch (key) {
             case PK_GROUP_ROW_HEIGHT:
                 return style.isGroupRowUsesPreferredHeight();
+
             case PK_SHOW_AUTHOR_NAME_GIVEN_FIRST:
                 return style.isShowAuthorByGivenName();
+
+            case PK_SHOW_PUBLISHER_NAME_REORDERED:
+                return style.isShowReorderedPublisherName();
+
+            case PK_SHOW_TITLES_REORDERED:
+                return style.isShowReorderedTitle();
+
             case PK_SORT_AUTHOR_NAME_GIVEN_FIRST:
                 return style.isSortAuthorByGivenName();
         }

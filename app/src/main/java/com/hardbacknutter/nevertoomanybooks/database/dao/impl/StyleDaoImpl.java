@@ -34,7 +34,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.StyleCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
@@ -116,7 +115,10 @@ public class StyleDaoImpl
                 + ',' + DBKey.STYLE_BOOK_LEVEL_FIELDS_VISIBILITY
                 + ',' + DBKey.STYLE_BOOK_LEVEL_FIELDS_ORDER_BY
                 + ',' + DBKey.STYLE_AUTHOR_SORT_BY_GIVEN_NAME
+
                 + ',' + DBKey.STYLE_AUTHOR_SHOW_BY_GIVEN_NAME
+                + ',' + DBKey.STYLE_PUBLISHER_SHOW_REORDERED
+                + ',' + DBKey.STYLE_TITLE_SHOW_REORDERED
 
                 + ',' + DBKey.STYLE_DETAILS_SHOW_FIELDS
 
@@ -222,7 +224,10 @@ public class StyleDaoImpl
         stmt.bindLong(++c, style.getFieldVisibilityValue(FieldVisibility.Screen.List));
         stmt.bindString(++c, StyleCoder.getBookLevelFieldsOrderByAsJsonString(style));
         stmt.bindBoolean(++c, style.isSortAuthorByGivenName());
+
         stmt.bindBoolean(++c, style.isShowAuthorByGivenName());
+        stmt.bindBoolean(++c, style.isShowReorderedPublisherName());
+        stmt.bindBoolean(++c, style.isShowReorderedTitle());
 
         stmt.bindLong(++c, style.getFieldVisibilityValue(FieldVisibility.Screen.Detail));
 
@@ -338,8 +343,10 @@ public class StyleDaoImpl
                    StyleCoder.getBookLevelFieldsOrderByAsJsonString(style));
             cv.put(DBKey.STYLE_AUTHOR_SORT_BY_GIVEN_NAME,
                    style.isSortAuthorByGivenName());
-            cv.put(DBKey.STYLE_AUTHOR_SHOW_BY_GIVEN_NAME,
-                   style.isShowAuthorByGivenName());
+
+            cv.put(DBKey.STYLE_AUTHOR_SHOW_BY_GIVEN_NAME, style.isShowAuthorByGivenName());
+            cv.put(DBKey.STYLE_PUBLISHER_SHOW_REORDERED, style.isShowReorderedPublisherName());
+            cv.put(DBKey.STYLE_TITLE_SHOW_REORDERED, style.isShowReorderedTitle());
 
             cv.put(DBKey.STYLE_DETAILS_SHOW_FIELDS,
                    style.getFieldVisibilityValue(FieldVisibility.Screen.Detail));

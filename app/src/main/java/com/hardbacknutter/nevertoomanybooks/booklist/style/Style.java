@@ -227,6 +227,10 @@ public interface Style {
      */
     boolean isShowAuthorByGivenName();
 
+    boolean isShowReorderedPublisherName();
+
+    boolean isShowReorderedTitle();
+
     /**
      * Whether the user prefers the Author names sorted by Given names, or by Family name first.
      *

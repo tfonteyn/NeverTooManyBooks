@@ -149,6 +149,10 @@ public abstract class BaseStyle
     private boolean sortAuthorByGivenName;
     /** Local override. */
     private boolean showAuthorByGivenName;
+    private boolean showReorderedPublisherName;
+    private boolean showReorderedTitle;
+
+
     /** The default number of levels to expand the list tree to. */
     private int expansionLevel = 1;
     /**
@@ -221,7 +225,10 @@ public abstract class BaseStyle
                 rowData.getLong(DBKey.STYLE_DETAILS_SHOW_FIELDS)));
 
         sortAuthorByGivenName = rowData.getBoolean(DBKey.STYLE_AUTHOR_SORT_BY_GIVEN_NAME);
+
         showAuthorByGivenName = rowData.getBoolean(DBKey.STYLE_AUTHOR_SHOW_BY_GIVEN_NAME);
+        showReorderedPublisherName = rowData.getBoolean(DBKey.STYLE_PUBLISHER_SHOW_REORDERED);
+        showReorderedTitle = rowData.getBoolean(DBKey.STYLE_TITLE_SHOW_REORDERED);
 
         // groups
         expansionLevel = rowData.getInt(DBKey.STYLE_EXP_LEVEL);
@@ -271,8 +278,10 @@ public abstract class BaseStyle
             fieldVisibility.put(screen, new FieldVisibility(keys, value));
         }
 
-        showAuthorByGivenName = from.isShowAuthorByGivenName();
         sortAuthorByGivenName = from.isSortAuthorByGivenName();
+        showAuthorByGivenName = from.isShowAuthorByGivenName();
+        showReorderedPublisherName = from.isShowReorderedPublisherName();
+        showReorderedTitle = from.isShowReorderedTitle();
     }
 
     /**
@@ -397,6 +406,24 @@ public abstract class BaseStyle
 
     public void setShowAuthorByGivenName(final boolean value) {
         showAuthorByGivenName = value;
+    }
+
+    @Override
+    public boolean isShowReorderedPublisherName() {
+        return showReorderedPublisherName;
+    }
+
+    public void setShowReorderedPublisherName(boolean value) {
+        showReorderedPublisherName = value;
+    }
+
+    @Override
+    public boolean isShowReorderedTitle() {
+        return showReorderedTitle;
+    }
+
+    public void setShowReorderedTitle(boolean value) {
+        showReorderedTitle = value;
     }
 
     @Override
@@ -672,6 +699,8 @@ public abstract class BaseStyle
                && textScale == style.textScale
 
                && showAuthorByGivenName == style.showAuthorByGivenName
+               && showReorderedPublisherName == style.showReorderedPublisherName
+               && showReorderedTitle == style.showReorderedTitle
                && sortAuthorByGivenName == style.sortAuthorByGivenName
 
                && Objects.equals(fieldVisibility, style.fieldVisibility);
@@ -692,6 +721,9 @@ public abstract class BaseStyle
                             textScale,
 
                             showAuthorByGivenName,
+                            showReorderedPublisherName,
+                            showReorderedTitle,
+
                             sortAuthorByGivenName,
 
                             fieldVisibility);
@@ -716,8 +748,10 @@ public abstract class BaseStyle
                + ", coverScale=" + coverScale
                + ", textScale=" + textScale
 
-               + ", showAuthorByGivenName=" + showAuthorByGivenName
                + ", sortAuthorByGivenName=" + sortAuthorByGivenName
+               + ", showAuthorByGivenName=" + showAuthorByGivenName
+               + ", showReorderedPublisherName=" + showReorderedPublisherName
+               + ", showReorderedTitle=" + showReorderedTitle
 
                + ", fieldVisibility=" + fieldVisibility
                + '}';

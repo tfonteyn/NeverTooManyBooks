@@ -427,15 +427,17 @@ public class Series
     @NonNull
     public String getLabel(@NonNull final Context context,
                            @Nullable final Details details,
-                           @Nullable final Style style) {
-        final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
+                           @NonNull final Style style) {
+
         final String label;
-        if (reorderHelper.forDisplay(context)) {
+        if (style.isShowReorderedPublisherName()) {
+            final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
             // Using the locale here is overkill;  see #getLocale(..)
             label = reorderHelper.reorder(context, title);
         } else {
             label = title;
         }
+
         if (number.isEmpty()) {
             return label;
         } else {

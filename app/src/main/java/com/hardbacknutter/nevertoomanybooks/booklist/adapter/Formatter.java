@@ -111,7 +111,7 @@ class Formatter
                 if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_series);
 
-                } else if (serviceLocator.getReorderHelper().forDisplay(context)) {
+                } else if (style.isShowReorderedTitle()) {
                     // We don't have full Objects here for Series/Publisher so we can't use
                     // their methods for auto-reordering.
                     //
@@ -129,7 +129,7 @@ class Formatter
                 if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_publisher);
 
-                } else if (serviceLocator.getReorderHelper().forDisplay(context)) {
+                } else if (style.isShowReorderedPublisherName()) {
                     // We don't have full Objects here for Series/Publisher so we can't use
                     // their methods for auto-reordering.
                     return serviceLocator.getReorderHelper()

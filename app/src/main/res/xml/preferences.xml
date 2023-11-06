@@ -91,34 +91,18 @@
             android:title="@string/pt_search_reformat_color" />
     </PreferenceCategory>
 
-
     <PreferenceCategory
-        android:title="@string/lbl_title">
-
-        <!-- This is the global setting used for
-             - book, toc and series titles.
-             - publisher name.
-
-         ENHANCE: add a style override setting
-         ENHANCE: split this into 3: book/toc, series, publisher
-        -->
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_baseline_reorder_24"
-            android:key="show.title.reordered"
-            android:summaryOff="@string/ps_show_titles_reordered_off"
-            android:summaryOn="@string/ps_show_titles_reordered_on"
-            android:title="@string/pt_show_title_reordered" />
+        android:title="@string/lbl_sorting">
 
         <!-- This is the global setting used for
              - book, toc and series titles.
              - publisher name.
 
          It decides how the OB columns are populated.
-         If the user changes this setting, a rebuild of all OB columns will be needed!
+         If the user changes this setting, a rebuild of all OB columns is needed!
          ENHANCE: create TWO OB columns for each title column to avoid rebuilds
          ENHANCE: add a style override setting
-         ENHANCE: split this into 3: book/toc, series, publisher
+         ENHANCE: split this into 2: book/series,toc titles + publisher name
         -->
         <SwitchPreference
             android:defaultValue="true"
@@ -131,7 +115,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/lbl_styles">
+        android:title="@string/lbl_style">
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleDefaultsFragment"
@@ -205,8 +189,8 @@
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.FieldVisibilityPreferenceFragment"
             android:icon="@drawable/ic_baseline_visibility_24"
             android:key="psk_fields_visibility"
-            android:title="@string/pt_field_visibility"
             android:summary="@string/ps_manage_fields"
+            android:title="@string/pt_field_visibility"
             />
 
         <SwitchPreference

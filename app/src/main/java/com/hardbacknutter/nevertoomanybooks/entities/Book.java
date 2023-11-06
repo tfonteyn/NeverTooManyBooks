@@ -488,9 +488,10 @@ public class Book
     @NonNull
     public String getLabel(@NonNull final Context context,
                            @Nullable final Details details,
-                           @Nullable final Style style) {
-        final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
-        if (reorderHelper.forDisplay(context)) {
+                           @NonNull final Style style) {
+
+        if (style.isShowReorderedTitle()) {
+            final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
             return reorderHelper.reorder(context, getTitle(), getLocaleOrUserLocale(context));
         } else {
             return getTitle();

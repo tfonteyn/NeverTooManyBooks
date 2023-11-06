@@ -142,8 +142,13 @@ public class StyleCoder
 
         settings.put(StyleDataStore.PK_SORT_AUTHOR_NAME_GIVEN_FIRST,
                      style.isSortAuthorByGivenName());
+
         settings.put(StyleDataStore.PK_SHOW_AUTHOR_NAME_GIVEN_FIRST,
                      style.isShowAuthorByGivenName());
+        settings.put(StyleDataStore.PK_SHOW_PUBLISHER_NAME_REORDERED,
+                     style.isShowReorderedPublisherName());
+        settings.put(StyleDataStore.PK_SHOW_TITLES_REORDERED,
+                     style.isShowReorderedTitle());
 
         settings.put(PK_DETAILS_FIELD_VISIBILITY,
                      style.getFieldVisibilityValue(FieldVisibility.Screen.Detail));
@@ -242,7 +247,8 @@ public class StyleCoder
             final JSONObject source = data.getJSONObject(STYLE_SETTINGS);
 
             if (style.getType() == StyleType.User && source.has(StyleDataStore.PK_GROUPS)) {
-                decodeGroups((WritableStyle) style, source);
+                decodeGroups((WritableStyle) style, source,
+                             stylesHelper.getGlobalStyle());
             }
             decodeSettings(source, (WritableStyle) style);
         }
@@ -294,7 +300,14 @@ public class StyleCoder
             style.setShowAuthorByGivenName(
                     source.getBoolean(StyleDataStore.PK_SHOW_AUTHOR_NAME_GIVEN_FIRST));
         }
-
+        if (source.has(StyleDataStore.PK_SHOW_PUBLISHER_NAME_REORDERED)) {
+            style.setShowReorderedPublisherName(
+                    source.getBoolean(StyleDataStore.PK_SHOW_PUBLISHER_NAME_REORDERED));
+        }
+        if (source.has(StyleDataStore.PK_SHOW_TITLES_REORDERED)) {
+            style.setShowReorderedTitle(
+                    source.getBoolean(StyleDataStore.PK_SHOW_TITLES_REORDERED));
+        }
         if (source.has(PK_DETAILS_FIELD_VISIBILITY)) {
             style.setFieldVisibility(FieldVisibility.Screen.Detail,
                                      source.getLong(PK_DETAILS_FIELD_VISIBILITY));
@@ -305,7 +318,8 @@ public class StyleCoder
     }
 
     private void decodeGroups(@NonNull final WritableStyle style,
-                              @NonNull final JSONObject source)
+                              @NonNull final JSONObject source,
+                              @NonNull final Style styleDefaults)
             throws JSONException {
 
         if (source.has(StyleDataStore.PK_EXPANSION_LEVEL)) {
@@ -322,12 +336,19 @@ public class StyleCoder
         if (source.has(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE)) {
             style.setPrimaryAuthorType(
                     source.getInt(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE));
+        } else {
+            style.setPrimaryAuthorType(styleDefaults.getPrimaryAuthorType());
         }
 
         for (final Style.UnderEach item : Style.UnderEach.values()) {
+            final int groupId = item.getGroupId();
+
             if (source.has(item.getPrefKey())) {
-                style.setShowBooksUnderEachGroup(item.getGroupId(),
+                style.setShowBooksUnderEachGroup(groupId,
                                                  source.getBoolean(item.getPrefKey()));
+            } else {
+                style.setShowBooksUnderEachGroup(groupId,
+                                                 styleDefaults.isShowBooksUnderEachGroup(groupId));
             }
         }
     }

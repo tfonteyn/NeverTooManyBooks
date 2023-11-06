@@ -400,17 +400,9 @@ public class SettingsFragment
     @CallSuper
     public void onSharedPreferenceChanged(@NonNull final SharedPreferences prefs,
                                           @Nullable final String key) {
-        if (key != null) {
-            switch (key) {
-                case ReorderHelper.PK_SORT_TITLE_REORDERED:
-                case ReorderHelper.PK_SHOW_TITLE_REORDERED: {
-                    // Set the activity result so our caller will recreate itself
-                    vm.setOnBackRequiresActivityRecreation();
-                    break;
-                }
-                default:
-                    break;
-            }
+        if (ReorderHelper.PK_SORT_TITLE_REORDERED.equals(key)) {
+            // Set the activity result so our caller will recreate itself
+            vm.setOnBackRequiresActivityRecreation();
         }
     }
 

@@ -49,11 +49,6 @@ public final class ReorderHelper {
 
     /**
      * Boolean preference.
-     * {@code true} if the title/name should be DISPLAYED reordered.
-     */
-    public static final String PK_SHOW_TITLE_REORDERED = "show.title.reordered";
-    /**
-     * Boolean preference.
      * {@code true} if the title/name should be SORTED by the reordered version.
      */
 
@@ -74,19 +69,6 @@ public final class ReorderHelper {
      */
     public ReorderHelper(@NonNull final Supplier<AppLocale> appLocaleSupplier) {
         this.appLocaleSupplier = appLocaleSupplier;
-    }
-
-    /**
-     * Get the global default for this preference.
-     *
-     * @param context Current context
-     *
-     * @return {@code true} if titles should be reordered. e.g. "The title" -> "title, The"
-     */
-    public boolean forDisplay(@NonNull final Context context) {
-        // ENHANCE: move this to the global style and let styles inherit this setting
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(PK_SHOW_TITLE_REORDERED, false);
     }
 
     /**
