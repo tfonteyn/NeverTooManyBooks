@@ -751,11 +751,11 @@
     <string name="pt_layout">Макет</string>
     <string name="pe_list">Список</string>
     <string name="pe_grid">Сетка</string>
-    <!-- NOT APPLICABLE FOR BOOKS IN RUSSIAN; Just show "On"; it will still be used for other languages. -->
-    <string name="ps_show_titles_reordered_on">На сайте</string>
-    <!-- NOT APPLICABLE FOR BOOKS IN RUSSIAN; Just show "Off"; it will still be used for other languages. -->
-    <string name="ps_show_titles_reordered_off">С сайта</string>
-    <!-- NOT APPLICABLE FOR BOOKS IN RUSSIAN. A single vertical bar character. -->
+    <!-- NOT APPLICABLE FOR BOOKS IN RUSSIAN. -->
+    <string name="ps_show_titles_reordered_on">Применяется только к языкам, в которых используются артикли. Английский пример: «title of a book, The».</string>
+    <!-- NOT APPLICABLE FOR BOOKS IN RUSSIAN. -->
+    <string name="ps_show_titles_reordered_off">Применяется только к языкам, в которых используются артикли. Английский пример: «The title of a book».</string>
+    <!-- NOT APPLICABLE FOR BOOKS IN RUSSIAN. MUST be set to a single vertical bar character. -->
     <string name="pv_reformat_titles_prefixes">"|"</string>
     <string name="pt_bob_cover_click">Нажатие на изображение обложки.</string>
     <string name="pe_bob_cover_click_zoom">Увеличение изображения обложки.</string>

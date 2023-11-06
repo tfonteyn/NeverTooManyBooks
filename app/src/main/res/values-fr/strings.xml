@@ -752,8 +752,6 @@
     <string name="lbl_certificate_validity_period">Validité : %1$s - %2$s</string>
     <string name="lbl_reading">En cours</string>
     <string name="action_edit_defaults">Modifier les paramètres par défaut</string>
-    <string name="ps_publisher_name_example">par exemple « Lombard, Le»</string>
-    <string name="ps_publisher_name_example_reordered">par exemple « Le Lombard»</string>
     <string name="ps_sort_author_name_given_first">Trier sur les prénoms en premier.\\npar exemple « Jules Verne »</string>
     <string name="ps_sort_author_name_family_first">Trier sur le nom de famille en premier.\\npar exemple « Verne, Jules »</string>
 </resources>

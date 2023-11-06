@@ -318,10 +318,11 @@
     <string name="pt_layout">布局</string>
     <string name="pe_list">列表</string>
     <string name="pe_grid">网格</string>
-    <!-- NOT APPLICABLE FOR BOOKS IN CHINESE; Just show "On"; it will still be used for other languages. -->
-    <!-- NOT APPLICABLE FOR BOOKS IN CHINESE; Just show "Off"; it will still be used for other languages. -->
-    <string name="ps_show_titles_reordered_off">关闭</string>
-    <!-- NOT APPLICABLE FOR BOOKS IN CHINESE. A single vertical bar character. -->
+    <!-- NOT APPLICABLE FOR BOOKS IN CHINESE. -->
+    <string name="ps_show_titles_reordered_on">仅适用于使用冠词的语言。 英语示例：“title of a book, The”。</string>
+    <!-- NOT APPLICABLE FOR BOOKS IN CHINESE. -->
+    <string name="ps_show_titles_reordered_off">仅适用于使用冠词的语言。 英语示例：“The title of a book”。</string>
+    <!-- NOT APPLICABLE FOR BOOKS IN CHINESE. MUST be set to a single vertical bar character. -->
     <string name="pv_reformat_titles_prefixes">"|"</string>
     <string name="X_style_type_defaults">风格默认值</string>
     <string name="action_edit_ellipsis">修改…</string>

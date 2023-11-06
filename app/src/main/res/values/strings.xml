@@ -1189,20 +1189,33 @@
     <!-- SwitchPreference title: How to sort titles. -->
     <string name="pt_sort_title_reordered">Sort titles by</string>
 
-    <!-- Preference summary: example of an 'original' title; must be translated in combination with "ps_show_titles_reordered_on".
-         https://en.wikipedia.org/wiki/Article_(grammar)#Tables -->
+    <!-- Preference summary: example of an 'original' title;
+         Must be translated in combination with "ps_show_titles_reordered_on".
+         https://en.wikipedia.org/wiki/Article_(grammar)#Tables
+         For languages which do not use articles, use the text:
+
+         Only applicable to languages that use articles. English example: "The title of a book"
+         -->
     <string name="ps_show_titles_reordered_off">The title</string>
-    <!-- Preference summary: example of a reordered title; must be translated in combination with "ps_show_titles_reordered_off".
-         https://en.wikipedia.org/wiki/Article_(grammar)#Tables-->
+    <!-- Preference summary: example of a reordered title;
+         Must be translated in combination with "ps_show_titles_reordered_off".
+         https://en.wikipedia.org/wiki/Article_(grammar)#Tables
+         For languages which do not use articles, use the text:
+
+         Only applicable to languages that use articles. English example: "title of a book, The"
+         -->
     <string name="ps_show_titles_reordered_on">title, The</string>
     <!--
      Not a preference as such.
-     These are the Locale specific title prefixes ('article') that will be moved to
+     These are the Locale specific title prefixes (grammar: 'article') that will be moved to
      the end of a title, if reformatting of titles options are enabled by the user.
 
      This is case-sensitive, so each locale can decide if it's appropriate to for example
      move a word only if it starts with an uppercase, but not for the same word starting
      with a lowercase character.
+
+     If this is not applicable to a language, then this string MUST be set to a
+     single vertical bar character: "|"
 
      https://en.wikipedia.org/wiki/Article_(grammar)#Tables
  . -->
@@ -1636,6 +1649,12 @@
 
     <!-- endregion -->
 
+    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
+    <string name="ps_publisher_name_example"
+            translatable="false">e.g. The British Library</string>
+    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
+    <string name="ps_publisher_name_example_reordered"
+            translatable="false">e.g. British Library, The</string>
 
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="pt_normalize_series_title"
