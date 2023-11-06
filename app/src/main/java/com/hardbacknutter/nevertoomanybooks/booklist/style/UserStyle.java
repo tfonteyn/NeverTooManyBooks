@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Objects;
+import java.util.UUID;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -51,18 +52,39 @@ public class UserStyle
     }
 
     /**
+     * Constructor to <strong>import from a backup file</strong>.
+     *
+     * @param uuid          for the style
+     * @param styleDefaults to copy the basic settings from (no group info is copied)
+     */
+    private UserStyle(@NonNull final String uuid,
+                      @NonNull final Style styleDefaults) {
+        super(uuid, 0);
+        copyBasicSettings(styleDefaults);
+    }
+
+    /**
      * Copy constructor.
      *
-     * @param uuid for the new style
-     * @param id   for the new style
+     * @param context Current context
+     * @param style   to copy
+     *
+     * @see #clone(Context)
      */
-    protected UserStyle(@NonNull final String uuid,
-                        final long id) {
-        super(uuid, id);
+    protected UserStyle(@NonNull final Context context,
+                        @NonNull final Style style) {
+        super(UUID.randomUUID().toString(), 0);
+        this.name = style.getLabel(context);
+
+        copyBasicSettings(style);
+        setGroupList(style.getGroupList());
+        copyGroupOptions(style);
     }
 
     /**
      * Constructor. Load the style data from the database.
+     * <p>
+     * Dev. note: we just want to us the same semantics as BuiltinStyle needs
      *
      * @param rowData data
      *
@@ -74,20 +96,23 @@ public class UserStyle
     }
 
     /**
-     * Constructor - create a template style inheriting from {@link GlobalStyle}.
-     * GROUP OPTIONS ARE NOT COPIED FROM THE GLOBAL-STYLE!
+     * Constructor - create a template specific to import the settings.
+     * <ol>
+     *     <li>the basic settings will be copied from the given defaults (done here)</li>
+     *     <li>the groups are expected to come from the import</li>
+     *     <li>the group options must either come from the import,
+     *         or during the import set from the defaults.</li>
+     * </ol>
      *
-     * @param uuid for the new style
+     * @param uuid          for the new style
      * @param styleDefaults the defaults to use
      *
-     * @return the loaded Style
+     * @return the style without group information
      */
     @NonNull
-    public static Style createFromImport(@NonNull final String uuid,
-                                         @NonNull final Style styleDefaults) {
-        final UserStyle userStyle = new UserStyle(uuid, 0);
-        userStyle.copyNonGroupSettings(styleDefaults);
-        return userStyle;
+    public static Style createForImport(@NonNull final String uuid,
+                                        @NonNull final Style styleDefaults) {
+        return new UserStyle(uuid, styleDefaults);
     }
 
     @Override

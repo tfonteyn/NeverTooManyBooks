@@ -271,13 +271,11 @@ public class StyleDaoImpl
     public Map<String, Style> getBuiltinStyles() {
         final Map<String, Style> map = new LinkedHashMap<>();
 
-        final Style styleDefaults = ServiceLocator.getInstance().getStyles().getGlobalStyle();
-
         try (Cursor cursor = db.rawQuery(SELECT_STYLES_BY_TYPE, new String[]{
                 String.valueOf(StyleType.Builtin.getId())})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                BuiltinStyle.createFromDatabase(styleDefaults, rowData).ifPresent(
+                BuiltinStyle.createFromDatabase(rowData).ifPresent(
                         style -> map.put(style.getUuid(), style));
             }
         }

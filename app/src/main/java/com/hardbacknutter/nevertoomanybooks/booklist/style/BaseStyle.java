@@ -258,7 +258,7 @@ public abstract class BaseStyle
      *
      * @param from to copy from
      */
-    void copyNonGroupSettings(@NonNull final Style from) {
+    void copyBasicSettings(@NonNull final Style from) {
         preferred = from.isPreferred();
         menuPosition = from.getMenuPosition();
 
@@ -291,7 +291,6 @@ public abstract class BaseStyle
      * @param from to copy from
      */
     void copyGroupOptions(@NonNull final Style from) {
-        setGroupList(from.getGroupList());
         // group-options
         setExpansionLevel(from.getExpansionLevel());
         setPrimaryAuthorType(from.getPrimaryAuthorType());
@@ -312,15 +311,7 @@ public abstract class BaseStyle
     @NonNull
     public WritableStyle clone(@NonNull final Context context) {
         // A cloned style is *always* a UserStyle regardless of the original type
-        //noinspection ClassReferencesSubclass
-        final UserStyle cloned = new UserStyle(UUID.randomUUID().toString(), 0);
-        cloned.setName(this.getLabel(context));
-
-        cloned.copyNonGroupSettings(this);
-        cloned.setGroupList(this.getGroupList());
-        cloned.copyGroupOptions(this);
-
-        return cloned;
+        return new UserStyle(context, this);
     }
 
     @Override

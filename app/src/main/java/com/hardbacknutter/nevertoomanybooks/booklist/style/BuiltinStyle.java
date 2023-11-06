@@ -26,7 +26,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -34,6 +33,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -232,6 +232,14 @@ public final class BuiltinStyle
     public BuiltinStyle(@NonNull final Definition definition) {
         super(definition.getUuid(), definition.getId());
         this.labelResId = definition.getLabelResId();
+
+        final Style styleDefaults = ServiceLocator.getInstance().getStyles().getGlobalStyle();
+
+        copyBasicSettings(styleDefaults);
+        // Groups come from the definition!
+        setGroupIds(definition.getGroupIds());
+        // But the options once again come from the defaults
+        copyGroupOptions(styleDefaults);
     }
 
     /**
@@ -247,6 +255,8 @@ public final class BuiltinStyle
 
     /**
      * Get all the builtin styles.
+     * <p>
+     * Deprecated styles are NOT included.
      *
      * @return all styles
      */
@@ -257,6 +267,8 @@ public final class BuiltinStyle
 
     /**
      * Check if the given UUID is a builtin Style.
+     * <p>
+     * Deprecated styles ARE checked.
      *
      * @param uuid to check
      *
@@ -270,17 +282,13 @@ public final class BuiltinStyle
     /**
      * Constructor. Load the style data from the database,
      * using the given defaults.
-     * <p>
-     * This method will return {@code Optional.empty()} if the style is deprecated.
      *
-     * @param styleDefaults the defaults to use
-     * @param rowData       from the styles table
+     * @param rowData from the styles table
      *
-     * @return style
+     * @return the loaded Style, or {@code Optional.empty()} if the style is deprecated.
      */
     @NonNull
-    public static Optional<Style> createFromDatabase(@NonNull final Style styleDefaults,
-                                                     @NonNull final DataHolder rowData) {
+    public static Optional<Style> createFromDatabase(@NonNull final DataHolder rowData) {
         final int id = rowData.getInt(DBKey.PK_ID);
         final Definition styleDef = ALL.stream()
                                        .filter(def -> def.getId() == id)
@@ -291,16 +299,7 @@ public final class BuiltinStyle
             return Optional.empty();
         }
 
-        final BuiltinStyle style = new BuiltinStyle(styleDef);
-        // Group options come from the default (i.e. global-style)
-        style.copyNonGroupSettings(styleDefaults);
-        // Groups come from the definitions
-        style.setGroupIds(Arrays.stream(styleDef.getGroupIds())
-                                .boxed()
-                                .collect(Collectors.toList()));
-        // Group options come from the default (i.e. global-style)
-        style.copyGroupOptions(styleDefaults);
-
+        final Style style = new BuiltinStyle(styleDef);
         style.setPreferred(rowData.getBoolean(DBKey.STYLE_IS_PREFERRED));
         style.setMenuPosition(rowData.getInt(DBKey.STYLE_MENU_POSITION));
 

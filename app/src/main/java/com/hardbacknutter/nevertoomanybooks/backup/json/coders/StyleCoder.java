@@ -218,7 +218,7 @@ public class StyleCoder
         final Style style;
         switch (type) {
             case User: {
-                style = UserStyle.createFromImport(uuid, stylesHelper.getGlobalStyle());
+                style = UserStyle.createForImport(uuid, stylesHelper.getGlobalStyle());
                 if (data.has(DBKey.STYLE_NAME)) {
                     ((UserStyle) style).setName(data.getString(DBKey.STYLE_NAME));
                 }
