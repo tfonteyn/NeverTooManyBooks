@@ -346,12 +346,15 @@
     <string name="option_select_all">"全选"</string>
     <string name="option_select_none">"取消全选"</string>
     <string name="lbl_tab_details">"详细信息"</string>
+    <string name="lbl_author_type_writer">作家</string>
+    <string name="lbl_author_type_translator">翻译者</string>
     <string name="lbl_author_type_cover_artist">封面</string>
     <string name="action_crop">"剪裁"</string>
     <string name="lbl_certificate_ca">CA 证书</string>
     <string name="lbl_certificate_issued_by">颁发者：%1$s</string>
     <string name="lbl_certificate_issued_to">颁发给： %1$s</string>
     <string name="lbl_color">颜色</string>
+    <string name="lbl_timeouts">超时</string>
     <string name="lbl_credentials">用户凭据</string>
     <string name="lbl_day">天</string>
     <string name="lbl_name">姓名</string>
