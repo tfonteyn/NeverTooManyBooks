@@ -719,6 +719,7 @@
     <string name="pt_search_show_shopping_options">Zobrazit nákupní nabídky</string>
     <string name="lbl_standardize">Standardizovat</string>
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
+    <string name="lbl_titles">Tituly</string>
     <string name="lbl_original_title">Originální název</string>
     <string name="lbl_original_title_long">Původní název, pokud je tato kniha překladem</string>
     <string name="error_site_access_blocked">Přístup byl zablokován na webových stránkách.</string>

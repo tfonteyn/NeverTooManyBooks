@@ -708,6 +708,7 @@
     <string name="pt_search_show_shopping_options">Standardisieren</string>
     <string name="lbl_standardize">Einkaufsmenüs anzeigen</string>
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
+    <string name="lbl_titles">Titel</string>
     <string name="lbl_original_title">Originaltitel</string>
     <string name="lbl_original_title_long">Originaltitel, wenn dieses Buch eine Übersetzung ist</string>
     <string name="error_site_access_blocked">Der Zugang wurde von der Website blockiert.</string>

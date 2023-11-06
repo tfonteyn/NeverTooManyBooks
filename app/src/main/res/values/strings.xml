@@ -1002,8 +1002,10 @@
     <string name="lbl_genre">Genre</string>
     <!-- is this book signed by the author? -->
     <string name="lbl_signed">Signed</string>
-    <!-- Label for the title of a book, series, story, ... -->
+    <!-- Single book/series/story title. Short label. -->
     <string name="lbl_title">Title</string>
+    <!-- Multiple book/series/story titles. Short label. -->
+    <string name="lbl_titles">Titles</string>
     <!-- Field label: the original title of a translated book; Short version of the label "lbl_original_title_long" -->
     <string name="lbl_original_title">Original title</string>
     <!-- Field label: the original title of a translated book; Long version of the label "lbl_original_title_long".-->

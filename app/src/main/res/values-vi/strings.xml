@@ -180,6 +180,7 @@
     <string name="option_select_all">"Chọn tất cả"</string>
     <string name="option_select_none">"Bỏ chọn tất cả"</string>
     <string name="lbl_title">Tiêu đề</string>
+    <string name="lbl_titles">Tiêu đề</string>
     <string name="lbl_description">Mô tả</string>
     <string name="option_barcode_scan_mode_manual">Thủ công</string>
     <string name="lbl_date_added">Ngày thêm</string>

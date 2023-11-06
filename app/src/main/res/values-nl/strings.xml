@@ -709,6 +709,7 @@
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
     <string name="lbl_strip_info_mapped_bookshelf_wishlist">„Verlanglijst” boekenplank</string>
     <string name="lbl_strip_info_mapped_bookshelf_owned_books">„In bezit” boekenplank</string>
+    <string name="lbl_titles">Titels</string>
     <string name="lbl_original_title">Oorspronkelijke titel</string>
     <string name="lbl_original_title_long">Oorspronkelijke titel indien dit boek een vertaling is</string>
     <string name="error_site_access_blocked">De toegang werd geblokkeerd door de website.</string>

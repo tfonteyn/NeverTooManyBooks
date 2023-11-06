@@ -356,6 +356,7 @@
     <string name="lbl_day">天</string>
     <string name="lbl_name">姓名</string>
     <string name="lbl_title">标题</string>
+    <string name="lbl_titles">标题</string>
     <string name="lbl_description">描述</string>
     <string name="option_barcode_scan_mode_manual">手动</string>
     <string name="info_import_complete">"导入已完成"</string>

@@ -738,6 +738,7 @@
     <string name="lbl_table_of_content_short">Conteúdo</string>
     <string name="lbl_virtual_libraries">Bibliotecas virtuais nesta biblioteca</string>
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
+    <string name="lbl_titles">Títulos</string>
     <string name="lbl_original_title">Título original</string>
     <string name="lbl_original_title_long">Título original se este livro for uma tradução</string>
     <string name="error_site_access_blocked">O acesso foi bloqueado pelo sítio Web.</string>
