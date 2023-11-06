@@ -558,8 +558,8 @@
     <string name="progress_msg_x_updated">%1$d bijgewerkt</string>
     <string name="progress_msg_x_skipped">%1$d overgeslagen</string>
     <string name="progress_msg_x_deleted">%1$d verwijderd</string>
-    <string name="ps_author_name_family_first">bvb. „Reve, Gerard”</string>
-    <string name="ps_author_name_given_first">bvb. „Gerard Reve”</string>
+    <string name="ps_author_name_example_family_first">bvb. „Reve, Gerard”</string>
+    <string name="ps_author_name_example_given_first">bvb. „Gerard Reve”</string>
     <string name="ps_bob_books_under_multiple_each_author">Onder elke auteur</string>
     <string name="ps_bob_books_under_multiple_each_publisher">onder elke uitgever</string>
     <string name="ps_bob_books_under_multiple_each_series">Onder elke reeks</string>
@@ -601,7 +601,7 @@
     <string name="pt_search_reformat_format">Standaardiseer namen van „boekformaten”</string>
     <string name="pt_search_resolve_authors_bedetheque">Los auteursnamen op met behulp van de Bedetheque-website</string>
     <string name="pt_search_uses_publisher">Zoeken maakt gebruik van de uitgever</string>
-    <string name="pt_show_author_name_given_first">Opmaak van auteursnamen</string>
+    <string name="pt_author_name_formatting">Opmaak van auteursnamen</string>
     <string name="pt_show_title_reordered">Toon titels als…</string>
     <string name="pt_sort_author_name_given_first">Sorteren op auteursnaam</string>
     <string name="pt_sort_title_reordered">Sorteer titels op</string>

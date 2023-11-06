@@ -573,7 +573,7 @@
     <string name="pt_search_reformat_color">Standardizujte názvy barev knih</string>
     <string name="pt_search_reformat_format">Standardizujte názvy „formát knihy“</string>
     <string name="pt_search_uses_publisher">Vyhledávání používá vydavatele</string>
-    <string name="pt_show_author_name_given_first">Formátování jména autora</string>
+    <string name="pt_author_name_formatting">Formátování jména autora</string>
     <string name="pt_show_title_reordered">Zobrazit tituly jako…</string>
     <string name="pt_sort_author_name_given_first">Třídění autorských jmen</string>
     <string name="pt_sort_title_reordered">Seřadit tituly podle</string>
@@ -586,8 +586,8 @@
     <string name="pt_ui_system_locale">Jazyk systému</string>
     <string name="pt_ui_theme">Téma</string>
     <string name="pt_website_search_order_and_enable">Priorita, povolení a zakázání</string>
-    <string name="ps_author_name_family_first">tj. „Čapek, Karel“</string>
-    <string name="ps_author_name_given_first">tj. „Karel Čapek“</string>
+    <string name="ps_author_name_example_family_first">tj. „Čapek, Karel“</string>
+    <string name="ps_author_name_example_given_first">tj. „Karel Čapek“</string>
     <string name="ps_bob_books_under_multiple_each_author">Pod každým autor</string>
     <string name="ps_bob_books_under_multiple_each_publisher">pod každým vydavatelem</string>
     <string name="ps_bob_books_under_multiple_each_series">Pod každým série</string>

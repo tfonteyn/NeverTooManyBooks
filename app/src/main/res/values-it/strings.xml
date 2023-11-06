@@ -561,7 +561,7 @@
     <string name="pt_search_reformat_color">Standardizzare i nomi di «colore del libro»</string>
     <string name="pt_search_reformat_format">Standardizzare i nomi di «formato libro»</string>
     <string name="pt_search_uses_publisher">La ricerca utilizza editore</string>
-    <string name="pt_show_author_name_given_first">Formattazione del nome dell’autore</string>
+    <string name="pt_author_name_formatting">Formattazione del nome dell’autore</string>
     <string name="pt_show_title_reordered">Mostra titoli come…</string>
     <string name="ps_show_titles_reordered_off">Il titolo</string>
     <string name="error_type_not_supported">Tipo non supportato: %1$s …</string>
@@ -577,8 +577,8 @@
     <string name="pt_ui_system_locale">Lingua di sistema</string>
     <string name="pt_ui_theme">Tema</string>
     <string name="pt_website_search_order_and_enable">Priorità, abilita e disabilita</string>
-    <string name="ps_author_name_family_first">es. «Alighieri, Dante»</string>
-    <string name="ps_author_name_given_first">es. «Dante Alighieri»</string>
+    <string name="ps_author_name_example_family_first">es. «Alighieri, Dante»</string>
+    <string name="ps_author_name_example_given_first">es. «Dante Alighieri»</string>
     <string name="ps_bob_books_under_multiple_each_author">Sotto ciascuno autore</string>
     <string name="ps_bob_books_under_multiple_each_publisher">sotto ciascun editore</string>
     <string name="ps_bob_books_under_multiple_each_series">Sotto ciascuno serie</string>
@@ -588,7 +588,8 @@
     <string name="pv_bob_header_filters">Filtri</string>
     <string name="pv_bob_header_nr_of_books">Mostra numero di libri</string>
     <string name="pv_bob_header_style_name">Nome dello stile</string>
-    <string name="pv_reformat_titles_prefixes" tools:ignore="TypographyQuotes">il|lo|la|l’|i||gli|le|un’|uno|una|un</string>
+    <string name="pv_reformat_titles_prefixes"
+            tools:ignore="TypographyQuotes">il|lo|la|l’|i||gli|le|un’|uno|una|un</string>
     <string name="size_hidden">Nascosto</string>
     <string name="size_large">Grande</string>
     <string name="size_medium">Medio</string>

@@ -559,7 +559,7 @@
     <string name="pt_search_reformat_color">Τυποποιήστε τα ονόματα «χρώματος βιβλίου»</string>
     <string name="pt_search_reformat_format">Τυποποιήστε τα ονόματα «μορφής βιβλίου»</string>
     <string name="pt_search_uses_publisher">Η αναζήτηση χρησιμοποιεί εκδότη</string>
-    <string name="pt_show_author_name_given_first">Μορφοποίηση ονόματος συντάκτη</string>
+    <string name="pt_author_name_formatting">Μορφοποίηση ονόματος συντάκτη</string>
     <string name="pt_show_title_reordered">Εμφάνιση τίτλων ως…</string>
     <string name="ps_show_titles_reordered_off">Ο τίτλος</string>
     <string name="error_type_not_supported">Ο τύπος δεν υποστηρίζεται: %1$s …</string>
@@ -575,8 +575,8 @@
     <string name="pt_ui_system_locale">Γλώσσα συστήματος</string>
     <string name="pt_ui_theme">Θέμα</string>
     <string name="pt_website_search_order_and_enable">Προτεραιότητα, ενεργοποίηση και απενεργοποίηση</string>
-    <string name="ps_author_name_family_first">για παράδειγμα «Παλαμάς, Κωστής»</string>
-    <string name="ps_author_name_given_first">για παράδειγμα «Κωστής  Παλαμάς»</string>
+    <string name="ps_author_name_example_family_first">για παράδειγμα «Παλαμάς, Κωστής»</string>
+    <string name="ps_author_name_example_given_first">για παράδειγμα «Κωστής  Παλαμάς»</string>
     <string name="ps_bob_books_under_multiple_each_author">Κάτω από κάθε συντάκτης</string>
     <string name="ps_bob_books_under_multiple_each_publisher">κάτω από κάθε εκδότη</string>
     <string name="ps_bob_books_under_multiple_each_series">Κάτω από κάθε Σειρά</string>

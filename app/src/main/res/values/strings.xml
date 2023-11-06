@@ -1416,13 +1416,18 @@
     <!-- SeekBarPreference -->
     <string name="pt_bob_list_state_expansion_level">Default booklist expansion</string>
     <!-- SwitchPreference - Display Authors by family (default) or given name. -->
-    <string name="pt_show_author_name_given_first">Author name formatting</string>
+    <string name="pt_author_name_formatting">Author name formatting</string>
     <!-- SwitchPreference - Sorting Authors by family (default) or given name. -->
     <string name="pt_sort_author_name_given_first">Author name sorting</string>
-    <!-- summary strings for show/sort author-name. Translator: use your favourite Author in your country. -->
-    <string name="ps_author_name_given_first">e.g. “Connie Willis”</string>
-    <!-- summary strings for show/sort author-name. Translator: use your favourite Author in your country. -->
-    <string name="ps_author_name_family_first">e.g. “Willis, Connie”</string>
+
+    <!-- Preference summary strings on how to show/sort author-name.
+         Translator: use your favourite Author in your country. -->
+    <string name="ps_author_name_example_given_first">e.g. “Connie Willis”</string>
+    <!-- Preference summary strings on how to show/sort author-name.
+         Translator: use your favourite Author in your country. -->
+    <string name="ps_author_name_example_family_first">e.g. “Willis, Connie”</string>
+
+
     <!-- SwitchPreference - option title -->
     <string name="pt_bob_books_under_multiple_authors">Show books with multiple authors</string>
     <string name="ps_bob_books_under_multiple_primary_author_only">under their primary author only</string>
@@ -1584,7 +1589,7 @@
     <!-- Book status/flag: I'm currently reading this book -->
     <string name="lbl_reading">Reading</string>
 
-    <!-- [VERIFIED] - heading/titles for settings/preference screens. -->
+    <!-- [VERIFIED] -->
     <string name="lbl_settings">Settings</string>
     <!-- endregion -->
     <!-- region ========== Unused, but not removing as we have translations which might be useful later. -->

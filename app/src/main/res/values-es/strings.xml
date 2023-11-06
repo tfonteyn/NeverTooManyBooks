@@ -572,7 +572,7 @@
     <string name="pt_search_reformat_color">Estandarizar nombres de «color de libro»</string>
     <string name="pt_search_reformat_format">Estandarizar nombres de «formato de libro»</string>
     <string name="pt_search_uses_publisher">Búsqueda utiliza editor</string>
-    <string name="pt_show_author_name_given_first">Formato de nombre de autor</string>
+    <string name="pt_author_name_formatting">Formato de nombre de autor</string>
     <string name="pt_show_title_reordered">Mostrar títulos como…</string>
     <string name="ps_show_titles_reordered_off">El título</string>
     <string name="error_type_not_supported">Tipo no soportado: %1$s …</string>
@@ -588,8 +588,8 @@
     <string name="pt_ui_system_locale">Idioma del sistema</string>
     <string name="pt_ui_theme">El tema</string>
     <string name="pt_website_search_order_and_enable">Prioridad, habilitar y deshabilitar</string>
-    <string name="ps_author_name_family_first">por ejemplo «Pérez Galdós, Benito»</string>
-    <string name="ps_author_name_given_first">por ejemplo «Benito Pérez Galdós»</string>
+    <string name="ps_author_name_example_family_first">por ejemplo «Pérez Galdós, Benito»</string>
+    <string name="ps_author_name_example_given_first">por ejemplo «Benito Pérez Galdós»</string>
     <string name="ps_bob_books_under_multiple_each_author">Bajo cada autorр</string>
     <string name="ps_bob_books_under_multiple_each_publisher">debajo de cada editor</string>
     <string name="ps_bob_books_under_multiple_each_series">Bajo cada serie</string>

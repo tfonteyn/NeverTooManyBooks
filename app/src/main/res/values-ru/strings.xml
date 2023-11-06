@@ -574,7 +574,7 @@
     <string name="pt_search_reformat_color">Стандартизировать названия книг</string>
     <string name="pt_search_reformat_format">Стандартизировать имена в формате книги</string>
     <string name="pt_search_uses_publisher">Поиск использует издатель</string>
-    <string name="pt_show_author_name_given_first">Форматирование имени автора</string>
+    <string name="pt_author_name_formatting">Форматирование имени автора</string>
     <string name="pt_show_title_reordered">Показать названия как…</string>
     <string name="pt_sort_author_name_given_first">Сортировка имени автора</string>
     <string name="pt_sort_title_reordered">Сортировать названия по</string>
@@ -587,8 +587,8 @@
     <string name="pt_ui_system_locale">Язык системы</string>
     <string name="pt_ui_theme">тема</string>
     <string name="pt_website_search_order_and_enable">Важные разговоры, включить и отключить</string>
-    <string name="ps_author_name_family_first">например «Достоевский, Фёдор»</string>
-    <string name="ps_author_name_given_first">например «Фёдор Достоевский»</string>
+    <string name="ps_author_name_example_family_first">например «Достоевский, Фёдор»</string>
+    <string name="ps_author_name_example_given_first">например «Фёдор Достоевский»</string>
     <string name="ps_bob_books_under_multiple_each_author">Под каждым автор</string>
     <string name="ps_bob_books_under_multiple_each_publisher">под каждым издателем</string>
     <string name="ps_bob_books_under_multiple_each_series">Под каждым серии</string>

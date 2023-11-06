@@ -562,7 +562,7 @@
     <string name="pt_search_reformat_color">Normaliser les noms de « couleur de livre »</string>
     <string name="pt_search_reformat_format">Normaliser les noms de « format livre »</string>
     <string name="pt_search_uses_publisher">La recherche utilise l’éditeur</string>
-    <string name="pt_show_author_name_given_first">Formatage du nom de l’auteur</string>
+    <string name="pt_author_name_formatting">Formatage du nom de l’auteur</string>
     <string name="pt_show_title_reordered">Afficher les titres en tant que…</string>
     <string name="ps_show_titles_reordered_off">Le titre</string>
     <string name="error_type_not_supported">Type non pris en charge : %1$s …</string>
@@ -578,8 +578,8 @@
     <string name="pt_ui_system_locale">Langue du système</string>
     <string name="pt_ui_theme">Thema</string>
     <string name="pt_website_search_order_and_enable">Priorité, activer et désactiver</string>
-    <string name="ps_author_name_family_first">par exemple « Verne, Jules »</string>
-    <string name="ps_author_name_given_first">par exemple « Jules Verne »</string>
+    <string name="ps_author_name_example_family_first">par exemple « Verne, Jules »</string>
+    <string name="ps_author_name_example_given_first">par exemple « Jules Verne »</string>
     <string name="ps_bob_books_under_multiple_each_author">Sous chaque auteur</string>
     <string name="ps_bob_books_under_multiple_each_publisher">sous chaque éditeur</string>
     <string name="ps_bob_books_under_multiple_each_series">Sous chaque séries</string>
