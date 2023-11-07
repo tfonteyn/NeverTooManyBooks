@@ -64,7 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
-import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderField;
 
 /**
  * Global settings page.
@@ -193,7 +193,7 @@ public class SettingsFragment
             return true;
         });
 
-        titleOrderByPref = findPreference(ReorderHelper.PK_SORT_TITLE_REORDERED);
+        titleOrderByPref = findPreference(ReorderField.Title.getPrefKey());
         //noinspection DataFlowIssue
         setVisualIndicator(titleOrderByPref, StartupViewModel.PK_REBUILD_TITLE_OB);
         titleOrderByPref.setOnPreferenceChangeListener(this::onTitleOrderByChange);
@@ -400,7 +400,7 @@ public class SettingsFragment
     @CallSuper
     public void onSharedPreferenceChanged(@NonNull final SharedPreferences prefs,
                                           @Nullable final String key) {
-        if (ReorderHelper.PK_SORT_TITLE_REORDERED.equals(key)) {
+        if (ReorderField.Title.getPrefKey().equals(key)) {
             // Set the activity result so our caller will recreate itself
             vm.setOnBackRequiresActivityRecreation();
         }

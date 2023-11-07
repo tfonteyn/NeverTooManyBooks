@@ -1224,6 +1224,25 @@
          -->
     <string name="ps_show_titles_reordered_on">Move a leading article to the end,\ne.g. “Lord of The Rings, The”</string>
 
+    <!-- TRANSLATORS: this is similar to the string "pv_reformat_titles_prefixes",
+         but used for reordering publisher names.
+
+         These values will be the usual articles, but can in addition list a number
+         of common prefixes. The latter is less important for English but often seen
+         in languages as Dutch, French, German... an example from
+             Dutch: "Uitgeverij Meulenhoff", where "Meulenhoff" is the actual name and
+              the prefix "Uitgeverij" literally meaning "Publisher".
+              Reordering such a name results in "Meulenhoff, Uitgeverij"
+
+             French: "Editions Hermann" where "Hermann" is actual name and
+              the prefix "Editions" literally meaning "Publisher".
+              Reordering such a name results in "Hermann, Editions"
+    -->
+    <string name="pv_reformat_publisher_prefixes">a|A|an|An|the|The</string>
+
+    <string name="ps_publisher_name_example">Display as given,\ne.g. “The British Library”</string>
+    <string name="ps_publisher_name_example_reordered">Move a leading article/prefix to the end,\ne.g. “British Library, The”</string>
+
     <!-- SwitchPreference title: allow mobile network usage or limit to use wifi/ethernet only. -->
     <string name="pt_allow_metered_network_data">Allow mobile data usage</string>
     <!-- SwitchPreference - Some web sites expose their website book id.

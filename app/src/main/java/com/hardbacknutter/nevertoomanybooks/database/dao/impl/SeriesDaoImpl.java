@@ -36,7 +36,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
@@ -109,7 +108,7 @@ public class SeriesDaoImpl
 
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{
                 SqlEncode.orderByColumn(series.getTitle(), obd.getLocale()),
-                SqlEncode.orderByColumn(obd.getTitle(), obd.getLocale())})) {
+                SqlEncode.orderByColumn(obd.getText(), obd.getLocale())})) {
             if (cursor.moveToFirst()) {
                 final CursorRow rowData = new CursorRow(cursor);
                 return Optional.of(new Series(rowData.getLong(DBKey.PK_ID), rowData));
@@ -253,11 +252,11 @@ public class SeriesDaoImpl
         }
 
         if (normalize) {
-            final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
             final List<Locale> locales = LocaleListUtils.asList(context);
             list.forEach(series -> {
-                final String title = reorderHelper.reverse(context, series.getTitle(),
-                                                           localeSupplier.apply(series), locales);
+                final String title = reorderHelperSupplier
+                        .get().reverse(context, series.getTitle(),
+                                       localeSupplier.apply(series), locales);
                 series.setTitle(title);
             });
         }
@@ -389,7 +388,7 @@ public class SeriesDaoImpl
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             stmt.bindString(1, series.getTitle());
-            stmt.bindString(2, SqlEncode.orderByColumn(obd.getTitle(), obd.getLocale()));
+            stmt.bindString(2, SqlEncode.orderByColumn(obd.getText(), obd.getLocale()));
             stmt.bindBoolean(3, series.isComplete());
             final long iId = stmt.executeInsert();
             if (iId > 0) {
@@ -416,7 +415,7 @@ public class SeriesDaoImpl
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
             stmt.bindString(1, series.getTitle());
-            stmt.bindString(2, SqlEncode.orderByColumn(obd.getTitle(), obd.getLocale()));
+            stmt.bindString(2, SqlEncode.orderByColumn(obd.getText(), obd.getLocale()));
             stmt.bindBoolean(3, series.isComplete());
             stmt.bindLong(4, series.getId());
 

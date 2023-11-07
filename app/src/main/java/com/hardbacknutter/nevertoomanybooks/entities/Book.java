@@ -74,6 +74,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.validators.OrValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderField;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 /**
@@ -491,7 +492,8 @@ public class Book
                            @NonNull final Style style) {
 
         if (style.isShowReorderedTitle()) {
-            final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
+            final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper(
+                    ReorderField.Title);
             return reorderHelper.reorder(context, getTitle(), getLocaleOrUserLocale(context));
         } else {
             return getTitle();

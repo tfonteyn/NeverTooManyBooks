@@ -35,7 +35,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
@@ -108,7 +107,7 @@ public class PublisherDaoImpl
 
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{
                 SqlEncode.orderByColumn(publisher.getName(), obd.getLocale()),
-                SqlEncode.orderByColumn(obd.getTitle(), obd.getLocale())})) {
+                SqlEncode.orderByColumn(obd.getText(), obd.getLocale())})) {
             if (cursor.moveToFirst()) {
                 final CursorRow rowData = new CursorRow(cursor);
                 return Optional.of(new Publisher(rowData.getLong(DBKey.PK_ID), rowData));
@@ -208,11 +207,11 @@ public class PublisherDaoImpl
         }
 
         if (normalize) {
-            final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
             final List<Locale> locales = LocaleListUtils.asList(context);
             list.forEach(publisher -> {
-                final String name = reorderHelper.reverse(context, publisher.getName(),
-                                                          localeSupplier.apply(publisher), locales);
+                final String name = reorderHelperSupplier
+                        .get().reverse(context, publisher.getName(),
+                                       localeSupplier.apply(publisher), locales);
                 publisher.setName(name);
             });
         }
@@ -343,7 +342,7 @@ public class PublisherDaoImpl
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             stmt.bindString(1, publisher.getName());
-            stmt.bindString(2, SqlEncode.orderByColumn(obd.getTitle(), obd.getLocale()));
+            stmt.bindString(2, SqlEncode.orderByColumn(obd.getText(), obd.getLocale()));
             final long iId = stmt.executeInsert();
             if (iId > 0) {
                 publisher.setId(iId);
@@ -369,7 +368,7 @@ public class PublisherDaoImpl
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
             stmt.bindString(1, publisher.getName());
-            stmt.bindString(2, SqlEncode.orderByColumn(obd.getTitle(), obd.getLocale()));
+            stmt.bindString(2, SqlEncode.orderByColumn(obd.getText(), obd.getLocale()));
             stmt.bindLong(3, publisher.getId());
 
             final boolean success = 0 < stmt.executeUpdateDelete();

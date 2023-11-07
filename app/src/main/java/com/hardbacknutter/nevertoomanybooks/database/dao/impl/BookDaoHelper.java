@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
@@ -53,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderField;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 /**
@@ -77,7 +79,7 @@ public class BookDaoHelper {
     @NonNull
     private final Supplier<CoverStorage> coverStorageSupplier;
     @NonNull
-    private final Supplier<ReorderHelper> reorderHelperSupplier;
+    private final Function<ReorderField, ReorderHelper> reorderHelperSupplier;
     @NonNull
     private final Book book;
     private final boolean isNew;
@@ -100,7 +102,7 @@ public class BookDaoHelper {
      */
     public BookDaoHelper(@NonNull final Context context,
                          @NonNull final Supplier<CoverStorage> coverStorageSupplier,
-                         @NonNull final Supplier<ReorderHelper> reorderHelperSupplier,
+                         @NonNull final Function<ReorderField, ReorderHelper> reorderHelperSupplier,
                          @NonNull final Book book,
                          final boolean isNew) {
         this.coverStorageSupplier = coverStorageSupplier;
@@ -132,8 +134,9 @@ public class BookDaoHelper {
         if (book.contains(DBKey.TITLE)) {
             final String title = book.getTitle();
             final String reorderedTitle;
-            if (reorderHelperSupplier.get().forSorting(context)) {
-                reorderedTitle = reorderHelperSupplier.get().reorder(context, title, bookLocale);
+            final ReorderHelper reorderHelper = reorderHelperSupplier.apply(ReorderField.Title);
+            if (reorderHelper.getReorderField().isSortReorder(context)) {
+                reorderedTitle = reorderHelper.reorder(context, title, bookLocale);
             } else {
                 reorderedTitle = title;
             }

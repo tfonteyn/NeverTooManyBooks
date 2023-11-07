@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -43,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.MaintenanceDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderField;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -101,7 +103,7 @@ public class MaintenanceDaoImpl
     @NonNull
     private final Supplier<AppLocale> appLocaleSupplier;
     @NonNull
-    private final Supplier<ReorderHelper> reorderHelperSupplier;
+    private final Function<ReorderField, ReorderHelper> reorderHelperSupplier;
 
     /**
      * Constructor.
@@ -118,7 +120,7 @@ public class MaintenanceDaoImpl
                               @NonNull final Supplier<SeriesDao> seriesDaoSupplier,
                               @NonNull final Supplier<PublisherDao> publisherDaoSupplier,
                               @NonNull final Supplier<AppLocale> appLocaleSupplier,
-                              @NonNull final Supplier<ReorderHelper> reorderHelperSupplier) {
+                              @NonNull final Function<ReorderField, ReorderHelper> reorderHelperSupplier) {
         super(db, TAG);
         this.authorDaoSupplier = authorDaoSupplier;
         this.seriesDaoSupplier = seriesDaoSupplier;
@@ -239,9 +241,11 @@ public class MaintenanceDaoImpl
         final String title = cursor.getString(1);
         final String currentObTitle = cursor.getString(2);
 
+        final ReorderHelper titleReorderHelper = reorderHelperSupplier.apply(ReorderField.Title);
+
         final String rebuildObTitle;
-        if (reorderHelperSupplier.get().forSorting(context)) {
-            rebuildObTitle = reorderHelperSupplier.get().reorder(context, title, locale, locales);
+        if (titleReorderHelper.getReorderField().isSortReorder(context)) {
+            rebuildObTitle = titleReorderHelper.reorder(context, title, locale, locales);
         } else {
             // Use the actual/original title
             rebuildObTitle = title;

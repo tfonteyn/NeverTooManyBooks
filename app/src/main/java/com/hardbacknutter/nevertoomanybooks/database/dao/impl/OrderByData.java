@@ -34,34 +34,14 @@ import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 public final class OrderByData {
 
     @NonNull
-    private final String title;
+    private final String text;
     @NonNull
     private final Locale locale;
 
-    private OrderByData(@NonNull final String title,
+    private OrderByData(@NonNull final String text,
                         @NonNull final Locale locale) {
-        this.title = title;
+        this.text = text;
         this.locale = locale;
-    }
-
-    /**
-     * Depending on at the time of construction, whether names are reordered for sorting or not.
-     *
-     * @return the actual title, or the reordered title, as to-be used for sorting.
-     */
-    @NonNull
-    public String getTitle() {
-        return title;
-    }
-
-    /**
-     * Get the {@link Locale} for the {@link #getTitle()}.
-     *
-     * @return title locale
-     */
-    @NonNull
-    public Locale getLocale() {
-        return locale;
     }
 
     /**
@@ -83,7 +63,7 @@ public final class OrderByData {
      *
      * @param context       Current context
      * @param reorderHelper to use for displaying labels
-     * @param title         to reorder
+     * @param text          to reorder
      * @param locale        to use for reordering
      *
      * @return title and locale data which should be used to construct ORDER-BY columns
@@ -91,13 +71,42 @@ public final class OrderByData {
     @NonNull
     public static OrderByData create(@NonNull final Context context,
                                      @NonNull final ReorderHelper reorderHelper,
-                                     @NonNull final String title,
+                                     @NonNull final String text,
                                      @NonNull final Locale locale) {
-        if (reorderHelper.forSorting(context)) {
-            final String result = reorderHelper.reorder(context, title, locale);
+        if (reorderHelper.getReorderField().isSortReorder(context)) {
+            final String result = reorderHelper.reorder(context, text, locale);
             return new OrderByData(result, locale);
         } else {
-            return new OrderByData(title, locale);
+            return new OrderByData(text, locale);
         }
+    }
+
+    /**
+     * Get the final text to use.
+     *
+     * @return the actual text, or the reordered text, as to-be used for sorting.
+     */
+    @NonNull
+    public String getText() {
+        return text;
+    }
+
+    /**
+     * Get the {@link Locale} for the {@link #getText()}.
+     *
+     * @return title locale
+     */
+    @NonNull
+    public Locale getLocale() {
+        return locale;
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "OrderByData{"
+               + "text='" + text + '`'
+               + ", locale=" + locale
+               + '}';
     }
 }

@@ -32,6 +32,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderField;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 /**
@@ -135,7 +136,8 @@ public class Publisher
                            @NonNull final Style style) {
 
         if (style.isShowReorderedPublisherName()) {
-            final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
+            final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper(
+                    ReorderField.Publisher);
             // Using the locale here is overkill;  see #getLocale(..)
             return reorderHelper.reorder(context, name);
         } else {

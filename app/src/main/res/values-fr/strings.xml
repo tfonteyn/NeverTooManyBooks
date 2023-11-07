@@ -592,6 +592,10 @@
     <!-- use the default single quote character and NOT the stylized! -->
     <string name="pv_reformat_titles_prefixes"
             tools:ignore="TypographyQuotes">le|Le|la|La|les|Les|l\'|L\'|un|Un|une|Une</string>
+    <!-- use the default single quote character and NOT the stylized! -->
+    <string name="pv_reformat_publisher_prefixes"
+            tools:ignore="TypographyQuotes">le|Le|la|La|les|Les|l\'|L\'|un|Un|une|Une|Editions|Éditions</string>
+
     <string name="size_hidden">Caché</string>
     <string name="size_large">Grand</string>
     <string name="size_medium">Moyen</string>
@@ -756,4 +760,6 @@
     <string name="action_edit_defaults">Modifier les paramètres par défaut</string>
     <string name="ps_sort_author_name_given_first">Trier sur les prénoms en premier,\npar exemple « Jules Verne »</string>
     <string name="ps_sort_author_name_family_first">Trier sur le nom de famille en premier,\npar exemple « Verne, Jules »</string>
+    <string name="ps_publisher_name_example">Afficher comme indiqué,\ne.g. “Le Lombard”</string>
+    <string name="ps_publisher_name_example_reordered">Déplacer un article de tête ou un préfixe à la fin,\ne.g. “Lombard, Le”</string>
 </resources>

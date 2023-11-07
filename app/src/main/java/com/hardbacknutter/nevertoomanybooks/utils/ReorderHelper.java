@@ -23,7 +23,6 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,7 +31,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 
 /**
@@ -47,85 +45,77 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
  */
 public final class ReorderHelper {
 
-    /**
-     * Boolean preference.
-     * {@code true} if the title/name should be SORTED by the reordered version.
-     */
-
-    public static final String PK_SORT_TITLE_REORDERED = "sort.title.reordered";
     private static final String SUFFIX_SEPARATOR = ", ";
 
     /**
-     * Cache for the pv_reformat_titles_prefixes strings.
+     * Cache for the prefix strings.
      */
     private final Map<Locale, String> localePrefixMap = new HashMap<>();
+    @NonNull
+    private final ReorderField reorderField;
     @NonNull
     private final Supplier<AppLocale> appLocaleSupplier;
 
     /**
      * Constructor.
      *
+     * @param reorderField      which field to handle in this instance
      * @param appLocaleSupplier deferred supplier for the {@link AppLocale}.
      */
-    public ReorderHelper(@NonNull final Supplier<AppLocale> appLocaleSupplier) {
+    public ReorderHelper(@NonNull final ReorderField reorderField,
+                         @NonNull final Supplier<AppLocale> appLocaleSupplier) {
+        this.reorderField = reorderField;
         this.appLocaleSupplier = appLocaleSupplier;
     }
 
-    /**
-     * Get the global default for this preference.
-     *
-     * @param context Current context
-     *
-     * @return {@code true} if titles should be reordered. e.g. "The title" -> "title, The"
-     */
-    public boolean forSorting(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(PK_SORT_TITLE_REORDERED, true);
+    @NonNull
+    public ReorderField getReorderField() {
+        return reorderField;
     }
 
     /**
      * Try reordering using the device Locale list.
      *
      * @param context Current context
-     * @param title   to reorder
+     * @param text    to reorder
      *
-     * @return the reordered title
+     * @return the reordered text
      */
     @NonNull
     public String reorder(@NonNull final Context context,
-                          @NonNull final String title) {
-        return reorder(context, title, (Locale) null, LocaleListUtils.asList(context));
+                          @NonNull final String text) {
+        return reorder(context, text, (Locale) null, LocaleListUtils.asList(context));
     }
 
     /**
      * Try reordering using the 'locale' or the device Locale list.
      *
      * @param context Current context
-     * @param title   to reorder
+     * @param text    to reorder
      * @param locale  to try first
      *
-     * @return the reordered title
+     * @return the reordered text
      */
     @NonNull
     public String reorder(@NonNull final Context context,
-                          @NonNull final String title,
+                          @NonNull final String text,
                           @NonNull final Locale locale) {
-        return reorder(context, title, locale, LocaleListUtils.asList(context));
+        return reorder(context, text, locale, LocaleListUtils.asList(context));
     }
 
     /**
      * Try reordering using the 'language' or the given Locale list.
      *
      * @param context    Current context
-     * @param title      to reorder
+     * @param text       to reorder
      * @param language   to try first
      * @param localeList to try if the the language locale fails
      *
-     * @return the reordered title
+     * @return the reordered text
      */
     @NonNull
     public String reorder(@NonNull final Context context,
-                          @NonNull final String title,
+                          @NonNull final String text,
                           @Nullable final String language,
                           @NonNull final List<Locale> localeList) {
         @Nullable
@@ -135,52 +125,52 @@ public final class ReorderHelper {
         } else {
             localeFromLang = appLocaleSupplier.get().getLocale(context, language).orElse(null);
         }
-        return reorder(context, title, localeFromLang, localeList);
+        return reorder(context, text, localeFromLang, localeList);
     }
 
     /**
-     * Unconditionally reformat the given (title) string.
+     * Unconditionally reformat the given text.
      * <p>
      * This method does the actual re-ordering.
-     * It move "The, A, An" etc... to the end of the title. e.g. "The title" -> "title, The".
+     * It move "The, A, An" etc... to the end of the text. e.g. "The title" -> "title, The".
      * This is case sensitive on purpose.
      *
      * @param context     Current context
-     * @param title       to reorder
+     * @param text        to reorder
      * @param firstLocale to try first
      * @param localeList  to try if the the firstLocale fails
      *
-     * @return reordered title, or the original if the pattern was not found
+     * @return reordered text, or the original if the pattern was not found
      */
     @NonNull
     public String reorder(@NonNull final Context context,
-                          @NonNull final String title,
+                          @NonNull final String text,
                           @Nullable final Locale firstLocale,
                           @NonNull final List<Locale> localeList) {
 
-        final String[] titleWords = title.split(" ");
-        // Single word titles (or empty titles).. just return.
-        if (titleWords.length < 2) {
-            return title;
+        final String[] textWords = text.split(" ");
+        // Single word text (or empty text).. just return.
+        if (textWords.length < 2) {
+            return text;
         }
 
         final List<Locale> locales = concatLocales(firstLocale, localeList);
         for (final Locale locale : locales) {
             // case sensitive, see notes in
             // src/main/res/values/string.xml/pv_reformat_titles_prefixes
-            if (getWords(context, locale).contains(titleWords[0])) {
-                final StringBuilder newTitle = new StringBuilder();
-                for (int i = 1; i < titleWords.length; i++) {
+            if (getWords(context, locale).contains(textWords[0])) {
+                final StringBuilder newText = new StringBuilder();
+                for (int i = 1; i < textWords.length; i++) {
                     if (i != 1) {
-                        newTitle.append(' ');
+                        newText.append(' ');
                     }
-                    newTitle.append(titleWords[i]);
+                    newText.append(textWords[i]);
                 }
-                newTitle.append(SUFFIX_SEPARATOR).append(titleWords[0]);
-                return newTitle.toString();
+                newText.append(SUFFIX_SEPARATOR).append(textWords[0]);
+                return newText.toString();
             }
         }
-        return title;
+        return text;
     }
 
 
@@ -205,7 +195,7 @@ public final class ReorderHelper {
             final String[] words = getWords(context, locale).split("\\|");
             for (final String word : words) {
                 if (text.endsWith(SUFFIX_SEPARATOR + word)) {
-                    // This is the (hopefully) original/actual title.
+                    // This is the (hopefully) original/actual text.
                     final String reconstructed =
                             word + " " + text.substring(0, text.length()
                                                            - SUFFIX_SEPARATOR.length()
@@ -215,8 +205,8 @@ public final class ReorderHelper {
                             reorder(context, reconstructed, firstLocale, localeList);
                     // IgnoreCase as the incoming text might have an uppercase character to start
                     if (text.equalsIgnoreCase(reordered)) {
-                        // We have a good chance that this is the original title.
-                        // The case of the first character of the 'word' and the original 'text'
+                        // We have a good chance that this is the original text.
+                        // The case of the first character of the 'word' and the original text
                         // might however be wrong. Leave that to the user...
                         return reconstructed;
                     }
@@ -245,7 +235,7 @@ public final class ReorderHelper {
         if (words == null) {
             words = appLocaleSupplier.get()
                                      .getLocalizedResources(context, locale)
-                                     .getString(R.string.pv_reformat_titles_prefixes);
+                                     .getString(reorderField.getPrefixResId());
             // hack for WebLate removing empty Strings.
             if ("|".equals(words)) {
                 words = "";

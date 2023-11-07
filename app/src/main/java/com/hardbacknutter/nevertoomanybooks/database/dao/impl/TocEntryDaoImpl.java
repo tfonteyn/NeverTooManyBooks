@@ -124,7 +124,7 @@ public class TocEntryDaoImpl
         try (SynchronizedStatement stmt = db.compileStatement(Sql.FIND_ID)) {
             stmt.bindLong(1, tocEntry.getPrimaryAuthor().getId());
             stmt.bindString(2, SqlEncode.orderByColumn(tocEntry.getTitle(), obd.getLocale()));
-            stmt.bindString(3, SqlEncode.orderByColumn(obd.getTitle(), obd.getLocale()));
+            stmt.bindString(3, SqlEncode.orderByColumn(obd.getText(), obd.getLocale()));
             return stmt.simpleQueryForLongOrZero();
         }
     }
@@ -243,7 +243,7 @@ public class TocEntryDaoImpl
                     stmtInsToc.bindLong(1, author.getId());
                     stmtInsToc.bindString(2, tocEntry.getTitle());
                     stmtInsToc.bindString(3, SqlEncode
-                            .orderByColumn(obd.getTitle(), obd.getLocale()));
+                            .orderByColumn(obd.getText(), obd.getLocale()));
                     stmtInsToc.bindString(4, tocEntry
                             .getFirstPublicationDate().getIsoString());
 
@@ -259,7 +259,7 @@ public class TocEntryDaoImpl
                     // (we should never even get here if the author was changed)
                     stmtUpdToc.bindString(1, tocEntry.getTitle());
                     stmtUpdToc.bindString(2, SqlEncode
-                            .orderByColumn(obd.getTitle(), obd.getLocale()));
+                            .orderByColumn(obd.getText(), obd.getLocale()));
                     stmtUpdToc.bindString(3, tocEntry
                             .getFirstPublicationDate().getIsoString());
                     stmtUpdToc.bindLong(4, tocEntry.getId());

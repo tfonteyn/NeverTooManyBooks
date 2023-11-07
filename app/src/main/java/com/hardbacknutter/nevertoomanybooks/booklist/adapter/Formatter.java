@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderField;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 
 /**
@@ -112,14 +113,15 @@ class Formatter
                     return context.getString(R.string.bob_empty_series);
 
                 } else if (style.isShowReorderedTitle()) {
-                    // We don't have full Objects here for Series/Publisher so we can't use
+                    // We don't have full Objects here for a Series so we can't use
                     // their methods for auto-reordering.
                     //
                     // FIXME: translated series are reordered in the book's language
                     // It should be done using the Series language
                     // but as long as we don't store the Series language there is no point
                     final String lang = rowData.getString(DBKey.LANGUAGE);
-                    return serviceLocator.getReorderHelper().reorder(context, text, lang, locales);
+                    return serviceLocator.getReorderHelper(ReorderField.Title)
+                                         .reorder(context, text, lang, locales);
                 } else {
                     return text;
                 }
@@ -130,9 +132,9 @@ class Formatter
                     return context.getString(R.string.bob_empty_publisher);
 
                 } else if (style.isShowReorderedPublisherName()) {
-                    // We don't have full Objects here for Series/Publisher so we can't use
+                    // We don't have full Objects here for a Publisher so we can't use
                     // their methods for auto-reordering.
-                    return serviceLocator.getReorderHelper()
+                    return serviceLocator.getReorderHelper(ReorderField.Publisher)
                                          .reorder(context, text, (Locale) null, locales);
                 } else {
                     return text;

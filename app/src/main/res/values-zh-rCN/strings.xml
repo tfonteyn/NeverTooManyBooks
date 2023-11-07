@@ -324,6 +324,7 @@
     <string name="ps_show_titles_reordered_off">仅适用于使用冠词的语言。\n英语示例：“The Lord of The Rings”。</string>
     <!-- NOT APPLICABLE FOR BOOKS IN CHINESE. MUST be set to a single vertical bar character. -->
     <string name="pv_reformat_titles_prefixes">"|"</string>
+    <string name="pv_reformat_publisher_prefixes">"|"</string>
     <string name="X_style_type_defaults">风格默认值</string>
     <string name="action_edit_ellipsis">修改…</string>
     <string name="tip_booklist_style_defaults">使用此界面设置所有样式的默认特征。所有内置样式都会使用这些特征，您自己定义的任何样式也会以这些特征为起点。</string>

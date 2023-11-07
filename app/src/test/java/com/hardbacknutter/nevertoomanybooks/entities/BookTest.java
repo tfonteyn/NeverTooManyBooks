@@ -68,10 +68,12 @@ class BookTest
         assertNotNull(money);
         book.putMoney(DBKey.PRICE_LISTED, money);
 
-        final BookDaoHelper bdh = new BookDaoHelper(context,
-                                                    () -> serviceLocatorMock.getCoverStorage(),
-                                                    () -> serviceLocatorMock.getReorderHelper(),
-                                                    book, true);
+        final BookDaoHelper bdh = new BookDaoHelper(
+                context,
+                () -> serviceLocatorMock.getCoverStorage(),
+                (field) -> serviceLocatorMock.getReorderHelper(field),
+                book,
+                true);
         bdh.processPrice(DBKey.PRICE_LISTED);
         // dump(book);
 
@@ -93,11 +95,12 @@ class BookTest
         book.putDouble(DBKey.PRICE_PAID, 456.789d);
         // no PRICE_PAID_CURRENCY
 
-        final BookDaoHelper bdh = new BookDaoHelper(context,
-                                                    () -> serviceLocatorMock.getCoverStorage(),
-                                                    () -> serviceLocatorMock.getReorderHelper(),
-                                                    book,
-                                                    true);
+        final BookDaoHelper bdh = new BookDaoHelper(
+                context,
+                () -> serviceLocatorMock.getCoverStorage(),
+                (field) -> serviceLocatorMock.getReorderHelper(field),
+                book,
+                true);
         bdh.processPrice(DBKey.PRICE_LISTED);
         bdh.processPrice(DBKey.PRICE_PAID);
         //dump(book);
@@ -122,11 +125,12 @@ class BookTest
         book.putString(DBKey.PRICE_PAID, "test");
         // no PRICE_PAID_CURRENCY
 
-        final BookDaoHelper bdh = new BookDaoHelper(context,
-                                                    () -> serviceLocatorMock.getCoverStorage(),
-                                                    () -> serviceLocatorMock.getReorderHelper(),
-                                                    book,
-                                                    true);
+        final BookDaoHelper bdh = new BookDaoHelper(
+                context,
+                () -> serviceLocatorMock.getCoverStorage(),
+                (field) -> serviceLocatorMock.getReorderHelper(field),
+                book,
+                true);
         bdh.processPrice(DBKey.PRICE_LISTED);
         bdh.processPrice(DBKey.PRICE_PAID);
         //dump(book);
@@ -150,11 +154,12 @@ class BookTest
         assertNotNull(money);
         book.putMoney(DBKey.PRICE_LISTED, money);
 
-        final BookDaoHelper bdh = new BookDaoHelper(context,
-                                                    () -> serviceLocatorMock.getCoverStorage(),
-                                                    () -> serviceLocatorMock.getReorderHelper(),
-                                                    book,
-                                                    true);
+        final BookDaoHelper bdh = new BookDaoHelper(
+                context,
+                () -> serviceLocatorMock.getCoverStorage(),
+                (field) -> serviceLocatorMock.getReorderHelper(field),
+                book,
+                true);
         bdh.processPrice(DBKey.PRICE_LISTED);
         //dump(book);
 
@@ -185,11 +190,12 @@ class BookTest
 
         // Not tested: null string for a string field..
 
-        final BookDaoHelper bdh = new BookDaoHelper(context,
-                                                    () -> serviceLocatorMock.getCoverStorage(),
-                                                    () -> serviceLocatorMock.getReorderHelper(),
-                                                    book,
-                                                    true);
+        final BookDaoHelper bdh = new BookDaoHelper(
+                context,
+                () -> serviceLocatorMock.getCoverStorage(),
+                (field) -> serviceLocatorMock.getReorderHelper(field),
+                book,
+                true);
         bdh.processExternalIds();
         dump(book);
 
@@ -235,11 +241,12 @@ class BookTest
         // Not tested: null string for a string field..
 
 
-        final BookDaoHelper bdh = new BookDaoHelper(context,
-                                                    () -> serviceLocatorMock.getCoverStorage(),
-                                                    () -> serviceLocatorMock.getReorderHelper(),
-                                                    book,
-                                                    false);
+        final BookDaoHelper bdh = new BookDaoHelper(
+                context,
+                () -> serviceLocatorMock.getCoverStorage(),
+                (field) -> serviceLocatorMock.getReorderHelper(field),
+                book,
+                false);
         bdh.processExternalIds();
         dump(book);
 
@@ -291,11 +298,12 @@ class BookTest
         book.putDouble(DBKey.PRICE_LISTED, 12.34);
         book.putDouble(DBKey.PRICE_PAID, 0);
 
-        final BookDaoHelper bdh = new BookDaoHelper(context,
-                                                    () -> serviceLocatorMock.getCoverStorage(),
-                                                    () -> serviceLocatorMock.getReorderHelper(),
-                                                    book,
-                                                    true);
+        final BookDaoHelper bdh = new BookDaoHelper(
+                context,
+                () -> serviceLocatorMock.getCoverStorage(),
+                (field) -> serviceLocatorMock.getReorderHelper(field),
+                book,
+                true);
         bdh.processNullsAndBlanks();
 
         assertEquals("2020-01-14", book.getString(DBKey.DATE_ACQUIRED, null));
@@ -321,11 +329,12 @@ class BookTest
         book.putDouble(DBKey.PRICE_LISTED, 12.34);
         book.putDouble(DBKey.PRICE_PAID, 0);
 
-        final BookDaoHelper bdh = new BookDaoHelper(context,
-                                                    () -> serviceLocatorMock.getCoverStorage(),
-                                                    () -> serviceLocatorMock.getReorderHelper(),
-                                                    book,
-                                                    false);
+        final BookDaoHelper bdh = new BookDaoHelper(
+                context,
+                () -> serviceLocatorMock.getCoverStorage(),
+                (field) -> serviceLocatorMock.getReorderHelper(field),
+                book,
+                false);
         bdh.processNullsAndBlanks();
 
         assertEquals("2020-01-14", book.getString(DBKey.DATE_ACQUIRED, null));

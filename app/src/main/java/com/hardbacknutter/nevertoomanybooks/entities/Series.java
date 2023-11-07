@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderField;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 /**
@@ -431,7 +432,8 @@ public class Series
 
         final String label;
         if (style.isShowReorderedPublisherName()) {
-            final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
+            final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper(
+                    ReorderField.Title);
             // Using the locale here is overkill;  see #getLocale(..)
             label = reorderHelper.reorder(context, title);
         } else {

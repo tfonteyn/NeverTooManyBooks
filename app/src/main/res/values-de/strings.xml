@@ -586,6 +586,7 @@
     <string name="pv_bob_header_nr_of_books">Anzahl der Bücher anzeigen</string>
     <string name="pv_bob_header_style_name">Stilname</string>
     <string name="pv_reformat_titles_prefixes">die|Die|der|Der|das|Das|ein|Ein|eine|Eine|eines|Eines|einer|Einer|einem|Einem|einen|Einen</string>
+    <string name="pv_reformat_publisher_prefixes">die|Die|der|Der|das|Das|ein|Ein|eine|Eine|eines|Eines|einer|Einer|einem|Einem|einen|Einen</string>
     <string name="size_hidden">Versteckt</string>
     <string name="size_large">Groß</string>
     <string name="size_medium">Mittel</string>

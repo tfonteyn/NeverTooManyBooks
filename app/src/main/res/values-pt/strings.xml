@@ -722,6 +722,7 @@
     <string name="option_header_import_books_option_new_and_updated_cutoff_date">Apenas importar livros modificados desde</string>
     <string name="ps_show_titles_reordered_off">Apresentar como indicado,\npor exemplo, “O Senhor dos Anéis“</string>
     <string name="pv_reformat_titles_prefixes">a|A|um|Um|o|O</string>
+    <string name="pv_reformat_publisher_prefixes">a|A|um|Um|o|O</string>
     <string name="pt_edit_book_isbn_checks">Verificações de validade do ISBN</string>
     <string name="pt_thumbnails_rotate_auto">Rodar imagens</string>
     <string name="pe_camera_back">Câmera traseira</string>

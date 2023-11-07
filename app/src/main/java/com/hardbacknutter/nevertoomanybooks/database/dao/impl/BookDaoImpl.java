@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -73,6 +74,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderField;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -130,7 +132,7 @@ public class BookDaoImpl
     @NonNull
     private final Supplier<CoverStorage> coverStorageSupplier;
     @NonNull
-    private final Supplier<ReorderHelper> reorderHelperSupplier;
+    private final Function<ReorderField, ReorderHelper> reorderHelperSupplier;
 
     /**
      * Constructor.
@@ -161,7 +163,7 @@ public class BookDaoImpl
                        @NonNull final Supplier<StripInfoDao> stripInfoDaoSupplier,
                        @NonNull final Supplier<FtsDao> ftsDaoSupplier,
                        @NonNull final Supplier<CoverStorage> coverStorageSupplier,
-                       @NonNull final Supplier<ReorderHelper> reorderHelperSupplier) {
+                       @NonNull final Function<ReorderField, ReorderHelper> reorderHelperSupplier) {
         super(db, TAG);
         dateParser = new ISODateParser(systemLocale);
         this.authorDaoSupplier = authorDaoSupplier;

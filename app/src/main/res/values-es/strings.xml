@@ -600,6 +600,7 @@
     <string name="pv_bob_header_nr_of_books">Mostrar el número de libros</string>
     <string name="pv_bob_header_style_name">Nombre de estilo</string>
     <string name="pv_reformat_titles_prefixes">el|El|la|La|lo|Lo|los|Los|las|Las|un|Un|una|Una|unos|Unos|unas|Unas</string>
+    <string name="pv_reformat_publisher_prefixes">el|El|la|La|lo|Lo|los|Los|las|Las|un|Un|una|Una|unos|Unos|unas|Unas</string>
     <string name="size_hidden">Oculto</string>
     <string name="size_large">Grande</string>
     <string name="size_medium">Medio</string>

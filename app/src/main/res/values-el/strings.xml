@@ -587,6 +587,7 @@
     <string name="pv_bob_header_nr_of_books">Εμφάνιση αριθμού βιβλίων</string>
     <string name="pv_bob_header_style_name">Όνομα στυλ</string>
     <string name="pv_reformat_titles_prefixes">ο|η|το|οι|οι|τα|ένας|μια|ένα</string>
+    <string name="pv_reformat_publisher_prefixes">ο|η|το|οι|οι|τα|ένας|μια|ένα</string>
     <string name="size_hidden">Κρυμμένος</string>
     <string name="size_large">Μεγάλο</string>
     <string name="size_medium">Μεσαίο</string>

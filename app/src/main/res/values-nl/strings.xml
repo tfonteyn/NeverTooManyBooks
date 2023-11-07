@@ -619,6 +619,7 @@
     <string name="pv_bob_header_nr_of_books">Aantal boeken</string>
     <string name="pv_bob_header_style_name">Stijl naam</string>
     <string name="pv_reformat_titles_prefixes">de|De|een|Een|het|Het</string>
+    <string name="pv_reformat_publisher_prefixes">de|De|een|Een|het|Het</string>
     <string name="size_bytes">%1$.0fB</string>
     <string name="size_hidden">Verborgen</string>
     <string name="size_kilobytes">%1$.2fkB</string>
@@ -750,4 +751,6 @@
     <string name="action_edit_defaults">Standaardinstellingen bewerken</string>
     <string name="ps_sort_author_name_given_first">Sorteer eerst op de voornamen,\nbvb. „Willy Vandersteen”</string>
     <string name="ps_sort_author_name_family_first">Sorteer eerst op de achternaam,\nbvb. „Vandersteen, Willy”</string>
+    <string name="ps_publisher_name_example">Weergeven zoals gegeven,\nbvb. „De Bezige Bij”</string>
+    <string name="ps_publisher_name_example_reordered">Verplaats een lidwoord of voorvoegsel naar het einde,\nbvb. „Bezige Bij, De”</string>
 </resources>

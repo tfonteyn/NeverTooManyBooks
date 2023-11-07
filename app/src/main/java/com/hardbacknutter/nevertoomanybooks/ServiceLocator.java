@@ -33,6 +33,8 @@ import java.io.File;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
+import java.util.EnumMap;
+import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
@@ -90,6 +92,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.FieldVisibilityPreferenceFr
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocaleImpl;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderField;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.notifier.Notifier;
 import com.hardbacknutter.nevertoomanybooks.utils.notifier.NotifierImpl;
@@ -108,27 +111,21 @@ public class ServiceLocator {
     /** Either the real Application Context, or the injected context when running in unit tests. */
     @NonNull
     private final Context appContext;
-
+    @NonNull
+    private final Map<ReorderField, ReorderHelper> reorderHelpers = new EnumMap<>(
+            ReorderField.class);
     /** TODO: allow this to be injected. */
     @Nullable
     private DBHelper dbHelper;
-
     /** TODO: allow this to be injected. */
     @Nullable
     private CacheDbHelper cacheDbHelper;
-
     @Nullable
     private NetworkChecker networkChecker;
-
     @Nullable
     private StylesHelper stylesHelper;
-
     @Nullable
     private FieldVisibility fieldVisibility;
-
-    @Nullable
-    private ReorderHelper reorderHelper;
-
     @Nullable
     private Languages languages;
 
@@ -378,18 +375,23 @@ public class ServiceLocator {
     }
 
     /**
-     * Get the title/name reordering helper..
+     * Get the reordering helper for the given field.
+     *
+     * @param field to use
      *
      * @return singleton
      */
     @NonNull
-    public ReorderHelper getReorderHelper() {
-        synchronized (this) {
-            if (reorderHelper == null) {
-                reorderHelper = new ReorderHelper(this::getAppLocale);
+    public ReorderHelper getReorderHelper(@NonNull final ReorderField field) {
+        ReorderHelper instance;
+        synchronized (reorderHelpers) {
+            instance = reorderHelpers.get(field);
+            if (instance == null) {
+                instance = new ReorderHelper(field, this::getAppLocale);
+                reorderHelpers.put(field, instance);
             }
         }
-        return reorderHelper;
+        return instance;
     }
 
     /**
@@ -660,7 +662,7 @@ public class ServiceLocator {
         synchronized (this) {
             if (publisherDao == null) {
                 publisherDao = new PublisherDaoImpl(getDb(),
-                                                    this::getReorderHelper);
+                                                    () -> getReorderHelper(ReorderField.Publisher));
             }
         }
         return publisherDao;
@@ -671,7 +673,7 @@ public class ServiceLocator {
         synchronized (this) {
             if (seriesDao == null) {
                 seriesDao = new SeriesDaoImpl(getDb(),
-                                              this::getReorderHelper);
+                                              () -> getReorderHelper(ReorderField.Title));
             }
         }
         return seriesDao;
@@ -707,7 +709,7 @@ public class ServiceLocator {
         synchronized (this) {
             if (tocEntryDao == null) {
                 tocEntryDao = new TocEntryDaoImpl(getDb(),
-                                                  this::getReorderHelper,
+                                                  () -> getReorderHelper(ReorderField.Title),
                                                   this::getAuthorDao
                 );
             }
