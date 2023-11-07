@@ -113,6 +113,20 @@ public class CalibreHandler {
     }
 
     /**
+     * Check if the given book has all the Calibre keys needed.
+     *
+     * @param book to check
+     *
+     * @return {@code true} is this book <strong>is</strong> a CalibreBook
+     */
+    static boolean isCalibreBook(@NonNull final Book book) {
+        return book.contains(DBKey.CALIBRE_BOOK_ID)
+               && !book.getString(DBKey.CALIBRE_BOOK_UUID).isEmpty()
+               && !book.getString(DBKey.CALIBRE_BOOK_MAIN_FORMAT).isEmpty()
+               && book.contains(DBKey.FK_CALIBRE_LIBRARY);
+    }
+
+    /**
      * Initializer for use from within an Activity.
      *
      * @param activity the hosting Activity
@@ -188,7 +202,7 @@ public class CalibreHandler {
                               @NonNull final Menu menu,
                               @NonNull final Book book) {
 
-        if (CalibreBook.isCalibreBook(book)) {
+        if (isCalibreBook(book)) {
             menu.findItem(R.id.SUBMENU_CALIBRE).setVisible(true);
             if (CalibreContentServer.getFolderUri(context).isPresent()) {
                 // conditional

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -277,7 +280,7 @@
     <string name="lbl_bookshelf">Kitaplık</string>
     <string name="lbl_bookshelves">Kitap rafları</string>
     <string name="lbl_calibre_content_server">Calibre İçerik Sunucusu</string>
-    <string name="info_calibre_content_server_extension">Calibre içerik sunucusu uzantısı kurulu değil.</string>
+    <string name="info_calibre_content_server_extension">Calibre içerik sunucusu uzantısı kurulu değil. Sanal kütüphaneler kullanılamayacaktır.</string>
     <string name="lbl_certificate_ca">CA sertifikası</string>
     <string name="lbl_certificates">Sertifikalar</string>
     <string name="lbl_clone_style">Biçemi çoğalt</string>
@@ -754,4 +757,5 @@
     <string name="error_invalid_url">Geçersiz adres (URL)</string>
     <string name="lbl_certificate_validity_period">Geçerlilik: %1$s - %2$s</string>
     <string name="lbl_reading">Okunuyor</string>
+    <string name="a_space_b">%1$s %2$s</string>
 </resources>

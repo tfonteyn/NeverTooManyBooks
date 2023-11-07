@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -33,6 +33,23 @@
         style="@style/TopCentered"
         >
 
+        <!-- actual text will have a 'help' url embedded -->
+        <TextView
+            android:id="@+id/inf_ext_not_installed"
+            style="@style/Text.Error"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:layout_marginEnd="@dimen/field_margin_end"
+            android:layout_marginTop="@dimen/section_margin_top"
+            android:drawableStart="@drawable/ic_baseline_warning_24"
+            android:drawablePadding="@dimen/field_margin_inline"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible"
+            tools:text="@string/info_calibre_content_server_extension"
+            tools:ignore="UseCompatTextViewDrawableXml" />
+
         <TextView
             android:id="@+id/header"
             style="@style/Text.Header"
@@ -40,18 +57,8 @@
             android:layout_height="wrap_content"
             android:text="@string/lbl_library"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/inf_ext_not_installed"
             tools:ignore="UseCompatTextViewDrawableXml"
-            />
-
-        <Button
-            android:id="@+id/inf_ext_not_installed"
-            style="@style/Button.InfoPopup"
-            android:contentDescription="@string/info_calibre_content_server_extension"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@id/header"
-            app:layout_constraintStart_toEndOf="@id/header"
-            tools:visibility="visible"
             />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -119,7 +126,7 @@
             />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/virtualLibraries"
+            android:id="@+id/virtual_libraries"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_margin="@dimen/container_margin"

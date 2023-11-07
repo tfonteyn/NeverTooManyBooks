@@ -36,6 +36,8 @@
             translatable="false">https://github.com/tfonteyn/NeverTooManyBooks</string>
     <string name="github_help_url"
             translatable="false">https://github.com/tfonteyn/NeverTooManyBooks/wiki</string>
+    <string name="github_help_calibre_url"
+            translatable="false">https://github.com/tfonteyn/NeverTooManyBooks/wiki#calibre</string>
     <string name="github_issues_url"
             translatable="false">https://github.com/tfonteyn/NeverTooManyBooks/issues</string>
 

@@ -69,7 +69,7 @@ class SingleFileDownloadTask
         this.folder = folder;
 
         if (BuildConfig.DEBUG /* always */) {
-            if (!CalibreBook.isCalibreBook(book)) {
+            if (!CalibreHandler.isCalibreBook(book)) {
                 throw new IllegalArgumentException("Missing Calibre keys");
             }
         }

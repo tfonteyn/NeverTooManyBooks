@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -274,7 +277,7 @@
     <string name="lbl_bookshelf">Biblioteca</string>
     <string name="lbl_bookshelves">Biblioteche</string>
     <string name="lbl_calibre_content_server">Server di contenuti Calibre</string>
-    <string name="info_calibre_content_server_extension">L’estensione del server dei contenuti Calibre non è installata.</string>
+    <string name="info_calibre_content_server_extension">Calibre content server-extensie is niet geïnstalleerd. Virtuele bibliotheken zijn niet beschikbaar.</string>
     <string name="lbl_certificate_ca">Certificato CA</string>
     <string name="lbl_certificates">Certificati</string>
     <string name="lbl_clone_style">Duplica stile</string>
@@ -748,4 +751,5 @@
     <string name="error_invalid_url">Indirizzo (URL) non valido</string>
     <string name="lbl_certificate_validity_period">Validità: %1$s - %2$s</string>
     <string name="lbl_reading">In lettura</string>
+    <string name="a_space_b">%1$s %2$s</string>
 </resources>
