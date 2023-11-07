@@ -1,6 +1,16 @@
 Installing the Calibre extension:
 
-Edit  /usr/lib/calibre/calibre/srv/ajax.py, and look for the line
+=== Windows ===
+
+The standard binary installation of Calibre cannot be modified.
+To go ahead with the below modifications, you will need to install a developer version.
+See https://manual.calibre-ebook.com/develop.html on how to do this.
+
+Then search your installation for the "ajax.py" file and continue below.
+
+=== Linux ===
+
+Edit  the file "/usr/lib/calibre/calibre/srv/ajax.py", and look for the line
 
     from calibre.srv.errors import HTTPNotFound, BookNotFound
 
