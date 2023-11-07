@@ -260,7 +260,6 @@ public final class DBKey {
     public static final String STYLE_ROW_USES_PREF_HEIGHT = "row_pref_height";
     public static final String STYLE_AUTHOR_SORT_BY_GIVEN_NAME = "author_sort_gn";
     public static final String STYLE_AUTHOR_SHOW_BY_GIVEN_NAME = "author_show_gn";
-    public static final String STYLE_PUBLISHER_SHOW_REORDERED = "show_reorder_pub_name";
     public static final String STYLE_TITLE_SHOW_REORDERED = "show_reorder_title";
     /**
      * @see com.hardbacknutter.nevertoomanybooks.booklist.style.Style.TextScale

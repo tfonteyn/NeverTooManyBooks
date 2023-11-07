@@ -94,7 +94,7 @@ public abstract class BaseStyle
 
     /** Configuration for the fields shown on the given {@link FieldVisibility.Screen}. */
     @NonNull
-    protected final Map<FieldVisibility.Screen, FieldVisibility> fieldVisibility =
+    final Map<FieldVisibility.Screen, FieldVisibility> fieldVisibility =
             new EnumMap<>(FieldVisibility.Screen.class);
 
     /**
@@ -149,7 +149,6 @@ public abstract class BaseStyle
     private boolean sortAuthorByGivenName;
     /** Local override. */
     private boolean showAuthorByGivenName;
-    private boolean showReorderedPublisherName;
     private boolean showReorderedTitle;
 
 
@@ -227,7 +226,6 @@ public abstract class BaseStyle
         sortAuthorByGivenName = rowData.getBoolean(DBKey.STYLE_AUTHOR_SORT_BY_GIVEN_NAME);
 
         showAuthorByGivenName = rowData.getBoolean(DBKey.STYLE_AUTHOR_SHOW_BY_GIVEN_NAME);
-        showReorderedPublisherName = rowData.getBoolean(DBKey.STYLE_PUBLISHER_SHOW_REORDERED);
         showReorderedTitle = rowData.getBoolean(DBKey.STYLE_TITLE_SHOW_REORDERED);
 
         // groups
@@ -280,7 +278,6 @@ public abstract class BaseStyle
 
         sortAuthorByGivenName = from.isSortAuthorByGivenName();
         showAuthorByGivenName = from.isShowAuthorByGivenName();
-        showReorderedPublisherName = from.isShowReorderedPublisherName();
         showReorderedTitle = from.isShowReorderedTitle();
     }
 
@@ -400,20 +397,11 @@ public abstract class BaseStyle
     }
 
     @Override
-    public boolean isShowReorderedPublisherName() {
-        return showReorderedPublisherName;
-    }
-
-    public void setShowReorderedPublisherName(boolean value) {
-        showReorderedPublisherName = value;
-    }
-
-    @Override
     public boolean isShowReorderedTitle() {
         return showReorderedTitle;
     }
 
-    public void setShowReorderedTitle(boolean value) {
+    public void setShowReorderedTitle(final boolean value) {
         showReorderedTitle = value;
     }
 
@@ -690,7 +678,6 @@ public abstract class BaseStyle
                && textScale == style.textScale
 
                && showAuthorByGivenName == style.showAuthorByGivenName
-               && showReorderedPublisherName == style.showReorderedPublisherName
                && showReorderedTitle == style.showReorderedTitle
                && sortAuthorByGivenName == style.sortAuthorByGivenName
 
@@ -712,7 +699,6 @@ public abstract class BaseStyle
                             textScale,
 
                             showAuthorByGivenName,
-                            showReorderedPublisherName,
                             showReorderedTitle,
 
                             sortAuthorByGivenName,
@@ -741,7 +727,6 @@ public abstract class BaseStyle
 
                + ", sortAuthorByGivenName=" + sortAuthorByGivenName
                + ", showAuthorByGivenName=" + showAuthorByGivenName
-               + ", showReorderedPublisherName=" + showReorderedPublisherName
                + ", showReorderedTitle=" + showReorderedTitle
 
                + ", fieldVisibility=" + fieldVisibility

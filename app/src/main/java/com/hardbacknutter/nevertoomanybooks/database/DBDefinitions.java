@@ -422,7 +422,6 @@ public final class DBDefinitions {
     public static final Domain DOM_STYLE_ROW_USES_PREF_HEIGHT;
     public static final Domain DOM_STYLE_AUTHOR_SORT_BY_GIVEN_NAME;
     public static final Domain DOM_STYLE_AUTHOR_SHOW_BY_GIVEN_NAME;
-    public static final Domain DOM_STYLE_PUBLISHER_SHOW_REORDERED;
     public static final Domain DOM_STYLE_TITLE_SHOW_REORDERED;
     public static final Domain DOM_STYLE_TEXT_SCALE;
     public static final Domain DOM_STYLE_COVER_SCALE;
@@ -1233,13 +1232,6 @@ public final class DBDefinitions {
                         .withDefault(false)
                         .build();
 
-        DOM_STYLE_PUBLISHER_SHOW_REORDERED =
-                new Domain.Builder(DBKey.STYLE_PUBLISHER_SHOW_REORDERED,
-                                   SqLiteDataType.Boolean)
-                        .notNull()
-                        .withDefault(false)
-                        .build();
-
         DOM_STYLE_TITLE_SHOW_REORDERED =
                 new Domain.Builder(DBKey.STYLE_TITLE_SHOW_REORDERED,
                                    SqLiteDataType.Boolean)
@@ -1308,7 +1300,6 @@ public final class DBDefinitions {
                             DOM_STYLE_ROW_USES_PREF_HEIGHT,
                             DOM_STYLE_AUTHOR_SORT_BY_GIVEN_NAME,
                             DOM_STYLE_AUTHOR_SHOW_BY_GIVEN_NAME,
-                            DOM_STYLE_PUBLISHER_SHOW_REORDERED,
                             DOM_STYLE_TITLE_SHOW_REORDERED,
                             DOM_STYLE_TEXT_SCALE,
                             DOM_STYLE_COVER_SCALE,

@@ -430,7 +430,7 @@ public class Series
                            @NonNull final Style style) {
 
         final String label;
-        if (style.isShowReorderedPublisherName()) {
+        if (style.isShowReorderedTitle()) {
             final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
             // Using the locale here is overkill;  see #getLocale(..)
             label = reorderHelper.reorder(context, title);

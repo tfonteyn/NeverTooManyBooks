@@ -117,7 +117,6 @@ public class StyleDaoImpl
                 + ',' + DBKey.STYLE_AUTHOR_SORT_BY_GIVEN_NAME
 
                 + ',' + DBKey.STYLE_AUTHOR_SHOW_BY_GIVEN_NAME
-                + ',' + DBKey.STYLE_PUBLISHER_SHOW_REORDERED
                 + ',' + DBKey.STYLE_TITLE_SHOW_REORDERED
 
                 + ',' + DBKey.STYLE_DETAILS_SHOW_FIELDS
@@ -226,7 +225,6 @@ public class StyleDaoImpl
         stmt.bindBoolean(++c, style.isSortAuthorByGivenName());
 
         stmt.bindBoolean(++c, style.isShowAuthorByGivenName());
-        stmt.bindBoolean(++c, style.isShowReorderedPublisherName());
         stmt.bindBoolean(++c, style.isShowReorderedTitle());
 
         stmt.bindLong(++c, style.getFieldVisibilityValue(FieldVisibility.Screen.Detail));
@@ -343,7 +341,6 @@ public class StyleDaoImpl
                    style.isSortAuthorByGivenName());
 
             cv.put(DBKey.STYLE_AUTHOR_SHOW_BY_GIVEN_NAME, style.isShowAuthorByGivenName());
-            cv.put(DBKey.STYLE_PUBLISHER_SHOW_REORDERED, style.isShowReorderedPublisherName());
             cv.put(DBKey.STYLE_TITLE_SHOW_REORDERED, style.isShowReorderedTitle());
 
             cv.put(DBKey.STYLE_DETAILS_SHOW_FIELDS,

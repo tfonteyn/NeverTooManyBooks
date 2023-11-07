@@ -227,8 +227,6 @@ public interface Style {
      */
     boolean isShowAuthorByGivenName();
 
-    boolean isShowReorderedPublisherName();
-
     boolean isShowReorderedTitle();
 
     /**

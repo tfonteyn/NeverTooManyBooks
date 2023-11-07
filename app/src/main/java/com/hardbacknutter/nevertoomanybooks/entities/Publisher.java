@@ -134,7 +134,9 @@ public class Publisher
                            @Nullable final Details details,
                            @NonNull final Style style) {
 
-        if (style.isShowReorderedPublisherName()) {
+        // yes, we're using the 'title'. Adding specific publisher logic was
+        // to much overhead for a presumably little used feature
+        if (style.isShowReorderedTitle()) {
             final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
             // Using the locale here is overkill;  see #getLocale(..)
             return reorderHelper.reorder(context, name);

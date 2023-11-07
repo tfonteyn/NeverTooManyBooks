@@ -145,8 +145,6 @@ public class StyleCoder
 
         settings.put(StyleDataStore.PK_SHOW_AUTHOR_NAME_GIVEN_FIRST,
                      style.isShowAuthorByGivenName());
-        settings.put(StyleDataStore.PK_SHOW_PUBLISHER_NAME_REORDERED,
-                     style.isShowReorderedPublisherName());
         settings.put(StyleDataStore.PK_SHOW_TITLES_REORDERED,
                      style.isShowReorderedTitle());
 
@@ -299,10 +297,6 @@ public class StyleCoder
         if (source.has(StyleDataStore.PK_SHOW_AUTHOR_NAME_GIVEN_FIRST)) {
             style.setShowAuthorByGivenName(
                     source.getBoolean(StyleDataStore.PK_SHOW_AUTHOR_NAME_GIVEN_FIRST));
-        }
-        if (source.has(StyleDataStore.PK_SHOW_PUBLISHER_NAME_REORDERED)) {
-            style.setShowReorderedPublisherName(
-                    source.getBoolean(StyleDataStore.PK_SHOW_PUBLISHER_NAME_REORDERED));
         }
         if (source.has(StyleDataStore.PK_SHOW_TITLES_REORDERED)) {
             style.setShowReorderedTitle(

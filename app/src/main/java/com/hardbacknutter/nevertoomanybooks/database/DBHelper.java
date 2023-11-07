@@ -738,7 +738,6 @@ public class DBHelper
         if (oldVersion < 28) {
             TBL_BOOKLIST_STYLES.alterTableAddColumns(
                     db,
-                    DBDefinitions.DOM_STYLE_PUBLISHER_SHOW_REORDERED,
                     DBDefinitions.DOM_STYLE_TITLE_SHOW_REORDERED);
 
             final int value =
@@ -787,15 +786,12 @@ public class DBHelper
     /**
      * A garbage bin with code used only during upgrades.
      */
-    public static final class LegacyUpgrades {
+    private static final class LegacyUpgrades {
 
         private static final String SHOW_TITLE_REORDERED = "show.title.reordered";
         private static final String FIELDS_VISIBILITY_KEYS = "fields.visibility.";
         private static final String SHOW_AUTHOR_NAME_GIVEN_FIRST = "show.author.name.given_first";
         private static final String SORT_AUTHOR_NAME_GIVEN_FIRST = "sort.author.name.given_first";
-
-        private LegacyUpgrades() {
-        }
 
         private static void removeDuplicateAuthorsV23(@NonNull final SQLiteDatabase db) {
 

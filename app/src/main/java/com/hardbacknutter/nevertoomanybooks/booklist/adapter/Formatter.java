@@ -129,7 +129,9 @@ class Formatter
                 if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_publisher);
 
-                } else if (style.isShowReorderedPublisherName()) {
+                    // yes, we're using the 'title'. Adding specific publisher logic was
+                    // to much overhead for a presumably little used feature
+                } else if (style.isShowReorderedTitle()) {
                     // We don't have full Objects here for Series/Publisher so we can't use
                     // their methods for auto-reordering.
                     return serviceLocator.getReorderHelper()

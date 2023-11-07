@@ -52,8 +52,6 @@ public interface WritableStyle
      */
     void setShowAuthorByGivenName(boolean value);
 
-    void setShowReorderedPublisherName(boolean value);
-
     void setShowReorderedTitle(boolean value);
 
     /**
