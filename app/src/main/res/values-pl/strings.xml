@@ -590,8 +590,8 @@
     <string name="pt_ui_system_locale">Język systemu</string>
     <string name="pt_ui_theme">Motyw</string>
     <string name="pt_website_search_order_and_enable">Priorytetowe, włącz i wyłącz</string>
-    <string name="ps_show_author_name_family_first">Wyświetl najpierw nazwisko rodowe.\\nnp. „Lem, Stanisław”</string>
-    <string name="ps_show_author_name_given_first">Wyświetlanie z podanymi imionami w pierwszej kolejności.\\nnp. „Stanisław Lem”</string>
+    <string name="ps_show_author_name_family_first">Wyświetl najpierw nazwisko rodowe,\nnp. „Lem, Stanisław”</string>
+    <string name="ps_show_author_name_given_first">Wyświetlanie z podanymi imionami w pierwszej kolejności,\nnp. „Stanisław Lem”</string>
     <string name="ps_bob_books_under_multiple_each_author">Pod każdym autor</string>
     <string name="ps_bob_books_under_multiple_each_publisher">pod każdym wydawcą</string>
     <string name="ps_bob_books_under_multiple_each_series">Pod każdym seria</string>
@@ -755,9 +755,9 @@
     <string name="pe_list">Lista</string>
     <string name="pe_grid">Siatka</string>
     <!-- NOT APPLICABLE FOR BOOKS IN POLISH. -->
-    <string name="ps_show_titles_reordered_on">Dotyczy tylko języków, w których używane są przedimki. Przykład w języku angielskim: „title of a book, The”</string>
+    <string name="ps_show_titles_reordered_on">Dotyczy tylko języków, w których używane są przedimki.\nPrzykład w języku angielskim: „Lord of The Rings, The”</string>
     <!-- NOT APPLICABLE FOR BOOKS IN POLISH. -->
-    <string name="ps_show_titles_reordered_off">Dotyczy tylko języków, w których używane są przedimki. Przykład w języku angielskim: „The title of a book”</string>
+    <string name="ps_show_titles_reordered_off">Dotyczy tylko języków, w których używane są przedimki.\nPrzykład w języku angielskim: „The Lord of The Rings”</string>
     <!-- NOT APPLICABLE FOR BOOKS IN POLISH. MUST be set to a single vertical bar character. -->
     <string name="pv_reformat_titles_prefixes">"|"</string>
     <string name="pt_bob_cover_click">Stuknięcie obrazu okładki.</string>
@@ -770,6 +770,6 @@
     <string name="lbl_certificate_validity_period">Ważność: %1$s - %2$s</string>
     <string name="lbl_reading">Czytane</string>
     <string name="action_edit_defaults">Edycja ustawień domyślnych</string>
-    <string name="ps_sort_author_name_given_first">Sortuj według imion w pierwszej kolejności.\\nnp. „Stanisław Lem”</string>
-    <string name="ps_sort_author_name_family_first">Sortuj według nazwiska w pierwszej kolejności.\\nnp. „Lem, Stanisław”</string>
+    <string name="ps_sort_author_name_given_first">Sortuj według imion w pierwszej kolejności,\nnp. „Stanisław Lem”</string>
+    <string name="ps_sort_author_name_family_first">Sortuj według nazwiska w pierwszej kolejności,\nnp. „Lem, Stanisław”</string>
 </resources>

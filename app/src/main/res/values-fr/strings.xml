@@ -564,9 +564,9 @@
     <string name="pt_search_uses_publisher">La recherche utilise l’éditeur</string>
     <string name="X_pt_author_name_formatting">Formatage du nom de l’auteur</string>
     <string name="pt_show_title_reordered">Afficher les titres en tant que…</string>
-    <string name="ps_show_titles_reordered_off">Le titre</string>
+    <string name="ps_show_titles_reordered_off">Afficher comme indiqué,\npar exemple « Le Seigneur des anneaux »</string>
     <string name="error_type_not_supported">Type non pris en charge : %1$s …</string>
-    <string name="ps_show_titles_reordered_on">titre, Le</string>
+    <string name="ps_show_titles_reordered_on">Déplacer un article de tête à la fin,\npar exemple « Seigneur des anneaux, Le »</string>
     <string name="X_pt_sort_author_name_given_first">Tri par nom d’auteur</string>
     <string name="pt_sort_title_reordered">Trier les titres par</string>
     <string name="pt_cover_undo_enabled">Annulation des opérations sur les couvertures de livres</string>
@@ -578,8 +578,8 @@
     <string name="pt_ui_system_locale">Langue du système</string>
     <string name="pt_ui_theme">Thema</string>
     <string name="pt_website_search_order_and_enable">Priorité, activer et désactiver</string>
-    <string name="ps_show_author_name_family_first">Afficher le nom de famille en premier.\\npar exemple « Verne, Jules »</string>
-    <string name="ps_show_author_name_given_first">Afficher les prénoms en premier.\\npar exemple « Jules Verne »</string>
+    <string name="ps_show_author_name_family_first">Afficher le nom de famille en premier,\npar exemple « Verne, Jules »</string>
+    <string name="ps_show_author_name_given_first">Afficher les prénoms en premier,\npar exemple « Jules Verne »</string>
     <string name="ps_bob_books_under_multiple_each_author">Sous chaque auteur</string>
     <string name="ps_bob_books_under_multiple_each_publisher">sous chaque éditeur</string>
     <string name="ps_bob_books_under_multiple_each_series">Sous chaque séries</string>
@@ -590,7 +590,8 @@
     <string name="pv_bob_header_nr_of_books">Montrer le nombre de livres</string>
     <string name="pv_bob_header_style_name">Nom du style</string>
     <!-- use the default single quote character and NOT the stylized! -->
-    <string name="pv_reformat_titles_prefixes">le|Le|la|La|les|Les|l\'|L\'|un|Un|une|Une</string>
+    <string name="pv_reformat_titles_prefixes"
+            tools:ignore="TypographyQuotes">le|Le|la|La|les|Les|l\'|L\'|un|Un|une|Une</string>
     <string name="size_hidden">Caché</string>
     <string name="size_large">Grand</string>
     <string name="size_medium">Moyen</string>
@@ -616,7 +617,7 @@
     <string name="tip_autorotate_camera_images">Si vous devez systematiquement tourner vos photos dans le même sens, envisagez d’autoriser la rotation automatique en changeant vos paramètres.</string>
     <string name="tip_book_list">Cliquez sur un livre vous montrera les détails du livre, un appui long sur un livre dans la liste vous donnera d’autres options.</string>
     <string name="tip_book_search_by_text">L’ajout de livres par ISBN est plus précis que par auteur ou titre, et généralement préférable. Rappelez-vous qu’il est parfois possible de trouver le bon code barre à l’intérieur de la couverture.</string>
-    <string name="tip_booklist_style_groups">Cet écran permet de modifier la hiérarchie des groupes pour un style spécifique. Une \"coche\" indique que le groupe sera affiché dans la liste, une \"décoche\" le cache et vice versa.  Vous pouvez réorganiser la hiérarchie en faisant glisser l\'icône située à l\'extrémité de chaque ligne vers le haut ou vers le bas.</string>
+    <string name="tip_booklist_style_groups">Cet écran permet de modifier la hiérarchie des groupes pour un style spécifique. Une « coche » indique que le groupe sera affiché dans la liste, une « décoche » le cache et vice versa.  Vous pouvez réorganiser la hiérarchie en faisant glisser l\'icône située à l\'extrémité de chaque ligne vers le haut ou vers le bas.</string>
     <string name="tip_booklist_style_properties">Cet écran permet de définir les caractéristiques d\'un style spécifique. Vous pouvez changer le nom, modifier les groupes pour changer la hiérarchie et ajuster une variété d\'autres préférences pour construire un style que vous trouvez utile.</string>
     <string name="tip_booklist_styles_editor" tools:ignore="TypographyQuotes">Vous pouvez utiliser cet écran pour personnaliser la liste des styles qui seront affichés dans votre menu de styles par défaut. Une coche indique que le style sera affiché dans la liste, décochez-la pour le masquer et inversement. Si aucun style n’est coché, tous les styles seront affichés. Vous pouvez réorganiser la hiérarchie en faisant glisser l’icône située à l’extrême droite de chaque ligne. Un appui prolongé n’importe où sur une ligne vous permettra d’éditer ou de cloner les détails d’un style spécifique. Si vous avez cloné un style et changé d’avis, vous devrez le supprimer vous-même.</string>
     <string name="tip_dialog_title">Astuce</string>
@@ -753,6 +754,6 @@
     <string name="lbl_certificate_validity_period">Validité : %1$s - %2$s</string>
     <string name="lbl_reading">En cours</string>
     <string name="action_edit_defaults">Modifier les paramètres par défaut</string>
-    <string name="ps_sort_author_name_given_first">Trier sur les prénoms en premier.\\npar exemple « Jules Verne »</string>
-    <string name="ps_sort_author_name_family_first">Trier sur le nom de famille en premier.\\npar exemple « Verne, Jules »</string>
+    <string name="ps_sort_author_name_given_first">Trier sur les prénoms en premier,\npar exemple « Jules Verne »</string>
+    <string name="ps_sort_author_name_family_first">Trier sur le nom de famille en premier,\npar exemple « Verne, Jules »</string>
 </resources>

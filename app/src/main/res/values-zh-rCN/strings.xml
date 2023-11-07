@@ -319,9 +319,9 @@
     <string name="pe_list">列表</string>
     <string name="pe_grid">网格</string>
     <!-- NOT APPLICABLE FOR BOOKS IN CHINESE. -->
-    <string name="ps_show_titles_reordered_on">仅适用于使用冠词的语言。 英语示例：“title of a book, The”。</string>
+    <string name="ps_show_titles_reordered_on">仅适用于使用冠词的语言。\n英语示例：“Lord of The Rings, The”。</string>
     <!-- NOT APPLICABLE FOR BOOKS IN CHINESE. -->
-    <string name="ps_show_titles_reordered_off">仅适用于使用冠词的语言。 英语示例：“The title of a book”。</string>
+    <string name="ps_show_titles_reordered_off">仅适用于使用冠词的语言。\n英语示例：“The Lord of The Rings”。</string>
     <!-- NOT APPLICABLE FOR BOOKS IN CHINESE. MUST be set to a single vertical bar character. -->
     <string name="pv_reformat_titles_prefixes">"|"</string>
     <string name="X_style_type_defaults">风格默认值</string>

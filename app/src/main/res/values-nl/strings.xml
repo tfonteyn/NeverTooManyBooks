@@ -558,8 +558,8 @@
     <string name="progress_msg_x_updated">%1$d bijgewerkt</string>
     <string name="progress_msg_x_skipped">%1$d overgeslagen</string>
     <string name="progress_msg_x_deleted">%1$d verwijderd</string>
-    <string name="ps_show_author_name_family_first">Weergeven met de achternaam eerst.\\nbvb. „Reve, Gerard”</string>
-    <string name="ps_show_author_name_given_first">Weergeven met de voornamen eerst.\\nbvb. „Gerard Reve”</string>
+    <string name="ps_show_author_name_family_first">Weergeven met de achternaam eerst,\nbvb. „Vandersteen, Willy”</string>
+    <string name="ps_show_author_name_given_first">Weergeven met de voornamen eerst,\nbvb. „Willy Vandersteen”</string>
     <string name="ps_bob_books_under_multiple_each_author">Onder elke auteur</string>
     <string name="ps_bob_books_under_multiple_each_publisher">onder elke uitgever</string>
     <string name="ps_bob_books_under_multiple_each_series">Onder elke reeks</string>
@@ -567,9 +567,9 @@
     <string name="ps_bob_books_under_multiple_primary_publisher_only">alleen onder hun primaire uitgever</string>
     <string name="ps_bob_books_under_multiple_primary_series_only">Alleen onder primaire reeks</string>
     <string name="ps_manage_fields">Geselecteerde velden zijn zichtbaar in de toevoegen/bewerken boekschermen. Ongeselecteerde velden zijn verborgen.</string>
-    <string name="ps_show_titles_reordered_off">De titel</string>
+    <string name="ps_show_titles_reordered_off">Weergeven zoals gegeven,\nbvb. „De schat van Beersel”</string>
     <string name="error_type_not_supported">Type niet ondersteund: %1$s …</string>
-    <string name="ps_show_titles_reordered_on">titel, De</string>
+    <string name="ps_show_titles_reordered_on">Verplaats een lidwoord naar het einde,\nbvb. „schat van Beersel, De”</string>
     <string name="pt_allow_editing_external_id">Sta bewerken van website-boek-ID toe</string>
     <string name="pt_allow_metered_network_data">Sta mobiel dataverbruik toe</string>
     <string name="pt_barcode_scanner">Barcode scanner</string>
@@ -748,6 +748,6 @@
     <string name="lbl_certificate_validity_period">Geldigheid: %1$s - %2$s</string>
     <string name="lbl_reading">Aan het lezen</string>
     <string name="action_edit_defaults">Standaardinstellingen bewerken</string>
-    <string name="ps_sort_author_name_given_first">Sorteer eerst op de voornamen.\\nbvb. „Gerard Reve”</string>
-    <string name="ps_sort_author_name_family_first">Sorteer eerst op de achternaam.\\nbvb. „Reve, Gerard”</string>
+    <string name="ps_sort_author_name_given_first">Sorteer eerst op de voornamen,\nbvb. „Willy Vandersteen”</string>
+    <string name="ps_sort_author_name_family_first">Sorteer eerst op de achternaam,\nbvb. „Vandersteen, Willy”</string>
 </resources>

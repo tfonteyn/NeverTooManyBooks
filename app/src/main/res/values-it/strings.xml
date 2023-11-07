@@ -563,9 +563,9 @@
     <string name="pt_search_uses_publisher">La ricerca utilizza editore</string>
     <string name="X_pt_author_name_formatting">Formattazione del nome dell’autore</string>
     <string name="pt_show_title_reordered">Mostra titoli come…</string>
-    <string name="ps_show_titles_reordered_off">Il titolo</string>
+    <string name="ps_show_titles_reordered_off">Visualizzazione come dato,\nad esempio «IIl Signore degli Anelli»</string>
     <string name="error_type_not_supported">Tipo non supportato: %1$s …</string>
-    <string name="ps_show_titles_reordered_on">titolo, Il</string>
+    <string name="ps_show_titles_reordered_on">Spostare un articolo iniziale alla fine,\nad esempio «ignore degli Anelli, Il»</string>
     <string name="X_pt_sort_author_name_given_first">Ordinamento dei nomi degli autori</string>
     <string name="pt_sort_title_reordered">Ordina titoli per</string>
     <string name="pt_cover_undo_enabled">Annullare le operazioni sulle copertine dei libri</string>
@@ -577,8 +577,8 @@
     <string name="pt_ui_system_locale">Lingua di sistema</string>
     <string name="pt_ui_theme">Tema</string>
     <string name="pt_website_search_order_and_enable">Priorità, abilita e disabilita</string>
-    <string name="ps_show_author_name_family_first">Visualizzare prima il nome della famiglia.\\nes. «Alighieri, Dante»</string>
-    <string name="ps_show_author_name_given_first">Visualizzare prima i nomi.\\nes. «Dante Alighieri»</string>
+    <string name="ps_show_author_name_family_first">Visualizzare prima il nome della famiglia,\nes. «Alighieri, Dante»</string>
+    <string name="ps_show_author_name_given_first">Visualizzare prima i nomi,\nes. «Dante Alighieri»</string>
     <string name="ps_bob_books_under_multiple_each_author">Sotto ciascuno autore</string>
     <string name="ps_bob_books_under_multiple_each_publisher">sotto ciascun editore</string>
     <string name="ps_bob_books_under_multiple_each_series">Sotto ciascuno serie</string>
@@ -753,6 +753,6 @@
     <string name="lbl_certificate_validity_period">Validità: %1$s - %2$s</string>
     <string name="lbl_reading">In lettura</string>
     <string name="action_edit_defaults">Modifica delle impostazioni predefinite</string>
-    <string name="ps_sort_author_name_given_first">Ordinamento in base ai nomi.\\nes. «Dante Alighieri»</string>
-    <string name="ps_sort_author_name_family_first">Ordinamento in base al nome della famiglia.\\nes. «Alighieri, Dante»</string>
+    <string name="ps_sort_author_name_given_first">Ordinamento in base ai nomi,\nes. «Dante Alighieri»</string>
+    <string name="ps_sort_author_name_family_first">Ordinamento in base al nome della famiglia,\nes. «Alighieri, Dante»</string>
 </resources>

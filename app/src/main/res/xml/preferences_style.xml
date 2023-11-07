@@ -268,17 +268,6 @@
         tools:isPreferenceVisible="true"
         >
 
-        <!-- TODO: reordering publisher names is hidden / disabled for now. -->
-        <SwitchPreference
-            app:isPreferenceVisible="false"
-            android:defaultValue="false"
-            android:icon="@drawable/ic_baseline_reorder_24"
-            android:key="show.publisher.name.reordered"
-            android:summaryOff="@string/ps_publisher_name_example"
-            android:summaryOn="@string/ps_publisher_name_example_reordered"
-            android:title="@string/pc_formatting"
-            />
-
         <!-- Enabled if Group 'Publisher' is present in this style. -->
         <SwitchPreference
             android:defaultValue="false"

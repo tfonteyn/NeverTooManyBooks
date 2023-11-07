@@ -577,8 +577,8 @@
     <string name="pt_ui_system_locale">Sistem dili</string>
     <string name="pt_ui_theme">Tema</string>
     <string name="pt_website_search_order_and_enable">Öncelikli, etkinleştir ve devre dışı bırak</string>
-    <string name="ps_show_author_name_family_first">Önce aile adı ile görüntüleyin.\\nÖrneğin “Nesin, Aziz”</string>
-    <string name="ps_show_author_name_given_first">Önce verilen adlarla görüntüleyin.\\nÖrneğin “Aziz Nesin”</string>
+    <string name="ps_show_author_name_family_first">Önce aile adı ile görüntüleyin,\nÖrneğin “Nesin, Aziz”</string>
+    <string name="ps_show_author_name_given_first">Önce verilen adlarla görüntüleyin,\nÖrneğin “Aziz Nesin”</string>
     <string name="ps_bob_books_under_multiple_each_author">Her yazar altında</string>
     <string name="ps_bob_books_under_multiple_each_publisher">her yayıncının altında</string>
     <string name="ps_bob_books_under_multiple_each_series">Her dizi altında</string>
@@ -711,9 +711,9 @@
     <string name="lbl_standardize">Standardize et</string>
     <string name="lbl_author_pseudonym_of_X">ta. %1$s</string>
     <!-- NOT APPLICABLE FOR BOOKS IN TURKISH. -->
-    <string name="ps_show_titles_reordered_on">Yalnızca makalelerin kullanıldığı diller için geçerlidir. İngilizce örnek: “title of a book, The”.</string>
+    <string name="ps_show_titles_reordered_on">Yalnızca makalelerin kullanıldığı diller için geçerlidir.\nİngilizce örnek: “Lord of The Rings, The”.</string>
     <!-- NOT APPLICABLE FOR BOOKS IN TURKISH. -->
-    <string name="ps_show_titles_reordered_off">Yalnızca makalelerin kullanıldığı diller için geçerlidir. İngilizce örnek: “The title of a book”.</string>
+    <string name="ps_show_titles_reordered_off">Yalnızca makalelerin kullanıldığı diller için geçerlidir.\nİngilizce örnek: “The Lord of The Rings”.</string>
     <!-- NOT APPLICABLE FOR BOOKS IN TURKISH. MUST be set to a single vertical bar character. -->
     <string name="pv_reformat_titles_prefixes">"|"</string>
     <string name="lbl_titles">Başlıklar</string>
@@ -757,6 +757,6 @@
     <string name="lbl_certificate_validity_period">Geçerlilik: %1$s - %2$s</string>
     <string name="lbl_reading">Okunuyor</string>
     <string name="action_edit_defaults">Varsayılan ayarları düzenleme</string>
-    <string name="ps_sort_author_name_given_first">Önce verilen isimlere göre sıralayın.\\nÖrneğin “Aziz Nesin”</string>
-    <string name="ps_sort_author_name_family_first">Önce soyadına göre sıralayın.\\nÖrneğin “Nesin, Aziz”</string>
+    <string name="ps_sort_author_name_given_first">Önce verilen isimlere göre sıralayın,\nÖrneğin “Aziz Nesin”</string>
+    <string name="ps_sort_author_name_family_first">Önce soyadına göre sıralayın,\nÖrneğin “Nesin, Aziz”</string>
 </resources>

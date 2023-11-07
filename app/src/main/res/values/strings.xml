@@ -1189,37 +1189,41 @@
     <!-- SwitchPreference title: How to sort titles. -->
     <string name="pt_sort_title_reordered">Sort titles by</string>
 
-    <!-- Preference summary: example of an 'original' title;
-         Must be translated in combination with "ps_show_titles_reordered_on".
-         https://en.wikipedia.org/wiki/Article_(grammar)#Tables
-         For languages which do not use articles, use the text:
-
-         Only applicable to languages that use articles. English example: "The title of a book"
-         -->
-    <string name="ps_show_titles_reordered_off">The title</string>
-    <!-- Preference summary: example of a reordered title;
-         Must be translated in combination with "ps_show_titles_reordered_off".
-         https://en.wikipedia.org/wiki/Article_(grammar)#Tables
-         For languages which do not use articles, use the text:
-
-         Only applicable to languages that use articles. English example: "title of a book, The"
-         -->
-    <string name="ps_show_titles_reordered_on">title, The</string>
     <!--
-     Not a preference as such.
-     These are the Locale specific title prefixes (grammar: 'article') that will be moved to
-     the end of a title, if reformatting of titles options are enabled by the user.
+         These are the Locale specific title prefixes (grammar: 'article') that will be moved to
+         the end of a title, if automatic reformatting of titles is enabled by the user.
 
-     This is case-sensitive, so each locale can decide if it's appropriate to for example
-     move a word only if it starts with an uppercase, but not for the same word starting
-     with a lowercase character.
+         This is case-sensitive, so each locale can decide if it's appropriate to for example
+         move a word only if it starts with an uppercase, but not for the same word starting
+         with a lowercase character.
 
-     If this is not applicable to a language, then this string MUST be set to a
-     single vertical bar character: "|"
+         If this is not applicable to a language, then this string MUST be set to a
+         single vertical bar character: "|"
 
-     https://en.wikipedia.org/wiki/Article_(grammar)#Tables
- . -->
+         More info on languages and their article usage can be found at
+         https://en.wikipedia.org/wiki/Article_(grammar)#Tables
+    -->
     <string name="pv_reformat_titles_prefixes">a|A|an|An|the|The</string>
+
+    <!--
+        TRANSLATORS: FIRST READ the information for the string "pv_reformat_titles_prefixes".
+
+         Example of how a title is displayed, i.e. exactly as printed on the book.
+         For languages which do not use articles, use the following text.
+         Use the book title as given IN ENGLISH.
+         ==> "Only applicable to languages that use articles. English example: \"The Lord of The Rings\""
+         -->
+    <string name="ps_show_titles_reordered_off">Display as given,\ne.g. “The Lord of The Rings”</string>
+    <!--
+        TRANSLATORS: FIRST READ the information for the string "pv_reformat_titles_prefixes".
+
+         Example of how a reordered title is displayed.
+         For languages which do not use articles, use the text.
+         Use the book title as given IN ENGLISH.
+         ==> "Only applicable to languages that use articles. English example: \"Lord of The Rings, The\""
+         -->
+    <string name="ps_show_titles_reordered_on">Move a leading article to the end,\ne.g. “Lord of The Rings, The”</string>
+
     <!-- SwitchPreference title: allow mobile network usage or limit to use wifi/ethernet only. -->
     <string name="pt_allow_metered_network_data">Allow mobile data usage</string>
     <!-- SwitchPreference - Some web sites expose their website book id.
@@ -1434,17 +1438,17 @@
 
     <!-- Preference summary strings on how to SORT an Author name.
          Translator: use your favourite Author in your country. -->
-    <string name="ps_sort_author_name_given_first">Sort on the given names first.\ne.g. “Connie Willis”</string>
+    <string name="ps_sort_author_name_given_first">Sort on the given names first,\ne.g. “Connie Willis”</string>
     <!-- Preference summary strings on how to SORT an Author name.
          Translator: use your favourite Author in your country. -->
-    <string name="ps_sort_author_name_family_first">Sort on the family name first.\n.e.g. “Willis, Connie”</string>
+    <string name="ps_sort_author_name_family_first">Sort on the family name first,\n.e.g. “Willis, Connie”</string>
 
     <!-- Preference summary strings on how to SHOW an Author name.
          Translator: use your favourite Author in your country. -->
-    <string name="ps_show_author_name_given_first">Display with the given names first.\ne.g. “Connie Willis”</string>
+    <string name="ps_show_author_name_given_first">Display with the given names first,\ne.g. “Connie Willis”</string>
     <!-- Preference summary strings on how to SHOW an Author name.
          Translator: use your favourite Author in your country. -->
-    <string name="ps_show_author_name_family_first">Display with the family name first.\n.e.g. “Willis, Connie”</string>
+    <string name="ps_show_author_name_family_first">Display with the family name first,\n.e.g. “Willis, Connie”</string>
 
 
     <!-- SwitchPreference - option title -->
@@ -1648,13 +1652,6 @@
     <string name="X_info_site_authorization_successful">%1$s authorization successful</string>
 
     <!-- endregion -->
-
-    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
-    <string name="ps_publisher_name_example"
-            translatable="false">e.g. The British Library</string>
-    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
-    <string name="ps_publisher_name_example_reordered"
-            translatable="false">e.g. British Library, The</string>
 
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="pt_normalize_series_title"

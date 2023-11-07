@@ -561,9 +561,9 @@
     <string name="pt_search_uses_publisher">Η αναζήτηση χρησιμοποιεί εκδότη</string>
     <string name="X_pt_author_name_formatting">Μορφοποίηση ονόματος συντάκτη</string>
     <string name="pt_show_title_reordered">Εμφάνιση τίτλων ως…</string>
-    <string name="ps_show_titles_reordered_off">Ο τίτλος</string>
+    <string name="ps_show_titles_reordered_off">Εμφάνιση όπως δίνεται,\nπ.χ. «Ο Άρχοντας των Δαχτυλιδιών»</string>
     <string name="error_type_not_supported">Ο τύπος δεν υποστηρίζεται: %1$s …</string>
-    <string name="ps_show_titles_reordered_on">τίτλος, Ο</string>
+    <string name="ps_show_titles_reordered_on">Μετακινήστε ένα αρχικό άρθρο στο τέλος,\nπ.χ. «Άρχοντας των Δαχτυλιδιών, Ο»</string>
     <string name="X_pt_sort_author_name_given_first">Ταξινόμηση ονόματος συγγραφέα</string>
     <string name="pt_sort_title_reordered">Ταξινόμηση τίτλων με βάση</string>
     <string name="pt_cover_undo_enabled">Αναίρεση λειτουργιών σε εξώφυλλα βιβλίων</string>
@@ -575,8 +575,8 @@
     <string name="pt_ui_system_locale">Γλώσσα συστήματος</string>
     <string name="pt_ui_theme">Θέμα</string>
     <string name="pt_website_search_order_and_enable">Προτεραιότητα, ενεργοποίηση και απενεργοποίηση</string>
-    <string name="ps_show_author_name_family_first">Εμφανίστε πρώτα το οικογενειακό όνομα.\\nγια παράδειγμα «Παλαμάς, Κωστής»</string>
-    <string name="ps_show_author_name_given_first">Εμφανίζονται πρώτα τα ονόματα.\\nγια παράδειγμα «Κωστής  Παλαμάς»</string>
+    <string name="ps_show_author_name_family_first">Εμφανίστε πρώτα το οικογενειακό όνομα,\nγια παράδειγμα «Παλαμάς, Κωστής»</string>
+    <string name="ps_show_author_name_given_first">Εμφανίζονται πρώτα τα ονόματα,\nγια παράδειγμα «Κωστής  Παλαμάς»</string>
     <string name="ps_bob_books_under_multiple_each_author">Κάτω από κάθε συντάκτης</string>
     <string name="ps_bob_books_under_multiple_each_publisher">κάτω από κάθε εκδότη</string>
     <string name="ps_bob_books_under_multiple_each_series">Κάτω από κάθε Σειρά</string>
@@ -749,6 +749,6 @@
     <string name="lbl_certificate_validity_period">Ισχύς: %1$s - %2$s</string>
     <string name="lbl_reading">Ανάγνωση</string>
     <string name="action_edit_defaults">Επεξεργασία προεπιλεγμένων ρυθμίσεων</string>
-    <string name="ps_sort_author_name_given_first">Ταξινόμηση με βάση τα προγενέστερα ονόματα.\\nγια παράδειγμα «Κωστής  Παλαμάς»</string>
-    <string name="ps_sort_author_name_family_first">Ταξινόμηση με πρώτο το επώνυμο.\\nγια παράδειγμα «Παλαμάς, Κωστής»</string>
+    <string name="ps_sort_author_name_given_first">Ταξινόμηση με βάση τα προγενέστερα ονόματα,\nγια παράδειγμα «Κωστής  Παλαμάς»</string>
+    <string name="ps_sort_author_name_family_first">Ταξινόμηση με πρώτο το επώνυμο,\nγια παράδειγμα «Παλαμάς, Κωστής»</string>
 </resources>
