@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,15 +19,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync.calibre;
 
-import androidx.annotation.NonNull;
-
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
-
 /**
  * These are the field names the Calibre Content Server uses/expects in its AJAX API.
  */
-final class CalibreBook {
+final class CalibreBookJsonKey {
 
     static final String USER_METADATA = "user_metadata";
 
@@ -54,20 +49,6 @@ final class CalibreBook {
     static final String DATE_PUBLISHED = "pubdate";
     static final String EBOOK_FORMAT = "main_format";
 
-    private CalibreBook() {
-    }
-
-    /**
-     * Check if the given book has all the Calibre keys needed.
-     *
-     * @param book to check
-     *
-     * @return {@code true} is this book <strong>is</strong> a CalibreBook
-     */
-    static boolean isCalibreBook(@NonNull final Book book) {
-        return book.contains(DBKey.CALIBRE_BOOK_ID)
-               && !book.getString(DBKey.CALIBRE_BOOK_UUID).isEmpty()
-               && !book.getString(DBKey.CALIBRE_BOOK_MAIN_FORMAT).isEmpty()
-               && book.contains(DBKey.FK_CALIBRE_LIBRARY);
+    private CalibreBookJsonKey() {
     }
 }

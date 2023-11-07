@@ -368,7 +368,7 @@ public class CalibreContentServerReader
                 // last_modified:">2021-01-15", so we do a "minusDays(1)" first
                 // Due to rounding, we might get some books we don't need, but that's ok.
                 if (syncDate != null) {
-                    query = CalibreBook.LAST_MODIFIED + ":%22%3E"
+                    query = CalibreBookJsonKey.LAST_MODIFIED + ":%22%3E"
                             + syncDate.minusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE)
                             + "%22";
                 }
@@ -458,7 +458,7 @@ public class CalibreContentServerReader
                             @NonNull final Book calibreBook)
             throws StorageException, IOException {
         try {
-            final String calibreUuid = calibreBook.getString(CalibreBook.UUID);
+            final String calibreUuid = calibreBook.getString(DBKey.CALIBRE_BOOK_UUID);
             // check if we already have the calibre book in the local database
             final long databaseBookId = calibreLibraryDao.getBookIdFromCalibreUuid(calibreUuid);
             if (databaseBookId > 0) {
@@ -475,12 +475,9 @@ public class CalibreContentServerReader
                         // Get the full local book data; overwrite it with remote data
                         // as needed, and update. We don't use a delta.
                         final Book book = Book.from(databaseBookId);
-                        // Should always be Non Null
                         final LocalDateTime localDate = book.getLastModified(dateParser);
-                        // Should not be null, but paranoia
-                        final LocalDateTime remoteDate = dateParser.parse(
-                                calibreBook.getString(CalibreBook.LAST_MODIFIED));
-
+                        final LocalDateTime remoteDate = calibreBook.getLastModified(dateParser);
+                        // Neither should be null, but paranoia
                         if (localDate != null && remoteDate != null
                             && remoteDate.isAfter(localDate)) {
 
@@ -493,7 +490,7 @@ public class CalibreContentServerReader
                                              .d(TAG, "handleBook", updateOption,
                                                 "FAIL",
                                                 "calibreUuid=" + calibreBook.getString(
-                                                        CalibreBook.UUID),
+                                                        DBKey.CALIBRE_BOOK_UUID),
                                                 "book=" + book.getId(),
                                                 book.getTitle());
                             }
@@ -506,7 +503,7 @@ public class CalibreContentServerReader
                             LoggerFactory.getLogger()
                                          .d(TAG, "handleBook", updateOption,
                                             "calibreUuid=" + calibreBook.getString(
-                                                    CalibreBook.UUID));
+                                                    DBKey.CALIBRE_BOOK_UUID));
                         }
                         break;
                     }
@@ -545,7 +542,7 @@ public class CalibreContentServerReader
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
                 LoggerFactory.getLogger()
                              .d(TAG, "updateBook", updateOption,
-                                "calibreUuid=" + calibreBook.getString(CalibreBook.UUID),
+                                "calibreUuid=" + calibreBook.getString(DBKey.CALIBRE_BOOK_UUID),
                                 "book=" + book.getId(),
                                 book.getTitle());
             }
@@ -569,7 +566,7 @@ public class CalibreContentServerReader
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
             LoggerFactory.getLogger()
                          .d(TAG, "insertBook", updateOption,
-                            "calibreUuid=" + book.getString(CalibreBook.UUID),
+                            "calibreUuid=" + book.getString(DBKey.CALIBRE_BOOK_UUID),
                             "book=" + book.getId(),
                             book.getTitle());
         }
@@ -594,56 +591,56 @@ public class CalibreContentServerReader
         final Book book = new Book();
         book.setStage(EntityStage.Stage.Dirty);
 
-        final int calibreBookId = calibreBook.getInt(CalibreBook.ID);
+        final int calibreBookId = calibreBook.getInt(CalibreBookJsonKey.ID);
         book.putInt(DBKey.CALIBRE_BOOK_ID, calibreBookId);
-        book.putString(DBKey.CALIBRE_BOOK_UUID,
-                       calibreBook.getString(CalibreBook.UUID));
+        book.putString(DBKey.CALIBRE_BOOK_UUID, calibreBook.getString(CalibreBookJsonKey.UUID));
+
         // Always add the current library; i.e. the library the book came from.
         book.setCalibreLibrary(library);
 
         // "last_modified": "2020-11-20T11:17:51+00:00",
-        final String calibreLastModified = calibreBook.getString(CalibreBook.LAST_MODIFIED);
+        final String calibreLastModified = calibreBook.getString(CalibreBookJsonKey.LAST_MODIFIED);
         final LocalDateTime lastModified = dateParser.parse(calibreLastModified);
         if (lastModified != null) {
             book.setLastModified(lastModified);
         }
 
         // paranoia ...
-        if (!calibreBook.isNull(CalibreBook.TITLE)) {
+        if (!calibreBook.isNull(CalibreBookJsonKey.TITLE)) {
             // always overwrite
             book.putString(DBKey.TITLE,
-                           calibreBook.getString(CalibreBook.TITLE));
+                           calibreBook.getString(CalibreBookJsonKey.TITLE));
         }
 
-        if (!calibreBook.isNull(CalibreBook.DESCRIPTION)) {
+        if (!calibreBook.isNull(CalibreBookJsonKey.DESCRIPTION)) {
             // always overwrite
             book.putString(DBKey.DESCRIPTION,
-                           calibreBook.getString(CalibreBook.DESCRIPTION));
+                           calibreBook.getString(CalibreBookJsonKey.DESCRIPTION));
         }
 
-        if (!calibreBook.isNull(CalibreBook.RATING)) {
-            final int rating = calibreBook.getInt(CalibreBook.RATING);
+        if (!calibreBook.isNull(CalibreBookJsonKey.RATING)) {
+            final int rating = calibreBook.getInt(CalibreBookJsonKey.RATING);
             // don't overwrite the local value with a remote 'not-set' value
             if (rating > 0) {
                 book.putFloat(DBKey.RATING, rating);
             }
         }
 
-        if (!calibreBook.isNull(CalibreBook.LANGUAGES_ARRAY)) {
+        if (!calibreBook.isNull(CalibreBookJsonKey.LANGUAGES_ARRAY)) {
             convertLanguages(calibreBook, book);
         }
 
         convertAuthors(context, calibreBook, book);
 
-        if (!calibreBook.isNull(CalibreBook.SERIES)) {
+        if (!calibreBook.isNull(CalibreBookJsonKey.SERIES)) {
             convertSeries(calibreBook, book);
         }
 
-        if (!calibreBook.isNull(CalibreBook.PUBLISHER)) {
+        if (!calibreBook.isNull(CalibreBookJsonKey.PUBLISHER)) {
             convertPublisher(calibreBook, book);
         }
 
-        if (!calibreBook.isNull(CalibreBook.IDENTIFIERS)) {
+        if (!calibreBook.isNull(CalibreBookJsonKey.IDENTIFIERS)) {
             convertIdentifiers(calibreBook, book);
         }
 
@@ -651,11 +648,11 @@ public class CalibreContentServerReader
             convertCovers(calibreBook, book, calibreBookId);
         }
 
-        if (!calibreBook.isNull(CalibreBook.USER_METADATA)) {
+        if (!calibreBook.isNull(CalibreBookJsonKey.USER_METADATA)) {
             convertCustomFields(calibreBook, book);
         }
 
-        if (!calibreBook.isNull(CalibreBook.EBOOK_FORMAT)) {
+        if (!calibreBook.isNull(CalibreBookJsonKey.EBOOK_FORMAT)) {
             convertFormat(calibreBook, book);
         }
 
@@ -669,7 +666,7 @@ public class CalibreContentServerReader
     // ],
     private void convertLanguages(@NonNull final JSONObject calibreBook,
                                   @NonNull final Book book) {
-        final JSONArray languages = calibreBook.optJSONArray(CalibreBook.LANGUAGES_ARRAY);
+        final JSONArray languages = calibreBook.optJSONArray(CalibreBookJsonKey.LANGUAGES_ARRAY);
         if (languages != null && !languages.isEmpty()) {
             // We only support one language, so grab the first one
             final String lang = languages.optString(0);
@@ -686,8 +683,8 @@ public class CalibreContentServerReader
                                 @NonNull final JSONObject calibreBook,
                                 @NonNull final Book book) {
         final List<Author> bookAuthors = new ArrayList<>();
-        if (!calibreBook.isNull(CalibreBook.AUTHOR_ARRAY)) {
-            final JSONArray authors = calibreBook.optJSONArray(CalibreBook.AUTHOR_ARRAY);
+        if (!calibreBook.isNull(CalibreBookJsonKey.AUTHOR_ARRAY)) {
+            final JSONArray authors = calibreBook.optJSONArray(CalibreBookJsonKey.AUTHOR_ARRAY);
             if (authors != null && !authors.isEmpty()) {
                 for (int i = 0; i < authors.length(); i++) {
                     final String author = authors.optString(i);
@@ -707,7 +704,7 @@ public class CalibreContentServerReader
     // "series": "Argos Mythos / The devil is dead",
     private void convertSeries(@NonNull final JSONObject calibreBook,
                                @NonNull final Book book) {
-        final String seriesName = calibreBook.optString(CalibreBook.SERIES);
+        final String seriesName = calibreBook.optString(CalibreBookJsonKey.SERIES);
         if (seriesName != null && !seriesName.isEmpty()) {
             if (VALUE_IS_NULL.equals(seriesName)) {
                 throw new IllegalArgumentException(ERROR_NULL_STRING);
@@ -715,7 +712,7 @@ public class CalibreContentServerReader
             final Series series = Series.from(seriesName);
             // "series_index": null,
             // "series_index": 2,  --> it's a float, but we grab it as a string
-            String seriesNr = calibreBook.optString(CalibreBook.SERIES_INDEX);
+            String seriesNr = calibreBook.optString(CalibreBookJsonKey.SERIES_INDEX);
             if (seriesNr != null && !seriesNr.isEmpty() && !"0.0".equals(seriesNr)) {
                 // transform "3.0" to just "3" (and similar) but leave "3.1" alone
                 if (seriesNr.endsWith(".0")) {
@@ -731,7 +728,7 @@ public class CalibreContentServerReader
 
     private void convertPublisher(@NonNull final JSONObject calibreBook,
                                   @NonNull final Book book) {
-        final String publisherName = calibreBook.optString(CalibreBook.PUBLISHER);
+        final String publisherName = calibreBook.optString(CalibreBookJsonKey.PUBLISHER);
         if (publisherName != null && !publisherName.isEmpty()) {
             if (VALUE_IS_NULL.equals(publisherName)) {
                 throw new IllegalArgumentException(ERROR_NULL_STRING);
@@ -745,7 +742,7 @@ public class CalibreContentServerReader
 
     private void convertIdentifiers(@NonNull final JSONObject calibreBook,
                                     @NonNull final Book book) {
-        final JSONObject remotes = calibreBook.optJSONObject(CalibreBook.IDENTIFIERS);
+        final JSONObject remotes = calibreBook.optJSONObject(CalibreBookJsonKey.IDENTIFIERS);
         if (remotes != null) {
             final Iterator<String> it = remotes.keys();
             while (it.hasNext()) {
@@ -782,7 +779,7 @@ public class CalibreContentServerReader
 
     private void convertCustomFields(@NonNull final JSONObject calibreBook,
                                      @NonNull final Book book) {
-        final JSONObject userMetaData = calibreBook.optJSONObject(CalibreBook.USER_METADATA);
+        final JSONObject userMetaData = calibreBook.optJSONObject(CalibreBookJsonKey.USER_METADATA);
         if (userMetaData != null && library != null) {
             for (final CalibreCustomField cf : library.getCustomFields()) {
                 final JSONObject data = userMetaData.optJSONObject(cf.getCalibreKey());
@@ -820,7 +817,7 @@ public class CalibreContentServerReader
 
     private void convertFormat(@NonNull final JSONObject calibreBook,
                                @NonNull final Book book) {
-        final JSONObject mainFormat = calibreBook.optJSONObject(CalibreBook.EBOOK_FORMAT);
+        final JSONObject mainFormat = calibreBook.optJSONObject(CalibreBookJsonKey.EBOOK_FORMAT);
         if (mainFormat != null) {
             final Iterator<String> it = mainFormat.keys();
             if (it.hasNext()) {
@@ -893,8 +890,8 @@ public class CalibreContentServerReader
                                @NonNull final Book book,
                                final int calibreBookId)
             throws StorageException, IOException {
-        if (!calibreBook.isNull(CalibreBook.COVER)) {
-            final String coverUrl = calibreBook.optString(CalibreBook.COVER);
+        if (!calibreBook.isNull(CalibreBookJsonKey.COVER)) {
+            final String coverUrl = calibreBook.optString(CalibreBookJsonKey.COVER);
             if (coverUrl != null && !coverUrl.isEmpty()) {
                 final File file = server.getCover(calibreBookId, coverUrl)
                                         .orElse(null);

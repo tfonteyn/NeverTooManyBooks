@@ -279,7 +279,7 @@
     <string name="lbl_bookshelf">Kitaplık</string>
     <string name="lbl_bookshelves">Kitap rafları</string>
     <string name="lbl_calibre_content_server">Calibre İçerik Sunucusu</string>
-    <string name="info_calibre_content_server_extension">Calibre içerik sunucusu uzantısı kurulu değil.</string>
+    <string name="info_calibre_content_server_extension">Calibre içerik sunucusu uzantısı kurulu değil. Sanal kütüphaneler kullanılamayacaktır.</string>
     <string name="lbl_certificate_ca">CA sertifikası</string>
     <string name="lbl_certificates">Sertifikalar</string>
     <string name="lbl_clone_style">Biçemi çoğalt</string>
@@ -759,4 +759,5 @@
     <string name="action_edit_defaults">Varsayılan ayarları düzenleme</string>
     <string name="ps_sort_author_name_given_first">Önce verilen isimlere göre sıralayın,\nÖrneğin “Aziz Nesin”</string>
     <string name="ps_sort_author_name_family_first">Önce soyadına göre sıralayın,\nÖrneğin “Nesin, Aziz”</string>
+    <string name="a_space_b">%1$s %2$s</string>
 </resources>

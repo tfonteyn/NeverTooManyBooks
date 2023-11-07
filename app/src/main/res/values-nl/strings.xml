@@ -214,7 +214,7 @@
     <string name="info_all_books_have_covers">Alle boeken op deze boekenplank hebben omslagen</string>
     <string name="info_authorized">Geautoriseerd</string>
     <string name="info_backup_successful">Back-up succesvol</string>
-    <string name="info_calibre_content_server_extension">Calibre content server-extensie is niet geïnstalleerd.</string>
+    <string name="info_calibre_content_server_extension">Calibre content server-extensie is niet geïnstalleerd. Virtuele bibliotheken zijn niet beschikbaar.</string>
     <string name="info_cleanup_files">Permanent te verwijderen bestanden nemen %1$s van uw SD-kaart in beslag. Log-bestanden en andere gegevens worden opgeslagen op uw SD-kaart bij iedere upgrade, na elke back-up van de database of wanneer de toepassing crasht. Tik op de knop hieronder om deze bestanden permanent te verwijderen van uw SD-kaart. Als je crashes ondervind of andere fouten, overweeg dan eerst de „%2$s” optie te gebruiken.</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d boeken, in %2$d slots</string>
     <string name="info_download_successful">Download succesvol</string>
@@ -750,4 +750,5 @@
     <string name="action_edit_defaults">Standaardinstellingen bewerken</string>
     <string name="ps_sort_author_name_given_first">Sorteer eerst op de voornamen,\nbvb. „Willy Vandersteen”</string>
     <string name="ps_sort_author_name_family_first">Sorteer eerst op de achternaam,\nbvb. „Vandersteen, Willy”</string>
+    <string name="a_space_b">%1$s %2$s</string>
 </resources>

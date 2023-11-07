@@ -292,7 +292,7 @@
     <string name="lbl_bookshelf">Półka</string>
     <string name="lbl_bookshelves">Wybierz półki</string>
     <string name="lbl_calibre_content_server">Serwer zawartości Calibre</string>
-    <string name="info_calibre_content_server_extension">Rozszerzenie serwera treści Calibre nie jest zainstalowane.</string>
+    <string name="info_calibre_content_server_extension">Rozszerzenie serwera treści Calibre nie jest zainstalowane. Wirtualne biblioteki nie będą dostępne.</string>
     <string name="lbl_certificate_ca">Certyfikat urzędu certyfikacji</string>
     <string name="lbl_certificates">Certyfikaty</string>
     <string name="lbl_clone_style">Duplikat stylu</string>
@@ -772,4 +772,5 @@
     <string name="action_edit_defaults">Edycja ustawień domyślnych</string>
     <string name="ps_sort_author_name_given_first">Sortuj według imion w pierwszej kolejności,\nnp. „Stanisław Lem”</string>
     <string name="ps_sort_author_name_family_first">Sortuj według nazwiska w pierwszej kolejności,\nnp. „Lem, Stanisław”</string>
+    <string name="a_space_b">%1$s %2$s</string>
 </resources>

@@ -288,7 +288,7 @@
     <string name="lbl_bookshelf">Knihovna</string>
     <string name="lbl_bookshelves">Zvolte knihovnu</string>
     <string name="lbl_calibre_content_server">Server obsahu Calibre</string>
-    <string name="info_calibre_content_server_extension">Rozšíření serveru s obsahem kalibru není nainstalováno.</string>
+    <string name="info_calibre_content_server_extension">Rozšíření serveru s obsahem kalibru není nainstalováno. Virtuální knihovny nebudou k dispozici.</string>
     <string name="lbl_certificate_ca">Certifikát CA</string>
     <string name="lbl_certificates">Certifikáty</string>
     <string name="lbl_clone_style">Klonovat styl</string>
@@ -768,4 +768,5 @@
     <string name="action_edit_defaults">Úprava výchozího nastavení</string>
     <string name="ps_sort_author_name_given_first">Řazení podle prvních křestních jmen,\ntj. „Karel Čapek“</string>
     <string name="ps_sort_author_name_family_first">Řazení podle příjmení na prvním místě,\ntj. „Čapek, Karel“</string>
+    <string name="a_space_b">%1$s %2$s</string>
 </resources>

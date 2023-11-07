@@ -601,7 +601,7 @@ public final class CalibreContentServer
 
         final Set<CalibreCustomField> fields = new HashSet<>();
         final JSONObject calibreBook = getBook(library.getLibraryStringId(), bookId);
-        final JSONObject userMetaData = calibreBook.optJSONObject(CalibreBook.USER_METADATA);
+        final JSONObject userMetaData = calibreBook.optJSONObject(CalibreBookJsonKey.USER_METADATA);
         if (userMetaData != null) {
             // check the supported fields
             for (final CalibreCustomField cf : this.calibreCustomFields) {

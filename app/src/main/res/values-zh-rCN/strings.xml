@@ -263,7 +263,7 @@
     <string name="lbl_author">作者</string>
     <string name="lbl_author_type">作者类型</string>
     <string name="lbl_authors">作者</string>
-    <string name="info_calibre_content_server_extension">没有安装Calibre内容服务器扩展。</string>
+    <string name="info_calibre_content_server_extension">没有安装Calibre内容服务器扩展。不提供虚拟图书馆。</string>
     <string name="cd_btn_drag_handle">拖动可重新排序此列表</string>
     <string name="cd_clear_text_end_icon">清除文本</string>
     <string name="tip_import_isbn_list">导入带有ISBN号的文本文件。文件每行应该有一个单独的ISBN。结果将放在列表中。</string>
@@ -371,4 +371,5 @@
     <string name="book_format_softcover_oblong">平装 - 长方形</string>
     <string name="book_format_digest">小型</string>
     <string name="action_edit_defaults">编辑默认设置</string>
+    <string name="a_space_b">%1$s %2$s</string>
 </resources>

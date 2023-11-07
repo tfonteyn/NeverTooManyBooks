@@ -289,7 +289,7 @@
     <string name="lbl_bookshelf">Книжная полка</string>
     <string name="lbl_bookshelves">Книжные полки</string>
     <string name="lbl_calibre_content_server">Сервер содержимого Calibre</string>
-    <string name="info_calibre_content_server_extension">Расширение сервера содержимого Caliber не установлено.</string>
+    <string name="info_calibre_content_server_extension">Расширение сервера содержимого Caliber не установлено. Виртуальные библиотеки будут недоступны.</string>
     <string name="lbl_certificate_ca">Сертификат центра сертификации</string>
     <string name="lbl_certificates">Cертификаты</string>
     <string name="lbl_clone_style">Клонировать стиль</string>
@@ -769,4 +769,5 @@
     <string name="action_edit_defaults">Редактирование настроек по умолчанию</string>
     <string name="ps_sort_author_name_given_first">Отсортировать по фамилиям,\nнапример «Фёдор Достоевский»</string>
     <string name="ps_sort_author_name_family_first">Сортировка по фамилии в первую очередь,\nнапример «Достоевский, Фёдор»</string>
+    <string name="a_space_b">%1$s %2$s</string>
 </resources>

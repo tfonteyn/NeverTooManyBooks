@@ -225,9 +225,9 @@ public class CalibreContentServerWriter
         final JSONObject calibreBook = server.getBook(library.getLibraryStringId(), calibreUuid);
 
         String dateStr = null;
-        if (!calibreBook.isNull(CalibreBook.LAST_MODIFIED)) {
+        if (!calibreBook.isNull(CalibreBookJsonKey.LAST_MODIFIED)) {
             try {
-                dateStr = calibreBook.getString(CalibreBook.LAST_MODIFIED);
+                dateStr = calibreBook.getString(CalibreBookJsonKey.LAST_MODIFIED);
             } catch (@NonNull final JSONException ignore) {
                 // ignore
             }
@@ -239,7 +239,8 @@ public class CalibreContentServerWriter
             // is our data newer then the server data ?
             final LocalDateTime localTime = book.getLastModified(dateParser);
             if (localTime != null && localTime.isAfter(remoteTime)) {
-                final JSONObject identifiers = calibreBook.optJSONObject(CalibreBook.IDENTIFIERS);
+                final JSONObject identifiers =
+                        calibreBook.optJSONObject(CalibreBookJsonKey.IDENTIFIERS);
                 final JSONObject changes = collectChanges(library, identifiers, book);
                 server.pushChanges(library.getLibraryStringId(), calibreId, changes);
                 results.addBook(book.getId());
@@ -251,7 +252,7 @@ public class CalibreContentServerWriter
      * Transform a {@link Book} to a Calibre {@link JSONObject}.
      * <p>
      * Copy the wanted fields from the local {@link Book} into a {@link JSONObject}
-     * with field names {@link CalibreBook} as needed by Calibre.
+     * with field names {@link CalibreBookJsonKey} as needed by Calibre.
      *
      * @param library                the library to which the given books belongs
      * @param calibreBookIdentifiers the <strong>full</strong> list of identifiers for this
@@ -271,12 +272,12 @@ public class CalibreContentServerWriter
         // Empty fields MUST be send to make the server remove the data.
 
         final JSONObject changes = new JSONObject();
-        changes.put(CalibreBook.TITLE, localBook.getTitle());
-        changes.put(CalibreBook.DESCRIPTION, localBook.getString(DBKey.DESCRIPTION));
+        changes.put(CalibreBookJsonKey.TITLE, localBook.getTitle());
+        changes.put(CalibreBookJsonKey.DESCRIPTION, localBook.getString(DBKey.DESCRIPTION));
         // we don't read this field, but we DO write it.
-        changes.put(CalibreBook.DATE_PUBLISHED,
+        changes.put(CalibreBookJsonKey.DATE_PUBLISHED,
                     localBook.getString(DBKey.BOOK_PUBLICATION__DATE));
-        changes.put(CalibreBook.LAST_MODIFIED,
+        changes.put(CalibreBookJsonKey.LAST_MODIFIED,
                     localBook.getString(DBKey.DATE_LAST_UPDATED__UTC));
 
         final JSONArray authors = new JSONArray();
@@ -284,7 +285,7 @@ public class CalibreContentServerWriter
                  .stream()
                  .map(author -> author.getFormattedName(true))
                  .forEach(authors::put);
-        changes.put(CalibreBook.AUTHOR_ARRAY, authors);
+        changes.put(CalibreBookJsonKey.AUTHOR_ARRAY, authors);
 
         final Optional<Series> optSeries = localBook.getPrimarySeries();
 
@@ -299,21 +300,22 @@ public class CalibreContentServerWriter
             }
         }
 
-        changes.put(CalibreBook.SERIES, seriesTitle);
-        changes.put(CalibreBook.SERIES_INDEX, number);
+        changes.put(CalibreBookJsonKey.SERIES, seriesTitle);
+        changes.put(CalibreBookJsonKey.SERIES_INDEX, number);
 
-        changes.put(CalibreBook.PUBLISHER, localBook.getPrimaryPublisher()
-                                                    .map(Publisher::getName)
-                                                    .orElse(""));
+        changes.put(CalibreBookJsonKey.PUBLISHER, localBook.getPrimaryPublisher()
+                                                           .map(Publisher::getName)
+                                                           .orElse(""));
 
-        changes.put(CalibreBook.RATING, (int) localBook.getFloat(DBKey.RATING, realNumberParser));
+        changes.put(CalibreBookJsonKey.RATING,
+                    (int) localBook.getFloat(DBKey.RATING, realNumberParser));
 
         final JSONArray languages = new JSONArray();
         final String language = localBook.getString(DBKey.LANGUAGE, null);
         if (language != null && !language.isEmpty()) {
             languages.put(language);
         }
-        changes.put(CalibreBook.LANGUAGES_ARRAY, languages);
+        changes.put(CalibreBookJsonKey.LANGUAGES_ARRAY, languages);
 
         // The server expects a FULL set of identifiers. Any not present, will be deleted.
         // https://github.com/kovidgoyal/calibre/blob/master/src/calibre/db/write.py#L480
@@ -327,11 +329,11 @@ public class CalibreContentServerWriter
                     final String key = it.next();
                     calibreBookIdentifiers.put(key, localIdentifiers.get(key));
                 }
-                changes.put(CalibreBook.IDENTIFIERS, calibreBookIdentifiers);
+                changes.put(CalibreBookJsonKey.IDENTIFIERS, calibreBookIdentifiers);
 
             } else {
                 // no remotes, just send all locals
-                changes.put(CalibreBook.IDENTIFIERS, localIdentifiers);
+                changes.put(CalibreBookJsonKey.IDENTIFIERS, localIdentifiers);
             }
         }
 
@@ -361,11 +363,11 @@ public class CalibreContentServerWriter
                     //noinspection ResultOfMethodCallIgnored
                     is.read(bFile);
                 }
-                changes.put(CalibreBook.COVER, Base64.encodeToString(bFile, 0));
+                changes.put(CalibreBookJsonKey.COVER, Base64.encodeToString(bFile, 0));
                 results.addCover(file);
 
             } else {
-                changes.put(CalibreBook.COVER, "");
+                changes.put(CalibreBookJsonKey.COVER, "");
             }
         }
 

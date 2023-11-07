@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.sync.calibre;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,9 +43,9 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapte
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentCalibreLibraryMapperBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditCalibreLibraryBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.HtmlFormatter;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
@@ -125,8 +126,6 @@ public class CalibreLibraryMappingFragment
             vb.bookshelf.setText(bookshelf.getName());
         });
 
-        vb.infExtNotInstalled.setOnClickListener(StandardDialogs::infoPopup);
-
         vb.btnCreate.setOnClickListener(btn -> {
             try {
                 btn.setEnabled(false);
@@ -205,7 +204,19 @@ public class CalibreLibraryMappingFragment
         onLibrarySelected(0);
         vb.getRoot().setVisibility(View.VISIBLE);
 
-        vb.infExtNotInstalled.setVisibility(vm.isExtInstalled() ? View.GONE : View.VISIBLE);
+        if (vm.isExtInstalled()) {
+            vb.infExtNotInstalled.setVisibility(View.GONE);
+        } else {
+            final String msg =
+                    getString(R.string.a_space_b,
+                              getString(R.string.info_calibre_content_server_extension),
+                              "<a href=\"" + getString(R.string.github_help_calibre_url) + "\">"
+                              + getString(R.string.action_help)
+                              + "</a>");
+            vb.infExtNotInstalled.setText(HtmlFormatter.linkify(msg));
+            vb.infExtNotInstalled.setMovementMethod(LinkMovementMethod.getInstance());
+            vb.infExtNotInstalled.setVisibility(View.VISIBLE);
+        }
     }
 
     private void addBookshelf(@NonNull final Bookshelf bookshelf,

@@ -277,7 +277,7 @@
     <string name="lbl_bookshelf">Bibliothèque</string>
     <string name="lbl_bookshelves">Bibliothèques</string>
     <string name="lbl_calibre_content_server">Serveur de contenu Calibre</string>
-    <string name="info_calibre_content_server_extension">L’extension du serveur de contenu Calibre n’est pas installée.</string>
+    <string name="info_calibre_content_server_extension">L’extension du serveur de contenu Calibre n’est pas installée. Les bibliothèques virtuelles ne seront pas disponibles.</string>
     <string name="lbl_certificate_ca">Certificat CA</string>
     <string name="lbl_certificates">Certificats</string>
     <string name="lbl_clone_style">Cloner le style</string>
@@ -756,4 +756,5 @@
     <string name="action_edit_defaults">Modifier les paramètres par défaut</string>
     <string name="ps_sort_author_name_given_first">Trier sur les prénoms en premier,\npar exemple « Jules Verne »</string>
     <string name="ps_sort_author_name_family_first">Trier sur le nom de famille en premier,\npar exemple « Verne, Jules »</string>
+    <string name="a_space_b">%1$s %2$s</string>
 </resources>

@@ -274,7 +274,7 @@
     <string name="lbl_bookshelf">Βιβλιοθήκης</string>
     <string name="lbl_bookshelves">Ράφια Βιβλιοθήκης</string>
     <string name="lbl_calibre_content_server">Διακομιστής περιεχομένου Calibre</string>
-    <string name="info_calibre_content_server_extension">Η επέκταση διακομιστή περιεχομένου Caliber δεν έχει εγκατασταθεί.</string>
+    <string name="info_calibre_content_server_extension">Η επέκταση διακομιστή περιεχομένου Caliber δεν έχει εγκατασταθεί. Οι εικονικές βιβλιοθήκες δεν θα είναι διαθέσιμες.</string>
     <string name="lbl_certificate_ca">Πιστοποιητικό CA</string>
     <string name="lbl_certificates">πιστοποιητικών</string>
     <string name="lbl_clone_style">Αντιγραφή στυλ</string>
@@ -751,4 +751,5 @@
     <string name="action_edit_defaults">Επεξεργασία προεπιλεγμένων ρυθμίσεων</string>
     <string name="ps_sort_author_name_given_first">Ταξινόμηση με βάση τα προγενέστερα ονόματα,\nγια παράδειγμα «Κωστής  Παλαμάς»</string>
     <string name="ps_sort_author_name_family_first">Ταξινόμηση με πρώτο το επώνυμο,\nγια παράδειγμα «Παλαμάς, Κωστής»</string>
+    <string name="a_space_b">%1$s %2$s</string>
 </resources>

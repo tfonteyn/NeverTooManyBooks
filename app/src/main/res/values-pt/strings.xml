@@ -429,7 +429,7 @@
     <string name="pt_bob_books_under_multiple_publisher">Mostrar livros com várias editoras</string>
     <string name="pt_bob_cover_scale">Tamanho da capa em listas</string>
     <string name="error_import_csv_column_count_mismatch">Incompatibilidade de contagem de colunas na linha %1$d</string>
-    <string name="info_calibre_content_server_extension">A extensão do servidor de conteúdo do Calibre não está instalada.</string>
+    <string name="info_calibre_content_server_extension">A extensão do servidor de conteúdo do Calibre não está instalada. As bibliotecas virtuais não estarão disponíveis.</string>
     <string name="tip_booklist_style_properties">Utilize este ecrã para definir as características de um estilo específico. Pode alterar o nome, editar os agrupamentos para alterar a hierarquia e ajustar uma variedade de outras preferências para criar um estilo que considere útil.</string>
     <string name="tip_series_book_may_appear_more_than_once">Se os livros forem apresentados em todas as séries a que pertencem, podem aparecer várias vezes na lista. A eliminação de um desses livros tem o efeito de remover todos os exemplares da lista.</string>
     <string name="size_x_small">Muito Pequeno</string>
@@ -780,4 +780,5 @@
     <string name="action_edit_defaults">Editar definições predefinidas</string>
     <string name="ps_sort_author_name_given_first">Ordenar primeiro pelos nomes próprios,\npor exemplo, “Luís de Camões”</string>
     <string name="ps_sort_author_name_family_first">Ordenar primeiro pelo apelido,\npor exemplo, “de Camões, Luís”</string>
+    <string name="a_space_b">%1$s %2$s</string>
 </resources>

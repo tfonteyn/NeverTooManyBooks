@@ -276,7 +276,7 @@
     <string name="lbl_bookshelf">Biblioteca</string>
     <string name="lbl_bookshelves">Biblioteche</string>
     <string name="lbl_calibre_content_server">Server di contenuti Calibre</string>
-    <string name="info_calibre_content_server_extension">L’estensione del server dei contenuti Calibre non è installata.</string>
+    <string name="info_calibre_content_server_extension">L’estensione del server dei contenuti Calibre non è installata. Le biblioteche virtuali non saranno disponibili.</string>
     <string name="lbl_certificate_ca">Certificato CA</string>
     <string name="lbl_certificates">Certificati</string>
     <string name="lbl_clone_style">Duplica stile</string>
@@ -755,4 +755,5 @@
     <string name="action_edit_defaults">Modifica delle impostazioni predefinite</string>
     <string name="ps_sort_author_name_given_first">Ordinamento in base ai nomi,\nes. «Dante Alighieri»</string>
     <string name="ps_sort_author_name_family_first">Ordinamento in base al nome della famiglia,\nes. «Alighieri, Dante»</string>
+    <string name="a_space_b">%1$s %2$s</string>
 </resources>

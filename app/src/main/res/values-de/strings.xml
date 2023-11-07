@@ -273,7 +273,7 @@
     <string name="lbl_bookshelf">Bücherregal</string>
     <string name="lbl_bookshelves">Bücherregale</string>
     <string name="lbl_calibre_content_server">Calibre inhaltsserver</string>
-    <string name="info_calibre_content_server_extension">Die Calibre-Inhaltsservererweiterung ist nicht installiert.</string>
+    <string name="info_calibre_content_server_extension">Die Calibre-Inhaltsservererweiterung ist nicht installiert. Virtuelle Bibliotheken werden nicht verfügbar sein.</string>
     <string name="lbl_certificate_ca">CA-Zertifikat</string>
     <string name="lbl_certificates">Zertifikate</string>
     <string name="lbl_clone_style">Stil klonen</string>
@@ -750,4 +750,5 @@
     <string name="action_edit_defaults">Standardeinstellungen bearbeiten</string>
     <string name="ps_sort_author_name_given_first">Sortierung nach den Vornamen zuerst,\nz.B. „Franz  Kafka“</string>
     <string name="ps_sort_author_name_family_first">Sortierung nach dem Familiennamen zuerst,\nz.B. „Kafka, Franz“</string>
+    <string name="a_space_b">%1$s %2$s</string>
 </resources>
