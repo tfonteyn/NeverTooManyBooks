@@ -89,7 +89,7 @@ public class SettingsFragment
     private static final String PSK_SEARCH_SITE_ORDER = "psk_search_site_order";
     private static final String PSK_CALIBRE = "psk_calibre";
 
-    public static final String PSK_STYLE_DEFAULTS = "psk_style_defaults";
+    private static final String PSK_STYLE_DEFAULTS = "psk_style_defaults";
 
     private final ActivityResultLauncher<Void> editSitesLauncher =
             registerForActivityResult(new SearchSitesAllListsContract(),
