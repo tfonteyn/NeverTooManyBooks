@@ -49,12 +49,10 @@ Booklist style sorting by date-read or date-added etc...:
 
 NEW:
 - the default style settings is now available from the menu in the styles list
-- the global single setting whether to reorder titles/names is now split
-  in separate two settings for titles and publisher names and moved to the Style level.
-  These can now be set globally, and on individual styles.
+- the global setting whether to reorder titles/names is now moved to the Style level.
+  It can now be set globally, and overridden on individual styles.
 
 FIXES:
-- group default settings where not always used for the builtin styles
 
 REMOVED:
 - predefined style "Compact" has been removed
