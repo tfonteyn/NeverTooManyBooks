@@ -18,7 +18,7 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-## Download the latest release: [5.1.0 apk](https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v5.1.0/NeverTooManyBooks-5.1.0.apk)
+## Download the latest release: [5.1.1 apk](https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v5.1.1/NeverTooManyBooks-5.1.1.apk)
 
 This is a book collection application, to keep track of your books and comics.
 
@@ -84,6 +84,15 @@ comments on this fork should be directed at myself and not
 at the original creators.
 
 ## History
+
+### 5.1.1
+
+FIXES:
+
+- fix issue #27
+- sync menu visibility no longer needs a restart
+
+---
 
 ### 5.1.0
 
