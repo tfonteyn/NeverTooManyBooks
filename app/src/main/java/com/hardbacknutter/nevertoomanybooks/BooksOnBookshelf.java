@@ -431,8 +431,6 @@ public class BooksOnBookshelf
             }
         }
 
-        updateSyncMenuVisibility();
-
         // Popup the search widget when the user starts to type.
         setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
 
@@ -587,6 +585,14 @@ public class BooksOnBookshelf
 
         vb.toolbar.setNavigationOnClickListener(v -> {
             if (isRootActivity()) {
+                // Show or hide the synchronization menu.
+                final boolean enable =
+                        SyncServer.CalibreCS.isEnabled(this) && calibreSyncLauncher != null
+                        ||
+                        SyncServer.StripInfo.isEnabled(this) && stripInfoSyncLauncher != null;
+
+                //noinspection DataFlowIssue
+                navDrawer.getMenuItem(R.id.SUBMENU_SYNC).setVisible(enable);
                 navDrawer.open();
             } else {
                 // Simulate the user pressing the 'back' key.
@@ -707,19 +713,6 @@ public class BooksOnBookshelf
         vb.content.list.setItemViewCacheSize(OFFSCREEN_CACHE_SIZE);
         vb.content.list.setDrawingCacheEnabled(true);
         vb.content.list.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-    }
-
-    /**
-     * Show or hide the synchronization menu.
-     */
-    private void updateSyncMenuVisibility() {
-        final boolean enable =
-                SyncServer.CalibreCS.isEnabled(this) && calibreSyncLauncher != null
-                ||
-                SyncServer.StripInfo.isEnabled(this) && stripInfoSyncLauncher != null;
-
-        //noinspection DataFlowIssue
-        navDrawer.getMenuItem(R.id.SUBMENU_SYNC).setVisible(enable);
     }
 
     private void setNavIcon() {
@@ -870,7 +863,6 @@ public class BooksOnBookshelf
         // then we should display the 'up' indicator.
         setNavIcon();
 
-        updateSyncMenuVisibility();
         fabMenu.getItem(vb.fab4SearchExternalId.getId())
                .ifPresent(item -> item.setEnabled(EditBookExternalIdFragment.isShowTab(this)));
 
