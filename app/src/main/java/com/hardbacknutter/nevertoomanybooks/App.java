@@ -52,7 +52,6 @@ public class App
     private static final String TAG = "App";
 
     private static final int ACRA_LOGFILE_LINES = 1_000;
-    private static final String EMAIL_ACRA_ATTACHMENTS = "NeverTooManyBooks-acra-report.txt";
     private static final String APPLICATION_LOG_FILE =
             LoggerImpl.DIR_LOG + File.separatorChar + LoggerImpl.ERROR_LOG_FILE;
 

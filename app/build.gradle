@@ -38,8 +38,6 @@ plugins {
         sign.storePassword=MyStorePassword
         sign.keyAlias=MyKeyAlias
         sign.keyPassword=MyKeyPassword
-        # This one can be empty but must exist
-        email.acra=acra@somewhere.com
 
  */
 final def props = new Properties()
@@ -79,8 +77,6 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["runnerBuilder"] =
                 "de.mannodermaus.junit5.AndroidJUnit5Builder"
-
-        buildConfigField("String", "EMAIL_ACRA", "\"" + props["email.acra"] + "\"")
 
         // Add the build UTC DateTime; ISO formatted
         buildConfigField("String", "TIMESTAMP", "\"x\"")
