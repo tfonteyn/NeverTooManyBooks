@@ -631,7 +631,6 @@
     <string name="strict">Strikt</string>
     <string name="style_builtin_author_series">Auteur daarna Reeks</string>
     <string name="style_builtin_author_year">Auteur en jaar</string>
-    <string name="style_builtin_compact">Compact</string>
     <string name="lbl_defaults">Standaardinstellingen</string>
     <string name="style_type_builtin">Ingebouwd</string>
     <string name="style_type_user_defined">Gebruiker-gedefinieerd</string>

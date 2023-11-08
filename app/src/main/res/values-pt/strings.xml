@@ -207,7 +207,6 @@
     <string name="tip_authors_works_book">Livro.</string>
     <string name="tip_authors_works_single_book">O título está presente num único livro.</string>
     <string name="book_format_audiobook">Áudio-livro</string>
-    <string name="style_builtin_compact">Compacto</string>
     <string name="lbl_group_1st_char_author_family_name">1º caracter do sobrenome do Autor</string>
     <string name="lbl_group_read_and_unread">Lido e não lido</string>
     <string name="lbl_group_1st_char_series_title">1º caracter do título da Série</string>

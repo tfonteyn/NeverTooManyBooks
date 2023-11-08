@@ -500,7 +500,6 @@
     <!-- builtin style name -->
     <string name="style_builtin_author_year">Author, Year</string>
     <!-- builtin style name -->
-    <string name="style_builtin_compact">Compact</string>
     <string name="style_builtin_bookshelf"
             translatable="false">@string/lbl_bookshelf</string>
     <string name="style_builtin_date_acquired"
@@ -1154,9 +1153,6 @@
             translatable="false">@android:string/search_go</string>
     <!-- Preference Category -->
     <string name="pc_formatting">Formatting</string>
-    <!-- Preference Category -->
-    <string name="pc_sorting"
-            translatable="false">@string/lbl_sorting</string>
     <!-- Preference Category -->
     <string name="pc_edit"
             translatable="false">@string/action_edit</string>

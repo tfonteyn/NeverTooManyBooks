@@ -231,7 +231,6 @@
     <string name="book_format_hardcover_oblong">精装本 - 长方形</string>
     <string name="book_color_support_color">双色</string>
     <string name="style_builtin_author_year">作者，年</string>
-    <string name="style_builtin_compact">袖珍本</string>
     <string name="lbl_styles_long">书单风格</string>
     <string name="lbl_defaults">默认操作</string>
     <string name="style_type_builtin">内装式</string>

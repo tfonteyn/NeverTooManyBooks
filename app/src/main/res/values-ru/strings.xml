@@ -608,7 +608,6 @@
     <string name="strict">Строгий</string>
     <string name="style_builtin_author_series">Сначала автор потом серия</string>
     <string name="style_builtin_author_year">Автор и год</string>
-    <string name="style_builtin_compact">Компактный</string>
     <string name="lbl_date_read">Дата прочтения</string>
     <string name="lbl_defaults">По умолчанию</string>
     <string name="style_type_builtin">Встроенный</string>

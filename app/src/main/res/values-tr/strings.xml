@@ -598,7 +598,6 @@
     <string name="strict">Sıkı</string>
     <string name="style_builtin_author_series">Önce yazar sonra seri</string>
     <string name="style_builtin_author_year">Önce yazar sonra yıl</string>
-    <string name="style_builtin_compact">Küçük</string>
     <string name="lbl_date_read">Okunan günay</string>
     <string name="lbl_defaults">Varsayılanlar</string>
     <string name="style_type_builtin">Yerleşik</string>

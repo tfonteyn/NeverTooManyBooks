@@ -610,7 +610,6 @@
     <string name="strict">Estricto</string>
     <string name="style_builtin_author_series">Primero Autor después Serie</string>
     <string name="style_builtin_author_year">Autor y Año</string>
-    <string name="style_builtin_compact">Compacto</string>
     <string name="lbl_date_read">Fecha de lectura</string>
     <string name="lbl_defaults">Valores predeterminados</string>
     <string name="style_type_builtin">Predefinido</string>

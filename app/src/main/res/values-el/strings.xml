@@ -597,7 +597,6 @@
     <string name="strict">Αυστηρό</string>
     <string name="style_builtin_author_series">Συγγραφέας μετά σειρά</string>
     <string name="style_builtin_author_year">Συγγραφέας και χρονιά</string>
-    <string name="style_builtin_compact">Συμπαγής</string>
     <string name="lbl_date_read">Ημερομηνία Ανάγνωσης</string>
     <string name="lbl_defaults">Προεπιλογές</string>
     <string name="style_type_builtin">Ενσωματωμένο</string>
