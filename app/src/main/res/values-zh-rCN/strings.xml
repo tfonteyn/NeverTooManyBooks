@@ -217,7 +217,7 @@
     <string name="progress_msg_x_skipped">%1$d已跳过</string>
     <string name="tip_book_search_by_text">按ISBN号添加图书要比按作者和书名添加准确得多，而且通常是首选。您有时可以在内侧前盖上找到正确的条形码。</string>
     <string name="tip_booklist_style_properties">使用此界面设置特定样式的特征。您可以更改名称、编辑分组以改变层次结构，还可以调整其他各种偏好设置，从而建立您认为有用的样式。</string>
-    <string name="tip_booklist_styles_editor">您可以使用此页面自定义将显示在默认样式菜单中的样式列表。“勾选”表示样式将显示在列表中，“取消勾选”表示隐藏它，反之亦然。如果没有选中任何样式，则将显示所有样式。您可以通过向上或向下拖动每行最右边的图标来重新排列层次结构。长按一行中的任何其他位置将允许您编辑或克隆特定样式的细节。如果你克隆了一个样式，然后改变了主意，你需要自己删除它。</string>
+    <string name="tip_booklist_styles_editor">使用此界面可自定义默认样式菜单中显示的样式列表。使用复选框选择将在列表中显示的样式。 如果未选择任何样式，则将显示所有样式。通过上下拖动每行最右边的图标，可以重新排列层次结构。长按一行中的其他位置，可以编辑或克隆特定样式的详细信息。如果你克隆了一个样式，但又改变了主意，那么你需要自己删除它。</string>
     <string name="size_x_small">极小</string>
     <string name="book_format_hardcover">精装</string>
     <string name="style_type_user_defined">用户自定义</string>
@@ -239,7 +239,7 @@
     <string name="info_isfdb_warning_limited_to">(仅支持ISFDB)</string>
     <string name="tip_dialog_title">提示</string>
     <string name="tip_reset_done">提示已重置</string>
-    <string name="tip_booklist_style_groups">使用该界面可以修改特定样式的组的层次结构。勾选 \"表示该组将显示在列表中，\"取消勾选 \"表示隐藏该组，反之亦然。 您可以通过上下拖动每一行末尾的图标来重新排列层次结构。</string>
+    <string name="tip_booklist_style_groups">使用此界面可修改特定样式的组的层次结构。使用复选框选择要在列表中显示的组，并通过向上或向下拖动每一行末尾的图标来重新排列层次结构。</string>
     <string name="tip_authors_book_may_appear_more_than_once">如果每本书的每个作者都显示了书，那么这些书可能会在列表中出现多次。删除其中一本书的效果是将所有副本从列表中删除。</string>
     <string name="tip_series_book_may_appear_more_than_once">如果书籍在其所属的所有系列中显示，则它们可能在列表中出现多次。删除其中一本书的效果是将所有副本从列表中删除。</string>
     <string name="tip_book_list">点击一本书，你就会看到这本书的细节。长按列表中的一个项目会给你更多的选项。</string>

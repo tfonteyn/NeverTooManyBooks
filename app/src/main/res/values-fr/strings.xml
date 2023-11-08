@@ -150,8 +150,8 @@
     <string name="lbl_certificate_issued_by">Émis par : %1$s</string>
     <string name="lbl_certificate_issued_to">Délivré à : %1$s</string>
     <string name="confirm_delete_book">Cela effacera totalement le livre intitulé « %1$s » par %2$s.\n\nÊtes vous sûr de vouloir poursuivre ?</string>
-    <string name="confirm_delete_bookshelf" tools:ignore="TypographyQuotes">Supprimer l’étagère « %1$s » ? Les livres eux-mêmes ne seront pas supprimés. Ils seront toujours présents sur toutes les autres étagères, ou sur l’étagère « %2$s ».</string>
-    <string name="confirm_delete_publisher" tools:ignore="TypographyQuotes">Supprimer l’éditeur « %1$s » ?\n\nLes livres eux-mêmes ne seront pas supprimés.\n\nEnvisagez de modifier l’éditeur et de remplacer le nom pour conserver ces données.</string>
+    <string name="confirm_delete_bookshelf">Supprimer l’étagère « %1$s » ? Les livres eux-mêmes ne seront pas supprimés. Ils seront toujours présents sur toutes les autres étagères, ou sur l’étagère « %2$s ».</string>
+    <string name="confirm_delete_publisher">Supprimer l’éditeur « %1$s » ?\n\nLes livres eux-mêmes ne seront pas supprimés.\n\nEnvisagez de modifier l’éditeur et de remplacer le nom pour conserver ces données.</string>
     <string name="confirm_delete_series">Supprimer la série « %1$s » ?\n\nLes livres eux-mêmes ne seront pas supprimés.\n\n Envisagez de modifier la série et d’en changer le nom pour conserver ces données.</string>
     <string name="confirm_delete_style">Supprimer le style « %1$s » ?</string>
     <string name="confirm_delete_toc_entry_everywhere">Vraiment supprimer le titre « %1$s » (par %2$s) ? Il sera supprimé de tous les livres dans lesquels il est répertorié. Les livres eux-mêmes ne seront pas supprimés.</string>
@@ -617,9 +617,9 @@
     <string name="tip_autorotate_camera_images">Si vous devez systematiquement tourner vos photos dans le même sens, envisagez d’autoriser la rotation automatique en changeant vos paramètres.</string>
     <string name="tip_book_list">Cliquez sur un livre vous montrera les détails du livre, un appui long sur un livre dans la liste vous donnera d’autres options.</string>
     <string name="tip_book_search_by_text">L’ajout de livres par ISBN est plus précis que par auteur ou titre, et généralement préférable. Rappelez-vous qu’il est parfois possible de trouver le bon code barre à l’intérieur de la couverture.</string>
-    <string name="tip_booklist_style_groups">Cet écran permet de modifier la hiérarchie des groupes pour un style spécifique. Une « coche » indique que le groupe sera affiché dans la liste, une « décoche » le cache et vice versa.  Vous pouvez réorganiser la hiérarchie en faisant glisser l\'icône située à l\'extrémité de chaque ligne vers le haut ou vers le bas.</string>
-    <string name="tip_booklist_style_properties">Cet écran permet de définir les caractéristiques d\'un style spécifique. Vous pouvez changer le nom, modifier les groupes pour changer la hiérarchie et ajuster une variété d\'autres préférences pour construire un style que vous trouvez utile.</string>
-    <string name="tip_booklist_styles_editor" tools:ignore="TypographyQuotes">Vous pouvez utiliser cet écran pour personnaliser la liste des styles qui seront affichés dans votre menu de styles par défaut. Une coche indique que le style sera affiché dans la liste, décochez-la pour le masquer et inversement. Si aucun style n’est coché, tous les styles seront affichés. Vous pouvez réorganiser la hiérarchie en faisant glisser l’icône située à l’extrême droite de chaque ligne. Un appui prolongé n’importe où sur une ligne vous permettra d’éditer ou de cloner les détails d’un style spécifique. Si vous avez cloné un style et changé d’avis, vous devrez le supprimer vous-même.</string>
+    <string name="tip_booklist_style_groups">Cet écran permet de modifier la hiérarchie des groupes pour un style spécifique. Utilisez la case à cocher pour sélectionner les groupes qui seront affichés dans la liste et réorganisez la hiérarchie en faisant glisser l’icône située à l’extrémité de chaque ligne vers le haut ou vers le bas.</string>
+    <string name="tip_booklist_style_properties">Cet écran permet de définir les caractéristiques d’un style spécifique. Vous pouvez changer le nom, modifier les groupes pour changer la hiérarchie et ajuster une variété d’autres préférences pour construire un style que vous trouvez utile.</string>
+    <string name="tip_booklist_styles_editor">Utilisez cet écran pour personnaliser la liste des styles qui seront affichés dans votre menu de styles par défaut. Utilisez la case à cocher pour sélectionner les styles qui seront affichés dans la liste.  Si aucun style n’est sélectionné, tous les styles seront affichés. Vous pouvez réorganiser la hiérarchie en faisant glisser l’icône située à l’extrême droite de chaque ligne vers le haut ou vers le bas. Un appui long sur une autre ligne vous permettra de modifier ou de cloner les détails d'un style spécifique. Si vous avez cloné un style et que vous changez d'avis, vous devrez le supprimer vous-même.</string>
     <string name="tip_dialog_title">Astuce</string>
     <string name="tip_reset_all">Réinitialiser les astuces</string>
     <string name="tip_reset_done">Les astuces ont été réinitialisées</string>
@@ -632,7 +632,7 @@
     <string name="option_info_import_books_option_all">Importez de nouveaux livres et écrasez les livres existants. Utilisez ceci pour restaurer une sauvegarde.</string>
     <string name="option_info_import_books_option_new_and_updated">Importez de nouveaux livres et synchronisez les livres existants en fonction de leur dernière date de modification.</string>
     <string name="option_info_import_books_option_new_only">Importez uniquement les nouveaux livres. Toutes les mises à jour des livres existants seront ignorées.</string>
-    <string name="ps_manage_fields" tools:ignore="TypographyQuotes">Les champs sélectionnés sont visibles dans les écrans d’ajout et d’édition des livres. Les champs non sélectionnés sont cachés.</string>
+    <string name="ps_manage_fields">Les champs sélectionnés sont visibles dans les écrans d’ajout et d’édition des livres. Les champs non sélectionnés sont cachés.</string>
     <string name="info_rebuild_scheduled">Reconstruction planifiée</string>
     <string name="info_select_fields_to_update">Les champs sélectionnés vont être mis à jour à partir d’Internet. Les champs non sélectionnés ne seront pas modifiés.</string>
     <string name="info_share_book_im_reading">Je lis « %1$s » %2$s par %3$s %4$s</string>
@@ -660,8 +660,8 @@
     <string name="warning_cannot_delete_1st_bs">Impossible de supprimer la première bibliothèque.</string>
     <string name="warning_enable_at_least_1_website">Activer au moins un site Web pour chaque catégorie.</string>
     <string name="warning_export_contains_no_data">Il n’y avait rien à exporter.</string>
-    <string name="warning_if_day_set_month_and_year_must_be" tools:ignore="TypographyQuotes">Si le jour est précisé, le mois et l’année doivent l’être aussi.</string>
-    <string name="warning_if_month_set_year_must_be" tools:ignore="TypographyQuotes">Si le mois est précisé, l’année doit l’être aussi.</string>
+    <string name="warning_if_day_set_month_and_year_must_be">Si le jour est précisé, le mois et l’année doivent l’être aussi.</string>
+    <string name="warning_if_month_set_year_must_be">Si le mois est précisé, l’année doit l’être aussi.</string>
     <string name="warning_image_copy_failed">L’image n’a pas pu être copiée.</string>
     <string name="warning_image_not_found">L’image est introuvable.</string>
     <string name="warning_immediate_global_changes">ATTENTION : Les modifications enregistrées sont instantanément appliquées à tous les livres.</string>
@@ -736,7 +736,7 @@
     <string name="info_nothing_to_do">Rien à faire.</string>
     <string name="option_restore_cover">Restaurer l’image précédente</string>
     <string name="info_site_list">Les recherches sont limitées à : %1$s</string>
-    <string name="tip_configure_sites">Les sites web individuels peuvent être configurés à l\'aide de l\'icône des paramètres en haut de l\'écran.</string>
+    <string name="tip_configure_sites">Les sites web individuels peuvent être configurés à l’aide de l’icône des paramètres en haut de l’écran.</string>
     <string name="lbl_sort_unsorted">Non trié</string>
     <string name="lbl_sort_ascending">Ascendante</string>
     <string name="lbl_sort_descending">Descendant</string>

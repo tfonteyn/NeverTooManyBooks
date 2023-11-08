@@ -683,7 +683,7 @@
     <string name="lbl_description">Descrição</string>
     <string name="lbl_personal_notes">Notas pessoais</string>
     <string name="warning_no_site_supports_this_method">AVISO: nenhum dos sites atualmente selecionados suporta pesquisar por %1$s. Por favor, use o menu do site para ativar sites alternativos ou use um método de pesquisa diferente.</string>
-    <string name="tip_booklist_style_groups">Utilize este ecrã para modificar a hierarquia dos grupos para um estilo específico. Um \"visto\" indica que o grupo será mostrado na lista, \"desmarcado\" para o ocultar e vice-versa.  Pode reordenar a hierarquia arrastando o ícone no final de cada linha para cima ou para baixo.</string>
+    <string name="tip_booklist_style_groups">Utilize este ecrã para modificar a hierarquia dos grupos para um estilo específico. Utilize a caixa de verificação para selecionar os grupos que serão mostrados na lista e reordene a hierarquia arrastando o ícone no final de cada linha para cima ou para baixo.</string>
     <string name="tip_update_fields_from_internet">Os links externos do site só são processados se o site for realmente contactado. Como resultado, o menu “Exibir em…” da mesma forma, mostrará apenas o que está disponível.</string>
     <string name="confirm_scope_for_change">Mudou:
 \n“%1$s”
@@ -692,7 +692,7 @@
 \n
 \nComo deseja aplicar esta mudança?
 \nNota: A escolha “%3$s” será aplicada instantaneamente. Se escolher “%4$s”, então um novo %5$s será criado.</string>
-    <string name="tip_booklist_styles_editor">Pode usar este ecrã para personalizar a lista de estilos que serão exibidos no seu menu de estilos padrão. Um “visto” indica que o estilo será mostrado na lista, “não-visto” para ocultá-lo e vice-versa. Se nenhum estilo estiver marcado, todos os estilos serão mostrados. Pode reordenar a hierarquia arrastando o ícone no extremo direito de cada linha para cima ou para baixo. Pressionar longamente em qualquer outro lugar numa linha permitirá que edite ou clone os detalhes de um estilo específico. Se clonou um estilo e mudou de ideia, precisará excluí-lo você mesmo.</string>
+    <string name="tip_booklist_styles_editor">Utilize este ecrã para personalizar a lista de estilos que serão apresentados no seu menu de estilos predefinido. Use a caixa de seleção para selecionar quais estilos serão mostrados na lista.  Se nenhum estilo for selecionado, serão mostrados todos os estilos. É possível reordenar a hierarquia arrastando o ícone no extremo direito de cada linha para cima ou para baixo. Se premir longamente qualquer outro ponto de uma linha, poderá editar ou clonar os detalhes de um estilo específico. Se clonou um estilo e mudou de ideias, terá de o apagar.</string>
     <string name="info_cleanup_files">Ficheiros que possam ser eliminados usam actualmente %1$s do cartão SD. Ficheiros de registo e outros dados são guardados no cartão SD a cada atualização, quando faz cópias de segurança da base de dados ou quando a aplicação falha. Prima o botão abaixo para limpar esses ficheiros do seu cartão SD. Se estiverem a ocorrer falhas ou outros erros, considere usar o botão “%2$s” primeiro.</string>
     <string name="tip_booklist_style_defaults">Utilize este ecrã para definir as características predefinidas de todos os estilos. Estas são utilizadas por todos os estilos incorporados e como ponto de partida para qualquer estilo definido pelo utilizador.</string>
     <string name="lbl_genre">Género</string>
