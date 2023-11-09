@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,11 +17,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
-    <!ENTITY APP_NAME "NeverTooManyBooks">
-    ]>
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
 <!--suppress LongLine --><resources>
     <string name="lbl_styles">Stílar</string>
     <string name="lbl_styles_long">Bóklistastílar</string>
@@ -119,4 +116,5 @@
     <string name="httpErrorFileNotFound">Ynskti fílan varð ikki funnin.</string>
     <string name="error_unexpected">Ein óvæntaður villa uppstóð.</string>
     <string name="a_space_b">%1$s %2$s</string>
+    <string name="lbl_group_1st_char_author_family_name">1. stavur í eftirnavn rithøvundsins</string>
 </resources>
