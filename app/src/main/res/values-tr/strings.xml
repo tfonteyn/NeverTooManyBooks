@@ -684,7 +684,7 @@
     <string name="yes">Evet</string>
     <string name="info_story_in_single_book">“%1$s” tek bir kitapta mevcut:\n\n%2$s</string>
     <string name="tip_import_isbn_list">ISBN numaralarına sahip bir metin dosyasını içe aktarın. Dosyanın her satırında tek bir ISBN olmalıdır. Sonuçlar sıraya konulacaktır.</string>
-    <string name="lbl_date_added">Eklenen günay</string>
+    <string name="lbl_date_added">Tarih eklendiy</string>
     <string name="debug_select_items">Ne eklemek istediğinizi seçin:</string>
     <string name="lbl_group_1st_char_author_family_name">Yazar soyadının 1. karakteri</string>
     <string name="lbl_group_1st_char_series_title">Seri başlığının 1. karakteri</string>

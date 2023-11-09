@@ -168,6 +168,8 @@
     <string name="unknown">Không xác định</string>
     <string name="X_action_update">Cập nhật</string>
     <string name="X_action_use_default_setting">Dùng chế độ cài đặt mặc định</string>
+    <string name="unknown_author">[Không rõ tác giả]</string>
+    <string name="unknown_title">[Tiêu đề không xác định]</string>
     <string name="username">Tên người dùng</string>
     <string name="yes">Có</string>
     <string name="size_hidden">Ẩn giấu</string>
