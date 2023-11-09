@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
@@ -18,15 +17,13 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
-    <!ENTITY APP_NAME "NeverTooManyBooks">
-    ]>
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
     <plurals name="displaying_n_books">
         <item quantity="one">%1$d kitap</item>
-        <item quantity="other">%1$d kitap</item>
+        <item quantity="other">%1$d kitaplar</item>
     </plurals>
     <plurals name="n_books_found">
         <item quantity="one">%1$d kitap bulundu</item>
@@ -34,7 +31,7 @@
     </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s yıldız</item>
-        <item quantity="other">%1$s yıldız</item>
+        <item quantity="other">%1$s yıldızlar</item>
     </plurals>
     <string name="X_action_clear_credentials">Kimlik bilgilerini temizle</string>
     <string name="X_action_execute">Çalıştır</string>
