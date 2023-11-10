@@ -947,6 +947,7 @@ public class BookDaoImpl
                            + TBL_STRIPINFO_COLLECTION
                                    .dotAs(DBKey.STRIP_INFO_COLL_ID,
                                           DBKey.STRIP_INFO_OWNED,
+                                          DBKey.STRIP_INFO_DIGITAL,
                                           DBKey.STRIP_INFO_WANTED,
                                           DBKey.STRIP_INFO_AMOUNT,
                                           DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC)

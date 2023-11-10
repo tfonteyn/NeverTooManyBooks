@@ -44,10 +44,11 @@ public class StripInfoDaoImpl
             + ',' + DBKey.SID_STRIP_INFO
             + ',' + DBKey.STRIP_INFO_COLL_ID
             + ',' + DBKey.STRIP_INFO_OWNED
+            + ',' + DBKey.STRIP_INFO_DIGITAL
             + ',' + DBKey.STRIP_INFO_WANTED
             + ',' + DBKey.STRIP_INFO_AMOUNT
             + ',' + DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC
-            + ") VALUES (?,?,?,?, ?,?,?)";
+            + ") VALUES (?,?,?,?,?,?,?,?)";
 
     /**
      * Constructor.
@@ -83,13 +84,16 @@ public class StripInfoDaoImpl
         }
 
         try (SynchronizedStatement stmt = db.compileStatement(INSERT)) {
-            stmt.bindLong(1, book.getId());
-            stmt.bindLong(2, book.getInt(DBKey.SID_STRIP_INFO));
-            stmt.bindLong(3, book.getInt(DBKey.STRIP_INFO_COLL_ID));
-            stmt.bindBoolean(4, book.getBoolean(DBKey.STRIP_INFO_OWNED));
-            stmt.bindBoolean(5, book.getBoolean(DBKey.STRIP_INFO_WANTED));
-            stmt.bindLong(6, book.getInt(DBKey.STRIP_INFO_AMOUNT));
-            stmt.bindString(7, book.getString(DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC));
+            int i = 0;
+            stmt.bindLong(++i, book.getId());
+            stmt.bindLong(++i, book.getInt(DBKey.SID_STRIP_INFO));
+            stmt.bindLong(++i, book.getInt(DBKey.STRIP_INFO_COLL_ID));
+            stmt.bindBoolean(++i, book.getBoolean(DBKey.STRIP_INFO_OWNED));
+            stmt.bindBoolean(++i, book.getBoolean(DBKey.STRIP_INFO_DIGITAL));
+            stmt.bindBoolean(++i, book.getBoolean(DBKey.STRIP_INFO_WANTED));
+            stmt.bindLong(++i, book.getInt(DBKey.STRIP_INFO_AMOUNT));
+            stmt.bindString(++i, book.getString(DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC));
+
             final long rowId = stmt.executeInsert();
             if (rowId == -1) {
                 throw new DaoInsertException("StripInfo data insert failed");

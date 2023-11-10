@@ -94,7 +94,7 @@ public class DBHelper
         extends SQLiteOpenHelper {
 
     /** Current version. */
-    public static final int DATABASE_VERSION = 28;
+    public static final int DATABASE_VERSION = 29;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -753,6 +753,11 @@ public class DBHelper
                 stmt.bindLong(1, value);
                 stmt.executeUpdateDelete();
             }
+        }
+        if (oldVersion < 29) {
+            TBL_STRIPINFO_COLLECTION.alterTableAddColumns(
+                    db,
+                    DBDefinitions.DOM_STRIP_INFO_BE_DIGITAL);
         }
 
         // SqLite 3.35.0 from 2021-03-12 adds ALTER TABLE DROP COLUMN

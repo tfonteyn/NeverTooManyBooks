@@ -392,6 +392,8 @@ public final class DBDefinitions {
     /** {@link #TBL_STRIPINFO_COLLECTION}. */
     public static final Domain DOM_STRIP_INFO_BE_OWNED;
     /** {@link #TBL_STRIPINFO_COLLECTION}. */
+    public static final Domain DOM_STRIP_INFO_BE_DIGITAL;
+    /** {@link #TBL_STRIPINFO_COLLECTION}. */
     public static final Domain DOM_STRIP_INFO_BE_WANTED;
     /** {@link #TBL_STRIPINFO_COLLECTION}. */
     public static final Domain DOM_STRIP_INFO_BE_AMOUNT;
@@ -984,6 +986,12 @@ public final class DBDefinitions {
 
         DOM_STRIP_INFO_BE_OWNED =
                 new Domain.Builder(DBKey.STRIP_INFO_OWNED, SqLiteDataType.Boolean)
+                        .notNull()
+                        .withDefault(false)
+                        .build();
+
+        DOM_STRIP_INFO_BE_DIGITAL =
+                new Domain.Builder(DBKey.STRIP_INFO_DIGITAL, SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
                         .build();
@@ -1639,6 +1647,7 @@ public final class DBDefinitions {
                             DOM_ESID_STRIP_INFO_BE,
                             DOM_STRIP_INFO_BE_COLLECTION_ID,
                             DOM_STRIP_INFO_BE_OWNED,
+                            DOM_STRIP_INFO_BE_DIGITAL,
                             DOM_STRIP_INFO_BE_WANTED,
                             DOM_STRIP_INFO_BE_AMOUNT,
                             DOM_STRIP_INFO_BE_LAST_SYNC__UTC)

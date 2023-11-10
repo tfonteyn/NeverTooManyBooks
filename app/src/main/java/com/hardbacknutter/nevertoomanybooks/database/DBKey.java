@@ -88,7 +88,10 @@ public final class DBKey {
      * as being in the users collection.
      */
     public static final String STRIP_INFO_COLL_ID = "si_coll_id";
+    /** Owned as a physical book. */
     public static final String STRIP_INFO_OWNED = "si_coll_owned";
+    /** Owned as a digital book. */
+    public static final String STRIP_INFO_DIGITAL = "si_coll_digital";
     public static final String STRIP_INFO_WANTED = "si_coll_wanted";
     public static final String STRIP_INFO_AMOUNT = "si_coll_amount";
     public static final String STRIP_INFO_LAST_SYNC_DATE__UTC = "si_coll_last_sync";
