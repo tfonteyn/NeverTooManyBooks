@@ -96,7 +96,7 @@ public class UserCollectionTest
         final UserCollection uc = new UserCollection(context, searchEngine, userId,
                                                      bookshelfMapper);
 
-        final List<Book> collection = uc.parseDocument(context, document, 1, logger);
+        final List<Book> collection = uc.parseDocument(document, 1, logger);
         assertFalse(collection.isEmpty());
 
         assertEquals(3, uc.getMaxPages());
@@ -136,7 +136,7 @@ public class UserCollectionTest
         final UserCollection uc = new UserCollection(context, searchEngine, userId,
                                                      bookshelfMapper);
 
-        final List<Book> collection = uc.parseDocument(context, document, 3, logger);
+        final List<Book> collection = uc.parseDocument(document, 3, logger);
         assertFalse(collection.isEmpty());
 
         assertNotNull(collection);

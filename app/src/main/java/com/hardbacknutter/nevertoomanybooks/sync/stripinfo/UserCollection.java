@@ -23,6 +23,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
@@ -134,7 +135,7 @@ public class UserCollection {
     private final StripInfoSearchEngine searchEngine;
     @NonNull
     private final CollectionParser rowParser;
-    private int maxPages = -1;
+    private int maxPages = 1;
 
     /**
      * Constructor.
@@ -155,6 +156,7 @@ public class UserCollection {
         rowParser = new CollectionParser(context, bookshelfMapper);
     }
 
+    @IntRange(from = 1)
     public int getMaxPages() {
         return maxPages;
     }
@@ -175,11 +177,11 @@ public class UserCollection {
     @WorkerThread
     @NonNull
     List<Book> fetchPage(@NonNull final Context context,
-                         final int pageNr,
+                         @IntRange(from = 1) final int pageNr,
                          @NonNull final ProgressListener progressListener)
             throws SearchException, IOException {
 
-        if (!(pageNr == 0 || maxPages > pageNr)) {
+        if (pageNr > maxPages) {
             throw new SearchException(searchEngine.getEngineId(), "Can't fetch more pages", null);
         }
 
@@ -190,11 +192,10 @@ public class UserCollection {
                            + String.format(URL_MY_BOOKS, userId, pageNr, FLAGS);
 
         final Document document = jsoupLoader.loadDocument(context, url, null);
-        return parseDocument(context, document, pageNr, progressListener);
+        return parseDocument(document, pageNr, progressListener);
     }
 
-    private int parseMaxPages(@NonNull final Context context,
-                              @NonNull final Element root,
+    private int parseMaxPages(@NonNull final Element root,
                               @NonNull final ProgressListener progressListener)
             throws SearchException {
         final Element last = root.select("div.pagination > a").last();
@@ -213,22 +214,24 @@ public class UserCollection {
             }
         }
 
-        throw new SearchException(searchEngine.getEngineId(), "No page numbers", null);
+        throw new SearchException(searchEngine.getEngineId(),
+                                  "No 'div.pagination > a' found",
+                                  null);
     }
 
     @VisibleForTesting
     @NonNull
-    List<Book> parseDocument(@NonNull final Context context,
-                             @NonNull final Document document,
+    List<Book> parseDocument(@NonNull final Document document,
                              final int pageNr,
                              @NonNull final ProgressListener progressListener)
             throws SearchException {
         final Element root = document.getElementById("collectionContent");
         if (root != null) {
             if (pageNr == 1) {
-                maxPages = parseMaxPages(context, root, progressListener);
+                // From the first page we fetch, we can parse the actual amount of pages
+                maxPages = parseMaxPages(root, progressListener);
             }
-            return parsePage(context, root);
+            return parsePage(root);
         }
 
         if (BuildConfig.DEBUG /* always */) {
@@ -253,8 +256,7 @@ public class UserCollection {
      */
     @AnyThread
     @NonNull
-    private List<Book> parsePage(@NonNull final Context context,
-                                 @NonNull final Element root) {
+    private List<Book> parsePage(@NonNull final Element root) {
         final List<Book> collection = new ArrayList<>();
 
         // showing 'progress' here is pointless as even older devices will be fast.

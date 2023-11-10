@@ -241,12 +241,10 @@ public class StripInfoReader
 
         int pageNr = 0;
         try {
-            // haven't started yet, or there are more pages.
-            while ((pageNr == 0 || uc.getMaxPages() > pageNr)
+            while (uc.getMaxPages() > pageNr
                    && !searchEngine.isCancelled()) {
 
-                pageNr++;
-                final List<Book> page = uc.fetchPage(context, pageNr, progressListener);
+                final List<Book> page = uc.fetchPage(context, ++pageNr, progressListener);
                 if (!page.isEmpty()) {
                     // We're committing by page.
                     Synchronizer.SyncLock txLock = null;
