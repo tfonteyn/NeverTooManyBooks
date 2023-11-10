@@ -46,28 +46,50 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 /**
- * Handles the userdata FORM from the individual book side ajax panel.
+ * Handles the userdata FORM from the individual <strong>book side ajax panel</strong>.
+ * <p>
+ * Wraps the {@link CollectionParser} handling all ajax calls before delegating the actual parsing.
  */
-public class CollectionFormParser
-        extends CollectionBaseParser {
+public class CollectionFormParser {
 
-    private static final String FORM_MODE = "mode";
+    /** Main page form checkbox name-attr. Suffixed with the collection-id. */
+    private static final String ROW_FF_OWNED = "stripCollectieInBezit-";
+    /** Main page form checkbox name-attr. Suffixed with the collection-id. */
+    private static final String ROW_FF_READ = "stripCollectieGelezen-";
+    /** Main page form checkbox name-attr. Suffixed with the collection-id. */
+    private static final String ROW_FF_WISHLIST = "stripCollectieInWishlist-";
 
-    private static final String FF_LOCATIE = "locatie";
-    private static final String FF_OPMERKING = "opmerking";
-    private static final String FF_AANKOOP_DATUM = "aankoopDatum";
-    private static final String FF_SCORE = "score";
-    private static final String FF_DRUK = "druk";
-    private static final String FF_AANKOOP_PRIJS = "aankoopPrijs";
-    private static final String FF_AANTAL = "aantal";
+    /** Side panel form name-attr. */
+    private static final String SIDE_FF_AMOUNT = "aantal";
+    /** Side panel form name-attr. */
+    private static final String SIDE_FF_DATE_ACQUIRED = "aankoopDatum";
+    /** Side panel form name-attr. */
+    private static final String SIDE_FF_DIGITAL = "digitaal";
+    /** Side panel form name-attr. */
+    private static final String SIDE_FF_EDITION = "druk";
+    /** Side panel form name-attr. */
+    private static final String SIDE_FF_LOCATION = "locatie";
+    /** Side panel form name-attr. */
+    private static final String SIDE_FF_PERSONAL_NOTES = "opmerking";
+    /** Side panel form name-attr. */
+    private static final String SIDE_FF_PRICE_PAID = "aankoopPrijs";
+    /** Side panel form name-attr. */
+    private static final String SIDE_FF_RATING = "score";
 
-    private static final String FF_STRIP_ID = "stripId";
-    private static final String FF_STRIP_COLLECTIE_ID = "stripCollectieId";
+    /** Hidden field on the side panel form name-attr. */
+    private static final String SIDE_FF_FORM_MODE = "mode";
+    /** Hidden field with the book id (the site/external id). */
+    private static final String SIDE_FF_STRIP_ID = "stripId";
+    /** Hidden field with the id linking your collection data with the actual book. */
+    private static final String SIDE_FF_STRIP_COLLECTIE_ID = "stripCollectieId";
 
     @NonNull
     private final FutureHttpPost<Document> futureHttpPost;
     @NonNull
     private final String postUrl;
+
+    @NonNull
+    private final CollectionParser formParser;
 
     /**
      * Constructor.
@@ -78,15 +100,6 @@ public class CollectionFormParser
     @AnyThread
     public CollectionFormParser(@NonNull final Context context,
                                 @NonNull final BookshelfMapper bookshelfMapper) {
-        super(context, bookshelfMapper);
-
-        idLocation = FF_LOCATIE;
-        idNotes = FF_OPMERKING;
-        idDateAcquired = FF_AANKOOP_DATUM;
-        idRating = FF_SCORE;
-        idEdition = FF_DRUK;
-        idPricePaid = FF_AANKOOP_PRIJS;
-        idAmount = FF_AANTAL;
 
         final SearchEngineConfig config = EngineId.StripInfoBe.requireConfig();
 
@@ -98,10 +111,12 @@ public class CollectionFormParser
                       .setThrottler(config.getThrottler())
                       .setRequestProperty(HttpConstants.CONTENT_TYPE,
                                           HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED);
+
+        formParser = new CollectionParser(context, bookshelfMapper);
     }
 
     /**
-     * Parse the form ('root') and put the results into the 'destBundle'.
+     * Parse the form ('root') and put the results into the Book.
      *
      * @param root         Element to parse
      * @param externalId   website book id
@@ -119,16 +134,16 @@ public class CollectionFormParser
             throws IOException,
                    StorageException {
 
-        idOwned = "stripCollectieInBezit-" + externalId;
-        idRead = "stripCollectieGelezen-" + externalId;
-        idWanted = "stripCollectieInWishlist-" + externalId;
+        // These come from the main page
+        formParser.parseOwnedFlag(root, ROW_FF_OWNED + externalId, book);
+        formParser.parseReadFlag(root, ROW_FF_READ + externalId, book);
+        formParser.parseWishListFlag(root, ROW_FF_WISHLIST + externalId, book);
 
-        parseFlags(root, book);
-
+        // The other fields come from an ajax fetched side-panel
         final String postBody = new Uri.Builder()
-                .appendQueryParameter(FF_STRIP_ID, String.valueOf(externalId))
-                .appendQueryParameter(FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
-                .appendQueryParameter(FORM_MODE, "detail")
+                .appendQueryParameter(SIDE_FF_STRIP_ID, String.valueOf(externalId))
+                .appendQueryParameter(SIDE_FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
+                .appendQueryParameter(SIDE_FF_FORM_MODE, "detail")
                 // no "frmName" used here
                 .build()
                 .getEncodedQuery();
@@ -143,7 +158,14 @@ public class CollectionFormParser
                     }
                 }));
 
-        parseDetails(response, book);
+        formParser.parseAmount(response, SIDE_FF_AMOUNT, book);
+        formParser.parseDateAcquired(response, SIDE_FF_DATE_ACQUIRED, book);
+        formParser.parseDigitalFlag(response, SIDE_FF_DIGITAL, book);
+        formParser.parseEdition(response, SIDE_FF_EDITION, book);
+        formParser.parseLocation(response, SIDE_FF_LOCATION, book);
+        formParser.parseNotes(response, SIDE_FF_PERSONAL_NOTES, book);
+        formParser.parsePricePaid(response, SIDE_FF_PRICE_PAID, book);
+        formParser.parseRating(response, SIDE_FF_RATING, book);
 
         // Add as last one in case of errors thrown
         book.putLong(DBKey.STRIP_INFO_COLL_ID, collectionId);

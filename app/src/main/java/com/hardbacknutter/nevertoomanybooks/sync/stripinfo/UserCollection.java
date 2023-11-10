@@ -23,7 +23,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 
 import androidx.annotation.AnyThread;
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
@@ -46,8 +45,16 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 /**
- * Fetches and parses the user collection list from the site.
- * This includes visiting each page, and parsing the specific collection data.
+ * Fetches and parses the <strong>user collection list page</strong> from the site.
+ * This list is available from the site top row menu bar.
+ * <p>
+ * <a href="https://www.stripinfo.be/userCollection">https://www.stripinfo.be/userCollection</a>
+ * <p>
+ * Each book is represented as a row containing a FORM.
+ * The INPUT "name" attributes start with the name of the field, a "-", and the 'collection id'
+ * of the book.
+ * <p>
+ * This class allows visiting each page, and parsing the specific collection row.
  * These are NOT full-book data sets.
  * <p>
  * Use this class with a simple loop/fetch:
@@ -60,8 +67,6 @@ import org.jsoup.nodes.Element;
  *          }
  *     }
  * </pre>
- * <p>
- * Processing the page itself is then up to the caller.
  */
 public class UserCollection {
 
@@ -128,7 +133,7 @@ public class UserCollection {
     @NonNull
     private final StripInfoSearchEngine searchEngine;
     @NonNull
-    private final RowParser rowParser;
+    private final CollectionParser rowParser;
     private int maxPages = -1;
 
     /**
@@ -147,7 +152,7 @@ public class UserCollection {
         this.userId = userId;
         this.searchEngine = searchEngine;
         jsoupLoader = new JsoupLoader(this.searchEngine.createFutureGetRequest(context));
-        rowParser = new RowParser(context, bookshelfMapper);
+        rowParser = new CollectionParser(context, bookshelfMapper);
     }
 
     public int getMaxPages() {
@@ -223,7 +228,7 @@ public class UserCollection {
             if (pageNr == 1) {
                 maxPages = parseMaxPages(context, root, progressListener);
             }
-            return parsePage(root);
+            return parsePage(context, root);
         }
 
         if (BuildConfig.DEBUG /* always */) {
@@ -248,7 +253,8 @@ public class UserCollection {
      */
     @AnyThread
     @NonNull
-    private List<Book> parsePage(@NonNull final Element root) {
+    private List<Book> parsePage(@NonNull final Context context,
+                                 @NonNull final Element root) {
         final List<Book> collection = new ArrayList<>();
 
         // showing 'progress' here is pointless as even older devices will be fast.
@@ -286,59 +292,26 @@ public class UserCollection {
                         }
                     }
 
-                    rowParser.parse(row, cData, collectionId);
+                    rowParser.parseAmount(row, "aantal-" + collectionId, cData);
+                    rowParser.parseDateAcquired(row, "aankoopdatum-" + collectionId, cData);
+                    rowParser.parseDigitalFlag(row, "digitaal-" + collectionId, cData);
+                    rowParser.parseEdition(row, "druk-" + collectionId, cData);
+                    rowParser.parseLocation(row, "locatie-" + collectionId, cData);
+                    rowParser.parseNotes(row, "opmerking-" + collectionId, cData);
+                    rowParser.parseOwnedFlag(row, "bezit-" + collectionId, cData);
+                    rowParser.parsePricePaid(row, "prijs-" + collectionId, cData);
+                    rowParser.parseRating(row, "score-" + collectionId, cData);
+                    rowParser.parseReadFlag(row, "gelezen-" + collectionId, cData);
+                    rowParser.parseWishListFlag(row, "wishlist-" + collectionId, cData);
+
+                    // Add as last one in case of errors thrown.
+                    // The presence of this data indicates a full record was parsed successfully
+                    cData.putLong(DBKey.STRIP_INFO_COLL_ID, collectionId);
                 }
             } catch (@NonNull final NumberFormatException ignore) {
                 // Make sure we don't return partial data
                 cData.clearData();
             }
-        }
-    }
-
-    private static class RowParser
-            extends CollectionBaseParser {
-
-        /**
-         * Constructor.
-         *
-         * @param context         Current context
-         * @param bookshelfMapper mapper for the wishlist/owned flags
-         */
-        @AnyThread
-        RowParser(@NonNull final Context context,
-                  @NonNull final BookshelfMapper bookshelfMapper) {
-            super(context, bookshelfMapper);
-        }
-
-        /**
-         * Parse the form ('root') and put the results into the 'destBundle'.
-         *
-         * @param root         Element to parse
-         * @param book         to store the results in
-         * @param collectionId website book collection-id
-         */
-        @AnyThread
-        public void parse(@NonNull final Element root,
-                          @NonNull final Book book,
-                          @IntRange(from = 1) final long collectionId) {
-
-            idOwned = "bezit-" + collectionId;
-            idRead = "gelezen-" + collectionId;
-            idWanted = "wishlist-" + collectionId;
-
-            idLocation = "locatie-" + collectionId;
-            idNotes = "opmerking-" + collectionId;
-            idDateAcquired = "aankoopdatum-" + collectionId;
-            idRating = "score-" + collectionId;
-            idEdition = "druk-" + collectionId;
-            idPricePaid = "prijs-" + collectionId;
-            idAmount = "aantal-" + collectionId;
-
-            parseFlags(root, book);
-            parseDetails(root, book);
-
-            // Add as last one in case of errors thrown
-            book.putLong(DBKey.STRIP_INFO_COLL_ID, collectionId);
         }
     }
 }

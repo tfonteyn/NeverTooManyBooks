@@ -361,6 +361,7 @@ public class CollectionFormUploader {
         book.remove(DBKey.STRIP_INFO_AMOUNT);
         book.remove(DBKey.STRIP_INFO_COLL_ID);
         book.remove(DBKey.STRIP_INFO_OWNED);
+        book.remove(DBKey.STRIP_INFO_DIGITAL);
         book.remove(DBKey.STRIP_INFO_WANTED);
         book.remove(DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC);
     }
