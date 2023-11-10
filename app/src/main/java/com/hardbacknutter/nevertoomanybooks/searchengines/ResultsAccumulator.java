@@ -21,13 +21,10 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
-import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -45,7 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
-import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -141,7 +137,7 @@ class ResultsAccumulator {
         mappers.forEach(mapper -> mapper.map(context, book));
 
         // Pick the best covers for each list (if any) and clean/delete all others.
-        processCovers(book);
+        book.processCovers();
     }
 
     /**
@@ -474,75 +470,4 @@ class ResultsAccumulator {
         }
     }
 
-    /**
-     * Filter the {@link Book#getCoverFileSpecList} present, selecting only the best
-     * image for each index, and store those in {@link Book#BKEY_TMP_FILE_SPEC}.
-     * This may result in removing ALL images if none are found suitable.
-     *
-     * @param book to filter
-     */
-    private void processCovers(@NonNull final Book book) {
-        for (int cIdx = 0; cIdx < 2; cIdx++) {
-            final List<String> imageList = book.getCoverFileSpecList(cIdx);
-            if (!imageList.isEmpty()) {
-                // ALWAYS call even if we only have 1 image...
-                // We want to remove bad ones if needed.
-                final String coverName = getBestImage(imageList);
-                if (coverName != null) {
-                    book.putString(Book.BKEY_TMP_FILE_SPEC[cIdx], coverName);
-                }
-            }
-            book.setCoverFileSpecList(cIdx, null);
-        }
-    }
-
-    /**
-     * Pick the largest image from the given list, and delete all others.
-     *
-     * @param imageList a list of images
-     *
-     * @return name of cover found, or {@code null} for none.
-     */
-    @Nullable
-    private String getBestImage(@NonNull final List<String> imageList) {
-
-        // biggest size based on height * width
-        long bestImageSize = -1;
-        // index of the file which is the biggest
-        int bestFileIndex = -1;
-
-        // Just read the image files to get file size
-        final BitmapFactory.Options opt = new BitmapFactory.Options();
-        opt.inJustDecodeBounds = true;
-
-        // Loop, finding biggest image
-        for (int i = 0; i < imageList.size(); i++) {
-            final String fileSpec = imageList.get(i);
-            if (new File(fileSpec).exists()) {
-                BitmapFactory.decodeFile(fileSpec, opt);
-                // If no size info, assume file bad and skip
-                if (opt.outHeight > 0 && opt.outWidth > 0) {
-                    final long size = (long) opt.outHeight * (long) opt.outWidth;
-                    if (size > bestImageSize) {
-                        bestImageSize = size;
-                        bestFileIndex = i;
-                    }
-                }
-            }
-        }
-
-        // Delete all but the best one.
-        // Note there *may* be no best one, so all would be deleted. This is fine.
-        for (int i = 0; i < imageList.size(); i++) {
-            if (i != bestFileIndex) {
-                FileUtils.delete(new File(imageList.get(i)));
-            }
-        }
-
-        if (bestFileIndex >= 0) {
-            return imageList.get(bestFileIndex);
-        }
-
-        return null;
-    }
 }
