@@ -19,8 +19,8 @@
  */
 
 plugins {
-    id("com.android.application") version '8.2.0-rc02' apply false
-    id("com.android.library") version '8.2.0-rc02' apply false
+    id("com.android.application") version '8.2.0-rc03' apply false
+    id("com.android.library") version '8.2.0-rc03' apply false
     // https://plugins.gradle.org/plugin/org.jetbrains.kotlin.android
     id("org.jetbrains.kotlin.android") version "1.9.10" apply false
     // https://github.com/mannodermaus/android-junit5
@@ -52,7 +52,7 @@ ext {
     compileSdkVersion = 34
 
     // https://github.com/google/desugar_jdk_libs/blob/master/CHANGELOG.md
-    desugarVersion = "2.0.3"
+    desugarVersion = '2.0.4'
 
     // https://developer.android.com/jetpack/androidx/versions
 
@@ -100,7 +100,7 @@ ext {
     mockitoVersion = '5.7.0'
 
     // https://junit.org/junit5/docs/current/user-guide/#overview
-    jupiterVersion = "5.10.0"
+    jupiterVersion = '5.10.1'
 
     // https://developer.android.com/jetpack/androidx/releases/test
     androidxArchCoreTestingVersion = "2.2.0"
