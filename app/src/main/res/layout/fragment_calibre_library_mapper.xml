@@ -38,17 +38,17 @@
             android:id="@+id/inf_ext_not_installed"
             style="@style/Text.Error"
             android:layout_marginStart="@dimen/field_margin_start"
-            android:layout_marginEnd="@dimen/field_margin_end"
             android:layout_marginTop="@dimen/section_margin_top"
+            android:layout_marginEnd="@dimen/field_margin_end"
             android:drawableStart="@drawable/ic_baseline_warning_24"
             android:drawablePadding="@dimen/field_margin_inline"
             android:visibility="gone"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="visible"
+            tools:ignore="UseCompatTextViewDrawableXml"
             tools:text="@string/info_calibre_content_server_extension"
-            tools:ignore="UseCompatTextViewDrawableXml" />
+            tools:visibility="visible" />
 
         <TextView
             android:id="@+id/header"
@@ -71,6 +71,9 @@
             app:layout_constraintTop_toBottomOf="@id/header"
             >
 
+            <!-- Displays the LIST of Libraries as they come from the Calibre server.
+                 The user must pick the one ALL operations will run against.
+             -->
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/library_name"
                 android:layout_width="match_parent"
@@ -82,6 +85,8 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- If there is no Bookshelf with an identical name to the above Library name,
+             the user can click 'create' to simply create a Bookshelf with the same name. -->
         <Button
             android:id="@+id/btn_create"
             style="@style/Button.Action.Submit"
@@ -101,6 +106,9 @@
             app:layout_constraintTop_toBottomOf="@id/lbl_library_name"
             >
 
+            <!-- Display the list of Bookshelves from the local device.
+                 The user must pick one to map to the above Calibre Library
+            -->
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/bookshelf"
                 android:layout_width="match_parent"

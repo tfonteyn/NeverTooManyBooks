@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -38,15 +38,16 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_library_name"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
-            app:endIconMode="clear_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/field_margin_inline"
+            app:endIconMode="clear_text"
             app:layout_constraintEnd_toStartOf="@id/btn_create"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             >
 
+            <!-- Displays a SINGLE Virtual Library name as it comes from the Calibre server. -->
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/library_name"
                 style="@style/TIE.ReadOnly"
@@ -55,25 +56,30 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- If there is no Bookshelf with an identical name to the above Virtual Library name,
+             the user can click 'create' to simply create a Bookshelf with the same name. -->
         <Button
             android:id="@+id/btn_create"
             style="@style/Button.Action.Submit"
             android:text="@string/action_create"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="@id/lbl_library_name"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/lbl_library_name"
             />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_bookshelf"
             style="@style/Button.DropdownMenu"
-            android:hint="@string/lbl_bookshelf"
             android:layout_marginTop="@dimen/field_margin_top"
+            android:hint="@string/lbl_bookshelf"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/lbl_library_name"
             app:layout_constraintTop_toBottomOf="@id/lbl_library_name"
             >
 
+            <!-- Display the list of Bookshelves from the local device.
+                 The user must pick one to map to the above Virtual Library
+            -->
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/bookshelf"
                 android:layout_width="match_parent"
