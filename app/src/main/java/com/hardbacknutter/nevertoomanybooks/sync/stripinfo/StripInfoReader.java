@@ -341,6 +341,8 @@ public class StripInfoReader
                 // It's a new book. Download the full data set from the server.
                 final Book book = searchEngine
                         .searchByExternalId(context, String.valueOf(externalId), coversForNewBooks);
+                book.processCovers();
+
                 insertBook(context, book);
             }
 
@@ -376,6 +378,7 @@ public class StripInfoReader
             // The siBook data is superseded by this new data.
             dataToMerge = searchEngine
                     .searchByExternalId(context, String.valueOf(externalId), coversWanted);
+            dataToMerge.processCovers();
         } else {
             // We have all we need in the incoming siBook
             dataToMerge = siBook;
