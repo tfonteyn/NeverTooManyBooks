@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -38,11 +38,11 @@
         />
 
     <Button
-        android:id="@+id/btn_sync"
+        android:id="@+id/btn_lib_map"
         style="@style/Button.Menu"
-        android:text="@string/action_synchronize"
-        android:visibility="gone"
+        android:text="@string/lbl_bookshelves"
         app:icon="@drawable/ic_baseline_sync_alt_24"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header"
         />
@@ -54,14 +54,14 @@
         app:icon="@drawable/ic_baseline_cloud_download_24"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_sync"
+        app:layout_constraintTop_toBottomOf="@id/btn_lib_map"
         />
 
     <Button
         android:id="@+id/btn_export"
         style="@style/Button.Menu"
         android:text="@string/action_export"
-        app:icon="@drawable/ic_baseline_send_24"
+        app:icon="@drawable/ic_baseline_cloud_upload_24"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_import"

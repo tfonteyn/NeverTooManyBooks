@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                  xmlns:tools="http://schemas.android.com/tools">
+
+    <PreferenceCategory
+        android:title="@string/site_stripinfo_be">
+
+        <ListPreference
+            android:icon="@drawable/ic_baseline_sync_alt_24"
+            android:key="stripinfo.bookshelf.owned"
+            android:title="@string/lbl_strip_info_mapped_bookshelf_owned_books"
+            tools:summary="@sample/data.json/shelves/name"
+            />
+
+        <ListPreference
+            android:icon="@drawable/ic_baseline_sync_alt_24"
+            android:key="stripinfo.bookshelf.digital"
+            android:title="@string/lbl_strip_info_mapped_bookshelf_digital_books"
+            tools:summary="@sample/data.json/shelves/name"
+            />
+
+        <ListPreference
+            android:icon="@drawable/ic_baseline_sync_alt_24"
+            android:key="stripinfo.bookshelf.wishlist"
+            android:title="@string/lbl_strip_info_mapped_bookshelf_wishlist"
+            tools:summary="@sample/data.json/shelves/name"
+            />
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -74,6 +74,14 @@ public class StripInfoSyncFragment
         toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
         toolbar.setTitle(R.string.action_synchronize);
 
+        vb.btnLibMap.setOnClickListener(v -> {
+            if (StripInfoAuth.isUsernameSet(v.getContext())) {
+                replaceFragment(StripInfoBookshelfMappingFragment.create(),
+                                StripInfoBookshelfMappingFragment.TAG);
+            } else {
+                openSettings();
+            }
+        });
         vb.btnImport.setOnClickListener(v -> {
             if (StripInfoAuth.isUsernameSet(v.getContext())) {
                 replaceFragment(SyncReaderFragment.create(SyncServer.StripInfo),

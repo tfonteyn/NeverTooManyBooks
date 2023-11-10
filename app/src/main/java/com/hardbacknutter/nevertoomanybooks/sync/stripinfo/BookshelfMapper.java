@@ -41,6 +41,9 @@ public class BookshelfMapper {
     /** The {@link Bookshelf} to which the owned-books list is mapped. */
     public static final String PK_BOOKSHELF_OWNED =
             EngineId.StripInfoBe.getPreferenceKey() + ".bookshelf.owned";
+    /** The {@link Bookshelf} to which the digital-books list is mapped. */
+    public static final String PK_BOOKSHELF_DIGITAL =
+            EngineId.StripInfoBe.getPreferenceKey() + ".bookshelf.digital";
 
     @NonNull
     private static Optional<Bookshelf> getBookshelf(@NonNull final Context context,
@@ -71,5 +74,17 @@ public class BookshelfMapper {
     @NonNull
     Optional<Bookshelf> getOwnedBooksBookshelf(@NonNull final Context context) {
         return getBookshelf(context, PK_BOOKSHELF_OWNED);
+    }
+
+    /**
+     * Get the mapped bookshelf where to put "digital" books on.
+     *
+     * @param context Current context
+     *
+     * @return the digital-books Bookshelf if configured
+     */
+    @NonNull
+    Optional<Bookshelf> getDigitalBooksBookshelf(@NonNull final Context context) {
+        return getBookshelf(context, PK_BOOKSHELF_DIGITAL);
     }
 }
