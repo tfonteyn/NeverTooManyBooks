@@ -185,6 +185,8 @@ public class StripInfoSearchEngine
             throws SearchException, CredentialsException {
 
         if (StripInfoAuth.isLoginToSearch(context)) {
+            // depending if we get here from a search or from a sync,
+            // the loginHelper MIGHT already exist so don't login twice!
             if (loginHelper == null) {
                 loginHelper = new StripInfoAuth(context, cookieManager);
                 try {
@@ -194,7 +196,9 @@ public class StripInfoSearchEngine
                     throw new SearchException(getEngineId(), e);
                 }
             }
+        }
 
+        if (loginHelper != null) {
             // Recreate every time we load a doc; the user could have changed the preferences.
             collectionFormParser = new CollectionFormParser(context, new BookshelfMapper());
         }
