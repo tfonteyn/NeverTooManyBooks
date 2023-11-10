@@ -32,6 +32,7 @@ import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.OptionalLong;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpPost;
@@ -332,9 +333,10 @@ public class CollectionFormUploader {
         //noinspection DataFlowIssue
         final Document form = doPost(postBody);
 
-        if (externalId == jSoupHelper.getInt(form, FF_STRIP_ID)
-            && collectionId == jSoupHelper.getInt(form, FF_STRIP_COLLECTIE_ID)) {
-
+        final OptionalLong siteExtId = jSoupHelper.getPositiveLong(form, FF_STRIP_ID);
+        final OptionalLong siteCollId = jSoupHelper.getPositiveLong(form, FF_STRIP_COLLECTIE_ID);
+        if (siteExtId.isPresent() && externalId == siteExtId.getAsLong()
+            && siteCollId.isPresent() && collectionId == siteCollId.getAsLong()) {
             postBody = new Uri.Builder()
                     .appendQueryParameter(FF_STRIP_ID, String.valueOf(externalId))
                     .appendQueryParameter(FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
@@ -383,7 +385,7 @@ public class CollectionFormUploader {
             throw new IllegalArgumentException(ERROR_EXTERNAL_ID_0);
         }
 
-        long collectionId = book.getLong(DBKey.STRIP_INFO_COLL_ID);
+        final long collectionId = book.getLong(DBKey.STRIP_INFO_COLL_ID);
         if (collectionId == 0) {
             final String postBody = new Uri.Builder()
                     .appendQueryParameter(FF_STRIP_ID, String.valueOf(externalId))
@@ -394,11 +396,10 @@ public class CollectionFormUploader {
             //noinspection DataFlowIssue
             final Document responseForm = doPost(postBody);
 
-            collectionId = jSoupHelper.getInt(responseForm, FF_STRIP_COLLECTIE_ID);
-            book.putLong(DBKey.STRIP_INFO_COLL_ID, collectionId);
-
-            book.setStage(EntityStage.Stage.Dirty);
-
+            jSoupHelper.getPositiveLong(responseForm, FF_STRIP_COLLECTIE_ID).ifPresent(id -> {
+                book.putLong(DBKey.STRIP_INFO_COLL_ID, id);
+                book.setStage(EntityStage.Stage.Dirty);
+            });
         } else {
             final String postBody = new Uri.Builder()
                     .appendQueryParameter(FF_STRIP_ID, String.valueOf(externalId))

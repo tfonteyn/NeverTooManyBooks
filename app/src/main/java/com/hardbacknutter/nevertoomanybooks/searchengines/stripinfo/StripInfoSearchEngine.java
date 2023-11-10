@@ -1046,20 +1046,21 @@ public class StripInfoSearchEngine
                                  @NonNull final Book book,
                                  final long externalId) {
 
-        final long collectionId = jSoupHelper.getInt(document, "stripCollectie-" + externalId);
-        if (collectionId > 0) {
-            try {
-                //noinspection DataFlowIssue
-                collectionFormParser.parse(document, externalId, collectionId, book);
+        jSoupHelper.getPositiveLong(document, "stripCollectie-" + externalId).ifPresent(
+                collectionId -> {
+                    try {
+                        //noinspection DataFlowIssue
+                        collectionFormParser.parse(document, externalId, collectionId, book);
 
-            } catch (@NonNull final IOException | StorageException e) {
-                if (BuildConfig.DEBUG  /* always */) {
-                    LoggerFactory.getLogger()
-                                 .e(TAG, e, "stripId=" + externalId
-                                            + "|collectieId=" + collectionId);
+                    } catch (@NonNull final IOException | StorageException e) {
+                        if (BuildConfig.DEBUG  /* always */) {
+                            LoggerFactory.getLogger()
+                                         .e(TAG, e, "stripId=" + externalId
+                                                    + "|collectieId=" + collectionId);
+                        }
+                    }
                 }
-            }
-        }
+        );
     }
 
     /**

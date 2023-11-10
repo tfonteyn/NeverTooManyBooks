@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,11 +20,14 @@
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
 import java.util.regex.Pattern;
 
 import org.jsoup.nodes.Element;
@@ -35,117 +38,127 @@ public class JSoupHelper {
     private static final String ATTR_STYLE = "style";
     private static final Pattern ATTR_STYLE_PATTERN = Pattern.compile("[:;]");
 
-    @NonNull
-    public String getString(@NonNull final Element root,
-                            @NonNull final String id) {
-        final String v = getStringOrNull(root, id);
-        return v != null ? v : "";
-    }
-
-    public boolean getBoolean(@NonNull final Element root,
-                              @NonNull final String id) {
-        final Boolean v = getBooleanOrNull(root, id);
-        return v != null ? v : false;
-    }
-
-    public int getInt(@NonNull final Element root,
-                      @NonNull final String id) {
-        final Integer v = getIntOrNull(root, id);
-        return v != null ? v : 0;
-    }
-
-    public double getDouble(@NonNull final Element root,
-                            @NonNull final String id) {
-        final Double v = getDoubleOrNull(root, id);
-        return v != null ? v : 0;
-    }
-
     /**
-     * Get the String value, or {@code null} if the element was not found.
+     * Get a non-empty String value.
      *
      * @param root to start the lookup
      * @param id   to lookup
      *
      * @return String
      */
-    @SuppressWarnings("WeakerAccess")
-    @Nullable
-    public String getStringOrNull(@NonNull final Element root,
-                                  @NonNull final String id) {
+    @NonNull
+    public Optional<String> getNonEmptyString(@NonNull final Element root,
+                                              @NonNull final String id) {
         final Element element = root.getElementById(id);
         if (element != null) {
-            return element.val();
+            final String value = element.val();
+            if (!value.isEmpty()) {
+                return Optional.of(value);
+            }
         }
-        return null;
+        return Optional.empty();
     }
 
     /**
-     * Get the Integer value, or {@code null} if the element was not found.
+     * Get a positive (non-zero) int value.
      *
      * @param root to start the lookup
      * @param id   to lookup
      *
-     * @return Integer
+     * @return int
      */
-    @SuppressWarnings("WeakerAccess")
-    @Nullable
-    public Integer getIntOrNull(@NonNull final Element root,
-                                @NonNull final String id) {
+    @NonNull
+    public OptionalInt getPositiveInt(@NonNull final Element root,
+                                      @NonNull final String id) {
         final Element element = root.getElementById(id);
         if (element != null) {
             final String val = element.val();
             if (!val.isEmpty()) {
                 try {
-                    return Integer.parseInt(val);
+                    final int value = Integer.parseInt(val);
+                    if (value > 0) {
+                        return OptionalInt.of(value);
+                    }
                 } catch (@NonNull final NumberFormatException ignore) {
                     // ignore
                 }
             }
         }
-        return null;
+        return OptionalInt.empty();
     }
 
     /**
-     * Get the Double value, or {@code null} if the element was not found.
+     * Get a positive (non-zero) long value.
      *
      * @param root to start the lookup
      * @param id   to lookup
      *
-     * @return Double
+     * @return long
      */
-    @Nullable
-    public Double getDoubleOrNull(@NonNull final Element root,
-                                  @NonNull final String id) {
+    @NonNull
+    public OptionalLong getPositiveLong(@NonNull final Element root,
+                                        @NonNull final String id) {
         final Element element = root.getElementById(id);
         if (element != null) {
             final String val = element.val();
             if (!val.isEmpty()) {
                 try {
-                    return Double.parseDouble(val);
+                    final long value = Long.parseLong(val);
+                    if (value > 0) {
+                        return OptionalLong.of(value);
+                    }
                 } catch (@NonNull final NumberFormatException ignore) {
                     // ignore
                 }
             }
         }
-        return null;
+        return OptionalLong.empty();
     }
 
     /**
-     * Get the boolean value, or {@code null} if the element was not found.
+     * Get a positive (can be zero) double value.
+     *
+     * @param root to start the lookup
+     * @param id   to lookup
+     *
+     * @return double
+     */
+    @NonNull
+    public OptionalDouble getPositiveOrZeroDouble(@NonNull final Element root,
+                                                  @NonNull final String id) {
+        final Element element = root.getElementById(id);
+        if (element != null) {
+            final String val = element.val();
+            if (!val.isEmpty()) {
+                try {
+                    final double value = Double.parseDouble(val);
+                    if (value >= 0L) {
+                        return OptionalDouble.of(value);
+                    }
+                } catch (@NonNull final NumberFormatException ignore) {
+                    // ignore
+                }
+            }
+        }
+        return OptionalDouble.empty();
+    }
+
+    /**
+     * Get a boolean value.
      *
      * @param root to start the lookup
      * @param id   to lookup
      *
      * @return boolean
      */
-    @Nullable
-    public Boolean getBooleanOrNull(@NonNull final Element root,
-                                    @NonNull final String id) {
+    @NonNull
+    public Optional<Boolean> getBoolean(@NonNull final Element root,
+                                        @NonNull final String id) {
         final Element checkbox = root.getElementById(id);
         if (checkbox != null && "checkbox".equalsIgnoreCase(checkbox.attr("type"))) {
-            return ATTR_CHECKED.equalsIgnoreCase(checkbox.attr(ATTR_CHECKED));
+            return Optional.of(ATTR_CHECKED.equalsIgnoreCase(checkbox.attr(ATTR_CHECKED)));
         }
-        return null;
+        return Optional.empty();
     }
 
     /**
