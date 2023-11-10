@@ -586,6 +586,9 @@ public class BooksOnBookshelf
         vb.toolbar.setNavigationOnClickListener(v -> {
             if (isRootActivity()) {
                 // Show or hide the synchronization menu.
+                // Note this is only effective for the actual sync switches.
+                // The launchers MUST have been created at Activity startup,
+                // due to how "registerForActivityResult" works.
                 final boolean enable =
                         SyncServer.CalibreCS.isEnabled(this) && calibreSyncLauncher != null
                         ||
