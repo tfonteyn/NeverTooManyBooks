@@ -114,7 +114,10 @@ public class IsfdbGetBookTask
             return book;
 
         } else if (isfdbId != 0) {
-            return searchEngine.searchByExternalId(context, String.valueOf(isfdbId), fetchCovers);
+            final Book book = searchEngine.searchByExternalId(context, String.valueOf(isfdbId),
+                                                              fetchCovers);
+            book.processCovers();
+            return book;
 
         } else {
             throw new IllegalStateException("how did we get here?");
