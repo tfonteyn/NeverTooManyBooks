@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2023 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -21,7 +21,7 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                   xmlns:app="http://schemas.android.com/apk/res-auto"
-                  xmlns:tools="http://schemas.android.com/tools">
+    >
 
     <PreferenceCategory
         android:title="@string/site_stripinfo_be">
@@ -82,21 +82,6 @@
             android:summaryOn="@string/yes"
             android:title="@string/lbl_login_to_search" />
 
-        <ListPreference
-            android:dependency="stripinfo.enabled"
-            android:icon="@drawable/ic_baseline_sync_alt_24"
-            android:key="stripinfo.bookshelf.owned"
-            android:title="@string/lbl_strip_info_mapped_bookshelf_owned_books"
-            tools:summary="@sample/data.json/shelves/name"
-            />
-
-        <ListPreference
-            android:dependency="stripinfo.enabled"
-            android:icon="@drawable/ic_baseline_sync_alt_24"
-            android:key="stripinfo.bookshelf.wishlist"
-            android:title="@string/lbl_strip_info_mapped_bookshelf_wishlist"
-            tools:summary="@sample/data.json/shelves/name"
-            />
     </PreferenceCategory>
 
     <PreferenceCategory
