@@ -1251,20 +1251,7 @@ public class Book
     }
 
     /**
-     * Add (or replace) a single cover fileSpec for the given cover index.
-     *
-     * @param cIdx     0..n image index
-     * @param fileSpec to set
-     */
-    public void setCoverFileSpec(@IntRange(from = 0, to = 1) final int cIdx,
-                                 @NonNull final String fileSpec) {
-        final List<String> list = new ArrayList<>();
-        list.add(fileSpec);
-        putStringArrayList(BKEY_FILE_SPEC_ARRAY[cIdx], list);
-    }
-
-    /**
-     * Add (or replace) a list of cover fileSpecs for the given cover index.
+     * Set a list of cover fileSpecs for the given cover index.
      *
      * @param cIdx      0..n image index
      * @param fileSpecs to set;
@@ -1273,7 +1260,7 @@ public class Book
     public void setCoverFileSpecList(@IntRange(from = 0, to = 1) final int cIdx,
                                      @Nullable final List<String> fileSpecs) {
         if (fileSpecs != null && !fileSpecs.isEmpty()) {
-            putStringArrayList(BKEY_FILE_SPEC_ARRAY[cIdx], fileSpecs);
+            putStringArrayList(BKEY_FILE_SPEC_ARRAY[cIdx], new ArrayList<>(fileSpecs));
         } else {
             remove(BKEY_FILE_SPEC_ARRAY[cIdx]);
         }
