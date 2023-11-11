@@ -116,7 +116,7 @@ public class IsfdbGetBookTask
         } else if (isfdbId != 0) {
             final Book book = searchEngine.searchByExternalId(context, String.valueOf(isfdbId),
                                                               fetchCovers);
-            book.processCovers();
+            book.processCoverFileSpecList();
             return book;
 
         } else {

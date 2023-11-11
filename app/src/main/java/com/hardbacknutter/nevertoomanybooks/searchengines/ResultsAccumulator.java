@@ -137,7 +137,7 @@ class ResultsAccumulator {
         mappers.forEach(mapper -> mapper.map(context, book));
 
         // Pick the best covers for each list (if any) and clean/delete all others.
-        book.processCovers();
+        book.processCoverFileSpecList();
     }
 
     /**

@@ -1488,7 +1488,7 @@ public class Book
      * image for each index, and store those in {@link Book#BKEY_TMP_FILE_SPEC}.
      * This may result in removing ALL images if none are found suitable.
      */
-    public void processCovers() {
+    public void processCoverFileSpecList() {
         for (int cIdx = 0; cIdx < 2; cIdx++) {
             final List<String> imageList = getCoverFileSpecList(cIdx);
             if (!imageList.isEmpty()) {
