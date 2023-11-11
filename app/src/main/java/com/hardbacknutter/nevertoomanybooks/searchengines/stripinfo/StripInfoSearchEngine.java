@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo;
 
 import android.content.Context;
 
-import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
@@ -41,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -624,50 +624,24 @@ public class StripInfoSearchEngine
                               @NonNull final Book book)
             throws StorageException {
 
-        final String isbn = book.getString(DBKey.BOOK_ISBN);
-        final String url = parseCover(document, cIdx);
+        String url = null;
+        if (cIdx == 0) {
+            final Element element = document
+                    .selectFirst("a.stripThumb > figure.stripThumbInnerWrapper > img");
+            if (element != null) {
+                url = element.attr("src");
+            }
+        } else if (cIdx == 1) {
+            final Element element = document.selectFirst("a.belowImage");
+            if (element != null) {
+                url = element.attr("data-ajax-url");
+            }
+        }
         if (url != null) {
-            final String fileSpec = saveCover(context, isbn, cIdx, url);
-            if (fileSpec != null && !fileSpec.isEmpty()) {
-                book.setCoverFileSpec(cIdx, fileSpec);
-            }
+            final String isbn = book.getString(DBKey.BOOK_ISBN);
+            saveCover(context, isbn, cIdx, url).ifPresent(
+                    fileSpec -> book.setCoverFileSpecList(cIdx, List.of(fileSpec)));
         }
-    }
-
-    /**
-     * Parses the downloaded {@link Document} for the given cover index.
-     *
-     * @param document to parse
-     * @param cIdx     0..n image index
-     *
-     * @return full url, or {@code null} when no image found
-     *
-     * @throws IndexOutOfBoundsException if the index is invalid
-     */
-    @AnyThread
-    @Nullable
-    private String parseCover(@NonNull final Document document,
-                              @IntRange(from = 0, to = 1) final int cIdx) {
-        switch (cIdx) {
-            case 0: {
-                final Element element = document
-                        .selectFirst("a.stripThumb > figure.stripThumbInnerWrapper > img");
-                if (element != null) {
-                    return element.attr("src");
-                }
-                break;
-            }
-            case 1: {
-                final Element element = document.selectFirst("a.belowImage");
-                if (element != null) {
-                    return element.attr("data-ajax-url");
-                }
-                break;
-            }
-            default:
-                throw new IndexOutOfBoundsException(String.valueOf(cIdx));
-        }
-        return null;
     }
 
     /**
@@ -678,16 +652,16 @@ public class StripInfoSearchEngine
      * @param cIdx    0..n image index
      * @param url     location
      *
-     * @return fileSpec, or {@code null} when not found
+     * @return fileSpec
      *
      * @throws StorageException on storage related failures
      */
     @WorkerThread
-    @Nullable
-    private String saveCover(@NonNull final Context context,
-                             @Nullable final String isbn,
-                             @IntRange(from = 0, to = 1) final int cIdx,
-                             @NonNull final String url)
+    @NonNull
+    private Optional<String> saveCover(@NonNull final Context context,
+                                       @Nullable final String isbn,
+                                       @IntRange(from = 0, to = 1) final int cIdx,
+                                       @NonNull final String url)
             throws StorageException {
 
         // if the site has no image: https://www.stripinfo.be/image.php?i=0
@@ -696,12 +670,12 @@ public class StripInfoSearchEngine
         // in place to guard against website changes.
         if (!url.isEmpty() && !url.endsWith("i=0") && !url.endsWith("mature.png")) {
 
-            final String fileSpec = saveImage(context, url, isbn, cIdx, null);
-            if (fileSpec != null) {
+            final Optional<String> oFileSpec = saveImage(context, url, isbn, cIdx, null);
+            if (oFileSpec.isPresent()) {
                 // Some back covers will return the "no cover available" image regardless.
                 // Sadly, we need to check explicitly after the download.
                 // But we need to check on "mature content" as well anyhow.
-                final File file = new File(fileSpec);
+                final File file = new File(oFileSpec.get());
                 final long fileLen = file.length();
                 // check the length as a quick check first
                 if (fileLen == NO_COVER_FILE_LEN
@@ -712,15 +686,15 @@ public class StripInfoSearchEngine
                         || Arrays.equals(digest, MATURE_COVER_MD5)) {
                         //noinspection ResultOfMethodCallIgnored
                         file.delete();
-                        return null;
+                        return Optional.empty();
                     }
                 }
 
-                return fileSpec;
+                return oFileSpec;
             }
         }
 
-        return null;
+        return Optional.empty();
     }
 
     /**

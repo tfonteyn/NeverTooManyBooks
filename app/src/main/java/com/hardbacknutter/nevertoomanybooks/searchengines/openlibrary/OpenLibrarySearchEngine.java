@@ -255,7 +255,7 @@ public class OpenLibrarySearchEngine
         }
 
         final String url = String.format(BASE_COVER_URL, "isbn", validIsbn, sizeParam);
-        return saveImage(context, url, validIsbn, cIdx, size);
+        return saveImage(context, url, validIsbn, cIdx, size).orElse(null);
     }
 
     @Override
@@ -679,8 +679,6 @@ public class OpenLibrarySearchEngine
                                      @IntRange(from = 0, to = 1) final int cIdx)
             throws StorageException {
 
-        final List<String> list = new ArrayList<>();
-
         // get the largest cover image available.
         final JSONObject o = element.optJSONObject("cover");
         if (o != null) {
@@ -697,13 +695,12 @@ public class OpenLibrarySearchEngine
 
             // we assume that the download will work if there is a url.
             if (coverUrl != null && !coverUrl.isEmpty()) {
-                final String fileSpec = saveImage(context, coverUrl, validIsbn, cIdx, size);
-                if (fileSpec != null) {
-                    list.add(fileSpec);
-                }
+                final List<String> list = new ArrayList<>();
+                saveImage(context, coverUrl, validIsbn, cIdx, size).ifPresent(list::add);
+                return list;
             }
         }
 
-        return list;
+        return List.of();
     }
 }

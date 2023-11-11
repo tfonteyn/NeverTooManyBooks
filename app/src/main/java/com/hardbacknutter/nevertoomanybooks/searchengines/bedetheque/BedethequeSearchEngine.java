@@ -575,28 +575,26 @@ public class BedethequeSearchEngine
         if (fetchCovers[0]) {
             final Element a = document.selectFirst(
                     "div.bandeau-principal > div.bandeau-image > a");
-            processCover(context, a, 0, book);
+            parseCover(context, a, 0, book);
         }
 
         if (fetchCovers[1]) {
             // bandeau-vignette contains a list, each "li" contains an "a"
-            final Elements as = document.select("div.bandeau-vignette a");
-            processCover(context, as.last(), 1, book);
+            final Element a = document.select("div.bandeau-vignette a").last();
+            parseCover(context, a, 1, book);
         }
     }
 
-    private void processCover(@NonNull final Context context,
-                              @Nullable final Element a,
-                              final int cIdx,
-                              @NonNull final Book book)
+    private void parseCover(@NonNull final Context context,
+                            @Nullable final Element a,
+                            final int cIdx,
+                            @NonNull final Book book)
             throws StorageException {
         if (a != null) {
             final String url = a.attr("href");
             final String isbn = book.getString(DBKey.BOOK_ISBN);
-            final String fileSpec = saveImage(context, url, isbn, cIdx, null);
-            if (fileSpec != null) {
-                book.setCoverFileSpec(cIdx, fileSpec);
-            }
+            saveImage(context, url, isbn, cIdx, null).ifPresent(
+                    fileSpec -> book.setCoverFileSpecList(cIdx, List.of(fileSpec)));
         }
     }
 

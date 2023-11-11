@@ -25,6 +25,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -280,17 +281,12 @@ class GoogleBooksEntryHandler
                 // This url comes back as http, and we must use https... so replace it.
                 final String url = HTTP_LITERAL.matcher(attributes.getValue("", "href"))
                                                .replaceAll(Matcher.quoteReplacement("https:"));
-
-                final String fileSpec;
+                final String isbn = book.getString(DBKey.BOOK_ISBN);
                 try {
-                    fileSpec = searchEngine.saveImage(context, url, book.getString(DBKey.BOOK_ISBN),
-                                                      0, null);
+                    searchEngine.saveImage(context, url, isbn, 0, null).ifPresent(
+                            fileSpec -> book.setCoverFileSpecList(0, List.of(fileSpec)));
                 } catch (@NonNull final StorageException e) {
                     throw new SAXException(e);
-                }
-
-                if (fileSpec != null) {
-                    book.setCoverFileSpec(0, fileSpec);
                 }
             }
         } else if (XML_PRICE.equalsIgnoreCase(localName)) {

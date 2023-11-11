@@ -283,10 +283,10 @@ public class LastDodoSearchEngine
             if (fetchCovers[cIdx] && images.size() > cIdx) {
                 final String url = images.get(cIdx).attr("src")
                                          .replace("/ld_thumb1/", "/ld_medium/");
-                final String fileSpec = saveImage(context, url, isbn, cIdx, null);
-                if (fileSpec != null) {
-                    book.setCoverFileSpec(cIdx, fileSpec);
-                }
+                // use for lambda
+                final int tmpIdx = cIdx;
+                saveImage(context, url, isbn, cIdx, null).ifPresent(
+                        fileSpec -> book.setCoverFileSpecList(tmpIdx, List.of(fileSpec)));
             }
         }
     }

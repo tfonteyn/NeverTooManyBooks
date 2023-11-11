@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -400,14 +401,14 @@ public class IsfdbSearchEngine
         if (!editions.isEmpty()) {
             final Edition edition = editions.get(0);
             final Document document = loadDocumentByEdition(context, edition);
-            if (!isCancelled()) {
-                final List<String> imageList = parseCovers(context, document,
-                                                           edition.getIsbn(), 0);
-                if (!imageList.isEmpty()) {
-                    // let the system resolve any path variations
-                    return new File(imageList.get(0)).getAbsolutePath();
-                }
+            if (isCancelled()) {
+                return null;
             }
+
+            return parseCovers(context, document, edition.getIsbn(), 0)
+                    // let the system resolve any path variations
+                    .map(fileSpec -> new File(fileSpec).getAbsolutePath())
+                    .orElse(null);
         }
         return null;
     }
@@ -1079,7 +1080,8 @@ public class IsfdbSearchEngine
 
         if (fetchCovers[0]) {
             final String isbn = book.getString(DBKey.BOOK_ISBN);
-            book.setCoverFileSpecList(0, parseCovers(context, document, isbn, 0));
+            parseCovers(context, document, isbn, 0).ifPresent(
+                    fileSpec -> book.setCoverFileSpecList(0, List.of(fileSpec)));
         }
     }
 
@@ -1091,18 +1093,18 @@ public class IsfdbSearchEngine
      * @param isbn     (optional) ISBN of the book, will be used for the cover filename
      * @param cIdx     0..n image index
      *
-     * @return a list of fileSpec's
+     * @return fileSpec
      *
      * @throws StorageException on storage related failures
      */
     @WorkerThread
     @VisibleForTesting
     @NonNull
-    private List<String> parseCovers(@NonNull final Context context,
-                                     @NonNull final Document document,
-                                     @Nullable final String isbn,
-                                     @SuppressWarnings("SameParameterValue")
-                                     @IntRange(from = 0, to = 1) final int cIdx)
+    private Optional<String> parseCovers(@NonNull final Context context,
+                                         @NonNull final Document document,
+                                         @Nullable final String isbn,
+                                         @SuppressWarnings("SameParameterValue")
+                                         @IntRange(from = 0, to = 1) final int cIdx)
             throws StorageException {
         /* First "ContentBox" contains all basic details.
          * <pre>
@@ -1131,20 +1133,15 @@ public class IsfdbSearchEngine
          * </pre>
          */
 
-        final List<String> imageList = new ArrayList<>();
-
         final Element contentBox = document.selectFirst(CSS_Q_DIV_CONTENTBOX);
         if (contentBox != null) {
             final Element img = contentBox.selectFirst("img");
             if (img != null) {
                 final String url = img.attr("src");
-                final String fileSpec = saveImage(context, url, isbn, cIdx, null);
-                if (fileSpec != null) {
-                    imageList.add(fileSpec);
-                }
+                return saveImage(context, url, isbn, cIdx, null);
             }
         }
-        return imageList;
+        return Optional.empty();
     }
 
     /**

@@ -429,12 +429,12 @@ public abstract class SearchEngineBase
      * @throws StorageException The covers directory is not available
      */
     @WorkerThread
-    @Nullable
-    public String saveImage(@NonNull final Context context,
-                            @NonNull final String url,
-                            @Nullable final String bookId,
-                            @IntRange(from = 0, to = 1) final int cIdx,
-                            @Nullable final Size size)
+    @NonNull
+    public Optional<String> saveImage(@NonNull final Context context,
+                                      @NonNull final String url,
+                                      @Nullable final String bookId,
+                                      @IntRange(from = 0, to = 1) final int cIdx,
+                                      @Nullable final Size size)
             throws StorageException {
 
         synchronized (this) {
@@ -447,13 +447,12 @@ public abstract class SearchEngineBase
 
         try {
             return imageDownloader.fetch(url, tempFilename)
-                                  .map(File::getAbsolutePath)
-                                  .orElse(null);
+                                  .map(File::getAbsolutePath);
         } catch (@NonNull final IOException e) {
             // we swallow IOExceptions, even when the disk is full.
             // We're counting on that condition to be caught elsewhere...
             // as handling it in each call here would become [bleep] fast.
-            return null;
+            return Optional.empty();
         }
     }
 

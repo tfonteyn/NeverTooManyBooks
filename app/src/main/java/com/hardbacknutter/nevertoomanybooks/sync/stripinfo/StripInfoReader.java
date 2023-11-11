@@ -433,11 +433,9 @@ public class StripInfoReader
             throws StorageException {
         final String url = cData.getString(UserCollection.BKEY_FRONT_COVER_URL, null);
         if (url != null && !url.isEmpty()) {
-            final String fileSpec = searchEngine
-                    .saveImage(context, url, String.valueOf(externalId), 0, null);
-            if (fileSpec != null) {
-                cData.putString(Book.BKEY_TMP_FILE_SPEC[0], fileSpec);
-            }
+            searchEngine.saveImage(context, url, String.valueOf(externalId), 0, null)
+                        .ifPresent(fileSpec -> cData
+                                .putString(Book.BKEY_TMP_FILE_SPEC[0], fileSpec));
         }
     }
 }

@@ -27,9 +27,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -200,29 +200,36 @@ public class BookFinderSearchEngine
         }
 
         if (fetchCovers[0]) {
-            book.setCoverFileSpecList(0, parseCovers(context, document, book));
+            parseCovers(context, document, book).ifPresent(
+                    fileSpec -> book.setCoverFileSpecList(0, List.of(fileSpec)));
         }
     }
 
+    /**
+     * Parses the downloaded {@link Document} for the cover and fetches it when present.
+     *
+     * @param context  Current context
+     * @param document to parse
+     * @param book     to update
+     *
+     * @return fileSpec
+     *
+     * @throws StorageException on storage related failures
+     */
     @WorkerThread
     @VisibleForTesting
     @NonNull
-    private List<String> parseCovers(@NonNull final Context context,
-                                     @NonNull final Document document,
-                                     @NonNull final Book book)
+    private Optional<String> parseCovers(@NonNull final Context context,
+                                         @NonNull final Document document,
+                                         @NonNull final Book book)
             throws StorageException {
-
-        final List<String> imageList = new ArrayList<>();
 
         final Element img = document.selectFirst("div#header-img > img");
         if (img != null) {
             final String url = img.attr("src");
             final String isbn = book.getString(DBKey.BOOK_ISBN);
-            final String fileSpec = saveImage(context, url, isbn, 0, null);
-            if (fileSpec != null) {
-                imageList.add(fileSpec);
-            }
+            return saveImage(context, url, isbn, 0, null);
         }
-        return imageList;
+        return Optional.empty();
     }
 }

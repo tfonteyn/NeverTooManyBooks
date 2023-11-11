@@ -29,9 +29,9 @@ import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -306,14 +306,14 @@ public class AmazonSearchEngine
 
         checkCaptcha(context, url, document);
 
-        if (!isCancelled()) {
-            final List<String> imageList = parseCovers(context, document, validIsbn, 0);
-            if (!imageList.isEmpty()) {
-                // let the system resolve any path variations
-                return new File(imageList.get(0)).getAbsolutePath();
-            }
+        if (isCancelled()) {
+            return null;
         }
-        return null;
+
+        return parseCovers(context, document, validIsbn, 0)
+                // let the system resolve any path variations
+                .map(fileSpec -> new File(fileSpec).getAbsolutePath())
+                .orElse(null);
     }
 
     /**
@@ -375,7 +375,9 @@ public class AmazonSearchEngine
 
         if (fetchCovers[0]) {
             final String isbn = book.getString(DBKey.BOOK_ISBN);
-            book.setCoverFileSpecList(0, parseCovers(context, document, isbn, 0));
+            parseCovers(context, document, isbn, 0).ifPresent(
+                    fileSpec -> book.setCoverFileSpecList(0, List.of(fileSpec)));
+
         }
     }
 
@@ -585,25 +587,23 @@ public class AmazonSearchEngine
      * @param isbn     (optional) ISBN of the book, will be used for the cover filename
      * @param cIdx     0..n image index
      *
-     * @return a list with fileSpecs; can be empty
+     * @return fileSpec
      *
      * @throws StorageException on storage related failures
      */
     @WorkerThread
     @VisibleForTesting
     @NonNull
-    private List<String> parseCovers(@NonNull final Context context,
-                                     @NonNull final Document document,
-                                     @Nullable final String isbn,
-                                     @SuppressWarnings("SameParameterValue")
-                                     @IntRange(from = 0, to = 1) final int cIdx)
+    private Optional<String> parseCovers(@NonNull final Context context,
+                                         @NonNull final Document document,
+                                         @Nullable final String isbn,
+                                         @SuppressWarnings("SameParameterValue")
+                                         @IntRange(from = 0, to = 1) final int cIdx)
             throws StorageException {
-
-        final List<String> imageList = new ArrayList<>();
 
         final Element coverElement = document.selectFirst("img#imgBlkFront");
         if (coverElement == null) {
-            return imageList;
+            return Optional.empty();
         }
 
         String url;
@@ -624,11 +624,7 @@ public class AmazonSearchEngine
             url = srcUrl;
         }
 
-        final String fileSpec = saveImage(context, url, isbn, cIdx, null);
-        if (fileSpec != null) {
-            imageList.add(fileSpec);
-        }
-        return imageList;
+        return saveImage(context, url, isbn, cIdx, null);
     }
 
     @NonNull

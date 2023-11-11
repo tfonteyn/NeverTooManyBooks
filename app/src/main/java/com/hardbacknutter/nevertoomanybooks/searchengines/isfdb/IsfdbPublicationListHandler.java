@@ -129,13 +129,15 @@ class IsfdbPublicationListHandler
     /** XML content. */
     @SuppressWarnings("StringBufferField")
     private final StringBuilder builder = new StringBuilder();
+    /** The resulting list of books collected by this class. */
     @NonNull
     private final List<Book> bookList = new ArrayList<>();
     @NonNull
     private final MoneyParser moneyParser;
     private int maxRecords;
     private boolean inPublication;
-    private Book publicationData;
+    /** The current book we're parsing data for. Will be added to the {@link #bookList}. */
+    private Book book;
     private boolean inAuthors;
     private boolean inCoverArtists;
     private boolean inExternalIds;
@@ -195,7 +197,7 @@ class IsfdbPublicationListHandler
         switch (qName) {
             case XML_PUBLICATION:
                 inPublication = true;
-                publicationData = new Book();
+                book = new Book();
                 break;
 
             case XML_AUTHORS:
@@ -223,6 +225,7 @@ class IsfdbPublicationListHandler
      *                      {@link EOFException}: NOT AN ERROR but means parsing is done here.
      *                      {@link StorageException} as an error
      */
+    @SuppressWarnings("NewExceptionWithoutArguments")
     @Override
     @CallSuper
     public void endElement(@NonNull final String uri,
@@ -244,10 +247,10 @@ class IsfdbPublicationListHandler
         } else if (XML_PUBLICATION.equals(qName)) {
             // ISFDB does not provide the books language in xml
             //ENHANCE: the site is adding language to the data. For now, default to English
-            publicationData.putString(DBKey.LANGUAGE, "eng");
+            book.putString(DBKey.LANGUAGE, "eng");
 
             inPublication = false;
-            bookList.add(publicationData);
+            bookList.add(book);
             if (bookList.size() == maxRecords) {
                 // we're done
                 throw new SAXException(new EOFException());
@@ -280,17 +283,17 @@ class IsfdbPublicationListHandler
                     if (inAuthors) {
                         searchEngine.processAuthor(Author.from(builder.toString()),
                                                    Author.TYPE_UNKNOWN,
-                                                   publicationData);
+                                                   book);
                     }
                     break;
                 }
 
                 case XML_YEAR: {
-                    if (!publicationData.contains(DBKey.BOOK_PUBLICATION__DATE)) {
+                    if (!book.contains(DBKey.BOOK_PUBLICATION__DATE)) {
                         final String text = builder.toString().strip();
                         searchEngine.processPublicationDate(context,
                                                             searchEngine.getLocale(context),
-                                                            text, publicationData);
+                                                            text, book);
                     }
                     break;
                 }
@@ -305,18 +308,18 @@ class IsfdbPublicationListHandler
                 }
                 case XML_PUBLISHER: {
                     final Publisher publisher = Publisher.from(builder.toString());
-                    publicationData.add(publisher);
+                    book.add(publisher);
                     break;
                 }
                 case XML_PUB_SERIES: {
                     final Series series = Series.from(builder.toString());
-                    publicationData.add(series);
+                    book.add(series);
                     break;
                 }
                 case XML_PUB_SERIES_NUM: {
                     final String tmpString = builder.toString().trim();
                     // assume that if we get here, then we added a "PubSeries" as last one.
-                    final List<Series> seriesList = publicationData.getSeries();
+                    final List<Series> seriesList = book.getSeries();
                     seriesList.get(seriesList.size() - 1).setNumber(tmpString);
                     break;
                 }
@@ -324,7 +327,7 @@ class IsfdbPublicationListHandler
                     final String tmpString = builder.toString().trim();
                     final Money money = moneyParser.parse(tmpString);
                     if (money != null) {
-                        publicationData.putMoney(DBKey.PRICE_LISTED, money);
+                        book.putMoney(DBKey.PRICE_LISTED, money);
                     } else {
                         // parsing failed, store the string as-is;
                         // no separate currency!
@@ -349,7 +352,7 @@ class IsfdbPublicationListHandler
                     addIfNotPresent(IsfdbSearchEngine.SiteField.BOOK_TYPE, tmpString);
                     final Book.ContentType type = IsfdbSearchEngine.TYPE_MAP.get(tmpString);
                     if (type != null) {
-                        publicationData.putLong(DBKey.BOOK_CONTENT_TYPE, type.getId());
+                        book.putLong(DBKey.BOOK_CONTENT_TYPE, type.getId());
                     }
                     break;
                 }
@@ -361,13 +364,11 @@ class IsfdbPublicationListHandler
                     if (fetchCovers[0]) {
                         final String tmpString = builder.toString().trim();
                         try {
-                            final String isbn = publicationData.getString(DBKey.BOOK_ISBN);
-                            final String fileSpec =
-                                    searchEngine.saveImage(context, tmpString, isbn, 0, null);
-                            if (fileSpec != null) {
-                                publicationData.setCoverFileSpec(0, fileSpec);
+                            final String isbn = book.getString(DBKey.BOOK_ISBN);
+                            searchEngine.saveImage(context, tmpString, isbn, 0, null)
+                                        .ifPresent(fileSpec -> book
+                                                .setCoverFileSpecList(0, List.of(fileSpec)));
 
-                            }
                         } catch (@NonNull final StorageException e) {
                             throw new SAXException(e);
                         }
@@ -378,7 +379,7 @@ class IsfdbPublicationListHandler
                     if (inCoverArtists) {
                         searchEngine.processAuthor(Author.from(builder.toString()),
                                                    Author.TYPE_COVER_ARTIST,
-                                                   publicationData);
+                                                   book);
                     }
                     break;
                 }
@@ -451,9 +452,9 @@ class IsfdbPublicationListHandler
      */
     private void addIfNotPresent(@NonNull final String key,
                                  @NonNull final String value) {
-        final String test = publicationData.getString(key, null);
+        final String test = book.getString(key, null);
         if (test == null || test.isEmpty()) {
-            publicationData.putString(key, value.trim());
+            book.putString(key, value.trim());
         }
     }
 }

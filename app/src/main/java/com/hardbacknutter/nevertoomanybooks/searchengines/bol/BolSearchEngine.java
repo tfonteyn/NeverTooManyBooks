@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.bol;
 
 import android.content.Context;
 
-import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,6 +32,7 @@ import androidx.preference.PreferenceManager;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -591,51 +591,27 @@ public class BolSearchEngine
                              @NonNull final boolean[] fetchCovers,
                              @NonNull final Book book)
             throws StorageException {
+        // The site uses several possible keys, loop until found or exhausted
         for (final String key : FRONT_COVER_KEYS) {
-            String coverImageUrl = currentItem.optString(key);
-            if (coverImageUrl != null && !coverImageUrl.isBlank()) {
-                if (processCover(context, coverImageUrl, isbn, 0, book)) {
+            final String coverImageUrl = currentItem.optString(key);
+            if (coverImageUrl != null && !coverImageUrl.isEmpty()) {
+                final Optional<String> fileSpec = saveImage(context, coverImageUrl, isbn, 0, null);
+                if (fileSpec.isPresent()) {
+                    book.setCoverFileSpecList(0, List.of(fileSpec.get()));
                     // only attempt to get the back-cover if we got a front-cover
                     // and (obv.) we want one.
                     if (fetchCovers.length > 1 && fetchCovers[1]) {
-                        coverImageUrl = currentItem.optString("backImageUrl");
-                        processCover(context, coverImageUrl, isbn, 1, book);
+                        final String url = currentItem.optString("backImageUrl");
+                        if (url != null && !url.isEmpty()) {
+                            saveImage(context, url, isbn, 1, null).ifPresent(
+                                    fs -> book.setCoverFileSpecList(1, List.of(fs)));
+                        }
                     }
                     // All done. We have a front-cover and maybe a back-cover.
                     return;
                 }
             }
         }
-    }
-
-    /**
-     * Fetch the given cover url if possible.
-     *
-     * @param context Current context
-     * @param url     to fetch
-     * @param isbn    of the book
-     * @param cIdx    0..n image index
-     * @param book    Bundle to update
-     *
-     * @return {@code true} if an image was successfully saved.
-     *
-     * @throws StorageException The covers directory is not available
-     */
-    private boolean processCover(@NonNull final Context context,
-                                 @Nullable final String url,
-                                 @NonNull final String isbn,
-                                 @IntRange(from = 0, to = 1) final int cIdx,
-                                 @NonNull final Book book)
-            throws StorageException {
-
-        if (url != null && !url.isEmpty()) {
-            final String fileSpec = saveImage(context, url, isbn, cIdx, null);
-            if (fileSpec != null && !fileSpec.isEmpty()) {
-                book.setCoverFileSpec(cIdx, fileSpec);
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
