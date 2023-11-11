@@ -570,12 +570,8 @@ public class DataManager
      * @param value to store
      */
     protected void putStringArrayList(@NonNull final String key,
-                                      @NonNull final List<String> value) {
-        if (value instanceof ArrayList) {
-            rawData.putStringArrayList(key, (ArrayList<String>) value);
-        } else {
-            rawData.putStringArrayList(key, new ArrayList<>(value));
-        }
+                                      @NonNull final ArrayList<String> value) {
+        rawData.putStringArrayList(key, value);
     }
 
     /**
