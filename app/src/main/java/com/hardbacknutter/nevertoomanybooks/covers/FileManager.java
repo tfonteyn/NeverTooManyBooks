@@ -126,8 +126,6 @@ public class FileManager {
 
         final Map<EngineId, SearchEngine> engineCache = new EnumMap<>(EngineId.class);
 
-        ImageFileInfo imageFileInfo;
-
         // We need to use the size as the outer loop.
         // The idea is to check all sites for the same size first.
         // If none respond with that size, try the next size inline.
@@ -137,9 +135,9 @@ public class FileManager {
             }
 
             // Do we already have a file previously downloaded?
-            imageFileInfo = files.get(isbn);
-            if (imageFileInfo != null && imageFileInfo.isUsable(size)) {
-                return imageFileInfo;
+            final ImageFileInfo previous = files.get(isbn);
+            if (previous != null && previous.isUsable(size)) {
+                return previous;
             }
 
             for (final EngineId engineId : engineIds) {
@@ -153,72 +151,65 @@ public class FileManager {
                     // Is this Site's SearchEngine available and suitable?
                     if (engineId.supports(SearchEngine.SearchBy.Isbn)) {
 
-                        SearchEngine searchEngine = engineCache.get(engineId);
-                        if (searchEngine == null) {
-                            searchEngine = engineId.createSearchEngine(context);
+                        SearchEngine.CoverByIsbn se = (SearchEngine.CoverByIsbn)
+                                engineCache.get(engineId);
+                        if (se == null) {
+                            se = (SearchEngine.CoverByIsbn) engineId.createSearchEngine(context);
                             // caller is the FetchImageTask
-                            searchEngine.setCaller(progressListener);
-                            engineCache.put(engineId, searchEngine);
+                            se.setCaller(progressListener);
+                            engineCache.put(engineId, se);
                         }
 
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                             LoggerFactory.getLogger()
                                          .d(TAG, "search|SEARCHING",
-                                            "searchEngine=" + searchEngine.getName(context),
+                                            "searchEngine=" + se.getName(context),
                                             "isbn=" + isbn,
                                             "cIdx=" + cIdx,
                                             "size=" + size);
                         }
 
-                        String fileSpec = null;
                         try {
-                            fileSpec = ((SearchEngine.CoverByIsbn) searchEngine)
-                                    .searchCoverByIsbn(context, isbn, cIdx, size);
+                            @Nullable
+                            final String fileSpec = se.searchCoverByIsbn(context, isbn, cIdx, size);
+                            if (fileSpec != null) {
+                                final ImageFileInfo imageFileInfo =
+                                        new ImageFileInfo(isbn, fileSpec, size, engineId);
+                                files.put(isbn, imageFileInfo);
 
+                                if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+                                    LoggerFactory.getLogger()
+                                                 .d(TAG, "search|SUCCESS",
+                                                    "searchEngine=" + se.getName(context),
+                                                    "imageFileInfo=" + imageFileInfo);
+                                }
+                                // abort search, we got an image
+                                return imageFileInfo;
+                            }
                         } catch (@NonNull final SearchException e) {
                             // ignore, don't let a single search break the loop.
-                            // disable it for THIS search
+                            // but disable the engine for THIS search
                             currentSearch.remove(engineId);
 
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                                 LoggerFactory.getLogger()
                                              .d(TAG, "search|FAILED",
-                                                "searchEngine=" + searchEngine.getName(context),
-                                                "imageFileInfo=" + imageFileInfo,
-                                                e);
+                                                "searchEngine=" + se.getName(context), e);
                             }
-
                         }
 
-                        if (fileSpec != null) {
-                            // we got a file
-                            imageFileInfo = new ImageFileInfo(isbn, fileSpec, size,
-                                                              searchEngine.getEngineId());
-                            files.put(isbn, imageFileInfo);
-
-                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                                LoggerFactory.getLogger()
-                                             .d(TAG, "search|SUCCESS",
-                                                "searchEngine=" + searchEngine.getName(context),
-                                                "imageFileInfo=" + imageFileInfo);
-                            }
-                            // abort search, we got an image
-                            return imageFileInfo;
-
-                        } else {
-                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                                LoggerFactory.getLogger()
-                                             .d(TAG, "search|NO FILE",
-                                                "searchEngine=" + searchEngine.getName(context),
-                                                "isbn=" + isbn,
-                                                "cIdx=" + cIdx,
-                                                "size=" + size);
-                            }
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+                            LoggerFactory.getLogger()
+                                         .d(TAG, "search|NO FILE",
+                                            "searchEngine=" + se.getName(context),
+                                            "isbn=" + isbn,
+                                            "cIdx=" + cIdx,
+                                            "size=" + size);
                         }
 
                         // if the site we just searched only supports one image,
                         // disable it for THIS search
-                        if (!searchEngine.supportsMultipleCoverSizes()) {
+                        if (!se.supportsMultipleCoverSizes()) {
                             currentSearch.remove(engineId);
                         }
                     } else {
@@ -237,10 +228,9 @@ public class FileManager {
         }
 
         // Failed to find any size on all sites, record the failure to prevent future attempt
-        imageFileInfo = new ImageFileInfo(isbn);
-        files.put(isbn, imageFileInfo);
-        // and return the failure
-        return imageFileInfo;
+        final ImageFileInfo failure = new ImageFileInfo(isbn);
+        files.put(isbn, failure);
+        return failure;
     }
 
     /**
