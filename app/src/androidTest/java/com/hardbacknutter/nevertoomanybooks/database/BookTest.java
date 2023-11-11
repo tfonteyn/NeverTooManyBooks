@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.filters.MediumTest;
@@ -296,7 +297,7 @@ public class BookTest {
 
     private void mustHaveTempCover(@NonNull final Context context,
                                    @NonNull final Book book,
-                                   final int cIdx)
+                                   @IntRange(from = 0, to = 1) final int cIdx)
             throws StorageException {
 
         assertTrue(book.contains(Book.BKEY_TMP_FILE_SPEC[cIdx]));
@@ -314,7 +315,7 @@ public class BookTest {
      * @param cIdx 0..n image index
      */
     private void mustHavePersistedCover(@NonNull final Book book,
-                                        final int cIdx) {
+                                        @IntRange(from = 0, to = 1) final int cIdx) {
         // we're testing a permanent file, the temp string must not exist
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[cIdx]));
 

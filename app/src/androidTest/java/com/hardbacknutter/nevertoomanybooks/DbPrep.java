@@ -23,6 +23,7 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.content.Context;
 import android.net.Uri;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -68,7 +69,7 @@ public class DbPrep {
      * @throws IOException on generic/other IO failures
      */
     @NonNull
-    public File getFile(final int cIdx)
+    public File getFile(@IntRange(from = 0, to = 1) final int cIdx)
             throws StorageException, IOException {
 
         final File tempDir = ServiceLocator.getInstance().getCoverStorage().getTempDir();

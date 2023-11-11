@@ -48,6 +48,7 @@ class FetchImageTask
     @NonNull
     private final FileManager fileManager;
     /** Image index we're handling. */
+    @IntRange(from = 0, to = 1)
     private final int cIdx;
     @NonNull
     private final Size[] sizes;

@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque;
 
 import android.content.Context;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -587,7 +588,7 @@ public class BedethequeSearchEngine
 
     private void parseCover(@NonNull final Context context,
                             @Nullable final Element a,
-                            final int cIdx,
+                            @IntRange(from = 0, to = 1) final int cIdx,
                             @NonNull final Book book)
             throws StorageException {
         if (a != null) {
