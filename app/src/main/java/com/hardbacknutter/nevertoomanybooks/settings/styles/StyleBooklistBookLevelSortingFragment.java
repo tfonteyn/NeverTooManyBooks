@@ -124,7 +124,7 @@ public class StyleBooklistBookLevelSortingFragment
                   .collect(Collectors.toMap(
                           domainExpression -> domainExpression.getDomain().getName(),
                           DomainExpression::getSort,
-                          (a, b) -> a,
+                          (existingKey, replacement) -> existingKey,
                           LinkedHashMap::new))
                   .entrySet()
                   .stream()

@@ -249,7 +249,7 @@ public class StyleViewModel
                         .stream()
                         .collect(Collectors.toMap(WrappedBookLevelColumn::getDbKey,
                                                   WrappedBookLevelColumn::getSort,
-                                                  (v1, v2) -> {
+                                                  (existingKey, replacement) -> {
                                                       throw new IllegalArgumentException(
                                                               "keys should already be unique");
                                                   },
