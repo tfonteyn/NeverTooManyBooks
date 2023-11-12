@@ -564,8 +564,8 @@ public class EditBookTocFragment
                 implements FragmentResultListener {
 
             private static final String SEARCH_NEXT_EDITION = "searchNextEdition";
-            private static final String TOC_BIT_MASK = "tocBitMask";
-            private static final String TOC_LIST = "tocEntries";
+            private static final String BKEY_TOC_BIT_MASK = "tocBitMask";
+            private static final String BKEY_TOC_LIST = "tocEntries";
             @NonNull
             private final String requestKey;
             private FragmentManager fragmentManager;
@@ -579,8 +579,8 @@ public class EditBookTocFragment
                                   @NonNull final Book.ContentType bookContentType,
                                   @NonNull final List<TocEntry> tocEntries) {
                 final Bundle result = new Bundle(2);
-                result.putLong(TOC_BIT_MASK, bookContentType.getId());
-                result.putParcelableArrayList(TOC_LIST, new ArrayList<>(tocEntries));
+                result.putLong(BKEY_TOC_BIT_MASK, bookContentType.getId());
+                result.putParcelableArrayList(BKEY_TOC_LIST, new ArrayList<>(tocEntries));
                 fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
             }
 
@@ -626,9 +626,9 @@ public class EditBookTocFragment
                 if (result.getBoolean(SEARCH_NEXT_EDITION)) {
                     searchNextEdition();
                 } else {
-                    onResult(Book.ContentType.getType(result.getLong(TOC_BIT_MASK)),
-                             Objects.requireNonNull(result.getParcelableArrayList(TOC_LIST),
-                                                    TOC_LIST));
+                    onResult(Book.ContentType.getType(result.getInt(BKEY_TOC_BIT_MASK)),
+                             Objects.requireNonNull(result.getParcelableArrayList(BKEY_TOC_LIST),
+                                                    BKEY_TOC_LIST));
                 }
             }
 
