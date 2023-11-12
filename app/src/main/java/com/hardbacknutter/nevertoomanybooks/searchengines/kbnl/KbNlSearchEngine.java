@@ -149,7 +149,7 @@ public class KbNlSearchEngine
 
         futureHttpGet = createFutureGetRequest(context);
 
-        final DefaultHandler handler = new KbNlBookHandler(context, this, book);
+        final DefaultHandler handler = new KbNlBookHandler(this, book);
 
         final SAXParser parser;
         try {

@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.kbnl;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -28,14 +26,12 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.mappers.ColorMapper;
 
 import org.xml.sax.SAXException;
 
@@ -45,8 +41,6 @@ class KbNlBookHandler
     private static final Pattern ISBN_BOUNDARY_PATTERN = Pattern.compile("[;)]");
 
     @NonNull
-    private final Context context;
-    @NonNull
     private final KbNlSearchEngine searchEngine;
 
     @Nullable
@@ -55,15 +49,12 @@ class KbNlBookHandler
     /**
      * Constructor.
      *
-     * @param context          Current context
      * @param kbNlSearchEngine engine
-     * @param data             Bundle to update
+     * @param data             Book to update
      */
-    KbNlBookHandler(@NonNull final Context context,
-                    @NonNull final KbNlSearchEngine kbNlSearchEngine,
+    KbNlBookHandler(@NonNull final KbNlSearchEngine kbNlSearchEngine,
                     @NonNull final Book data) {
         super(data);
-        this.context = context;
         searchEngine = kbNlSearchEngine;
     }
 
@@ -572,36 +563,7 @@ class KbNlBookHandler
      */
     private void processIllustration(@NonNull final List<String> currentData) {
         if (!book.contains(DBKey.COLOR)) {
-            if (ColorMapper.isMappingAllowed(context)) {
-                final int resId;
-                // As usual on this site, the data is unstructured... we do our best
-                // Anything not recognized is rejected as it could not be a color at all.
-                switch (currentData.get(0)) {
-                    case "gekleurde illustraties":
-                    case "gekleurde ill":
-                        resId = R.string.book_color_full_color;
-                        break;
-
-                    case "blauw-witte illustraties":
-                    case "ill":
-                    case "zw. ill":
-                    case "zw. tek":
-                    case "ill.(zw./w.)":
-                        resId = R.string.book_color_black_and_white;
-                        break;
-
-                    default:
-                        resId = 0;
-                        break;
-                }
-
-                if (resId != 0) {
-                    book.putString(DBKey.COLOR, context.getString(resId));
-                }
-            } else {
-                // Leave it to the user as requested
-                book.putString(DBKey.COLOR, currentData.get(0));
-            }
+            book.putString(DBKey.COLOR, currentData.get(0));
         }
     }
 

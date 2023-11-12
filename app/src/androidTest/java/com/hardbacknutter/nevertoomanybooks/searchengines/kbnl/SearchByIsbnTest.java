@@ -70,6 +70,8 @@ public class SearchByIsbnTest
         assertFalse(book.isEmpty());
         assertEquals("De Discus valt aan", book.getString(DBKey.TITLE, null));
         assertEquals("1973", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("zw. ill", book.getString(DBKey.COLOR, null));
+
         // this is good enough... the local junit tests do the full parse test
     }
 }

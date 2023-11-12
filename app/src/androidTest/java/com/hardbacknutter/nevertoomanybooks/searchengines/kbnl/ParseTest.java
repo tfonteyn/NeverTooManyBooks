@@ -77,7 +77,7 @@ public class ParseTest
     private Book getBook(final int resId)
             throws IOException, SAXException {
         final Book book = new Book();
-        final KbNlBookHandler bookHandler = new KbNlBookHandler(context, searchEngine, book);
+        final KbNlBookHandler bookHandler = new KbNlBookHandler(searchEngine, book);
         try (InputStream in = InstrumentationRegistry.getInstrumentation().getContext()
                                                      .getResources().openRawResource(resId)) {
             saxParser.parse(in, bookHandler);
