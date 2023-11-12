@@ -29,7 +29,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.io.File;
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -48,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -375,7 +375,7 @@ public class AmazonSearchEngine
         if (fetchCovers[0]) {
             final String isbn = book.getString(DBKey.BOOK_ISBN);
             parseCovers(context, document, isbn, 0).ifPresent(
-                    fileSpec -> book.setCoverFileSpecList(0, List.of(fileSpec)));
+                    fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
 
         }
     }

@@ -35,6 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
@@ -159,13 +160,13 @@ public class ParseTest
         assertEquals("Michael", author.getGivenNames());
         assertEquals(Author.TYPE_EDITOR, author.getType());
 
-        final List<String> covers = book.getCoverFileSpecList(0);
+        final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
         assertEquals(1, covers.size());
         assertTrue(covers.get(0).endsWith(EngineId.Bol.getPreferenceKey()
                                           + "_9781841593326_0_.jpg"));
 
-        final List<String> backCovers = book.getCoverFileSpecList(1);
+        final List<String> backCovers = CoverFileSpecArray.getList(book, 1);
         assertNotNull(backCovers);
         assertEquals(0, backCovers.size());
     }
@@ -214,13 +215,13 @@ public class ParseTest
         assertEquals("Esther", author.getGivenNames());
         assertEquals(Author.TYPE_WRITER, author.getType());
 
-        final List<String> covers = book.getCoverFileSpecList(0);
+        final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
         assertEquals(1, covers.size());
         assertTrue(covers.get(0).endsWith(EngineId.Bol.getPreferenceKey()
                                           + "_9789044652901_0_.jpg"));
 
-        final List<String> backCovers = book.getCoverFileSpecList(1);
+        final List<String> backCovers = CoverFileSpecArray.getList(book, 1);
         assertNotNull(backCovers);
         assertEquals(1, backCovers.size());
         assertTrue(backCovers.get(0).endsWith(EngineId.Bol.getPreferenceKey()
@@ -315,13 +316,13 @@ public class ParseTest
         assertEquals("Inge", author.getGivenNames());
         assertEquals(Author.TYPE_TRANSLATOR, author.getType());
 
-        final List<String> covers = book.getCoverFileSpecList(0);
+        final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
         assertEquals(1, covers.size());
         assertTrue(covers.get(0).endsWith(EngineId.Bol.getPreferenceKey()
                                           + "_9789044544725_0_.jpg"));
 
-        final List<String> backCovers = book.getCoverFileSpecList(1);
+        final List<String> backCovers = CoverFileSpecArray.getList(book, 1);
         assertNotNull(backCovers);
         assertEquals(1, backCovers.size());
         assertTrue(backCovers.get(0).endsWith(EngineId.Bol.getPreferenceKey()
@@ -420,13 +421,13 @@ public class ParseTest
         assertEquals("Michael", author.getGivenNames());
         assertEquals(Author.TYPE_EDITOR, author.getType());
 
-        final List<String> covers = book.getCoverFileSpecList(0);
+        final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
         assertEquals(1, covers.size());
         assertTrue(covers.get(0).endsWith(EngineId.Bol.getPreferenceKey()
                                           + "_9781841593326_0_.jpg"));
 
-        final List<String> backCovers = book.getCoverFileSpecList(1);
+        final List<String> backCovers = CoverFileSpecArray.getList(book, 1);
         assertNotNull(backCovers);
         assertEquals(0, backCovers.size());
     }

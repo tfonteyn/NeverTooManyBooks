@@ -552,7 +552,7 @@ public class DataManager
      * @return The list, can be empty, but never {@code null}
      */
     @NonNull
-    protected List<String> getStringArrayList(@NonNull final String key) {
+    public List<String> getStringArrayList(@NonNull final String key) {
         Object o = rawData.get(key);
         if (o == null) {
             o = new ArrayList<>();
@@ -569,8 +569,8 @@ public class DataManager
      * @param key   Key of data object
      * @param value to store
      */
-    protected void putStringArrayList(@NonNull final String key,
-                                      @NonNull final ArrayList<String> value) {
+    public void putStringArrayList(@NonNull final String key,
+                                   @NonNull final ArrayList<String> value) {
         rawData.putStringArrayList(key, value);
     }
 

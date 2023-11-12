@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -609,7 +610,8 @@ public class OpenLibrarySearchEngine
         }
 
         if (fetchCovers[0]) {
-            book.setCoverFileSpecList(0, parseCovers(context, document, validIsbn, 0));
+            parseCovers(context, document, validIsbn, 0).ifPresent(
+                    fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
     }
 
@@ -673,11 +675,11 @@ public class OpenLibrarySearchEngine
     }
 
     @NonNull
-    private List<String> parseCovers(@NonNull final Context context,
-                                     @NonNull final JSONObject element,
-                                     @NonNull final String validIsbn,
-                                     @SuppressWarnings("SameParameterValue")
-                                     @IntRange(from = 0, to = 1) final int cIdx)
+    private Optional<String> parseCovers(@NonNull final Context context,
+                                         @NonNull final JSONObject element,
+                                         @NonNull final String validIsbn,
+                                         @SuppressWarnings("SameParameterValue")
+                                         @IntRange(from = 0, to = 1) final int cIdx)
             throws StorageException {
 
         // get the largest cover image available.
@@ -696,12 +698,10 @@ public class OpenLibrarySearchEngine
 
             // we assume that the download will work if there is a url.
             if (coverUrl != null && !coverUrl.isEmpty()) {
-                final List<String> list = new ArrayList<>();
-                saveImage(context, coverUrl, validIsbn, cIdx, size).ifPresent(list::add);
-                return list;
+                return saveImage(context, coverUrl, validIsbn, cIdx, size);
             }
         }
 
-        return List.of();
+        return Optional.empty();
     }
 }

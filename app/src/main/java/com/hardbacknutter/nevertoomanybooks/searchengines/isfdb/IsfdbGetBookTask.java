@@ -31,6 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
@@ -116,7 +117,7 @@ public class IsfdbGetBookTask
         } else if (isfdbId != 0) {
             final Book book = searchEngine.searchByExternalId(context, String.valueOf(isfdbId),
                                                               fetchCovers);
-            book.processCoverFileSpecList();
+            CoverFileSpecArray.process(book);
             return book;
 
         } else {

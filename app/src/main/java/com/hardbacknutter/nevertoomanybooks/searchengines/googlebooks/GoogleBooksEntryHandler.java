@@ -25,7 +25,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -284,7 +284,7 @@ class GoogleBooksEntryHandler
                 final String isbn = book.getString(DBKey.BOOK_ISBN);
                 try {
                     searchEngine.saveImage(context, url, isbn, 0, null).ifPresent(
-                            fileSpec -> book.setCoverFileSpecList(0, List.of(fileSpec)));
+                            fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
                 } catch (@NonNull final StorageException e) {
                     throw new SAXException(e);
                 }

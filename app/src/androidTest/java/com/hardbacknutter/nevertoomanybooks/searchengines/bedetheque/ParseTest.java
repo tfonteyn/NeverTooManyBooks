@@ -33,6 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
@@ -122,14 +123,14 @@ public class ParseTest
         assertEquals(Author.TYPE_FOREWORD, author.getType());
 
         List<String> coverList;
-        coverList = book.getCoverFileSpecList(0);
+        coverList = CoverFileSpecArray.getList(book, 0);
         assertNotNull(coverList);
         assertEquals(1, coverList.size());
         String cover;
         cover = coverList.get(0);
         assertTrue(cover.endsWith(searchEngine.getEngineId().getPreferenceKey()
                                   + "_2840557428_0_.jpg"));
-        coverList = book.getCoverFileSpecList(1);
+        coverList = CoverFileSpecArray.getList(book, 1);
         assertNotNull(coverList);
         assertEquals(1, coverList.size());
         cover = coverList.get(0);

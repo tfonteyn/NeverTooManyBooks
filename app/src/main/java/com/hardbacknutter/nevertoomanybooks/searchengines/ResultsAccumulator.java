@@ -61,8 +61,8 @@ class ResultsAccumulator {
                                                         Book.BKEY_PUBLISHER_LIST,
                                                         Book.BKEY_TOC_LIST,
                                                         Book.BKEY_BOOKSHELF_LIST,
-                                                        Book.BKEY_FILE_SPEC_ARRAY[0],
-                                                        Book.BKEY_FILE_SPEC_ARRAY[1]);
+                                                        CoverFileSpecArray.BKEY_FILE_SPEC_ARRAY[0],
+                                                        CoverFileSpecArray.BKEY_FILE_SPEC_ARRAY[1]);
 
     private final Map<EngineId, SearchEngine> engineCache;
     /** Mappers to apply. */
@@ -163,7 +163,7 @@ class ResultsAccumulator {
         mappers.forEach(mapper -> mapper.map(context, book));
 
         // Pick the best covers for each list (if any) and clean/delete all others.
-        book.processCoverFileSpecList();
+        CoverFileSpecArray.process(book);
     }
 
     /**

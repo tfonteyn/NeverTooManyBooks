@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.ReaderResults;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
+import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
@@ -341,7 +342,7 @@ public class StripInfoReader
                 // It's a new book. Download the full data set from the server.
                 final Book book = searchEngine
                         .searchByExternalId(context, String.valueOf(externalId), coversForNewBooks);
-                book.processCoverFileSpecList();
+                CoverFileSpecArray.process(book);
 
                 insertBook(context, book);
             }
@@ -378,7 +379,7 @@ public class StripInfoReader
             // The siBook data is superseded by this new data.
             dataToMerge = searchEngine
                     .searchByExternalId(context, String.valueOf(externalId), coversWanted);
-            dataToMerge.processCoverFileSpecList();
+            CoverFileSpecArray.process(dataToMerge);
         } else {
             // We have all we need in the incoming siBook
             dataToMerge = siBook;

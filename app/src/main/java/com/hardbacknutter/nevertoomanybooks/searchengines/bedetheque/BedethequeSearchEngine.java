@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
+import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -595,7 +596,7 @@ public class BedethequeSearchEngine
             final String url = a.attr("href");
             final String isbn = book.getString(DBKey.BOOK_ISBN);
             saveImage(context, url, isbn, cIdx, null).ifPresent(
-                    fileSpec -> book.setCoverFileSpecList(cIdx, List.of(fileSpec)));
+                    fileSpec -> CoverFileSpecArray.setFileSpec(book, cIdx, fileSpec));
         }
     }
 

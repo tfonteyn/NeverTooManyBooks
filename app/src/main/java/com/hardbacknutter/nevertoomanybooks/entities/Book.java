@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.entities;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -37,7 +36,6 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -55,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.LoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
-import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
@@ -156,16 +153,6 @@ public class Book
      * <strong>No prefix, NEVER change this string as it's used in export/import.</strong>
      */
     public static final String BKEY_CALIBRE_LIBRARY = "calibre_library";
-
-    /**
-     * List of front/back cover file specs as collected during the search.
-     * <p>
-     * <br>type: {@code ArrayList<String>}
-     */
-    public static final String[] BKEY_FILE_SPEC_ARRAY = {
-            "fileSpec_array:0",
-            "fileSpec_array:1"
-    };
 
     /**
      * Rating goes from 0 to 5 stars, in 0.5 increments.
@@ -1198,7 +1185,8 @@ public class Book
                                     + "|file=" + file.getAbsolutePath()
                                  );
                 }
-                // #storeCovers will do the actual storing
+                // BookDaoHelper#persistCovers will do the actual work
+                // at the time of insert/update -ing the book
                 putString(BKEY_TMP_FILE_SPEC[cIdx], file.getAbsolutePath());
 
             } else {
@@ -1211,7 +1199,8 @@ public class Book
                                     + "|deleting"
                                  );
                 }
-                // explicitly set to "" to let #storeCovers do the delete
+                // explicitly set to "" to let BookDaoHelper#persistCovers do a delete
+                // at the time of insert/update -ing the book
                 putString(BKEY_TMP_FILE_SPEC[cIdx], "");
             }
 
@@ -1232,6 +1221,7 @@ public class Book
             @Nullable
             File destination = file;
 
+            // See BookDaoHelper#persistCovers which does the same as below for BKEY_TMP_FILE_SPEC
             if (file != null) {
                 if (file.getName().startsWith(uuid)) {
                     // No further action needed as we have the cover "in-place"
@@ -1251,45 +1241,13 @@ public class Book
                                                 .persist(file, uuid, cIdx);
                 }
             } else {
+                // a null file indicates we need to delete the cover
                 ServiceLocator.getInstance().getCoverStorage().delete(uuid, cIdx);
             }
 
             ServiceLocator.getInstance().getBookDao().touch(this);
 
             return destination;
-        }
-    }
-
-    /**
-     * Set a list of cover fileSpecs for the given cover index.
-     *
-     * @param cIdx      0..n image index
-     * @param fileSpecs to set;
-     *                  Pass in {@code null} or an empty list to remove any previous list
-     */
-    public void setCoverFileSpecList(@IntRange(from = 0, to = 1) final int cIdx,
-                                     @Nullable final List<String> fileSpecs) {
-        if (fileSpecs != null && !fileSpecs.isEmpty()) {
-            putStringArrayList(BKEY_FILE_SPEC_ARRAY[cIdx], new ArrayList<>(fileSpecs));
-        } else {
-            remove(BKEY_FILE_SPEC_ARRAY[cIdx]);
-        }
-    }
-
-    /**
-     * Get the list of cover fileSpecs for the given cover index.
-     *
-     * @param cIdx 0..n image index
-     *
-     * @return list
-     */
-    @VisibleForTesting
-    @NonNull
-    public List<String> getCoverFileSpecList(@IntRange(from = 0, to = 1) final int cIdx) {
-        if (contains(BKEY_FILE_SPEC_ARRAY[cIdx])) {
-            return getStringArrayList(BKEY_FILE_SPEC_ARRAY[cIdx]);
-        } else {
-            return List.of();
         }
     }
 
@@ -1478,76 +1436,6 @@ public class Book
 
 
         return Intent.createChooser(intent, context.getString(R.string.whichSendApplication));
-    }
-
-    /**
-     * Filter the {@link Book#BKEY_FILE_SPEC_ARRAY} present, selecting only the best
-     * image for each index, and store those in {@link Book#BKEY_TMP_FILE_SPEC}.
-     * This may result in removing ALL images if none are found suitable.
-     */
-    public void processCoverFileSpecList() {
-        for (int cIdx = 0; cIdx < 2; cIdx++) {
-            final List<String> imageList = getCoverFileSpecList(cIdx);
-            if (!imageList.isEmpty()) {
-                // ALWAYS call even if we only have 1 image...
-                // We want to remove bad ones if needed.
-                final String fileSpec = getBestImage(imageList);
-                if (fileSpec != null) {
-                    putString(BKEY_TMP_FILE_SPEC[cIdx], fileSpec);
-                }
-            }
-            setCoverFileSpecList(cIdx, null);
-        }
-    }
-
-    /**
-     * Pick the largest image from the given list, and delete all others.
-     *
-     * @param imageList a list of images
-     *
-     * @return fileSpec of cover found, or {@code null} for none.
-     */
-    @Nullable
-    private String getBestImage(@NonNull final List<String> imageList) {
-
-        // biggest size based on height * width
-        long bestImageSize = -1;
-        // index of the file which is the biggest
-        int bestFileIndex = -1;
-
-        // Just read the image files to get file size
-        final BitmapFactory.Options opt = new BitmapFactory.Options();
-        opt.inJustDecodeBounds = true;
-
-        // Loop, finding biggest image
-        for (int i = 0; i < imageList.size(); i++) {
-            final String fileSpec = imageList.get(i);
-            if (new File(fileSpec).exists()) {
-                BitmapFactory.decodeFile(fileSpec, opt);
-                // If no size info, assume file bad and skip
-                if (opt.outHeight > 0 && opt.outWidth > 0) {
-                    final long size = (long) opt.outHeight * (long) opt.outWidth;
-                    if (size > bestImageSize) {
-                        bestImageSize = size;
-                        bestFileIndex = i;
-                    }
-                }
-            }
-        }
-
-        // Delete all but the best one.
-        // Note there *may* be no best one, so all would be deleted. This is fine.
-        for (int i = 0; i < imageList.size(); i++) {
-            if (i != bestFileIndex) {
-                FileUtils.delete(new File(imageList.get(i)));
-            }
-        }
-
-        if (bestFileIndex >= 0) {
-            return imageList.get(bestFileIndex);
-        }
-
-        return null;
     }
 
     /**

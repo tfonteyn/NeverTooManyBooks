@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -597,14 +598,14 @@ public class BolSearchEngine
             if (coverImageUrl != null && !coverImageUrl.isEmpty()) {
                 final Optional<String> fileSpec = saveImage(context, coverImageUrl, isbn, 0, null);
                 if (fileSpec.isPresent()) {
-                    book.setCoverFileSpecList(0, List.of(fileSpec.get()));
+                    CoverFileSpecArray.setFileSpec(book, 0, fileSpec.get());
                     // only attempt to get the back-cover if we got a front-cover
                     // and (obv.) we want one.
                     if (fetchCovers.length > 1 && fetchCovers[1]) {
                         final String url = currentItem.optString("backImageUrl");
                         if (url != null && !url.isEmpty()) {
                             saveImage(context, url, isbn, 1, null).ifPresent(
-                                    fs -> book.setCoverFileSpecList(1, List.of(fs)));
+                                    fs -> CoverFileSpecArray.setFileSpec(book, 1, fs));
                         }
                     }
                     // All done. We have a front-cover and maybe a back-cover.

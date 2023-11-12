@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 
 import org.xml.sax.Attributes;
@@ -366,8 +367,8 @@ class IsfdbPublicationListHandler
                         try {
                             final String isbn = book.getString(DBKey.BOOK_ISBN);
                             searchEngine.saveImage(context, tmpString, isbn, 0, null)
-                                        .ifPresent(fileSpec -> book
-                                                .setCoverFileSpecList(0, List.of(fileSpec)));
+                                        .ifPresent(fileSpec -> CoverFileSpecArray
+                                                .setFileSpec(book, 0, fileSpec));
 
                         } catch (@NonNull final StorageException e) {
                             throw new SAXException(e);
