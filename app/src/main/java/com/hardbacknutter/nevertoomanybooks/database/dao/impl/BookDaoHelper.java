@@ -61,11 +61,13 @@ import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
  * Normal flow:
  * <ol>
  *     <li>Create this object</li>
- *     <li>{@link #process(Context)}</li>
- *     <li>{@link #filterValues(TableInfo)}</li>
+ *     <li>Call {@link #process(Context)}</li>
+ *     <li>Call {@link #filterValues(TableInfo)}</li>
  *     <li>insert or update the book to the database</li>
- *     <li>{@link #persistCovers()}</li>
+ *     <li>Call {@link #persistCovers()}</li>
  * </ol>
+ * <p>
+ * Processing and filtering is done in two methods to facilitate testing.
  */
 public class BookDaoHelper {
 
@@ -411,12 +413,6 @@ public class BookDaoHelper {
                 });
     }
 
-    @NonNull
-    ContentValues filterValues(@NonNull final TableInfo tableInfo) {
-
-        return filterValues(tableInfo, book);
-    }
-
     /**
      * Return a ContentValues collection containing only those values from 'source'
      * that match columns in 'dest'.
@@ -428,16 +424,13 @@ public class BookDaoHelper {
      * </ul>
      *
      * @param tableInfo destination table
-     * @param book      A collection with the columns to be set. May contain extra data.
      *
      * @return New and filtered ContentValues
      *
      * @throws IllegalArgumentException if a {@code null} is set for a not-nullable column
      */
-    @SuppressWarnings("WeakerAccess")
     @NonNull
-    ContentValues filterValues(@NonNull final TableInfo tableInfo,
-                               @NonNull final Book book) {
+    ContentValues filterValues(@NonNull final TableInfo tableInfo) {
         final ContentValues cv = new ContentValues();
         for (final String key : book.keySet()) {
             // We've seen empty keys in old BC imports - this is likely due to a csv column
@@ -547,7 +540,7 @@ public class BookDaoHelper {
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                     LoggerFactory.getLogger()
-                                 .d(TAG, "storeCovers",
+                                 .d(TAG, "persistCovers",
                                     "BKEY_TMP_FILE_SPEC[" + cIdx + "]=`" + fileSpec + '`');
                 }
 
