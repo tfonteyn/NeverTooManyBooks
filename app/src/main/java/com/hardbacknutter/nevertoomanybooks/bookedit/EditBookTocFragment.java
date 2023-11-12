@@ -511,7 +511,7 @@ public class EditBookTocFragment
             tocEntries = Objects.requireNonNull(args.getParcelableArrayList(Book.BKEY_TOC_LIST),
                                                 Book.BKEY_TOC_LIST);
 
-            bookContentType = Book.ContentType.getType(args.getLong(DBKey.BOOK_CONTENT_TYPE));
+            bookContentType = Book.ContentType.getType(args.getInt(DBKey.BOOK_CONTENT_TYPE));
             hasOtherEditions = args.getBoolean(BKEY_HAS_OTHER_EDITIONS, false);
         }
 

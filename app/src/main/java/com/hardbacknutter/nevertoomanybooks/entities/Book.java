@@ -936,11 +936,21 @@ public class Book
         putParcelableArrayList(BKEY_TOC_LIST, tocEntries);
     }
 
+    /**
+     * Get the type of content of this book; i.e. Book/Collection/Anthology.
+     *
+     * @return type
+     */
     @NonNull
     public ContentType getContentType() {
-        return ContentType.getType(getLong(DBKey.BOOK_CONTENT_TYPE));
+        return ContentType.getType(getInt(DBKey.BOOK_CONTENT_TYPE));
     }
 
+    /**
+     * Set the type of content of this book; i.e. Book/Collection/Anthology.
+     *
+     * @param type to set
+     */
     public void setContentType(@NonNull final ContentType type) {
         putLong(DBKey.BOOK_CONTENT_TYPE, type.getId());
     }
@@ -1564,7 +1574,7 @@ public class Book
         }
 
         @NonNull
-        public static ContentType getType(final long value) {
+        public static ContentType getType(final int value) {
             switch ((int) value) {
                 case 3:
                     return Anthology;
