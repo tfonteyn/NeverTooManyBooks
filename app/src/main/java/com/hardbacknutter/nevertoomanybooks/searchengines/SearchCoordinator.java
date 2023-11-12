@@ -650,7 +650,7 @@ public class SearchCoordinator
         }
 
         final SearchTask task = new SearchTask(context, TASK_ID.getAndIncrement(),
-                                               searchEngine, searchTaskListener);
+                                               searchEngine, new SearchTaskListener());
         task.setExecutor(ASyncExecutor.MAIN);
 
         task.setFetchCovers(fetchCover);
@@ -1024,7 +1024,8 @@ public class SearchCoordinator
     }
 
     /** Listener for <strong>individual</strong> search tasks. */
-    private final TaskListener<Book> searchTaskListener = new TaskListener<>() {
+    private class SearchTaskListener
+            implements TaskListener<Book> {
 
         @Override
         public void onProgress(@NonNull final TaskProgress message) {
@@ -1071,7 +1072,5 @@ public class SearchCoordinator
             }
             onSearchTaskFinished(taskId, null);
         }
-    };
-
-
+    }
 }
